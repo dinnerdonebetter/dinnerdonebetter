@@ -16,10 +16,10 @@ var ContextMatcher interface{} = mock.MatchedBy(func(context.Context) bool {
 	return true
 })
 
-// MapOfStringToInterfaceMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
+// QueryFilterMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
 // safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
 // a context.Context.
-var MapOfStringToInterfaceMatcher interface{} = mock.MatchedBy(func(map[string]interface{}) bool {
+var QueryFilterMatcher interface{} = mock.MatchedBy(func(*types.QueryFilter) bool {
 	return true
 })
 
@@ -37,5 +37,9 @@ var HTTPResponseWriterMatcher interface{} = mock.MatchedBy(func(http.ResponseWri
 	return true
 })
 
-// DataChangeMessageMatcher matches the types.PreWriteMessage type.
-func DataChangeMessageMatcher(*types.DataChangeMessage) bool { return true }
+// DataChangeMessageMatcher is a matcher for the types.DataChangeMessage interface. It provides some level of type
+// safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
+// a http.ResponseWriter.
+var DataChangeMessageMatcher interface{} = mock.MatchedBy(func(*types.DataChangeMessage) bool {
+	return true
+})

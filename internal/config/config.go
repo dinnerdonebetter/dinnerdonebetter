@@ -168,7 +168,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.ValidMeasurementUnits.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
+			return fmt.Errorf("error validating ValidMeasurementUnits service portion of config: %w", err)
 		}
 
 		if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {

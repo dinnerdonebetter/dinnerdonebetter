@@ -202,14 +202,14 @@ func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query strin
 		wrapQueryForILIKE(query),
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validPreparationSearchQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "valid preparations", validPreparationSearchQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareError(err, logger, span, "executing valid preparations list retrieval query")
 	}
 
 	x, _, _, err := q.scanValidPreparations(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredients")
+		return nil, observability.PrepareError(err, logger, span, "scanning valid preparations")
 	}
 
 	return x, nil

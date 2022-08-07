@@ -131,6 +131,120 @@ func (s *validIngredientPreparationsTestSuite) TestClient_GetValidIngredientPrep
 	})
 }
 
+func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredientPreparationsForIngredient() {
+	const expectedPath = "/api/v1/valid_ingredient_preparations/by_ingredient/%s"
+
+	exampleValidIngredient := fakes.BuildFakeValidIngredient()
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientPreparationList()
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, exampleValidIngredient.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		actual, err := c.GetValidIngredientPreparationsForIngredient(s.ctx, exampleValidIngredient.ID, filter)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+	})
+
+	s.Run("with invalid ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.GetValidIngredientPreparationsForIngredient(s.ctx, "", nil)
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetValidIngredientPreparationsForIngredient(s.ctx, exampleValidIngredient.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, exampleValidIngredient.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetValidIngredientPreparationsForIngredient(s.ctx, exampleValidIngredient.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredientPreparationsForPreparation() {
+	const expectedPath = "/api/v1/valid_ingredient_preparations/by_preparation/%s"
+
+	exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientPreparationList()
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		actual, err := c.GetValidIngredientPreparationsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+	})
+
+	s.Run("with invalid ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.GetValidIngredientPreparationsForPreparation(s.ctx, "", nil)
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetValidIngredientPreparationsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetValidIngredientPreparationsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientPreparation() {
 	const expectedPath = "/api/v1/valid_ingredient_preparations"
 

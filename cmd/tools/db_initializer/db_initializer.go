@@ -95,6 +95,18 @@ func main() {
 		log.Fatal(fmt.Errorf("error creating valid measurement units: %w", err))
 	}
 
+	if err = scaffoldValidPreparationInstruments(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating valid preparation instruments: %w", err))
+	}
+
+	if err = scaffoldValidIngredientPreparations(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating valid ingredient preparations: %w", err))
+	}
+
+	if err = scaffoldValidIngredientMeasurementUnits(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating valid ingredient preparations: %w", err))
+	}
+
 	if err = scaffoldRecipes(ctx, dataManager); err != nil {
 		log.Fatal(fmt.Errorf("error creating recipes: %w", err))
 	}

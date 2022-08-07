@@ -48,7 +48,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
+			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 			var createdRecipeStep *types.RecipeStep
 			for _, step := range createdRecipe.Steps {
@@ -66,10 +66,10 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			updateInput := convertRecipeStepToRecipeStepUpdateInput(newRecipeStep)
 			updateInput.Preparation = createdValidPreparation
 			createdRecipeStep.Update(updateInput)
-			assert.NoError(t, testClients.main.UpdateRecipeStep(ctx, createdRecipeStep))
+			assert.NoError(t, testClients.user.UpdateRecipeStep(ctx, createdRecipeStep))
 
 			t.Log("fetching changed recipe step")
-			actual, err := testClients.main.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
+			actual, err := testClients.user.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe step equality
@@ -77,10 +77,10 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up recipe step")
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -93,7 +93,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
+			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
@@ -124,13 +124,13 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(exampleRecipeStep)
 				exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
 
-				createdRecipeStep, createdRecipeStepErr := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
+				createdRecipeStep, createdRecipeStepErr := testClients.user.CreateRecipeStep(ctx, exampleRecipeStepInput)
 				require.NoError(t, createdRecipeStepErr)
 				t.Logf("recipe step %q created", createdRecipeStep.ID)
 
 				checkRecipeStepEquality(t, exampleRecipeStep, createdRecipeStep)
 
-				createdRecipeStep, createdRecipeStepErr = testClients.main.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
+				createdRecipeStep, createdRecipeStepErr = testClients.user.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
 				requireNotNilAndNoProblems(t, createdRecipeStep, createdRecipeStepErr)
 				require.Equal(t, createdRecipe.ID, createdRecipeStep.BelongsToRecipe)
 
@@ -138,7 +138,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			}
 
 			// assert recipe step list equality
-			actual, err := testClients.main.GetRecipeSteps(ctx, createdRecipe.ID, nil)
+			actual, err := testClients.user.GetRecipeSteps(ctx, createdRecipe.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -150,11 +150,11 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdRecipeStep := range expected {
-				assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+				assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 			}
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

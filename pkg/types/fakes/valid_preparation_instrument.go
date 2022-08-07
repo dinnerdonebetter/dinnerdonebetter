@@ -10,11 +10,11 @@ import (
 // BuildFakeValidPreparationInstrument builds a faked valid ingredient preparation.
 func BuildFakeValidPreparationInstrument() *types.ValidPreparationInstrument {
 	return &types.ValidPreparationInstrument{
-		ID:                 ksuid.New().String(),
-		Notes:              buildUniqueString(),
-		ValidPreparationID: buildUniqueString(),
-		ValidInstrumentID:  buildUniqueString(),
-		CreatedOn:          uint64(uint32(fake.Date().Unix())),
+		ID:          ksuid.New().String(),
+		Notes:       buildUniqueString(),
+		Preparation: *BuildFakeValidPreparation(),
+		Instrument:  *BuildFakeValidInstrument(),
+		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }
 
@@ -41,8 +41,8 @@ func BuildFakeValidPreparationInstrumentUpdateRequestInput() *types.ValidPrepara
 	validPreparationInstrument := BuildFakeValidPreparationInstrument()
 	return &types.ValidPreparationInstrumentUpdateRequestInput{
 		Notes:              &validPreparationInstrument.Notes,
-		ValidPreparationID: &validPreparationInstrument.ValidPreparationID,
-		ValidInstrumentID:  &validPreparationInstrument.ValidInstrumentID,
+		ValidPreparationID: &validPreparationInstrument.Preparation.ID,
+		ValidInstrumentID:  &validPreparationInstrument.Instrument.ID,
 	}
 }
 
@@ -50,8 +50,8 @@ func BuildFakeValidPreparationInstrumentUpdateRequestInput() *types.ValidPrepara
 func BuildFakeValidPreparationInstrumentUpdateRequestInputFromValidPreparationInstrument(validPreparationInstrument *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentUpdateRequestInput {
 	return &types.ValidPreparationInstrumentUpdateRequestInput{
 		Notes:              &validPreparationInstrument.Notes,
-		ValidPreparationID: &validPreparationInstrument.ValidPreparationID,
-		ValidInstrumentID:  &validPreparationInstrument.ValidInstrumentID,
+		ValidPreparationID: &validPreparationInstrument.Preparation.ID,
+		ValidInstrumentID:  &validPreparationInstrument.Instrument.ID,
 	}
 }
 
@@ -66,8 +66,8 @@ func BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparation
 	return &types.ValidPreparationInstrumentCreationRequestInput{
 		ID:                 validPreparationInstrument.ID,
 		Notes:              validPreparationInstrument.Notes,
-		ValidPreparationID: validPreparationInstrument.ValidPreparationID,
-		ValidInstrumentID:  validPreparationInstrument.ValidInstrumentID,
+		ValidPreparationID: validPreparationInstrument.Preparation.ID,
+		ValidInstrumentID:  validPreparationInstrument.Instrument.ID,
 	}
 }
 
@@ -82,7 +82,7 @@ func BuildFakeValidPreparationInstrumentDatabaseCreationInputFromValidPreparatio
 	return &types.ValidPreparationInstrumentDatabaseCreationInput{
 		ID:                 validPreparationInstrument.ID,
 		Notes:              validPreparationInstrument.Notes,
-		ValidPreparationID: validPreparationInstrument.ValidPreparationID,
-		ValidInstrumentID:  validPreparationInstrument.ValidInstrumentID,
+		ValidPreparationID: validPreparationInstrument.Preparation.ID,
+		ValidInstrumentID:  validPreparationInstrument.Instrument.ID,
 	}
 }

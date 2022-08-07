@@ -13,6 +13,11 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
+const (
+	validIngredientsOnValidIngredientPreparationsJoinClause  = "valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id"
+	validPreparationsOnValidIngredientPreparationsJoinClause = "valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id"
+)
+
 var (
 	_ types.ValidIngredientPreparationDataManager = (*SQLQuerier)(nil)
 
@@ -20,8 +25,34 @@ var (
 	validIngredientPreparationsTableColumns = []string{
 		"valid_ingredient_preparations.id",
 		"valid_ingredient_preparations.notes",
-		"valid_ingredient_preparations.valid_preparation_id",
-		"valid_ingredient_preparations.valid_ingredient_id",
+		"valid_preparations.id",
+		"valid_preparations.name",
+		"valid_preparations.description",
+		"valid_preparations.icon_path",
+		"valid_preparations.created_on",
+		"valid_preparations.last_updated_on",
+		"valid_preparations.archived_on",
+		"valid_ingredients.id",
+		"valid_ingredients.name",
+		"valid_ingredients.description",
+		"valid_ingredients.warning",
+		"valid_ingredients.contains_egg",
+		"valid_ingredients.contains_dairy",
+		"valid_ingredients.contains_peanut",
+		"valid_ingredients.contains_tree_nut",
+		"valid_ingredients.contains_soy",
+		"valid_ingredients.contains_wheat",
+		"valid_ingredients.contains_shellfish",
+		"valid_ingredients.contains_sesame",
+		"valid_ingredients.contains_fish",
+		"valid_ingredients.contains_gluten",
+		"valid_ingredients.animal_flesh",
+		"valid_ingredients.volumetric",
+		"valid_ingredients.is_liquid",
+		"valid_ingredients.icon_path",
+		"valid_ingredients.created_on",
+		"valid_ingredients.last_updated_on",
+		"valid_ingredients.archived_on",
 		"valid_ingredient_preparations.created_on",
 		"valid_ingredient_preparations.last_updated_on",
 		"valid_ingredient_preparations.archived_on",
@@ -40,8 +71,34 @@ func (q *SQLQuerier) scanValidIngredientPreparation(ctx context.Context, scan da
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Notes,
-		&x.ValidPreparationID,
-		&x.ValidIngredientID,
+		&x.Preparation.ID,
+		&x.Preparation.Name,
+		&x.Preparation.Description,
+		&x.Preparation.IconPath,
+		&x.Preparation.CreatedOn,
+		&x.Preparation.LastUpdatedOn,
+		&x.Preparation.ArchivedOn,
+		&x.Ingredient.ID,
+		&x.Ingredient.Name,
+		&x.Ingredient.Description,
+		&x.Ingredient.Warning,
+		&x.Ingredient.ContainsEgg,
+		&x.Ingredient.ContainsDairy,
+		&x.Ingredient.ContainsPeanut,
+		&x.Ingredient.ContainsTreeNut,
+		&x.Ingredient.ContainsSoy,
+		&x.Ingredient.ContainsWheat,
+		&x.Ingredient.ContainsShellfish,
+		&x.Ingredient.ContainsSesame,
+		&x.Ingredient.ContainsFish,
+		&x.Ingredient.ContainsGluten,
+		&x.Ingredient.AnimalFlesh,
+		&x.Ingredient.IsMeasuredVolumetrically,
+		&x.Ingredient.IsLiquid,
+		&x.Ingredient.IconPath,
+		&x.Ingredient.CreatedOn,
+		&x.Ingredient.LastUpdatedOn,
+		&x.Ingredient.ArchivedOn,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -118,7 +175,46 @@ func (q *SQLQuerier) ValidIngredientPreparationExists(ctx context.Context, valid
 	return result, nil
 }
 
-const getValidIngredientPreparationQuery = "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL AND valid_ingredient_preparations.id = $1"
+const getValidIngredientPreparationQuery = `SELECT
+	valid_ingredient_preparations.id,
+	valid_ingredient_preparations.notes,
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.created_on,
+	valid_preparations.last_updated_on,
+	valid_preparations.archived_on,
+	valid_ingredients.id,
+	valid_ingredients.name,
+	valid_ingredients.description,
+	valid_ingredients.warning,
+	valid_ingredients.contains_egg,
+	valid_ingredients.contains_dairy,
+	valid_ingredients.contains_peanut,
+	valid_ingredients.contains_tree_nut,
+	valid_ingredients.contains_soy,
+	valid_ingredients.contains_wheat,
+	valid_ingredients.contains_shellfish,
+	valid_ingredients.contains_sesame,
+	valid_ingredients.contains_fish,
+	valid_ingredients.contains_gluten,
+	valid_ingredients.animal_flesh,
+	valid_ingredients.volumetric,
+	valid_ingredients.is_liquid,
+	valid_ingredients.icon_path,
+	valid_ingredients.created_on,
+	valid_ingredients.last_updated_on,
+	valid_ingredients.archived_on,
+	valid_ingredient_preparations.created_on,
+	valid_ingredient_preparations.last_updated_on,
+	valid_ingredient_preparations.archived_on
+FROM valid_ingredient_preparations
+JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
+JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
+WHERE valid_ingredient_preparations.archived_on IS NULL
+AND valid_ingredient_preparations.id = $1
+`
 
 // GetValidIngredientPreparation fetches a valid ingredient preparation from the database.
 func (q *SQLQuerier) GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*types.ValidIngredientPreparation, error) {
@@ -179,7 +275,18 @@ func (q *SQLQuerier) GetValidIngredientPreparations(ctx context.Context, filter 
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
+	joins := []string{
+		validIngredientsOnValidIngredientPreparationsJoinClause,
+		validPreparationsOnValidIngredientPreparationsJoinClause,
+	}
+
+	groupBys := []string{
+		"valid_ingredients.id",
+		"valid_preparations.id",
+		"valid_ingredient_preparations.id",
+	}
+
+	query, args := q.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validIngredientPreparations", query, args)
 	if err != nil {
@@ -251,6 +358,106 @@ func (q *SQLQuerier) GetValidIngredientPreparationsWithIDs(ctx context.Context, 
 	return validIngredientPreparations, nil
 }
 
+func (q *SQLQuerier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	query, args, err := q.sqlBuilder.Select(validIngredientPreparationsTableColumns...).
+		From("valid_ingredient_preparations").
+		Join(validIngredientsOnValidIngredientPreparationsJoinClause).
+		Join(validPreparationsOnValidIngredientPreparationsJoinClause).
+		Where(squirrel.Eq{
+			fmt.Sprintf("valid_ingredient_preparations.%s", column): ids,
+			"valid_ingredient_preparations.archived_on":             nil,
+		}).
+		Limit(uint64(limit)).
+		ToSql()
+
+	q.logQueryBuildingError(span, err)
+
+	return query, args
+}
+
+func (q *SQLQuerier) buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+	return q.buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
+}
+
+// GetValidIngredientPreparationsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
+func (q *SQLQuerier) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if preparationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
+	tracing.AttachValidIngredientPreparationIDToSpan(span, preparationID)
+
+	x = &types.ValidIngredientPreparationList{}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if filter != nil {
+		x.Page, x.Limit = filter.Page, filter.Limit
+	}
+
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx, filter.Limit, []string{preparationID})
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for preparation", query, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient preparations list retrieval query")
+	}
+
+	if x.ValidIngredientPreparations, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientPreparations(ctx, rows, false); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient preparations")
+	}
+
+	return x, nil
+}
+
+func (q *SQLQuerier) buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+	return q.buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx, "valid_ingredient_id", limit, ids)
+}
+
+// GetValidIngredientPreparationsForIngredient fetches a list of valid ingredient preparations from the database that meet a particular filter.
+func (q *SQLQuerier) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if ingredientID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachValidIngredientPreparationIDToSpan(span, ingredientID)
+
+	x = &types.ValidIngredientPreparationList{}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if filter != nil {
+		x.Page, x.Limit = filter.Page, filter.Limit
+	}
+
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx, filter.Limit, []string{ingredientID})
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid preparation ingredients for ingredient", query, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient preparations list retrieval query")
+	}
+
+	if x.ValidIngredientPreparations, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientPreparations(ctx, rows, false); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient preparations")
+	}
+
+	return x, nil
+}
+
 const validIngredientPreparationCreationQuery = "INSERT INTO valid_ingredient_preparations (id,notes,valid_preparation_id,valid_ingredient_id) VALUES ($1,$2,$3,$4)"
 
 // CreateValidIngredientPreparation creates a valid ingredient preparation in the database.
@@ -277,11 +484,11 @@ func (q *SQLQuerier) CreateValidIngredientPreparation(ctx context.Context, input
 	}
 
 	x := &types.ValidIngredientPreparation{
-		ID:                 input.ID,
-		Notes:              input.Notes,
-		ValidPreparationID: input.ValidPreparationID,
-		ValidIngredientID:  input.ValidIngredientID,
-		CreatedOn:          q.currentTime(),
+		ID:          input.ID,
+		Notes:       input.Notes,
+		Preparation: types.ValidPreparation{ID: input.ValidPreparationID},
+		Ingredient:  types.ValidIngredient{ID: input.ValidIngredientID},
+		CreatedOn:   q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientPreparationIDToSpan(span, x.ID)
@@ -306,8 +513,8 @@ func (q *SQLQuerier) UpdateValidIngredientPreparation(ctx context.Context, updat
 
 	args := []interface{}{
 		updated.Notes,
-		updated.ValidPreparationID,
-		updated.ValidIngredientID,
+		updated.Preparation.ID,
+		updated.Ingredient.ID,
 		updated.ID,
 	}
 

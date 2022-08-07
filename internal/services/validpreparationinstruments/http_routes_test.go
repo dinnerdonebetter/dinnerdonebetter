@@ -53,7 +53,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -175,7 +175,7 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -451,7 +451,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -633,7 +633,7 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -671,7 +671,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -803,7 +803,7 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -812,5 +812,149 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+	})
+}
+
+func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		exampleResponse := fakes.BuildFakeValidPreparationInstrumentList()
+
+		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManager{}
+		validPreparationInstrumentDataManager.On(
+			"GetValidPreparationInstrumentsForPreparation",
+			testutils.ContextMatcher,
+			helper.exampleValidPreparation.ID,
+			testutils.QueryFilterMatcher,
+		).Return(exampleResponse, nil)
+		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeResponseWithStatus",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			exampleResponse,
+			http.StatusOK,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		helper.service.sessionContextDataFetcher = func(request *http.Request) (*types.SessionContextData, error) {
+			return nil, errors.New("blah")
+		}
+
+		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+	})
+
+	T.Run("with error fetching data from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManager{}
+		validPreparationInstrumentDataManager.On(
+			"GetValidPreparationInstrumentsForPreparation",
+			testutils.ContextMatcher,
+			helper.exampleValidPreparation.ID,
+			testutils.QueryFilterMatcher,
+		).Return((*types.ValidPreparationInstrumentList)(nil), errors.New("blah"))
+		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
+
+		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
+	})
+}
+
+func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		exampleResponse := fakes.BuildFakeValidPreparationInstrumentList()
+
+		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManager{}
+		validPreparationInstrumentDataManager.On(
+			"GetValidPreparationInstrumentsForInstrument",
+			testutils.ContextMatcher,
+			helper.exampleValidInstrument.ID,
+			testutils.QueryFilterMatcher,
+		).Return(exampleResponse, nil)
+		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeResponseWithStatus",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			exampleResponse,
+			http.StatusOK,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		helper.service.sessionContextDataFetcher = func(request *http.Request) (*types.SessionContextData, error) {
+			return nil, errors.New("blah")
+		}
+
+		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+	})
+
+	T.Run("with error fetching data from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManager{}
+		validPreparationInstrumentDataManager.On(
+			"GetValidPreparationInstrumentsForInstrument",
+			testutils.ContextMatcher,
+			helper.exampleValidInstrument.ID,
+			testutils.QueryFilterMatcher,
+		).Return((*types.ValidPreparationInstrumentList)(nil), errors.New("blah"))
+		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
+
+		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
 }

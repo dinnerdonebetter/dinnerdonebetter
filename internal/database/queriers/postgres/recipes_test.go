@@ -1735,7 +1735,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
 					ID:                   product.ID,
 					Name:                 product.Name,
-					MeasurementUnitID:    product.MeasurementUnit.ID,
+					MeasurementUnitID:    &product.MeasurementUnit.ID,
 					QuantityNotes:        product.QuantityNotes,
 					BelongsToRecipeStep:  product.BelongsToRecipeStep,
 					MinimumQuantityValue: product.MinimumQuantityValue,
@@ -1932,7 +1932,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
 					ID:                   product.ID,
 					Name:                 product.Name,
-					MeasurementUnitID:    product.MeasurementUnit.ID,
+					MeasurementUnitID:    &product.MeasurementUnit.ID,
 					QuantityNotes:        product.QuantityNotes,
 					BelongsToRecipeStep:  product.BelongsToRecipeStep,
 					MinimumQuantityValue: product.MinimumQuantityValue,

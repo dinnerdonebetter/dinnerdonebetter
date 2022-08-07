@@ -22,6 +22,8 @@ type validPreparationInstrumentsServiceHTTPRoutesTestHelper struct {
 	service                           *service
 	exampleUser                       *types.User
 	exampleHousehold                  *types.Household
+	exampleValidPreparation           *types.ValidPreparation
+	exampleValidInstrument            *types.ValidInstrument
 	exampleValidPreparationInstrument *types.ValidPreparationInstrument
 	exampleCreationInput              *types.ValidPreparationInstrumentCreationRequestInput
 	exampleUpdateInput                *types.ValidPreparationInstrumentUpdateRequestInput
@@ -37,12 +39,22 @@ func buildTestHelper(t *testing.T) *validPreparationInstrumentsServiceHTTPRoutes
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleValidPreparation = fakes.BuildFakeValidPreparation()
+	helper.exampleValidInstrument = fakes.BuildFakeValidInstrument()
 	helper.exampleValidPreparationInstrument = fakes.BuildFakeValidPreparationInstrument()
 	helper.exampleCreationInput = fakes.BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(helper.exampleValidPreparationInstrument)
 	helper.exampleUpdateInput = fakes.BuildFakeValidPreparationInstrumentUpdateRequestInputFromValidPreparationInstrument(helper.exampleValidPreparationInstrument)
 
 	helper.service.validPreparationInstrumentIDFetcher = func(*http.Request) string {
 		return helper.exampleValidPreparationInstrument.ID
+	}
+
+	helper.service.validPreparationIDFetcher = func(*http.Request) string {
+		return helper.exampleValidPreparation.ID
+	}
+
+	helper.service.validInstrumentIDFetcher = func(*http.Request) string {
+		return helper.exampleValidInstrument.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{

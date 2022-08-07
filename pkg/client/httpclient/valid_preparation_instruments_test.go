@@ -131,6 +131,120 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_GetValidPreparationIns
 	})
 }
 
+func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparationInstrumentsForPreparation() {
+	const expectedPath = "/api/v1/valid_preparation_instruments/by_preparation/%s"
+
+	exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationInstrumentList()
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		actual, err := c.GetValidPreparationInstrumentsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+	})
+
+	s.Run("with invalid ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.GetValidPreparationInstrumentsForPreparation(s.ctx, "", nil)
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetValidPreparationInstrumentsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetValidPreparationInstrumentsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparationInstrumentsForInstrument() {
+	const expectedPath = "/api/v1/valid_preparation_instruments/by_instrument/%s"
+
+	exampleValidInstrument := fakes.BuildFakeValidInstrument()
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationInstrumentList()
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		actual, err := c.GetValidPreparationInstrumentsForInstrument(s.ctx, exampleValidInstrument.ID, filter)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+	})
+
+	s.Run("with invalid ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.GetValidPreparationInstrumentsForInstrument(s.ctx, "", nil)
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetValidPreparationInstrumentsForInstrument(s.ctx, exampleValidInstrument.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetValidPreparationInstrumentsForInstrument(s.ctx, exampleValidInstrument.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *validPreparationInstrumentsTestSuite) TestClient_CreateValidPreparationInstrument() {
 	const expectedPath = "/api/v1/valid_preparation_instruments"
 

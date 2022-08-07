@@ -66,6 +66,68 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsRequest(ctx context.Con
 	return req, nil
 }
 
+// BuildGetValidIngredientMeasurementUnitsForIngredientRequest builds an HTTP request for fetching a list of valid ingredient measurement units.
+func (b *Builder) BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := filter.AttachToLogger(b.logger)
+
+	if ingredientID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachValidIngredientIDToSpan(span, ingredientID)
+
+	uri := b.BuildURL(
+		ctx,
+		filter.ToValues(),
+		validIngredientMeasurementUnitsBasePath,
+		"by_ingredient",
+		ingredientID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
+// BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest builds an HTTP request for fetching a list of valid ingredient measurement units.
+func (b *Builder) BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := filter.AttachToLogger(b.logger)
+
+	if validMeasurementUnitID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+
+	uri := b.BuildURL(
+		ctx,
+		filter.ToValues(),
+		validIngredientMeasurementUnitsBasePath,
+		"by_measurement_unit",
+		validMeasurementUnitID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
 // BuildCreateValidIngredientMeasurementUnitRequest builds an HTTP request for creating a valid ingredient measurement unit.
 func (b *Builder) BuildCreateValidIngredientMeasurementUnitRequest(ctx context.Context, input *types.ValidIngredientMeasurementUnitCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

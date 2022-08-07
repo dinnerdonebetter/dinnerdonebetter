@@ -35,7 +35,7 @@ func (c *Client) GetValidPreparationInstrument(ctx context.Context, validPrepara
 	return validPreparationInstrument, nil
 }
 
-// GetValidPreparationInstruments retrieves a list of valid ingredient preparations.
+// GetValidPreparationInstruments retrieves a list of valid preparation instruments.
 func (c *Client) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -45,12 +45,66 @@ func (c *Client) GetValidPreparationInstruments(ctx context.Context, filter *typ
 
 	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid ingredient preparations list request")
+		return nil, observability.PrepareError(err, logger, span, "building valid preparation instruments list request")
 	}
 
 	var validPreparationInstruments *types.ValidPreparationInstrumentList
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient preparations")
+		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation instruments")
+	}
+
+	return validPreparationInstruments, nil
+}
+
+// GetValidPreparationInstrumentsForPreparation retrieves a list of valid preparation instruments.
+func (c *Client) GetValidPreparationInstrumentsForPreparation(ctx context.Context, validPreparationID string, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.loggerWithFilter(filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if validPreparationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+
+	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentsForPreparationRequest(ctx, validPreparationID, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building valid preparation instruments list request")
+	}
+
+	var validPreparationInstruments *types.ValidPreparationInstrumentList
+	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation instruments")
+	}
+
+	return validPreparationInstruments, nil
+}
+
+// GetValidPreparationInstrumentsForInstrument retrieves a list of valid preparation instruments.
+func (c *Client) GetValidPreparationInstrumentsForInstrument(ctx context.Context, validInstrumentID string, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.loggerWithFilter(filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if validInstrumentID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+
+	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentsForInstrumentRequest(ctx, validInstrumentID, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building valid preparation instruments list request")
+	}
+
+	var validPreparationInstruments *types.ValidPreparationInstrumentList
+	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation instruments")
 	}
 
 	return validPreparationInstruments, nil

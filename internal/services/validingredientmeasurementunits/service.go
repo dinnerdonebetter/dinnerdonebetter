@@ -26,6 +26,8 @@ type (
 		logger                                    logging.Logger
 		validIngredientMeasurementUnitDataManager types.ValidIngredientMeasurementUnitDataManager
 		validIngredientMeasurementUnitIDFetcher   func(*http.Request) string
+		validIngredientIDFetcher                  func(*http.Request) string
+		validMeasurementUnitIDFetcher             func(*http.Request) string
 		sessionContextDataFetcher                 func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher                      messagequeue.Publisher
 		encoderDecoder                            encoding.ServerEncoderDecoder
@@ -51,6 +53,8 @@ func ProvideService(
 	svc := &service{
 		logger:                                    logging.EnsureLogger(logger).WithName(serviceName),
 		validIngredientMeasurementUnitIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientMeasurementUnitIDURIParamKey),
+		validIngredientIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
+		validMeasurementUnitIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(ValidMeasurementUnitIDURIParamKey),
 		sessionContextDataFetcher:                 authservice.FetchContextFromRequest,
 		validIngredientMeasurementUnitDataManager: validIngredientMeasurementUnitDataManager,
 		dataChangesPublisher:                      dataChangesPublisher,

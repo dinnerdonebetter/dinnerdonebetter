@@ -90,7 +90,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 
 			// create household members
 			t.Logf("determining household ID")
-			currentStatus, statusErr := testClients.main.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
@@ -103,7 +103,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 				t.Logf("inviting user")
-				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := testClients.user.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 					FromUser:               s.user.ID,
 					Note:                   t.Name(),
 					ToEmail:                u.EmailAddress,
@@ -112,7 +112,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				require.NoError(t, err)
 
 				t.Logf("checking for sent invitation")
-				sentInvitations, err := testClients.main.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+				sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
 				assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
 
@@ -133,7 +133,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -169,12 +169,12 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			}
 
 			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-			createdMealPlan, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
+			createdMealPlan, err := testClients.user.CreateMealPlan(ctx, exampleMealPlanInput)
 			require.NotEmpty(t, createdMealPlan.ID)
 			require.NoError(t, err)
 			t.Logf("meal plan %q created", createdMealPlan.ID)
 
-			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
@@ -239,14 +239,14 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			require.NotNil(t, createdMealPlanOptionVotesB)
 			t.Logf("meal plan option votes created for user B")
 
-			createdMealPlanOptionVotesC, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userCVotes)
+			createdMealPlanOptionVotesC, err := testClients.user.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userCVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesC)
 			t.Logf("meal plan option votes created for user C")
 
 			time.Sleep(baseDeadline * 2)
 
-			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.FinalizedMealPlanStatus, createdMealPlan.Status)
 
@@ -279,7 +279,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 			// create household members
 			t.Logf("determining household ID")
-			currentStatus, statusErr := testClients.main.UserStatus(s.ctx)
+			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
@@ -292,7 +292,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 				t.Logf("inviting user")
-				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := testClients.user.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 					FromUser:               s.user.ID,
 					Note:                   t.Name(),
 					ToEmail:                u.EmailAddress,
@@ -301,7 +301,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				require.NoError(t, err)
 
 				t.Logf("checking for sent invitation")
-				sentInvitations, err := testClients.main.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+				sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
 				assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
 
@@ -322,7 +322,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -358,13 +358,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			}
 
 			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-			createdMealPlan, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
+			createdMealPlan, err := testClients.user.CreateMealPlan(ctx, exampleMealPlanInput)
 			require.NotEmpty(t, createdMealPlan.ID)
 			require.NoError(t, err)
 
 			t.Logf("meal plan %q created", createdMealPlan.ID)
 
-			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
@@ -412,7 +412,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			require.NotNil(t, createdMealPlanOptionVotesB)
 			t.Logf("meal plan option votes created for user B")
 
-			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.AwaitingVotesMealPlanStatus, createdMealPlan.Status)
 
@@ -421,7 +421,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 			time.Sleep(baseDeadline * 2)
 
-			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.FinalizedMealPlanStatus, createdMealPlan.Status)
 
@@ -455,12 +455,12 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			t.Log("creating meal plans")
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.main)
+				createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
 				expected = append(expected, createdMealPlan)
 			}
 
 			// assert meal plan list equality
-			actual, err := testClients.main.GetMealPlans(ctx, nil)
+			actual, err := testClients.user.GetMealPlans(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -472,7 +472,7 @@ func (s *TestSuite) TestMealPlans_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdMealPlan := range expected {
-				assert.NoError(t, testClients.main.ArchiveMealPlan(ctx, createdMealPlan.ID))
+				assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 			}
 		}
 	})

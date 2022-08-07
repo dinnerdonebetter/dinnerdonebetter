@@ -16,6 +16,10 @@ import (
 const (
 	// ValidIngredientPreparationIDURIParamKey is a standard string that we'll use to refer to valid ingredient preparation IDs with.
 	ValidIngredientPreparationIDURIParamKey = "validIngredientPreparationID"
+	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
+	ValidPreparationIDURIParamKey = "validPreparationID"
+	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient IDs with.
+	ValidIngredientIDURIParamKey = "validIngredientID"
 )
 
 // CreateHandler is our valid ingredient preparation creation route.
@@ -286,4 +290,82 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
+}
+
+// SearchByIngredientHandler is our valid ingredient measurement unit search route.
+func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+
+	validIngredientID := s.validIngredientIDFetcher(req)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validIngredientPreparations, err := s.validIngredientPreparationDataManager.GetValidIngredientPreparationsForIngredient(ctx, validIngredientID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientPreparations, http.StatusOK)
+}
+
+// SearchByPreparationHandler is our valid ingredient measurement unit search route.
+func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+
+	validPreparationID := s.validPreparationIDFetcher(req)
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validIngredientPreparations, err := s.validIngredientPreparationDataManager.GetValidIngredientPreparationsForPreparation(ctx, validPreparationID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientPreparations, http.StatusOK)
 }

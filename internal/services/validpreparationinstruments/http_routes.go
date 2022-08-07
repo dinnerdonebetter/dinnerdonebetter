@@ -16,6 +16,10 @@ import (
 const (
 	// ValidPreparationInstrumentIDURIParamKey is a standard string that we'll use to refer to valid preparation instrument IDs with.
 	ValidPreparationInstrumentIDURIParamKey = "validPreparationInstrumentID"
+	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
+	ValidPreparationIDURIParamKey = "validPreparationID"
+	// ValidInstrumentIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
+	ValidInstrumentIDURIParamKey = "validInstrumentID"
 )
 
 // CreateHandler is our valid preparation instrument creation route.
@@ -286,4 +290,80 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
+}
+
+// SearchByPreparationHandler is our valid preparation instrument search route for preparations.
+func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+
+	validPreparationID := s.validPreparationIDFetcher(req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrumentsForPreparation(ctx, validPreparationID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid preparation instruments")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationInstruments, http.StatusOK)
+}
+
+// SearchByInstrumentHandler is our valid preparation instrument search route for instruments.
+func (s *service) SearchByInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+
+	validInstrumentID := s.validInstrumentIDFetcher(req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrumentsForInstrument(ctx, validInstrumentID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid preparation instruments")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationInstruments, http.StatusOK)
 }

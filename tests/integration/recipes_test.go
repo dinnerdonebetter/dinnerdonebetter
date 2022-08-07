@@ -269,7 +269,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						ID:                   product.ID,
 						Name:                 product.Name,
 						Type:                 product.Type,
-						MeasurementUnitID:    product.MeasurementUnit.ID,
+						MeasurementUnitID:    &product.MeasurementUnit.ID,
 						QuantityNotes:        product.QuantityNotes,
 						BelongsToRecipeStep:  product.BelongsToRecipeStep,
 						MinimumQuantityValue: product.MinimumQuantityValue,
@@ -284,12 +284,12 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			require.NoError(t, json.NewEncoder(&b).Encode(exampleRecipeInput))
 			t.Logf("creating recipe with input: %s", b.String())
 
-			created, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
+			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
 
-			created, err = testClients.main.GetRecipe(ctx, created.ID)
+			created, err = testClients.user.GetRecipe(ctx, created.ID)
 			requireNotNilAndNoProblems(t, created, err)
 			checkRecipeEquality(t, expected, created)
 
@@ -318,15 +318,15 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(convertRecipeToRecipeUpdateInput(newRecipe))
-			assert.NoError(t, testClients.main.UpdateRecipe(ctx, createdRecipe))
+			assert.NoError(t, testClients.user.UpdateRecipe(ctx, createdRecipe))
 
 			t.Log("fetching changed recipe")
-			actual, err := testClients.main.GetRecipe(ctx, createdRecipe.ID)
+			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe equality
@@ -334,7 +334,7 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -393,17 +393,17 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 
 			exampleRecipeInput.AlsoCreateMeal = true
 
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
+			createdRecipe, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", createdRecipe.ID)
 			checkRecipeEquality(t, exampleRecipe, createdRecipe)
 
-			mealResults, err := testClients.main.SearchForMeals(ctx, createdRecipe.Name, nil)
+			mealResults, err := testClients.user.SearchForMeals(ctx, createdRecipe.Name, nil)
 			requireNotNilAndNoProblems(t, mealResults, err)
 
 			foundMealID := ""
 			for _, m := range mealResults.Meals {
-				meal, mealFetchErr := testClients.main.GetMeal(ctx, m.ID)
+				meal, mealFetchErr := testClients.user.GetMeal(ctx, m.ID)
 				requireNotNilAndNoProblems(t, meal, mealFetchErr)
 
 				for _, r := range meal.Recipes {
@@ -416,7 +416,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 			require.NotEmpty(t, foundMealID)
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -438,7 +438,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -451,20 +451,20 @@ func (s *TestSuite) TestRecipes_Listing() {
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparation.ID)
+			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			t.Log("creating recipes")
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
-				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
+				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 				expected = append(expected, createdRecipe)
 			}
 
 			// assert recipe list equality
-			actual, err := testClients.main.GetRecipes(ctx, nil)
+			actual, err := testClients.user.GetRecipes(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -476,7 +476,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+				assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
 		}
 	})
@@ -499,7 +499,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -512,7 +512,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparation.ID)
+			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -522,13 +522,13 @@ func (s *TestSuite) TestRecipes_Searching() {
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe.Name = fmt.Sprintf("example%d", i)
-				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, exampleRecipe)
+				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, exampleRecipe)
 
 				expected = append(expected, createdRecipe)
 			}
 
 			// assert recipe list equality
-			actual, err := testClients.main.SearchForRecipes(ctx, "example", nil)
+			actual, err := testClients.user.SearchForRecipes(ctx, "example", nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -540,7 +540,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 
 			t.Log("cleaning up")
 			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+				assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
 		}
 	})
