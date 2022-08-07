@@ -27,13 +27,39 @@ func buildMockRowsFromValidIngredientPreparations(includeCounts bool, filteredCo
 
 	for _, x := range validIngredientPreparations {
 		rowValues := []driver.Value{
-			x.ID,
-			x.Notes,
-			x.ValidPreparationID,
-			x.ValidIngredientID,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			&x.ID,
+			&x.Notes,
+			&x.Preparation.ID,
+			&x.Preparation.Name,
+			&x.Preparation.Description,
+			&x.Preparation.IconPath,
+			&x.Preparation.CreatedOn,
+			&x.Preparation.LastUpdatedOn,
+			&x.Preparation.ArchivedOn,
+			&x.Ingredient.ID,
+			&x.Ingredient.Name,
+			&x.Ingredient.Description,
+			&x.Ingredient.Warning,
+			&x.Ingredient.ContainsEgg,
+			&x.Ingredient.ContainsDairy,
+			&x.Ingredient.ContainsPeanut,
+			&x.Ingredient.ContainsTreeNut,
+			&x.Ingredient.ContainsSoy,
+			&x.Ingredient.ContainsWheat,
+			&x.Ingredient.ContainsShellfish,
+			&x.Ingredient.ContainsSesame,
+			&x.Ingredient.ContainsFish,
+			&x.Ingredient.ContainsGluten,
+			&x.Ingredient.AnimalFlesh,
+			&x.Ingredient.IsMeasuredVolumetrically,
+			&x.Ingredient.IsLiquid,
+			&x.Ingredient.IconPath,
+			&x.Ingredient.CreatedOn,
+			&x.Ingredient.LastUpdatedOn,
+			&x.Ingredient.ArchivedOn,
+			&x.CreatedOn,
+			&x.LastUpdatedOn,
+			&x.ArchivedOn,
 		}
 
 		if includeCounts {
@@ -269,6 +295,17 @@ func TestQuerier_GetTotalValidIngredientPreparationCount(T *testing.T) {
 func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 	T.Parallel()
 
+	joins := []string{
+		validIngredientsOnValidIngredientPreparationsJoinClause,
+		validPreparationsOnValidIngredientPreparationsJoinClause,
+	}
+
+	groupBys := []string{
+		"valid_ingredients.id",
+		"valid_preparations.id",
+		"valid_ingredient_preparations.id",
+	}
+
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
@@ -278,7 +315,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -302,7 +339,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -323,7 +360,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -344,7 +381,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -456,6 +493,9 @@ func TestQuerier_CreateValidIngredientPreparation(T *testing.T) {
 
 		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 		exampleValidIngredientPreparation.ID = "1"
+		exampleValidIngredientPreparation.Preparation = types.ValidPreparation{ID: exampleValidIngredientPreparation.Preparation.ID}
+		exampleValidIngredientPreparation.Ingredient = types.ValidIngredient{ID: exampleValidIngredientPreparation.Ingredient.ID}
+
 		exampleInput := fakes.BuildFakeValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 		ctx := context.Background()
@@ -541,8 +581,8 @@ func TestQuerier_UpdateValidIngredientPreparation(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredientPreparation.Notes,
-			exampleValidIngredientPreparation.ValidPreparationID,
-			exampleValidIngredientPreparation.ValidIngredientID,
+			exampleValidIngredientPreparation.Preparation.ID,
+			exampleValidIngredientPreparation.Ingredient.ID,
 			exampleValidIngredientPreparation.ID,
 		}
 
@@ -574,8 +614,8 @@ func TestQuerier_UpdateValidIngredientPreparation(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredientPreparation.Notes,
-			exampleValidIngredientPreparation.ValidPreparationID,
-			exampleValidIngredientPreparation.ValidIngredientID,
+			exampleValidIngredientPreparation.Preparation.ID,
+			exampleValidIngredientPreparation.Ingredient.ID,
 			exampleValidIngredientPreparation.ID,
 		}
 

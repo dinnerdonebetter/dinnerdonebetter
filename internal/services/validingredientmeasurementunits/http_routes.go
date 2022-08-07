@@ -16,6 +16,10 @@ import (
 const (
 	// ValidIngredientMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid ingredient measurement unit IDs with.
 	ValidIngredientMeasurementUnitIDURIParamKey = "validIngredientMeasurementUnitID"
+	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient measurement unit IDs with.
+	ValidIngredientIDURIParamKey = "validIngredientID"
+	// ValidMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid ingredient measurement unit IDs with.
+	ValidMeasurementUnitIDURIParamKey = "validMeasurementUnitID"
 )
 
 // CreateHandler is our valid ingredient measurement unit creation route.
@@ -286,4 +290,82 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
+}
+
+// SearchByIngredientHandler is our valid ingredient measurement unit search route.
+func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+
+	validIngredientID := s.validIngredientIDFetcher(req)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validIngredientMeasurementUnits, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnitsForIngredient(ctx, validIngredientID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient measurement units")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientMeasurementUnits, http.StatusOK)
+}
+
+// SearchByMeasurementUnitHandler is our valid ingredient measurement unit search route.
+func (s *service) SearchByMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+
+	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
+	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validIngredientMeasurementUnits, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, validMeasurementUnitID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient measurement units")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientMeasurementUnits, http.StatusOK)
 }

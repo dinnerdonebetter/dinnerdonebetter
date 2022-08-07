@@ -10,11 +10,11 @@ import (
 // BuildFakeValidIngredientPreparation builds a faked valid ingredient preparation.
 func BuildFakeValidIngredientPreparation() *types.ValidIngredientPreparation {
 	return &types.ValidIngredientPreparation{
-		ID:                 ksuid.New().String(),
-		Notes:              buildUniqueString(),
-		ValidPreparationID: buildUniqueString(),
-		ValidIngredientID:  buildUniqueString(),
-		CreatedOn:          uint64(uint32(fake.Date().Unix())),
+		ID:          ksuid.New().String(),
+		Notes:       buildUniqueString(),
+		Preparation: *BuildFakeValidPreparation(),
+		Ingredient:  *BuildFakeValidIngredient(),
+		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }
 
@@ -41,8 +41,8 @@ func BuildFakeValidIngredientPreparationUpdateRequestInput() *types.ValidIngredi
 	validIngredientPreparation := BuildFakeValidIngredientPreparation()
 	return &types.ValidIngredientPreparationUpdateRequestInput{
 		Notes:              &validIngredientPreparation.Notes,
-		ValidPreparationID: &validIngredientPreparation.ValidPreparationID,
-		ValidIngredientID:  &validIngredientPreparation.ValidIngredientID,
+		ValidPreparationID: &validIngredientPreparation.Preparation.ID,
+		ValidIngredientID:  &validIngredientPreparation.Ingredient.ID,
 	}
 }
 
@@ -50,8 +50,8 @@ func BuildFakeValidIngredientPreparationUpdateRequestInput() *types.ValidIngredi
 func BuildFakeValidIngredientPreparationUpdateRequestInputFromValidIngredientPreparation(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateRequestInput {
 	return &types.ValidIngredientPreparationUpdateRequestInput{
 		Notes:              &validIngredientPreparation.Notes,
-		ValidPreparationID: &validIngredientPreparation.ValidPreparationID,
-		ValidIngredientID:  &validIngredientPreparation.ValidIngredientID,
+		ValidPreparationID: &validIngredientPreparation.Preparation.ID,
+		ValidIngredientID:  &validIngredientPreparation.Ingredient.ID,
 	}
 }
 
@@ -66,8 +66,8 @@ func BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientP
 	return &types.ValidIngredientPreparationCreationRequestInput{
 		ID:                 validIngredientPreparation.ID,
 		Notes:              validIngredientPreparation.Notes,
-		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
-		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
+		ValidPreparationID: validIngredientPreparation.Preparation.ID,
+		ValidIngredientID:  validIngredientPreparation.Ingredient.ID,
 	}
 }
 
@@ -82,7 +82,7 @@ func BuildFakeValidIngredientPreparationDatabaseCreationInputFromValidIngredient
 	return &types.ValidIngredientPreparationDatabaseCreationInput{
 		ID:                 validIngredientPreparation.ID,
 		Notes:              validIngredientPreparation.Notes,
-		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
-		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
+		ValidPreparationID: validIngredientPreparation.Preparation.ID,
+		ValidIngredientID:  validIngredientPreparation.Ingredient.ID,
 	}
 }

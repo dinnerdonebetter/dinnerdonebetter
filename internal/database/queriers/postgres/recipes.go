@@ -618,7 +618,7 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		s, createErr := q.createRecipeStep(ctx, tx, stepInput)
 		if createErr != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step")
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step #%d", i+1)
 		}
 
 		x.Steps = append(x.Steps, s)

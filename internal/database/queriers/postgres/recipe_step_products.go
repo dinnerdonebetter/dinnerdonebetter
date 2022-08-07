@@ -25,8 +25,16 @@ var (
 		"recipe_step_products.id",
 		"recipe_step_products.name",
 		"recipe_step_products.type",
-		"recipe_step_products.quantity_type",
-		"recipe_step_products.quantity_value",
+		"valid_measurement_units.id",
+		"valid_measurement_units.name",
+		"valid_measurement_units.description",
+		"valid_measurement_units.volumetric",
+		"valid_measurement_units.icon_path",
+		"valid_measurement_units.created_on",
+		"valid_measurement_units.last_updated_on",
+		"valid_measurement_units.archived_on",
+		"recipe_step_products.minimum_quantity_value",
+		"recipe_step_products.maximum_quantity_value",
 		"recipe_step_products.quantity_notes",
 		"recipe_step_products.created_on",
 		"recipe_step_products.last_updated_on",
@@ -37,6 +45,7 @@ var (
 	getRecipeStepProductsJoins = []string{
 		recipeStepsOnRecipeStepProductsJoinClause,
 		recipesOnRecipeStepsJoinClause,
+		validMeasurementUnitsOnRecipeStepProductsJoinClause,
 	}
 )
 
@@ -47,14 +56,24 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	x = &types.RecipeStepProduct{}
+	x = &types.RecipeStepProduct{
+		MeasurementUnit: &types.ValidMeasurementUnit{},
+	}
 
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
 		&x.Type,
-		&x.QuantityType,
-		&x.QuantityValue,
+		&x.MeasurementUnit.ID,
+		&x.MeasurementUnit.Name,
+		&x.MeasurementUnit.Description,
+		&x.MeasurementUnit.Volumetric,
+		&x.MeasurementUnit.IconPath,
+		&x.MeasurementUnit.CreatedOn,
+		&x.MeasurementUnit.LastUpdatedOn,
+		&x.MeasurementUnit.ArchivedOn,
+		&x.MinimumQuantityValue,
+		&x.MaximumQuantityValue,
 		&x.QuantityNotes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
@@ -153,8 +172,16 @@ const getRecipeStepProductQuery = `SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
 	recipe_step_products.type,
-	recipe_step_products.quantity_type,
-	recipe_step_products.quantity_value,
+	valid_measurement_units.id,
+	valid_measurement_units.name,
+	valid_measurement_units.description,
+	valid_measurement_units.volumetric,
+	valid_measurement_units.icon_path,
+	valid_measurement_units.created_on,
+	valid_measurement_units.last_updated_on,
+	valid_measurement_units.archived_on,
+	recipe_step_products.minimum_quantity_value,
+	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
 	recipe_step_products.created_on,
 	recipe_step_products.last_updated_on,
@@ -163,6 +190,7 @@ const getRecipeStepProductQuery = `SELECT
 FROM recipe_step_products
 JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_on IS NULL
 AND recipe_step_products.belongs_to_recipe_step = $1 
 AND recipe_step_products.id = $2
@@ -237,8 +265,16 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
 	recipe_step_products.type,
-	recipe_step_products.quantity_type,
-	recipe_step_products.quantity_value,
+	valid_measurement_units.id,
+	valid_measurement_units.name,
+	valid_measurement_units.description,
+	valid_measurement_units.volumetric,
+	valid_measurement_units.icon_path,
+	valid_measurement_units.created_on,
+	valid_measurement_units.last_updated_on,
+	valid_measurement_units.archived_on,
+	recipe_step_products.minimum_quantity_value,
+	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
 	recipe_step_products.created_on,
 	recipe_step_products.last_updated_on,
@@ -247,6 +283,7 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 FROM recipe_step_products
 JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_on IS NULL
 AND recipe_steps.archived_on IS NULL
 AND recipe_steps.belongs_to_recipe = $1
@@ -312,7 +349,7 @@ func (q *SQLQuerier) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", query, args)
 	if err != nil {
@@ -391,7 +428,7 @@ func (q *SQLQuerier) GetRecipeStepProductsWithIDs(ctx context.Context, recipeSte
 	return recipeStepProducts, nil
 }
 
-const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,type,quantity_type,quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7)"
+const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
@@ -408,8 +445,9 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		input.ID,
 		input.Name,
 		input.Type,
-		input.QuantityType,
-		input.QuantityValue,
+		input.MeasurementUnitID,
+		input.MinimumQuantityValue,
+		input.MaximumQuantityValue,
 		input.QuantityNotes,
 		input.BelongsToRecipeStep,
 	}
@@ -420,14 +458,18 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 	}
 
 	x := &types.RecipeStepProduct{
-		ID:                  input.ID,
-		Name:                input.Name,
-		Type:                input.Type,
-		QuantityType:        input.QuantityType,
-		QuantityValue:       input.QuantityValue,
-		QuantityNotes:       input.QuantityNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		CreatedOn:           q.currentTime(),
+		ID:                   input.ID,
+		Name:                 input.Name,
+		Type:                 input.Type,
+		MinimumQuantityValue: input.MinimumQuantityValue,
+		MaximumQuantityValue: input.MaximumQuantityValue,
+		QuantityNotes:        input.QuantityNotes,
+		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		CreatedOn:            q.currentTime(),
+	}
+
+	if input.MeasurementUnitID != nil {
+		x.MeasurementUnit = &types.ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)
@@ -440,7 +482,7 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
-const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, type = $2, quantity_type = $3, quantity_value = $4, quantity_notes = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $6 AND id = $7"
+const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, type = $2, measurement_unit = $3, minimum_quantity_value = $4, maximum_quantity_value = $5, quantity_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $7 AND id = $8"
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
 func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types.RecipeStepProduct) error {
@@ -457,8 +499,9 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 	args := []interface{}{
 		updated.Name,
 		updated.Type,
-		updated.QuantityType,
-		updated.QuantityValue,
+		updated.MeasurementUnit.ID,
+		updated.MinimumQuantityValue,
+		updated.MaximumQuantityValue,
 		updated.QuantityNotes,
 		updated.BelongsToRecipeStep,
 		updated.ID,

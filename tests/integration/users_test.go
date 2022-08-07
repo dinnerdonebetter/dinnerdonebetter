@@ -45,7 +45,7 @@ func (s *TestSuite) TestUsers_Creating() {
 
 			// Create user.
 			exampleUserInput := fakes.BuildFakeUserCreationInput()
-			createdUser, err := testClients.main.CreateUser(ctx, exampleUserInput)
+			createdUser, err := testClients.user.CreateUser(ctx, exampleUserInput)
 			requireNotNilAndNoProblems(t, createdUser, err)
 
 			// Assert user equality.
@@ -64,11 +64,11 @@ func (s *TestSuite) TestUsers_Creating() {
 
 			// Create user.
 			exampleUserInput := fakes.BuildFakeUserCreationInput()
-			createdUser, err := testClients.main.CreateUser(ctx, exampleUserInput)
+			createdUser, err := testClients.user.CreateUser(ctx, exampleUserInput)
 			requireNotNilAndNoProblems(t, createdUser, err)
 
 			// attempt to create user again.
-			_, err = testClients.main.CreateUser(ctx, exampleUserInput)
+			_, err = testClients.user.CreateUser(ctx, exampleUserInput)
 			require.Error(t, err)
 
 			// Assert user equality.
@@ -129,7 +129,7 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 
 			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
 
-			permissions, err := testClients.main.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
+			permissions, err := testClients.user.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
 			if err != nil {
 				t.Logf("error encountered trying to fetch user %q: %v\n", user.Username, err)
 			}
@@ -169,7 +169,7 @@ func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
 			defer span.End()
 
 			// Search For user.
-			actual, err := testClients.main.SearchForUsersByUsername(ctx, s.user.Username)
+			actual, err := testClients.user.SearchForUsersByUsername(ctx, s.user.Username)
 			assert.Nil(t, actual)
 			assert.Error(t, err)
 		}
@@ -240,7 +240,7 @@ func (s *TestSuite) TestUsers_Archiving() {
 
 			// Create user.
 			exampleUserInput := fakes.BuildFakeUserCreationInput()
-			createdUser, err := testClients.main.CreateUser(ctx, exampleUserInput)
+			createdUser, err := testClients.user.CreateUser(ctx, exampleUserInput)
 			assert.NoError(t, err)
 			assert.NotNil(t, createdUser)
 
@@ -265,7 +265,7 @@ func (s *TestSuite) TestUsers_AvatarManagement() {
 
 			avatar := testutils.BuildArbitraryImagePNGBytes(256)
 
-			require.NoError(t, testClients.main.UploadNewAvatar(ctx, avatar, "png"))
+			require.NoError(t, testClients.user.UploadNewAvatar(ctx, avatar, "png"))
 
 			// Assert user equality.
 			user, err := testClients.admin.GetUser(ctx, s.user.ID)

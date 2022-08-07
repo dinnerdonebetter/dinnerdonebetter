@@ -39,7 +39,7 @@ func (s *TestSuite) TestAPIClients_Creating() {
 				TOTPToken: generateTOTPTokenForUser(t, s.user),
 			}
 
-			createdAPIClient, err := testClients.main.CreateAPIClient(ctx, s.cookie, exampleAPIClientInput)
+			createdAPIClient, err := testClients.user.CreateAPIClient(ctx, s.cookie, exampleAPIClientInput)
 			requireNotNilAndNoProblems(t, createdAPIClient, err)
 
 			// Assert API client equality.
@@ -47,7 +47,7 @@ func (s *TestSuite) TestAPIClients_Creating() {
 			assert.NotEmpty(t, createdAPIClient.ClientSecret, "expected ClientSecret for API client %s to not be empty, but it was", createdAPIClient.ID)
 
 			// Clean up.
-			assert.NoError(t, testClients.main.ArchiveAPIClient(ctx, createdAPIClient.ID))
+			assert.NoError(t, testClients.user.ArchiveAPIClient(ctx, createdAPIClient.ID))
 		}
 	})
 }
@@ -73,14 +73,14 @@ func (s *TestSuite) TestAPIClients_Listing() {
 					Password:  s.user.HashedPassword,
 					TOTPToken: generateTOTPTokenForUser(t, s.user),
 				}
-				createdAPIClient, apiClientCreationErr := testClients.main.CreateAPIClient(ctx, s.cookie, exampleAPIClientInput)
+				createdAPIClient, apiClientCreationErr := testClients.user.CreateAPIClient(ctx, s.cookie, exampleAPIClientInput)
 				requireNotNilAndNoProblems(t, createdAPIClient, apiClientCreationErr)
 
 				expected = append(expected, createdAPIClient.ID)
 			}
 
 			// Assert API client list equality.
-			actual, err := testClients.main.GetAPIClients(ctx, nil)
+			actual, err := testClients.user.GetAPIClients(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -92,7 +92,7 @@ func (s *TestSuite) TestAPIClients_Listing() {
 
 			// Clean up.
 			for _, createdAPIClientID := range expected {
-				assert.NoError(t, testClients.main.ArchiveAPIClient(ctx, createdAPIClientID))
+				assert.NoError(t, testClients.user.ArchiveAPIClient(ctx, createdAPIClientID))
 			}
 		}
 	})
@@ -107,7 +107,7 @@ func (s *TestSuite) TestAPIClients_Reading_Returns404ForNonexistentAPIClient() {
 			defer span.End()
 
 			// Attempt to fetch nonexistent API client.
-			_, err := testClients.main.GetAPIClient(ctx, nonexistentID)
+			_, err := testClients.user.GetAPIClient(ctx, nonexistentID)
 			assert.Error(t, err)
 		}
 	})
@@ -130,18 +130,18 @@ func (s *TestSuite) TestAPIClients_Reading() {
 				TOTPToken: generateTOTPTokenForUser(t, s.user),
 			}
 
-			createdAPIClient, err := testClients.main.CreateAPIClient(ctx, s.cookie, exampleAPIClientInput)
+			createdAPIClient, err := testClients.user.CreateAPIClient(ctx, s.cookie, exampleAPIClientInput)
 			requireNotNilAndNoProblems(t, createdAPIClient, err)
 
 			// Fetch API client.
-			actual, err := testClients.main.GetAPIClient(ctx, createdAPIClient.ID)
+			actual, err := testClients.user.GetAPIClient(ctx, createdAPIClient.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// Assert API client equality.
 			checkAPIClientEquality(t, exampleAPIClient, actual)
 
 			// Clean up API client.
-			assert.NoError(t, testClients.main.ArchiveAPIClient(ctx, createdAPIClient.ID))
+			assert.NoError(t, testClients.user.ArchiveAPIClient(ctx, createdAPIClient.ID))
 		}
 	})
 }
@@ -154,7 +154,7 @@ func (s *TestSuite) TestAPIClients_Archiving_Returns404ForNonexistentAPIClient()
 			ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 			defer span.End()
 
-			assert.Error(t, testClients.main.ArchiveAPIClient(ctx, nonexistentID))
+			assert.Error(t, testClients.user.ArchiveAPIClient(ctx, nonexistentID))
 		}
 	})
 }
@@ -176,11 +176,11 @@ func (s *TestSuite) TestAPIClients_Archiving() {
 				TOTPToken: generateTOTPTokenForUser(t, s.user),
 			}
 
-			createdAPIClient, err := testClients.main.CreateAPIClient(ctx, s.cookie, exampleAPIClientInput)
+			createdAPIClient, err := testClients.user.CreateAPIClient(ctx, s.cookie, exampleAPIClientInput)
 			requireNotNilAndNoProblems(t, createdAPIClient, err)
 
 			// Clean up API client.
-			assert.NoError(t, testClients.main.ArchiveAPIClient(ctx, createdAPIClient.ID))
+			assert.NoError(t, testClients.user.ArchiveAPIClient(ctx, createdAPIClient.ID))
 		}
 	})
 }

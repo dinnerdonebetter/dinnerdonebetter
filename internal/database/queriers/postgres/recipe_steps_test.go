@@ -731,8 +731,9 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				product.ID,
 				product.Name,
 				product.Type,
-				product.QuantityType,
-				product.QuantityValue,
+				product.MeasurementUnitID,
+				product.MinimumQuantityValue,
+				product.MaximumQuantityValue,
 				product.QuantityNotes,
 				product.BelongsToRecipeStep,
 			}
@@ -894,8 +895,9 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Products[0].ID,
 			exampleInput.Products[0].Name,
 			exampleInput.Products[0].Type,
-			exampleInput.Products[0].QuantityType,
-			exampleInput.Products[0].QuantityValue,
+			exampleInput.Products[0].MeasurementUnitID,
+			exampleInput.Products[0].MinimumQuantityValue,
+			exampleInput.Products[0].MaximumQuantityValue,
 			exampleInput.Products[0].QuantityNotes,
 			exampleInput.Products[0].BelongsToRecipeStep,
 		}

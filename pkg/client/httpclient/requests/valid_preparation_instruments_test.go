@@ -87,6 +87,98 @@ func TestBuilder_BuildGetValidPreparationInstrumentsRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildGetValidPreparationInstrumentsForPreparationRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/valid_preparation_instruments/by_preparation/%s"
+
+	examplePreparation := fakes.BuildFakeValidPreparation()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		filter := (*types.QueryFilter)(nil)
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
+
+		actual, err := helper.builder.BuildGetValidPreparationInstrumentsForPreparationRequest(helper.ctx, examplePreparation.ID, filter)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidPreparationInstrumentsForPreparationRequest(helper.ctx, "", filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidPreparationInstrumentsForPreparationRequest(helper.ctx, examplePreparation.ID, filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func TestBuilder_BuildGetValidPreparationInstrumentsForInstrumentRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/valid_preparation_instruments/by_instrument/%s"
+
+	examplePreparation := fakes.BuildFakeValidPreparation()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		filter := (*types.QueryFilter)(nil)
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
+
+		actual, err := helper.builder.BuildGetValidPreparationInstrumentsForInstrumentRequest(helper.ctx, examplePreparation.ID, filter)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidPreparationInstrumentsForInstrumentRequest(helper.ctx, "", filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidPreparationInstrumentsForInstrumentRequest(helper.ctx, examplePreparation.ID, filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildCreateValidPreparationInstrumentRequest(T *testing.T) {
 	T.Parallel()
 

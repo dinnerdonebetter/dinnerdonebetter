@@ -1636,8 +1636,9 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							ID:   fakes.BuildFakeID(),
-							Name: productName,
+							ID:              fakes.BuildFakeID(),
+							Name:            productName,
+							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
 						},
 					},
 					Notes:       "first step",
@@ -1667,7 +1668,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							Name: "final output",
+							Name:            "final output",
+							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
 						},
 					},
 					Notes:       "second step",
@@ -1731,12 +1733,12 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 			for _, product := range step.Products {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                  product.ID,
-					Name:                product.Name,
-					QuantityType:        product.QuantityType,
-					QuantityNotes:       product.QuantityNotes,
-					BelongsToRecipeStep: product.BelongsToRecipeStep,
-					QuantityValue:       product.QuantityValue,
+					ID:                   product.ID,
+					Name:                 product.Name,
+					MeasurementUnitID:    &product.MeasurementUnit.ID,
+					QuantityNotes:        product.QuantityNotes,
+					BelongsToRecipeStep:  product.BelongsToRecipeStep,
+					MinimumQuantityValue: product.MinimumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -1768,8 +1770,9 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							ID:   fakes.BuildFakeID(),
-							Name: productName,
+							ID:              fakes.BuildFakeID(),
+							Name:            productName,
+							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
 						},
 					},
 					Notes:       "first step",
@@ -1799,7 +1802,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							Name: "pressure cooked beans",
+							Name:            "pressure cooked beans",
+							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
 						},
 					},
 					Notes:       "second step",
@@ -1829,8 +1833,9 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							ID:   fakes.BuildFakeID(),
-							Name: productName,
+							ID:              fakes.BuildFakeID(),
+							Name:            productName,
+							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
 						},
 					},
 					Notes:       "third step",
@@ -1860,7 +1865,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							Name: "final output",
+							Name:            "final output",
+							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
 						},
 					},
 					Notes:       "fourth step",
@@ -1924,12 +1930,12 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 			for _, product := range step.Products {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                  product.ID,
-					Name:                product.Name,
-					QuantityType:        product.QuantityType,
-					QuantityNotes:       product.QuantityNotes,
-					BelongsToRecipeStep: product.BelongsToRecipeStep,
-					QuantityValue:       product.QuantityValue,
+					ID:                   product.ID,
+					Name:                 product.Name,
+					MeasurementUnitID:    &product.MeasurementUnit.ID,
+					QuantityNotes:        product.QuantityNotes,
+					BelongsToRecipeStep:  product.BelongsToRecipeStep,
+					MinimumQuantityValue: product.MinimumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}

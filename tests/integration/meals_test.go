@@ -63,10 +63,10 @@ func (s *TestSuite) TestMeals_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
+			createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 			t.Log("cleaning up meal")
-			assert.NoError(t, testClients.main.ArchiveMeal(ctx, createdMeal.ID))
+			assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
 		}
 	})
 }
@@ -88,7 +88,7 @@ func (s *TestSuite) TestMeals_Listing() {
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
-			createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -101,20 +101,20 @@ func (s *TestSuite) TestMeals_Listing() {
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparation.ID)
+			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			t.Log("creating meals")
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 				expected = append(expected, createdMeal)
 			}
 
 			// assert meal list equality
-			actual, err := testClients.main.GetMeals(ctx, nil)
+			actual, err := testClients.user.GetMeals(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -126,7 +126,7 @@ func (s *TestSuite) TestMeals_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdMeal := range expected {
-				assert.NoError(t, testClients.main.ArchiveMeal(ctx, createdMeal.ID))
+				assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
 			}
 		}
 	})
@@ -149,7 +149,7 @@ func (s *TestSuite) TestMeals_Searching() {
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredient.ID)
+			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -162,7 +162,7 @@ func (s *TestSuite) TestMeals_Searching() {
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparation.ID)
+			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -171,13 +171,13 @@ func (s *TestSuite) TestMeals_Searching() {
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
 				exampleMeal.Name = fmt.Sprintf("example%d", i)
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, exampleMeal)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, exampleMeal)
 
 				expected = append(expected, createdMeal)
 			}
 
 			// assert meal list equality
-			actual, err := testClients.main.SearchForMeals(ctx, "example", nil)
+			actual, err := testClients.user.SearchForMeals(ctx, "example", nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -189,7 +189,7 @@ func (s *TestSuite) TestMeals_Searching() {
 
 			t.Log("cleaning up")
 			for _, createdMeal := range expected {
-				assert.NoError(t, testClients.main.ArchiveMeal(ctx, createdMeal.ID))
+				assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
 			}
 		}
 	})

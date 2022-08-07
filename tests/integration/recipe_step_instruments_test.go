@@ -41,7 +41,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 			var createdRecipeStepID string
 			for _, step := range createdRecipe.Steps {
@@ -53,13 +53,13 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepInstrumentInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(exampleRecipeStepInstrument)
-			createdRecipeStepInstrument, err := testClients.main.CreateRecipeStepInstrument(ctx, createdRecipe.ID, exampleRecipeStepInstrumentInput)
+			createdRecipeStepInstrument, err := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, exampleRecipeStepInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("recipe step instrument %q created", createdRecipeStepInstrument.ID)
 
 			checkRecipeStepInstrumentEquality(t, exampleRecipeStepInstrument, createdRecipeStepInstrument)
 
-			createdRecipeStepInstrument, err = testClients.main.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID)
+			createdRecipeStepInstrument, err = testClients.user.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID)
 			requireNotNilAndNoProblems(t, createdRecipeStepInstrument, err)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepInstrument.BelongsToRecipeStep)
 
@@ -69,10 +69,10 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			newRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			newRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			createdRecipeStepInstrument.Update(convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(newRecipeStepInstrument))
-			assert.NoError(t, testClients.main.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
+			assert.NoError(t, testClients.user.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
 
 			t.Log("fetching changed recipe step instrument")
-			actual, err := testClients.main.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID)
+			actual, err := testClients.user.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe step instrument equality
@@ -80,13 +80,13 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up recipe step instrument")
-			assert.NoError(t, testClients.main.ArchiveRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID))
 
 			t.Log("cleaning up recipe step")
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
+			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -99,7 +99,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 			var createdRecipeStepID string
 			for _, step := range createdRecipe.Steps {
@@ -113,12 +113,12 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 				exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 				exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepInstrumentInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(exampleRecipeStepInstrument)
-				createdRecipeStepInstrument, createdRecipeStepInstrumentErr := testClients.main.CreateRecipeStepInstrument(ctx, createdRecipe.ID, exampleRecipeStepInstrumentInput)
+				createdRecipeStepInstrument, createdRecipeStepInstrumentErr := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, exampleRecipeStepInstrumentInput)
 				require.NoError(t, createdRecipeStepInstrumentErr)
 				t.Logf("recipe step instrument %q created", createdRecipeStepInstrument.ID)
 				checkRecipeStepInstrumentEquality(t, exampleRecipeStepInstrument, createdRecipeStepInstrument)
 
-				createdRecipeStepInstrument, createdRecipeStepInstrumentErr = testClients.main.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID)
+				createdRecipeStepInstrument, createdRecipeStepInstrumentErr = testClients.user.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID)
 				requireNotNilAndNoProblems(t, createdRecipeStepInstrument, createdRecipeStepInstrumentErr)
 				require.Equal(t, createdRecipeStepID, createdRecipeStepInstrument.BelongsToRecipeStep)
 
@@ -126,7 +126,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 			}
 
 			// assert recipe step instrument list equality
-			actual, err := testClients.main.GetRecipeStepInstruments(ctx, createdRecipe.ID, createdRecipeStepID, nil)
+			actual, err := testClients.user.GetRecipeStepInstruments(ctx, createdRecipe.ID, createdRecipeStepID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -138,14 +138,14 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdRecipeStepInstrument := range expected {
-				assert.NoError(t, testClients.main.ArchiveRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID))
+				assert.NoError(t, testClients.user.ArchiveRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID))
 			}
 
 			t.Log("cleaning up recipe step")
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
+			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

@@ -66,6 +66,68 @@ func (b *Builder) BuildGetValidIngredientPreparationsRequest(ctx context.Context
 	return req, nil
 }
 
+// BuildGetValidIngredientPreparationsForIngredientRequest builds an HTTP request for fetching a list of valid ingredient preparations.
+func (b *Builder) BuildGetValidIngredientPreparationsForIngredientRequest(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := filter.AttachToLogger(b.logger)
+
+	if ingredientID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
+	tracing.AttachValidIngredientIDToSpan(span, ingredientID)
+
+	uri := b.BuildURL(
+		ctx,
+		filter.ToValues(),
+		validIngredientPreparationsBasePath,
+		"by_ingredient",
+		ingredientID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
+// BuildGetValidIngredientPreparationsForPreparationRequest builds an HTTP request for fetching a list of valid ingredient preparations.
+func (b *Builder) BuildGetValidIngredientPreparationsForPreparationRequest(ctx context.Context, preparationID string, filter *types.QueryFilter) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := filter.AttachToLogger(b.logger)
+
+	if preparationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
+	tracing.AttachValidIngredientIDToSpan(span, preparationID)
+
+	uri := b.BuildURL(
+		ctx,
+		filter.ToValues(),
+		validIngredientPreparationsBasePath,
+		"by_preparation",
+		preparationID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
 // BuildCreateValidIngredientPreparationRequest builds an HTTP request for creating a valid ingredient preparation.
 func (b *Builder) BuildCreateValidIngredientPreparationRequest(ctx context.Context, input *types.ValidIngredientPreparationCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

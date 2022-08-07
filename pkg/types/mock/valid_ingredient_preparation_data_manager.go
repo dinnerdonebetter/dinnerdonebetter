@@ -45,6 +45,18 @@ func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparationsWi
 	return args.Get(0).([]*types.ValidIngredientPreparation), args.Error(1)
 }
 
+// GetValidIngredientPreparationsForIngredient is a mock function.
+func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*types.ValidIngredientPreparationList, error) {
+	args := m.Called(ctx, ingredientID, filter)
+	return args.Get(0).(*types.ValidIngredientPreparationList), args.Error(1)
+}
+
+// GetValidIngredientPreparationsForPreparation is a mock function.
+func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.ValidIngredientPreparationList, error) {
+	args := m.Called(ctx, preparationID, filter)
+	return args.Get(0).(*types.ValidIngredientPreparationList), args.Error(1)
+}
+
 // CreateValidIngredientPreparation is a mock function.
 func (m *ValidIngredientPreparationDataManager) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationDatabaseCreationInput) (*types.ValidIngredientPreparation, error) {
 	args := m.Called(ctx, input)

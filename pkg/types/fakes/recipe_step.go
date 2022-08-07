@@ -124,7 +124,6 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 
 	return &types.RecipeStepCreationRequestInput{
 		ID:                            recipeStep.ID,
-		Products:                      products,
 		Optional:                      recipeStep.Optional,
 		Index:                         recipeStep.Index,
 		PreparationID:                 recipeStep.Preparation.ID,
@@ -134,6 +133,7 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
 		Notes:                         recipeStep.Notes,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
+		Products:                      products,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
 	}

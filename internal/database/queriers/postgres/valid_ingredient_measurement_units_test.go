@@ -27,13 +27,40 @@ func buildMockRowsFromValidIngredientMeasurementUnits(includeCounts bool, filter
 
 	for _, x := range validIngredientMeasurementUnits {
 		rowValues := []driver.Value{
-			x.ID,
-			x.Notes,
-			x.ValidMeasurementUnitID,
-			x.ValidIngredientID,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			&x.ID,
+			&x.Notes,
+			&x.MeasurementUnit.ID,
+			&x.MeasurementUnit.Name,
+			&x.MeasurementUnit.Description,
+			&x.MeasurementUnit.Volumetric,
+			&x.MeasurementUnit.IconPath,
+			&x.MeasurementUnit.CreatedOn,
+			&x.MeasurementUnit.LastUpdatedOn,
+			&x.MeasurementUnit.ArchivedOn,
+			&x.Ingredient.ID,
+			&x.Ingredient.Name,
+			&x.Ingredient.Description,
+			&x.Ingredient.Warning,
+			&x.Ingredient.ContainsEgg,
+			&x.Ingredient.ContainsDairy,
+			&x.Ingredient.ContainsPeanut,
+			&x.Ingredient.ContainsTreeNut,
+			&x.Ingredient.ContainsSoy,
+			&x.Ingredient.ContainsWheat,
+			&x.Ingredient.ContainsShellfish,
+			&x.Ingredient.ContainsSesame,
+			&x.Ingredient.ContainsFish,
+			&x.Ingredient.ContainsGluten,
+			&x.Ingredient.AnimalFlesh,
+			&x.Ingredient.IsMeasuredVolumetrically,
+			&x.Ingredient.IsLiquid,
+			&x.Ingredient.IconPath,
+			&x.Ingredient.CreatedOn,
+			&x.Ingredient.LastUpdatedOn,
+			&x.Ingredient.ArchivedOn,
+			&x.CreatedOn,
+			&x.LastUpdatedOn,
+			&x.ArchivedOn,
 		}
 
 		if includeCounts {
@@ -269,6 +296,17 @@ func TestQuerier_GetTotalValidIngredientMeasurementUnitCount(T *testing.T) {
 func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 	T.Parallel()
 
+	joins := []string{
+		validMeasurementUnitsOnValidIngredientMeasurementUnitsJoinClause,
+		validIngredientsOnValidIngredientMeasurementUnitsJoinClause,
+	}
+
+	groupBys := []string{
+		"valid_ingredients.id",
+		"valid_measurement_units.id",
+		"valid_ingredient_measurement_units.id",
+	}
+
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
@@ -278,7 +316,7 @@ func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_measurement_units", nil, nil, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_measurement_units", joins, groupBys, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -302,7 +340,7 @@ func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_measurement_units", nil, nil, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_measurement_units", joins, groupBys, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -323,7 +361,7 @@ func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_measurement_units", nil, nil, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_measurement_units", joins, groupBys, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -344,7 +382,7 @@ func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_measurement_units", nil, nil, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_measurement_units", joins, groupBys, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -358,96 +396,6 @@ func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetValidIngredientMeasurementUnitsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientMeasurementUnitsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientMeasurementUnits(false, 0, exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits...))
-
-		actual, err := c.GetValidIngredientMeasurementUnitsWithIDs(ctx, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetValidIngredientMeasurementUnitsWithIDs(ctx, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientMeasurementUnitsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetValidIngredientMeasurementUnitsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientMeasurementUnitsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetValidIngredientMeasurementUnitsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
@@ -456,6 +404,9 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 
 		exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 		exampleValidIngredientMeasurementUnit.ID = "1"
+		exampleValidIngredientMeasurementUnit.Ingredient = types.ValidIngredient{ID: exampleValidIngredientMeasurementUnit.Ingredient.ID}
+		exampleValidIngredientMeasurementUnit.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleValidIngredientMeasurementUnit.MeasurementUnit.ID}
+
 		exampleInput := fakes.BuildFakeValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
 
 		ctx := context.Background()
@@ -499,6 +450,9 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
+		exampleValidIngredientMeasurementUnit.Ingredient = types.ValidIngredient{ID: exampleValidIngredientMeasurementUnit.Ingredient.ID}
+		exampleValidIngredientMeasurementUnit.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleValidIngredientMeasurementUnit.MeasurementUnit.ID}
+
 		exampleInput := fakes.BuildFakeValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
 
 		ctx := context.Background()
@@ -541,8 +495,8 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredientMeasurementUnit.Notes,
-			exampleValidIngredientMeasurementUnit.ValidMeasurementUnitID,
-			exampleValidIngredientMeasurementUnit.ValidIngredientID,
+			exampleValidIngredientMeasurementUnit.MeasurementUnit.ID,
+			exampleValidIngredientMeasurementUnit.Ingredient.ID,
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -574,8 +528,8 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredientMeasurementUnit.Notes,
-			exampleValidIngredientMeasurementUnit.ValidMeasurementUnitID,
-			exampleValidIngredientMeasurementUnit.ValidIngredientID,
+			exampleValidIngredientMeasurementUnit.MeasurementUnit.ID,
+			exampleValidIngredientMeasurementUnit.Ingredient.ID,
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 

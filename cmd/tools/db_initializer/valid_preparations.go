@@ -17,12 +17,14 @@ var validPreparationCollection = struct {
 	Grill,
 	Whisk,
 	Mix,
+	Mince,
 	Knead,
 	Divide,
 	Flatten,
 	Rest,
 	Griddle,
-	Drain *types.ValidPreparationDatabaseCreationInput
+	Grind,
+	_ *types.ValidPreparationDatabaseCreationInput
 }{
 	Dice: &types.ValidPreparationDatabaseCreationInput{
 		ID:   "vprep_dice",
@@ -60,6 +62,10 @@ var validPreparationCollection = struct {
 		ID:   "vprep_mix",
 		Name: "Mix",
 	},
+	Mince: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_mince",
+		Name: "Mince",
+	},
 	Knead: &types.ValidPreparationDatabaseCreationInput{
 		ID:   "vprep_knead",
 		Name: "Knead",
@@ -80,9 +86,9 @@ var validPreparationCollection = struct {
 		ID:   "vprep_griddle",
 		Name: "Griddle",
 	},
-	Drain: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_drain",
-		Name: "Drain",
+	Grind: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_grind",
+		Name: "Grind",
 	},
 }
 
@@ -97,12 +103,13 @@ func scaffoldValidPreparations(ctx context.Context, db database.DataManager) err
 		validPreparationCollection.Grill,
 		validPreparationCollection.Whisk,
 		validPreparationCollection.Mix,
+		validPreparationCollection.Mince,
+		validPreparationCollection.Grind,
 		validPreparationCollection.Knead,
 		validPreparationCollection.Divide,
 		validPreparationCollection.Flatten,
 		validPreparationCollection.Rest,
 		validPreparationCollection.Griddle,
-		validPreparationCollection.Drain,
 	}
 
 	for _, input := range validPreparations {

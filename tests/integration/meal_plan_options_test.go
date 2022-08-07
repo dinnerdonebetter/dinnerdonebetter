@@ -38,7 +38,7 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.main)
+			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
 
 			var createdMealPlanOption *types.MealPlanOption
 			for _, opt := range createdMealPlan.Options {
@@ -52,10 +52,10 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			newMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
 			newMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 			createdMealPlanOption.Update(convertMealPlanOptionToMealPlanOptionUpdateInput(newMealPlanOption))
-			assert.NoError(t, testClients.main.UpdateMealPlanOption(ctx, createdMealPlanOption))
+			assert.NoError(t, testClients.user.UpdateMealPlanOption(ctx, createdMealPlanOption))
 
 			t.Log("fetching changed meal plan option")
-			actual, err := testClients.main.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID)
+			actual, err := testClients.user.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert meal plan option equality
@@ -63,10 +63,10 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up meal plan option")
-			assert.NoError(t, testClients.main.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))
+			assert.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))
 
 			t.Log("cleaning up meal plan")
-			assert.NoError(t, testClients.main.ArchiveMealPlan(ctx, createdMealPlan.ID))
+			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
 }
@@ -79,7 +79,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.main)
+			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
 
 			t.Log("creating meal plan options")
 			var expected []*types.MealPlanOption
@@ -87,17 +87,17 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 				exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 				exampleMealPlanOption.Meal.ID = createdMeal.ID
 
 				exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)
-				createdMealPlanOption, err := testClients.main.CreateMealPlanOption(ctx, exampleMealPlanOptionInput)
+				createdMealPlanOption, err := testClients.user.CreateMealPlanOption(ctx, exampleMealPlanOptionInput)
 				require.NoError(t, err)
 				t.Logf("meal plan option %q created", createdMealPlanOption.ID)
 
 				checkMealPlanOptionEquality(t, exampleMealPlanOption, createdMealPlanOption)
 
-				createdMealPlanOption, err = testClients.main.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID)
+				createdMealPlanOption, err = testClients.user.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID)
 				requireNotNilAndNoProblems(t, createdMealPlanOption, err)
 				require.Equal(t, createdMealPlan.ID, createdMealPlanOption.BelongsToMealPlan)
 
@@ -105,7 +105,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 			}
 
 			// assert meal plan option list equality
-			actual, err := testClients.main.GetMealPlanOptions(ctx, createdMealPlan.ID, nil)
+			actual, err := testClients.user.GetMealPlanOptions(ctx, createdMealPlan.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -117,11 +117,11 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdMealPlanOption := range expected {
-				assert.NoError(t, testClients.main.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))
+				assert.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))
 			}
 
 			t.Log("cleaning up meal plan")
-			assert.NoError(t, testClients.main.ArchiveMealPlan(ctx, createdMealPlan.ID))
+			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
 }

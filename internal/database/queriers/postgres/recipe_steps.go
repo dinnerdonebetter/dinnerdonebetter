@@ -352,8 +352,7 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.ID).WithValue("input", input)
-	logger.Debug("creating recipe step")
+	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.ID)
 
 	args := []interface{}{
 		input.ID,
@@ -386,31 +385,31 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		CreatedOn:                     q.currentTime(),
 	}
 
-	for _, ingredientInput := range input.Ingredients {
+	for i, ingredientInput := range input.Ingredients {
 		ingredientInput.BelongsToRecipeStep = x.ID
 		ingredient, createErr := q.createRecipeStepIngredient(ctx, db, ingredientInput)
 		if createErr != nil {
-			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step ingredient")
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step ingredient #%d", i+1)
 		}
 
 		x.Ingredients = append(x.Ingredients, ingredient)
 	}
 
-	for _, productInput := range input.Products {
+	for i, productInput := range input.Products {
 		productInput.BelongsToRecipeStep = x.ID
 		product, createErr := q.createRecipeStepProduct(ctx, db, productInput)
 		if createErr != nil {
-			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step product")
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step product #%d", i+1)
 		}
 
 		x.Products = append(x.Products, product)
 	}
 
-	for _, instrumentInput := range input.Instruments {
+	for i, instrumentInput := range input.Instruments {
 		instrumentInput.BelongsToRecipeStep = x.ID
 		instrument, createErr := q.createRecipeStepInstrument(ctx, db, instrumentInput)
 		if createErr != nil {
-			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step instrument")
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step instrument #%d", i+1)
 		}
 
 		x.Instruments = append(x.Instruments, instrument)
@@ -426,7 +425,20 @@ func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeSt
 	return q.createRecipeStep(ctx, q.db, input)
 }
 
-const updateRecipeStepQuery = "UPDATE recipe_steps SET index = $1, preparation_id = $2, minimum_estimated_time_in_seconds = $3, maximum_estimated_time_in_seconds = $4, minimum_temperature_in_celsius = $5, maximum_temperature_in_celsius = $6, notes = $7, optional = $8, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $9 AND id = $10"
+const updateRecipeStepQuery = `UPDATE recipe_steps SET 
+	index = $1,
+	preparation_id = $2,
+	minimum_estimated_time_in_seconds = $3,
+	maximum_estimated_time_in_seconds = $4,
+	minimum_temperature_in_celsius = $5,
+	maximum_temperature_in_celsius = $6,
+	notes = $7,
+	optional = $8,
+	last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL 
+  AND belongs_to_recipe = $9 
+  AND id = $10
+`
 
 // UpdateRecipeStep updates a particular recipe step.
 func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeStep) error {

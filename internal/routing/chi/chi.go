@@ -112,7 +112,7 @@ func buildRouter(mux chi.Router, l logging.Logger, tracerProvider tracing.Tracer
 	tracer := tracing.NewTracer(tracerProvider.Tracer("router"))
 
 	if mux == nil {
-		logger.Info("starting with a new mux")
+		logger.Debug("starting with a new mux")
 		mux = buildChiMux(logger, tracer, cfg)
 	}
 

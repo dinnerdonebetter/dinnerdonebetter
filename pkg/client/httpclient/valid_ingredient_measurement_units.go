@@ -56,6 +56,60 @@ func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter 
 	return validIngredientMeasurementUnits, nil
 }
 
+// GetValidIngredientMeasurementUnitsForIngredient retrieves a list of valid ingredient preparations.
+func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.ValidIngredientMeasurementUnitList, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.loggerWithFilter(filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if validIngredientID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+
+	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ctx, validIngredientID, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building valid ingredient preparations list request")
+	}
+
+	var validPreparationInstruments *types.ValidIngredientMeasurementUnitList
+	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient preparations")
+	}
+
+	return validPreparationInstruments, nil
+}
+
+// GetValidIngredientMeasurementUnitsForMeasurementUnit retrieves a list of valid ingredient preparations.
+func (c *Client) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (*types.ValidIngredientMeasurementUnitList, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.loggerWithFilter(filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if validMeasurementUnitID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+
+	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(ctx, validMeasurementUnitID, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building valid ingredient preparations list request")
+	}
+
+	var validPreparationInstruments *types.ValidIngredientMeasurementUnitList
+	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient preparations")
+	}
+
+	return validPreparationInstruments, nil
+}
+
 // CreateValidIngredientMeasurementUnit creates a valid ingredient preparation.
 func (c *Client) CreateValidIngredientMeasurementUnit(ctx context.Context, input *types.ValidIngredientMeasurementUnitCreationRequestInput) (*types.ValidIngredientMeasurementUnit, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
