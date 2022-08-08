@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	"github.com/googleapis/gax-go/v2"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -31,17 +32,21 @@ const (
 	gcpSendgridTokenEnvVarKey = "PRIXFIXE_SENDGRID_API_TOKEN"
 	/* #nosec G101 */
 	gcpSegmentTokenEnvVarKey = "PRIXFIXE_SEGMENT_API_TOKEN"
+
+	dataChangesTopicAccessName = "data_changes_topic_name"
 )
 
+// SecretVersionAccessor is an interface abstraction of the GCP Secret Manager API call we use during config hydration.
+// This interface exists for testing purposes. Yes, you're not supposed to write arbitrary interfaces for testing.
+// Yes I'm still doing it.
+type SecretVersionAccessor interface {
+	AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error)
+}
+
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches and InstanceConfig from GCP Secret Manager.
-func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
+func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
 	logger.Debug("setting up secret manager client")
-
-	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
-	if secretManagerCreationErr != nil {
-		return nil, fmt.Errorf("failed to create secretmanager client: %w", secretManagerCreationErr)
-	}
 
 	var cfg *InstanceConfig
 	configFilepath := os.Getenv(gcpConfigFilePathEnvVarKey)
@@ -82,7 +87,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
 
-	changesTopic, dataChangesNameFetchErr := fetchSecretFromSecretStore(ctx, client, "data_changes_topic_name")
+	changesTopic, dataChangesNameFetchErr := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
 	if dataChangesNameFetchErr != nil {
 		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", dataChangesNameFetchErr)
 	}
@@ -133,7 +138,7 @@ func buildSecretPathForSecretStore(secretName string) string {
 	)
 }
 
-func fetchSecretFromSecretStore(ctx context.Context, client *secretmanager.Client, secretName string) ([]byte, error) {
+func fetchSecretFromSecretStore(ctx context.Context, client SecretVersionAccessor, secretName string) ([]byte, error) {
 	req := &secretmanagerpb.AccessSecretVersionRequest{
 		Name: buildSecretPathForSecretStore(secretName),
 	}

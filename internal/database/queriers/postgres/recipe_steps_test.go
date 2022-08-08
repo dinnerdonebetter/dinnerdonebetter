@@ -747,7 +747,9 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			args := []interface{}{
 				instrument.ID,
 				instrument.InstrumentID,
-				instrument.RecipeStepID,
+				instrument.RecipeStepProductID,
+				instrument.Name,
+				instrument.ProductOfRecipeStep,
 				instrument.Notes,
 				instrument.PreferenceRank,
 				instrument.BelongsToRecipeStep,

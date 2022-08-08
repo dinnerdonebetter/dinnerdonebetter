@@ -613,7 +613,8 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		// we need to go through all the prior steps and see
 		// if the names of a product matches any ingredients
 		// used in this step and not used in prior steps
-		findCreatedRecipeStepProducts(input, i)
+		findCreatedRecipeStepProductsForIngredients(input, i)
+		findCreatedRecipeStepProductsForInstruments(input, i)
 
 		s, createErr := q.createRecipeStep(ctx, tx, stepInput)
 		if createErr != nil {
@@ -649,7 +650,7 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 	return x, nil
 }
 
-func findCreatedRecipeStepProducts(recipe *types.RecipeDatabaseCreationInput, stepIndex int) {
+func findCreatedRecipeStepProductsForIngredients(recipe *types.RecipeDatabaseCreationInput, stepIndex int) {
 	step := recipe.Steps[stepIndex]
 
 	priorSteps := []*types.RecipeStepDatabaseCreationInput{}
@@ -665,7 +666,9 @@ func findCreatedRecipeStepProducts(recipe *types.RecipeDatabaseCreationInput, st
 	createdProducts := map[string]*types.RecipeStepProductDatabaseCreationInput{}
 	for _, s := range priorSteps {
 		for _, product := range s.Products {
-			createdProducts[product.Name] = product
+			if product.Type == types.RecipeStepProductIngredientType {
+				createdProducts[product.Name] = product
+			}
 		}
 
 		for _, ingredient := range s.Ingredients {
@@ -680,6 +683,43 @@ func findCreatedRecipeStepProducts(recipe *types.RecipeDatabaseCreationInput, st
 
 		if ingredient.ProductOfRecipeStep && availableAsACreatedProduct {
 			ingredient.RecipeStepProductID = &createdProduct.ID
+		}
+	}
+}
+
+func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCreationInput, stepIndex int) {
+	step := recipe.Steps[stepIndex]
+
+	priorSteps := []*types.RecipeStepDatabaseCreationInput{}
+	for i, s := range recipe.Steps {
+		if i < stepIndex {
+			priorSteps = append(priorSteps, s)
+		} else {
+			break
+		}
+	}
+
+	// created products is everything available to the step at the provided stepIndex.
+	createdProducts := map[string]*types.RecipeStepProductDatabaseCreationInput{}
+	for _, s := range priorSteps {
+		for _, product := range s.Products {
+			if product.Type == types.RecipeStepProductInstrumentType {
+				createdProducts[product.Name] = product
+			}
+		}
+
+		for _, instrument := range s.Instruments {
+			if instrument.RecipeStepProductID == nil {
+				delete(createdProducts, instrument.Name)
+			}
+		}
+	}
+
+	for _, instrument := range step.Instruments {
+		createdProduct, availableAsACreatedProduct := createdProducts[instrument.Name]
+
+		if instrument.ProductOfRecipeStep && availableAsACreatedProduct {
+			instrument.RecipeStepProductID = &createdProduct.ID
 		}
 	}
 }
