@@ -15,10 +15,13 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentCreationRequestInput{
-			InstrumentID:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			RecipeStepID:   fake.LoremIpsumSentence(exampleQuantity),
-			Notes:          fake.LoremIpsumSentence(exampleQuantity),
-			PreferenceRank: fake.Uint8(),
+			InstrumentID:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                fake.LoremIpsumSentence(exampleQuantity),
+			BelongsToRecipeStep: fake.LoremIpsumSentence(exampleQuantity),
+			ProductOfRecipeStep: fake.Bool(),
+			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:               fake.LoremIpsumSentence(exampleQuantity),
+			PreferenceRank:      fake.Uint8(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -42,10 +45,13 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentUpdateRequestInput{
-			InstrumentID:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			RecipeStepID:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PreferenceRank: uint8Pointer(fake.Uint8()),
+			InstrumentID:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			BelongsToRecipeStep: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ProductOfRecipeStep: boolPointer(fake.Bool()),
+			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:               stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			PreferenceRank:      uint8Pointer(fake.Uint8()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

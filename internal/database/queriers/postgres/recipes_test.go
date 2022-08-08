@@ -1172,7 +1172,9 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				recipeStepInstrumentCreationArgs := []interface{}{
 					instrument.ID,
 					instrument.InstrumentID,
-					instrument.RecipeStepID,
+					instrument.RecipeStepProductID,
+					instrument.Name,
+					instrument.ProductOfRecipeStep,
 					instrument.Notes,
 					instrument.PreferenceRank,
 					instrument.BelongsToRecipeStep,
@@ -1615,7 +1617,7 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 	})
 }
 
-func Test_findCreatedRecipeStepProducts(T *testing.T) {
+func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 	T.Parallel()
 
 	T.Run("sopa de frijol", func(t *testing.T) {
@@ -1639,6 +1641,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 							ID:              fakes.BuildFakeID(),
 							Name:            productName,
 							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
+							Type:            types.RecipeStepProductIngredientType,
 						},
 					},
 					Notes:       "first step",
@@ -1670,6 +1673,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 						{
 							Name:            "final output",
 							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
+							Type:            types.RecipeStepProductIngredientType,
 						},
 					},
 					Notes:       "second step",
@@ -1722,6 +1726,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					ID:                   ingredient.ID,
 					BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
 					Name:                 ingredient.Name,
+					RecipeStepProductID:  ingredient.RecipeStepProductID,
 					MeasurementUnitID:    &ingredient.MeasurementUnit.ID,
 					QuantityNotes:        ingredient.QuantityNotes,
 					IngredientNotes:      ingredient.IngredientNotes,
@@ -1735,10 +1740,12 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
 					ID:                   product.ID,
 					Name:                 product.Name,
+					Type:                 product.Type,
 					MeasurementUnitID:    &product.MeasurementUnit.ID,
 					QuantityNotes:        product.QuantityNotes,
 					BelongsToRecipeStep:  product.BelongsToRecipeStep,
 					MinimumQuantityValue: product.MinimumQuantityValue,
+					MaximumQuantityValue: product.MaximumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -1746,7 +1753,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 			exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
 		}
 
-		findCreatedRecipeStepProducts(exampleRecipeInput, len(exampleRecipeInput.Steps)-1)
+		findCreatedRecipeStepProductsForIngredients(exampleRecipeInput, len(exampleRecipeInput.Steps)-1)
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
@@ -1773,6 +1780,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 							ID:              fakes.BuildFakeID(),
 							Name:            productName,
 							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
+							Type:            types.RecipeStepProductIngredientType,
 						},
 					},
 					Notes:       "first step",
@@ -1804,6 +1812,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 						{
 							Name:            "pressure cooked beans",
 							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
+							Type:            types.RecipeStepProductIngredientType,
 						},
 					},
 					Notes:       "second step",
@@ -1836,6 +1845,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 							ID:              fakes.BuildFakeID(),
 							Name:            productName,
 							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
+							Type:            types.RecipeStepProductIngredientType,
 						},
 					},
 					Notes:       "third step",
@@ -1867,6 +1877,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 						{
 							Name:            "final output",
 							MeasurementUnit: fakes.BuildFakeValidMeasurementUnit(),
+							Type:            types.RecipeStepProductIngredientType,
 						},
 					},
 					Notes:       "fourth step",
@@ -1919,6 +1930,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					ID:                   ingredient.ID,
 					BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
 					Name:                 ingredient.Name,
+					RecipeStepProductID:  ingredient.RecipeStepProductID,
 					MeasurementUnitID:    &ingredient.MeasurementUnit.ID,
 					QuantityNotes:        ingredient.QuantityNotes,
 					IngredientNotes:      ingredient.IngredientNotes,
@@ -1932,10 +1944,12 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
 					ID:                   product.ID,
 					Name:                 product.Name,
+					Type:                 product.Type,
 					MeasurementUnitID:    &product.MeasurementUnit.ID,
 					QuantityNotes:        product.QuantityNotes,
 					BelongsToRecipeStep:  product.BelongsToRecipeStep,
 					MinimumQuantityValue: product.MinimumQuantityValue,
+					MaximumQuantityValue: product.MaximumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -1944,7 +1958,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 		}
 
 		for stepIndex := range exampleRecipeInput.Steps {
-			findCreatedRecipeStepProducts(exampleRecipeInput, stepIndex)
+			findCreatedRecipeStepProductsForIngredients(exampleRecipeInput, stepIndex)
 		}
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)

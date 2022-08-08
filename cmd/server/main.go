@@ -12,14 +12,15 @@ import (
 	"syscall"
 	"time"
 
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+
 	"github.com/prixfixeco/api_server/internal/build/server"
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -33,7 +34,12 @@ func main() {
 
 	var cfg *config.InstanceConfig
 	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
-		c, cfgHydrateErr := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
+		client, secretManagerCreationErr := secretmanager.NewClient(ctx)
+		if secretManagerCreationErr != nil {
+			log.Fatal(secretManagerCreationErr)
+		}
+
+		c, cfgHydrateErr := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx, client)
 		if cfgHydrateErr != nil {
 			log.Fatal(cfgHydrateErr)
 		}
