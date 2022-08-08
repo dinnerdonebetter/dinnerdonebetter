@@ -120,6 +120,11 @@ var (
 			Description: "bridge table unique constraint improvements",
 			Script:      fetchMigration("00033_better_bridge_table_constraints"),
 		},
+		{
+			Version:     34,
+			Description: "add recipe step product id to recipe step instruments",
+			Script:      fetchMigration("00034_add_recipe_step_product_id_to_recipe_step_instruments"),
+		},
 	}
 )
 

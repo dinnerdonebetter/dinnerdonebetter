@@ -17,7 +17,9 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.InstrumentID, actual.InstrumentID, "expected InstrumentID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.InstrumentID, actual.InstrumentID)
-	assert.Equal(t, expected.RecipeStepID, actual.RecipeStepID, "expected RecipeStepID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.RecipeStepID, actual.RecipeStepID)
+	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
+	assert.Equal(t, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep, "expected ProductOfRecipeStep for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep)
+	assert.Equal(t, expected.RecipeStepProductID, actual.RecipeStepProductID, "expected RecipeStepProductID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.RecipeStepProductID, actual.RecipeStepProductID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected PreferenceRank for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.PreferenceRank, actual.PreferenceRank)
 	assert.NotZero(t, actual.CreatedOn)
@@ -26,10 +28,13 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 // convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput creates an RecipeStepInstrumentUpdateRequestInput struct from a recipe step instrument.
 func convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(x *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
 	return &types.RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID:   x.InstrumentID,
-		RecipeStepID:   &x.RecipeStepID,
-		Notes:          &x.Notes,
-		PreferenceRank: &x.PreferenceRank,
+		InstrumentID:        x.InstrumentID,
+		RecipeStepProductID: x.RecipeStepProductID,
+		ProductOfRecipeStep: &x.ProductOfRecipeStep,
+		Notes:               &x.Notes,
+		PreferenceRank:      &x.PreferenceRank,
+		BelongsToRecipeStep: &x.BelongsToRecipeStep,
+		Name:                &x.Name,
 	}
 }
 

@@ -34,11 +34,13 @@ type (
 		ArchivedOn          *uint64 `json:"archivedOn"`
 		InstrumentID        *string `json:"instrumentID"`
 		LastUpdatedOn       *uint64 `json:"lastUpdatedOn"`
-		RecipeStepID        string  `json:"recipeStepID"`
+		RecipeStepProductID *string `json:"recipeStepProductID"`
 		Notes               string  `json:"notes"`
+		Name                string  `json:"name"`
 		ID                  string  `json:"id"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
 		CreatedOn           uint64  `json:"createdOn"`
+		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 		PreferenceRank      uint8   `json:"preferenceRank"`
 	}
 
@@ -53,10 +55,12 @@ type (
 	RecipeStepInstrumentCreationRequestInput struct {
 		_                   struct{}
 		InstrumentID        *string `json:"instrumentID"`
+		RecipeStepProductID *string `json:"recipeStepProductID"`
 		ID                  string  `json:"-"`
-		RecipeStepID        string  `json:"recipeStepID"`
+		Name                string  `json:"name"`
 		Notes               string  `json:"notes"`
 		BelongsToRecipeStep string  `json:"-"`
+		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 		PreferenceRank      uint8   `json:"preferenceRank"`
 	}
 
@@ -64,23 +68,25 @@ type (
 	RecipeStepInstrumentDatabaseCreationInput struct {
 		_                   struct{}
 		InstrumentID        *string `json:"instrumentID"`
+		RecipeStepProductID *string `json:"recipeStepProductID"`
 		ID                  string  `json:"id"`
-		RecipeStepID        string  `json:"recipeStepID"`
+		Name                string  `json:"name"`
 		Notes               string  `json:"notes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 		PreferenceRank      uint8   `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
 	RecipeStepInstrumentUpdateRequestInput struct {
-		_ struct{}
-
-		// InstrumentID is already a pointer, I'm not about to make it a double pointer.
+		_                   struct{}
 		InstrumentID        *string `json:"instrumentID"`
-		RecipeStepID        *string `json:"recipeStepID"`
+		RecipeStepProductID *string `json:"recipeStepProductID"`
+		ProductOfRecipeStep *bool   `json:"productOfRecipeStep"`
 		Notes               *string `json:"notes"`
 		PreferenceRank      *uint8  `json:"preferenceRank"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
+		Name                *string `json:"name"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -111,8 +117,16 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 		x.InstrumentID = input.InstrumentID
 	}
 
-	if input.RecipeStepID != nil && *input.RecipeStepID != x.RecipeStepID {
-		x.RecipeStepID = *input.RecipeStepID
+	if input.RecipeStepProductID != nil && *input.RecipeStepProductID != *x.RecipeStepProductID {
+		x.RecipeStepProductID = input.RecipeStepProductID
+	}
+
+	if input.ProductOfRecipeStep != nil && *input.ProductOfRecipeStep != x.ProductOfRecipeStep {
+		x.ProductOfRecipeStep = *input.ProductOfRecipeStep
+	}
+
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
 	}
 
 	if input.Notes != nil && *input.Notes != x.Notes {
@@ -132,7 +146,6 @@ func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx conte
 		ctx,
 		x,
 		validation.Field(&x.InstrumentID, validation.Required),
-		validation.Field(&x.RecipeStepID, validation.Required),
 		validation.Field(&x.PreferenceRank, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
@@ -147,7 +160,7 @@ func (x *RecipeStepInstrumentDatabaseCreationInput) ValidateWithContext(ctx cont
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.InstrumentID, validation.Required),
-		validation.Field(&x.RecipeStepID, validation.Required),
+		validation.Field(&x.BelongsToRecipeStep, validation.Required),
 		validation.Field(&x.PreferenceRank, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
@@ -157,8 +170,10 @@ func (x *RecipeStepInstrumentDatabaseCreationInput) ValidateWithContext(ctx cont
 func RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(input *RecipeStepInstrument) *RecipeStepInstrumentUpdateRequestInput {
 	x := &RecipeStepInstrumentUpdateRequestInput{
 		InstrumentID:        input.InstrumentID,
-		RecipeStepID:        &input.RecipeStepID,
 		Notes:               &input.Notes,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Name:                &input.Name,
+		ProductOfRecipeStep: &input.ProductOfRecipeStep,
 		PreferenceRank:      &input.PreferenceRank,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
 	}
@@ -170,7 +185,9 @@ func RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(input *Recip
 func RecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrumentCreationInput(input *RecipeStepInstrumentCreationRequestInput) *RecipeStepInstrumentDatabaseCreationInput {
 	x := &RecipeStepInstrumentDatabaseCreationInput{
 		InstrumentID:        input.InstrumentID,
-		RecipeStepID:        input.RecipeStepID,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Name:                input.Name,
+		ProductOfRecipeStep: input.ProductOfRecipeStep,
 		Notes:               input.Notes,
 		PreferenceRank:      input.PreferenceRank,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
@@ -186,7 +203,6 @@ func (x *RecipeStepInstrumentUpdateRequestInput) ValidateWithContext(ctx context
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.RecipeStepID, validation.Required),
 		validation.Field(&x.PreferenceRank, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)

@@ -29,7 +29,9 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 		rowValues := []driver.Value{
 			x.ID,
 			x.InstrumentID,
-			x.RecipeStepID,
+			x.RecipeStepProductID,
+			x.Name,
+			x.ProductOfRecipeStep,
 			x.Notes,
 			x.PreferenceRank,
 			x.CreatedOn,
@@ -619,7 +621,9 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.InstrumentID,
-			exampleInput.RecipeStepID,
+			exampleInput.RecipeStepProductID,
+			exampleInput.Name,
+			exampleInput.ProductOfRecipeStep,
 			exampleInput.Notes,
 			exampleInput.PreferenceRank,
 			exampleInput.BelongsToRecipeStep,
@@ -664,7 +668,9 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.InstrumentID,
-			exampleInput.RecipeStepID,
+			exampleInput.RecipeStepProductID,
+			exampleInput.Name,
+			exampleInput.ProductOfRecipeStep,
 			exampleInput.Notes,
 			exampleInput.PreferenceRank,
 			exampleInput.BelongsToRecipeStep,
@@ -700,7 +706,9 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStepInstrument.InstrumentID,
-			exampleRecipeStepInstrument.RecipeStepID,
+			exampleRecipeStepInstrument.RecipeStepProductID,
+			exampleRecipeStepInstrument.Name,
+			exampleRecipeStepInstrument.ProductOfRecipeStep,
 			exampleRecipeStepInstrument.Notes,
 			exampleRecipeStepInstrument.PreferenceRank,
 			exampleRecipeStepInstrument.BelongsToRecipeStep,
@@ -735,7 +743,9 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStepInstrument.InstrumentID,
-			exampleRecipeStepInstrument.RecipeStepID,
+			exampleRecipeStepInstrument.RecipeStepProductID,
+			exampleRecipeStepInstrument.Name,
+			exampleRecipeStepInstrument.ProductOfRecipeStep,
 			exampleRecipeStepInstrument.Notes,
 			exampleRecipeStepInstrument.PreferenceRank,
 			exampleRecipeStepInstrument.BelongsToRecipeStep,
