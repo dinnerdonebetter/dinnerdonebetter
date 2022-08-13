@@ -56,9 +56,7 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	x = &types.RecipeStepProduct{
-		MeasurementUnit: &types.ValidMeasurementUnit{},
-	}
+	x = &types.RecipeStepProduct{}
 
 	targetVars := []interface{}{
 		&x.ID,
@@ -283,7 +281,7 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 FROM recipe_step_products
 JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
+LEFT OUTER JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_on IS NULL
 AND recipe_steps.archived_on IS NULL
 AND recipe_steps.belongs_to_recipe = $1
@@ -461,15 +459,12 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		ID:                   input.ID,
 		Name:                 input.Name,
 		Type:                 input.Type,
+		MeasurementUnit:      types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
 		MinimumQuantityValue: input.MinimumQuantityValue,
 		MaximumQuantityValue: input.MaximumQuantityValue,
 		QuantityNotes:        input.QuantityNotes,
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
 		CreatedOn:            q.currentTime(),
-	}
-
-	if input.MeasurementUnitID != nil {
-		x.MeasurementUnit = &types.ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)

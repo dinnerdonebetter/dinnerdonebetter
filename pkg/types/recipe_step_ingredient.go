@@ -31,20 +31,20 @@ type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
 		_                    struct{}
-		LastUpdatedOn        *uint64               `json:"lastUpdatedOn"`
-		IngredientID         *string               `json:"ingredientID"`
-		ArchivedOn           *uint64               `json:"archivedOn"`
-		RecipeStepProductID  *string               `json:"recipeStepProductID"`
-		MeasurementUnit      *ValidMeasurementUnit `json:"measurementUnit"`
-		ID                   string                `json:"id"`
-		Name                 string                `json:"name"`
-		IngredientNotes      string                `json:"ingredientNotes"`
-		QuantityNotes        string                `json:"quantityNotes"`
-		BelongsToRecipeStep  string                `json:"belongsToRecipeStep"`
-		CreatedOn            uint64                `json:"createdOn"`
-		MinimumQuantityValue float32               `json:"minimumQuantityValue"`
-		MaximumQuantityValue float32               `json:"maximumQuantityValue"`
-		ProductOfRecipeStep  bool                  `json:"productOfRecipeStep"`
+		IngredientID         *string              `json:"ingredientID"`
+		ArchivedOn           *uint64              `json:"archivedOn"`
+		RecipeStepProductID  *string              `json:"recipeStepProductID"`
+		LastUpdatedOn        *uint64              `json:"lastUpdatedOn"`
+		QuantityNotes        string               `json:"quantityNotes"`
+		BelongsToRecipeStep  string               `json:"belongsToRecipeStep"`
+		ID                   string               `json:"id"`
+		IngredientNotes      string               `json:"ingredientNotes"`
+		Name                 string               `json:"name"`
+		MeasurementUnit      ValidMeasurementUnit `json:"measurementUnit"`
+		CreatedOn            uint64               `json:"createdOn"`
+		MinimumQuantityValue float32              `json:"minimumQuantityValue"`
+		MaximumQuantityValue float32              `json:"maximumQuantityValue"`
+		ProductOfRecipeStep  bool                 `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
@@ -62,7 +62,7 @@ type (
 		ID                   string                                 `json:"-"`
 		BelongsToRecipeStep  string                                 `json:"-"`
 		Name                 string                                 `json:"name"`
-		MeasurementUnitID    *string                                `json:"measurementUnitID"`
+		MeasurementUnitID    string                                 `json:"measurementUnitID"`
 		QuantityNotes        string                                 `json:"quantityNotes"`
 		IngredientNotes      string                                 `json:"ingredientNotes"`
 		MinimumQuantityValue float32                                `json:"minimumQuantityValue"`
@@ -77,7 +77,7 @@ type (
 		RecipeStepProductID  *string `json:"recipeStepProductID"`
 		ID                   string  `json:"id"`
 		Name                 string  `json:"name"`
-		MeasurementUnitID    *string `json:"measurementUnitID"`
+		MeasurementUnitID    string  `json:"measurementUnitID"`
 		QuantityNotes        string  `json:"quantityNotes"`
 		IngredientNotes      string  `json:"ingredientNotes"`
 		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
@@ -141,7 +141,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 	}
 
 	if input.MeasurementUnitID != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
-		x.MeasurementUnit = &ValidMeasurementUnit{ID: *input.MeasurementUnitID}
+		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	if input.MinimumQuantityValue != nil && *input.MinimumQuantityValue != x.MinimumQuantityValue {
@@ -174,6 +174,7 @@ func (x *RecipeStepIngredientCreationRequestInput) ValidateWithContext(ctx conte
 		x,
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
+		validation.Field(&x.ProductOfRecipeStep, validation.Required),
 	)
 }
 

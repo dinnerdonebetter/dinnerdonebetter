@@ -59,9 +59,7 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	x = &types.RecipeStepIngredient{
-		MeasurementUnit: &types.ValidMeasurementUnit{},
-	}
+	x = &types.RecipeStepIngredient{}
 
 	targetVars := []interface{}{
 		&x.ID,
@@ -452,6 +450,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		ID:                   input.ID,
 		Name:                 input.Name,
 		IngredientID:         input.IngredientID,
+		MeasurementUnit:      types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
 		MinimumQuantityValue: input.MinimumQuantityValue,
 		MaximumQuantityValue: input.MaximumQuantityValue,
 		QuantityNotes:        input.QuantityNotes,
@@ -460,10 +459,6 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		CreatedOn:            q.currentTime(),
-	}
-
-	if input.MeasurementUnitID != nil {
-		x.MeasurementUnit = &types.ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)

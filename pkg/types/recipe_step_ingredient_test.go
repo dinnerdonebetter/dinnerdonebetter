@@ -16,7 +16,7 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepIngredientCreationRequestInput{
 			IngredientID:         stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MeasurementUnitID:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MeasurementUnitID:    fake.LoremIpsumSentence(exampleQuantity),
 			MinimumQuantityValue: fake.Float32(),
 			QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
 			ProductOfRecipeStep:  fake.Bool(),
