@@ -174,7 +174,6 @@ func (x *RecipeStepIngredientCreationRequestInput) ValidateWithContext(ctx conte
 		x,
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
-		validation.Field(&x.ProductOfRecipeStep, validation.Required),
 	)
 }
 
