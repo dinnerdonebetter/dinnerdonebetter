@@ -19,44 +19,49 @@ var validMeasurementUnitCollection = struct {
 	Percent *types.ValidMeasurementUnitDatabaseCreationInput
 }{
 	Gram: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:   "vmu_gram",
-		Name: "gram",
+		ID:         padID("vmu_gram"),
+		Name:       "gram",
+		Volumetric: false,
 	},
 	Milliliter: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:         "vmu_milliliter",
+		ID:         padID("vmu_milliliter"),
 		Name:       "milliliter",
 		Volumetric: true,
 	},
 	Unit: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:   "vmu_unit",
-		Name: "unit",
+		ID:         padID("vmu_unit"),
+		Name:       "unit",
+		Volumetric: false,
 	},
 	Clove: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:   "vmu_clove",
-		Name: "clove",
+		ID:         padID("vmu_clove"),
+		Name:       "clove",
+		Volumetric: false,
 	},
 	Teaspoon: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:         "vmu_teaspoon",
+		ID:         padID("vmu_teaspoon"),
 		Name:       "teaspoon",
 		Volumetric: true,
 	},
 	Tablespoon: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:         "vmu_tablespoon",
+		ID:         padID("vmu_tablespoon"),
 		Name:       "tablespoon",
 		Volumetric: true,
 	},
 	Can: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:   "vmu_can",
-		Name: "can",
+		ID:         padID("vmu_can"),
+		Name:       "can",
+		Volumetric: false,
 	},
 	Cup: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:         "vmu_cup",
+		ID:         padID("vmu_cup"),
 		Name:       "cup",
 		Volumetric: true,
 	},
 	Percent: &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:   "vmu_percent",
-		Name: "percent",
+		ID:         padID("vmu_percent"),
+		Name:       "percent",
+		Volumetric: false,
 	},
 }
 

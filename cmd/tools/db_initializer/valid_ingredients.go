@@ -26,70 +26,70 @@ var validIngredientCollection = struct {
 	_ *types.ValidIngredientDatabaseCreationInput
 }{
 	ChickenBreast: &types.ValidIngredientDatabaseCreationInput{
-		ID:          "vi_chicken_breast",
+		ID:          padID("vi_chicken_breast"),
 		Name:        "chicken breast",
 		AnimalFlesh: true,
 	},
 	Water: &types.ValidIngredientDatabaseCreationInput{
-		ID:       "vi_water",
+		ID:       padID("vi_water"),
 		Name:     "water",
 		IsLiquid: true,
 	},
 	Onion: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_onion",
+		ID:   padID("vi_onion"),
 		Name: "onion",
 	},
 	Garlic: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_garlic",
+		ID:   padID("vi_garlic"),
 		Name: "garlic",
 	},
 	BlackPepper: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_black_pepper",
+		ID:   padID("vi_black_pepper"),
 		Name: "black pepper",
 	},
 	OliveOil: &types.ValidIngredientDatabaseCreationInput{
-		ID:                       "vi_olive_oil",
+		ID:                       padID("vi_olive_oil"),
 		Name:                     "olive oil",
 		IsMeasuredVolumetrically: true,
 		IsLiquid:                 true,
 	},
 	Coffee: &types.ValidIngredientDatabaseCreationInput{
-		ID:                       "vi_coffee",
+		ID:                       padID("vi_coffee"),
 		Name:                     "brewed coffee",
 		IsMeasuredVolumetrically: true,
 		IsLiquid:                 true,
 	},
 	Pasta: &types.ValidIngredientDatabaseCreationInput{
-		ID:             "vi_pasta",
+		ID:             padID("vi_pasta"),
 		Name:           "pasta",
 		ContainsGluten: true,
 	},
 	Tomato: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_tomato",
+		ID:   padID("vi_tomato"),
 		Name: "tomato",
 	},
 	AllPurposeFlour: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_ap_flour",
+		ID:   padID("vi_ap_flour"),
 		Name: "all purpose flour",
 	},
 	Salt: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_salt",
+		ID:   padID("vi_salt"),
 		Name: "salt",
 	},
 	BakingPowder: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_baking_powder",
+		ID:   padID("vi_baking_powder"),
 		Name: "baking powder",
 	},
 	VegetableShortening: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_vegetable_shortening",
+		ID:   padID("vi_vegetable_shortening"),
 		Name: "vegetable shortening",
 	},
 	HotWater: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_hot_water",
+		ID:   padID("vi_hot_water"),
 		Name: "hot water",
 	},
 	Mozzarella: &types.ValidIngredientDatabaseCreationInput{
-		ID:   "vi_mozzarella",
+		ID:   padID("vi_mozzarella"),
 		Name: "mozzarella",
 	},
 }

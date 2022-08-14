@@ -47,6 +47,26 @@ var (
 	debug    bool
 )
 
+func padID(s string) string {
+	var x []byte
+
+	if len(s) > 27 {
+		log.Panicf("invalid identifier: %q", s)
+	}
+
+	stopIndex := 0
+	for i, b := range s {
+		x = append(x, byte(b))
+		stopIndex = i + 1
+	}
+
+	for i := stopIndex; i < 27; i++ {
+		x = append(x, []byte("_")[0])
+	}
+
+	return string(x)
+}
+
 func init() {
 	flag.StringVarP(&dbString, "dburl", "u", defaultDBURL, "where the database is hosted")
 	flag.BoolVarP(&debug, "debug", "d", false, "whether debug mode is enabled")
