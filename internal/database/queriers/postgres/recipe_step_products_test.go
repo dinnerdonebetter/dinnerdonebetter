@@ -708,7 +708,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 		exampleRecipeStepProduct.ID = "1"
 		exampleInput := fakes.BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(exampleRecipeStepProduct)
-		exampleRecipeStepProduct.MeasurementUnit = &types.ValidMeasurementUnit{ID: exampleRecipeStepProduct.MeasurementUnit.ID}
+		exampleRecipeStepProduct.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepProduct.MeasurementUnit.ID}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

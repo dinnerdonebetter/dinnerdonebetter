@@ -114,11 +114,11 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
 				for j := range exampleRecipeStep.Ingredients {
 					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
-					exampleRecipeStep.Ingredients[j].MeasurementUnit = createdValidMeasurementUnit
+					exampleRecipeStep.Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
 				}
 
 				for j := range exampleRecipeStep.Products {
-					exampleRecipeStep.Products[j].MeasurementUnit = createdValidMeasurementUnit
+					exampleRecipeStep.Products[j].MeasurementUnit = *createdValidMeasurementUnit
 				}
 
 				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(exampleRecipeStep)

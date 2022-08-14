@@ -36,17 +36,17 @@ type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
 		_                    struct{}
-		LastUpdatedOn        *uint64               `json:"lastUpdatedOn"`
-		ArchivedOn           *uint64               `json:"archivedOn"`
-		ID                   string                `json:"id"`
-		Name                 string                `json:"name"`
-		Type                 string                `json:"type"`
-		MeasurementUnit      *ValidMeasurementUnit `json:"measurementUnit"`
-		QuantityNotes        string                `json:"quantityNotes"`
-		BelongsToRecipeStep  string                `json:"belongsToRecipeStep"`
-		CreatedOn            uint64                `json:"createdOn"`
-		MinimumQuantityValue float32               `json:"minimumQuantityValue"`
-		MaximumQuantityValue float32               `json:"maximumQuantityValue"`
+		LastUpdatedOn        *uint64              `json:"lastUpdatedOn"`
+		ArchivedOn           *uint64              `json:"archivedOn"`
+		ID                   string               `json:"id"`
+		Name                 string               `json:"name"`
+		Type                 string               `json:"type"`
+		QuantityNotes        string               `json:"quantityNotes"`
+		BelongsToRecipeStep  string               `json:"belongsToRecipeStep"`
+		MeasurementUnit      ValidMeasurementUnit `json:"measurementUnit"`
+		CreatedOn            uint64               `json:"createdOn"`
+		MinimumQuantityValue float32              `json:"minimumQuantityValue"`
+		MaximumQuantityValue float32              `json:"maximumQuantityValue"`
 	}
 
 	// RecipeStepProductList represents a list of recipe step products.
@@ -63,7 +63,7 @@ type (
 		Name                 string  `json:"name"`
 		Type                 string  `json:"type"`
 		QuantityNotes        string  `json:"quantityNotes"`
-		MeasurementUnitID    *string `json:"measurementUnitID"`
+		MeasurementUnitID    string  `json:"measurementUnitID"`
 		BelongsToRecipeStep  string  `json:"-"`
 		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
 		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
@@ -75,7 +75,7 @@ type (
 		ID                   string  `json:"id"`
 		Name                 string  `json:"name"`
 		Type                 string  `json:"type"`
-		MeasurementUnitID    *string `json:"measurementUnitID"`
+		MeasurementUnitID    string  `json:"measurementUnitID"`
 		QuantityNotes        string  `json:"quantityNotes"`
 		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
 		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
@@ -127,7 +127,7 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 	}
 
 	if input.MeasurementUnitID != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
-		x.MeasurementUnit = &ValidMeasurementUnit{ID: *input.MeasurementUnitID}
+		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	if input.MinimumQuantityValue != nil && *input.MinimumQuantityValue != x.MinimumQuantityValue {
@@ -167,6 +167,7 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType)),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
+		validation.Field(&x.MeasurementUnitID, validation.Required),
 	)
 }
 

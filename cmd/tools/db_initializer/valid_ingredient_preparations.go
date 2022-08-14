@@ -23,57 +23,57 @@ var validIngredientPreparationCollection = struct {
 	_ *types.ValidIngredientPreparationDatabaseCreationInput
 }{
 	ChickenBreastSlice: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_cb_slice",
+		ID:                 padID("vip_cb_slice"),
 		ValidPreparationID: "vprep_slice",
 		ValidIngredientID:  "vi_chicken_breast",
 	},
 	WaterBoil: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_water_boil",
+		ID:                 padID("vip_water_boil"),
 		ValidPreparationID: "vprep_boil",
 		ValidIngredientID:  "vi_water",
 	},
 	OnionSlice: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_onion_slice",
+		ID:                 padID("vip_onion_slice"),
 		ValidPreparationID: "vprep_slice",
 		ValidIngredientID:  "vi_onion",
 	},
 	OnionDice: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_onion_dice",
+		ID:                 padID("vip_onion_dice"),
 		ValidPreparationID: "vprep_dice",
 		ValidIngredientID:  "vi_onion",
 	},
 	GarlicSlice: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_garlic_mince",
+		ID:                 padID("vip_garlic_mince"),
 		ValidPreparationID: "vprep_slice",
 		ValidIngredientID:  "vi_garlic",
 	},
 	GarlicMince: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_garlic_mince",
+		ID:                 padID("vip_garlic_mince"),
 		ValidPreparationID: "vprep_mince",
 		ValidIngredientID:  "vi_garlic",
 	},
 	BlackPepperGrind: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_bp_grind",
+		ID:                 padID("vip_bp_grind"),
 		ValidPreparationID: "vprep_grind",
 		ValidIngredientID:  "vi_black_pepper",
 	},
 	PastaBoil: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_pasta_boil",
+		ID:                 padID("vip_pasta_boil"),
 		ValidPreparationID: "vprep_boil",
 		ValidIngredientID:  "vi_pasta",
 	},
 	TomatoSlice: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_tomato_slice",
+		ID:                 padID("vip_tomato_slice"),
 		ValidPreparationID: "vprep_slice",
 		ValidIngredientID:  "vi_tomato",
 	},
 	TomatoDice: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_tomato_dice",
+		ID:                 padID("vip_tomato_dice"),
 		ValidPreparationID: "vprep_dice",
 		ValidIngredientID:  "vi_tomato",
 	},
 	MozzarellaSlice: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_mozzarella_slice",
+		ID:                 padID("vip_mozzarella_slice"),
 		ValidPreparationID: "vprep_slice",
 		ValidIngredientID:  "vi_mozzarella",
 	},

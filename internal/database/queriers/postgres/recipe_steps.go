@@ -375,6 +375,7 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 	x := &types.RecipeStep{
 		ID:                            input.ID,
 		Index:                         input.Index,
+		Preparation:                   types.ValidPreparation{ID: input.PreparationID},
 		MinimumEstimatedTimeInSeconds: input.MinimumEstimatedTimeInSeconds,
 		MaximumEstimatedTimeInSeconds: input.MaximumEstimatedTimeInSeconds,
 		MinimumTemperatureInCelsius:   input.MinimumTemperatureInCelsius,
