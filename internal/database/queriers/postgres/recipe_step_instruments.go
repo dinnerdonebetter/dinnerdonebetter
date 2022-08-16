@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	recipeStepsOnRecipeStepInstrumentsJoinClause = "recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id"
+	recipeStepsOnRecipeStepInstrumentsJoinClause      = "recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id"
+	recipeStepInstrumentsOnValidInstrumentsJoinClause = "valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id"
 )
 
 var (
@@ -23,7 +24,14 @@ var (
 	// recipeStepInstrumentsTableColumns are the columns for the recipe_step_instruments table.
 	recipeStepInstrumentsTableColumns = []string{
 		"recipe_step_instruments.id",
-		"recipe_step_instruments.instrument_id",
+		"valid_instruments.id",
+		"valid_instruments.name",
+		"valid_instruments.variant",
+		"valid_instruments.description",
+		"valid_instruments.icon_path",
+		"valid_instruments.created_on",
+		"valid_instruments.last_updated_on",
+		"valid_instruments.archived_on",
 		"recipe_step_instruments.recipe_step_product_id",
 		"recipe_step_instruments.name",
 		"recipe_step_instruments.product_of_recipe_step",
@@ -37,6 +45,7 @@ var (
 
 	getRecipeStepInstrumentsJoins = []string{
 		recipeStepsOnRecipeStepInstrumentsJoinClause,
+		recipeStepInstrumentsOnValidInstrumentsJoinClause,
 		recipesOnRecipeStepsJoinClause,
 	}
 )
@@ -48,11 +57,20 @@ func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	x = &types.RecipeStepInstrument{}
+	x = &types.RecipeStepInstrument{
+		Instrument: &types.ValidInstrument{},
+	}
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.InstrumentID,
+		&x.Instrument.ID,
+		&x.Instrument.Name,
+		&x.Instrument.Variant,
+		&x.Instrument.Description,
+		&x.Instrument.IconPath,
+		&x.Instrument.CreatedOn,
+		&x.Instrument.LastUpdatedOn,
+		&x.Instrument.ArchivedOn,
 		&x.RecipeStepProductID,
 		&x.Name,
 		&x.ProductOfRecipeStep,
@@ -151,9 +169,16 @@ func (q *SQLQuerier) RecipeStepInstrumentExists(ctx context.Context, recipeID, r
 	return result, nil
 }
 
-const getRecipeStepInstrumentQuery = `SELECT 
+const getRecipeStepInstrumentQuery = `SELECT
 	recipe_step_instruments.id,
-	recipe_step_instruments.instrument_id,
+	valid_instruments.id,
+	valid_instruments.name,
+	valid_instruments.variant,
+	valid_instruments.description,
+	valid_instruments.icon_path,
+	valid_instruments.created_on,
+	valid_instruments.last_updated_on,
+	valid_instruments.archived_on,
 	recipe_step_instruments.recipe_step_product_id,
 	recipe_step_instruments.name,
 	recipe_step_instruments.product_of_recipe_step,
@@ -163,7 +188,8 @@ const getRecipeStepInstrumentQuery = `SELECT
 	recipe_step_instruments.last_updated_on,
 	recipe_step_instruments.archived_on,
 	recipe_step_instruments.belongs_to_recipe_step
-FROM recipe_step_instruments 
+FROM recipe_step_instruments
+LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
 JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_instruments.archived_on IS NULL
@@ -208,7 +234,7 @@ func (q *SQLQuerier) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 		recipeID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipeStepInstrument", getRecipeStepInstrumentQuery, args)
+	row := q.getOneRow(ctx, q.db, "recipe step instrument", getRecipeStepInstrumentQuery, args)
 
 	recipeStepInstrument, _, _, err := q.scanRecipeStepInstrument(ctx, row, false)
 	if err != nil {
@@ -262,7 +288,7 @@ func (q *SQLQuerier) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipeStepInstruments", query, args)
 	if err != nil {
@@ -343,7 +369,14 @@ func (q *SQLQuerier) GetRecipeStepInstrumentsWithIDs(ctx context.Context, recipe
 
 const getRecipeStepInstrumentsForRecipeQuery = `SELECT
 	recipe_step_instruments.id,
-	recipe_step_instruments.instrument_id,
+	valid_instruments.id,
+	valid_instruments.name,
+	valid_instruments.variant,
+	valid_instruments.description,
+	valid_instruments.icon_path,
+	valid_instruments.created_on,
+	valid_instruments.last_updated_on,
+	valid_instruments.archived_on,
 	recipe_step_instruments.recipe_step_product_id,
 	recipe_step_instruments.name,
 	recipe_step_instruments.product_of_recipe_step,
@@ -354,6 +387,7 @@ const getRecipeStepInstrumentsForRecipeQuery = `SELECT
 	recipe_step_instruments.archived_on,
 	recipe_step_instruments.belongs_to_recipe_step
 FROM recipe_step_instruments
+LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
 JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_instruments.archived_on IS NULL
@@ -425,7 +459,7 @@ func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier dat
 
 	x := &types.RecipeStepInstrument{
 		ID:                  input.ID,
-		InstrumentID:        input.InstrumentID,
+		Instrument:          nil,
 		RecipeStepProductID: input.RecipeStepProductID,
 		Name:                input.Name,
 		ProductOfRecipeStep: input.ProductOfRecipeStep,
@@ -433,6 +467,10 @@ func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier dat
 		PreferenceRank:      input.PreferenceRank,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		CreatedOn:           q.currentTime(),
+	}
+
+	if input.InstrumentID != nil {
+		x.Instrument = &types.ValidInstrument{ID: *input.InstrumentID}
 	}
 
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, x.ID)
@@ -470,8 +508,13 @@ func (q *SQLQuerier) UpdateRecipeStepInstrument(ctx context.Context, updated *ty
 	logger := q.logger.WithValue(keys.RecipeStepInstrumentIDKey, updated.ID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, updated.ID)
 
+	var instrumentID *string
+	if updated.Instrument != nil {
+		instrumentID = &updated.Instrument.ID
+	}
+
 	args := []interface{}{
-		updated.InstrumentID,
+		instrumentID,
 		updated.RecipeStepProductID,
 		updated.Name,
 		updated.ProductOfRecipeStep,

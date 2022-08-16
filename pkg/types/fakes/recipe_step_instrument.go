@@ -11,7 +11,7 @@ import (
 func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 	return &types.RecipeStepInstrument{
 		ID:                  ksuid.New().String(),
-		InstrumentID:        func(x string) *string { return &x }(buildUniqueString()),
+		Instrument:          BuildFakeValidInstrument(),
 		Name:                buildUniqueString(),
 		ProductOfRecipeStep: fake.Bool(),
 		RecipeStepProductID: nil,
@@ -44,7 +44,7 @@ func BuildFakeRecipeStepInstrumentList() *types.RecipeStepInstrumentList {
 func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrumentUpdateRequestInput {
 	recipeStepInstrument := BuildFakeRecipeStepInstrument()
 	return &types.RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID:        recipeStepInstrument.InstrumentID,
+		InstrumentID:        &recipeStepInstrument.Instrument.ID,
 		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
 		Name:                &recipeStepInstrument.Name,
 		ProductOfRecipeStep: &recipeStepInstrument.ProductOfRecipeStep,
@@ -57,7 +57,7 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 // BuildFakeRecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument builds a faked RecipeStepInstrumentUpdateRequestInput from a recipe step instrument.
 func BuildFakeRecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
 	return &types.RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID:        recipeStepInstrument.InstrumentID,
+		InstrumentID:        &recipeStepInstrument.Instrument.ID,
 		Name:                &recipeStepInstrument.Name,
 		ProductOfRecipeStep: &recipeStepInstrument.ProductOfRecipeStep,
 		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
@@ -75,9 +75,14 @@ func BuildFakeRecipeStepInstrumentCreationRequestInput() *types.RecipeStepInstru
 
 // BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument builds a faked RecipeStepInstrumentCreationRequestInput from a recipe step instrument.
 func BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentCreationRequestInput {
+	var instrumentID *string
+	if recipeStepInstrument.Instrument != nil {
+		instrumentID = &recipeStepInstrument.Instrument.ID
+	}
+
 	return &types.RecipeStepInstrumentCreationRequestInput{
 		ID:                  recipeStepInstrument.ID,
-		InstrumentID:        recipeStepInstrument.InstrumentID,
+		InstrumentID:        instrumentID,
 		Name:                recipeStepInstrument.Name,
 		ProductOfRecipeStep: recipeStepInstrument.ProductOfRecipeStep,
 		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
@@ -95,9 +100,14 @@ func BuildFakeRecipeStepInstrumentDatabaseCreationInput() *types.RecipeStepInstr
 
 // BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument builds a faked RecipeStepInstrumentDatabaseCreationInput from a recipe step instrument.
 func BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentDatabaseCreationInput {
+	var instrumentID *string
+	if recipeStepInstrument.Instrument != nil {
+		instrumentID = &recipeStepInstrument.Instrument.ID
+	}
+
 	return &types.RecipeStepInstrumentDatabaseCreationInput{
 		ID:                  recipeStepInstrument.ID,
-		InstrumentID:        recipeStepInstrument.InstrumentID,
+		InstrumentID:        instrumentID,
 		Name:                recipeStepInstrument.Name,
 		ProductOfRecipeStep: recipeStepInstrument.ProductOfRecipeStep,
 		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,

@@ -131,6 +131,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	logger.WithValue("response", x).Info("responding with fetched recipe step instrument")
+
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

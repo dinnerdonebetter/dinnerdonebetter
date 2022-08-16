@@ -100,10 +100,17 @@ func stringPointer(s string) *string {
 func createRecipeForTest(ctx context.Context, client *httpclient.Client) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe, error) {
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
 	exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-	createdValidPreparation, err := client.CreateValidPreparation(ctx, exampleValidPreparationInput)
 
+	createdValidPreparation, err := client.CreateValidPreparation(ctx, exampleValidPreparationInput)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("creating valid preparation: %w", err)
+	}
+
+	exampleValidInstrument := fakes.BuildFakeValidInstrument()
+	exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+	createdValidInstrument, err := client.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("creating valid instrument: %w", err)
 	}
 
 	exampleRecipe := fakes.BuildFakeRecipe()
@@ -121,6 +128,10 @@ func createRecipeForTest(ctx context.Context, client *httpclient.Client) ([]*typ
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
 			exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+		}
+
+		for j := range recipeStep.Instruments {
+			recipeStep.Instruments[j].Instrument = createdValidInstrument
 		}
 	}
 

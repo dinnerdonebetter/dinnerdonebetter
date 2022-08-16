@@ -142,6 +142,7 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Steps, validation.Required),
 	)
 }
 
