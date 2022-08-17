@@ -1104,6 +1104,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 			for j := range step.Instruments {
 				exampleRecipe.Steps[i].Instruments[j].ID = "3"
+				exampleRecipe.Steps[i].Instruments[j].Instrument = &types.ValidInstrument{ID: exampleRecipe.Steps[i].Instruments[j].Instrument.ID}
 				exampleRecipe.Steps[i].Instruments[j].BelongsToRecipeStep = "2"
 			}
 
@@ -2059,7 +2060,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					},
 					Instruments: []*types.RecipeStepInstrument{
 						{
-							InstrumentID:        &bakingSheet.ID,
+							Instrument:          bakingSheet,
 							RecipeStepProductID: nil,
 							Name:                "baking sheet",
 							ProductOfRecipeStep: false,
@@ -2091,7 +2092,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					},
 					Instruments: []*types.RecipeStepInstrument{
 						{
-							InstrumentID:        &bakingSheet.ID,
+							Instrument:          bakingSheet,
 							RecipeStepProductID: nil,
 							Name:                productName,
 							ProductOfRecipeStep: true,
@@ -2150,8 +2151,13 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 			}
 
 			for _, instrument := range step.Instruments {
+				var instrumentID *string
+				if instrument.Instrument != nil {
+					instrumentID = &instrument.Instrument.ID
+				}
+
 				newInstrument := &types.RecipeStepInstrumentDatabaseCreationInput{
-					InstrumentID:        instrument.InstrumentID,
+					InstrumentID:        instrumentID,
 					RecipeStepProductID: instrument.RecipeStepProductID,
 					ID:                  instrument.ID,
 					Name:                instrument.Name,

@@ -28,7 +28,14 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 	for _, x := range recipeStepInstruments {
 		rowValues := []driver.Value{
 			x.ID,
-			x.InstrumentID,
+			x.Instrument.ID,
+			x.Instrument.Name,
+			x.Instrument.Variant,
+			x.Instrument.Description,
+			x.Instrument.IconPath,
+			x.Instrument.CreatedOn,
+			x.Instrument.LastUpdatedOn,
+			x.Instrument.ArchivedOn,
 			x.RecipeStepProductID,
 			x.Name,
 			x.ProductOfRecipeStep,
@@ -378,7 +385,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -432,7 +439,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -455,7 +462,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -478,7 +485,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -613,6 +620,7 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 
 		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 		exampleRecipeStepInstrument.ID = "1"
+		exampleRecipeStepInstrument.Instrument = &types.ValidInstrument{ID: exampleRecipeStepInstrument.ID}
 		exampleInput := fakes.BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(exampleRecipeStepInstrument)
 
 		ctx := context.Background()
@@ -705,7 +713,7 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipeStepInstrument.InstrumentID,
+			exampleRecipeStepInstrument.Instrument.ID,
 			exampleRecipeStepInstrument.RecipeStepProductID,
 			exampleRecipeStepInstrument.Name,
 			exampleRecipeStepInstrument.ProductOfRecipeStep,
@@ -742,7 +750,7 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipeStepInstrument.InstrumentID,
+			exampleRecipeStepInstrument.Instrument.ID,
 			exampleRecipeStepInstrument.RecipeStepProductID,
 			exampleRecipeStepInstrument.Name,
 			exampleRecipeStepInstrument.ProductOfRecipeStep,

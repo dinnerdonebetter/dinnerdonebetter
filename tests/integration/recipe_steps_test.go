@@ -95,6 +95,14 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
+			t.Log("creating valid instrument")
+			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			require.NoError(t, err)
+			t.Logf("valid instrument %q created", createdValidInstrument.ID)
+			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+
 			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
@@ -119,6 +127,10 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 				for j := range exampleRecipeStep.Products {
 					exampleRecipeStep.Products[j].MeasurementUnit = *createdValidMeasurementUnit
+				}
+
+				for j := range exampleRecipeStep.Instruments {
+					exampleRecipeStep.Instruments[j].Instrument = createdValidInstrument
 				}
 
 				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(exampleRecipeStep)

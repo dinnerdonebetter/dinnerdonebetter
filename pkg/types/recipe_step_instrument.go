@@ -31,17 +31,17 @@ type (
 	// RecipeStepInstrument represents a recipe step instrument.
 	RecipeStepInstrument struct {
 		_                   struct{}
-		ArchivedOn          *uint64 `json:"archivedOn"`
-		InstrumentID        *string `json:"instrumentID"`
-		LastUpdatedOn       *uint64 `json:"lastUpdatedOn"`
-		RecipeStepProductID *string `json:"recipeStepProductID"`
-		Notes               string  `json:"notes"`
-		Name                string  `json:"name"`
-		ID                  string  `json:"id"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
-		CreatedOn           uint64  `json:"createdOn"`
-		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
-		PreferenceRank      uint8   `json:"preferenceRank"`
+		ArchivedOn          *uint64          `json:"archivedOn"`
+		Instrument          *ValidInstrument `json:"instrument"`
+		LastUpdatedOn       *uint64          `json:"lastUpdatedOn"`
+		RecipeStepProductID *string          `json:"recipeStepProductID"`
+		Notes               string           `json:"notes"`
+		Name                string           `json:"name"`
+		ID                  string           `json:"id"`
+		BelongsToRecipeStep string           `json:"belongsToRecipeStep"`
+		CreatedOn           uint64           `json:"createdOn"`
+		ProductOfRecipeStep bool             `json:"productOfRecipeStep"`
+		PreferenceRank      uint8            `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentList represents a list of recipe step instruments.
@@ -113,8 +113,8 @@ type (
 
 // Update merges an RecipeStepInstrumentUpdateRequestInput with a recipe step instrument.
 func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestInput) {
-	if input.InstrumentID != nil && (x.InstrumentID == nil || (*input.InstrumentID != "" && *input.InstrumentID != *x.InstrumentID)) {
-		x.InstrumentID = input.InstrumentID
+	if input.InstrumentID != nil && (x.Instrument == nil || (*input.InstrumentID != "" && *input.InstrumentID != x.Instrument.ID)) {
+		x.Instrument.ID = *input.InstrumentID
 	}
 
 	if input.RecipeStepProductID != nil && *input.RecipeStepProductID != *x.RecipeStepProductID {
@@ -169,7 +169,7 @@ func (x *RecipeStepInstrumentDatabaseCreationInput) ValidateWithContext(ctx cont
 // RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument creates a DatabaseCreationInput from a CreationInput.
 func RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(input *RecipeStepInstrument) *RecipeStepInstrumentUpdateRequestInput {
 	x := &RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID:        input.InstrumentID,
+		InstrumentID:        &input.Instrument.ID,
 		Notes:               &input.Notes,
 		RecipeStepProductID: input.RecipeStepProductID,
 		Name:                &input.Name,

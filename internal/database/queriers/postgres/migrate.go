@@ -185,6 +185,11 @@ var (
 			Description: "add recipe step product id to recipe step instruments",
 			Script:      fetchMigration("00034_add_recipe_step_product_id_to_recipe_step_instruments"),
 		},
+		{
+			Version:     35,
+			Description: "make instrument id a foreign key for recipe step instruments",
+			Script:      fetchMigration("00035_make_instrument_id_a_foreign_key_for_recipe_step_instruments"),
+		},
 	}
 )
 

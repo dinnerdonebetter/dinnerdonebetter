@@ -32,6 +32,8 @@ DELETE FROM "valid_preparation_instruments" WHERE id IS NOT NULL;
 DELETE FROM "valid_ingredient_measurement_units" WHERE id IS NOT NULL;
 DELETE FROM "recipes" WHERE id IS NOT NULL;
 DELETE FROM "recipe_steps" WHERE id IS NOT NULL;
+DELETE FROM "recipe_step_products" WHERE id IS NOT NULL;
+DELETE FROM "recipe_step_instruments" WHERE id IS NOT NULL;
 DELETE FROM "recipe_step_ingredients" WHERE id IS NOT NULL;
 DELETE FROM "meals" WHERE id IS NOT NULL;
 DELETE FROM "meal_recipes" WHERE id IS NOT NULL;
