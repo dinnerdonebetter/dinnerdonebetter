@@ -57,20 +57,19 @@ func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	x = &types.RecipeStepInstrument{
-		Instrument: &types.ValidInstrument{},
-	}
+	x = &types.RecipeStepInstrument{}
+	instrument := types.NullableValidInstrument{}
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.Instrument.ID,
-		&x.Instrument.Name,
-		&x.Instrument.Variant,
-		&x.Instrument.Description,
-		&x.Instrument.IconPath,
-		&x.Instrument.CreatedOn,
-		&x.Instrument.LastUpdatedOn,
-		&x.Instrument.ArchivedOn,
+		&instrument.ID,
+		&instrument.Name,
+		&instrument.Variant,
+		&instrument.Description,
+		&instrument.IconPath,
+		&instrument.CreatedOn,
+		&instrument.LastUpdatedOn,
+		&instrument.ArchivedOn,
 		&x.RecipeStepProductID,
 		&x.Name,
 		&x.ProductOfRecipeStep,
@@ -88,6 +87,10 @@ func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+	}
+
+	if instrument.ID != nil {
+		x.Instrument = instrument.ToValidInstrument()
 	}
 
 	return x, filteredCount, totalCount, nil

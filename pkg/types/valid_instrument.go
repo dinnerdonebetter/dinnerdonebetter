@@ -41,6 +41,19 @@ type (
 		CreatedOn     uint64  `json:"createdOn"`
 	}
 
+	// NullableValidInstrument represents a fully nullable valid instrument.
+	NullableValidInstrument struct {
+		_             struct{}
+		LastUpdatedOn *uint64
+		ArchivedOn    *uint64
+		Variant       *string
+		Description   *string
+		IconPath      *string
+		ID            *string
+		Name          *string
+		CreatedOn     *uint64
+	}
+
 	// ValidInstrumentList represents a list of valid instruments.
 	ValidInstrumentList struct {
 		_                struct{}
@@ -181,4 +194,18 @@ func (x *ValidInstrumentUpdateRequestInput) ValidateWithContext(ctx context.Cont
 		x,
 		validation.Field(&x.Name, validation.Required),
 	)
+}
+
+// ToValidInstrument produces a ValidInstrument from a NullableValidInstrument.
+func (x *NullableValidInstrument) ToValidInstrument() *ValidInstrument {
+	return &ValidInstrument{
+		LastUpdatedOn: x.LastUpdatedOn,
+		ArchivedOn:    x.ArchivedOn,
+		Variant:       *x.Variant,
+		Description:   *x.Description,
+		IconPath:      *x.IconPath,
+		ID:            *x.ID,
+		Name:          *x.Name,
+		CreatedOn:     *x.CreatedOn,
+	}
 }
