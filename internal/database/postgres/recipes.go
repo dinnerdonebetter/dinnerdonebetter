@@ -209,7 +209,7 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 
 	// because a recipe is allowed to have no steps, currently, we have to
 	// create temporary nil values and assign them afterwards if they're not nil
-	// it sucks but we are prototyping
+	// it sucks, but we are prototyping
 	var (
 		recipeStepID                            *string
 		recipeStepIndex                         *uint32

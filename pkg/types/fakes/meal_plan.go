@@ -60,7 +60,6 @@ func BuildFakeMealPlanUpdateRequestInput() *types.MealPlanUpdateRequestInput {
 	mealPlan := BuildFakeMealPlan()
 	return &types.MealPlanUpdateRequestInput{
 		Notes:              &mealPlan.Notes,
-		Status:             &mealPlan.Status,
 		VotingDeadline:     &mealPlan.VotingDeadline,
 		StartsAt:           &mealPlan.StartsAt,
 		EndsAt:             &mealPlan.EndsAt,
@@ -72,7 +71,6 @@ func BuildFakeMealPlanUpdateRequestInput() *types.MealPlanUpdateRequestInput {
 func BuildFakeMealPlanUpdateRequestInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanUpdateRequestInput {
 	return &types.MealPlanUpdateRequestInput{
 		Notes:              &mealPlan.Notes,
-		Status:             &mealPlan.Status,
 		VotingDeadline:     &mealPlan.VotingDeadline,
 		StartsAt:           &mealPlan.StartsAt,
 		EndsAt:             &mealPlan.EndsAt,

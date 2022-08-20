@@ -91,12 +91,11 @@ type (
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.
 	MealPlanUpdateRequestInput struct {
 		_                  struct{}
-		Status             *MealPlanStatus `json:"status"`
-		BelongsToHousehold *string         `json:"-"`
-		Notes              *string         `json:"notes"`
-		VotingDeadline     *uint64         `json:"votingDeadline"`
-		StartsAt           *uint64         `json:"startsAt"`
-		EndsAt             *uint64         `json:"endsAt"`
+		BelongsToHousehold *string `json:"-"`
+		Notes              *string `json:"notes"`
+		VotingDeadline     *uint64 `json:"votingDeadline"`
+		StartsAt           *uint64 `json:"startsAt"`
+		EndsAt             *uint64 `json:"endsAt"`
 	}
 
 	// MealPlanDataManager describes a structure capable of storing meal plans permanently.
@@ -127,10 +126,6 @@ type (
 func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
-	}
-
-	if input.Status != nil && *input.Status != x.Status {
-		x.Status = *input.Status
 	}
 
 	if input.StartsAt != nil && *input.StartsAt != x.StartsAt {
@@ -203,7 +198,6 @@ func (x *MealPlanDatabaseCreationInput) ValidateWithContext(ctx context.Context)
 // MealPlanUpdateRequestInputFromMealPlan creates a DatabaseCreationInput from a CreationInput.
 func MealPlanUpdateRequestInputFromMealPlan(input *MealPlan) *MealPlanUpdateRequestInput {
 	x := &MealPlanUpdateRequestInput{
-		Status:             &input.Status,
 		BelongsToHousehold: &input.BelongsToHousehold,
 		Notes:              &input.Notes,
 		VotingDeadline:     &input.VotingDeadline,
@@ -240,7 +234,6 @@ func (x *MealPlanUpdateRequestInput) ValidateWithContext(ctx context.Context) er
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Status, validation.Required),
 		validation.Field(&x.VotingDeadline, validation.Required),
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),

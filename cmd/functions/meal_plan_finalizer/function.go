@@ -7,7 +7,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
+	"github.com/prixfixeco/api_server/internal/database/postgres"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"

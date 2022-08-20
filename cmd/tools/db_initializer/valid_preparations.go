@@ -27,67 +27,67 @@ var validPreparationCollection = struct {
 	_ *types.ValidPreparationDatabaseCreationInput
 }{
 	Dice: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_dice",
+		ID:   padID("vprep_dice"),
 		Name: "Dice",
 	},
 	Slice: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_slice",
+		ID:   padID("vprep_slice"),
 		Name: "Slice",
 	},
 	Plate: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_plate",
+		ID:   padID("vprep_plate"),
 		Name: "Plate",
 	},
 	Sautee: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_sautee",
+		ID:   padID("vprep_sautee"),
 		Name: "Sautee",
 	},
 	Marinate: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_marinate",
+		ID:   padID("vprep_marinate"),
 		Name: "Marinate",
 	},
 	Boil: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_boil",
+		ID:   padID("vprep_boil"),
 		Name: "Boil",
 	},
 	Grill: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_grill",
+		ID:   padID("vprep_grill"),
 		Name: "Grill",
 	},
 	Whisk: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_whisk",
+		ID:   padID("vprep_whisk"),
 		Name: "Whisk",
 	},
 	Mix: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_mix",
+		ID:   padID("vprep_mix"),
 		Name: "Mix",
 	},
 	Mince: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_mince",
+		ID:   padID("vprep_mince"),
 		Name: "Mince",
 	},
 	Knead: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_knead",
+		ID:   padID("vprep_knead"),
 		Name: "Knead",
 	},
 	Divide: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_divide",
+		ID:   padID("vprep_divide"),
 		Name: "Divide",
 	},
 	Flatten: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_flatten",
+		ID:   padID("vprep_flatten"),
 		Name: "Flatten",
 	},
 	Rest: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_rest",
+		ID:   padID("vprep_rest"),
 		Name: "Rest",
 	},
 	Griddle: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_griddle",
+		ID:   padID("vprep_griddle"),
 		Name: "Griddle",
 	},
 	Grind: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_grind",
+		ID:   padID("vprep_grind"),
 		Name: "Grind",
 	},
 }
