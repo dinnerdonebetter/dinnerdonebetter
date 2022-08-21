@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	AddUserToHouseholdDuringCreation(ctx context.Context, arg *AddUserToHouseholdDuringCreationParams) error
+	AddUserToHouseholdQuery(ctx context.Context, arg *AddUserToHouseholdQueryParams) error
 	ArchiveAPIClient(ctx context.Context, arg *ArchiveAPIClientParams) error
 	ArchiveHousehold(ctx context.Context, arg *ArchiveHouseholdParams) error
 	ArchiveMeal(ctx context.Context, arg *ArchiveMealParams) error
@@ -63,12 +64,14 @@ type Querier interface {
 	GetAllHouseholdsCount(ctx context.Context) (int64, error)
 	GetAllUsersCount(ctx context.Context) (int64, error)
 	GetAllWebhooksCount(ctx context.Context) (int64, error)
+	GetDefaultHouseholdIDForUserQuery(ctx context.Context, arg *GetDefaultHouseholdIDForUserQueryParams) (string, error)
 	GetExpiredAndUnresolvedMealPlanIDs(ctx context.Context) ([]*MealPlans, error)
 	GetHousehold(ctx context.Context, id string) ([]*GetHouseholdRow, error)
 	GetHouseholdByID(ctx context.Context, id string) ([]*GetHouseholdByIDRow, error)
 	GetHouseholdInvitationByEmailAndToken(ctx context.Context, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error)
 	GetHouseholdInvitationByHouseholdAndID(ctx context.Context, arg *GetHouseholdInvitationByHouseholdAndIDParams) ([]*GetHouseholdInvitationByHouseholdAndIDRow, error)
 	GetHouseholdInvitationByTokenAndID(ctx context.Context, arg *GetHouseholdInvitationByTokenAndIDParams) (*GetHouseholdInvitationByTokenAndIDRow, error)
+	GetHouseholdMembershipsForUserQuery(ctx context.Context, belongsToUser string) ([]*GetHouseholdMembershipsForUserQueryRow, error)
 	GetMealByID(ctx context.Context, id string) (*GetMealByIDRow, error)
 	GetMealPlan(ctx context.Context, arg *GetMealPlanParams) ([]*GetMealPlanRow, error)
 	GetMealPlanOptionQuery(ctx context.Context, arg *GetMealPlanOptionQueryParams) (*GetMealPlanOptionQueryRow, error)
@@ -114,6 +117,7 @@ type Querier interface {
 	GetValidPreparationInstrument(ctx context.Context, id string) (*GetValidPreparationInstrumentRow, error)
 	GetWebhook(ctx context.Context, arg *GetWebhookParams) (*Webhooks, error)
 	HouseholdInvitationExists(ctx context.Context, id string) (bool, error)
+	MarkHouseholdAsUserDefaultQuery(ctx context.Context, arg *MarkHouseholdAsUserDefaultQueryParams) error
 	MarkUserTwoFactorSecretAsVerified(ctx context.Context, arg *MarkUserTwoFactorSecretAsVerifiedParams) error
 	MealExists(ctx context.Context, id string) (bool, error)
 	MealPlanExists(ctx context.Context, id string) (bool, error)
@@ -121,6 +125,7 @@ type Querier interface {
 	MealPlanOptionExists(ctx context.Context, arg *MealPlanOptionExistsParams) (bool, error)
 	MealPlanOptionVoteCreation(ctx context.Context, arg *MealPlanOptionVoteCreationParams) error
 	MealPlanOptionVoteExists(ctx context.Context, arg *MealPlanOptionVoteExistsParams) (bool, error)
+	ModifyUserPermissionsQuery(ctx context.Context, arg *ModifyUserPermissionsQueryParams) error
 	RecipeExists(ctx context.Context, id string) (bool, error)
 	RecipeStepExists(ctx context.Context, arg *RecipeStepExistsParams) (bool, error)
 	RecipeStepIngredientExists(ctx context.Context, arg *RecipeStepIngredientExistsParams) (bool, error)
@@ -128,6 +133,7 @@ type Querier interface {
 	RecipeStepProductExists(ctx context.Context, arg *RecipeStepProductExistsParams) (bool, error)
 	RecipeStepProductsForRecipeQuery(ctx context.Context, arg *RecipeStepProductsForRecipeQueryParams) ([]*RecipeStepProductsForRecipeQueryRow, error)
 	RedeemPasswordResetToken(ctx context.Context, id string) error
+	RemoveUserFromHouseholdQuery(ctx context.Context, arg *RemoveUserFromHouseholdQueryParams) error
 	SearchForUserByUsername(ctx context.Context, username string) ([]*SearchForUserByUsernameRow, error)
 	SearchForValidIngredients(ctx context.Context, name string) ([]*SearchForValidIngredientsRow, error)
 	SearchForValidInstruments(ctx context.Context, name string) ([]*ValidInstruments, error)
@@ -136,6 +142,8 @@ type Querier interface {
 	SetUserAccountStatus(ctx context.Context, arg *SetUserAccountStatusParams) error
 	TotalRecipeStepIngredientCount(ctx context.Context) (int64, error)
 	TotalRecipeStepProductCount(ctx context.Context) (int64, error)
+	TransferHouseholdMembershipQuery(ctx context.Context, arg *TransferHouseholdMembershipQueryParams) error
+	TransferHouseholdOwnershipQuery(ctx context.Context, arg *TransferHouseholdOwnershipQueryParams) error
 	UpdateHousehold(ctx context.Context, arg *UpdateHouseholdParams) error
 	UpdateMealPlan(ctx context.Context, arg *UpdateMealPlanParams) error
 	UpdateMealPlanOption(ctx context.Context, arg *UpdateMealPlanOptionParams) error
@@ -156,6 +164,7 @@ type Querier interface {
 	UpdateValidPreparation(ctx context.Context, arg *UpdateValidPreparationParams) error
 	UpdateValidPreparationInstrument(ctx context.Context, arg *UpdateValidPreparationInstrumentParams) error
 	UserHasStatus(ctx context.Context, arg *UserHasStatusParams) (bool, error)
+	UserIsMemberOfHouseholdQuery(ctx context.Context, arg *UserIsMemberOfHouseholdQueryParams) (bool, error)
 	ValidIngredientExists(ctx context.Context, id string) (bool, error)
 	ValidIngredientMeasurementUnitExists(ctx context.Context, id string) (bool, error)
 	ValidIngredientPreparationExists(ctx context.Context, id string) (bool, error)
@@ -165,15 +174,6 @@ type Querier interface {
 	ValidPreparationInstrumentExists(ctx context.Context, id string) (bool, error)
 	ValidPreparationsSearch(ctx context.Context, name string) ([]*ValidPreparations, error)
 	WebhookExists(ctx context.Context, arg *WebhookExistsParams) (bool, error)
-	addUserToHouseholdQuery(ctx context.Context, arg *addUserToHouseholdQueryParams) error
-	getDefaultHouseholdIDForUserQuery(ctx context.Context, arg *getDefaultHouseholdIDForUserQueryParams) (string, error)
-	getHouseholdMembershipsForUserQuery(ctx context.Context, belongsToUser string) ([]*getHouseholdMembershipsForUserQueryRow, error)
-	markHouseholdAsUserDefaultQuery(ctx context.Context, arg *markHouseholdAsUserDefaultQueryParams) error
-	modifyUserPermissionsQuery(ctx context.Context, arg *modifyUserPermissionsQueryParams) error
-	removeUserFromHouseholdQuery(ctx context.Context, arg *removeUserFromHouseholdQueryParams) error
-	transferHouseholdMembershipQuery(ctx context.Context, arg *transferHouseholdMembershipQueryParams) error
-	transferHouseholdOwnershipQuery(ctx context.Context, arg *transferHouseholdOwnershipQueryParams) error
-	userIsMemberOfHouseholdQuery(ctx context.Context, arg *userIsMemberOfHouseholdQueryParams) (bool, error)
 }
 
 var _ Querier = (*Queries)(nil)

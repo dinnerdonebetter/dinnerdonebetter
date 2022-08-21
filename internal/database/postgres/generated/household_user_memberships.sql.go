@@ -10,19 +10,19 @@ import (
 	"database/sql"
 )
 
-const AddUserToHouseholdQuery = `-- name: addUserToHouseholdQuery :exec
+const AddUserToHouseholdQuery = `-- name: AddUserToHouseholdQuery :exec
 INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,household_roles)
 	VALUES ($1,$2,$3,$4)
 `
 
-type addUserToHouseholdQueryParams struct {
+type AddUserToHouseholdQueryParams struct {
 	ID                 string
 	BelongsToUser      string
 	BelongsToHousehold string
 	HouseholdRoles     string
 }
 
-func (q *Queries) addUserToHouseholdQuery(ctx context.Context, arg *addUserToHouseholdQueryParams) error {
+func (q *Queries) AddUserToHouseholdQuery(ctx context.Context, arg *AddUserToHouseholdQueryParams) error {
 	_, err := q.db.ExecContext(ctx, AddUserToHouseholdQuery,
 		arg.ID,
 		arg.BelongsToUser,
@@ -32,7 +32,7 @@ func (q *Queries) addUserToHouseholdQuery(ctx context.Context, arg *addUserToHou
 	return err
 }
 
-const GetDefaultHouseholdIDForUserQuery = `-- name: getDefaultHouseholdIDForUserQuery :one
+const GetDefaultHouseholdIDForUserQuery = `-- name: GetDefaultHouseholdIDForUserQuery :one
 SELECT households.id
     FROM households
     JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
@@ -40,19 +40,19 @@ SELECT households.id
     AND household_user_memberships.default_household = $2
 `
 
-type getDefaultHouseholdIDForUserQueryParams struct {
+type GetDefaultHouseholdIDForUserQueryParams struct {
 	BelongsToUser    string
 	DefaultHousehold bool
 }
 
-func (q *Queries) getDefaultHouseholdIDForUserQuery(ctx context.Context, arg *getDefaultHouseholdIDForUserQueryParams) (string, error) {
+func (q *Queries) GetDefaultHouseholdIDForUserQuery(ctx context.Context, arg *GetDefaultHouseholdIDForUserQueryParams) (string, error) {
 	row := q.db.QueryRowContext(ctx, GetDefaultHouseholdIDForUserQuery, arg.BelongsToUser, arg.DefaultHousehold)
 	var id string
 	err := row.Scan(&id)
 	return id, err
 }
 
-const GetHouseholdMembershipsForUserQuery = `-- name: getHouseholdMembershipsForUserQuery :many
+const GetHouseholdMembershipsForUserQuery = `-- name: GetHouseholdMembershipsForUserQuery :many
 SELECT
     household_user_memberships.id,
     household_user_memberships.belongs_to_user,
@@ -68,7 +68,7 @@ WHERE household_user_memberships.archived_on IS NULL
 AND household_user_memberships.belongs_to_user = $1
 `
 
-type getHouseholdMembershipsForUserQueryRow struct {
+type GetHouseholdMembershipsForUserQueryRow struct {
 	ID                 string
 	BelongsToUser      string
 	BelongsToHousehold string
@@ -79,15 +79,15 @@ type getHouseholdMembershipsForUserQueryRow struct {
 	ArchivedOn         sql.NullInt64
 }
 
-func (q *Queries) getHouseholdMembershipsForUserQuery(ctx context.Context, belongsToUser string) ([]*getHouseholdMembershipsForUserQueryRow, error) {
+func (q *Queries) GetHouseholdMembershipsForUserQuery(ctx context.Context, belongsToUser string) ([]*GetHouseholdMembershipsForUserQueryRow, error) {
 	rows, err := q.db.QueryContext(ctx, GetHouseholdMembershipsForUserQuery, belongsToUser)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []*getHouseholdMembershipsForUserQueryRow
+	var items []*GetHouseholdMembershipsForUserQueryRow
 	for rows.Next() {
-		var i getHouseholdMembershipsForUserQueryRow
+		var i GetHouseholdMembershipsForUserQueryRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.BelongsToUser,
@@ -111,40 +111,40 @@ func (q *Queries) getHouseholdMembershipsForUserQuery(ctx context.Context, belon
 	return items, nil
 }
 
-const MarkHouseholdAsUserDefaultQuery = `-- name: markHouseholdAsUserDefaultQuery :exec
+const MarkHouseholdAsUserDefaultQuery = `-- name: MarkHouseholdAsUserDefaultQuery :exec
 UPDATE household_user_memberships
 	SET default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
 	WHERE archived_on IS NULL
 	AND belongs_to_user = $3
 `
 
-type markHouseholdAsUserDefaultQueryParams struct {
+type MarkHouseholdAsUserDefaultQueryParams struct {
 	BelongsToUser      string
 	BelongsToHousehold string
 	BelongsToUser_2    string
 }
 
-func (q *Queries) markHouseholdAsUserDefaultQuery(ctx context.Context, arg *markHouseholdAsUserDefaultQueryParams) error {
+func (q *Queries) MarkHouseholdAsUserDefaultQuery(ctx context.Context, arg *MarkHouseholdAsUserDefaultQueryParams) error {
 	_, err := q.db.ExecContext(ctx, MarkHouseholdAsUserDefaultQuery, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
 	return err
 }
 
-const ModifyUserPermissionsQuery = `-- name: modifyUserPermissionsQuery :exec
+const ModifyUserPermissionsQuery = `-- name: ModifyUserPermissionsQuery :exec
 UPDATE household_user_memberships SET household_roles = $1 WHERE belongs_to_household = $2 AND belongs_to_user = $3
 `
 
-type modifyUserPermissionsQueryParams struct {
+type ModifyUserPermissionsQueryParams struct {
 	HouseholdRoles     string
 	BelongsToHousehold string
 	BelongsToUser      string
 }
 
-func (q *Queries) modifyUserPermissionsQuery(ctx context.Context, arg *modifyUserPermissionsQueryParams) error {
+func (q *Queries) ModifyUserPermissionsQuery(ctx context.Context, arg *ModifyUserPermissionsQueryParams) error {
 	_, err := q.db.ExecContext(ctx, ModifyUserPermissionsQuery, arg.HouseholdRoles, arg.BelongsToHousehold, arg.BelongsToUser)
 	return err
 }
 
-const RemoveUserFromHouseholdQuery = `-- name: removeUserFromHouseholdQuery :exec
+const RemoveUserFromHouseholdQuery = `-- name: RemoveUserFromHouseholdQuery :exec
 UPDATE household_user_memberships
 	SET archived_on = extract(epoch from NOW()),
 		default_household = 'false'
@@ -153,47 +153,47 @@ UPDATE household_user_memberships
 	AND household_user_memberships.belongs_to_user = $2
 `
 
-type removeUserFromHouseholdQueryParams struct {
+type RemoveUserFromHouseholdQueryParams struct {
 	BelongsToHousehold string
 	BelongsToUser      string
 }
 
-func (q *Queries) removeUserFromHouseholdQuery(ctx context.Context, arg *removeUserFromHouseholdQueryParams) error {
+func (q *Queries) RemoveUserFromHouseholdQuery(ctx context.Context, arg *RemoveUserFromHouseholdQueryParams) error {
 	_, err := q.db.ExecContext(ctx, RemoveUserFromHouseholdQuery, arg.BelongsToHousehold, arg.BelongsToUser)
 	return err
 }
 
-const TransferHouseholdMembershipQuery = `-- name: transferHouseholdMembershipQuery :exec
+const TransferHouseholdMembershipQuery = `-- name: TransferHouseholdMembershipQuery :exec
 UPDATE household_user_memberships SET belongs_to_user = $1 WHERE archived_on IS NULL AND belongs_to_household = $2 AND belongs_to_user = $3
 `
 
-type transferHouseholdMembershipQueryParams struct {
+type TransferHouseholdMembershipQueryParams struct {
 	BelongsToUser      string
 	BelongsToHousehold string
 	BelongsToUser_2    string
 }
 
-func (q *Queries) transferHouseholdMembershipQuery(ctx context.Context, arg *transferHouseholdMembershipQueryParams) error {
+func (q *Queries) TransferHouseholdMembershipQuery(ctx context.Context, arg *TransferHouseholdMembershipQueryParams) error {
 	_, err := q.db.ExecContext(ctx, TransferHouseholdMembershipQuery, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
 	return err
 }
 
-const TransferHouseholdOwnershipQuery = `-- name: transferHouseholdOwnershipQuery :exec
+const TransferHouseholdOwnershipQuery = `-- name: TransferHouseholdOwnershipQuery :exec
 UPDATE households SET belongs_to_user = $1 WHERE archived_on IS NULL AND belongs_to_user = $2 AND id = $3
 `
 
-type transferHouseholdOwnershipQueryParams struct {
+type TransferHouseholdOwnershipQueryParams struct {
 	BelongsToUser   string
 	BelongsToUser_2 string
 	ID              string
 }
 
-func (q *Queries) transferHouseholdOwnershipQuery(ctx context.Context, arg *transferHouseholdOwnershipQueryParams) error {
+func (q *Queries) TransferHouseholdOwnershipQuery(ctx context.Context, arg *TransferHouseholdOwnershipQueryParams) error {
 	_, err := q.db.ExecContext(ctx, TransferHouseholdOwnershipQuery, arg.BelongsToUser, arg.BelongsToUser_2, arg.ID)
 	return err
 }
 
-const UserIsMemberOfHouseholdQuery = `-- name: userIsMemberOfHouseholdQuery :one
+const UserIsMemberOfHouseholdQuery = `-- name: UserIsMemberOfHouseholdQuery :one
 SELECT EXISTS (
     SELECT household_user_memberships.id
     FROM household_user_memberships
@@ -203,12 +203,12 @@ SELECT EXISTS (
 )
 `
 
-type userIsMemberOfHouseholdQueryParams struct {
+type UserIsMemberOfHouseholdQueryParams struct {
 	BelongsToHousehold string
 	BelongsToUser      string
 }
 
-func (q *Queries) userIsMemberOfHouseholdQuery(ctx context.Context, arg *userIsMemberOfHouseholdQueryParams) (bool, error) {
+func (q *Queries) UserIsMemberOfHouseholdQuery(ctx context.Context, arg *UserIsMemberOfHouseholdQueryParams) (bool, error) {
 	row := q.db.QueryRowContext(ctx, UserIsMemberOfHouseholdQuery, arg.BelongsToHousehold, arg.BelongsToUser)
 	var exists bool
 	err := row.Scan(&exists)
