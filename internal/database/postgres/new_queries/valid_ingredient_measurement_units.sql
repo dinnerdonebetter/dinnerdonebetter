@@ -5,6 +5,8 @@ SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredie
 SELECT
     valid_ingredient_measurement_units.id,
     valid_ingredient_measurement_units.notes,
+    valid_ingredient_measurement_units.minimum_allowable_quantity,
+    valid_ingredient_measurement_units.maximum_allowable_quantity,
     valid_measurement_units.id,
     valid_measurement_units.name,
     valid_measurement_units.description,
@@ -47,10 +49,10 @@ WHERE valid_ingredient_measurement_units.archived_on IS NULL
 SELECT COUNT(valid_ingredient_measurement_units.id) FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_on IS NULL;
 
 -- name: CreateValidIngredientMeasurementUnit :exec
-INSERT INTO valid_ingredient_measurement_units (id,notes,valid_measurement_unit_id,valid_ingredient_id) VALUES ($1,$2,$3,$4);
+INSERT INTO valid_ingredient_measurement_units (id,notes,minimum_allowable_quantity,maximum_allowable_quantity,valid_measurement_unit_id,valid_ingredient_id) VALUES ($1,$2,$3,$4,$5,$6);
 
 -- name: UpdateValidIngredientMeasurementUnit :exec
-UPDATE valid_ingredient_measurement_units SET notes = $1, valid_measurement_unit_id = $2, valid_ingredient_id = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4;
+UPDATE valid_ingredient_measurement_units SET notes = $1, minimum_allowable_quantity = $2, maximum_allowable_quantity = $3, valid_measurement_unit_id = $4, valid_ingredient_id = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $6;
 
 -- name: ArchiveValidIngredientMeasurementUnit :exec
 UPDATE valid_ingredient_measurement_units SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1;

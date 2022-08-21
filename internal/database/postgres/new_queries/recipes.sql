@@ -7,6 +7,7 @@ SELECT
     recipes.name,
     recipes.source,
     recipes.description,
+    recipes.yields_portions,
     recipes.inspired_by_recipe_id,
     recipes.created_on,
     recipes.last_updated_on,
@@ -44,6 +45,7 @@ SELECT
     recipes.name,
     recipes.source,
     recipes.description,
+    recipes.yields_portions,
     recipes.inspired_by_recipe_id,
     recipes.created_on,
     recipes.last_updated_on,
@@ -80,10 +82,19 @@ ORDER BY recipe_steps.index;
 SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL;
 
 -- name: CreateRecipe :exec
-INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,created_by_user) VALUES ($1,$2,$3,$4,$5,$6);
+INSERT INTO recipes (id,name,source,description,yields_portions,inspired_by_recipe_id,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7);
 
 -- name: UpdateRecipe :exec
-UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND created_by_user = $5 AND id = $6;
+UPDATE recipes SET
+   name = $1,
+   source = $2,
+   description = $3,
+   yields_portions = $4,
+   inspired_by_recipe_id = $5,
+   last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+  AND created_by_user = $6
+  AND id = $7;
 
 -- name: ArchiveRecipe :exec
 UPDATE recipes SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND created_by_user = $1 AND id = $2;

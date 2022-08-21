@@ -16,6 +16,7 @@ SELECT
     recipe_steps.maximum_estimated_time_in_seconds,
     recipe_steps.minimum_temperature_in_celsius,
     recipe_steps.maximum_temperature_in_celsius,
+    recipe_steps.explicit_instructions,
     recipe_steps.notes,
     recipe_steps.optional,
     recipe_steps.created_on,
@@ -35,23 +36,23 @@ WHERE recipe_steps.archived_on IS NULL
 SELECT COUNT(recipe_steps.id) FROM recipe_steps WHERE recipe_steps.archived_on IS NULL;
 
 -- name: CreateRecipeStep :exec
-INSERT INTO recipe_steps (id,index,preparation_id,minimum_estimated_time_in_seconds,maximum_estimated_time_in_seconds,minimum_temperature_in_celsius,maximum_temperature_in_celsius,notes,optional,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
+INSERT INTO recipe_steps (id,index,preparation_id,minimum_estimated_time_in_seconds,maximum_estimated_time_in_seconds,minimum_temperature_in_celsius,maximum_temperature_in_celsius,notes,explicit_instructions,optional,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);
 
 -- name: UpdateRecipeStep :exec
-UPDATE recipe_steps
-SET
+UPDATE recipe_steps SET
     index = $1,
     preparation_id = $2,
     minimum_estimated_time_in_seconds = $3,
     maximum_estimated_time_in_seconds = $4,
     minimum_temperature_in_celsius = $5,
     maximum_temperature_in_celsius = $6,
-    notes = $7,
-    optional = $8,
+    explicit_instructions = $7,
+    notes = $8,
+    optional = $9,
     last_updated_on = extract(epoch FROM NOW())
 WHERE archived_on IS NULL
-  AND belongs_to_recipe = $9
-  AND id = $10;
+  AND belongs_to_recipe = $10
+  AND id = $11;
 
 -- name: ArchiveRecipeStep :exec
 UPDATE recipe_steps SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $1 AND id = $2;
