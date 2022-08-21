@@ -447,7 +447,11 @@ func (q *SQLQuerier) GetValidIngredientPreparationsForIngredient(ctx context.Con
 	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, ingredientID)
 
-	x = &types.ValidIngredientPreparationList{}
+	x = &types.ValidIngredientPreparationList{
+		Pagination: types.Pagination{
+			Limit: 20,
+		},
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -461,8 +465,8 @@ func (q *SQLQuerier) GetValidIngredientPreparationsForIngredient(ctx context.Con
 		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
-	query, args := q.buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx, *filter.Limit, []string{ingredientID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx, x.Limit, []string{ingredientID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation ingredients for ingredient", query, args)
 	if err != nil {

@@ -301,7 +301,11 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, ingredientID)
 
-	x = &types.ValidIngredientMeasurementUnitList{}
+	x = &types.ValidIngredientMeasurementUnitList{
+		Pagination: types.Pagination{
+			Limit: 20,
+		},
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -315,8 +319,8 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
-	query, args := q.buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx, *filter.Limit, []string{ingredientID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx, x.Limit, []string{ingredientID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for ingredient", query, args)
 	if err != nil {
@@ -347,7 +351,11 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validMeasurementUnitID)
 
-	x = &types.ValidIngredientMeasurementUnitList{}
+	x = &types.ValidIngredientMeasurementUnitList{
+		Pagination: types.Pagination{
+			Limit: 20,
+		},
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -361,8 +369,8 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
-	query, args := q.buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx, *filter.Limit, []string{validMeasurementUnitID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx, x.Limit, []string{validMeasurementUnitID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for measurement unit", query, args)
 	if err != nil {

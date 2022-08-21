@@ -306,7 +306,11 @@ func (q *SQLQuerier) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, preparationID)
 
-	x = &types.ValidPreparationInstrumentList{}
+	x = &types.ValidPreparationInstrumentList{
+		Pagination: types.Pagination{
+			Limit: 20,
+		},
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -320,8 +324,8 @@ func (q *SQLQuerier) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
-	query, args := q.buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx, *filter.Limit, []string{preparationID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx, x.Limit, []string{preparationID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
@@ -352,7 +356,11 @@ func (q *SQLQuerier) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, instrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, instrumentID)
 
-	x = &types.ValidPreparationInstrumentList{}
+	x = &types.ValidPreparationInstrumentList{
+		Pagination: types.Pagination{
+			Limit: 20,
+		},
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -366,8 +374,8 @@ func (q *SQLQuerier) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
-	query, args := q.buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx, *filter.Limit, []string{instrumentID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx, x.Limit, []string{instrumentID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for instrument", query, args)
 	if err != nil {
