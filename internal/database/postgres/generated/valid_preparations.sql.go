@@ -7,6 +7,7 @@ package generated
 
 import (
 	"context"
+	"database/sql"
 )
 
 const ArchiveValidPreparation = `-- name: ArchiveValidPreparation :exec
@@ -45,6 +46,10 @@ SELECT
     valid_preparations.name,
     valid_preparations.description,
     valid_preparations.icon_path,
+    valid_preparations.yields_nothing,
+    valid_preparations.restrict_to_ingredients,
+    valid_preparations.zero_ingredients_allowed,
+    valid_preparations.past_tense,
     valid_preparations.created_on,
     valid_preparations.last_updated_on,
     valid_preparations.archived_on
@@ -53,14 +58,32 @@ WHERE valid_preparations.archived_on IS NULL
     ORDER BY random() LIMIT 1
 `
 
-func (q *Queries) GetRandomValidPreparation(ctx context.Context) (*ValidPreparations, error) {
+type GetRandomValidPreparationRow struct {
+	ID                     string
+	Name                   string
+	Description            string
+	IconPath               string
+	YieldsNothing          bool
+	RestrictToIngredients  bool
+	ZeroIngredientsAllowed bool
+	PastTense              string
+	CreatedOn              int64
+	LastUpdatedOn          sql.NullInt64
+	ArchivedOn             sql.NullInt64
+}
+
+func (q *Queries) GetRandomValidPreparation(ctx context.Context) (*GetRandomValidPreparationRow, error) {
 	row := q.db.QueryRowContext(ctx, GetRandomValidPreparation)
-	var i ValidPreparations
+	var i GetRandomValidPreparationRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Description,
 		&i.IconPath,
+		&i.YieldsNothing,
+		&i.RestrictToIngredients,
+		&i.ZeroIngredientsAllowed,
+		&i.PastTense,
 		&i.CreatedOn,
 		&i.LastUpdatedOn,
 		&i.ArchivedOn,
@@ -85,6 +108,10 @@ SELECT
     valid_preparations.name,
     valid_preparations.description,
     valid_preparations.icon_path,
+    valid_preparations.yields_nothing,
+    valid_preparations.restrict_to_ingredients,
+    valid_preparations.zero_ingredients_allowed,
+    valid_preparations.past_tense,
     valid_preparations.created_on,
     valid_preparations.last_updated_on,
     valid_preparations.archived_on
@@ -93,14 +120,32 @@ WHERE valid_preparations.archived_on IS NULL
   AND valid_preparations.id = $1
 `
 
-func (q *Queries) GetValidPreparation(ctx context.Context, id string) (*ValidPreparations, error) {
+type GetValidPreparationRow struct {
+	ID                     string
+	Name                   string
+	Description            string
+	IconPath               string
+	YieldsNothing          bool
+	RestrictToIngredients  bool
+	ZeroIngredientsAllowed bool
+	PastTense              string
+	CreatedOn              int64
+	LastUpdatedOn          sql.NullInt64
+	ArchivedOn             sql.NullInt64
+}
+
+func (q *Queries) GetValidPreparation(ctx context.Context, id string) (*GetValidPreparationRow, error) {
 	row := q.db.QueryRowContext(ctx, GetValidPreparation, id)
-	var i ValidPreparations
+	var i GetValidPreparationRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Description,
 		&i.IconPath,
+		&i.YieldsNothing,
+		&i.RestrictToIngredients,
+		&i.ZeroIngredientsAllowed,
+		&i.PastTense,
 		&i.CreatedOn,
 		&i.LastUpdatedOn,
 		&i.ArchivedOn,
@@ -109,14 +154,28 @@ func (q *Queries) GetValidPreparation(ctx context.Context, id string) (*ValidPre
 }
 
 const UpdateValidPreparation = `-- name: UpdateValidPreparation :exec
-UPDATE valid_preparations SET name = $1, description = $2, icon_path = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4
+UPDATE valid_preparations SET
+  name = $1,
+  description = $2,
+  icon_path = $3,
+  yields_nothing = $4,
+  restrict_to_ingredients = $5,
+  zero_ingredients_allowed = $6,
+  past_tense = $7,
+  last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+  AND id = $8
 `
 
 type UpdateValidPreparationParams struct {
-	Name        string
-	Description string
-	IconPath    string
-	ID          string
+	Name                   string
+	Description            string
+	IconPath               string
+	YieldsNothing          bool
+	RestrictToIngredients  bool
+	ZeroIngredientsAllowed bool
+	PastTense              string
+	ID                     string
 }
 
 func (q *Queries) UpdateValidPreparation(ctx context.Context, arg *UpdateValidPreparationParams) error {
@@ -124,6 +183,10 @@ func (q *Queries) UpdateValidPreparation(ctx context.Context, arg *UpdateValidPr
 		arg.Name,
 		arg.Description,
 		arg.IconPath,
+		arg.YieldsNothing,
+		arg.RestrictToIngredients,
+		arg.ZeroIngredientsAllowed,
+		arg.PastTense,
 		arg.ID,
 	)
 	return err
@@ -141,23 +204,56 @@ func (q *Queries) ValidPreparationExists(ctx context.Context, id string) (bool, 
 }
 
 const ValidPreparationsSearch = `-- name: ValidPreparationsSearch :many
-SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon_path, valid_preparations.created_on, valid_preparations.last_updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.name ILIKE $1 LIMIT 50
+SELECT
+    valid_preparations.id,
+    valid_preparations.name,
+    valid_preparations.description,
+    valid_preparations.icon_path,
+    valid_preparations.yields_nothing,
+    valid_preparations.restrict_to_ingredients,
+    valid_preparations.zero_ingredients_allowed,
+    valid_preparations.past_tense,
+    valid_preparations.created_on,
+    valid_preparations.last_updated_on,
+    valid_preparations.archived_on
+FROM valid_preparations
+WHERE valid_preparations.archived_on IS NULL
+  AND valid_preparations.name ILIKE $1
+  LIMIT 50
 `
 
-func (q *Queries) ValidPreparationsSearch(ctx context.Context, name string) ([]*ValidPreparations, error) {
+type ValidPreparationsSearchRow struct {
+	ID                     string
+	Name                   string
+	Description            string
+	IconPath               string
+	YieldsNothing          bool
+	RestrictToIngredients  bool
+	ZeroIngredientsAllowed bool
+	PastTense              string
+	CreatedOn              int64
+	LastUpdatedOn          sql.NullInt64
+	ArchivedOn             sql.NullInt64
+}
+
+func (q *Queries) ValidPreparationsSearch(ctx context.Context, name string) ([]*ValidPreparationsSearchRow, error) {
 	rows, err := q.db.QueryContext(ctx, ValidPreparationsSearch, name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []*ValidPreparations
+	var items []*ValidPreparationsSearchRow
 	for rows.Next() {
-		var i ValidPreparations
+		var i ValidPreparationsSearchRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Description,
 			&i.IconPath,
+			&i.YieldsNothing,
+			&i.RestrictToIngredients,
+			&i.ZeroIngredientsAllowed,
+			&i.PastTense,
 			&i.CreatedOn,
 			&i.LastUpdatedOn,
 			&i.ArchivedOn,

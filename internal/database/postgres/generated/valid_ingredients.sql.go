@@ -20,34 +20,64 @@ func (q *Queries) ArchiveValidIngredient(ctx context.Context, id string) error {
 }
 
 const CreateValidIngredient = `-- name: CreateValidIngredient :exec
-INSERT INTO valid_ingredients (id,name,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,volumetric,is_liquid,icon_path) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
+INSERT INTO valid_ingredients (
+    id,
+    name,
+    plural_name,
+    description,
+    warning,
+    contains_egg,
+    contains_dairy,
+    contains_peanut,
+    contains_tree_nut,
+    contains_soy,
+    contains_wheat,
+    contains_shellfish,
+    contains_sesame,
+    contains_fish,
+    contains_gluten,
+    animal_flesh,
+    animal_derived,
+    volumetric,
+    restrict_to_preparations,
+    minimum_ideal_storage_temperature_in_celsius,
+    maximum_ideal_storage_temperature_in_celsius,
+    is_liquid,
+    icon_path
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)
 `
 
 type CreateValidIngredientParams struct {
-	ID                string
-	Name              string
-	Description       string
-	Warning           string
-	ContainsEgg       bool
-	ContainsDairy     bool
-	ContainsPeanut    bool
-	ContainsTreeNut   bool
-	ContainsSoy       bool
-	ContainsWheat     bool
-	ContainsShellfish bool
-	ContainsSesame    bool
-	ContainsFish      bool
-	ContainsGluten    bool
-	AnimalFlesh       bool
-	Volumetric        bool
-	IsLiquid          sql.NullBool
-	IconPath          string
+	ID                                      string
+	Name                                    string
+	PluralName                              string
+	Description                             string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	AnimalDerived                           bool
+	Volumetric                              bool
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius float64
+	MaximumIdealStorageTemperatureInCelsius float64
+	IsLiquid                                sql.NullBool
+	IconPath                                string
 }
 
 func (q *Queries) CreateValidIngredient(ctx context.Context, arg *CreateValidIngredientParams) error {
 	_, err := q.db.ExecContext(ctx, CreateValidIngredient,
 		arg.ID,
 		arg.Name,
+		arg.PluralName,
 		arg.Description,
 		arg.Warning,
 		arg.ContainsEgg,
@@ -61,7 +91,11 @@ func (q *Queries) CreateValidIngredient(ctx context.Context, arg *CreateValidIng
 		arg.ContainsFish,
 		arg.ContainsGluten,
 		arg.AnimalFlesh,
+		arg.AnimalDerived,
 		arg.Volumetric,
+		arg.RestrictToPreparations,
+		arg.MinimumIdealStorageTemperatureInCelsius,
+		arg.MaximumIdealStorageTemperatureInCelsius,
 		arg.IsLiquid,
 		arg.IconPath,
 	)
@@ -72,6 +106,7 @@ const GetRandomValidIngredient = `-- name: GetRandomValidIngredient :one
 SELECT
     valid_ingredients.id,
     valid_ingredients.name,
+    valid_ingredients.plural_name,
     valid_ingredients.description,
     valid_ingredients.warning,
     valid_ingredients.contains_egg,
@@ -85,7 +120,11 @@ SELECT
     valid_ingredients.contains_fish,
     valid_ingredients.contains_gluten,
     valid_ingredients.animal_flesh,
+    valid_ingredients.animal_derived,
     valid_ingredients.volumetric,
+    valid_ingredients.restrict_to_preparations,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
     valid_ingredients.is_liquid,
     valid_ingredients.icon_path,
     valid_ingredients.created_on,
@@ -97,27 +136,32 @@ ORDER BY random() LIMIT 1
 `
 
 type GetRandomValidIngredientRow struct {
-	ID                string
-	Name              string
-	Description       string
-	Warning           string
-	ContainsEgg       bool
-	ContainsDairy     bool
-	ContainsPeanut    bool
-	ContainsTreeNut   bool
-	ContainsSoy       bool
-	ContainsWheat     bool
-	ContainsShellfish bool
-	ContainsSesame    bool
-	ContainsFish      bool
-	ContainsGluten    bool
-	AnimalFlesh       bool
-	Volumetric        bool
-	IsLiquid          sql.NullBool
-	IconPath          string
-	CreatedOn         int64
-	LastUpdatedOn     sql.NullInt64
-	ArchivedOn        sql.NullInt64
+	ID                                      string
+	Name                                    string
+	PluralName                              string
+	Description                             string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	AnimalDerived                           bool
+	Volumetric                              bool
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius float64
+	MaximumIdealStorageTemperatureInCelsius float64
+	IsLiquid                                sql.NullBool
+	IconPath                                string
+	CreatedOn                               int64
+	LastUpdatedOn                           sql.NullInt64
+	ArchivedOn                              sql.NullInt64
 }
 
 func (q *Queries) GetRandomValidIngredient(ctx context.Context) (*GetRandomValidIngredientRow, error) {
@@ -126,6 +170,7 @@ func (q *Queries) GetRandomValidIngredient(ctx context.Context) (*GetRandomValid
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.PluralName,
 		&i.Description,
 		&i.Warning,
 		&i.ContainsEgg,
@@ -139,7 +184,11 @@ func (q *Queries) GetRandomValidIngredient(ctx context.Context) (*GetRandomValid
 		&i.ContainsFish,
 		&i.ContainsGluten,
 		&i.AnimalFlesh,
+		&i.AnimalDerived,
 		&i.Volumetric,
+		&i.RestrictToPreparations,
+		&i.MinimumIdealStorageTemperatureInCelsius,
+		&i.MaximumIdealStorageTemperatureInCelsius,
 		&i.IsLiquid,
 		&i.IconPath,
 		&i.CreatedOn,
@@ -164,6 +213,7 @@ const GetValidIngredient = `-- name: GetValidIngredient :one
 SELECT
     valid_ingredients.id,
     valid_ingredients.name,
+    valid_ingredients.plural_name,
     valid_ingredients.description,
     valid_ingredients.warning,
     valid_ingredients.contains_egg,
@@ -177,7 +227,11 @@ SELECT
     valid_ingredients.contains_fish,
     valid_ingredients.contains_gluten,
     valid_ingredients.animal_flesh,
+    valid_ingredients.animal_derived,
     valid_ingredients.volumetric,
+    valid_ingredients.restrict_to_preparations,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
     valid_ingredients.is_liquid,
     valid_ingredients.icon_path,
     valid_ingredients.created_on,
@@ -189,27 +243,32 @@ WHERE valid_ingredients.archived_on IS NULL
 `
 
 type GetValidIngredientRow struct {
-	ID                string
-	Name              string
-	Description       string
-	Warning           string
-	ContainsEgg       bool
-	ContainsDairy     bool
-	ContainsPeanut    bool
-	ContainsTreeNut   bool
-	ContainsSoy       bool
-	ContainsWheat     bool
-	ContainsShellfish bool
-	ContainsSesame    bool
-	ContainsFish      bool
-	ContainsGluten    bool
-	AnimalFlesh       bool
-	Volumetric        bool
-	IsLiquid          sql.NullBool
-	IconPath          string
-	CreatedOn         int64
-	LastUpdatedOn     sql.NullInt64
-	ArchivedOn        sql.NullInt64
+	ID                                      string
+	Name                                    string
+	PluralName                              string
+	Description                             string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	AnimalDerived                           bool
+	Volumetric                              bool
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius float64
+	MaximumIdealStorageTemperatureInCelsius float64
+	IsLiquid                                sql.NullBool
+	IconPath                                string
+	CreatedOn                               int64
+	LastUpdatedOn                           sql.NullInt64
+	ArchivedOn                              sql.NullInt64
 }
 
 func (q *Queries) GetValidIngredient(ctx context.Context, id string) (*GetValidIngredientRow, error) {
@@ -218,6 +277,7 @@ func (q *Queries) GetValidIngredient(ctx context.Context, id string) (*GetValidI
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.PluralName,
 		&i.Description,
 		&i.Warning,
 		&i.ContainsEgg,
@@ -231,7 +291,11 @@ func (q *Queries) GetValidIngredient(ctx context.Context, id string) (*GetValidI
 		&i.ContainsFish,
 		&i.ContainsGluten,
 		&i.AnimalFlesh,
+		&i.AnimalDerived,
 		&i.Volumetric,
+		&i.RestrictToPreparations,
+		&i.MinimumIdealStorageTemperatureInCelsius,
+		&i.MaximumIdealStorageTemperatureInCelsius,
 		&i.IsLiquid,
 		&i.IconPath,
 		&i.CreatedOn,
@@ -242,31 +306,66 @@ func (q *Queries) GetValidIngredient(ctx context.Context, id string) (*GetValidI
 }
 
 const SearchForValidIngredients = `-- name: SearchForValidIngredients :many
-SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.volumetric, valid_ingredients.is_liquid, valid_ingredients.icon_path, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.name ILIKE $1 AND valid_ingredients.archived_on IS NULL LIMIT 50
+SELECT
+    valid_ingredients.id,
+    valid_ingredients.name,
+    valid_ingredients.plural_name,
+    valid_ingredients.description,
+    valid_ingredients.warning,
+    valid_ingredients.contains_egg,
+    valid_ingredients.contains_dairy,
+    valid_ingredients.contains_peanut,
+    valid_ingredients.contains_tree_nut,
+    valid_ingredients.contains_soy,
+    valid_ingredients.contains_wheat,
+    valid_ingredients.contains_shellfish,
+    valid_ingredients.contains_sesame,
+    valid_ingredients.contains_fish,
+    valid_ingredients.contains_gluten,
+    valid_ingredients.animal_flesh,
+    valid_ingredients.animal_derived,
+    valid_ingredients.volumetric,
+    valid_ingredients.restrict_to_preparations,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.is_liquid,
+    valid_ingredients.icon_path,
+    valid_ingredients.created_on,
+    valid_ingredients.last_updated_on,
+    valid_ingredients.archived_on
+FROM valid_ingredients
+WHERE valid_ingredients.name ILIKE $1
+AND valid_ingredients.archived_on IS NULL
+    LIMIT 50
 `
 
 type SearchForValidIngredientsRow struct {
-	ID                string
-	Name              string
-	Description       string
-	Warning           string
-	ContainsEgg       bool
-	ContainsDairy     bool
-	ContainsPeanut    bool
-	ContainsTreeNut   bool
-	ContainsSoy       bool
-	ContainsWheat     bool
-	ContainsShellfish bool
-	ContainsSesame    bool
-	ContainsFish      bool
-	ContainsGluten    bool
-	AnimalFlesh       bool
-	Volumetric        bool
-	IsLiquid          sql.NullBool
-	IconPath          string
-	CreatedOn         int64
-	LastUpdatedOn     sql.NullInt64
-	ArchivedOn        sql.NullInt64
+	ID                                      string
+	Name                                    string
+	PluralName                              string
+	Description                             string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	AnimalDerived                           bool
+	Volumetric                              bool
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius float64
+	MaximumIdealStorageTemperatureInCelsius float64
+	IsLiquid                                sql.NullBool
+	IconPath                                string
+	CreatedOn                               int64
+	LastUpdatedOn                           sql.NullInt64
+	ArchivedOn                              sql.NullInt64
 }
 
 func (q *Queries) SearchForValidIngredients(ctx context.Context, name string) ([]*SearchForValidIngredientsRow, error) {
@@ -281,6 +380,7 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, name string) ([
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.PluralName,
 			&i.Description,
 			&i.Warning,
 			&i.ContainsEgg,
@@ -294,7 +394,11 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, name string) ([
 			&i.ContainsFish,
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
+			&i.AnimalDerived,
 			&i.Volumetric,
+			&i.RestrictToPreparations,
+			&i.MinimumIdealStorageTemperatureInCelsius,
+			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.IsLiquid,
 			&i.IconPath,
 			&i.CreatedOn,
@@ -315,53 +419,63 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, name string) ([
 }
 
 const UpdateValidIngredient = `-- name: UpdateValidIngredient :exec
-
 UPDATE valid_ingredients SET
  name = $1,
- description = $2,
- warning = $3,
- contains_egg = $4,
- contains_dairy = $5,
- contains_peanut = $6,
- contains_tree_nut = $7,
- contains_soy = $8,
- contains_wheat = $9,
- contains_shellfish = $10,
- contains_sesame = $11,
- contains_fish = $12,
- contains_gluten = $13,
- animal_flesh = $14,
- volumetric = $15,
- is_liquid = $16,
- icon_path = $17,
+ plural_name = $2,
+ description = $3,
+ warning = $4,
+ contains_egg = $5,
+ contains_dairy = $6,
+ contains_peanut = $7,
+ contains_tree_nut = $8,
+ contains_soy = $9,
+ contains_wheat = $10,
+ contains_shellfish = $11,
+ contains_sesame = $12,
+ contains_fish = $13,
+ contains_gluten = $14,
+ animal_flesh = $15,
+ animal_derived = $16,
+ volumetric = $17,
+ restrict_to_preparations = $18,
+ minimum_ideal_storage_temperature_in_celsius = $19,
+ maximum_ideal_storage_temperature_in_celsius = $20,
+ is_liquid = $21,
+ icon_path = $22,
  last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL AND id = $18
+WHERE archived_on IS NULL AND id = $23
 `
 
 type UpdateValidIngredientParams struct {
-	Name              string
-	Description       string
-	Warning           string
-	ContainsEgg       bool
-	ContainsDairy     bool
-	ContainsPeanut    bool
-	ContainsTreeNut   bool
-	ContainsSoy       bool
-	ContainsWheat     bool
-	ContainsShellfish bool
-	ContainsSesame    bool
-	ContainsFish      bool
-	ContainsGluten    bool
-	AnimalFlesh       bool
-	Volumetric        bool
-	IsLiquid          sql.NullBool
-	IconPath          string
-	ID                string
+	Name                                    string
+	PluralName                              string
+	Description                             string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	AnimalDerived                           bool
+	Volumetric                              bool
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius float64
+	MaximumIdealStorageTemperatureInCelsius float64
+	IsLiquid                                sql.NullBool
+	IconPath                                string
+	ID                                      string
 }
 
 func (q *Queries) UpdateValidIngredient(ctx context.Context, arg *UpdateValidIngredientParams) error {
 	_, err := q.db.ExecContext(ctx, UpdateValidIngredient,
 		arg.Name,
+		arg.PluralName,
 		arg.Description,
 		arg.Warning,
 		arg.ContainsEgg,
@@ -375,7 +489,11 @@ func (q *Queries) UpdateValidIngredient(ctx context.Context, arg *UpdateValidIng
 		arg.ContainsFish,
 		arg.ContainsGluten,
 		arg.AnimalFlesh,
+		arg.AnimalDerived,
 		arg.Volumetric,
+		arg.RestrictToPreparations,
+		arg.MinimumIdealStorageTemperatureInCelsius,
+		arg.MaximumIdealStorageTemperatureInCelsius,
 		arg.IsLiquid,
 		arg.IconPath,
 		arg.ID,

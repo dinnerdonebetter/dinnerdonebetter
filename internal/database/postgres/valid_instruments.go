@@ -21,7 +21,6 @@ var (
 	validInstrumentsTableColumns = []string{
 		"valid_instruments.id",
 		"valid_instruments.name",
-		"valid_instruments.variant",
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
 		"valid_instruments.created_on",
@@ -42,7 +41,6 @@ func (q *SQLQuerier) scanValidInstrument(ctx context.Context, scan database.Scan
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
-		&x.Variant,
 		&x.Description,
 		&x.IconPath,
 		&x.CreatedOn,
@@ -124,7 +122,6 @@ func (q *SQLQuerier) ValidInstrumentExists(ctx context.Context, validInstrumentI
 const getValidInstrumentBaseQuery = `SELECT
 	valid_instruments.id,
 	valid_instruments.name,
-	valid_instruments.variant,
 	valid_instruments.description,
 	valid_instruments.icon_path,
 	valid_instruments.created_on,
@@ -183,7 +180,7 @@ func (q *SQLQuerier) GetRandomValidInstrument(ctx context.Context) (*types.Valid
 	return validInstrument, nil
 }
 
-const validInstrumentSearchQuery = `SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_on, valid_instruments.last_updated_on, valid_instruments.archived_on FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50`
+const validInstrumentSearchQuery = `SELECT valid_instruments.id, valid_instruments.name, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_on, valid_instruments.last_updated_on, valid_instruments.archived_on FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50`
 
 // SearchForValidInstruments fetches a valid instrument from the database.
 func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
@@ -198,34 +195,51 @@ func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidInstrumentIDToSpan(span, query)
 
-	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, wrapQueryForILIKE(query))
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients search query")
+	if q.useGeneratedQueries {
+		results, err := q.generatedQuerier.SearchForValidInstruments(ctx, wrapQueryForILIKE(query))
+		if err != nil {
+			return nil, observability.PrepareError(err, logger, span, "executing valid ingredients search query")
+		}
+
+		validInstruments := []*types.ValidInstrument{}
+
+		for _, result := range results {
+			instrument := &types.ValidInstrument{
+				Description: result.Description,
+				IconPath:    result.IconPath,
+				ID:          result.ID,
+				Name:        result.Name,
+				CreatedOn:   uint64(result.CreatedOn),
+			}
+
+			if result.LastUpdatedOn.Valid {
+				t := uint64(result.LastUpdatedOn.Int64)
+				instrument.LastUpdatedOn = &t
+			}
+
+			if result.ArchivedOn.Valid {
+				t := uint64(result.ArchivedOn.Int64)
+				instrument.ArchivedOn = &t
+			}
+
+			validInstruments = append(validInstruments, instrument)
+		}
+
+		return validInstruments, nil
 	}
 
-	validInstruments := []*types.ValidInstrument{}
+	args := []interface{}{
+		wrapQueryForILIKE(query),
+	}
 
-	for _, result := range results {
-		instrument := &types.ValidInstrument{
-			Variant:     result.Variant,
-			Description: result.Description,
-			IconPath:    result.IconPath,
-			ID:          result.ID,
-			Name:        result.Name,
-			CreatedOn:   uint64(result.CreatedOn),
-		}
+	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients list retrieval query")
+	}
 
-		if result.LastUpdatedOn.Valid {
-			t := uint64(result.LastUpdatedOn.Int64)
-			instrument.LastUpdatedOn = &t
-		}
-
-		if result.ArchivedOn.Valid {
-			t := uint64(result.ArchivedOn.Int64)
-			instrument.ArchivedOn = &t
-		}
-
-		validInstruments = append(validInstruments, instrument)
+	validInstruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning validInstrument")
 	}
 
 	return validInstruments, nil
@@ -367,7 +381,7 @@ func (q *SQLQuerier) GetValidInstrumentsWithIDs(ctx context.Context, limit uint8
 	return validInstruments, nil
 }
 
-const validInstrumentCreationQuery = "INSERT INTO valid_instruments (id,name,variant,description,icon_path) VALUES ($1,$2,$3,$4,$5)"
+const validInstrumentCreationQuery = "INSERT INTO valid_instruments (id,name,description,icon_path) VALUES ($1,$2,$3,$4)"
 
 // CreateValidInstrument creates a valid instrument in the database.
 func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
@@ -380,22 +394,34 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 
 	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, input.ID)
 
-	args := &generated.CreateValidInstrumentParams{
-		ID:          input.ID,
-		Name:        input.Name,
-		Variant:     input.Variant,
-		Description: input.Description,
-		IconPath:    input.IconPath,
-	}
+	if q.useGeneratedQueries {
+		args := &generated.CreateValidInstrumentParams{
+			ID:          input.ID,
+			Name:        input.Name,
+			Description: input.Description,
+			IconPath:    input.IconPath,
+		}
 
-	if err := q.generatedQuerier.CreateValidInstrument(ctx, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid instrument")
+		if err := q.generatedQuerier.CreateValidInstrument(ctx, args); err != nil {
+			return nil, observability.PrepareError(err, logger, span, "creating valid instrument")
+		}
+	} else {
+		args := []interface{}{
+			input.ID,
+			input.Name,
+			input.Description,
+			input.IconPath,
+		}
+
+		// create the valid instrument.
+		if err := q.performWriteQuery(ctx, q.db, "valid instrument creation", validInstrumentCreationQuery, args); err != nil {
+			return nil, observability.PrepareError(err, logger, span, "performing valid instrument creation query")
+		}
 	}
 
 	x := &types.ValidInstrument{
 		ID:          input.ID,
 		Name:        input.Name,
-		Variant:     input.Variant,
 		Description: input.Description,
 		IconPath:    input.IconPath,
 		CreatedOn:   q.currentTime(),
@@ -407,7 +433,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 	return x, nil
 }
 
-const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, variant = $2, description = $3, icon_path = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $5"
+const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, description = $2, icon_path = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4"
 
 // UpdateValidInstrument updates a particular valid instrument.
 func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
@@ -421,22 +447,35 @@ func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.V
 	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, updated.ID)
 	tracing.AttachValidInstrumentIDToSpan(span, updated.ID)
 
-	args := &generated.UpdateValidInstrumentParams{
-		ID:          updated.ID,
-		Name:        updated.Name,
-		Variant:     updated.Variant,
-		Description: updated.Description,
-		IconPath:    updated.IconPath,
-	}
+	if q.useGeneratedQueries {
+		args := &generated.UpdateValidInstrumentParams{
+			ID:          updated.ID,
+			Name:        updated.Name,
+			Description: updated.Description,
+			IconPath:    updated.IconPath,
+		}
 
-	if err := q.generatedQuerier.UpdateValidInstrument(ctx, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid instrument")
-	}
+		if err := q.generatedQuerier.UpdateValidInstrument(ctx, args); err != nil {
+			return observability.PrepareError(err, logger, span, "updating valid instrument")
+		}
+	} else {
+		args := []interface{}{
+			updated.Name,
+			updated.Description,
+			updated.IconPath,
+			updated.ID,
+		}
 
+		if err := q.performWriteQuery(ctx, q.db, "valid instrument update", updateValidInstrumentQuery, args); err != nil {
+			return observability.PrepareError(err, logger, span, "updating valid instrument")
+		}
+	}
 	logger.Info("valid instrument updated")
 
 	return nil
 }
+
+const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
 func (q *SQLQuerier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {

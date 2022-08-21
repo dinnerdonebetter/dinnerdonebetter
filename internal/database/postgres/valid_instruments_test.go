@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -30,7 +29,6 @@ func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64,
 		rowValues := []driver.Value{
 			x.ID,
 			x.Name,
-			x.Variant,
 			x.Description,
 			x.IconPath,
 			x.CreatedOn,
@@ -288,7 +286,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 			wrapQueryForILIKE(exampleQuery),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.SearchForValidInstruments)).
+		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.ValidInstruments...))
 
@@ -674,7 +672,6 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
-			exampleInput.Variant,
 			exampleInput.Description,
 			exampleInput.IconPath,
 		}
@@ -718,7 +715,6 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
-			exampleInput.Variant,
 			exampleInput.Description,
 			exampleInput.IconPath,
 		}
@@ -753,7 +749,6 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidInstrument.Name,
-			exampleValidInstrument.Variant,
 			exampleValidInstrument.Description,
 			exampleValidInstrument.IconPath,
 			exampleValidInstrument.ID,
@@ -787,7 +782,6 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidInstrument.Name,
-			exampleValidInstrument.Variant,
 			exampleValidInstrument.Description,
 			exampleValidInstrument.IconPath,
 			exampleValidInstrument.ID,
@@ -818,7 +812,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(generated.ArchiveValidInstrument)).
+		db.ExpectExec(formatQueryForSQLMock(archiveValidInstrumentQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
@@ -848,7 +842,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(generated.ArchiveValidInstrument)).
+		db.ExpectExec(formatQueryForSQLMock(archiveValidInstrumentQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 

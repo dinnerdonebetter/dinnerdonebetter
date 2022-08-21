@@ -79,9 +79,9 @@ type Querier interface {
 	GetMealPlanPastVotingDeadline(ctx context.Context, arg *GetMealPlanPastVotingDeadlineParams) ([]*GetMealPlanPastVotingDeadlineRow, error)
 	GetPasswordResetToken(ctx context.Context, token string) (*PasswordResetTokens, error)
 	GetRandomValidIngredient(ctx context.Context) (*GetRandomValidIngredientRow, error)
-	GetRandomValidInstrument(ctx context.Context) (*ValidInstruments, error)
+	GetRandomValidInstrument(ctx context.Context) (*GetRandomValidInstrumentRow, error)
 	GetRandomValidMeasurementUnit(ctx context.Context) (*GetRandomValidMeasurementUnitRow, error)
-	GetRandomValidPreparation(ctx context.Context) (*ValidPreparations, error)
+	GetRandomValidPreparation(ctx context.Context) (*GetRandomValidPreparationRow, error)
 	GetRecipeByID(ctx context.Context, id string) ([]*GetRecipeByIDRow, error)
 	GetRecipeByIDAndAuthorID(ctx context.Context, arg *GetRecipeByIDAndAuthorIDParams) ([]*GetRecipeByIDAndAuthorIDRow, error)
 	GetRecipeStep(ctx context.Context, arg *GetRecipeStepParams) (*GetRecipeStepRow, error)
@@ -111,9 +111,9 @@ type Querier interface {
 	GetValidIngredient(ctx context.Context, id string) (*GetValidIngredientRow, error)
 	GetValidIngredientMeasurementUnit(ctx context.Context, id string) (*GetValidIngredientMeasurementUnitRow, error)
 	GetValidIngredientPreparation(ctx context.Context, id string) (*GetValidIngredientPreparationRow, error)
-	GetValidInstrument(ctx context.Context, id string) (*ValidInstruments, error)
+	GetValidInstrument(ctx context.Context, id string) (*GetValidInstrumentRow, error)
 	GetValidMeasurementUnit(ctx context.Context, id string) (*GetValidMeasurementUnitRow, error)
-	GetValidPreparation(ctx context.Context, id string) (*ValidPreparations, error)
+	GetValidPreparation(ctx context.Context, id string) (*GetValidPreparationRow, error)
 	GetValidPreparationInstrument(ctx context.Context, id string) (*GetValidPreparationInstrumentRow, error)
 	GetWebhook(ctx context.Context, arg *GetWebhookParams) (*Webhooks, error)
 	HouseholdInvitationExists(ctx context.Context, id string) (bool, error)
@@ -136,7 +136,7 @@ type Querier interface {
 	RemoveUserFromHouseholdQuery(ctx context.Context, arg *RemoveUserFromHouseholdQueryParams) error
 	SearchForUserByUsername(ctx context.Context, username string) ([]*SearchForUserByUsernameRow, error)
 	SearchForValidIngredients(ctx context.Context, name string) ([]*SearchForValidIngredientsRow, error)
-	SearchForValidInstruments(ctx context.Context, name string) ([]*ValidInstruments, error)
+	SearchForValidInstruments(ctx context.Context, name string) ([]*SearchForValidInstrumentsRow, error)
 	SearchForValidMeasurementUnits(ctx context.Context, name string) ([]*SearchForValidMeasurementUnitsRow, error)
 	SetInvitationStatus(ctx context.Context, arg *SetInvitationStatusParams) error
 	SetUserAccountStatus(ctx context.Context, arg *SetUserAccountStatusParams) error
@@ -172,7 +172,7 @@ type Querier interface {
 	ValidMeasurementUnitExists(ctx context.Context, id string) (bool, error)
 	ValidPreparationExists(ctx context.Context, id string) (bool, error)
 	ValidPreparationInstrumentExists(ctx context.Context, id string) (bool, error)
-	ValidPreparationsSearch(ctx context.Context, name string) ([]*ValidPreparations, error)
+	ValidPreparationsSearch(ctx context.Context, name string) ([]*ValidPreparationsSearchRow, error)
 	WebhookExists(ctx context.Context, arg *WebhookExistsParams) (bool, error)
 }
 

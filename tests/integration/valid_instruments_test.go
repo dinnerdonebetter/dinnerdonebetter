@@ -18,7 +18,6 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid instrument %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.Variant, actual.Variant, "expected Variant for valid instrument %s to be %v, but it was %v", expected.ID, expected.Variant, actual.Variant)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid instrument %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid instrument %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.NotZero(t, actual.CreatedOn)
@@ -28,7 +27,6 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 func convertValidInstrumentToValidInstrumentUpdateInput(x *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
 	return &types.ValidInstrumentUpdateRequestInput{
 		Name:        &x.Name,
-		Variant:     &x.Variant,
 		Description: &x.Description,
 		IconPath:    &x.IconPath,
 	}

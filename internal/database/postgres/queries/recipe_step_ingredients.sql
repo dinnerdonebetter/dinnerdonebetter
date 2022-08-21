@@ -17,6 +17,7 @@ SELECT
     recipe_step_ingredients.minimum_quantity_value,
     recipe_step_ingredients.maximum_quantity_value,
     recipe_step_ingredients.quantity_notes,
+    recipe_step_ingredients.optional,
     recipe_step_ingredients.product_of_recipe_step,
     recipe_step_ingredients.recipe_step_product_id,
     recipe_step_ingredients.ingredient_notes,
@@ -49,12 +50,13 @@ INSERT INTO recipe_step_ingredients (
     measurement_unit,
     minimum_quantity_value,
     maximum_quantity_value,
+    optional,
     quantity_notes,
     product_of_recipe_step,
     recipe_step_product_id,
     ingredient_notes,
     belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
 
 -- name: UpdateRecipeStepIngredient :exec
 
@@ -64,13 +66,14 @@ UPDATE recipe_step_ingredients SET
     measurement_unit = $3,
     minimum_quantity_value = $4,
     maximum_quantity_value = $5,
-    quantity_notes = $6,
-    product_of_recipe_step = $7,
-    recipe_step_product_id = $8,
-    ingredient_notes = $9,
+    optional = $6,
+    quantity_notes = $7,
+    product_of_recipe_step = $8,
+    recipe_step_product_id = $9,
+    ingredient_notes = $10,
     last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL AND belongs_to_recipe_step = $10
-  AND id = $11;
+WHERE archived_on IS NULL AND belongs_to_recipe_step = $11
+  AND id = $12;
 
 -- name: ArchiveRecipeStepIngredient :exec
 UPDATE recipe_step_ingredients SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2;

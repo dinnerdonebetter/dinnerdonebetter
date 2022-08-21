@@ -6,7 +6,6 @@ SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id,
 	valid_instruments.name,
-	valid_instruments.variant,
 	valid_instruments.description,
 	valid_instruments.icon_path,
 	valid_instruments.created_on,
@@ -14,6 +13,9 @@ SELECT
 	valid_instruments.archived_on,
 	recipe_step_instruments.recipe_step_product_id,
 	recipe_step_instruments.name,
+    recipe_step_instruments.optional,
+    recipe_step_instruments.minimum_quantity,
+    recipe_step_instruments.maximum_quantity,
 	recipe_step_instruments.product_of_recipe_step,
 	recipe_step_instruments.notes,
 	recipe_step_instruments.preference_rank,
@@ -42,14 +44,16 @@ SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id,
 	valid_instruments.name,
-	valid_instruments.variant,
 	valid_instruments.description,
 	valid_instruments.icon_path,
 	valid_instruments.created_on,
 	valid_instruments.last_updated_on,
 	valid_instruments.archived_on,
 	recipe_step_instruments.recipe_step_product_id,
-	recipe_step_instruments.name,
+    recipe_step_instruments.name,
+    recipe_step_instruments.optional,
+    recipe_step_instruments.minimum_quantity,
+    recipe_step_instruments.maximum_quantity,
 	recipe_step_instruments.product_of_recipe_step,
 	recipe_step_instruments.notes,
 	recipe_step_instruments.preference_rank,
@@ -68,7 +72,7 @@ AND recipes.archived_on IS NULL
 AND recipes.id = $2;
 
 -- name: CreateRecipeStepInstrument :exec
-INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_product_id,name,product_of_recipe_step,notes,preference_rank,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8);
+INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_product_id,name,optional,minimum_quantity,maximum_quantity,product_of_recipe_step,notes,preference_rank,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);
 
 -- name: UpdateRecipeStepInstrument :exec
 UPDATE recipe_step_instruments SET
@@ -77,11 +81,14 @@ UPDATE recipe_step_instruments SET
    name = $3,
    product_of_recipe_step = $4,
    notes = $5,
-   preference_rank = $6,
+   optional = $6,
+   minimum_quantity = $7,
+   maximum_quantity = $8,
+   preference_rank = $9,
    last_updated_on = extract(epoch FROM NOW())
 WHERE archived_on IS NULL
-  AND belongs_to_recipe_step = $7
-  AND id = $8;
+  AND belongs_to_recipe_step = $10
+  AND id = $11;
 
 -- name: ArchiveRecipeStepInstrument :exec
 UPDATE recipe_step_instruments SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2;

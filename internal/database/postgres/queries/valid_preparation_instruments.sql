@@ -14,7 +14,6 @@ SELECT
     valid_preparations.archived_on,
     valid_instruments.id,
     valid_instruments.name,
-    valid_instruments.variant,
     valid_instruments.description,
     valid_instruments.icon_path,
     valid_instruments.created_on,

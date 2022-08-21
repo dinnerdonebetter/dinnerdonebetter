@@ -190,6 +190,11 @@ var (
 			Description: "make instrument id a foreign key for recipe step instruments",
 			Script:      fetchMigration("00035_make_instrument_id_a_foreign_key_for_recipe_step_instruments"),
 		},
+		{
+			Version:     36,
+			Description: "a ton of various additions",
+			Script:      fetchMigration("00036_myriad_schema_additions"),
+		},
 	}
 )
 

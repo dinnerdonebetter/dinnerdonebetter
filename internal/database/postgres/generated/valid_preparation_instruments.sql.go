@@ -64,7 +64,6 @@ SELECT
     valid_preparations.archived_on,
     valid_instruments.id,
     valid_instruments.name,
-    valid_instruments.variant,
     valid_instruments.description,
     valid_instruments.icon_path,
     valid_instruments.created_on,
@@ -94,7 +93,6 @@ type GetValidPreparationInstrumentRow struct {
 	ArchivedOn      sql.NullInt64
 	ID_3            string
 	Name_2          string
-	Variant         string
 	Description_2   string
 	IconPath_2      string
 	CreatedOn_2     int64
@@ -120,7 +118,6 @@ func (q *Queries) GetValidPreparationInstrument(ctx context.Context, id string) 
 		&i.ArchivedOn,
 		&i.ID_3,
 		&i.Name_2,
-		&i.Variant,
 		&i.Description_2,
 		&i.IconPath_2,
 		&i.CreatedOn_2,

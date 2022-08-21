@@ -25,7 +25,7 @@ func (q *Queries) ArchiveRecipe(ctx context.Context, arg *ArchiveRecipeParams) e
 }
 
 const CreateRecipe = `-- name: CreateRecipe :exec
-INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,created_by_user) VALUES ($1,$2,$3,$4,$5,$6)
+INSERT INTO recipes (id,name,source,description,yields_portions,inspired_by_recipe_id,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
 type CreateRecipeParams struct {
@@ -33,6 +33,7 @@ type CreateRecipeParams struct {
 	Name               string
 	Source             string
 	Description        string
+	YieldsPortions     int32
 	InspiredByRecipeID sql.NullString
 	CreatedByUser      string
 }
@@ -43,6 +44,7 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg *CreateRecipeParams) err
 		arg.Name,
 		arg.Source,
 		arg.Description,
+		arg.YieldsPortions,
 		arg.InspiredByRecipeID,
 		arg.CreatedByUser,
 	)
@@ -55,6 +57,7 @@ SELECT
     recipes.name,
     recipes.source,
     recipes.description,
+    recipes.yields_portions,
     recipes.inspired_by_recipe_id,
     recipes.created_on,
     recipes.last_updated_on,
@@ -92,6 +95,7 @@ type GetRecipeByIDRow struct {
 	Name                          sql.NullString
 	Source                        sql.NullString
 	Description                   sql.NullString
+	YieldsPortions                sql.NullInt32
 	InspiredByRecipeID            sql.NullString
 	CreatedOn                     sql.NullInt64
 	LastUpdatedOn                 sql.NullInt64
@@ -132,6 +136,7 @@ func (q *Queries) GetRecipeByID(ctx context.Context, id string) ([]*GetRecipeByI
 			&i.Name,
 			&i.Source,
 			&i.Description,
+			&i.YieldsPortions,
 			&i.InspiredByRecipeID,
 			&i.CreatedOn,
 			&i.LastUpdatedOn,
@@ -176,6 +181,7 @@ SELECT
     recipes.name,
     recipes.source,
     recipes.description,
+    recipes.yields_portions,
     recipes.inspired_by_recipe_id,
     recipes.created_on,
     recipes.last_updated_on,
@@ -219,6 +225,7 @@ type GetRecipeByIDAndAuthorIDRow struct {
 	Name                          sql.NullString
 	Source                        sql.NullString
 	Description                   sql.NullString
+	YieldsPortions                sql.NullInt32
 	InspiredByRecipeID            sql.NullString
 	CreatedOn                     sql.NullInt64
 	LastUpdatedOn                 sql.NullInt64
@@ -259,6 +266,7 @@ func (q *Queries) GetRecipeByIDAndAuthorID(ctx context.Context, arg *GetRecipeBy
 			&i.Name,
 			&i.Source,
 			&i.Description,
+			&i.YieldsPortions,
 			&i.InspiredByRecipeID,
 			&i.CreatedOn,
 			&i.LastUpdatedOn,
@@ -320,13 +328,23 @@ func (q *Queries) RecipeExists(ctx context.Context, id string) (bool, error) {
 }
 
 const UpdateRecipe = `-- name: UpdateRecipe :exec
-UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND created_by_user = $5 AND id = $6
+UPDATE recipes SET
+   name = $1,
+   source = $2,
+   description = $3,
+   yields_portions = $4,
+   inspired_by_recipe_id = $5,
+   last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+  AND created_by_user = $6
+  AND id = $7
 `
 
 type UpdateRecipeParams struct {
 	Name               string
 	Source             string
 	Description        string
+	YieldsPortions     int32
 	InspiredByRecipeID sql.NullString
 	CreatedByUser      string
 	ID                 string
@@ -337,6 +355,7 @@ func (q *Queries) UpdateRecipe(ctx context.Context, arg *UpdateRecipeParams) err
 		arg.Name,
 		arg.Source,
 		arg.Description,
+		arg.YieldsPortions,
 		arg.InspiredByRecipeID,
 		arg.CreatedByUser,
 		arg.ID,

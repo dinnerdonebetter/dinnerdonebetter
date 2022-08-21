@@ -17,6 +17,7 @@ SELECT
     recipe_step_products.minimum_quantity_value,
     recipe_step_products.maximum_quantity_value,
     recipe_step_products.quantity_notes,
+    recipe_step_products.compostable,
     recipe_step_products.created_on,
     recipe_step_products.last_updated_on,
     recipe_step_products.archived_on,
@@ -53,6 +54,7 @@ SELECT
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
+    recipe_step_products.compostable,
 	recipe_step_products.created_on,
 	recipe_step_products.last_updated_on,
 	recipe_step_products.archived_on,
@@ -68,10 +70,21 @@ AND recipes.archived_on IS NULL
 AND recipes.id = $2;
 
 -- name: CreateRecipeStepProduct :exec
-INSERT INTO recipe_step_products (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8);
+INSERT INTO recipe_step_products (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9);
 
 -- name: UpdateRecipeStepProduct :exec
-UPDATE recipe_step_products SET name = $1, type = $2, measurement_unit = $3, minimum_quantity_value = $4, maximum_quantity_value = $5, quantity_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $7 AND id = $8;
+UPDATE recipe_step_products SET
+    name = $1,
+    type = $2,
+    measurement_unit = $3,
+    minimum_quantity_value = $4,
+    maximum_quantity_value = $5,
+    quantity_notes = $6,
+    compostable = $7,
+    last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+  AND belongs_to_recipe_step = $8
+  AND id = $9;
 
 -- name: ArchiveRecipeStepProduct :exec
 UPDATE recipe_step_products SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2;

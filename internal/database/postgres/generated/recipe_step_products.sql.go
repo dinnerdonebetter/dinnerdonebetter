@@ -25,7 +25,7 @@ func (q *Queries) ArchiveRecipeStepProduct(ctx context.Context, arg *ArchiveReci
 }
 
 const CreateRecipeStepProduct = `-- name: CreateRecipeStepProduct :exec
-INSERT INTO recipe_step_products (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+INSERT INTO recipe_step_products (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 `
 
 type CreateRecipeStepProductParams struct {
@@ -36,6 +36,7 @@ type CreateRecipeStepProductParams struct {
 	MinimumQuantityValue float64
 	MaximumQuantityValue float64
 	QuantityNotes        string
+	Compostable          bool
 	BelongsToRecipeStep  string
 }
 
@@ -48,6 +49,7 @@ func (q *Queries) CreateRecipeStepProduct(ctx context.Context, arg *CreateRecipe
 		arg.MinimumQuantityValue,
 		arg.MaximumQuantityValue,
 		arg.QuantityNotes,
+		arg.Compostable,
 		arg.BelongsToRecipeStep,
 	)
 	return err
@@ -69,6 +71,7 @@ SELECT
     recipe_step_products.minimum_quantity_value,
     recipe_step_products.maximum_quantity_value,
     recipe_step_products.quantity_notes,
+    recipe_step_products.compostable,
     recipe_step_products.created_on,
     recipe_step_products.last_updated_on,
     recipe_step_products.archived_on,
@@ -110,6 +113,7 @@ type GetRecipeStepProductRow struct {
 	MinimumQuantityValue float64
 	MaximumQuantityValue float64
 	QuantityNotes        string
+	Compostable          bool
 	CreatedOn_2          int64
 	LastUpdatedOn_2      sql.NullInt64
 	ArchivedOn_2         sql.NullInt64
@@ -146,6 +150,7 @@ func (q *Queries) GetRecipeStepProduct(ctx context.Context, arg *GetRecipeStepPr
 			&i.MinimumQuantityValue,
 			&i.MaximumQuantityValue,
 			&i.QuantityNotes,
+			&i.Compostable,
 			&i.CreatedOn_2,
 			&i.LastUpdatedOn_2,
 			&i.ArchivedOn_2,
@@ -205,6 +210,7 @@ SELECT
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
+    recipe_step_products.compostable,
 	recipe_step_products.created_on,
 	recipe_step_products.last_updated_on,
 	recipe_step_products.archived_on,
@@ -240,6 +246,7 @@ type RecipeStepProductsForRecipeQueryRow struct {
 	MinimumQuantityValue float64
 	MaximumQuantityValue float64
 	QuantityNotes        string
+	Compostable          bool
 	CreatedOn_2          int64
 	LastUpdatedOn_2      sql.NullInt64
 	ArchivedOn_2         sql.NullInt64
@@ -270,6 +277,7 @@ func (q *Queries) RecipeStepProductsForRecipeQuery(ctx context.Context, arg *Rec
 			&i.MinimumQuantityValue,
 			&i.MaximumQuantityValue,
 			&i.QuantityNotes,
+			&i.Compostable,
 			&i.CreatedOn_2,
 			&i.LastUpdatedOn_2,
 			&i.ArchivedOn_2,
@@ -300,7 +308,18 @@ func (q *Queries) TotalRecipeStepProductCount(ctx context.Context) (int64, error
 }
 
 const UpdateRecipeStepProduct = `-- name: UpdateRecipeStepProduct :exec
-UPDATE recipe_step_products SET name = $1, type = $2, measurement_unit = $3, minimum_quantity_value = $4, maximum_quantity_value = $5, quantity_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $7 AND id = $8
+UPDATE recipe_step_products SET
+    name = $1,
+    type = $2,
+    measurement_unit = $3,
+    minimum_quantity_value = $4,
+    maximum_quantity_value = $5,
+    quantity_notes = $6,
+    compostable = $7,
+    last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+  AND belongs_to_recipe_step = $8
+  AND id = $9
 `
 
 type UpdateRecipeStepProductParams struct {
@@ -310,6 +329,7 @@ type UpdateRecipeStepProductParams struct {
 	MinimumQuantityValue float64
 	MaximumQuantityValue float64
 	QuantityNotes        string
+	Compostable          bool
 	BelongsToRecipeStep  string
 	ID                   string
 }
@@ -322,6 +342,7 @@ func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, arg *UpdateRecipe
 		arg.MinimumQuantityValue,
 		arg.MaximumQuantityValue,
 		arg.QuantityNotes,
+		arg.Compostable,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 	)
