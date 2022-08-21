@@ -3,11 +3,11 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 
 	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -225,7 +225,7 @@ func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string
 			instrument.ArchivedOn = &t
 		}
 
-		validInstruments = append(validInstruments)
+		validInstruments = append(validInstruments, instrument)
 	}
 
 	return validInstruments, nil

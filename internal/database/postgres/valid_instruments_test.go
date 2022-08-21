@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -13,6 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -288,7 +288,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 			wrapQueryForILIKE(exampleQuery),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.SearchForValidInstruments)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.ValidInstruments...))
 
