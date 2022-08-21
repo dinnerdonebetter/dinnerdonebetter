@@ -246,7 +246,13 @@ func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mea
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	query, args := q.buildListQuery(ctx, "meal_plan_option_votes", getMealPlanOptionVotesJoins, nil, nil, householdOwnershipColumn, mealPlanOptionVotesTableColumns, "", false, filter, true)

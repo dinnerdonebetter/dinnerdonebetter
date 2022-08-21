@@ -5,10 +5,17 @@ import (
 )
 
 const (
-	// SortAscending is the pre-determined Ascending sortType for external use.
-	SortAscending sortType = "asc"
-	// SortDescending is the pre-determined Descending sortType for external use.
-	SortDescending sortType = "desc"
+	// sortAscendingString is the pre-determined Ascending sortType for external use.
+	sortAscendingString = "asc"
+	// sortDescendingString is the pre-determined Descending sortType for external use.
+	sortDescendingString = "desc"
+)
+
+var (
+	// SortAscending is the pre-determined Ascending string for external use.
+	SortAscending = func(x string) *string { return &x }(sortAscendingString)
+	// SortDescending is the pre-determined Descending string for external use.
+	SortDescending = func(x string) *string { return &x }(sortDescendingString)
 )
 
 type (
@@ -16,7 +23,6 @@ type (
 	// 	"The provided key must be comparable and should not be of type string or
 	// 	 any other built-in type to avoid collisions between packages using context."
 	ContextKey string
-	sortType   string
 
 	// Pagination represents a pagination request.
 	Pagination struct {

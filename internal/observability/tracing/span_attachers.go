@@ -50,10 +50,18 @@ func AttachToSpan(span trace.Span, key string, val interface{}) {
 }
 
 // AttachFilterDataToSpan provides a consistent way to attach a filter's info to a span.
-func AttachFilterDataToSpan(span trace.Span, page uint64, limit uint8, sortBy string) {
-	attachUint64ToSpan(span, keys.FilterPageKey, page)
-	attachUint8ToSpan(span, keys.FilterLimitKey, limit)
-	attachStringToSpan(span, keys.FilterSortByKey, sortBy)
+func AttachFilterDataToSpan(span trace.Span, page *uint64, limit *uint8, sortBy *string) {
+	if page != nil {
+		attachUint64ToSpan(span, keys.FilterPageKey, *page)
+	}
+
+	if limit != nil {
+		attachUint8ToSpan(span, keys.FilterLimitKey, *limit)
+	}
+
+	if sortBy != nil {
+		attachStringToSpan(span, keys.FilterSortByKey, *sortBy)
+	}
 }
 
 // AttachEmailAddressToSpan provides a consistent way to attach a household's ID to a span.
@@ -189,13 +197,33 @@ func AttachDatabaseQueryToSpan(span trace.Span, queryDescription, query string, 
 // AttachQueryFilterToSpan attaches a given query filter to a span.
 func AttachQueryFilterToSpan(span trace.Span, filter *types.QueryFilter) {
 	if filter != nil {
-		attachUint8ToSpan(span, keys.FilterLimitKey, filter.Limit)
-		attachUint64ToSpan(span, keys.FilterPageKey, filter.Page)
-		attachUint64ToSpan(span, keys.FilterCreatedAfterKey, filter.CreatedAfter)
-		attachUint64ToSpan(span, keys.FilterCreatedBeforeKey, filter.CreatedBefore)
-		attachUint64ToSpan(span, keys.FilterUpdatedAfterKey, filter.UpdatedAfter)
-		attachUint64ToSpan(span, keys.FilterUpdatedBeforeKey, filter.UpdatedBefore)
-		attachStringToSpan(span, keys.FilterSortByKey, string(filter.SortBy))
+		if filter.Limit != nil {
+			attachUint8ToSpan(span, keys.FilterLimitKey, *filter.Limit)
+		}
+
+		if filter.Page != nil {
+			attachUint64ToSpan(span, keys.FilterPageKey, *filter.Page)
+		}
+
+		if filter.CreatedAfter != nil {
+			attachUint64ToSpan(span, keys.FilterCreatedAfterKey, *filter.CreatedAfter)
+		}
+
+		if filter.CreatedBefore != nil {
+			attachUint64ToSpan(span, keys.FilterCreatedBeforeKey, *filter.CreatedBefore)
+		}
+
+		if filter.UpdatedAfter != nil {
+			attachUint64ToSpan(span, keys.FilterUpdatedAfterKey, *filter.UpdatedAfter)
+		}
+
+		if filter.UpdatedBefore != nil {
+			attachUint64ToSpan(span, keys.FilterUpdatedBeforeKey, *filter.UpdatedBefore)
+		}
+
+		if filter.SortBy != nil {
+			attachStringToSpan(span, keys.FilterSortByKey, *filter.SortBy)
+		}
 	} else {
 		attachBooleanToSpan(span, keys.FilterIsNilKey, true)
 	}

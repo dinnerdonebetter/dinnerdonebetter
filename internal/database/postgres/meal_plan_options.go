@@ -266,7 +266,13 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, 
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	groupBys := []string{"meal_plan_options.id", "meals.id"}

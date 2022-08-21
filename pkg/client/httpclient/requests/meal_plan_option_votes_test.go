@@ -101,7 +101,7 @@ func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealPlanID, exampleMealPlanOptionID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealPlanID, exampleMealPlanOptionID)
 
 		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, filter)
 		assert.NoError(t, err)

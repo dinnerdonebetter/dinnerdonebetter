@@ -259,7 +259,13 @@ func (q *SQLQuerier) GetRecipeSteps(ctx context.Context, recipeID string, filter
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	query, args := q.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter, true)

@@ -251,7 +251,13 @@ func (q *SQLQuerier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	query, args := q.buildListQuery(ctx, "meals", nil, nil, nil, "", mealsTableColumns, "", false, filter, true)
@@ -280,7 +286,13 @@ func (q *SQLQuerier) SearchForMeals(ctx context.Context, mealNameQuery string, f
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	where := squirrel.ILike{"name": wrapQueryForILIKE(mealNameQuery)}

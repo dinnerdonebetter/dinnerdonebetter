@@ -3,7 +3,7 @@ sql:
   - schema: "internal/database/postgres/migrations"
     queries: "internal/database/postgres/queries"
     engine: "postgresql"
-    strict_function_checks: true
+    strict_function_checks: false
     gen:
       go:
         package: "generated"

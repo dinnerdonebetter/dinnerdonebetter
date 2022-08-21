@@ -11,14 +11,22 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64, validInstruments ...*types.ValidInstrument) *sqlmock.Rows {
-	columns := validInstrumentsTableColumns
+	columns := []string{
+		"valid_instruments.id",
+		"valid_instruments.name",
+		"valid_instruments.plural_name",
+		"valid_instruments.description",
+		"valid_instruments.icon_path",
+		"valid_instruments.created_on",
+		"valid_instruments.last_updated_on",
+		"valid_instruments.archived_on",
+	}
 
 	if includeCounts {
 		columns = append(columns, "filtered_count", "total_count")
@@ -46,39 +54,6 @@ func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64,
 	}
 
 	return exampleRows
-}
-
-func TestQuerier_ScanValidInstruments(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanValidInstruments(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanValidInstruments(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
 }
 
 func TestQuerier_ValidInstrumentExists(T *testing.T) {
@@ -406,9 +381,15 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter, true)
+		args := []interface{}{
+			nullInt64ForUint64Field(filter.CreatedAfter),
+			nullInt64ForUint64Field(filter.CreatedBefore),
+			nullInt64ForUint64Field(filter.UpdatedAfter),
+			nullInt64ForUint64Field(filter.UpdatedBefore),
+			nullInt32ForUint8Field(filter.Limit),
+		}
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstruments)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.ValidInstruments...))
 
@@ -430,9 +411,16 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter, true)
+		f := types.DefaultQueryFilter()
+		args := []interface{}{
+			nullInt64ForUint64Field(f.CreatedAfter),
+			nullInt64ForUint64Field(f.CreatedBefore),
+			nullInt64ForUint64Field(f.UpdatedAfter),
+			nullInt64ForUint64Field(f.UpdatedBefore),
+			nullInt32ForUint8Field(f.Limit),
+		}
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstruments)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.ValidInstruments...))
 
@@ -451,9 +439,15 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter, true)
+		args := []interface{}{
+			nullInt64ForUint64Field(filter.CreatedAfter),
+			nullInt64ForUint64Field(filter.CreatedBefore),
+			nullInt64ForUint64Field(filter.UpdatedAfter),
+			nullInt64ForUint64Field(filter.UpdatedBefore),
+			nullInt32ForUint8Field(filter.Limit),
+		}
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstruments)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -472,9 +466,15 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter, true)
+		args := []interface{}{
+			nullInt64ForUint64Field(filter.CreatedAfter),
+			nullInt64ForUint64Field(filter.CreatedBefore),
+			nullInt64ForUint64Field(filter.UpdatedAfter),
+			nullInt64ForUint64Field(filter.UpdatedBefore),
+			nullInt32ForUint8Field(filter.Limit),
+		}
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstruments)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 

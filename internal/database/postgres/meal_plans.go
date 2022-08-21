@@ -363,7 +363,13 @@ func (q *SQLQuerier) GetMealPlans(ctx context.Context, householdID string, filte
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, false, filter, true)

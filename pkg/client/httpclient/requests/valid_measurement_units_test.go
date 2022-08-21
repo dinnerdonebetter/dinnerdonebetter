@@ -65,7 +65,7 @@ func TestBuilder_BuildGetValidMeasurementUnitsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetValidMeasurementUnitsRequest(helper.ctx, filter)
 		assert.NoError(t, err)
@@ -101,7 +101,7 @@ func TestBuilder_BuildSearchValidMeasurementUnitsRequest(T *testing.T) {
 		exampleQuery := "whatever"
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
 
-		actual, err := helper.builder.BuildSearchValidMeasurementUnitsRequest(helper.ctx, exampleQuery, limit)
+		actual, err := helper.builder.BuildSearchValidMeasurementUnitsRequest(helper.ctx, exampleQuery, *limit)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -116,7 +116,7 @@ func TestBuilder_BuildSearchValidMeasurementUnitsRequest(T *testing.T) {
 		limit := types.DefaultQueryFilter().Limit
 		exampleQuery := "whatever"
 
-		actual, err := helper.builder.BuildSearchValidMeasurementUnitsRequest(helper.ctx, exampleQuery, limit)
+		actual, err := helper.builder.BuildSearchValidMeasurementUnitsRequest(helper.ctx, exampleQuery, *limit)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

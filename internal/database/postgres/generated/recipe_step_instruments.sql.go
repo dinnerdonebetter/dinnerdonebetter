@@ -25,7 +25,7 @@ func (q *Queries) ArchiveRecipeStepInstrument(ctx context.Context, arg *ArchiveR
 }
 
 const CreateRecipeStepInstrument = `-- name: CreateRecipeStepInstrument :exec
-INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_product_id,name,optional,minimum_quantity,maximum_quantity,product_of_recipe_step,notes,preference_rank,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_product_id,name,product_of_recipe_step,notes,preference_rank,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 `
 
 type CreateRecipeStepInstrumentParams struct {
@@ -33,9 +33,6 @@ type CreateRecipeStepInstrumentParams struct {
 	InstrumentID        sql.NullString
 	RecipeStepProductID sql.NullString
 	Name                string
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
 	ProductOfRecipeStep bool
 	Notes               string
 	PreferenceRank      int32
@@ -48,9 +45,6 @@ func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, arg *CreateRec
 		arg.InstrumentID,
 		arg.RecipeStepProductID,
 		arg.Name,
-		arg.Optional,
-		arg.MinimumQuantity,
-		arg.MaximumQuantity,
 		arg.ProductOfRecipeStep,
 		arg.Notes,
 		arg.PreferenceRank,
@@ -61,30 +55,27 @@ func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, arg *CreateRec
 
 const GetRecipeStepInstrument = `-- name: GetRecipeStepInstrument :many
 SELECT
-	recipe_step_instruments.id,
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.created_on,
-	valid_instruments.last_updated_on,
-	valid_instruments.archived_on,
-	recipe_step_instruments.recipe_step_product_id,
-	recipe_step_instruments.name,
-    recipe_step_instruments.optional,
-    recipe_step_instruments.minimum_quantity,
-    recipe_step_instruments.maximum_quantity,
-	recipe_step_instruments.product_of_recipe_step,
-	recipe_step_instruments.notes,
-	recipe_step_instruments.preference_rank,
-	recipe_step_instruments.created_on,
-	recipe_step_instruments.last_updated_on,
-	recipe_step_instruments.archived_on,
-	recipe_step_instruments.belongs_to_recipe_step
+    recipe_step_instruments.id,
+    valid_instruments.id,
+    valid_instruments.name,
+    valid_instruments.description,
+    valid_instruments.icon_path,
+    valid_instruments.created_on,
+    valid_instruments.last_updated_on,
+    valid_instruments.archived_on,
+    recipe_step_instruments.recipe_step_product_id,
+    recipe_step_instruments.name,
+    recipe_step_instruments.product_of_recipe_step,
+    recipe_step_instruments.notes,
+    recipe_step_instruments.preference_rank,
+    recipe_step_instruments.created_on,
+    recipe_step_instruments.last_updated_on,
+    recipe_step_instruments.archived_on,
+    recipe_step_instruments.belongs_to_recipe_step
 FROM recipe_step_instruments
-LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
-JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+         LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
+         JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
+         JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_instruments.archived_on IS NULL
   AND recipe_step_instruments.belongs_to_recipe_step = $1
   AND recipe_step_instruments.id = $2
@@ -114,9 +105,6 @@ type GetRecipeStepInstrumentRow struct {
 	ArchivedOn          sql.NullInt64
 	RecipeStepProductID sql.NullString
 	Name_2              string
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
 	ProductOfRecipeStep bool
 	Notes               string
 	PreferenceRank      int32
@@ -152,9 +140,6 @@ func (q *Queries) GetRecipeStepInstrument(ctx context.Context, arg *GetRecipeSte
 			&i.ArchivedOn,
 			&i.RecipeStepProductID,
 			&i.Name_2,
-			&i.Optional,
-			&i.MinimumQuantity,
-			&i.MaximumQuantity,
 			&i.ProductOfRecipeStep,
 			&i.Notes,
 			&i.PreferenceRank,
@@ -178,35 +163,32 @@ func (q *Queries) GetRecipeStepInstrument(ctx context.Context, arg *GetRecipeSte
 
 const GetRecipeStepInstrumentsForRecipe = `-- name: GetRecipeStepInstrumentsForRecipe :many
 SELECT
-	recipe_step_instruments.id,
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.created_on,
-	valid_instruments.last_updated_on,
-	valid_instruments.archived_on,
-	recipe_step_instruments.recipe_step_product_id,
+    recipe_step_instruments.id,
+    valid_instruments.id,
+    valid_instruments.name,
+    valid_instruments.description,
+    valid_instruments.icon_path,
+    valid_instruments.created_on,
+    valid_instruments.last_updated_on,
+    valid_instruments.archived_on,
+    recipe_step_instruments.recipe_step_product_id,
     recipe_step_instruments.name,
-    recipe_step_instruments.optional,
-    recipe_step_instruments.minimum_quantity,
-    recipe_step_instruments.maximum_quantity,
-	recipe_step_instruments.product_of_recipe_step,
-	recipe_step_instruments.notes,
-	recipe_step_instruments.preference_rank,
-	recipe_step_instruments.created_on,
-	recipe_step_instruments.last_updated_on,
-	recipe_step_instruments.archived_on,
-	recipe_step_instruments.belongs_to_recipe_step
+    recipe_step_instruments.product_of_recipe_step,
+    recipe_step_instruments.notes,
+    recipe_step_instruments.preference_rank,
+    recipe_step_instruments.created_on,
+    recipe_step_instruments.last_updated_on,
+    recipe_step_instruments.archived_on,
+    recipe_step_instruments.belongs_to_recipe_step
 FROM recipe_step_instruments
-LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
-JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+         LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
+         JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
+         JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_instruments.archived_on IS NULL
-AND recipe_steps.archived_on IS NULL
-AND recipe_steps.belongs_to_recipe = $1
-AND recipes.archived_on IS NULL
-AND recipes.id = $2
+  AND recipe_steps.archived_on IS NULL
+  AND recipe_steps.belongs_to_recipe = $1
+  AND recipes.archived_on IS NULL
+  AND recipes.id = $2
 `
 
 type GetRecipeStepInstrumentsForRecipeParams struct {
@@ -225,9 +207,6 @@ type GetRecipeStepInstrumentsForRecipeRow struct {
 	ArchivedOn          sql.NullInt64
 	RecipeStepProductID sql.NullString
 	Name_2              string
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
 	ProductOfRecipeStep bool
 	Notes               string
 	PreferenceRank      int32
@@ -257,9 +236,6 @@ func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, arg *Ge
 			&i.ArchivedOn,
 			&i.RecipeStepProductID,
 			&i.Name_2,
-			&i.Optional,
-			&i.MinimumQuantity,
-			&i.MaximumQuantity,
 			&i.ProductOfRecipeStep,
 			&i.Notes,
 			&i.PreferenceRank,
@@ -318,20 +294,18 @@ func (q *Queries) RecipeStepInstrumentExists(ctx context.Context, arg *RecipeSte
 }
 
 const UpdateRecipeStepInstrument = `-- name: UpdateRecipeStepInstrument :exec
-UPDATE recipe_step_instruments SET
-   instrument_id = $1,
-   recipe_step_product_id = $2,
-   name = $3,
-   product_of_recipe_step = $4,
-   notes = $5,
-   optional = $6,
-   minimum_quantity = $7,
-   maximum_quantity = $8,
-   preference_rank = $9,
-   last_updated_on = extract(epoch FROM NOW())
+UPDATE recipe_step_instruments
+SET
+    instrument_id = $1,
+    recipe_step_product_id = $2,
+    name = $3,
+    product_of_recipe_step = $4,
+    notes = $5,
+    preference_rank = $6,
+    last_updated_on = extract(epoch FROM NOW())
 WHERE archived_on IS NULL
-  AND belongs_to_recipe_step = $10
-  AND id = $11
+  AND belongs_to_recipe_step = $7
+  AND id = $8
 `
 
 type UpdateRecipeStepInstrumentParams struct {
@@ -340,9 +314,6 @@ type UpdateRecipeStepInstrumentParams struct {
 	Name                string
 	ProductOfRecipeStep bool
 	Notes               string
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
 	PreferenceRank      int32
 	BelongsToRecipeStep string
 	ID                  string
@@ -355,9 +326,6 @@ func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, arg *UpdateRec
 		arg.Name,
 		arg.ProductOfRecipeStep,
 		arg.Notes,
-		arg.Optional,
-		arg.MinimumQuantity,
-		arg.MaximumQuantity,
 		arg.PreferenceRank,
 		arg.BelongsToRecipeStep,
 		arg.ID,

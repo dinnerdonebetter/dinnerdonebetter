@@ -32,13 +32,12 @@ INSERT INTO recipe_step_ingredients (
     measurement_unit,
     minimum_quantity_value,
     maximum_quantity_value,
-    optional,
     quantity_notes,
     product_of_recipe_step,
     recipe_step_product_id,
     ingredient_notes,
     belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
 `
 
 type CreateRecipeStepIngredientParams struct {
@@ -48,7 +47,6 @@ type CreateRecipeStepIngredientParams struct {
 	MeasurementUnit      sql.NullString
 	MinimumQuantityValue float64
 	MaximumQuantityValue float64
-	Optional             bool
 	QuantityNotes        string
 	ProductOfRecipeStep  bool
 	RecipeStepProductID  sql.NullString
@@ -64,7 +62,6 @@ func (q *Queries) CreateRecipeStepIngredient(ctx context.Context, arg *CreateRec
 		arg.MeasurementUnit,
 		arg.MinimumQuantityValue,
 		arg.MaximumQuantityValue,
-		arg.Optional,
 		arg.QuantityNotes,
 		arg.ProductOfRecipeStep,
 		arg.RecipeStepProductID,
@@ -90,7 +87,6 @@ SELECT
     recipe_step_ingredients.minimum_quantity_value,
     recipe_step_ingredients.maximum_quantity_value,
     recipe_step_ingredients.quantity_notes,
-    recipe_step_ingredients.optional,
     recipe_step_ingredients.product_of_recipe_step,
     recipe_step_ingredients.recipe_step_product_id,
     recipe_step_ingredients.ingredient_notes,
@@ -99,10 +95,10 @@ SELECT
     recipe_step_ingredients.archived_on,
     recipe_step_ingredients.belongs_to_recipe_step
 FROM recipe_step_ingredients
-  JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
-  JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-  JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
-  JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id
+         JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
+         JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+         JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
+         JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_ingredients.archived_on IS NULL
   AND recipe_step_ingredients.belongs_to_recipe_step = $1
   AND recipe_step_ingredients.id = $2
@@ -136,7 +132,6 @@ type GetRecipeStepIngredientRow struct {
 	MinimumQuantityValue float64
 	MaximumQuantityValue float64
 	QuantityNotes        string
-	Optional             bool
 	ProductOfRecipeStep  bool
 	RecipeStepProductID  sql.NullString
 	IngredientNotes      string
@@ -176,7 +171,6 @@ func (q *Queries) GetRecipeStepIngredient(ctx context.Context, arg *GetRecipeSte
 			&i.MinimumQuantityValue,
 			&i.MaximumQuantityValue,
 			&i.QuantityNotes,
-			&i.Optional,
 			&i.ProductOfRecipeStep,
 			&i.RecipeStepProductID,
 			&i.IngredientNotes,
@@ -236,20 +230,20 @@ func (q *Queries) TotalRecipeStepIngredientCount(ctx context.Context) (int64, er
 
 const UpdateRecipeStepIngredient = `-- name: UpdateRecipeStepIngredient :exec
 
-UPDATE recipe_step_ingredients SET
+UPDATE recipe_step_ingredients
+SET
     ingredient_id = $1,
     name = $2,
     measurement_unit = $3,
     minimum_quantity_value = $4,
     maximum_quantity_value = $5,
-    optional = $6,
-    quantity_notes = $7,
-    product_of_recipe_step = $8,
-    recipe_step_product_id = $9,
-    ingredient_notes = $10,
+    quantity_notes = $6,
+    product_of_recipe_step = $7,
+    recipe_step_product_id = $8,
+    ingredient_notes = $9,
     last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL AND belongs_to_recipe_step = $11
-  AND id = $12
+WHERE archived_on IS NULL AND belongs_to_recipe_step = $10
+  AND id = $11
 `
 
 type UpdateRecipeStepIngredientParams struct {
@@ -258,7 +252,6 @@ type UpdateRecipeStepIngredientParams struct {
 	MeasurementUnit      sql.NullString
 	MinimumQuantityValue float64
 	MaximumQuantityValue float64
-	Optional             bool
 	QuantityNotes        string
 	ProductOfRecipeStep  bool
 	RecipeStepProductID  sql.NullString
@@ -274,7 +267,6 @@ func (q *Queries) UpdateRecipeStepIngredient(ctx context.Context, arg *UpdateRec
 		arg.MeasurementUnit,
 		arg.MinimumQuantityValue,
 		arg.MaximumQuantityValue,
-		arg.Optional,
 		arg.QuantityNotes,
 		arg.ProductOfRecipeStep,
 		arg.RecipeStepProductID,

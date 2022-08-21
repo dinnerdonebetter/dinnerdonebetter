@@ -107,7 +107,7 @@ SELECT
     valid_instruments.archived_on
 FROM valid_instruments
 WHERE valid_instruments.archived_on IS NULL
-AND valid_instruments.id = $1
+  AND valid_instruments.id = $1
 `
 
 type GetValidInstrumentRow struct {
@@ -135,6 +135,112 @@ func (q *Queries) GetValidInstrument(ctx context.Context, id string) (*GetValidI
 		&i.ArchivedOn,
 	)
 	return &i, err
+}
+
+const GetValidInstruments = `-- name: GetValidInstruments :many
+SELECT
+    valid_instruments.id,
+    valid_instruments.name,
+    valid_instruments.plural_name,
+    valid_instruments.description,
+    valid_instruments.icon_path,
+    valid_instruments.created_on,
+    valid_instruments.last_updated_on,
+    valid_instruments.archived_on,
+    (
+        SELECT
+            COUNT(valid_instruments.id)
+        FROM
+            valid_instruments
+        WHERE
+            valid_instruments.archived_on IS NULL
+          AND valid_instruments.created_on > COALESCE($1, 0)
+          AND valid_instruments.created_on < COALESCE($2, (SELECT ~(1::bigint<<63)))
+          AND (valid_instruments.last_updated_on IS NULL OR valid_instruments.last_updated_on > COALESCE($3, 0))
+          AND (valid_instruments.last_updated_on IS NULL OR valid_instruments.last_updated_on < COALESCE($4, (SELECT ~(1::bigint<<63))))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_instruments.id)
+        FROM
+            valid_instruments
+        WHERE
+            valid_instruments.archived_on IS NULL
+    ) as total_count
+FROM
+    valid_instruments
+WHERE
+    valid_instruments.archived_on IS NULL
+  AND valid_instruments.created_on > COALESCE($1, 0)
+  AND valid_instruments.created_on < COALESCE($2, (SELECT ~(1::bigint<<63)))
+  AND (valid_instruments.last_updated_on IS NULL OR valid_instruments.last_updated_on > COALESCE($3, 0))
+  AND (valid_instruments.last_updated_on IS NULL OR valid_instruments.last_updated_on < COALESCE($4, (SELECT ~(1::bigint<<63))))
+GROUP BY
+    valid_instruments.id
+ORDER BY
+    valid_instruments.id
+    LIMIT $5
+`
+
+type GetValidInstrumentsParams struct {
+	CreatedAfter  sql.NullInt64
+	CreatedBefore sql.NullInt64
+	UpdatedAfter  sql.NullInt64
+	UpdatedBefore sql.NullInt64
+	Limit         sql.NullInt32
+}
+
+type GetValidInstrumentsRow struct {
+	ID            string
+	Name          string
+	PluralName    string
+	Description   string
+	IconPath      string
+	CreatedOn     int64
+	LastUpdatedOn sql.NullInt64
+	ArchivedOn    sql.NullInt64
+	FilteredCount int64
+	TotalCount    int64
+}
+
+func (q *Queries) GetValidInstruments(ctx context.Context, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
+	rows, err := q.db.QueryContext(ctx, GetValidInstruments,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*GetValidInstrumentsRow
+	for rows.Next() {
+		var i GetValidInstrumentsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.PluralName,
+			&i.Description,
+			&i.IconPath,
+			&i.CreatedOn,
+			&i.LastUpdatedOn,
+			&i.ArchivedOn,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const SearchForValidInstruments = `-- name: SearchForValidInstruments :many

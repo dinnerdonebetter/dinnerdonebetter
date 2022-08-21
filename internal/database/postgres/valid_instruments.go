@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -15,83 +14,7 @@ import (
 
 var (
 	_ types.ValidInstrumentDataManager = (*SQLQuerier)(nil)
-
-	// validInstrumentsTableColumns are the columns for the valid_instruments table.
-	validInstrumentsTableColumns = []string{
-		"valid_instruments.id",
-		"valid_instruments.name",
-		"valid_instruments.plural_name",
-		"valid_instruments.description",
-		"valid_instruments.icon_path",
-		"valid_instruments.created_on",
-		"valid_instruments.last_updated_on",
-		"valid_instruments.archived_on",
-	}
 )
-
-// scanValidInstrument takes a database Scanner (i.e. *sql.Row) and scans the result into a valid instrument struct.
-func (q *SQLQuerier) scanValidInstrument(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidInstrument, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
-	x = &types.ValidInstrument{}
-
-	targetVars := []interface{}{
-		&x.ID,
-		&x.Name,
-		&x.PluralName,
-		&x.Description,
-		&x.IconPath,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanValidInstruments takes some database rows and turns them into a slice of valid instruments.
-func (q *SQLQuerier) scanValidInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validInstruments []*types.ValidInstrument, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanValidInstrument(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		validInstruments = append(validInstruments, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
-	}
-
-	return validInstruments, filteredCount, totalCount, nil
-}
 
 // ValidInstrumentExists fetches whether a valid instrument exists from the database.
 func (q *SQLQuerier) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
@@ -247,12 +170,12 @@ func (q *SQLQuerier) GetTotalValidInstrumentCount(ctx context.Context) (uint64, 
 
 	logger := q.logger.Clone()
 
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidInstrumentsCountQuery, "fetching count of valid instruments")
+	count, err := q.generatedQuerier.GetTotalValidInstrumentCount(ctx)
 	if err != nil {
 		return 0, observability.PrepareError(err, logger, span, "querying for count of valid instruments")
 	}
 
-	return count, nil
+	return uint64(count), nil
 }
 
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
@@ -267,18 +190,54 @@ func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.Quer
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
+	} else {
+		filter = types.DefaultQueryFilter()
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter, true)
+	args := &generated.GetValidInstrumentsParams{
+		CreatedAfter:  nullInt64ForUint64Field(filter.CreatedAfter),
+		CreatedBefore: nullInt64ForUint64Field(filter.CreatedBefore),
+		UpdatedAfter:  nullInt64ForUint64Field(filter.UpdatedAfter),
+		UpdatedBefore: nullInt64ForUint64Field(filter.UpdatedBefore),
+		Limit:         nullInt32ForUint8Field(filter.Limit),
+	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "validInstruments", query, args)
+	results, err := q.generatedQuerier.GetValidInstruments(ctx, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing valid instruments list retrieval query")
 	}
 
-	if x.ValidInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidInstruments(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid instruments")
+	for _, result := range results {
+		instrument := &types.ValidInstrument{
+			Description: result.Description,
+			IconPath:    result.IconPath,
+			ID:          result.ID,
+			Name:        result.Name,
+			PluralName:  result.PluralName,
+			CreatedOn:   uint64(result.CreatedOn),
+		}
+
+		if result.LastUpdatedOn.Valid {
+			t := uint64(result.LastUpdatedOn.Int64)
+			instrument.LastUpdatedOn = &t
+		}
+
+		if result.ArchivedOn.Valid {
+			t := uint64(result.ArchivedOn.Int64)
+			instrument.ArchivedOn = &t
+		}
+
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
+
+		x.ValidInstruments = append(x.ValidInstruments, instrument)
 	}
 
 	return x, nil

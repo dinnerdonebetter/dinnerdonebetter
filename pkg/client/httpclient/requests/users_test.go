@@ -66,7 +66,7 @@ func TestBuilder_BuildGetUsersRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
 
 		actual, err := helper.builder.BuildGetUsersRequest(helper.ctx, nil)
 		assert.NoError(t, err)

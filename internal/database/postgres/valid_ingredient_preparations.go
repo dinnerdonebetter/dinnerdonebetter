@@ -272,7 +272,13 @@ func (q *SQLQuerier) GetValidIngredientPreparations(ctx context.Context, filter 
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	joins := []string{
@@ -400,11 +406,17 @@ func (q *SQLQuerier) GetValidIngredientPreparationsForPreparation(ctx context.Co
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx, filter.Limit, []string{preparationID})
+	query, args := q.buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx, *filter.Limit, []string{preparationID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
@@ -440,11 +452,17 @@ func (q *SQLQuerier) GetValidIngredientPreparationsForIngredient(ctx context.Con
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx, filter.Limit, []string{ingredientID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
+	query, args := q.buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx, *filter.Limit, []string{ingredientID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation ingredients for ingredient", query, args)
 	if err != nil {

@@ -20,18 +20,14 @@ func (q *Queries) ArchiveValidMeasurementUnit(ctx context.Context, id string) er
 }
 
 const CreateValidMeasurementUnit = `-- name: CreateValidMeasurementUnit :exec
-INSERT INTO valid_measurement_units (id,name,plural_name,description,volumetric,universal,metric,imperial,icon_path) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+INSERT INTO valid_measurement_units (id,name,description,volumetric,icon_path) VALUES ($1,$2,$3,$4,$5)
 `
 
 type CreateValidMeasurementUnitParams struct {
 	ID          string
 	Name        string
-	PluralName  string
 	Description string
 	Volumetric  sql.NullBool
-	Universal   bool
-	Metric      bool
-	Imperial    bool
 	IconPath    string
 }
 
@@ -39,12 +35,8 @@ func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, arg *CreateVal
 	_, err := q.db.ExecContext(ctx, CreateValidMeasurementUnit,
 		arg.ID,
 		arg.Name,
-		arg.PluralName,
 		arg.Description,
 		arg.Volumetric,
-		arg.Universal,
-		arg.Metric,
-		arg.Imperial,
 		arg.IconPath,
 	)
 	return err
@@ -54,30 +46,22 @@ const GetRandomValidMeasurementUnit = `-- name: GetRandomValidMeasurementUnit :o
 SELECT
     valid_measurement_units.id,
     valid_measurement_units.name,
-    valid_measurement_units.plural_name,
     valid_measurement_units.description,
     valid_measurement_units.volumetric,
-    valid_measurement_units.universal,
-    valid_measurement_units.metric,
-    valid_measurement_units.imperial,
     valid_measurement_units.icon_path,
     valid_measurement_units.created_on,
     valid_measurement_units.last_updated_on,
     valid_measurement_units.archived_on
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_on IS NULL
-    ORDER BY random() LIMIT 1
+ORDER BY random() LIMIT 1
 `
 
 type GetRandomValidMeasurementUnitRow struct {
 	ID            string
 	Name          string
-	PluralName    string
 	Description   string
 	Volumetric    sql.NullBool
-	Universal     bool
-	Metric        bool
-	Imperial      bool
 	IconPath      string
 	CreatedOn     int64
 	LastUpdatedOn sql.NullInt64
@@ -90,12 +74,8 @@ func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context) (*GetRandom
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.PluralName,
 		&i.Description,
 		&i.Volumetric,
-		&i.Universal,
-		&i.Metric,
-		&i.Imperial,
 		&i.IconPath,
 		&i.CreatedOn,
 		&i.LastUpdatedOn,
@@ -119,12 +99,8 @@ const GetValidMeasurementUnit = `-- name: GetValidMeasurementUnit :one
 SELECT
     valid_measurement_units.id,
     valid_measurement_units.name,
-    valid_measurement_units.plural_name,
     valid_measurement_units.description,
     valid_measurement_units.volumetric,
-    valid_measurement_units.universal,
-    valid_measurement_units.metric,
-    valid_measurement_units.imperial,
     valid_measurement_units.icon_path,
     valid_measurement_units.created_on,
     valid_measurement_units.last_updated_on,
@@ -137,12 +113,8 @@ WHERE valid_measurement_units.archived_on IS NULL
 type GetValidMeasurementUnitRow struct {
 	ID            string
 	Name          string
-	PluralName    string
 	Description   string
 	Volumetric    sql.NullBool
-	Universal     bool
-	Metric        bool
-	Imperial      bool
 	IconPath      string
 	CreatedOn     int64
 	LastUpdatedOn sql.NullInt64
@@ -155,12 +127,8 @@ func (q *Queries) GetValidMeasurementUnit(ctx context.Context, id string) (*GetV
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.PluralName,
 		&i.Description,
 		&i.Volumetric,
-		&i.Universal,
-		&i.Metric,
-		&i.Imperial,
 		&i.IconPath,
 		&i.CreatedOn,
 		&i.LastUpdatedOn,
@@ -173,12 +141,8 @@ const SearchForValidMeasurementUnits = `-- name: SearchForValidMeasurementUnits 
 SELECT
     valid_measurement_units.id,
     valid_measurement_units.name,
-    valid_measurement_units.plural_name,
     valid_measurement_units.description,
     valid_measurement_units.volumetric,
-    valid_measurement_units.universal,
-    valid_measurement_units.metric,
-    valid_measurement_units.imperial,
     valid_measurement_units.icon_path,
     valid_measurement_units.created_on,
     valid_measurement_units.last_updated_on,
@@ -192,12 +156,8 @@ LIMIT 50
 type SearchForValidMeasurementUnitsRow struct {
 	ID            string
 	Name          string
-	PluralName    string
 	Description   string
 	Volumetric    sql.NullBool
-	Universal     bool
-	Metric        bool
-	Imperial      bool
 	IconPath      string
 	CreatedOn     int64
 	LastUpdatedOn sql.NullInt64
@@ -216,12 +176,8 @@ func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, name strin
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.PluralName,
 			&i.Description,
 			&i.Volumetric,
-			&i.Universal,
-			&i.Metric,
-			&i.Imperial,
 			&i.IconPath,
 			&i.CreatedOn,
 			&i.LastUpdatedOn,
@@ -241,27 +197,20 @@ func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, name strin
 }
 
 const UpdateValidMeasurementUnit = `-- name: UpdateValidMeasurementUnit :exec
-UPDATE valid_measurement_units SET
-   name = $1,
-   plural_name = $2,
-   description = $3,
-   volumetric = $4,
-   universal = $5,
-   metric = $6,
-   imperial = $7,
-   icon_path = $8,
-   last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL AND id = $9
+UPDATE valid_measurement_units
+SET
+    name = $1,
+    description = $2,
+    volumetric = $3,
+    icon_path = $4,
+    last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL AND id = $5
 `
 
 type UpdateValidMeasurementUnitParams struct {
 	Name        string
-	PluralName  string
 	Description string
 	Volumetric  sql.NullBool
-	Universal   bool
-	Metric      bool
-	Imperial    bool
 	IconPath    string
 	ID          string
 }
@@ -269,12 +218,8 @@ type UpdateValidMeasurementUnitParams struct {
 func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, arg *UpdateValidMeasurementUnitParams) error {
 	_, err := q.db.ExecContext(ctx, UpdateValidMeasurementUnit,
 		arg.Name,
-		arg.PluralName,
 		arg.Description,
 		arg.Volumetric,
-		arg.Universal,
-		arg.Metric,
-		arg.Imperial,
 		arg.IconPath,
 		arg.ID,
 	)

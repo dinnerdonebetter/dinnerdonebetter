@@ -397,7 +397,6 @@ type RecipeStepIngredients struct {
 	RecipeStepProductID  sql.NullString
 	MaximumQuantityValue float64
 	MeasurementUnit      sql.NullString
-	Optional             bool
 }
 
 type RecipeStepInstruments struct {
@@ -412,9 +411,6 @@ type RecipeStepInstruments struct {
 	RecipeStepProductID sql.NullString
 	ProductOfRecipeStep bool
 	Name                string
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
 }
 
 type RecipeStepProducts struct {
@@ -429,7 +425,6 @@ type RecipeStepProducts struct {
 	MaximumQuantityValue float64
 	MeasurementUnit      sql.NullString
 	Type                 RecipeStepProductType
-	Compostable          bool
 }
 
 type RecipeSteps struct {
@@ -446,7 +441,6 @@ type RecipeSteps struct {
 	BelongsToRecipe               string
 	Optional                      bool
 	MaximumTemperatureInCelsius   sql.NullInt32
-	ExplicitInstructions          string
 }
 
 type Recipes struct {
@@ -459,7 +453,6 @@ type Recipes struct {
 	LastUpdatedOn      sql.NullInt64
 	ArchivedOn         sql.NullInt64
 	CreatedByUser      string
-	YieldsPortions     int32
 }
 
 type Sessions struct {
@@ -490,15 +483,13 @@ type Users struct {
 }
 
 type ValidIngredientMeasurementUnits struct {
-	ID                       string
-	Notes                    string
-	ValidIngredientID        string
-	ValidMeasurementUnitID   string
-	CreatedOn                int64
-	LastUpdatedOn            sql.NullInt64
-	ArchivedOn               sql.NullInt64
-	MinimumAllowableQuantity float64
-	MaximumAllowableQuantity float64
+	ID                     string
+	Notes                  string
+	ValidIngredientID      string
+	ValidMeasurementUnitID string
+	CreatedOn              int64
+	LastUpdatedOn          sql.NullInt64
+	ArchivedOn             sql.NullInt64
 }
 
 type ValidIngredientPreparations struct {
@@ -512,32 +503,27 @@ type ValidIngredientPreparations struct {
 }
 
 type ValidIngredients struct {
-	ID                                      string
-	Name                                    string
-	Description                             string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IconPath                                string
-	CreatedOn                               int64
-	LastUpdatedOn                           sql.NullInt64
-	ArchivedOn                              sql.NullInt64
-	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	PluralName                              string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius float64
-	MaximumIdealStorageTemperatureInCelsius float64
+	ID                string
+	Name              string
+	Description       string
+	Warning           string
+	ContainsEgg       bool
+	ContainsDairy     bool
+	ContainsPeanut    bool
+	ContainsTreeNut   bool
+	ContainsSoy       bool
+	ContainsWheat     bool
+	ContainsShellfish bool
+	ContainsSesame    bool
+	ContainsFish      bool
+	ContainsGluten    bool
+	AnimalFlesh       bool
+	Volumetric        bool
+	IconPath          string
+	CreatedOn         int64
+	LastUpdatedOn     sql.NullInt64
+	ArchivedOn        sql.NullInt64
+	IsLiquid          sql.NullBool
 }
 
 type ValidInstruments struct {
@@ -560,10 +546,6 @@ type ValidMeasurementUnits struct {
 	CreatedOn     int64
 	LastUpdatedOn sql.NullInt64
 	ArchivedOn    sql.NullInt64
-	Universal     bool
-	Metric        bool
-	Imperial      bool
-	PluralName    string
 }
 
 type ValidPreparationInstruments struct {
@@ -577,17 +559,13 @@ type ValidPreparationInstruments struct {
 }
 
 type ValidPreparations struct {
-	ID                     string
-	Name                   string
-	Description            string
-	IconPath               string
-	CreatedOn              int64
-	LastUpdatedOn          sql.NullInt64
-	ArchivedOn             sql.NullInt64
-	YieldsNothing          bool
-	RestrictToIngredients  bool
-	ZeroIngredientsAllowed bool
-	PastTense              string
+	ID            string
+	Name          string
+	Description   string
+	IconPath      string
+	CreatedOn     int64
+	LastUpdatedOn sql.NullInt64
+	ArchivedOn    sql.NullInt64
 }
 
 type Webhooks struct {

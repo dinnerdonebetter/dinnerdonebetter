@@ -12,7 +12,7 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 LOCAL_ADDRESS                 := api.prixfixe.local
 DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
-SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc
+SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.15.0
 
 ## non-PHONY folders/files
 

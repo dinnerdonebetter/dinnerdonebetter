@@ -233,7 +233,13 @@ func (q *SQLQuerier) GetWebhooks(ctx context.Context, householdID string, filter
 
 	x := &types.WebhookList{}
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	query, args := q.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, householdID, false, filter, true)

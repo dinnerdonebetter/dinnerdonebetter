@@ -369,12 +369,12 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 	tracing.AttachUserIDToSpan(span, userID)
 
 	if filter != nil {
-		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 	}
 
 	var includeArchived bool
-	if filter != nil {
-		includeArchived = filter.IncludeArchived
+	if filter != nil && filter.IncludeArchived != nil {
+		includeArchived = *filter.IncludeArchived
 	}
 
 	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, householdsTableName, nil, nil, userOwnershipColumn, userID, forAdmin, includeArchived, filter)
@@ -432,7 +432,13 @@ func (q *SQLQuerier) getHouseholds(ctx context.Context, querier database.SQLQuer
 
 	x = &types.HouseholdList{}
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	query, args := q.buildGetHouseholdsQuery(ctx, userID, forAdmin, filter)

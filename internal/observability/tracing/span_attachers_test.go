@@ -93,7 +93,7 @@ func TestAttachFilterToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachFilterDataToSpan(span, 1, 2, t.Name())
+		AttachFilterDataToSpan(span, func(x uint64) *uint64 { return &x }(1), func(x uint8) *uint8 { return &x }(2), func(x string) *string { return &x }(t.Name()))
 	})
 }
 

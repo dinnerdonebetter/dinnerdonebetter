@@ -120,7 +120,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_GetRecipeStepInstruments() {
 
 		exampleRecipeStepInstrumentList := fakes.BuildFakeRecipeStepInstrumentList()
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipeStepInstrumentList)
 		actual, err := c.GetRecipeStepInstruments(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, filter)
 
@@ -170,7 +170,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_GetRecipeStepInstruments() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetRecipeStepInstruments(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, filter)
 

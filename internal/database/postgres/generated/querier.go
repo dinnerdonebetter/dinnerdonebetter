@@ -81,7 +81,7 @@ type Querier interface {
 	GetRandomValidIngredient(ctx context.Context) (*GetRandomValidIngredientRow, error)
 	GetRandomValidInstrument(ctx context.Context) (*GetRandomValidInstrumentRow, error)
 	GetRandomValidMeasurementUnit(ctx context.Context) (*GetRandomValidMeasurementUnitRow, error)
-	GetRandomValidPreparation(ctx context.Context) (*GetRandomValidPreparationRow, error)
+	GetRandomValidPreparation(ctx context.Context) (*ValidPreparations, error)
 	GetRecipeByID(ctx context.Context, id string) ([]*GetRecipeByIDRow, error)
 	GetRecipeByIDAndAuthorID(ctx context.Context, arg *GetRecipeByIDAndAuthorIDParams) ([]*GetRecipeByIDAndAuthorIDRow, error)
 	GetRecipeStep(ctx context.Context, arg *GetRecipeStepParams) (*GetRecipeStepRow, error)
@@ -112,8 +112,9 @@ type Querier interface {
 	GetValidIngredientMeasurementUnit(ctx context.Context, id string) (*GetValidIngredientMeasurementUnitRow, error)
 	GetValidIngredientPreparation(ctx context.Context, id string) (*GetValidIngredientPreparationRow, error)
 	GetValidInstrument(ctx context.Context, id string) (*GetValidInstrumentRow, error)
+	GetValidInstruments(ctx context.Context, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error)
 	GetValidMeasurementUnit(ctx context.Context, id string) (*GetValidMeasurementUnitRow, error)
-	GetValidPreparation(ctx context.Context, id string) (*GetValidPreparationRow, error)
+	GetValidPreparation(ctx context.Context, id string) (*ValidPreparations, error)
 	GetValidPreparationInstrument(ctx context.Context, id string) (*GetValidPreparationInstrumentRow, error)
 	GetWebhook(ctx context.Context, arg *GetWebhookParams) (*Webhooks, error)
 	HouseholdInvitationExists(ctx context.Context, id string) (bool, error)
@@ -172,7 +173,7 @@ type Querier interface {
 	ValidMeasurementUnitExists(ctx context.Context, id string) (bool, error)
 	ValidPreparationExists(ctx context.Context, id string) (bool, error)
 	ValidPreparationInstrumentExists(ctx context.Context, id string) (bool, error)
-	ValidPreparationsSearch(ctx context.Context, name string) ([]*ValidPreparationsSearchRow, error)
+	ValidPreparationsSearch(ctx context.Context, name string) ([]*ValidPreparations, error)
 	WebhookExists(ctx context.Context, arg *WebhookExistsParams) (bool, error)
 }
 

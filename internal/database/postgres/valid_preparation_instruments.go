@@ -235,7 +235,13 @@ func (q *SQLQuerier) GetValidPreparationInstruments(ctx context.Context, filter 
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	joins := []string{
@@ -305,11 +311,17 @@ func (q *SQLQuerier) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx, filter.Limit, []string{preparationID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
+	query, args := q.buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx, *filter.Limit, []string{preparationID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
@@ -345,11 +357,17 @@ func (q *SQLQuerier) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx, filter.Limit, []string{instrumentID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
+	query, args := q.buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx, *filter.Limit, []string{instrumentID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for instrument", query, args)
 	if err != nil {

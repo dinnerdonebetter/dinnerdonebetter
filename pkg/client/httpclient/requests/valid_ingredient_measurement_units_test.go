@@ -65,7 +65,7 @@ func TestBuilder_BuildGetValidIngredientMeasurementUnitsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsRequest(helper.ctx, filter)
 		assert.NoError(t, err)
@@ -100,7 +100,7 @@ func TestBuilder_BuildGetValidIngredientMeasurementUnitsForIngredientRequest(T *
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, exampleIngredient.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleIngredient.ID)
 
 		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsForIngredientRequest(helper.ctx, exampleIngredient.ID, filter)
 		assert.NoError(t, err)
@@ -146,7 +146,7 @@ func TestBuilder_BuildGetValidIngredientMeasurementUnitsForMeasurementUnitReques
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMeasurementUnit.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMeasurementUnit.ID)
 
 		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(helper.ctx, exampleMeasurementUnit.ID, filter)
 		assert.NoError(t, err)

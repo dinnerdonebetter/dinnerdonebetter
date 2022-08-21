@@ -486,7 +486,13 @@ func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x
 	logger := filter.AttachToLogger(q.logger)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	query, args := q.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter, true)

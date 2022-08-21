@@ -149,10 +149,10 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+		WithValue(keys.FilterSortByKey, filter.SortBy)
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -190,8 +190,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, string(filter.SortBy))
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		WithValue(keys.FilterSortByKey, filter.SortBy)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	searchQuery := req.URL.Query().Get(types.SearchQueryKey)
 	tracing.AttachSearchQueryToSpan(span, searchQuery)

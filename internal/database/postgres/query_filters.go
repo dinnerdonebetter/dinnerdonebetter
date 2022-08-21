@@ -20,25 +20,25 @@ func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBui
 		queryBuilder = queryBuilder.Offset(qp)
 	}
 
-	if qf.Limit > 0 {
-		queryBuilder = queryBuilder.Limit(uint64(qf.Limit))
+	if qf.Limit != nil && *qf.Limit != 0 {
+		queryBuilder = queryBuilder.Limit(uint64(*qf.Limit))
 	} else {
 		queryBuilder = queryBuilder.Limit(types.MaxLimit)
 	}
 
-	if qf.CreatedAfter > 0 {
+	if qf.CreatedAfter != nil && *qf.CreatedAfter > 0 {
 		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "created_on"): qf.CreatedAfter})
 	}
 
-	if qf.CreatedBefore > 0 {
+	if qf.CreatedBefore != nil && *qf.CreatedBefore > 0 {
 		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "created_on"): qf.CreatedBefore})
 	}
 
-	if qf.UpdatedAfter > 0 {
+	if qf.UpdatedAfter != nil && *qf.UpdatedAfter > 0 {
 		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "last_updated_on"): qf.UpdatedAfter})
 	}
 
-	if qf.UpdatedBefore > 0 {
+	if qf.UpdatedBefore != nil && *qf.UpdatedBefore > 0 {
 		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "last_updated_on"): qf.UpdatedBefore})
 	}
 
@@ -51,19 +51,19 @@ func applyFilterToSubCountQueryBuilder(qf *types.QueryFilter, tableName string, 
 		return queryBuilder
 	}
 
-	if qf.CreatedAfter > 0 {
+	if qf.CreatedAfter != nil && *qf.CreatedAfter > 0 {
 		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "created_on"): qf.CreatedAfter})
 	}
 
-	if qf.CreatedBefore > 0 {
+	if qf.CreatedBefore != nil && *qf.CreatedBefore > 0 {
 		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "created_on"): qf.CreatedBefore})
 	}
 
-	if qf.UpdatedAfter > 0 {
+	if qf.UpdatedAfter != nil && *qf.UpdatedAfter > 0 {
 		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "last_updated_on"): qf.UpdatedAfter})
 	}
 
-	if qf.UpdatedBefore > 0 {
+	if qf.UpdatedBefore != nil && *qf.UpdatedBefore > 0 {
 		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "last_updated_on"): qf.UpdatedBefore})
 	}
 

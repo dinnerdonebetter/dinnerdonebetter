@@ -306,11 +306,17 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx, filter.Limit, []string{ingredientID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
+	query, args := q.buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx, *filter.Limit, []string{ingredientID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for ingredient", query, args)
 	if err != nil {
@@ -346,11 +352,17 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx, filter.Limit, []string{validMeasurementUnitID})
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay? // FIXME
+	query, args := q.buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx, *filter.Limit, []string{validMeasurementUnitID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for measurement unit", query, args)
 	if err != nil {
@@ -376,7 +388,13 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	joins := []string{

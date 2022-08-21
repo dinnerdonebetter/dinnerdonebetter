@@ -217,7 +217,13 @@ func (q *SQLQuerier) GetAPIClients(ctx context.Context, userID string, filter *t
 
 	x = &types.APIClientList{}
 	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
 	}
 
 	query, args := q.buildListQuery(ctx, "api_clients", nil, nil, nil, userOwnershipColumn, apiClientsTableColumns, userID, false, filter, true)

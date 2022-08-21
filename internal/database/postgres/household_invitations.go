@@ -576,12 +576,20 @@ func (q *SQLQuerier) GetPendingHouseholdInvitationsFromUser(ctx context.Context,
 
 	returnList := &types.HouseholdInvitationList{
 		Pagination: types.Pagination{
-			Page:          filter.Page,
-			Limit:         filter.Limit,
 			FilteredCount: fc,
 			TotalCount:    tc,
 		},
 		HouseholdInvitations: householdInvitations,
+	}
+
+	if filter != nil {
+		if filter.Page != nil {
+			returnList.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			returnList.Limit = *filter.Limit
+		}
 	}
 
 	return returnList, nil
@@ -645,12 +653,20 @@ func (q *SQLQuerier) GetPendingHouseholdInvitationsForUser(ctx context.Context, 
 
 	returnList := &types.HouseholdInvitationList{
 		Pagination: types.Pagination{
-			Page:          filter.Page,
-			Limit:         filter.Limit,
 			FilteredCount: fc,
 			TotalCount:    tc,
 		},
 		HouseholdInvitations: householdInvitations,
+	}
+
+	if filter != nil {
+		if filter.Page != nil {
+			returnList.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			returnList.Limit = *filter.Limit
+		}
 	}
 
 	return returnList, nil

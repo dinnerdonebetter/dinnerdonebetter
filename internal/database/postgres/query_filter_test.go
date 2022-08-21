@@ -24,12 +24,12 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Page:          100,
-			Limit:         50,
-			CreatedAfter:  123456789,
-			CreatedBefore: 123456789,
-			UpdatedAfter:  123456789,
-			UpdatedBefore: 123456789,
+			Page:          func(x uint64) *uint64 { return &x }(100),
+			Limit:         func(x uint8) *uint8 { return &x }(50),
+			CreatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
+			CreatedBefore: func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedBefore: func(x uint64) *uint64 { return &x }(123456789),
 			SortBy:        types.SortDescending,
 		}
 
@@ -57,7 +57,10 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 	T.Run("basic usage", func(t *testing.T) {
 		t.Parallel()
 
-		qf := &types.QueryFilter{Limit: 15, Page: 2}
+		qf := &types.QueryFilter{
+			Limit: func(x uint8) *uint8 { return &x }(15),
+			Page:  func(x uint64) *uint64 { return &x }(2),
+		}
 
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 LIMIT 15 OFFSET 15"
 		x := applyFilterToQueryBuilder(qf, exampleTableName, baseQueryBuilder)
@@ -72,12 +75,12 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Limit:         20,
-			Page:          6,
-			CreatedAfter:  uint64(time.Now().Unix()),
-			CreatedBefore: uint64(time.Now().Unix()),
-			UpdatedAfter:  uint64(time.Now().Unix()),
-			UpdatedBefore: uint64(time.Now().Unix()),
+			Limit:         func(x uint8) *uint8 { return &x }(20),
+			Page:          func(x uint64) *uint64 { return &x }(6),
+			CreatedAfter:  func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
+			CreatedBefore: func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
+			UpdatedAfter:  func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
+			UpdatedBefore: func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
 		}
 
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 AND stuff.created_on > $2 AND stuff.created_on < $3 AND stuff.last_updated_on > $4 AND stuff.last_updated_on < $5 LIMIT 20 OFFSET 100"
@@ -92,7 +95,10 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 	T.Run("with zero limit", func(t *testing.T) {
 		t.Parallel()
 
-		qf := &types.QueryFilter{Limit: 0, Page: 1}
+		qf := &types.QueryFilter{
+			Limit: func(x uint8) *uint8 { return &x }(0),
+			Page:  func(x uint64) *uint64 { return &x }(1),
+		}
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 LIMIT 250"
 		x := applyFilterToQueryBuilder(qf, exampleTableName, baseQueryBuilder)
 		actual, args, err := x.ToSql()
@@ -112,12 +118,12 @@ func TestQueryFilter_ApplyFilterToSubCountQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Page:          100,
-			Limit:         50,
-			CreatedAfter:  123456789,
-			CreatedBefore: 123456789,
-			UpdatedAfter:  123456789,
-			UpdatedBefore: 123456789,
+			Page:          func(x uint64) *uint64 { return &x }(100),
+			Limit:         func(x uint8) *uint8 { return &x }(50),
+			CreatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
+			CreatedBefore: func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedBefore: func(x uint64) *uint64 { return &x }(123456789),
 			SortBy:        types.SortDescending,
 		}
 

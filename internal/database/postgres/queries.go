@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -150,7 +151,7 @@ func (q *SQLQuerier) buildFilteredCountQuery(
 	defer span.End()
 
 	if filter != nil {
-		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 	}
 
 	if where == nil {
@@ -202,7 +203,7 @@ func (q *SQLQuerier) buildFilteredCountQueryWithILike(
 	defer span.End()
 
 	if filter != nil {
-		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 	}
 
 	filteredCountQueryBuilder := q.sqlBuilder.
@@ -256,12 +257,14 @@ func (q *SQLQuerier) buildListQuery(
 	defer span.End()
 
 	if filter != nil {
-		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 	}
 
 	var includeArchived bool
 	if filter != nil {
-		includeArchived = filter.IncludeArchived
+		if filter.IncludeArchived != nil {
+			includeArchived = *filter.IncludeArchived
+		}
 	}
 
 	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, tableName, joins, where, ownershipColumn, ownerID, forAdmin, includeArchived, filter)
@@ -331,12 +334,14 @@ func (q *SQLQuerier) buildListQueryWithILike(
 	defer span.End()
 
 	if filter != nil {
-		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 	}
 
 	var includeArchived bool
 	if filter != nil {
-		includeArchived = filter.IncludeArchived
+		if filter.IncludeArchived != nil {
+			includeArchived = *filter.IncludeArchived
+		}
 	}
 
 	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQueryWithILike(ctx, tableName, joins, where, ownershipColumn, ownerID, forAdmin, includeArchived, filter)
@@ -380,4 +385,26 @@ func (q *SQLQuerier) buildListQueryWithILike(
 	query, selectArgs := q.buildQuery(span, builder)
 
 	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), selectArgs...)
+}
+
+func nullInt64ForUint64Field(x *uint64) sql.NullInt64 {
+	z := sql.NullInt64{}
+
+	if x != nil {
+		z.Int64 = int64(*x)
+		z.Valid = true
+	}
+
+	return z
+}
+
+func nullInt32ForUint8Field(x *uint8) sql.NullInt32 {
+	z := sql.NullInt32{}
+
+	if x != nil {
+		z.Int32 = int32(*x)
+		z.Valid = true
+	}
+
+	return z
 }

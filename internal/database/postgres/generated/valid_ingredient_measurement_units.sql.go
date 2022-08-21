@@ -20,24 +20,20 @@ func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, id 
 }
 
 const CreateValidIngredientMeasurementUnit = `-- name: CreateValidIngredientMeasurementUnit :exec
-INSERT INTO valid_ingredient_measurement_units (id,notes,minimum_allowable_quantity,maximum_allowable_quantity,valid_measurement_unit_id,valid_ingredient_id) VALUES ($1,$2,$3,$4,$5,$6)
+INSERT INTO valid_ingredient_measurement_units (id,notes,valid_measurement_unit_id,valid_ingredient_id) VALUES ($1,$2,$3,$4)
 `
 
 type CreateValidIngredientMeasurementUnitParams struct {
-	ID                       string
-	Notes                    string
-	MinimumAllowableQuantity float64
-	MaximumAllowableQuantity float64
-	ValidMeasurementUnitID   string
-	ValidIngredientID        string
+	ID                     string
+	Notes                  string
+	ValidMeasurementUnitID string
+	ValidIngredientID      string
 }
 
 func (q *Queries) CreateValidIngredientMeasurementUnit(ctx context.Context, arg *CreateValidIngredientMeasurementUnitParams) error {
 	_, err := q.db.ExecContext(ctx, CreateValidIngredientMeasurementUnit,
 		arg.ID,
 		arg.Notes,
-		arg.MinimumAllowableQuantity,
-		arg.MaximumAllowableQuantity,
 		arg.ValidMeasurementUnitID,
 		arg.ValidIngredientID,
 	)
@@ -59,8 +55,6 @@ const GetValidIngredientMeasurementUnit = `-- name: GetValidIngredientMeasuremen
 SELECT
     valid_ingredient_measurement_units.id,
     valid_ingredient_measurement_units.notes,
-    valid_ingredient_measurement_units.minimum_allowable_quantity,
-    valid_ingredient_measurement_units.maximum_allowable_quantity,
     valid_measurement_units.id,
     valid_measurement_units.name,
     valid_measurement_units.description,
@@ -101,42 +95,40 @@ WHERE valid_ingredient_measurement_units.archived_on IS NULL
 `
 
 type GetValidIngredientMeasurementUnitRow struct {
-	ID                       string
-	Notes                    string
-	MinimumAllowableQuantity float64
-	MaximumAllowableQuantity float64
-	ID_2                     string
-	Name                     string
-	Description              string
-	Volumetric               sql.NullBool
-	IconPath                 string
-	CreatedOn                int64
-	LastUpdatedOn            sql.NullInt64
-	ArchivedOn               sql.NullInt64
-	ID_3                     string
-	Name_2                   string
-	Description_2            string
-	Warning                  string
-	ContainsEgg              bool
-	ContainsDairy            bool
-	ContainsPeanut           bool
-	ContainsTreeNut          bool
-	ContainsSoy              bool
-	ContainsWheat            bool
-	ContainsShellfish        bool
-	ContainsSesame           bool
-	ContainsFish             bool
-	ContainsGluten           bool
-	AnimalFlesh              bool
-	Volumetric_2             bool
-	IsLiquid                 sql.NullBool
-	IconPath_2               string
-	CreatedOn_2              int64
-	LastUpdatedOn_2          sql.NullInt64
-	ArchivedOn_2             sql.NullInt64
-	CreatedOn_3              int64
-	LastUpdatedOn_3          sql.NullInt64
-	ArchivedOn_3             sql.NullInt64
+	ID                string
+	Notes             string
+	ID_2              string
+	Name              string
+	Description       string
+	Volumetric        sql.NullBool
+	IconPath          string
+	CreatedOn         int64
+	LastUpdatedOn     sql.NullInt64
+	ArchivedOn        sql.NullInt64
+	ID_3              string
+	Name_2            string
+	Description_2     string
+	Warning           string
+	ContainsEgg       bool
+	ContainsDairy     bool
+	ContainsPeanut    bool
+	ContainsTreeNut   bool
+	ContainsSoy       bool
+	ContainsWheat     bool
+	ContainsShellfish bool
+	ContainsSesame    bool
+	ContainsFish      bool
+	ContainsGluten    bool
+	AnimalFlesh       bool
+	Volumetric_2      bool
+	IsLiquid          sql.NullBool
+	IconPath_2        string
+	CreatedOn_2       int64
+	LastUpdatedOn_2   sql.NullInt64
+	ArchivedOn_2      sql.NullInt64
+	CreatedOn_3       int64
+	LastUpdatedOn_3   sql.NullInt64
+	ArchivedOn_3      sql.NullInt64
 }
 
 func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, id string) (*GetValidIngredientMeasurementUnitRow, error) {
@@ -145,8 +137,6 @@ func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, id stri
 	err := row.Scan(
 		&i.ID,
 		&i.Notes,
-		&i.MinimumAllowableQuantity,
-		&i.MaximumAllowableQuantity,
 		&i.ID_2,
 		&i.Name,
 		&i.Description,
@@ -184,23 +174,19 @@ func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, id stri
 }
 
 const UpdateValidIngredientMeasurementUnit = `-- name: UpdateValidIngredientMeasurementUnit :exec
-UPDATE valid_ingredient_measurement_units SET notes = $1, minimum_allowable_quantity = $2, maximum_allowable_quantity = $3, valid_measurement_unit_id = $4, valid_ingredient_id = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $6
+UPDATE valid_ingredient_measurement_units SET notes = $1, valid_measurement_unit_id = $2, valid_ingredient_id = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4
 `
 
 type UpdateValidIngredientMeasurementUnitParams struct {
-	Notes                    string
-	MinimumAllowableQuantity float64
-	MaximumAllowableQuantity float64
-	ValidMeasurementUnitID   string
-	ValidIngredientID        string
-	ID                       string
+	Notes                  string
+	ValidMeasurementUnitID string
+	ValidIngredientID      string
+	ID                     string
 }
 
 func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, arg *UpdateValidIngredientMeasurementUnitParams) error {
 	_, err := q.db.ExecContext(ctx, UpdateValidIngredientMeasurementUnit,
 		arg.Notes,
-		arg.MinimumAllowableQuantity,
-		arg.MaximumAllowableQuantity,
 		arg.ValidMeasurementUnitID,
 		arg.ValidIngredientID,
 		arg.ID,

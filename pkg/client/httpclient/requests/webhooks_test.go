@@ -62,7 +62,7 @@ func TestBuilder_BuildGetWebhooksRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		spec := newRequestSpec(false, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(false, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
 
 		actual, err := helper.builder.BuildGetWebhooksRequest(helper.ctx, nil)
 		assert.NoError(t, err)
