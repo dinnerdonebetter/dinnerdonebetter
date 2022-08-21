@@ -36,17 +36,16 @@ var _ database.DataManager = (*SQLQuerier)(nil)
 
 // SQLQuerier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type SQLQuerier struct {
-	tracer              tracing.Tracer
-	sqlBuilder          squirrel.StatementBuilderType
-	logger              logging.Logger
-	generatedQuerier    generated.Querier
-	timeFunc            func() uint64
-	config              *dbconfig.Config
-	db                  *sql.DB
-	connectionURL       string
-	migrateOnce         sync.Once
-	useGeneratedQueries bool
-	logQueries          bool
+	tracer           tracing.Tracer
+	sqlBuilder       squirrel.StatementBuilderType
+	logger           logging.Logger
+	generatedQuerier generated.Querier
+	timeFunc         func() uint64
+	config           *dbconfig.Config
+	db               *sql.DB
+	connectionURL    string
+	migrateOnce      sync.Once
+	logQueries       bool
 }
 
 var instrumentedDriverRegistration sync.Once

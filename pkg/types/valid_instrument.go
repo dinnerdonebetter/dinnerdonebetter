@@ -37,6 +37,7 @@ type (
 		IconPath      string  `json:"iconPath"`
 		ID            string  `json:"id"`
 		Name          string  `json:"name"`
+		PluralName    string  `json:"pluralName"`
 		CreatedOn     uint64  `json:"createdOn"`
 	}
 
@@ -49,6 +50,7 @@ type (
 		IconPath      *string
 		ID            *string
 		Name          *string
+		PluralName    *string
 		CreatedOn     *uint64
 	}
 
@@ -64,6 +66,7 @@ type (
 		_           struct{}
 		ID          string `json:"-"`
 		Name        string `json:"name"`
+		PluralName  string `json:"pluralName"`
 		Description string `json:"description"`
 		IconPath    string `json:"iconPath"`
 	}
@@ -74,6 +77,7 @@ type (
 
 		ID          string `json:"id"`
 		Name        string `json:"name"`
+		PluralName  string `json:"pluralName"`
 		Description string `json:"description"`
 		IconPath    string `json:"iconPath"`
 	}
@@ -83,6 +87,7 @@ type (
 		_ struct{}
 
 		Name        *string `json:"name"`
+		PluralName  *string `json:"pluralName"`
 		Description *string `json:"description"`
 		IconPath    *string `json:"iconPath"`
 	}
@@ -95,8 +100,6 @@ type (
 		GetTotalValidInstrumentCount(ctx context.Context) (uint64, error)
 		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*ValidInstrumentList, error)
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
-		SearchForValidInstrumentsForPreparation(ctx context.Context, preparationID, query string) ([]*ValidInstrument, error)
-		GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
@@ -118,6 +121,10 @@ type (
 func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name
+	}
+
+	if input.PluralName != nil && *input.PluralName != x.PluralName {
+		x.PluralName = *input.PluralName
 	}
 
 	if input.Description != nil && *input.Description != x.Description {
@@ -156,6 +163,7 @@ func (x *ValidInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.C
 func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument) *ValidInstrumentUpdateRequestInput {
 	x := &ValidInstrumentUpdateRequestInput{
 		Name:        &input.Name,
+		PluralName:  &input.PluralName,
 		Description: &input.Description,
 		IconPath:    &input.IconPath,
 	}
@@ -167,6 +175,7 @@ func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument
 func ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput(input *ValidInstrumentCreationRequestInput) *ValidInstrumentDatabaseCreationInput {
 	x := &ValidInstrumentDatabaseCreationInput{
 		Name:        input.Name,
+		PluralName:  input.PluralName,
 		Description: input.Description,
 		IconPath:    input.IconPath,
 	}
@@ -194,6 +203,7 @@ func (x *NullableValidInstrument) ToValidInstrument() *ValidInstrument {
 		IconPath:      *x.IconPath,
 		ID:            *x.ID,
 		Name:          *x.Name,
+		PluralName:    *x.PluralName,
 		CreatedOn:     *x.CreatedOn,
 	}
 }

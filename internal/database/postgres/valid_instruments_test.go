@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -29,6 +30,7 @@ func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64,
 		rowValues := []driver.Value{
 			x.ID,
 			x.Name,
+			x.PluralName,
 			x.Description,
 			x.IconPath,
 			x.CreatedOn,
@@ -94,7 +96,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentExistenceQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.ValidInstrumentExists)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
 
@@ -129,7 +131,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentExistenceQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.ValidInstrumentExists)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(sql.ErrNoRows)
 
@@ -152,7 +154,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentExistenceQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.ValidInstrumentExists)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -179,7 +181,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getValidInstrumentQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstrument))
 
@@ -213,7 +215,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getValidInstrumentQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -238,7 +240,7 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 
 		args := []interface{}{}
 
-		db.ExpectQuery(formatQueryForSQLMock(getRandomValidInstrumentQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.GetRandomValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstrument))
 
@@ -257,7 +259,7 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 
 		args := []interface{}{}
 
-		db.ExpectQuery(formatQueryForSQLMock(getRandomValidInstrumentQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.GetRandomValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -286,7 +288,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 			wrapQueryForILIKE(exampleQuery),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.SearchForValidInstruments)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.ValidInstruments...))
 
@@ -318,7 +320,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 			wrapQueryForILIKE(exampleQuery),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.SearchForValidInstruments)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -339,93 +341,11 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 			wrapQueryForILIKE(exampleQuery),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(generated.SearchForValidInstruments)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
 		actual, err := c.SearchForValidInstruments(ctx, exampleQuery)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_SearchForValidInstrumentsForPreparation(T *testing.T) {
-	T.Parallel()
-
-	exampleQuery := "blah"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidInstruments := fakes.BuildFakeValidInstrumentList()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.ValidInstruments...))
-
-		actual, err := c.SearchForValidInstrumentsForPreparation(ctx, "", exampleQuery)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidInstruments.ValidInstruments, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid valid instrument ID", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.SearchForValidInstrumentsForPreparation(ctx, "", "")
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.SearchForValidInstrumentsForPreparation(ctx, "", exampleQuery)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning response", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.SearchForValidInstrumentsForPreparation(ctx, "", exampleQuery)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -566,96 +486,6 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetValidInstrumentsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidInstrumentList.ValidInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidInstrumentsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstrumentList.ValidInstruments...))
-
-		actual, err := c.GetValidInstrumentsWithIDs(ctx, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidInstrumentList.ValidInstruments, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetValidInstrumentsWithIDs(ctx, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidInstrumentList.ValidInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidInstrumentsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetValidInstrumentsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidInstrumentList.ValidInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidInstrumentsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetValidInstrumentsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateValidInstrument(T *testing.T) {
 	T.Parallel()
 
@@ -672,11 +502,12 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.PluralName,
 			exampleInput.Description,
 			exampleInput.IconPath,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(validInstrumentCreationQuery)).
+		db.ExpectExec(formatQueryForSQLMock(generated.CreateValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
@@ -715,11 +546,12 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.PluralName,
 			exampleInput.Description,
 			exampleInput.IconPath,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(validInstrumentCreationQuery)).
+		db.ExpectExec(formatQueryForSQLMock(generated.CreateValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(expectedErr)
 
@@ -749,12 +581,13 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidInstrument.Name,
+			exampleValidInstrument.PluralName,
 			exampleValidInstrument.Description,
 			exampleValidInstrument.IconPath,
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(updateValidInstrumentQuery)).
+		db.ExpectExec(formatQueryForSQLMock(generated.UpdateValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
@@ -782,12 +615,13 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidInstrument.Name,
+			exampleValidInstrument.PluralName,
 			exampleValidInstrument.Description,
 			exampleValidInstrument.IconPath,
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(updateValidInstrumentQuery)).
+		db.ExpectExec(formatQueryForSQLMock(generated.UpdateValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 

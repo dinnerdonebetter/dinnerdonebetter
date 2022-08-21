@@ -38,6 +38,7 @@ func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCo
 			x.Preparation.ArchivedOn,
 			x.Instrument.ID,
 			x.Instrument.Name,
+			x.Instrument.PluralName,
 			x.Instrument.Description,
 			x.Instrument.IconPath,
 			x.Instrument.CreatedOn,

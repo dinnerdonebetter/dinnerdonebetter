@@ -30,6 +30,7 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 			x.ID,
 			x.Instrument.ID,
 			x.Instrument.Name,
+			x.Instrument.PluralName,
 			x.Instrument.Description,
 			x.Instrument.IconPath,
 			x.Instrument.CreatedOn,
