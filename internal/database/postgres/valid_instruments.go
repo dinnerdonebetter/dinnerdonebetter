@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 
 	"github.com/Masterminds/squirrel"
 
@@ -197,18 +198,34 @@ func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidInstrumentIDToSpan(span, query)
 
-	args := []interface{}{
-		wrapQueryForILIKE(query),
+	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, wrapQueryForILIKE(query))
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients search query")
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients list retrieval query")
-	}
+	validInstruments := []*types.ValidInstrument{}
 
-	validInstruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning validInstrument")
+	for _, result := range results {
+		instrument := &types.ValidInstrument{
+			Variant:     result.Variant,
+			Description: result.Description,
+			IconPath:    result.IconPath,
+			ID:          result.ID,
+			Name:        result.Name,
+			CreatedOn:   uint64(result.CreatedOn),
+		}
+
+		if result.LastUpdatedOn.Valid {
+			t := uint64(result.LastUpdatedOn.Int64)
+			instrument.LastUpdatedOn = &t
+		}
+
+		if result.ArchivedOn.Valid {
+			t := uint64(result.ArchivedOn.Int64)
+			instrument.ArchivedOn = &t
+		}
+
+		validInstruments = append(validInstruments)
 	}
 
 	return validInstruments, nil
@@ -363,17 +380,16 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 
 	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, input.ID)
 
-	args := []interface{}{
-		input.ID,
-		input.Name,
-		input.Variant,
-		input.Description,
-		input.IconPath,
+	args := &generated.CreateValidInstrumentParams{
+		ID:          input.ID,
+		Name:        input.Name,
+		Variant:     input.Variant,
+		Description: input.Description,
+		IconPath:    input.IconPath,
 	}
 
-	// create the valid instrument.
-	if err := q.performWriteQuery(ctx, q.db, "valid instrument creation", validInstrumentCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing valid instrument creation query")
+	if err := q.generatedQuerier.CreateValidInstrument(ctx, args); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating valid instrument")
 	}
 
 	x := &types.ValidInstrument{
@@ -405,15 +421,15 @@ func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.V
 	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, updated.ID)
 	tracing.AttachValidInstrumentIDToSpan(span, updated.ID)
 
-	args := []interface{}{
-		updated.Name,
-		updated.Variant,
-		updated.Description,
-		updated.IconPath,
-		updated.ID,
+	args := &generated.UpdateValidInstrumentParams{
+		ID:          updated.ID,
+		Name:        updated.Name,
+		Variant:     updated.Variant,
+		Description: updated.Description,
+		IconPath:    updated.IconPath,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid instrument update", updateValidInstrumentQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateValidInstrument(ctx, args); err != nil {
 		return observability.PrepareError(err, logger, span, "updating valid instrument")
 	}
 
@@ -421,8 +437,6 @@ func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.V
 
 	return nil
 }
-
-const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
 func (q *SQLQuerier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
@@ -437,12 +451,8 @@ func (q *SQLQuerier) ArchiveValidInstrument(ctx context.Context, validInstrument
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
 
-	args := []interface{}{
-		validInstrumentID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid instrument archive", archiveValidInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid instrument")
+	if err := q.generatedQuerier.ArchiveValidInstrument(ctx, validInstrumentID); err != nil {
+		return observability.PrepareError(err, logger, span, "archiving valid instrument")
 	}
 
 	logger.Info("valid instrument archived")

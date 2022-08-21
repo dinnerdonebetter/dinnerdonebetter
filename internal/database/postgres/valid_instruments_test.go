@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -817,7 +818,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(archiveValidInstrumentQuery)).
+		db.ExpectExec(formatQueryForSQLMock(generated.ArchiveValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
@@ -847,7 +848,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(archiveValidInstrumentQuery)).
+		db.ExpectExec(formatQueryForSQLMock(generated.ArchiveValidInstrument)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 

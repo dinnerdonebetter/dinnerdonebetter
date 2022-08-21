@@ -22,7 +22,7 @@ const (
 )
 
 func wrapQueryForILIKE(s string) string {
-	return fmt.Sprintf("%s%%", s)
+	return fmt.Sprintf("%%%s%%", s)
 }
 
 func joinIDs(ids []string) string {

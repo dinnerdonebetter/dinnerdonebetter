@@ -17,6 +17,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -44,6 +45,8 @@ type SQLQuerier struct {
 	connectionURL string
 	migrateOnce   sync.Once
 	logQueries    bool
+
+	generatedQuerier generated.Querier
 }
 
 var instrumentedDriverRegistration sync.Once
@@ -80,14 +83,15 @@ func ProvideDatabaseClient(
 	}
 
 	c := &SQLQuerier{
-		db:            db,
-		config:        cfg,
-		tracer:        tracer,
-		logQueries:    cfg.LogQueries,
-		timeFunc:      defaultTimeFunc,
-		connectionURL: string(cfg.ConnectionDetails),
-		logger:        logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:    squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:               db,
+		config:           cfg,
+		tracer:           tracer,
+		logQueries:       cfg.LogQueries,
+		timeFunc:         defaultTimeFunc,
+		connectionURL:    string(cfg.ConnectionDetails),
+		logger:           logging.EnsureLogger(logger).WithName("querier"),
+		sqlBuilder:       squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		generatedQuerier: generated.New(db),
 	}
 
 	if cfg.Debug {

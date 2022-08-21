@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"regexp"
 	"strings"
 	"testing"
@@ -111,12 +112,13 @@ func buildTestClient(t *testing.T) (*SQLQuerier, *sqlmockExpecterWrapper) {
 	require.NoError(t, err)
 
 	c := &SQLQuerier{
-		db:         fakeDB,
-		logQueries: true,
-		logger:     logging.NewNoopLogger(),
-		timeFunc:   defaultTimeFunc,
-		tracer:     tracing.NewTracerForTest("test"),
-		sqlBuilder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:               fakeDB,
+		logQueries:       true,
+		logger:           logging.NewNoopLogger(),
+		timeFunc:         defaultTimeFunc,
+		tracer:           tracing.NewTracerForTest("test"),
+		sqlBuilder:       squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		generatedQuerier: generated.New(fakeDB),
 	}
 
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
