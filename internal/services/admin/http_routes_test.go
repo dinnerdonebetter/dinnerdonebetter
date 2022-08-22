@@ -2,7 +2,6 @@ package admin
 
 import (
 	"bytes"
-	"database/sql"
 	"errors"
 	"net/http"
 	"testing"
@@ -240,36 +239,6 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
-	})
-
-	T.Run("with no such user in database", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		userDataManager := &mocktypes.AdminUserDataManager{}
-		userDataManager.On(
-			"UpdateUserAccountStatus",
-			testutils.ContextMatcher,
-			helper.exampleInput.TargetUserID,
-			helper.exampleInput,
-		).Return(sql.ErrNoRows)
-		helper.service.userDB = userDataManager
-
-		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, userDataManager)
 	})
 
 	T.Run("with error writing new account status to database", func(t *testing.T) {

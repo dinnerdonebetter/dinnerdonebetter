@@ -12,8 +12,10 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount uint64, recipeStepIngredients ...*types.RecipeStepIngredient) *sqlmock.Rows {
@@ -103,26 +105,29 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredientID := fakes.BuildFakeID()
 
-		c, db := buildTestClient(t)
-		args := []interface{}{
-			exampleRecipeStepID,
-			exampleRecipeStepIngredient.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
+		c, _ := buildTestClient(t)
+
+		args := &generated.RecipeStepIngredientExistsParams{
+			RecipeStepID:           exampleRecipeStepID,
+			RecipeStepIngredientID: exampleRecipeStepIngredientID,
+			RecipeID:               exampleRecipeID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepIngredientExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"RecipeStepIngredientExists",
+			testutils.ContextMatcher,
+			args,
+		).Return(true, nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
-		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID)
+		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredientID)
 		assert.NoError(t, err)
 		assert.True(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid recipe ID", func(t *testing.T) {
@@ -177,26 +182,29 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredientID := fakes.BuildFakeID()
 
-		c, db := buildTestClient(t)
-		args := []interface{}{
-			exampleRecipeStepID,
-			exampleRecipeStepIngredient.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
+		c, _ := buildTestClient(t)
+
+		args := &generated.RecipeStepIngredientExistsParams{
+			RecipeStepID:           exampleRecipeStepID,
+			RecipeStepIngredientID: exampleRecipeStepIngredientID,
+			RecipeID:               exampleRecipeID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepIngredientExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"RecipeStepIngredientExists",
+			testutils.ContextMatcher,
+			args,
+		).Return(false, sql.ErrNoRows)
+		c.generatedQuerier = mockGeneratedQuerier
 
-		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID)
+		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredientID)
 		assert.NoError(t, err)
 		assert.False(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with error executing query", func(t *testing.T) {
@@ -206,26 +214,29 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredientID := fakes.BuildFakeID()
 
-		c, db := buildTestClient(t)
-		args := []interface{}{
-			exampleRecipeStepID,
-			exampleRecipeStepIngredient.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
+		c, _ := buildTestClient(t)
+
+		args := &generated.RecipeStepIngredientExistsParams{
+			RecipeStepID:           exampleRecipeStepID,
+			RecipeStepIngredientID: exampleRecipeStepIngredientID,
+			RecipeID:               exampleRecipeID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepIngredientExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"RecipeStepIngredientExists",
+			testutils.ContextMatcher,
+			args,
+		).Return(false, errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
-		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID)
+		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredientID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 

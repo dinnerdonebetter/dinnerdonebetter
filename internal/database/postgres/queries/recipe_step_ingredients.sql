@@ -1,5 +1,5 @@
 -- name: RecipeStepIngredientExists :one
-SELECT EXISTS ( SELECT recipe_step_ingredients.id FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5 );
+SELECT EXISTS ( SELECT recipe_step_ingredients.id FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = sqlc.arg('recipe_step_id') AND recipe_step_ingredients.id = sqlc.arg('recipe_step_ingredient_id') AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = sqlc.arg('recipe_id') AND recipe_steps.id = sqlc.arg('recipe_step_id') AND recipes.archived_on IS NULL AND recipes.id = sqlc.arg('recipe_id') );
 
 -- name: GetRecipeStepIngredient :many
 SELECT
