@@ -25,7 +25,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		mockGeneratedQuerier := &mockQuerier{}
 		mockGeneratedQuerier.On(
@@ -39,7 +39,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		assert.NoError(t, err)
 		assert.True(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
@@ -61,7 +61,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		mockGeneratedQuerier := &mockQuerier{}
 		mockGeneratedQuerier.On(
@@ -75,7 +75,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		assert.NoError(t, err)
 		assert.False(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with error executing query", func(t *testing.T) {
@@ -85,7 +85,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		mockGeneratedQuerier := &mockQuerier{}
 		mockGeneratedQuerier.On(
@@ -99,7 +99,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		assert.Error(t, err)
 		assert.False(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 
@@ -112,7 +112,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		querierResponse := &generated.GetValidInstrumentRow{
 			ID:          exampleValidInstrument.ID,
@@ -135,7 +135,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstrument, actual)
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
@@ -155,7 +155,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		mockGeneratedQuerier := &mockQuerier{}
 		mockGeneratedQuerier.On(
@@ -169,7 +169,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 
@@ -182,7 +182,7 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		querierResponse := &generated.GetRandomValidInstrumentRow{
 			ID:          exampleValidInstrument.ID,
@@ -204,14 +204,14 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstrument, actual)
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		mockGeneratedQuerier := &mockQuerier{}
 		mockGeneratedQuerier.On(
@@ -224,7 +224,7 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 
@@ -331,7 +331,7 @@ func TestQuerier_GetTotalValidInstrumentCount(T *testing.T) {
 
 		ctx := context.Background()
 
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		mockGeneratedQuerier := &mockQuerier{}
 		mockGeneratedQuerier.On(
@@ -344,7 +344,7 @@ func TestQuerier_GetTotalValidInstrumentCount(T *testing.T) {
 		assert.Error(t, err)
 		assert.Zero(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 
@@ -578,7 +578,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		args := &generated.UpdateValidInstrumentParams{
 			ID:          exampleValidInstrument.ID,
@@ -598,7 +598,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 
 		assert.NoError(t, c.UpdateValidInstrument(ctx, exampleValidInstrument))
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with nil input", func(t *testing.T) {
@@ -616,7 +616,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		args := &generated.UpdateValidInstrumentParams{
 			ID:          exampleValidInstrument.ID,
@@ -636,7 +636,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 
 		assert.Error(t, c.UpdateValidInstrument(ctx, exampleValidInstrument))
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 
@@ -649,7 +649,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		mockGeneratedQuerier := &mockQuerier{}
 		mockGeneratedQuerier.On(
@@ -661,7 +661,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 
 		assert.NoError(t, c.ArchiveValidInstrument(ctx, exampleValidInstrument.ID))
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
@@ -679,7 +679,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		mockGeneratedQuerier := &mockQuerier{}
 		mockGeneratedQuerier.On(
@@ -691,6 +691,6 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 
 		assert.Error(t, c.ArchiveValidInstrument(ctx, exampleValidInstrument.ID))
 
-		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }

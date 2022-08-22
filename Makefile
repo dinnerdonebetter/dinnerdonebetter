@@ -183,8 +183,9 @@ typescript: clean_ts
 clean_queries:
 	rm -rf internal/database/postgres/generated
 
-gen_queries: clean_queries
+gen_queries:
 	$(SQL_GENERATOR) compile
+	$(MAKE) clean_queries
 	$(SQL_GENERATOR) generate
 
 ## Integration tests
