@@ -1,5 +1,5 @@
-ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "variant";                                                               -- #227
-ALTER TABLE valid_instruments ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';                                             -- #228
+ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "variant";                                                                  -- #227
+ALTER TABLE valid_instruments ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';                                                -- #228
 -- ALTER TABLE valid_ingredients ADD COLUMN "animal_derived" BOOLEAN NOT NULL DEFAULT 'false';                                  -- #189
 -- ALTER TABLE valid_ingredients ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';                                             -- #228
 -- ALTER TABLE valid_ingredients ADD COLUMN "restrict_to_preparations" BOOLEAN NOT NULL DEFAULT 'false';                        -- #239
@@ -22,3 +22,22 @@ ALTER TABLE valid_instruments ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';
 -- ALTER TABLE recipe_steps ADD COLUMN "explicit_instructions" TEXT NOT NULL DEFAULT '';                                        -- #243
 -- ALTER TABLE recipe_step_products ADD COLUMN "compostable" BOOLEAN NOT NULL DEFAULT 'false';                                  -- #252
 -- ALTER TABLE recipes ADD COLUMN "yields_portions" INTEGER NOT NULL DEFAULT 1;                                                 -- #253
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

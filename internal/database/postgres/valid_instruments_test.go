@@ -3,58 +3,17 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"database/sql/driver"
 	"errors"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
-
-func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64, validInstruments ...*types.ValidInstrument) *sqlmock.Rows {
-	columns := []string{
-		"valid_instruments.id",
-		"valid_instruments.name",
-		"valid_instruments.plural_name",
-		"valid_instruments.description",
-		"valid_instruments.icon_path",
-		"valid_instruments.created_on",
-		"valid_instruments.last_updated_on",
-		"valid_instruments.archived_on",
-	}
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, x := range validInstruments {
-		rowValues := []driver.Value{
-			x.ID,
-			x.Name,
-			x.PluralName,
-			x.Description,
-			x.IconPath,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
-		}
-
-		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(validInstruments))
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
 
 func TestQuerier_ValidInstrumentExists(T *testing.T) {
 	T.Parallel()
@@ -67,19 +26,20 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
-			exampleValidInstrument.ID,
-		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.ValidInstrumentExists)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"ValidInstrumentExists",
+			testutils.ContextMatcher,
+			exampleValidInstrument.ID,
+		).Return(true, nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.ValidInstrumentExists(ctx, exampleValidInstrument.ID)
 		assert.NoError(t, err)
 		assert.True(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
@@ -102,19 +62,20 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
-			exampleValidInstrument.ID,
-		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.ValidInstrumentExists)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"ValidInstrumentExists",
+			testutils.ContextMatcher,
+			exampleValidInstrument.ID,
+		).Return(false, sql.ErrNoRows)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.ValidInstrumentExists(ctx, exampleValidInstrument.ID)
 		assert.NoError(t, err)
 		assert.False(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 
 	T.Run("with error executing query", func(t *testing.T) {
@@ -125,19 +86,20 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
-			exampleValidInstrument.ID,
-		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.ValidInstrumentExists)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"ValidInstrumentExists",
+			testutils.ContextMatcher,
+			exampleValidInstrument.ID,
+		).Return(false, errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.ValidInstrumentExists(ctx, exampleValidInstrument.ID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 }
 
@@ -152,19 +114,28 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
-			exampleValidInstrument.ID,
+		querierResponse := &generated.GetValidInstrumentRow{
+			ID:          exampleValidInstrument.ID,
+			Name:        exampleValidInstrument.Name,
+			PluralName:  exampleValidInstrument.PluralName,
+			Description: exampleValidInstrument.Description,
+			IconPath:    exampleValidInstrument.IconPath,
+			CreatedOn:   int64(exampleValidInstrument.CreatedOn),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstrument)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstrument))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetValidInstrument",
+			testutils.ContextMatcher,
+			exampleValidInstrument.ID,
+		).Return(querierResponse, nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetValidInstrument(ctx, exampleValidInstrument.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstrument, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
@@ -186,19 +157,19 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetValidInstrument",
+			testutils.ContextMatcher,
 			exampleValidInstrument.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstrument)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		).Return((*generated.GetValidInstrumentRow)(nil), errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetValidInstrument(ctx, exampleValidInstrument.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 }
 
@@ -213,17 +184,27 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		querierResponse := &generated.GetRandomValidInstrumentRow{
+			ID:          exampleValidInstrument.ID,
+			Name:        exampleValidInstrument.Name,
+			PluralName:  exampleValidInstrument.PluralName,
+			Description: exampleValidInstrument.Description,
+			IconPath:    exampleValidInstrument.IconPath,
+			CreatedOn:   int64(exampleValidInstrument.CreatedOn),
+		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.GetRandomValidInstrument)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstrument))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetRandomValidInstrument",
+			testutils.ContextMatcher,
+		).Return(querierResponse, nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetRandomValidInstrument(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstrument, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 
 	T.Run("with error executing query", func(t *testing.T) {
@@ -232,17 +213,18 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
-
-		db.ExpectQuery(formatQueryForSQLMock(generated.GetRandomValidInstrument)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetRandomValidInstrument",
+			testutils.ContextMatcher,
+		).Return((*generated.GetRandomValidInstrumentRow)(nil), errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetRandomValidInstrument(ctx)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 }
 
@@ -257,21 +239,33 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 		exampleValidInstruments := fakes.BuildFakeValidInstrumentList()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		args := []interface{}{
-			wrapQueryForILIKE(exampleQuery),
+		results := []*generated.SearchForValidInstrumentsRow{}
+		for _, instrument := range exampleValidInstruments.ValidInstruments {
+			results = append(results, &generated.SearchForValidInstrumentsRow{
+				ID:          instrument.ID,
+				Name:        instrument.Name,
+				PluralName:  instrument.PluralName,
+				Description: instrument.Description,
+				IconPath:    instrument.IconPath,
+				CreatedOn:   int64(instrument.CreatedOn),
+			})
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.SearchForValidInstruments)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.ValidInstruments...))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"SearchForValidInstruments",
+			testutils.ContextMatcher,
+			wrapQueryForILIKE(exampleQuery),
+		).Return(results, nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.SearchForValidInstruments(ctx, exampleQuery)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstruments.ValidInstruments, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
@@ -289,42 +283,21 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		args := []interface{}{
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"SearchForValidInstruments",
+			testutils.ContextMatcher,
 			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(generated.SearchForValidInstruments)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		).Return([]*generated.SearchForValidInstrumentsRow(nil), errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.SearchForValidInstruments(ctx, exampleQuery)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning response", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(generated.SearchForValidInstruments)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.SearchForValidInstruments(ctx, exampleQuery)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 
@@ -337,17 +310,20 @@ func TestQuerier_GetTotalValidInstrumentCount(T *testing.T) {
 		ctx := context.Background()
 		exampleCount := uint64(123)
 
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		db.ExpectQuery(formatQueryForSQLMock(getTotalValidInstrumentsCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetTotalValidInstrumentCount",
+			testutils.ContextMatcher,
+		).Return(int64(exampleCount), nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetTotalValidInstrumentCount(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleCount, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("error executing query", func(t *testing.T) {
@@ -357,9 +333,12 @@ func TestQuerier_GetTotalValidInstrumentCount(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		db.ExpectQuery(formatQueryForSQLMock(getTotalValidInstrumentsCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetTotalValidInstrumentCount",
+			testutils.ContextMatcher,
+		).Return(int64(0), errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetTotalValidInstrumentCount(ctx)
 		assert.Error(t, err)
@@ -379,25 +358,43 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		args := []interface{}{
-			nullInt64ForUint64Field(filter.CreatedAfter),
-			nullInt64ForUint64Field(filter.CreatedBefore),
-			nullInt64ForUint64Field(filter.UpdatedAfter),
-			nullInt64ForUint64Field(filter.UpdatedBefore),
-			nullInt32ForUint8Field(filter.Limit),
+		results := []*generated.GetValidInstrumentsRow{}
+		for _, instrument := range exampleValidInstrumentList.ValidInstruments {
+			results = append(results, &generated.GetValidInstrumentsRow{
+				ID:            instrument.ID,
+				Name:          instrument.Name,
+				PluralName:    instrument.PluralName,
+				Description:   instrument.Description,
+				IconPath:      instrument.IconPath,
+				CreatedOn:     int64(instrument.CreatedOn),
+				FilteredCount: int64(exampleValidInstrumentList.FilteredCount),
+				TotalCount:    int64(exampleValidInstrumentList.TotalCount),
+			})
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstruments)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.ValidInstruments...))
+		args := &generated.GetValidInstrumentsParams{
+			CreatedAfter:  nullInt64ForUint64Field(filter.CreatedAfter),
+			CreatedBefore: nullInt64ForUint64Field(filter.CreatedBefore),
+			UpdatedAfter:  nullInt64ForUint64Field(filter.UpdatedAfter),
+			UpdatedBefore: nullInt64ForUint64Field(filter.UpdatedBefore),
+			Limit:         nullInt32ForUint8Field(filter.Limit),
+		}
+
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetValidInstruments",
+			testutils.ContextMatcher,
+			args,
+		).Return(results, nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetValidInstruments(ctx, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstrumentList, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
@@ -409,26 +406,45 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 		exampleValidInstrumentList.Limit = 0
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
 		f := types.DefaultQueryFilter()
-		args := []interface{}{
-			nullInt64ForUint64Field(f.CreatedAfter),
-			nullInt64ForUint64Field(f.CreatedBefore),
-			nullInt64ForUint64Field(f.UpdatedAfter),
-			nullInt64ForUint64Field(f.UpdatedBefore),
-			nullInt32ForUint8Field(f.Limit),
+
+		results := []*generated.GetValidInstrumentsRow{}
+		for _, instrument := range exampleValidInstrumentList.ValidInstruments {
+			results = append(results, &generated.GetValidInstrumentsRow{
+				ID:            instrument.ID,
+				Name:          instrument.Name,
+				PluralName:    instrument.PluralName,
+				Description:   instrument.Description,
+				IconPath:      instrument.IconPath,
+				CreatedOn:     int64(instrument.CreatedOn),
+				FilteredCount: int64(exampleValidInstrumentList.FilteredCount),
+				TotalCount:    int64(exampleValidInstrumentList.TotalCount),
+			})
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstruments)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.ValidInstruments...))
+		args := &generated.GetValidInstrumentsParams{
+			CreatedAfter:  nullInt64ForUint64Field(f.CreatedAfter),
+			CreatedBefore: nullInt64ForUint64Field(f.CreatedBefore),
+			UpdatedAfter:  nullInt64ForUint64Field(f.UpdatedAfter),
+			UpdatedBefore: nullInt64ForUint64Field(f.UpdatedBefore),
+			Limit:         nullInt32ForUint8Field(f.Limit),
+		}
+
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetValidInstruments",
+			testutils.ContextMatcher,
+			args,
+		).Return(results, nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetValidInstruments(ctx, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstrumentList, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with error executing query", func(t *testing.T) {
@@ -437,52 +453,29 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		args := []interface{}{
-			nullInt64ForUint64Field(filter.CreatedAfter),
-			nullInt64ForUint64Field(filter.CreatedBefore),
-			nullInt64ForUint64Field(filter.UpdatedAfter),
-			nullInt64ForUint64Field(filter.UpdatedBefore),
-			nullInt32ForUint8Field(filter.Limit),
+		args := &generated.GetValidInstrumentsParams{
+			CreatedAfter:  nullInt64ForUint64Field(filter.CreatedAfter),
+			CreatedBefore: nullInt64ForUint64Field(filter.CreatedBefore),
+			UpdatedAfter:  nullInt64ForUint64Field(filter.UpdatedAfter),
+			UpdatedBefore: nullInt64ForUint64Field(filter.UpdatedBefore),
+			Limit:         nullInt32ForUint8Field(filter.Limit),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstruments)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"GetValidInstruments",
+			testutils.ContextMatcher,
+			args,
+		).Return([]*generated.GetValidInstrumentsRow(nil), errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
 		actual, err := c.GetValidInstruments(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with erroneous response from database", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			nullInt64ForUint64Field(filter.CreatedAfter),
-			nullInt64ForUint64Field(filter.CreatedBefore),
-			nullInt64ForUint64Field(filter.UpdatedAfter),
-			nullInt64ForUint64Field(filter.UpdatedBefore),
-			nullInt32ForUint8Field(filter.Limit),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(generated.GetValidInstruments)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetValidInstruments(ctx, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 
@@ -497,19 +490,23 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		exampleInput := fakes.BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(exampleValidInstrument)
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		args := []interface{}{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.PluralName,
-			exampleInput.Description,
-			exampleInput.IconPath,
+		args := &generated.CreateValidInstrumentParams{
+			ID:          exampleInput.ID,
+			Name:        exampleInput.Name,
+			PluralName:  exampleInput.PluralName,
+			Description: exampleInput.Description,
+			IconPath:    exampleInput.IconPath,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(generated.CreateValidInstrument)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"CreateValidInstrument",
+			testutils.ContextMatcher,
+			args,
+		).Return(nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		c.timeFunc = func() uint64 {
 			return exampleValidInstrument.CreatedOn
@@ -519,7 +516,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstrument, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -541,19 +538,23 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		exampleInput := fakes.BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(exampleValidInstrument)
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		args := []interface{}{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.PluralName,
-			exampleInput.Description,
-			exampleInput.IconPath,
+		args := &generated.CreateValidInstrumentParams{
+			ID:          exampleInput.ID,
+			Name:        exampleInput.Name,
+			PluralName:  exampleInput.PluralName,
+			Description: exampleInput.Description,
+			IconPath:    exampleInput.IconPath,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(generated.CreateValidInstrument)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"CreateValidInstrument",
+			testutils.ContextMatcher,
+			args,
+		).Return(expectedErr)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		c.timeFunc = func() uint64 {
 			return exampleValidInstrument.CreatedOn
@@ -564,7 +565,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		assert.True(t, errors.Is(err, expectedErr))
 		assert.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
 	})
 }
 
@@ -579,21 +580,25 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
-			exampleValidInstrument.Name,
-			exampleValidInstrument.PluralName,
-			exampleValidInstrument.Description,
-			exampleValidInstrument.IconPath,
-			exampleValidInstrument.ID,
+		args := &generated.UpdateValidInstrumentParams{
+			ID:          exampleValidInstrument.ID,
+			Name:        exampleValidInstrument.Name,
+			PluralName:  exampleValidInstrument.PluralName,
+			Description: exampleValidInstrument.Description,
+			IconPath:    exampleValidInstrument.IconPath,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(generated.UpdateValidInstrument)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"UpdateValidInstrument",
+			testutils.ContextMatcher,
+			args,
+		).Return(nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		assert.NoError(t, c.UpdateValidInstrument(ctx, exampleValidInstrument))
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 
 	T.Run("with nil input", func(t *testing.T) {
@@ -613,21 +618,25 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
-			exampleValidInstrument.Name,
-			exampleValidInstrument.PluralName,
-			exampleValidInstrument.Description,
-			exampleValidInstrument.IconPath,
-			exampleValidInstrument.ID,
+		args := &generated.UpdateValidInstrumentParams{
+			ID:          exampleValidInstrument.ID,
+			Name:        exampleValidInstrument.Name,
+			PluralName:  exampleValidInstrument.PluralName,
+			Description: exampleValidInstrument.Description,
+			IconPath:    exampleValidInstrument.IconPath,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(generated.UpdateValidInstrument)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"UpdateValidInstrument",
+			testutils.ContextMatcher,
+			args,
+		).Return(errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
 		assert.Error(t, c.UpdateValidInstrument(ctx, exampleValidInstrument))
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 }
 
@@ -642,17 +651,17 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"ArchiveValidInstrument",
+			testutils.ContextMatcher,
 			exampleValidInstrument.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidInstrumentQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
+		).Return(nil)
+		c.generatedQuerier = mockGeneratedQuerier
 
 		assert.NoError(t, c.ArchiveValidInstrument(ctx, exampleValidInstrument.ID))
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
@@ -672,16 +681,16 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		mockGeneratedQuerier := &mockQuerier{}
+		mockGeneratedQuerier.On(
+			"ArchiveValidInstrument",
+			testutils.ContextMatcher,
 			exampleValidInstrument.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidInstrumentQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		).Return(errors.New("blah"))
+		c.generatedQuerier = mockGeneratedQuerier
 
 		assert.Error(t, c.ArchiveValidInstrument(ctx, exampleValidInstrument.ID))
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, mockGeneratedQuerier)
 	})
 }

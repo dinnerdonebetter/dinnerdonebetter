@@ -161,8 +161,6 @@ func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string
 	return validInstruments, nil
 }
 
-const getTotalValidInstrumentsCountQuery = "SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL"
-
 // GetTotalValidInstrumentCount fetches the count of valid instruments from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalValidInstrumentCount(ctx context.Context) (uint64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -309,8 +307,6 @@ func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.V
 
 	return nil
 }
-
-const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
 func (q *SQLQuerier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
