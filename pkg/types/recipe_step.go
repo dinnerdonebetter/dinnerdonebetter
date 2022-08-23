@@ -35,16 +35,16 @@ type (
 	RecipeStep struct {
 		_                             struct{}
 		LastUpdatedOn                 *uint64                 `json:"lastUpdatedOn"`
-		MinimumTemperatureInCelsius   *uint16                 `json:"minimumTemperatureInCelsius"`
 		MaximumTemperatureInCelsius   *uint16                 `json:"maximumTemperatureInCelsius"`
 		ArchivedOn                    *uint64                 `json:"archivedOn"`
-		BelongsToRecipe               string                  `json:"belongsToRecipe"`
+		MinimumTemperatureInCelsius   *uint16                 `json:"minimumTemperatureInCelsius"`
 		Notes                         string                  `json:"notes"`
+		BelongsToRecipe               string                  `json:"belongsToRecipe"`
 		ID                            string                  `json:"id"`
-		Preparation                   ValidPreparation        `json:"preparation"`
+		Products                      []*RecipeStepProduct    `json:"products"`
 		Instruments                   []*RecipeStepInstrument `json:"instruments"`
 		Ingredients                   []*RecipeStepIngredient `json:"ingredients"`
-		Products                      []*RecipeStepProduct    `json:"products"`
+		Preparation                   ValidPreparation        `json:"preparation"`
 		CreatedOn                     uint64                  `json:"createdOn"`
 		Index                         uint32                  `json:"index"`
 		MaximumEstimatedTimeInSeconds uint32                  `json:"maximumEstimatedTimeInSeconds"`

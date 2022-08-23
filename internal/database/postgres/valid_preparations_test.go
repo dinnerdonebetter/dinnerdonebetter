@@ -31,6 +31,10 @@ func buildMockRowsFromValidPreparations(includeCounts bool, filteredCount uint64
 			x.Name,
 			x.Description,
 			x.IconPath,
+			x.YieldsNothing,
+			x.RestrictToIngredients,
+			x.ZeroIngredientsAllowable,
+			x.PastTense,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -592,6 +596,10 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			exampleInput.Name,
 			exampleInput.Description,
 			exampleInput.IconPath,
+			exampleInput.YieldsNothing,
+			exampleInput.RestrictToIngredients,
+			exampleInput.ZeroIngredientsAllowable,
+			exampleInput.PastTense,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validPreparationCreationQuery)).
@@ -635,6 +643,10 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			exampleInput.Name,
 			exampleInput.Description,
 			exampleInput.IconPath,
+			exampleInput.YieldsNothing,
+			exampleInput.RestrictToIngredients,
+			exampleInput.ZeroIngredientsAllowable,
+			exampleInput.PastTense,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validPreparationCreationQuery)).
@@ -669,6 +681,10 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 			exampleValidPreparation.Name,
 			exampleValidPreparation.Description,
 			exampleValidPreparation.IconPath,
+			exampleValidPreparation.YieldsNothing,
+			exampleValidPreparation.RestrictToIngredients,
+			exampleValidPreparation.ZeroIngredientsAllowable,
+			exampleValidPreparation.PastTense,
 			exampleValidPreparation.ID,
 		}
 
@@ -702,6 +718,10 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 			exampleValidPreparation.Name,
 			exampleValidPreparation.Description,
 			exampleValidPreparation.IconPath,
+			exampleValidPreparation.YieldsNothing,
+			exampleValidPreparation.RestrictToIngredients,
+			exampleValidPreparation.ZeroIngredientsAllowable,
+			exampleValidPreparation.PastTense,
 			exampleValidPreparation.ID,
 		}
 

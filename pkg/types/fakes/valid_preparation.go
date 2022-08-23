@@ -10,11 +10,15 @@ import (
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
 	return &types.ValidPreparation{
-		ID:          ksuid.New().String(),
-		Name:        buildUniqueString(),
-		Description: buildUniqueString(),
-		IconPath:    buildUniqueString(),
-		CreatedOn:   uint64(uint32(fake.Date().Unix())),
+		ID:                       ksuid.New().String(),
+		Name:                     buildUniqueString(),
+		Description:              buildUniqueString(),
+		IconPath:                 buildUniqueString(),
+		YieldsNothing:            fake.Bool(),
+		RestrictToIngredients:    fake.Bool(),
+		ZeroIngredientsAllowable: fake.Bool(),
+		PastTense:                buildUniqueString(),
+		CreatedOn:                uint64(uint32(fake.Date().Unix())),
 	}
 }
 
@@ -40,18 +44,26 @@ func BuildFakeValidPreparationList() *types.ValidPreparationList {
 func BuildFakeValidPreparationUpdateRequestInput() *types.ValidPreparationUpdateRequestInput {
 	validPreparation := BuildFakeValidPreparation()
 	return &types.ValidPreparationUpdateRequestInput{
-		Name:        &validPreparation.Name,
-		Description: &validPreparation.Description,
-		IconPath:    &validPreparation.IconPath,
+		Name:                     &validPreparation.Name,
+		Description:              &validPreparation.Description,
+		IconPath:                 &validPreparation.IconPath,
+		YieldsNothing:            &validPreparation.YieldsNothing,
+		RestrictToIngredients:    &validPreparation.RestrictToIngredients,
+		ZeroIngredientsAllowable: &validPreparation.ZeroIngredientsAllowable,
+		PastTense:                &validPreparation.PastTense,
 	}
 }
 
 // BuildFakeValidPreparationUpdateRequestInputFromValidPreparation builds a faked ValidPreparationUpdateRequestInput from a valid preparation.
 func BuildFakeValidPreparationUpdateRequestInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationUpdateRequestInput {
 	return &types.ValidPreparationUpdateRequestInput{
-		Name:        &validPreparation.Name,
-		Description: &validPreparation.Description,
-		IconPath:    &validPreparation.IconPath,
+		Name:                     &validPreparation.Name,
+		Description:              &validPreparation.Description,
+		IconPath:                 &validPreparation.IconPath,
+		YieldsNothing:            &validPreparation.YieldsNothing,
+		RestrictToIngredients:    &validPreparation.RestrictToIngredients,
+		ZeroIngredientsAllowable: &validPreparation.ZeroIngredientsAllowable,
+		PastTense:                &validPreparation.PastTense,
 	}
 }
 
@@ -64,10 +76,14 @@ func BuildFakeValidPreparationCreationRequestInput() *types.ValidPreparationCrea
 // BuildFakeValidPreparationCreationRequestInputFromValidPreparation builds a faked ValidPreparationCreationRequestInput from a valid preparation.
 func BuildFakeValidPreparationCreationRequestInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationCreationRequestInput {
 	return &types.ValidPreparationCreationRequestInput{
-		ID:          validPreparation.ID,
-		Name:        validPreparation.Name,
-		Description: validPreparation.Description,
-		IconPath:    validPreparation.IconPath,
+		ID:                       validPreparation.ID,
+		Name:                     validPreparation.Name,
+		Description:              validPreparation.Description,
+		IconPath:                 validPreparation.IconPath,
+		YieldsNothing:            validPreparation.YieldsNothing,
+		RestrictToIngredients:    validPreparation.RestrictToIngredients,
+		ZeroIngredientsAllowable: validPreparation.ZeroIngredientsAllowable,
+		PastTense:                validPreparation.PastTense,
 	}
 }
 
@@ -80,9 +96,13 @@ func BuildFakeValidPreparationDatabaseCreationInput() *types.ValidPreparationDat
 // BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation builds a faked ValidPreparationDatabaseCreationInput from a valid preparation.
 func BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationDatabaseCreationInput {
 	return &types.ValidPreparationDatabaseCreationInput{
-		ID:          validPreparation.ID,
-		Name:        validPreparation.Name,
-		Description: validPreparation.Description,
-		IconPath:    validPreparation.IconPath,
+		ID:                       validPreparation.ID,
+		Name:                     validPreparation.Name,
+		Description:              validPreparation.Description,
+		IconPath:                 validPreparation.IconPath,
+		YieldsNothing:            validPreparation.YieldsNothing,
+		RestrictToIngredients:    validPreparation.RestrictToIngredients,
+		ZeroIngredientsAllowable: validPreparation.ZeroIngredientsAllowable,
+		PastTense:                validPreparation.PastTense,
 	}
 }

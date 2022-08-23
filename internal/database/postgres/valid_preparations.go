@@ -26,6 +26,10 @@ var (
 		"valid_preparations.name",
 		"valid_preparations.description",
 		"valid_preparations.icon_path",
+		"valid_preparations.yields_nothing",
+		"valid_preparations.restrict_to_ingredients",
+		"valid_preparations.zero_ingredients_allowable",
+		"valid_preparations.past_tense",
 		"valid_preparations.created_on",
 		"valid_preparations.last_updated_on",
 		"valid_preparations.archived_on",
@@ -46,6 +50,10 @@ func (q *SQLQuerier) scanValidPreparation(ctx context.Context, scan database.Sca
 		&x.Name,
 		&x.Description,
 		&x.IconPath,
+		&x.YieldsNothing,
+		&x.RestrictToIngredients,
+		&x.ZeroIngredientsAllowable,
+		&x.PastTense,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -127,6 +135,10 @@ const getValidPreparationBaseQuery = `SELECT
 	valid_preparations.name,
 	valid_preparations.description,
 	valid_preparations.icon_path,
+	valid_preparations.yields_nothing,
+	valid_preparations.restrict_to_ingredients,
+	valid_preparations.zero_ingredients_allowable,
+	valid_preparations.past_tense,
 	valid_preparations.created_on,
 	valid_preparations.last_updated_on,
 	valid_preparations.archived_on
@@ -183,7 +195,22 @@ func (q *SQLQuerier) GetRandomValidPreparation(ctx context.Context) (*types.Vali
 	return validPreparation, nil
 }
 
-const validPreparationSearchQuery = "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon_path, valid_preparations.created_on, valid_preparations.last_updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.name ILIKE $1 LIMIT 50"
+const validPreparationSearchQuery = `SELECT
+    valid_preparations.id,
+    valid_preparations.name,
+    valid_preparations.description,
+    valid_preparations.icon_path,
+    valid_preparations.yields_nothing,
+	valid_preparations.restrict_to_ingredients,
+	valid_preparations.zero_ingredients_allowable,
+	valid_preparations.past_tense,
+    valid_preparations.created_on,
+    valid_preparations.last_updated_on,
+    valid_preparations.archived_on 
+FROM valid_preparations 
+WHERE valid_preparations.archived_on IS NULL 
+  AND valid_preparations.name ILIKE $1 
+LIMIT 50`
 
 // SearchForValidPreparations fetches a valid preparation from the database.
 func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query string) ([]*types.ValidPreparation, error) {
@@ -325,7 +352,7 @@ func (q *SQLQuerier) GetValidPreparationsWithIDs(ctx context.Context, limit uint
 	return validPreparations, nil
 }
 
-const validPreparationCreationQuery = "INSERT INTO valid_preparations (id,name,description,icon_path) VALUES ($1,$2,$3,$4)"
+const validPreparationCreationQuery = "INSERT INTO valid_preparations (id,name,description,icon_path,yields_nothing,restrict_to_ingredients,zero_ingredients_allowable,past_tense) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
 // CreateValidPreparation creates a valid preparation in the database.
 func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationDatabaseCreationInput) (*types.ValidPreparation, error) {
@@ -343,6 +370,10 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 		input.Name,
 		input.Description,
 		input.IconPath,
+		input.YieldsNothing,
+		input.RestrictToIngredients,
+		input.ZeroIngredientsAllowable,
+		input.PastTense,
 	}
 
 	// create the valid preparation.
@@ -351,11 +382,15 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 	}
 
 	x := &types.ValidPreparation{
-		ID:          input.ID,
-		Name:        input.Name,
-		Description: input.Description,
-		IconPath:    input.IconPath,
-		CreatedOn:   q.currentTime(),
+		ID:                       input.ID,
+		Name:                     input.Name,
+		Description:              input.Description,
+		IconPath:                 input.IconPath,
+		YieldsNothing:            input.YieldsNothing,
+		RestrictToIngredients:    input.RestrictToIngredients,
+		ZeroIngredientsAllowable: input.ZeroIngredientsAllowable,
+		PastTense:                input.PastTense,
+		CreatedOn:                q.currentTime(),
 	}
 
 	tracing.AttachValidPreparationIDToSpan(span, x.ID)
@@ -364,7 +399,19 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 	return x, nil
 }
 
-const updateValidPreparationQuery = "UPDATE valid_preparations SET name = $1, description = $2, icon_path = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4"
+const updateValidPreparationQuery = `UPDATE valid_preparations 
+SET 
+    name = $1,
+    description = $2,
+    icon_path = $3,
+    yields_nothing = $4,
+	restrict_to_ingredients = $5,
+	zero_ingredients_allowable = $6,
+	past_tense = $7,
+    last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL 
+  AND id = $8
+`
 
 // UpdateValidPreparation updates a particular valid preparation.
 func (q *SQLQuerier) UpdateValidPreparation(ctx context.Context, updated *types.ValidPreparation) error {
@@ -382,6 +429,10 @@ func (q *SQLQuerier) UpdateValidPreparation(ctx context.Context, updated *types.
 		updated.Name,
 		updated.Description,
 		updated.IconPath,
+		updated.YieldsNothing,
+		updated.RestrictToIngredients,
+		updated.ZeroIngredientsAllowable,
+		updated.PastTense,
 		updated.ID,
 	}
 
