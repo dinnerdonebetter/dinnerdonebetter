@@ -1,10 +1,10 @@
 ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "variant";                                                                  -- #227
 ALTER TABLE valid_instruments ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';                                                -- #228
--- ALTER TABLE valid_ingredients ADD COLUMN "animal_derived" BOOLEAN NOT NULL DEFAULT 'false';                                  -- #189
--- ALTER TABLE valid_ingredients ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';                                             -- #228
--- ALTER TABLE valid_ingredients ADD COLUMN "restrict_to_preparations" BOOLEAN NOT NULL DEFAULT 'false';                        -- #239
--- ALTER TABLE valid_ingredients ADD COLUMN "minimum_ideal_storage_temperature_in_celsius" DOUBLE PRECISION NOT NULL DEFAULT 0; -- #247
--- ALTER TABLE valid_ingredients ADD COLUMN "maximum_ideal_storage_temperature_in_celsius" DOUBLE PRECISION NOT NULL DEFAULT 0; -- #247
+ALTER TABLE valid_ingredients ADD COLUMN "animal_derived" BOOLEAN NOT NULL DEFAULT 'false';                                  -- #189
+ALTER TABLE valid_ingredients ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';                                             -- #228
+ALTER TABLE valid_ingredients ADD COLUMN "restrict_to_preparations" BOOLEAN NOT NULL DEFAULT 'false';                        -- #239
+ALTER TABLE valid_ingredients ADD COLUMN "minimum_ideal_storage_temperature_in_celsius" DOUBLE PRECISION NOT NULL DEFAULT 0; -- #247
+ALTER TABLE valid_ingredients ADD COLUMN "maximum_ideal_storage_temperature_in_celsius" DOUBLE PRECISION NOT NULL DEFAULT 0; -- #247
 -- ALTER TABLE valid_preparations ADD COLUMN "yields_nothing" BOOLEAN NOT NULL DEFAULT 'false';                                 -- #195
 -- ALTER TABLE valid_preparations ADD COLUMN "restrict_to_ingredients" BOOLEAN NOT NULL DEFAULT 'false';                        -- #219
 -- ALTER TABLE valid_preparations ADD COLUMN "zero_ingredients_allowed" BOOLEAN NOT NULL DEFAULT 'false';                       -- #224

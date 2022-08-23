@@ -45,6 +45,11 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 			x.IsMeasuredVolumetrically,
 			x.IsLiquid,
 			x.IconPath,
+			x.AnimalDerived,
+			x.PluralName,
+			x.RestrictToPreparations,
+			x.MinimumIdealStorageTemperatureInCelsius,
+			x.MaximumIdealStorageTemperatureInCelsius,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -702,6 +707,11 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.IsMeasuredVolumetrically,
 			exampleInput.IsLiquid,
 			exampleInput.IconPath,
+			exampleInput.AnimalDerived,
+			exampleInput.PluralName,
+			exampleInput.RestrictToPreparations,
+			exampleInput.MinimumIdealStorageTemperatureInCelsius,
+			exampleInput.MaximumIdealStorageTemperatureInCelsius,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -759,6 +769,11 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.IsMeasuredVolumetrically,
 			exampleInput.IsLiquid,
 			exampleInput.IconPath,
+			exampleInput.AnimalDerived,
+			exampleInput.PluralName,
+			exampleInput.RestrictToPreparations,
+			exampleInput.MinimumIdealStorageTemperatureInCelsius,
+			exampleInput.MaximumIdealStorageTemperatureInCelsius,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -807,6 +822,11 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.IsMeasuredVolumetrically,
 			exampleValidIngredient.IsLiquid,
 			exampleValidIngredient.IconPath,
+			exampleValidIngredient.AnimalDerived,
+			exampleValidIngredient.PluralName,
+			exampleValidIngredient.RestrictToPreparations,
+			exampleValidIngredient.MinimumIdealStorageTemperatureInCelsius,
+			exampleValidIngredient.MaximumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.ID,
 		}
 
@@ -854,6 +874,11 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.IsMeasuredVolumetrically,
 			exampleValidIngredient.IsLiquid,
 			exampleValidIngredient.IconPath,
+			exampleValidIngredient.AnimalDerived,
+			exampleValidIngredient.PluralName,
+			exampleValidIngredient.RestrictToPreparations,
+			exampleValidIngredient.MinimumIdealStorageTemperatureInCelsius,
+			exampleValidIngredient.MaximumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.ID,
 		}
 
