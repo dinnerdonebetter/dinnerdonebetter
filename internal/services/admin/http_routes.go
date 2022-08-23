@@ -1,6 +1,8 @@
 package admin
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -59,8 +61,12 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	logger = logger.WithValue("status_change_recipient", input.TargetUserID)
 
 	if err = s.userDB.UpdateUserAccountStatus(ctx, input.TargetUserID, input); err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		} else {
+			observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		}
 		return
 	}
 

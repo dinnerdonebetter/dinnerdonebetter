@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"strings"
 
@@ -385,26 +384,4 @@ func (q *SQLQuerier) buildListQueryWithILike(
 	query, selectArgs := q.buildQuery(span, builder)
 
 	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), selectArgs...)
-}
-
-func nullInt64ForUint64Field(x *uint64) sql.NullInt64 {
-	z := sql.NullInt64{}
-
-	if x != nil {
-		z.Int64 = int64(*x)
-		z.Valid = true
-	}
-
-	return z
-}
-
-func nullInt32ForUint8Field(x *uint8) sql.NullInt32 {
-	z := sql.NullInt32{}
-
-	if x != nil {
-		z.Int32 = int32(*x)
-		z.Valid = true
-	}
-
-	return z
 }

@@ -17,7 +17,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -36,16 +35,15 @@ var _ database.DataManager = (*SQLQuerier)(nil)
 
 // SQLQuerier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type SQLQuerier struct {
-	tracer           tracing.Tracer
-	sqlBuilder       squirrel.StatementBuilderType
-	logger           logging.Logger
-	generatedQuerier generated.Querier
-	timeFunc         func() uint64
-	config           *dbconfig.Config
-	db               *sql.DB
-	connectionURL    string
-	migrateOnce      sync.Once
-	logQueries       bool
+	tracer        tracing.Tracer
+	sqlBuilder    squirrel.StatementBuilderType
+	logger        logging.Logger
+	timeFunc      func() uint64
+	config        *dbconfig.Config
+	db            *sql.DB
+	connectionURL string
+	migrateOnce   sync.Once
+	logQueries    bool
 }
 
 var instrumentedDriverRegistration sync.Once
@@ -82,15 +80,14 @@ func ProvideDatabaseClient(
 	}
 
 	c := &SQLQuerier{
-		db:               db,
-		config:           cfg,
-		tracer:           tracer,
-		logQueries:       cfg.LogQueries,
-		timeFunc:         defaultTimeFunc,
-		connectionURL:    string(cfg.ConnectionDetails),
-		logger:           logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:       squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
-		generatedQuerier: generated.New(db),
+		db:            db,
+		config:        cfg,
+		tracer:        tracer,
+		logQueries:    cfg.LogQueries,
+		timeFunc:      defaultTimeFunc,
+		connectionURL: string(cfg.ConnectionDetails),
+		logger:        logging.EnsureLogger(logger).WithName("querier"),
+		sqlBuilder:    squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
 	if cfg.Debug {

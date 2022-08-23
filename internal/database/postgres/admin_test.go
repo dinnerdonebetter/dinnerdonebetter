@@ -8,10 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestQuerier_UpdateUserAccountStatus(T *testing.T) {
@@ -28,25 +26,21 @@ func TestQuerier_UpdateUserAccountStatus(T *testing.T) {
 		}
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c, db := buildTestClient(t)
 
-		args := &generated.SetUserAccountStatusParams{
-			UserAccountStatus:            string(exampleInput.NewStatus),
-			UserAccountStatusExplanation: exampleInput.Reason,
-			ID:                           exampleInput.TargetUserID,
+		args := []interface{}{
+			exampleInput.NewStatus,
+			exampleInput.Reason,
+			exampleInput.TargetUserID,
 		}
 
-		mockGeneratedQuerier := &mockQuerier{}
-		mockGeneratedQuerier.On(
-			"SetUserAccountStatus",
-			testutils.ContextMatcher,
-			args,
-		).Return(nil)
-		c.generatedQuerier = mockGeneratedQuerier
+		db.ExpectExec(formatQueryForSQLMock(setUserAccountStatusQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateUserAccountStatus(ctx, exampleUser.ID, exampleInput))
 
-		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, db)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -60,24 +54,20 @@ func TestQuerier_UpdateUserAccountStatus(T *testing.T) {
 		}
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c, db := buildTestClient(t)
 
-		args := &generated.SetUserAccountStatusParams{
-			UserAccountStatus:            string(exampleInput.NewStatus),
-			UserAccountStatusExplanation: exampleInput.Reason,
-			ID:                           exampleInput.TargetUserID,
+		args := []interface{}{
+			exampleInput.NewStatus,
+			exampleInput.Reason,
+			exampleInput.TargetUserID,
 		}
 
-		mockGeneratedQuerier := &mockQuerier{}
-		mockGeneratedQuerier.On(
-			"SetUserAccountStatus",
-			testutils.ContextMatcher,
-			args,
-		).Return(errors.New("blah"))
-		c.generatedQuerier = mockGeneratedQuerier
+		db.ExpectExec(formatQueryForSQLMock(setUserAccountStatusQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.UpdateUserAccountStatus(ctx, exampleUser.ID, exampleInput))
 
-		mock.AssertExpectationsForObjects(t, mockGeneratedQuerier)
+		mock.AssertExpectationsForObjects(t, db)
 	})
 }

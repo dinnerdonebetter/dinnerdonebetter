@@ -19,7 +19,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -112,13 +111,12 @@ func buildTestClient(t *testing.T) (*SQLQuerier, *sqlmockExpecterWrapper) {
 	require.NoError(t, err)
 
 	c := &SQLQuerier{
-		db:               fakeDB,
-		logQueries:       true,
-		logger:           logging.NewNoopLogger(),
-		timeFunc:         defaultTimeFunc,
-		tracer:           tracing.NewTracerForTest("test"),
-		sqlBuilder:       squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
-		generatedQuerier: generated.New(fakeDB),
+		db:         fakeDB,
+		logQueries: true,
+		logger:     logging.NewNoopLogger(),
+		timeFunc:   defaultTimeFunc,
+		tracer:     tracing.NewTracerForTest("test"),
+		sqlBuilder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}

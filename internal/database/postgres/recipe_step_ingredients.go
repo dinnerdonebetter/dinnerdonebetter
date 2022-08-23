@@ -2,14 +2,11 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -132,6 +129,8 @@ func (q *SQLQuerier) scanRecipeStepIngredients(ctx context.Context, rows databas
 	return recipeStepIngredients, filteredCount, totalCount, nil
 }
 
+const recipeStepIngredientExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_ingredients.id FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5 )"
+
 // RecipeStepIngredientExists fetches whether a recipe step ingredient exists from the database.
 func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -157,16 +156,15 @@ func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
 
-	args := &generated.RecipeStepIngredientExistsParams{
-		RecipeStepID:           recipeStepID,
-		RecipeStepIngredientID: recipeStepIngredientID,
-		RecipeID:               recipeID,
+	args := []interface{}{
+		recipeStepID,
+		recipeStepIngredientID,
+		recipeID,
+		recipeStepID,
+		recipeID,
 	}
 
-	result, err := q.generatedQuerier.RecipeStepIngredientExists(ctx, args)
-	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	}
+	result, err := q.performBooleanQuery(ctx, q.db, recipeStepIngredientExistenceQuery, args)
 	if err != nil {
 		return false, observability.PrepareError(err, logger, span, "performing recipe step ingredient existence check")
 	}
