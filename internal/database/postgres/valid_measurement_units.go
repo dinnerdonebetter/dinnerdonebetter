@@ -28,6 +28,10 @@ var (
 		"valid_measurement_units.description",
 		"valid_measurement_units.volumetric",
 		"valid_measurement_units.icon_path",
+		"valid_measurement_units.universal",
+		"valid_measurement_units.metric",
+		"valid_measurement_units.imperial",
+		"valid_measurement_units.plural_name",
 		"valid_measurement_units.created_on",
 		"valid_measurement_units.last_updated_on",
 		"valid_measurement_units.archived_on",
@@ -49,6 +53,10 @@ func (q *SQLQuerier) scanValidMeasurementUnit(ctx context.Context, scan database
 		&x.Description,
 		&x.Volumetric,
 		&x.IconPath,
+		&x.Universal,
+		&x.Metric,
+		&x.Imperial,
+		&x.PluralName,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -131,6 +139,10 @@ const getValidMeasurementUnitBaseQuery = `SELECT
 	valid_measurement_units.description,
 	valid_measurement_units.volumetric,
 	valid_measurement_units.icon_path,
+	valid_measurement_units.universal,
+	valid_measurement_units.metric,
+	valid_measurement_units.imperial,
+	valid_measurement_units.plural_name,
 	valid_measurement_units.created_on, 
 	valid_measurement_units.last_updated_on, 
 	valid_measurement_units.archived_on 
@@ -193,6 +205,10 @@ const validMeasurementUnitSearchQuery = `SELECT
 	valid_measurement_units.description,
 	valid_measurement_units.volumetric,
 	valid_measurement_units.icon_path,
+	valid_measurement_units.universal,
+	valid_measurement_units.metric,
+	valid_measurement_units.imperial,
+	valid_measurement_units.plural_name,
 	valid_measurement_units.created_on,
 	valid_measurement_units.last_updated_on,
 	valid_measurement_units.archived_on
@@ -341,7 +357,10 @@ func (q *SQLQuerier) GetValidMeasurementUnitsWithIDs(ctx context.Context, limit 
 	return validMeasurementUnits, nil
 }
 
-const validMeasurementUnitCreationQuery = "INSERT INTO valid_measurement_units (id,name,description,volumetric,icon_path) VALUES ($1,$2,$3,$4,$5)"
+const validMeasurementUnitCreationQuery = `INSERT INTO valid_measurement_units
+    (id,name,description,volumetric,icon_path,universal,metric,imperial,plural_name) 
+	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+`
 
 // CreateValidMeasurementUnit creates a valid measurement unit in the database.
 func (q *SQLQuerier) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
@@ -360,6 +379,10 @@ func (q *SQLQuerier) CreateValidMeasurementUnit(ctx context.Context, input *type
 		input.Description,
 		input.Volumetric,
 		input.IconPath,
+		input.Universal,
+		input.Metric,
+		input.Imperial,
+		input.PluralName,
 	}
 
 	// create the valid measurement unit.
@@ -373,6 +396,10 @@ func (q *SQLQuerier) CreateValidMeasurementUnit(ctx context.Context, input *type
 		Description: input.Description,
 		Volumetric:  input.Volumetric,
 		IconPath:    input.IconPath,
+		Universal:   input.Universal,
+		Metric:      input.Metric,
+		Imperial:    input.Imperial,
+		PluralName:  input.PluralName,
 		CreatedOn:   q.currentTime(),
 	}
 
@@ -388,8 +415,12 @@ UPDATE valid_measurement_units SET
 	description = $2,
 	volumetric = $3,
 	icon_path = $4,
+	universal = $5,
+	metric = $6,
+	imperial = $7,
+	plural_name = $8,
 	last_updated_on = extract(epoch FROM NOW()) 
-WHERE archived_on IS NULL AND id = $5
+WHERE archived_on IS NULL AND id = $9
 `
 
 // UpdateValidMeasurementUnit updates a particular valid measurement unit.
@@ -409,6 +440,10 @@ func (q *SQLQuerier) UpdateValidMeasurementUnit(ctx context.Context, updated *ty
 		updated.Description,
 		updated.Volumetric,
 		updated.IconPath,
+		updated.Universal,
+		updated.Metric,
+		updated.Imperial,
+		updated.PluralName,
 		updated.ID,
 	}
 

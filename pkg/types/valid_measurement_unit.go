@@ -39,8 +39,12 @@ type (
 		Description   string  `json:"description"`
 		ID            string  `json:"id"`
 		IconPath      string  `json:"iconPath"`
+		PluralName    string  `json:"pluralName"`
 		CreatedOn     uint64  `json:"createdOn"`
 		Volumetric    bool    `json:"volumetric"`
+		Universal     bool    `json:"universal"`
+		Metric        bool    `json:"metric"`
+		Imperial      bool    `json:"imperial"`
 	}
 
 	// ValidMeasurementUnitList represents a list of valid measurement units.
@@ -56,8 +60,12 @@ type (
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		IconPath    string `json:"iconPath"`
+		PluralName  string `json:"pluralName"`
 		CreatedOn   uint64 `json:"createdOn"`
 		Volumetric  bool   `json:"volumetric"`
+		Universal   bool   `json:"universal"`
+		Metric      bool   `json:"metric"`
+		Imperial    bool   `json:"imperial"`
 	}
 
 	// ValidMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid measurement units.
@@ -67,8 +75,12 @@ type (
 		Description string `json:"description"`
 		ID          string `json:"id"`
 		IconPath    string `json:"iconPath"`
+		PluralName  string `json:"pluralName"`
 		CreatedOn   uint64 `json:"createdOn"`
 		Volumetric  bool   `json:"volumetric"`
+		Universal   bool   `json:"universal"`
+		Metric      bool   `json:"metric"`
+		Imperial    bool   `json:"imperial"`
 	}
 
 	// ValidMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid measurement units.
@@ -79,6 +91,10 @@ type (
 		IconPath    *string `json:"iconPath"`
 		CreatedOn   *uint64 `json:"createdOn"`
 		Volumetric  *bool   `json:"volumetric"`
+		Universal   *bool   `json:"universal"`
+		Metric      *bool   `json:"metric"`
+		Imperial    *bool   `json:"imperial"`
+		PluralName  *string `json:"pluralName"`
 	}
 
 	// ValidMeasurementUnitDataManager describes a structure capable of storing valid measurement units permanently.
@@ -120,6 +136,19 @@ func (x *ValidMeasurementUnit) Update(input *ValidMeasurementUnitUpdateRequestIn
 	if input.IconPath != nil && *input.IconPath != x.IconPath {
 		x.IconPath = *input.IconPath
 	}
+
+	if input.Universal != nil && *input.Universal != x.Universal {
+		x.Universal = *input.Universal
+	}
+	if input.Metric != nil && *input.Metric != x.Metric {
+		x.Metric = *input.Metric
+	}
+	if input.Imperial != nil && *input.Imperial != x.Imperial {
+		x.Imperial = *input.Imperial
+	}
+	if input.PluralName != nil && *input.PluralName != x.PluralName {
+		x.PluralName = *input.PluralName
+	}
 }
 
 var _ validation.ValidatableWithContext = (*ValidMeasurementUnitCreationRequestInput)(nil)
@@ -152,6 +181,10 @@ func ValidMeasurementUnitUpdateRequestInputFromValidMeasurementUnit(input *Valid
 		Description: &input.Description,
 		IconPath:    &input.IconPath,
 		Volumetric:  &input.Volumetric,
+		Universal:   &input.Universal,
+		Metric:      &input.Metric,
+		Imperial:    &input.Imperial,
+		PluralName:  &input.PluralName,
 	}
 
 	return x
@@ -165,6 +198,10 @@ func ValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnitCreationIn
 		Description: input.Description,
 		Volumetric:  input.Volumetric,
 		IconPath:    input.IconPath,
+		Universal:   input.Universal,
+		Metric:      input.Metric,
+		Imperial:    input.Imperial,
+		PluralName:  input.PluralName,
 	}
 
 	return x

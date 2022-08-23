@@ -9,10 +9,10 @@ ALTER TABLE valid_preparations ADD COLUMN "yields_nothing" BOOLEAN NOT NULL DEFA
 ALTER TABLE valid_preparations ADD COLUMN "restrict_to_ingredients" BOOLEAN NOT NULL DEFAULT 'false';                        -- #219
 ALTER TABLE valid_preparations ADD COLUMN "zero_ingredients_allowable" BOOLEAN NOT NULL DEFAULT 'false';                       -- #224
 ALTER TABLE valid_preparations ADD COLUMN "past_tense" TEXT NOT NULL DEFAULT '';                                             -- #89
--- ALTER TABLE valid_measurement_units ADD COLUMN "universal" BOOLEAN NOT NULL DEFAULT 'false';                                 -- #212
--- ALTER TABLE valid_measurement_units ADD COLUMN "metric" BOOLEAN NOT NULL DEFAULT 'false';                                    -- #213
--- ALTER TABLE valid_measurement_units ADD COLUMN "imperial" BOOLEAN NOT NULL DEFAULT 'false';                                  -- #213
--- ALTER TABLE valid_measurement_units ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';                                       -- #228
+ALTER TABLE valid_measurement_units ADD COLUMN "universal" BOOLEAN NOT NULL DEFAULT 'false';                                 -- #212
+ALTER TABLE valid_measurement_units ADD COLUMN "metric" BOOLEAN NOT NULL DEFAULT 'false';                                    -- #213
+ALTER TABLE valid_measurement_units ADD COLUMN "imperial" BOOLEAN NOT NULL DEFAULT 'false';                                  -- #213
+ALTER TABLE valid_measurement_units ADD COLUMN "plural_name" TEXT NOT NULL DEFAULT '';                                       -- #228
 -- ALTER TABLE valid_ingredient_measurement_units ADD COLUMN "minimum_allowable_quantity" DOUBLE PRECISION NOT NULL DEFAULT 0;  -- #232
 -- ALTER TABLE valid_ingredient_measurement_units ADD COLUMN "maximum_allowable_quantity" DOUBLE PRECISION NOT NULL DEFAULT 0;  -- #232
 -- ALTER TABLE recipe_step_instruments ADD COLUMN "optional" BOOLEAN NOT NULL DEFAULT 'false';                                  -- #233
