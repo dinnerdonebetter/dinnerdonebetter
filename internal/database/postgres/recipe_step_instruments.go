@@ -400,10 +400,10 @@ const getRecipeStepInstrumentsForRecipeQuery = `SELECT
 	recipe_step_instruments.product_of_recipe_step,
 	recipe_step_instruments.notes,
 	recipe_step_instruments.preference_rank,
-	recipe_step_instruments.created_on,
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
+	recipe_step_instruments.created_on,
 	recipe_step_instruments.last_updated_on,
 	recipe_step_instruments.archived_on,
 	recipe_step_instruments.belongs_to_recipe_step
