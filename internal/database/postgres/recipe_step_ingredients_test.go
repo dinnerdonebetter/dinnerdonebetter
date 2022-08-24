@@ -29,6 +29,7 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 		rowValues := []driver.Value{
 			x.ID,
 			x.Name,
+			x.Optional,
 			x.IngredientID,
 			x.MeasurementUnit.ID,
 			x.MeasurementUnit.Name,
@@ -690,6 +691,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.Optional,
 			exampleInput.IngredientID,
 			exampleInput.MeasurementUnitID,
 			exampleInput.MinimumQuantityValue,
@@ -740,6 +742,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.Optional,
 			exampleInput.IngredientID,
 			exampleInput.MeasurementUnitID,
 			exampleInput.MinimumQuantityValue,
@@ -786,6 +789,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 		recipeStepIngredientCreationArgs := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.Optional,
 			exampleInput.IngredientID,
 			exampleInput.MeasurementUnitID,
 			exampleInput.MinimumQuantityValue,
@@ -828,6 +832,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeStepIngredient.IngredientID,
 			exampleRecipeStepIngredient.Name,
+			exampleRecipeStepIngredient.Optional,
 			exampleRecipeStepIngredient.MeasurementUnit.ID,
 			exampleRecipeStepIngredient.MinimumQuantityValue,
 			exampleRecipeStepIngredient.MaximumQuantityValue,
@@ -869,6 +874,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeStepIngredient.IngredientID,
 			exampleRecipeStepIngredient.Name,
+			exampleRecipeStepIngredient.Optional,
 			exampleRecipeStepIngredient.MeasurementUnit.ID,
 			exampleRecipeStepIngredient.MinimumQuantityValue,
 			exampleRecipeStepIngredient.MaximumQuantityValue,

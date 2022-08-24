@@ -23,6 +23,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
 	assert.Equal(t, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep, "expected ProductOfRecipeStep for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep)
 	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected IngredientNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.IngredientNotes, actual.IngredientNotes)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Optional, actual.Optional)
 	assert.NotZero(t, actual.CreatedOn)
 }
 

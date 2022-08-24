@@ -24,6 +24,7 @@ var (
 	recipeStepIngredientsTableColumns = []string{
 		"recipe_step_ingredients.id",
 		"recipe_step_ingredients.name",
+		"recipe_step_ingredients.optional",
 		"recipe_step_ingredients.ingredient_id",
 		"valid_measurement_units.id",
 		"valid_measurement_units.name",
@@ -68,6 +69,7 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
+		&x.Optional,
 		&x.IngredientID,
 		&x.MeasurementUnit.ID,
 		&x.MeasurementUnit.Name,
@@ -183,6 +185,7 @@ func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 const getRecipeStepIngredientQuery = `SELECT
 	recipe_step_ingredients.id,
 	recipe_step_ingredients.name,
+	recipe_step_ingredients.optional,
 	recipe_step_ingredients.ingredient_id,
 	valid_measurement_units.id,
 	valid_measurement_units.name,
@@ -422,6 +425,7 @@ func (q *SQLQuerier) GetRecipeStepIngredientsWithIDs(ctx context.Context, recipe
 const recipeStepIngredientCreationQuery = `INSERT INTO recipe_step_ingredients (
 	id,
 	name,
+	optional,
 	ingredient_id,
 	measurement_unit,
 	minimum_quantity_value,
@@ -431,7 +435,7 @@ const recipeStepIngredientCreationQuery = `INSERT INTO recipe_step_ingredients (
 	recipe_step_product_id,
 	ingredient_notes,
 	belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
 `
 
 // createRecipeStepIngredient creates a recipe step ingredient in the database.
@@ -448,6 +452,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 	args := []interface{}{
 		input.ID,
 		input.Name,
+		input.Optional,
 		input.IngredientID,
 		input.MeasurementUnitID,
 		input.MinimumQuantityValue,
@@ -467,6 +472,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 	x := &types.RecipeStepIngredient{
 		ID:                   input.ID,
 		Name:                 input.Name,
+		Optional:             input.Optional,
 		IngredientID:         input.IngredientID,
 		MeasurementUnit:      types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
 		MinimumQuantityValue: input.MinimumQuantityValue,
@@ -493,16 +499,17 @@ const updateRecipeStepIngredientQuery = `
 UPDATE recipe_step_ingredients SET
 	ingredient_id = $1,
 	name = $2,
-	measurement_unit = $3,
-	minimum_quantity_value = $4,
-	maximum_quantity_value = $5,
-	quantity_notes = $6,
-	product_of_recipe_step = $7,
-	recipe_step_product_id = $8,
-	ingredient_notes = $9,
+	optional = $3,
+	measurement_unit = $4,
+	minimum_quantity_value = $5,
+	maximum_quantity_value = $6,
+	quantity_notes = $7,
+	product_of_recipe_step = $8,
+	recipe_step_product_id = $9,
+	ingredient_notes = $10,
 	last_updated_on = extract(epoch FROM NOW()) 
-WHERE archived_on IS NULL AND belongs_to_recipe_step = $10
-AND id = $11
+WHERE archived_on IS NULL AND belongs_to_recipe_step = $11
+AND id = $12
 `
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
@@ -520,6 +527,7 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 	args := []interface{}{
 		updated.IngredientID,
 		updated.Name,
+		updated.Optional,
 		updated.MeasurementUnit.ID,
 		updated.MinimumQuantityValue,
 		updated.MaximumQuantityValue,

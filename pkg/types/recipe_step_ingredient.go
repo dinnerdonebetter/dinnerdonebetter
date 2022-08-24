@@ -32,18 +32,19 @@ type (
 	RecipeStepIngredient struct {
 		_                    struct{}
 		IngredientID         *string              `json:"ingredientID"`
-		ArchivedOn           *uint64              `json:"archivedOn"`
 		RecipeStepProductID  *string              `json:"recipeStepProductID"`
 		LastUpdatedOn        *uint64              `json:"lastUpdatedOn"`
+		ArchivedOn           *uint64              `json:"archivedOn"`
+		Name                 string               `json:"name"`
 		QuantityNotes        string               `json:"quantityNotes"`
 		BelongsToRecipeStep  string               `json:"belongsToRecipeStep"`
 		ID                   string               `json:"id"`
 		IngredientNotes      string               `json:"ingredientNotes"`
-		Name                 string               `json:"name"`
 		MeasurementUnit      ValidMeasurementUnit `json:"measurementUnit"`
 		CreatedOn            uint64               `json:"createdOn"`
 		MinimumQuantityValue float32              `json:"minimumQuantityValue"`
 		MaximumQuantityValue float32              `json:"maximumQuantityValue"`
+		Optional             bool                 `json:"optional"`
 		ProductOfRecipeStep  bool                 `json:"productOfRecipeStep"`
 	}
 
@@ -65,8 +66,9 @@ type (
 		MeasurementUnitID    string                                 `json:"measurementUnitID"`
 		QuantityNotes        string                                 `json:"quantityNotes"`
 		IngredientNotes      string                                 `json:"ingredientNotes"`
-		MinimumQuantityValue float32                                `json:"minimumQuantityValue"`
 		MaximumQuantityValue float32                                `json:"maximumQuantityValue"`
+		MinimumQuantityValue float32                                `json:"minimumQuantityValue"`
+		Optional             bool                                   `json:"optional"`
 		ProductOfRecipeStep  bool                                   `json:"productOfRecipeStep"`
 	}
 
@@ -75,14 +77,15 @@ type (
 		_                    struct{}
 		IngredientID         *string `json:"ingredientID"`
 		RecipeStepProductID  *string `json:"recipeStepProductID"`
-		ID                   string  `json:"id"`
-		Name                 string  `json:"name"`
 		MeasurementUnitID    string  `json:"measurementUnitID"`
+		Name                 string  `json:"name"`
+		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
+		ID                   string  `json:"id"`
 		QuantityNotes        string  `json:"quantityNotes"`
 		IngredientNotes      string  `json:"ingredientNotes"`
-		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
 		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
 		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
+		Optional             bool    `json:"optional"`
 		ProductOfRecipeStep  bool    `json:"productOfRecipeStep"`
 	}
 
@@ -95,6 +98,7 @@ type (
 		// RecipeStepProductID is already a pointer, and I don't feel like making it a double pointer.
 		RecipeStepProductID  *string  `json:"recipeStepProductID"`
 		Name                 *string  `json:"name"`
+		Optional             *bool    `json:"optional"`
 		MeasurementUnitID    *string  `json:"measurementUnitID"`
 		QuantityNotes        *string  `json:"quantityNotes"`
 		IngredientNotes      *string  `json:"ingredientNotes"`
@@ -163,6 +167,10 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 	if input.IngredientNotes != nil && *input.IngredientNotes != x.IngredientNotes {
 		x.IngredientNotes = *input.IngredientNotes
 	}
+
+	if input.Optional != nil && *input.Optional != x.Optional {
+		x.Optional = *input.Optional
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepIngredientCreationRequestInput)(nil)
@@ -203,6 +211,7 @@ func RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(input *Recip
 		MinimumQuantityValue: &input.MinimumQuantityValue,
 		MaximumQuantityValue: &input.MaximumQuantityValue,
 		ProductOfRecipeStep:  &input.ProductOfRecipeStep,
+		Optional:             &input.Optional,
 	}
 
 	return x
@@ -220,6 +229,7 @@ func RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationIn
 		ProductOfRecipeStep:  input.ProductOfRecipeStep,
 		IngredientNotes:      input.IngredientNotes,
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		Optional:             input.Optional,
 	}
 
 	return x

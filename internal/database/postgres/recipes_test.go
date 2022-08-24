@@ -1161,6 +1161,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				recipeStepIngredientCreationArgs := []interface{}{
 					ingredient.ID,
 					ingredient.Name,
+					ingredient.Optional,
 					ingredient.IngredientID,
 					ingredient.MeasurementUnitID,
 					ingredient.MinimumQuantityValue,
@@ -1797,6 +1798,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					ID:                   ingredient.ID,
 					BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
 					Name:                 ingredient.Name,
+					Optional:             ingredient.Optional,
 					RecipeStepProductID:  ingredient.RecipeStepProductID,
 					MeasurementUnitID:    ingredient.MeasurementUnit.ID,
 					QuantityNotes:        ingredient.QuantityNotes,

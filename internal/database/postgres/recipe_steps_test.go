@@ -714,6 +714,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			recipeStepIngredientCreationArgs := []interface{}{
 				ingredient.ID,
 				ingredient.Name,
+				ingredient.Optional,
 				ingredient.IngredientID,
 				ingredient.MeasurementUnitID,
 				ingredient.MinimumQuantityValue,
@@ -819,6 +820,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		recipeStepIngredientCreationArgs := []interface{}{
 			exampleInput.Ingredients[0].ID,
 			exampleInput.Ingredients[0].Name,
+			exampleInput.Ingredients[0].Optional,
 			exampleInput.Ingredients[0].IngredientID,
 			exampleInput.Ingredients[0].MeasurementUnitID,
 			exampleInput.Ingredients[0].MinimumQuantityValue,
@@ -888,6 +890,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			recipeStepIngredientCreationArgs := []interface{}{
 				ingredient.ID,
 				ingredient.Name,
+				ingredient.Optional,
 				ingredient.IngredientID,
 				ingredient.MeasurementUnitID,
 				ingredient.MinimumQuantityValue,

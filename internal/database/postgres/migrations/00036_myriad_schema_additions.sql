@@ -22,7 +22,7 @@ ALTER TABLE recipe_step_products ADD COLUMN "maximum_storage_temperature_in_cels
 ALTER TABLE recipe_step_instruments ADD COLUMN "optional" BOOLEAN NOT NULL DEFAULT 'false';                                     -- #233
 ALTER TABLE recipe_step_instruments ADD COLUMN "minimum_quantity" INTEGER NOT NULL DEFAULT 1;                                   -- #240
 ALTER TABLE recipe_step_instruments ADD COLUMN "maximum_quantity" INTEGER NOT NULL DEFAULT 1;                                   -- #240
--- ALTER TABLE recipe_step_ingredients ADD COLUMN "optional" BOOLEAN NOT NULL DEFAULT 'false';                                     -- #233
+ALTER TABLE recipe_step_ingredients ADD COLUMN "optional" BOOLEAN NOT NULL DEFAULT 'false';                                     -- #233
 -- ALTER TABLE meal_plan_options ADD COLUMN "assigned_cook" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE;            -- #259
 -- ALTER TABLE recipe_steps ADD COLUMN "explicit_instructions" TEXT NOT NULL DEFAULT '';                                           -- #243
 -- ALTER TABLE recipes ADD COLUMN "yields_portions" INTEGER NOT NULL DEFAULT 1;                                                    -- #253

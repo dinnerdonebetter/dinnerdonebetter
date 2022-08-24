@@ -21,6 +21,7 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 			QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
 			ProductOfRecipeStep:  fake.Bool(),
 			IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
+			Optional:             fake.Bool(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -50,6 +51,7 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 			QuantityNotes:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			ProductOfRecipeStep:  boolPointer(fake.Bool()),
 			IngredientNotes:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Optional:             boolPointer(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
