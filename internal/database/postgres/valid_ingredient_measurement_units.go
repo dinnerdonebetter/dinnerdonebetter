@@ -63,6 +63,8 @@ var (
 		"valid_ingredients.created_on",
 		"valid_ingredients.last_updated_on",
 		"valid_ingredients.archived_on",
+		"valid_ingredient_measurement_units.minimum_allowable_quantity",
+		"valid_ingredient_measurement_units.maximum_allowable_quantity",
 		"valid_ingredient_measurement_units.created_on",
 		"valid_ingredient_measurement_units.last_updated_on",
 		"valid_ingredient_measurement_units.archived_on",
@@ -119,6 +121,8 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnit(ctx context.Context, sca
 		&x.Ingredient.CreatedOn,
 		&x.Ingredient.LastUpdatedOn,
 		&x.Ingredient.ArchivedOn,
+		&x.MinimumAllowableQuantity,
+		&x.MaximumAllowableQuantity,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -237,6 +241,8 @@ SELECT
 	valid_ingredients.created_on,
 	valid_ingredients.last_updated_on,
 	valid_ingredients.archived_on,
+	valid_ingredient_measurement_units.minimum_allowable_quantity,
+	valid_ingredient_measurement_units.maximum_allowable_quantity,
 	valid_ingredient_measurement_units.created_on,
 	valid_ingredient_measurement_units.last_updated_on,
 	valid_ingredient_measurement_units.archived_on
@@ -264,7 +270,7 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 		validIngredientMeasurementUnitID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "validIngredientMeasurementUnit", getValidIngredientMeasurementUnitQuery, args)
+	row := q.getOneRow(ctx, q.db, "valid ingredient measurement unit", getValidIngredientMeasurementUnitQuery, args)
 
 	validIngredientMeasurementUnit, _, _, err := q.scanValidIngredientMeasurementUnit(ctx, row, false)
 	if err != nil {
@@ -457,7 +463,9 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 	return x, nil
 }
 
-const validIngredientMeasurementUnitCreationQuery = "INSERT INTO valid_ingredient_measurement_units (id,notes,valid_measurement_unit_id,valid_ingredient_id) VALUES ($1,$2,$3,$4)"
+const validIngredientMeasurementUnitCreationQuery = `INSERT INTO valid_ingredient_measurement_units
+    (id,notes,valid_measurement_unit_id,valid_ingredient_id,minimum_allowable_quantity,maximum_allowable_quantity) 
+	VALUES ($1,$2,$3,$4,$5,$6)`
 
 // CreateValidIngredientMeasurementUnit creates a valid ingredient measurement unit in the database.
 func (q *SQLQuerier) CreateValidIngredientMeasurementUnit(ctx context.Context, input *types.ValidIngredientMeasurementUnitDatabaseCreationInput) (*types.ValidIngredientMeasurementUnit, error) {
@@ -475,6 +483,8 @@ func (q *SQLQuerier) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 		input.Notes,
 		input.ValidMeasurementUnitID,
 		input.ValidIngredientID,
+		input.MinimumAllowableQuantity,
+		input.MaximumAllowableQuantity,
 	}
 
 	// create the valid ingredient measurement unit.
@@ -483,11 +493,13 @@ func (q *SQLQuerier) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 	}
 
 	x := &types.ValidIngredientMeasurementUnit{
-		ID:              input.ID,
-		Notes:           input.Notes,
-		MeasurementUnit: types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
-		Ingredient:      types.ValidIngredient{ID: input.ValidIngredientID},
-		CreatedOn:       q.currentTime(),
+		ID:                       input.ID,
+		Notes:                    input.Notes,
+		MeasurementUnit:          types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
+		Ingredient:               types.ValidIngredient{ID: input.ValidIngredientID},
+		MinimumAllowableQuantity: input.MinimumAllowableQuantity,
+		MaximumAllowableQuantity: input.MaximumAllowableQuantity,
+		CreatedOn:                q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, x.ID)
@@ -496,7 +508,17 @@ func (q *SQLQuerier) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 	return x, nil
 }
 
-const updateValidIngredientMeasurementUnitQuery = "UPDATE valid_ingredient_measurement_units SET notes = $1, valid_measurement_unit_id = $2, valid_ingredient_id = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4"
+const updateValidIngredientMeasurementUnitQuery = `UPDATE valid_ingredient_measurement_units 
+SET 
+    notes = $1,
+    valid_measurement_unit_id = $2,
+    valid_ingredient_id = $3,
+	minimum_allowable_quantity = $4,
+	maximum_allowable_quantity = $5,
+    last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL 
+  AND id = $6
+`
 
 // UpdateValidIngredientMeasurementUnit updates a particular valid ingredient measurement unit.
 func (q *SQLQuerier) UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *types.ValidIngredientMeasurementUnit) error {
@@ -514,6 +536,8 @@ func (q *SQLQuerier) UpdateValidIngredientMeasurementUnit(ctx context.Context, u
 		updated.Notes,
 		updated.MeasurementUnit.ID,
 		updated.Ingredient.ID,
+		updated.MinimumAllowableQuantity,
+		updated.MaximumAllowableQuantity,
 		updated.ID,
 	}
 

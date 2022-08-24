@@ -67,6 +67,8 @@ func buildMockRowsFromValidIngredientMeasurementUnits(includeCounts bool, filter
 			&x.Ingredient.CreatedOn,
 			&x.Ingredient.LastUpdatedOn,
 			&x.Ingredient.ArchivedOn,
+			&x.MinimumAllowableQuantity,
+			&x.MaximumAllowableQuantity,
 			&x.CreatedOn,
 			&x.LastUpdatedOn,
 			&x.ArchivedOn,
@@ -426,6 +428,8 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 			exampleInput.Notes,
 			exampleInput.ValidMeasurementUnitID,
 			exampleInput.ValidIngredientID,
+			exampleInput.MinimumAllowableQuantity,
+			exampleInput.MaximumAllowableQuantity,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientMeasurementUnitCreationQuery)).
@@ -472,6 +476,8 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 			exampleInput.Notes,
 			exampleInput.ValidMeasurementUnitID,
 			exampleInput.ValidIngredientID,
+			exampleInput.MinimumAllowableQuantity,
+			exampleInput.MaximumAllowableQuantity,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientMeasurementUnitCreationQuery)).
@@ -506,6 +512,8 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 			exampleValidIngredientMeasurementUnit.Notes,
 			exampleValidIngredientMeasurementUnit.MeasurementUnit.ID,
 			exampleValidIngredientMeasurementUnit.Ingredient.ID,
+			exampleValidIngredientMeasurementUnit.MinimumAllowableQuantity,
+			exampleValidIngredientMeasurementUnit.MaximumAllowableQuantity,
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -539,6 +547,8 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 			exampleValidIngredientMeasurementUnit.Notes,
 			exampleValidIngredientMeasurementUnit.MeasurementUnit.ID,
 			exampleValidIngredientMeasurementUnit.Ingredient.ID,
+			exampleValidIngredientMeasurementUnit.MinimumAllowableQuantity,
+			exampleValidIngredientMeasurementUnit.MaximumAllowableQuantity,
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 

@@ -15,9 +15,11 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitCreationRequestInput{
-			Notes:                  fake.LoremIpsumSentence(exampleQuantity),
-			ValidMeasurementUnitID: fake.LoremIpsumSentence(exampleQuantity),
-			ValidIngredientID:      fake.LoremIpsumSentence(exampleQuantity),
+			Notes:                    fake.LoremIpsumSentence(exampleQuantity),
+			ValidMeasurementUnitID:   fake.LoremIpsumSentence(exampleQuantity),
+			ValidIngredientID:        fake.LoremIpsumSentence(exampleQuantity),
+			MinimumAllowableQuantity: fake.Float32(),
+			MaximumAllowableQuantity: fake.Float32(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -41,9 +43,11 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitUpdateRequestInput{
-			Notes:                  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidMeasurementUnitID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientID:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:                    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidMeasurementUnitID:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidIngredientID:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MinimumAllowableQuantity: float32Pointer(fake.Float32()),
+			MaximumAllowableQuantity: float32Pointer(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
