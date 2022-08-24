@@ -15,11 +15,15 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductCreationRequestInput{
-			Name:                 fake.LoremIpsumSentence(exampleQuantity),
-			Type:                 RecipeStepProductIngredientType,
-			MeasurementUnitID:    fake.LoremIpsumSentence(exampleQuantity),
-			MinimumQuantityValue: fake.Float32(),
-			QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
+			Name:                               fake.LoremIpsumSentence(exampleQuantity),
+			Type:                               RecipeStepProductIngredientType,
+			MeasurementUnitID:                  fake.LoremIpsumSentence(exampleQuantity),
+			MinimumQuantityValue:               fake.Float32(),
+			QuantityNotes:                      fake.LoremIpsumSentence(exampleQuantity),
+			Compostable:                        fake.Bool(),
+			MaximumStorageDurationInSeconds:    fake.Uint32(),
+			MinimumStorageTemperatureInCelsius: fake.Float32(),
+			MaximumStorageTemperatureInCelsius: fake.Float32(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -43,12 +47,16 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:                 stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Type:                 stringPointer(RecipeStepProductIngredientType),
-			MeasurementUnitID:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MinimumQuantityValue: float32Pointer(fake.Float32()),
-			MaximumQuantityValue: float32Pointer(fake.Float32()),
-			QuantityNotes:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                               stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Type:                               stringPointer(RecipeStepProductIngredientType),
+			MeasurementUnitID:                  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MinimumQuantityValue:               float32Pointer(fake.Float32()),
+			MaximumQuantityValue:               float32Pointer(fake.Float32()),
+			QuantityNotes:                      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Compostable:                        boolPointer(fake.Bool()),
+			MaximumStorageDurationInSeconds:    uint32Pointer(fake.Uint32()),
+			MinimumStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
+			MaximumStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

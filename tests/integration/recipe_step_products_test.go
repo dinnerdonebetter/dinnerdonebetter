@@ -22,18 +22,26 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 	assert.Equal(t, expected.MinimumQuantityValue, actual.MinimumQuantityValue, "expected MinimumQuantityValue for recipe step product %s to be %v, but it was %v", expected.ID, expected.MinimumQuantityValue, actual.MinimumQuantityValue)
 	assert.Equal(t, expected.MaximumQuantityValue, actual.MaximumQuantityValue, "expected MaximumQuantityValue for recipe step product %s to be %v, but it was %v", expected.ID, expected.MaximumQuantityValue, actual.MaximumQuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step product %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
+	assert.Equal(t, expected.Compostable, actual.Compostable, "expected Compostable for recipe step product %s to be %v, but was %v", expected.ID, expected.Compostable, actual.Compostable)
+	assert.Equal(t, expected.MaximumStorageDurationInSeconds, actual.MaximumStorageDurationInSeconds, "expected MaximumStorageDurationInSeconds for recipe step product %s to be %v, but was %v", expected.ID, expected.MaximumStorageDurationInSeconds, actual.MaximumStorageDurationInSeconds)
+	assert.Equal(t, expected.MinimumStorageTemperatureInCelsius, actual.MinimumStorageTemperatureInCelsius, "expected MinimumStorageTemperatureInCelsius for recipe step product %s to be %v, but was %v", expected.ID, expected.MinimumStorageTemperatureInCelsius, actual.MinimumStorageTemperatureInCelsius)
+	assert.Equal(t, expected.MaximumStorageTemperatureInCelsius, actual.MaximumStorageTemperatureInCelsius, "expected MaximumStorageTemperatureInCelsius for recipe step product %s to be %v, but was %v", expected.ID, expected.MaximumStorageTemperatureInCelsius, actual.MaximumStorageTemperatureInCelsius)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
 // convertRecipeStepProductToRecipeStepProductUpdateInput creates an RecipeStepProductUpdateRequestInput struct from a recipe step product.
 func convertRecipeStepProductToRecipeStepProductUpdateInput(x *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
 	return &types.RecipeStepProductUpdateRequestInput{
-		Name:                 &x.Name,
-		Type:                 &x.Type,
-		MeasurementUnitID:    &x.MeasurementUnit.ID,
-		MinimumQuantityValue: &x.MinimumQuantityValue,
-		MaximumQuantityValue: &x.MaximumQuantityValue,
-		QuantityNotes:        &x.QuantityNotes,
+		Name:                               &x.Name,
+		Type:                               &x.Type,
+		MeasurementUnitID:                  &x.MeasurementUnit.ID,
+		MinimumQuantityValue:               &x.MinimumQuantityValue,
+		MaximumQuantityValue:               &x.MaximumQuantityValue,
+		QuantityNotes:                      &x.QuantityNotes,
+		Compostable:                        &x.Compostable,
+		MaximumStorageDurationInSeconds:    &x.MaximumStorageDurationInSeconds,
+		MinimumStorageTemperatureInCelsius: &x.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius: &x.MaximumStorageTemperatureInCelsius,
 	}
 }
 

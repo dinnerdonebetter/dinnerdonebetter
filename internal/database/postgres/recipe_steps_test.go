@@ -739,6 +739,10 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				product.MinimumQuantityValue,
 				product.MaximumQuantityValue,
 				product.QuantityNotes,
+				product.Compostable,
+				product.MaximumStorageDurationInSeconds,
+				product.MinimumStorageTemperatureInCelsius,
+				product.MaximumStorageTemperatureInCelsius,
 				product.BelongsToRecipeStep,
 			}
 
@@ -905,6 +909,10 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Products[0].MinimumQuantityValue,
 			exampleInput.Products[0].MaximumQuantityValue,
 			exampleInput.Products[0].QuantityNotes,
+			exampleInput.Products[0].Compostable,
+			exampleInput.Products[0].MaximumStorageDurationInSeconds,
+			exampleInput.Products[0].MinimumStorageTemperatureInCelsius,
+			exampleInput.Products[0].MaximumStorageTemperatureInCelsius,
 			exampleInput.Products[0].BelongsToRecipeStep,
 		}
 

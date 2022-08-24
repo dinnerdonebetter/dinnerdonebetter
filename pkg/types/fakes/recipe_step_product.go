@@ -10,15 +10,19 @@ import (
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 	return &types.RecipeStepProduct{
-		ID:                   ksuid.New().String(),
-		Name:                 buildUniqueString(),
-		Type:                 types.RecipeStepProductIngredientType,
-		MinimumQuantityValue: fake.Float32(),
-		MaximumQuantityValue: fake.Float32(),
-		QuantityNotes:        buildUniqueString(),
-		MeasurementUnit:      *BuildFakeValidMeasurementUnit(),
-		CreatedOn:            uint64(uint32(fake.Date().Unix())),
-		BelongsToRecipeStep:  fake.UUID(),
+		ID:                                 ksuid.New().String(),
+		Name:                               buildUniqueString(),
+		Type:                               types.RecipeStepProductIngredientType,
+		MinimumQuantityValue:               fake.Float32(),
+		MaximumQuantityValue:               fake.Float32(),
+		QuantityNotes:                      buildUniqueString(),
+		MeasurementUnit:                    *BuildFakeValidMeasurementUnit(),
+		CreatedOn:                          uint64(uint32(fake.Date().Unix())),
+		BelongsToRecipeStep:                fake.UUID(),
+		Compostable:                        fake.Bool(),
+		MaximumStorageDurationInSeconds:    fake.Uint32(),
+		MinimumStorageTemperatureInCelsius: fake.Float32(),
+		MaximumStorageTemperatureInCelsius: fake.Float32(),
 	}
 }
 
@@ -44,26 +48,34 @@ func BuildFakeRecipeStepProductList() *types.RecipeStepProductList {
 func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpdateRequestInput {
 	recipeStepProduct := BuildFakeRecipeStepProduct()
 	return &types.RecipeStepProductUpdateRequestInput{
-		Name:                 &recipeStepProduct.Name,
-		Type:                 &recipeStepProduct.Type,
-		MinimumQuantityValue: &recipeStepProduct.MinimumQuantityValue,
-		MaximumQuantityValue: &recipeStepProduct.MaximumQuantityValue,
-		QuantityNotes:        &recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:    &recipeStepProduct.MeasurementUnit.ID,
-		BelongsToRecipeStep:  &recipeStepProduct.BelongsToRecipeStep,
+		Name:                               &recipeStepProduct.Name,
+		Type:                               &recipeStepProduct.Type,
+		MinimumQuantityValue:               &recipeStepProduct.MinimumQuantityValue,
+		MaximumQuantityValue:               &recipeStepProduct.MaximumQuantityValue,
+		QuantityNotes:                      &recipeStepProduct.QuantityNotes,
+		MeasurementUnitID:                  &recipeStepProduct.MeasurementUnit.ID,
+		BelongsToRecipeStep:                &recipeStepProduct.BelongsToRecipeStep,
+		Compostable:                        &recipeStepProduct.Compostable,
+		MaximumStorageDurationInSeconds:    &recipeStepProduct.MaximumStorageDurationInSeconds,
+		MinimumStorageTemperatureInCelsius: &recipeStepProduct.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius: &recipeStepProduct.MaximumStorageTemperatureInCelsius,
 	}
 }
 
 // BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct builds a faked RecipeStepProductUpdateRequestInput from a recipe step product.
 func BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
 	return &types.RecipeStepProductUpdateRequestInput{
-		Name:                 &recipeStepProduct.Name,
-		Type:                 &recipeStepProduct.Type,
-		MinimumQuantityValue: &recipeStepProduct.MinimumQuantityValue,
-		MaximumQuantityValue: &recipeStepProduct.MaximumQuantityValue,
-		QuantityNotes:        &recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:    &recipeStepProduct.MeasurementUnit.ID,
-		BelongsToRecipeStep:  &recipeStepProduct.BelongsToRecipeStep,
+		Name:                               &recipeStepProduct.Name,
+		Type:                               &recipeStepProduct.Type,
+		MinimumQuantityValue:               &recipeStepProduct.MinimumQuantityValue,
+		MaximumQuantityValue:               &recipeStepProduct.MaximumQuantityValue,
+		QuantityNotes:                      &recipeStepProduct.QuantityNotes,
+		MeasurementUnitID:                  &recipeStepProduct.MeasurementUnit.ID,
+		BelongsToRecipeStep:                &recipeStepProduct.BelongsToRecipeStep,
+		Compostable:                        &recipeStepProduct.Compostable,
+		MaximumStorageDurationInSeconds:    &recipeStepProduct.MaximumStorageDurationInSeconds,
+		MinimumStorageTemperatureInCelsius: &recipeStepProduct.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius: &recipeStepProduct.MaximumStorageTemperatureInCelsius,
 	}
 }
 
@@ -76,33 +88,35 @@ func BuildFakeRecipeStepProductCreationRequestInput() *types.RecipeStepProductCr
 // BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct builds a faked RecipeStepProductCreationRequestInput from a recipe step product.
 func BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductCreationRequestInput {
 	return &types.RecipeStepProductCreationRequestInput{
-		ID:                   recipeStepProduct.ID,
-		Name:                 recipeStepProduct.Name,
-		Type:                 recipeStepProduct.Type,
-		MinimumQuantityValue: recipeStepProduct.MinimumQuantityValue,
-		MaximumQuantityValue: recipeStepProduct.MaximumQuantityValue,
-		QuantityNotes:        recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:    recipeStepProduct.MeasurementUnit.ID,
-		BelongsToRecipeStep:  recipeStepProduct.BelongsToRecipeStep,
+		ID:                                 recipeStepProduct.ID,
+		Name:                               recipeStepProduct.Name,
+		Type:                               recipeStepProduct.Type,
+		MinimumQuantityValue:               recipeStepProduct.MinimumQuantityValue,
+		MaximumQuantityValue:               recipeStepProduct.MaximumQuantityValue,
+		QuantityNotes:                      recipeStepProduct.QuantityNotes,
+		MeasurementUnitID:                  recipeStepProduct.MeasurementUnit.ID,
+		BelongsToRecipeStep:                recipeStepProduct.BelongsToRecipeStep,
+		Compostable:                        recipeStepProduct.Compostable,
+		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,
+		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
 	}
-}
-
-// BuildFakeRecipeStepProductDatabaseCreationInput builds a faked RecipeStepProductDatabaseCreationInput.
-func BuildFakeRecipeStepProductDatabaseCreationInput() *types.RecipeStepProductDatabaseCreationInput {
-	recipeStepProduct := BuildFakeRecipeStepProduct()
-	return BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(recipeStepProduct)
 }
 
 // BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct builds a faked RecipeStepProductDatabaseCreationInput from a recipe step product.
 func BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductDatabaseCreationInput {
 	return &types.RecipeStepProductDatabaseCreationInput{
-		ID:                   recipeStepProduct.ID,
-		Name:                 recipeStepProduct.Name,
-		Type:                 recipeStepProduct.Type,
-		MinimumQuantityValue: recipeStepProduct.MinimumQuantityValue,
-		MaximumQuantityValue: recipeStepProduct.MaximumQuantityValue,
-		QuantityNotes:        recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:    recipeStepProduct.MeasurementUnit.ID,
-		BelongsToRecipeStep:  recipeStepProduct.BelongsToRecipeStep,
+		ID:                                 recipeStepProduct.ID,
+		Name:                               recipeStepProduct.Name,
+		Type:                               recipeStepProduct.Type,
+		MinimumQuantityValue:               recipeStepProduct.MinimumQuantityValue,
+		MaximumQuantityValue:               recipeStepProduct.MaximumQuantityValue,
+		QuantityNotes:                      recipeStepProduct.QuantityNotes,
+		MeasurementUnitID:                  recipeStepProduct.MeasurementUnit.ID,
+		BelongsToRecipeStep:                recipeStepProduct.BelongsToRecipeStep,
+		Compostable:                        recipeStepProduct.Compostable,
+		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,
+		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
 	}
 }

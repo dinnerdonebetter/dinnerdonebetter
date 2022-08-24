@@ -40,6 +40,10 @@ var (
 		"recipe_step_products.minimum_quantity_value",
 		"recipe_step_products.maximum_quantity_value",
 		"recipe_step_products.quantity_notes",
+		"recipe_step_products.compostable",
+		"recipe_step_products.maximum_storage_duration_in_seconds",
+		"recipe_step_products.minimum_storage_temperature_in_celsius",
+		"recipe_step_products.maximum_storage_temperature_in_celsius",
 		"recipe_step_products.created_on",
 		"recipe_step_products.last_updated_on",
 		"recipe_step_products.archived_on",
@@ -81,6 +85,10 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.MinimumQuantityValue,
 		&x.MaximumQuantityValue,
 		&x.QuantityNotes,
+		&x.Compostable,
+		&x.MaximumStorageDurationInSeconds,
+		&x.MinimumStorageTemperatureInCelsius,
+		&x.MaximumStorageTemperatureInCelsius,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -193,6 +201,10 @@ const getRecipeStepProductQuery = `SELECT
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
+	recipe_step_products.compostable,
+	recipe_step_products.maximum_storage_duration_in_seconds,
+	recipe_step_products.minimum_storage_temperature_in_celsius,
+	recipe_step_products.maximum_storage_temperature_in_celsius,
 	recipe_step_products.created_on,
 	recipe_step_products.last_updated_on,
 	recipe_step_products.archived_on,
@@ -290,6 +302,10 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
+	recipe_step_products.compostable,
+	recipe_step_products.maximum_storage_duration_in_seconds,
+	recipe_step_products.minimum_storage_temperature_in_celsius,
+	recipe_step_products.maximum_storage_temperature_in_celsius,
 	recipe_step_products.created_on,
 	recipe_step_products.last_updated_on,
 	recipe_step_products.archived_on,
@@ -448,7 +464,9 @@ func (q *SQLQuerier) GetRecipeStepProductsWithIDs(ctx context.Context, recipeSte
 	return recipeStepProducts, nil
 }
 
-const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
+const recipeStepProductCreationQuery = `INSERT INTO recipe_step_products
+    (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,maximum_storage_duration_in_seconds,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,belongs_to_recipe_step) 
+	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
@@ -469,6 +487,10 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		input.MinimumQuantityValue,
 		input.MaximumQuantityValue,
 		input.QuantityNotes,
+		input.Compostable,
+		input.MaximumStorageDurationInSeconds,
+		input.MinimumStorageTemperatureInCelsius,
+		input.MaximumStorageTemperatureInCelsius,
 		input.BelongsToRecipeStep,
 	}
 
@@ -478,15 +500,19 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 	}
 
 	x := &types.RecipeStepProduct{
-		ID:                   input.ID,
-		Name:                 input.Name,
-		Type:                 input.Type,
-		MeasurementUnit:      types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
-		MinimumQuantityValue: input.MinimumQuantityValue,
-		MaximumQuantityValue: input.MaximumQuantityValue,
-		QuantityNotes:        input.QuantityNotes,
-		BelongsToRecipeStep:  input.BelongsToRecipeStep,
-		CreatedOn:            q.currentTime(),
+		ID:                                 input.ID,
+		Name:                               input.Name,
+		Type:                               input.Type,
+		MeasurementUnit:                    types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
+		MinimumQuantityValue:               input.MinimumQuantityValue,
+		MaximumQuantityValue:               input.MaximumQuantityValue,
+		QuantityNotes:                      input.QuantityNotes,
+		BelongsToRecipeStep:                input.BelongsToRecipeStep,
+		Compostable:                        input.Compostable,
+		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
+		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
+		CreatedOn:                          q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)
@@ -499,7 +525,24 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
-const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, type = $2, measurement_unit = $3, minimum_quantity_value = $4, maximum_quantity_value = $5, quantity_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $7 AND id = $8"
+const updateRecipeStepProductQuery = `
+UPDATE recipe_step_products
+SET 
+    name = $1,
+    type = $2,
+    measurement_unit = $3,
+    minimum_quantity_value = $4,
+    maximum_quantity_value = $5,
+    quantity_notes = $6,
+    compostable = $7,
+	maximum_storage_duration_in_seconds = $8,
+	minimum_storage_temperature_in_celsius = $9,
+	maximum_storage_temperature_in_celsius = $10,
+    last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+  AND belongs_to_recipe_step = $11
+  AND id = $12
+`
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
 func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types.RecipeStepProduct) error {
@@ -520,6 +563,10 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 		updated.MinimumQuantityValue,
 		updated.MaximumQuantityValue,
 		updated.QuantityNotes,
+		updated.Compostable,
+		updated.MaximumStorageDurationInSeconds,
+		updated.MinimumStorageTemperatureInCelsius,
+		updated.MaximumStorageTemperatureInCelsius,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

@@ -45,6 +45,10 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.MinimumQuantityValue,
 			x.MaximumQuantityValue,
 			x.QuantityNotes,
+			x.Compostable,
+			x.MaximumStorageDurationInSeconds,
+			x.MinimumStorageTemperatureInCelsius,
+			x.MaximumStorageTemperatureInCelsius,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -725,6 +729,10 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.MinimumQuantityValue,
 			exampleInput.MaximumQuantityValue,
 			exampleInput.QuantityNotes,
+			exampleInput.Compostable,
+			exampleInput.MaximumStorageDurationInSeconds,
+			exampleInput.MinimumStorageTemperatureInCelsius,
+			exampleInput.MaximumStorageTemperatureInCelsius,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -772,6 +780,10 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.MinimumQuantityValue,
 			exampleInput.MaximumQuantityValue,
 			exampleInput.QuantityNotes,
+			exampleInput.Compostable,
+			exampleInput.MaximumStorageDurationInSeconds,
+			exampleInput.MinimumStorageTemperatureInCelsius,
+			exampleInput.MaximumStorageTemperatureInCelsius,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -810,6 +822,10 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.MinimumQuantityValue,
 			exampleRecipeStepProduct.MaximumQuantityValue,
 			exampleRecipeStepProduct.QuantityNotes,
+			exampleRecipeStepProduct.Compostable,
+			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
+			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
+			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}
@@ -847,6 +863,10 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.MinimumQuantityValue,
 			exampleRecipeStepProduct.MaximumQuantityValue,
 			exampleRecipeStepProduct.QuantityNotes,
+			exampleRecipeStepProduct.Compostable,
+			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
+			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
+			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}

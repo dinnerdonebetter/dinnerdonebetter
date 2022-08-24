@@ -1806,14 +1806,18 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 
 			for _, product := range step.Products {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                   product.ID,
-					Name:                 product.Name,
-					Type:                 product.Type,
-					MeasurementUnitID:    product.MeasurementUnit.ID,
-					QuantityNotes:        product.QuantityNotes,
-					BelongsToRecipeStep:  product.BelongsToRecipeStep,
-					MinimumQuantityValue: product.MinimumQuantityValue,
-					MaximumQuantityValue: product.MaximumQuantityValue,
+					ID:                                 product.ID,
+					Name:                               product.Name,
+					Type:                               product.Type,
+					MeasurementUnitID:                  product.MeasurementUnit.ID,
+					QuantityNotes:                      product.QuantityNotes,
+					Compostable:                        product.Compostable,
+					MaximumStorageDurationInSeconds:    product.MaximumStorageDurationInSeconds,
+					MinimumStorageTemperatureInCelsius: product.MinimumStorageTemperatureInCelsius,
+					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
+					BelongsToRecipeStep:                product.BelongsToRecipeStep,
+					MinimumQuantityValue:               product.MinimumQuantityValue,
+					MaximumQuantityValue:               product.MaximumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -2010,14 +2014,18 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 
 			for _, product := range step.Products {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                   product.ID,
-					Name:                 product.Name,
-					Type:                 product.Type,
-					MeasurementUnitID:    product.MeasurementUnit.ID,
-					QuantityNotes:        product.QuantityNotes,
-					BelongsToRecipeStep:  product.BelongsToRecipeStep,
-					MinimumQuantityValue: product.MinimumQuantityValue,
-					MaximumQuantityValue: product.MaximumQuantityValue,
+					ID:                                 product.ID,
+					Name:                               product.Name,
+					Type:                               product.Type,
+					MeasurementUnitID:                  product.MeasurementUnit.ID,
+					QuantityNotes:                      product.QuantityNotes,
+					Compostable:                        product.Compostable,
+					MaximumStorageDurationInSeconds:    product.MaximumStorageDurationInSeconds,
+					MinimumStorageTemperatureInCelsius: product.MinimumStorageTemperatureInCelsius,
+					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
+					BelongsToRecipeStep:                product.BelongsToRecipeStep,
+					MinimumQuantityValue:               product.MinimumQuantityValue,
+					MaximumQuantityValue:               product.MaximumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -2181,14 +2189,18 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 				measurementUnitID := product.MeasurementUnit.ID
 
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                   product.ID,
-					Name:                 product.Name,
-					Type:                 product.Type,
-					MeasurementUnitID:    measurementUnitID,
-					QuantityNotes:        product.QuantityNotes,
-					BelongsToRecipeStep:  product.BelongsToRecipeStep,
-					MinimumQuantityValue: product.MinimumQuantityValue,
-					MaximumQuantityValue: product.MaximumQuantityValue,
+					ID:                                 product.ID,
+					Name:                               product.Name,
+					Type:                               product.Type,
+					MeasurementUnitID:                  measurementUnitID,
+					QuantityNotes:                      product.QuantityNotes,
+					Compostable:                        product.Compostable,
+					MaximumStorageDurationInSeconds:    product.MaximumStorageDurationInSeconds,
+					MinimumStorageTemperatureInCelsius: product.MinimumStorageTemperatureInCelsius,
+					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
+					BelongsToRecipeStep:                product.BelongsToRecipeStep,
+					MinimumQuantityValue:               product.MinimumQuantityValue,
+					MaximumQuantityValue:               product.MaximumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
