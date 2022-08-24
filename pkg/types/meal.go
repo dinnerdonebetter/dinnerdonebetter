@@ -41,6 +41,12 @@ type (
 		CreatedOn     uint64    `json:"createdOn"`
 	}
 
+	// MealRecipe is a recipe with some extra data attached to it.
+	MealRecipe struct {
+		Recipe        *Recipe `json:"recipe"`
+		ComponentType string  `json:"componentType"`
+	}
+
 	// MealList represents a list of meals.
 	MealList struct {
 		_ struct{}
