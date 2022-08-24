@@ -22,6 +22,9 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               fake.LoremIpsumSentence(exampleQuantity),
 			PreferenceRank:      fake.Uint8(),
+			Optional:            fake.Bool(),
+			MinimumQuantity:     fake.Uint32(),
+			MaximumQuantity:     fake.Uint32(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -52,6 +55,9 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			PreferenceRank:      uint8Pointer(fake.Uint8()),
+			Optional:            boolPointer(fake.Bool()),
+			MinimumQuantity:     uint32Pointer(fake.Uint32()),
+			MaximumQuantity:     uint32Pointer(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

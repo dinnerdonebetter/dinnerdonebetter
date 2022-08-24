@@ -41,6 +41,9 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 			x.ProductOfRecipeStep,
 			x.Notes,
 			x.PreferenceRank,
+			&x.Optional,
+			&x.MinimumQuantity,
+			&x.MaximumQuantity,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -634,6 +637,9 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 			exampleInput.ProductOfRecipeStep,
 			exampleInput.Notes,
 			exampleInput.PreferenceRank,
+			exampleInput.Optional,
+			exampleInput.MinimumQuantity,
+			exampleInput.MaximumQuantity,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -681,6 +687,9 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 			exampleInput.ProductOfRecipeStep,
 			exampleInput.Notes,
 			exampleInput.PreferenceRank,
+			exampleInput.Optional,
+			exampleInput.MinimumQuantity,
+			exampleInput.MaximumQuantity,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -719,6 +728,9 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 			exampleRecipeStepInstrument.ProductOfRecipeStep,
 			exampleRecipeStepInstrument.Notes,
 			exampleRecipeStepInstrument.PreferenceRank,
+			exampleRecipeStepInstrument.Optional,
+			exampleRecipeStepInstrument.MinimumQuantity,
+			exampleRecipeStepInstrument.MaximumQuantity,
 			exampleRecipeStepInstrument.BelongsToRecipeStep,
 			exampleRecipeStepInstrument.ID,
 		}
@@ -756,6 +768,9 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 			exampleRecipeStepInstrument.ProductOfRecipeStep,
 			exampleRecipeStepInstrument.Notes,
 			exampleRecipeStepInstrument.PreferenceRank,
+			exampleRecipeStepInstrument.Optional,
+			exampleRecipeStepInstrument.MinimumQuantity,
+			exampleRecipeStepInstrument.MaximumQuantity,
 			exampleRecipeStepInstrument.BelongsToRecipeStep,
 			exampleRecipeStepInstrument.ID,
 		}

@@ -37,6 +37,9 @@ var (
 		"recipe_step_instruments.product_of_recipe_step",
 		"recipe_step_instruments.notes",
 		"recipe_step_instruments.preference_rank",
+		"recipe_step_instruments.optional",
+		"recipe_step_instruments.minimum_quantity",
+		"recipe_step_instruments.maximum_quantity",
 		"recipe_step_instruments.created_on",
 		"recipe_step_instruments.last_updated_on",
 		"recipe_step_instruments.archived_on",
@@ -75,6 +78,9 @@ func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database
 		&x.ProductOfRecipeStep,
 		&x.Notes,
 		&x.PreferenceRank,
+		&x.Optional,
+		&x.MinimumQuantity,
+		&x.MaximumQuantity,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -187,6 +193,9 @@ const getRecipeStepInstrumentQuery = `SELECT
 	recipe_step_instruments.product_of_recipe_step,
 	recipe_step_instruments.notes,
 	recipe_step_instruments.preference_rank,
+	recipe_step_instruments.optional,
+	recipe_step_instruments.minimum_quantity,
+	recipe_step_instruments.maximum_quantity,
 	recipe_step_instruments.created_on,
 	recipe_step_instruments.last_updated_on,
 	recipe_step_instruments.archived_on,
@@ -392,6 +401,9 @@ const getRecipeStepInstrumentsForRecipeQuery = `SELECT
 	recipe_step_instruments.notes,
 	recipe_step_instruments.preference_rank,
 	recipe_step_instruments.created_on,
+	recipe_step_instruments.optional,
+	recipe_step_instruments.minimum_quantity,
+	recipe_step_instruments.maximum_quantity,
 	recipe_step_instruments.last_updated_on,
 	recipe_step_instruments.archived_on,
 	recipe_step_instruments.belongs_to_recipe_step
@@ -437,7 +449,9 @@ func (q *SQLQuerier) getRecipeStepInstrumentsForRecipe(ctx context.Context, reci
 	return recipeStepInstruments, nil
 }
 
-const recipeStepInstrumentCreationQuery = `INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_product_id,name,product_of_recipe_step,notes,preference_rank,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`
+const recipeStepInstrumentCreationQuery = `INSERT INTO recipe_step_instruments
+    (id,instrument_id,recipe_step_product_id,name,product_of_recipe_step,notes,preference_rank,optional,minimum_quantity,maximum_quantity,belongs_to_recipe_step) 
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
 func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
@@ -458,6 +472,9 @@ func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier dat
 		input.ProductOfRecipeStep,
 		input.Notes,
 		input.PreferenceRank,
+		input.Optional,
+		input.MinimumQuantity,
+		input.MaximumQuantity,
 		input.BelongsToRecipeStep,
 	}
 
@@ -475,6 +492,9 @@ func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier dat
 		Notes:               input.Notes,
 		PreferenceRank:      input.PreferenceRank,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		Optional:            input.Optional,
+		MinimumQuantity:     input.MinimumQuantity,
+		MaximumQuantity:     input.MaximumQuantity,
 		CreatedOn:           q.currentTime(),
 	}
 
@@ -500,10 +520,14 @@ const updateRecipeStepInstrumentQuery = `UPDATE recipe_step_instruments SET
    product_of_recipe_step = $4,
    notes = $5,
    preference_rank = $6,
+   optional = $7,
+   minimum_quantity = $8,
+   maximum_quantity = $9,
    last_updated_on = extract(epoch FROM NOW())
 WHERE archived_on IS NULL
-  AND belongs_to_recipe_step = $7
-  AND id = $8`
+  AND belongs_to_recipe_step = $10
+  AND id = $11
+`
 
 // UpdateRecipeStepInstrument updates a particular recipe step instrument.
 func (q *SQLQuerier) UpdateRecipeStepInstrument(ctx context.Context, updated *types.RecipeStepInstrument) error {
@@ -529,6 +553,9 @@ func (q *SQLQuerier) UpdateRecipeStepInstrument(ctx context.Context, updated *ty
 		updated.ProductOfRecipeStep,
 		updated.Notes,
 		updated.PreferenceRank,
+		updated.Optional,
+		updated.MinimumQuantity,
+		updated.MaximumQuantity,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

@@ -19,6 +19,9 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		PreferenceRank:      fake.Uint8(),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: fake.UUID(),
+		Optional:            fake.Bool(),
+		MinimumQuantity:     fake.Uint32(),
+		MaximumQuantity:     fake.Uint32(),
 	}
 }
 
@@ -51,6 +54,9 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 		Notes:               &recipeStepInstrument.Notes,
 		PreferenceRank:      &recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: &recipeStepInstrument.BelongsToRecipeStep,
+		Optional:            &recipeStepInstrument.Optional,
+		MinimumQuantity:     &recipeStepInstrument.MinimumQuantity,
+		MaximumQuantity:     &recipeStepInstrument.MaximumQuantity,
 	}
 }
 
@@ -64,6 +70,9 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(rec
 		Notes:               &recipeStepInstrument.Notes,
 		PreferenceRank:      &recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: &recipeStepInstrument.BelongsToRecipeStep,
+		Optional:            &recipeStepInstrument.Optional,
+		MinimumQuantity:     &recipeStepInstrument.MinimumQuantity,
+		MaximumQuantity:     &recipeStepInstrument.MaximumQuantity,
 	}
 }
 
@@ -89,6 +98,9 @@ func BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(r
 		Notes:               recipeStepInstrument.Notes,
 		PreferenceRank:      recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
+		Optional:            recipeStepInstrument.Optional,
+		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,
+		MaximumQuantity:     recipeStepInstrument.MaximumQuantity,
 	}
 }
 
@@ -114,5 +126,8 @@ func BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(
 		Notes:               recipeStepInstrument.Notes,
 		PreferenceRank:      recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
+		Optional:            recipeStepInstrument.Optional,
+		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,
+		MaximumQuantity:     recipeStepInstrument.MaximumQuantity,
 	}
 }
