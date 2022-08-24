@@ -36,6 +36,7 @@ func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, house
 				x.ContactPhone,
 				x.PaymentProcessorCustomerID,
 				x.SubscriptionPlanID,
+				x.TimeZone,
 				x.CreatedOn,
 				x.LastUpdatedOn,
 				x.ArchivedOn,
@@ -628,6 +629,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			exampleInput.ContactEmail,
 			exampleInput.ContactPhone,
+			exampleHousehold.TimeZone,
 			exampleInput.BelongsToUser,
 		}
 
@@ -715,6 +717,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			exampleInput.ContactEmail,
 			exampleInput.ContactPhone,
+			exampleHousehold.TimeZone,
 			exampleInput.BelongsToUser,
 		}
 
@@ -754,6 +757,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			exampleInput.ContactEmail,
 			exampleInput.ContactPhone,
+			exampleHousehold.TimeZone,
 			exampleInput.BelongsToUser,
 		}
 
@@ -804,6 +808,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			exampleInput.ContactEmail,
 			exampleInput.ContactPhone,
+			exampleHousehold.TimeZone,
 			exampleInput.BelongsToUser,
 		}
 
@@ -853,6 +858,7 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 			exampleHousehold.Name,
 			exampleHousehold.ContactEmail,
 			exampleHousehold.ContactPhone,
+			exampleHousehold.TimeZone,
 			exampleHousehold.BelongsToUser,
 			exampleHousehold.ID,
 		}
@@ -893,6 +899,7 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 			exampleHousehold.Name,
 			exampleHousehold.ContactEmail,
 			exampleHousehold.ContactPhone,
+			exampleHousehold.TimeZone,
 			exampleHousehold.BelongsToUser,
 			exampleHousehold.ID,
 		}

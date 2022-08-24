@@ -41,9 +41,10 @@ type (
 		Notes                         string                  `json:"notes"`
 		BelongsToRecipe               string                  `json:"belongsToRecipe"`
 		ID                            string                  `json:"id"`
+		ExplicitInstructions          string                  `json:"explicitInstructions"`
 		Products                      []*RecipeStepProduct    `json:"products"`
-		Instruments                   []*RecipeStepInstrument `json:"instruments"`
 		Ingredients                   []*RecipeStepIngredient `json:"ingredients"`
+		Instruments                   []*RecipeStepInstrument `json:"instruments"`
 		Preparation                   ValidPreparation        `json:"preparation"`
 		CreatedOn                     uint64                  `json:"createdOn"`
 		Index                         uint32                  `json:"index"`
@@ -64,13 +65,14 @@ type (
 		_                             struct{}
 		MinimumTemperatureInCelsius   *uint16                                     `json:"minimumTemperatureInCelsius"`
 		MaximumTemperatureInCelsius   *uint16                                     `json:"maximumTemperatureInCelsius"`
-		Products                      []*RecipeStepProductCreationRequestInput    `json:"products"`
+		BelongsToRecipe               string                                      `json:"-"`
 		Notes                         string                                      `json:"notes"`
 		PreparationID                 string                                      `json:"preparationID"`
-		BelongsToRecipe               string                                      `json:"-"`
 		ID                            string                                      `json:"-"`
-		Ingredients                   []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
+		ExplicitInstructions          string                                      `json:"explicitInstructions"`
+		Products                      []*RecipeStepProductCreationRequestInput    `json:"products"`
 		Instruments                   []*RecipeStepInstrumentCreationRequestInput `json:"instruments"`
+		Ingredients                   []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
 		Index                         uint32                                      `json:"index"`
 		MinimumEstimatedTimeInSeconds uint32                                      `json:"minimumEstimatedTimeInSeconds"`
 		MaximumEstimatedTimeInSeconds uint32                                      `json:"maximumEstimatedTimeInSeconds"`
@@ -82,13 +84,14 @@ type (
 		_                             struct{}
 		MinimumTemperatureInCelsius   *uint16                                      `json:"minimumTemperatureInCelsius"`
 		MaximumTemperatureInCelsius   *uint16                                      `json:"maximumTemperatureInCelsius"`
-		Products                      []*RecipeStepProductDatabaseCreationInput    `json:"products"`
-		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput `json:"instruments"`
-		Notes                         string                                       `json:"notes"`
 		PreparationID                 string                                       `json:"preparationID"`
-		BelongsToRecipe               string                                       `json:"belongsToRecipe"`
 		ID                            string                                       `json:"id"`
+		Notes                         string                                       `json:"notes"`
+		BelongsToRecipe               string                                       `json:"belongsToRecipe"`
+		ExplicitInstructions          string                                       `json:"explicitInstructions"`
+		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput `json:"instruments"`
 		Ingredients                   []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
+		Products                      []*RecipeStepProductDatabaseCreationInput    `json:"products"`
 		Index                         uint32                                       `json:"index"`
 		MinimumEstimatedTimeInSeconds uint32                                       `json:"minimumEstimatedTimeInSeconds"`
 		MaximumEstimatedTimeInSeconds uint32                                       `json:"maximumEstimatedTimeInSeconds"`
@@ -106,6 +109,7 @@ type (
 		MinimumEstimatedTimeInSeconds *uint32           `json:"minimumEstimatedTimeInSeconds"`
 		MaximumEstimatedTimeInSeconds *uint32           `json:"maximumEstimatedTimeInSeconds"`
 		Optional                      *bool             `json:"optional"`
+		ExplicitInstructions          *string           `json:"explicitInstructions"`
 		BelongsToRecipe               string            `json:"belongsToRecipe"`
 	}
 
@@ -178,6 +182,10 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 	if input.MinimumTemperatureInCelsius != nil && (x.MinimumTemperatureInCelsius == nil || (*input.MinimumTemperatureInCelsius != 0 && *input.MinimumTemperatureInCelsius != *x.MinimumTemperatureInCelsius)) {
 		x.MinimumTemperatureInCelsius = input.MinimumTemperatureInCelsius
 	}
+
+	if input.ExplicitInstructions != nil && *input.ExplicitInstructions != x.ExplicitInstructions {
+		x.ExplicitInstructions = *input.ExplicitInstructions
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
@@ -218,6 +226,7 @@ func RecipeStepUpdateRequestInputFromRecipeStep(input *RecipeStep) *RecipeStepUp
 		MinimumEstimatedTimeInSeconds: &input.MinimumEstimatedTimeInSeconds,
 		MaximumEstimatedTimeInSeconds: &input.MaximumEstimatedTimeInSeconds,
 		Optional:                      &input.Optional,
+		ExplicitInstructions:          &input.ExplicitInstructions,
 	}
 
 	return x
@@ -252,6 +261,7 @@ func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeSte
 		Optional:                      input.Optional,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
+		ExplicitInstructions:          input.ExplicitInstructions,
 	}
 
 	return x

@@ -41,6 +41,8 @@ type (
 		Name               string        `json:"name"`
 		CreatedByUser      string        `json:"belongsToUser"`
 		Steps              []*RecipeStep `json:"steps"`
+		SealOfApproval     bool          `json:"sealOfApproval"`
+		YieldsPortions     uint8         `json:"yieldsPortions"`
 		CreatedOn          uint64        `json:"createdOn"`
 	}
 
@@ -63,6 +65,8 @@ type (
 		Description        string                            `json:"description"`
 		Steps              []*RecipeStepCreationRequestInput `json:"steps"`
 		AlsoCreateMeal     bool                              `json:"alsoCreateMeal"`
+		SealOfApproval     bool                              `json:"sealOfApproval"`
+		YieldsPortions     uint8                             `json:"yieldsPortions"`
 	}
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
@@ -76,6 +80,8 @@ type (
 		Description        string                             `json:"description"`
 		Steps              []*RecipeStepDatabaseCreationInput `json:"steps"`
 		AlsoCreateMeal     bool                               `json:"alsoCreateMeal"`
+		SealOfApproval     bool                               `json:"sealOfApproval"`
+		YieldsPortions     uint8                              `json:"yieldsPortions"`
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.
@@ -88,6 +94,8 @@ type (
 		// InspiredByRecipeID is already a pointer, I'm not about to make it a double pointer.
 		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
 		CreatedByUser      *string `json:"-"`
+		SealOfApproval     *bool   `json:"sealOfApproval"`
+		YieldsPortions     *uint8  `json:"yieldsPortions"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -132,6 +140,14 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 	if input.InspiredByRecipeID != nil && (x.InspiredByRecipeID == nil || (*input.InspiredByRecipeID != "" && *input.InspiredByRecipeID != *x.InspiredByRecipeID)) {
 		x.InspiredByRecipeID = input.InspiredByRecipeID
 	}
+
+	if input.SealOfApproval != nil && *input.SealOfApproval != x.SealOfApproval {
+		x.SealOfApproval = *input.SealOfApproval
+	}
+
+	if input.YieldsPortions != nil && *input.YieldsPortions != x.YieldsPortions {
+		x.YieldsPortions = *input.YieldsPortions
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeCreationRequestInput)(nil)
@@ -167,6 +183,8 @@ func RecipeUpdateRequestInputFromRecipe(input *Recipe) *RecipeUpdateRequestInput
 		Description:        &input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		CreatedByUser:      &input.CreatedByUser,
+		SealOfApproval:     &input.SealOfApproval,
+		YieldsPortions:     &input.YieldsPortions,
 	}
 
 	return x
@@ -186,6 +204,8 @@ func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationReq
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		Steps:              steps,
+		SealOfApproval:     input.SealOfApproval,
+		YieldsPortions:     input.YieldsPortions,
 	}
 
 	return x

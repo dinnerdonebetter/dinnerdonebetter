@@ -36,6 +36,7 @@ var (
 		"households.contact_phone",
 		"households.payment_processor_customer_id",
 		"households.subscription_plan_id",
+		"households.time_zone",
 		"households.created_on",
 		"households.last_updated_on",
 		"households.archived_on",
@@ -81,6 +82,7 @@ func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, i
 		&household.ContactPhone,
 		&household.PaymentProcessorCustomerID,
 		&household.SubscriptionPlanID,
+		&household.TimeZone,
 		&household.CreatedOn,
 		&household.LastUpdatedOn,
 		&household.ArchivedOn,
@@ -182,6 +184,7 @@ const getHouseholdQuery = `
 		households.contact_phone,
 		households.payment_processor_customer_id,
 		households.subscription_plan_id,
+		households.time_zone,
 		households.created_on,
 		households.last_updated_on,
 		households.archived_on,
@@ -269,6 +272,7 @@ const getHouseholdByIDQuery = `
 		households.contact_phone,
 		households.payment_processor_customer_id,
 		households.subscription_plan_id,
+		households.time_zone,
 		households.created_on,
 		households.last_updated_on,
 		households.archived_on,
@@ -466,7 +470,7 @@ func (q *SQLQuerier) GetHouseholdsForAdmin(ctx context.Context, userID string, f
 }
 
 const householdCreationQuery = `
-	INSERT INTO households (id,name,billing_status,contact_email,contact_phone,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6)
+	INSERT INTO households (id,name,billing_status,contact_email,contact_phone,time_zone,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
 const addUserToHouseholdDuringCreationQuery = `
@@ -497,6 +501,7 @@ func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.Household
 		types.UnpaidHouseholdBillingStatus,
 		input.ContactEmail,
 		input.ContactPhone,
+		input.TimeZone,
 		input.BelongsToUser,
 	}
 
@@ -513,6 +518,7 @@ func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.Household
 		BillingStatus: types.UnpaidHouseholdBillingStatus,
 		ContactEmail:  input.ContactEmail,
 		ContactPhone:  input.ContactPhone,
+		TimeZone:      input.TimeZone,
 		CreatedOn:     q.currentTime(),
 	}
 
@@ -545,8 +551,16 @@ func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.Household
 	return household, nil
 }
 
-const updateHouseholdQuery = `
-	UPDATE households SET name = $1, contact_email = $2, contact_phone = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $4 AND id = $5
+const updateHouseholdQuery = `UPDATE households
+SET 
+    name = $1,
+    contact_email = $2,
+    contact_phone = $3,
+    time_zone = $4,
+    last_updated_on = extract(epoch FROM NOW()) 
+WHERE archived_on IS NULL 
+  AND belongs_to_user = $5 
+  AND id = $6
 `
 
 // UpdateHousehold updates a particular household. Note that UpdateHousehold expects the provided input to have a valid ID.
@@ -565,6 +579,7 @@ func (q *SQLQuerier) UpdateHousehold(ctx context.Context, updated *types.Househo
 		updated.Name,
 		updated.ContactEmail,
 		updated.ContactPhone,
+		updated.TimeZone,
 		updated.BelongsToUser,
 		updated.ID,
 	}
@@ -580,9 +595,7 @@ func (q *SQLQuerier) UpdateHousehold(ctx context.Context, updated *types.Househo
 	return nil
 }
 
-const archiveHouseholdQuery = `
-	UPDATE households SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2
-`
+const archiveHouseholdQuery = `UPDATE households SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2`
 
 // ArchiveHousehold archives a household from the database by its ID.
 func (q *SQLQuerier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {

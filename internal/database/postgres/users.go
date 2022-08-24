@@ -628,6 +628,7 @@ func (q *SQLQuerier) createHouseholdForUser(ctx context.Context, querier databas
 		ID:            householdID,
 		Name:          fmt.Sprintf("%s_default", userID),
 		BelongsToUser: userID,
+		TimeZone:      types.DefaultHouseholdTimeZone,
 	}
 
 	householdCreationArgs := []interface{}{
@@ -636,6 +637,7 @@ func (q *SQLQuerier) createHouseholdForUser(ctx context.Context, querier databas
 		types.UnpaidHouseholdBillingStatus,
 		householdCreationInput.ContactEmail,
 		householdCreationInput.ContactPhone,
+		householdCreationInput.TimeZone,
 		householdCreationInput.BelongsToUser,
 	}
 

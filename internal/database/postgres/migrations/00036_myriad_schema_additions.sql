@@ -24,10 +24,10 @@ ALTER TABLE recipe_step_instruments ADD COLUMN "minimum_quantity" INTEGER NOT NU
 ALTER TABLE recipe_step_instruments ADD COLUMN "maximum_quantity" INTEGER NOT NULL DEFAULT 1;                                   -- #240
 ALTER TABLE recipe_step_ingredients ADD COLUMN "optional" BOOLEAN NOT NULL DEFAULT 'false';                                     -- #233
 ALTER TABLE meal_plan_options ADD COLUMN "assigned_cook" CHAR(27) REFERENCES users("id") ON DELETE CASCADE;                     -- #259
--- ALTER TABLE recipe_steps ADD COLUMN "explicit_instructions" TEXT NOT NULL DEFAULT '';                                           -- #243
--- ALTER TABLE recipes ADD COLUMN "seal_of_approval" BOOLEAN NOT NULL DEFAULT 'false';                                             -- #265
--- ALTER TABLE recipes ADD COLUMN "yields_portions" INTEGER NOT NULL DEFAULT 1;                                                    -- #253
--- CREATE TYPE time_zone AS ENUM ('US_PT', 'US_MT', 'US_CT', 'US_ET');                                                             -- #260
--- ALTER TABLE households ADD COLUMN "time_zone" time_zone NOT NULL DEFAULT 'CT';                                                  -- #260
+ALTER TABLE recipes ADD COLUMN "yields_portions" INTEGER NOT NULL DEFAULT 1;                                                    -- #253
+ALTER TABLE recipes ADD COLUMN "seal_of_approval" BOOLEAN NOT NULL DEFAULT 'false';                                             -- #265
+ALTER TABLE recipe_steps ADD COLUMN "explicit_instructions" TEXT NOT NULL DEFAULT '';                                           -- #243
+CREATE TYPE time_zone AS ENUM ('UTC', 'US/Pacific', 'US/Mountain', 'US/Central', 'US/Eastern');                                                             -- #260
+ALTER TABLE households ADD COLUMN "time_zone" time_zone NOT NULL DEFAULT 'US/Central';                                                  -- #260
 -- CREATE TYPE component_type AS ENUM ('main', 'appetizer', 'side', 'garnish');                                                    -- #267
 -- ALTER TABLE meal_recipes ADD COLUMN "component_type" component_type;                                                            -- #267

@@ -35,6 +35,8 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 			x.Source,
 			x.Description,
 			x.InspiredByRecipeID,
+			x.YieldsPortions,
+			x.SealOfApproval,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -58,6 +60,8 @@ var fullRecipesColumns = []string{
 	"recipes.source",
 	"recipes.description",
 	"recipes.inspired_by_recipe_id",
+	"recipes.yields_portions",
+	"recipes.seal_of_approval",
 	"recipes.created_on",
 	"recipes.last_updated_on",
 	"recipes.archived_on",
@@ -80,6 +84,7 @@ var fullRecipesColumns = []string{
 	"recipe_steps.minimum_temperature_in_celsius",
 	"recipe_steps.maximum_temperature_in_celsius",
 	"recipe_steps.notes",
+	"recipe_steps.explicit_instructions",
 	"recipe_steps.optional",
 	"recipe_steps.created_on",
 	"recipe_steps.last_updated_on",
@@ -97,6 +102,8 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&recipe.Source,
 			&recipe.Description,
 			&recipe.InspiredByRecipeID,
+			&recipe.YieldsPortions,
+			&recipe.SealOfApproval,
 			&recipe.CreatedOn,
 			&recipe.LastUpdatedOn,
 			&recipe.ArchivedOn,
@@ -119,35 +126,13 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.MinimumTemperatureInCelsius,
 			&step.MaximumTemperatureInCelsius,
 			&step.Notes,
+			&step.ExplicitInstructions,
 			&step.Optional,
 			&step.CreatedOn,
 			&step.LastUpdatedOn,
 			&step.ArchivedOn,
 			&step.BelongsToRecipe,
 		)
-	}
-
-	return exampleRows
-}
-
-func buildInvalidMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
-	columns := recipesTableColumns
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, step := range recipe.Steps {
-		for range step.Ingredients {
-			exampleRows.AddRow(
-				driver.Value(nil),
-				driver.Value(nil),
-				driver.Value(nil),
-				driver.Value(nil),
-				driver.Value(nil),
-				driver.Value(nil),
-				driver.Value(nil),
-				driver.Value(nil),
-				driver.Value(nil),
-			)
-		}
 	}
 
 	return exampleRows
@@ -513,35 +498,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with error scanning response from database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			exampleRecipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildInvalidMockFullRowsFromRecipe(exampleRecipe))
-
-		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with no results returned", func(t *testing.T) {
 		t.Parallel()
 
@@ -683,44 +639,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDAndAuthorIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetRecipeByIDAndUser(ctx, exampleRecipe.ID, exampleRecipe.CreatedByUser)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning response from database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
-
-		for _, step := range exampleRecipe.Steps {
-			step.Ingredients = []*types.RecipeStepIngredient{
-				fakes.BuildFakeRecipeStepIngredient(),
-				fakes.BuildFakeRecipeStepIngredient(),
-				fakes.BuildFakeRecipeStepIngredient(),
-			}
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			exampleRecipe.ID,
-			exampleRecipe.CreatedByUser,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDAndAuthorIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildInvalidMockFullRowsFromRecipe(exampleRecipe))
 
 		actual, err := c.GetRecipeByIDAndUser(ctx, exampleRecipe.ID, exampleRecipe.CreatedByUser)
 		assert.Error(t, err)
@@ -1132,6 +1050,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
+			exampleRecipe.YieldsPortions,
+			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1149,6 +1069,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				step.MinimumTemperatureInCelsius,
 				step.MaximumTemperatureInCelsius,
 				step.Notes,
+				step.ExplicitInstructions,
 				step.Optional,
 				step.BelongsToRecipe,
 			}
@@ -1252,6 +1173,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
+			exampleRecipe.YieldsPortions,
+			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1365,6 +1288,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Source,
 			exampleInput.Description,
 			exampleInput.InspiredByRecipeID,
+			exampleRecipe.YieldsPortions,
+			exampleRecipe.SealOfApproval,
 			exampleInput.CreatedByUser,
 		}
 
@@ -1416,6 +1341,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
+			exampleRecipe.YieldsPortions,
+			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1432,6 +1359,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Steps[0].MinimumTemperatureInCelsius,
 			exampleInput.Steps[0].MaximumTemperatureInCelsius,
 			exampleInput.Steps[0].Notes,
+			exampleInput.Steps[0].ExplicitInstructions,
 			exampleInput.Steps[0].Optional,
 			exampleInput.Steps[0].BelongsToRecipe,
 		}
@@ -1470,6 +1398,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Source,
 			exampleInput.Description,
 			exampleInput.InspiredByRecipeID,
+			exampleInput.YieldsPortions,
+			exampleInput.SealOfApproval,
 			exampleInput.CreatedByUser,
 		}
 
@@ -1514,6 +1444,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
+			exampleRecipe.YieldsPortions,
+			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1568,6 +1500,8 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
+			exampleRecipe.YieldsPortions,
+			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
 		}
@@ -1603,6 +1537,8 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
+			exampleRecipe.YieldsPortions,
+			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
 		}
@@ -1783,6 +1719,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 				MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
 				MaximumTemperatureInCelsius:   step.MaximumTemperatureInCelsius,
 				Notes:                         step.Notes,
+				ExplicitInstructions:          step.ExplicitInstructions,
 				PreparationID:                 step.Preparation.ID,
 				BelongsToRecipe:               step.BelongsToRecipe,
 				ID:                            step.ID,
@@ -1992,6 +1929,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 				MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
 				MaximumTemperatureInCelsius:   step.MaximumTemperatureInCelsius,
 				Notes:                         step.Notes,
+				ExplicitInstructions:          step.ExplicitInstructions,
 				PreparationID:                 step.Preparation.ID,
 				BelongsToRecipe:               step.BelongsToRecipe,
 				ID:                            step.ID,
@@ -2146,6 +2084,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 				MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
 				MaximumTemperatureInCelsius:   step.MaximumTemperatureInCelsius,
 				Notes:                         step.Notes,
+				ExplicitInstructions:          step.ExplicitInstructions,
 				PreparationID:                 step.Preparation.ID,
 				BelongsToRecipe:               step.BelongsToRecipe,
 				ID:                            step.ID,

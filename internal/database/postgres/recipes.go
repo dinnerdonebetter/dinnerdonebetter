@@ -25,6 +25,8 @@ var (
 		"recipes.source",
 		"recipes.description",
 		"recipes.inspired_by_recipe_id",
+		"recipes.yields_portions",
+		"recipes.seal_of_approval",
 		"recipes.created_on",
 		"recipes.last_updated_on",
 		"recipes.archived_on",
@@ -47,6 +49,8 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 		&x.Source,
 		&x.Description,
 		&x.InspiredByRecipeID,
+		&x.YieldsPortions,
+		&x.SealOfApproval,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -130,6 +134,8 @@ const getRecipeByIDQuery = `SELECT
 	recipes.source,
 	recipes.description,
 	recipes.inspired_by_recipe_id,
+	recipes.yields_portions,
+	recipes.seal_of_approval,
 	recipes.created_on,
 	recipes.last_updated_on,
 	recipes.archived_on,
@@ -152,6 +158,7 @@ const getRecipeByIDQuery = `SELECT
 	recipe_steps.minimum_temperature_in_celsius,
 	recipe_steps.maximum_temperature_in_celsius,
 	recipe_steps.notes,
+	recipe_steps.explicit_instructions,
 	recipe_steps.optional,
 	recipe_steps.created_on,
 	recipe_steps.last_updated_on,
@@ -171,6 +178,8 @@ const getRecipeByIDAndAuthorIDQuery = `SELECT
 	recipes.source,
 	recipes.description,
 	recipes.inspired_by_recipe_id,
+	recipes.yields_portions,
+	recipes.seal_of_approval,
 	recipes.created_on,
 	recipes.last_updated_on,
 	recipes.archived_on,
@@ -193,6 +202,7 @@ const getRecipeByIDAndAuthorIDQuery = `SELECT
 	recipe_steps.minimum_temperature_in_celsius,
 	recipe_steps.maximum_temperature_in_celsius,
 	recipe_steps.notes,
+	recipe_steps.explicit_instructions,
 	recipe_steps.optional,
 	recipe_steps.created_on,
 	recipe_steps.last_updated_on,
@@ -221,6 +231,8 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&x.Source,
 		&x.Description,
 		&x.InspiredByRecipeID,
+		&x.YieldsPortions,
+		&x.SealOfApproval,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -243,6 +255,7 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&y.MinimumTemperatureInCelsius,
 		&y.MaximumTemperatureInCelsius,
 		&y.Notes,
+		&y.ExplicitInstructions,
 		&y.Optional,
 		&y.CreatedOn,
 		&y.LastUpdatedOn,
@@ -504,7 +517,7 @@ func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, userID string, limit
 	return recipes, nil
 }
 
-const recipeCreationQuery = "INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,created_by_user) VALUES ($1,$2,$3,$4,$5,$6)"
+const recipeCreationQuery = "INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,yields_portions,seal_of_approval,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
 // CreateRecipe creates a recipe in the database.
 func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
@@ -528,6 +541,8 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		input.Source,
 		input.Description,
 		input.InspiredByRecipeID,
+		input.YieldsPortions,
+		input.SealOfApproval,
 		input.CreatedByUser,
 	}
 
@@ -544,6 +559,8 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		CreatedByUser:      input.CreatedByUser,
+		YieldsPortions:     input.YieldsPortions,
+		SealOfApproval:     input.SealOfApproval,
 		CreatedOn:          q.currentTime(),
 	}
 
@@ -665,7 +682,7 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 	}
 }
 
-const updateRecipeQuery = "UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND created_by_user = $5 AND id = $6"
+const updateRecipeQuery = `UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, yields_portions = $5, seal_of_approval = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND created_by_user = $7 AND id = $8`
 
 // UpdateRecipe updates a particular recipe.
 func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
@@ -685,6 +702,8 @@ func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe) er
 		updated.Source,
 		updated.Description,
 		updated.InspiredByRecipeID,
+		updated.YieldsPortions,
+		updated.SealOfApproval,
 		updated.CreatedByUser,
 		updated.ID,
 	}

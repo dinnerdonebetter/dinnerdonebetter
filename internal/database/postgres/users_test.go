@@ -847,6 +847,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 
@@ -1079,6 +1080,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 
@@ -1206,6 +1208,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 
@@ -1296,6 +1299,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 
@@ -1398,6 +1402,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 
@@ -1463,6 +1468,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 
@@ -1541,6 +1547,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 
@@ -1629,6 +1636,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 
@@ -1720,6 +1728,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactEmail,
 			householdCreationInput.ContactPhone,
+			types.DefaultHouseholdTimeZone,
 			&idMatcher{},
 		}
 

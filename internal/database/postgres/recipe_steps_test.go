@@ -45,6 +45,7 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.MinimumTemperatureInCelsius,
 			x.MaximumTemperatureInCelsius,
 			x.Notes,
+			x.ExplicitInstructions,
 			x.Optional,
 			x.CreatedOn,
 			x.LastUpdatedOn,
@@ -593,6 +594,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.MinimumTemperatureInCelsius,
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
+			exampleInput.ExplicitInstructions,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -642,6 +644,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.MinimumTemperatureInCelsius,
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
+			exampleInput.ExplicitInstructions,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -702,6 +705,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.MinimumTemperatureInCelsius,
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
+			exampleInput.ExplicitInstructions,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -809,6 +813,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.MinimumTemperatureInCelsius,
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
+			exampleInput.ExplicitInstructions,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -878,6 +883,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.MinimumTemperatureInCelsius,
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
+			exampleInput.ExplicitInstructions,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -957,6 +963,7 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.MinimumTemperatureInCelsius,
 			exampleRecipeStep.MaximumTemperatureInCelsius,
 			exampleRecipeStep.Notes,
+			exampleRecipeStep.ExplicitInstructions,
 			exampleRecipeStep.Optional,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
@@ -996,6 +1003,7 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.MinimumTemperatureInCelsius,
 			exampleRecipeStep.MaximumTemperatureInCelsius,
 			exampleRecipeStep.Notes,
+			exampleRecipeStep.ExplicitInstructions,
 			exampleRecipeStep.Optional,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,

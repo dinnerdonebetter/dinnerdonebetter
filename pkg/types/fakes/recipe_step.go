@@ -46,6 +46,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		CreatedOn:                     uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipe:               ksuid.New().String(),
 		Ingredients:                   ingredients,
+		ExplicitInstructions:          buildUniqueString(),
 		Instruments:                   instruments,
 	}
 }
@@ -80,6 +81,7 @@ func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput
 		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
 		Notes:                         &recipeStep.Notes,
 		Optional:                      &recipeStep.Optional,
+		ExplicitInstructions:          &recipeStep.ExplicitInstructions,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
 	}
 }
@@ -95,6 +97,7 @@ func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.Recip
 		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
 		Notes:                         &recipeStep.Notes,
+		ExplicitInstructions:          &recipeStep.ExplicitInstructions,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
 	}
 }
@@ -132,17 +135,12 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
 		Notes:                         recipeStep.Notes,
+		ExplicitInstructions:          recipeStep.ExplicitInstructions,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
 		Products:                      products,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
 	}
-}
-
-// BuildFakeRecipeStepDatabaseCreationInput builds a faked RecipeStepDatabaseCreationInput.
-func BuildFakeRecipeStepDatabaseCreationInput() *types.RecipeStepDatabaseCreationInput {
-	recipeStep := BuildFakeRecipeStep()
-	return BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep)
 }
 
 // BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep builds a faked RecipeStepDatabaseCreationInput from a recipe step.
@@ -172,6 +170,7 @@ func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.Re
 		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
 		Notes:                         recipeStep.Notes,
+		ExplicitInstructions:          recipeStep.ExplicitInstructions,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
 		Products:                      products,
