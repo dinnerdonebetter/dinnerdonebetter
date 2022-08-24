@@ -32,6 +32,7 @@ func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.Recip
 	return &types.RecipeStepIngredientUpdateRequestInput{
 		IngredientID:         x.IngredientID,
 		Name:                 &x.Name,
+		Optional:             &x.Optional,
 		MeasurementUnitID:    &x.MeasurementUnit.ID,
 		MinimumQuantityValue: &x.MinimumQuantityValue,
 		MaximumQuantityValue: &x.MaximumQuantityValue,

@@ -20,9 +20,10 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 	meal.Recipes = nil
 
 	return &types.MealPlanOption{
-		ID:   ksuid.New().String(),
-		Day:  time.Monday,
-		Meal: *meal,
+		ID:           ksuid.New().String(),
+		Day:          time.Monday,
+		AssignedCook: func(s string) *string { return &s }(BuildFakeID()),
+		Meal:         *meal,
 		MealName: types.MealName(fake.RandomString([]string{
 			string(types.BreakfastMealName),
 			string(types.SecondBreakfastMealName),
@@ -65,6 +66,7 @@ func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequ
 		MealID:            &mealPlanOption.Meal.ID,
 		Notes:             &mealPlanOption.Notes,
 		MealName:          &mealPlanOption.MealName,
+		AssignedCook:      mealPlanOption.AssignedCook,
 		BelongsToMealPlan: &mealPlanOption.BelongsToMealPlan,
 	}
 }
@@ -76,6 +78,7 @@ func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption 
 		MealID:            &mealPlanOption.Meal.ID,
 		Notes:             &mealPlanOption.Notes,
 		MealName:          &mealPlanOption.MealName,
+		AssignedCook:      mealPlanOption.AssignedCook,
 		BelongsToMealPlan: &mealPlanOption.BelongsToMealPlan,
 	}
 }
@@ -94,14 +97,9 @@ func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOptio
 		MealID:            mealPlanOption.Meal.ID,
 		Notes:             mealPlanOption.Notes,
 		MealName:          mealPlanOption.MealName,
+		AssignedCook:      mealPlanOption.AssignedCook,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
 	}
-}
-
-// BuildFakeMealPlanOptionDatabaseCreationInput builds a faked MealPlanOptionDatabaseCreationInput.
-func BuildFakeMealPlanOptionDatabaseCreationInput() *types.MealPlanOptionDatabaseCreationInput {
-	mealPlanOption := BuildFakeMealPlanOption()
-	return BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOption)
 }
 
 // BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption builds a faked MealPlanOptionDatabaseCreationInput from a meal plan option.
@@ -112,6 +110,7 @@ func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOpti
 		MealID:            mealPlanOption.Meal.ID,
 		MealName:          mealPlanOption.MealName,
 		Notes:             mealPlanOption.Notes,
+		AssignedCook:      mealPlanOption.AssignedCook,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
 	}
 }

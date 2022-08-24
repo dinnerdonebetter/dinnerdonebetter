@@ -56,6 +56,7 @@ type (
 		BelongsToMealPlan string                `json:"belongsToMealPlan"`
 		Notes             string                `json:"notes"`
 		MealName          MealName              `json:"mealName"`
+		AssignedCook      *string               `json:"assignedCook"`
 		Votes             []*MealPlanOptionVote `json:"votes"`
 		Meal              Meal                  `json:"meal"`
 		CreatedOn         uint64                `json:"createdOn"`
@@ -77,6 +78,7 @@ type (
 		ID                string       `json:"-"`
 		MealID            string       `json:"mealID"`
 		Notes             string       `json:"notes"`
+		AssignedCook      *string      `json:"assignedCook"`
 		MealName          MealName     `json:"mealName"`
 		BelongsToMealPlan string       `json:"-"`
 		Day               time.Weekday `json:"day"`
@@ -88,6 +90,7 @@ type (
 		ID                string       `json:"id"`
 		MealID            string       `json:"mealID"`
 		Notes             string       `json:"notes"`
+		AssignedCook      *string      `json:"assignedCook"`
 		MealName          MealName     `json:"mealName"`
 		BelongsToMealPlan string       `json:"belongsToMealPlan"`
 		Day               time.Weekday `json:"day"`
@@ -98,6 +101,7 @@ type (
 		_                 struct{}
 		MealID            *string       `json:"mealID"`
 		Notes             *string       `json:"notes"`
+		AssignedCook      *string       `json:"assignedCook"`
 		MealName          *MealName     `json:"mealName"`
 		BelongsToMealPlan *string       `json:"-"`
 		Day               *time.Weekday `json:"day"`
@@ -144,6 +148,10 @@ func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
 
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
+	}
+
+	if input.AssignedCook != nil && input.AssignedCook != x.AssignedCook {
+		x.AssignedCook = input.AssignedCook
 	}
 }
 

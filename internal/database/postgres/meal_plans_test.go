@@ -64,6 +64,7 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 		"meal_plans.belongs_to_household",
 		"meal_plan_options.id",
 		"meal_plan_options.day",
+		"meal_plan_options.assigned_cook",
 		"meal_plan_options.meal_name",
 		"meal_plan_options.chosen",
 		"meal_plan_options.tiebroken",
@@ -113,6 +114,7 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 					x.BelongsToHousehold,
 					opt.ID,
 					opt.Day,
+					opt.AssignedCook,
 					opt.MealName,
 					opt.Chosen,
 					opt.TieBroken,
@@ -671,6 +673,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			optionArgs := []interface{}{
 				option.ID,
 				option.Day,
+				option.AssignedCook,
 				option.MealName,
 				option.MealID,
 				option.Notes,
@@ -811,6 +814,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		optionArgs := []interface{}{
 			exampleInput.Options[0].ID,
 			exampleInput.Options[0].Day,
+			exampleInput.Options[0].AssignedCook,
 			exampleInput.Options[0].MealName,
 			exampleInput.Options[0].MealID,
 			exampleInput.Options[0].Notes,
@@ -870,6 +874,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			optionArgs := []interface{}{
 				option.ID,
 				option.Day,
+				option.AssignedCook,
 				option.MealName,
 				option.MealID,
 				option.Notes,

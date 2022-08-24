@@ -104,12 +104,6 @@ func BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(r
 	}
 }
 
-// BuildFakeRecipeStepInstrumentDatabaseCreationInput builds a faked RecipeStepInstrumentDatabaseCreationInput.
-func BuildFakeRecipeStepInstrumentDatabaseCreationInput() *types.RecipeStepInstrumentDatabaseCreationInput {
-	recipeStepInstrument := BuildFakeRecipeStepInstrument()
-	return BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(recipeStepInstrument)
-}
-
 // BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument builds a faked RecipeStepInstrumentDatabaseCreationInput from a recipe step instrument.
 func BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentDatabaseCreationInput {
 	var instrumentID *string

@@ -28,6 +28,7 @@ var (
 	mealPlanOptionsTableColumns = []string{
 		"meal_plan_options.id",
 		"meal_plan_options.day",
+		"meal_plan_options.assigned_cook",
 		"meal_plan_options.meal_name",
 		"meal_plan_options.chosen",
 		"meal_plan_options.tiebroken",
@@ -70,6 +71,7 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Day,
+		&x.AssignedCook,
 		&x.MealName,
 		&x.Chosen,
 		&x.TieBroken,
@@ -168,16 +170,17 @@ func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealP
 }
 
 const getMealPlanOptionQuery = `SELECT
-	meal_plan_options.id, 
-	meal_plan_options.day, 
-	meal_plan_options.meal_name, 
-	meal_plan_options.chosen, 
-	meal_plan_options.tiebroken, 
-	meal_plan_options.meal_id, 
-	meal_plan_options.notes, 
-	meal_plan_options.created_on, 
-	meal_plan_options.last_updated_on, 
-	meal_plan_options.archived_on, 
+	meal_plan_options.id,
+	meal_plan_options.day,
+	meal_plan_options.assigned_cook,
+	meal_plan_options.meal_name,
+	meal_plan_options.chosen,
+	meal_plan_options.tiebroken,
+	meal_plan_options.meal_id,
+	meal_plan_options.notes,
+	meal_plan_options.created_on,
+	meal_plan_options.last_updated_on,
+	meal_plan_options.archived_on,
 	meal_plan_options.belongs_to_meal_plan,
 	meals.id,
 	meals.name,
@@ -186,13 +189,13 @@ const getMealPlanOptionQuery = `SELECT
 	meals.last_updated_on,
 	meals.archived_on,
 	meals.created_by_user
-FROM meal_plan_options 
-JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id 
+FROM meal_plan_options
+JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
 JOIN meals ON meal_plan_options.meal_id=meals.id
-WHERE meal_plan_options.archived_on IS NULL 
-AND meal_plan_options.belongs_to_meal_plan = $1 
-AND meal_plan_options.id = $2 
-AND meal_plans.archived_on IS NULL 
+WHERE meal_plan_options.archived_on IS NULL
+AND meal_plan_options.belongs_to_meal_plan = $1
+AND meal_plan_options.id = $2
+AND meal_plans.archived_on IS NULL
 AND meal_plans.id = $3
 `
 
@@ -355,7 +358,7 @@ func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID s
 	return mealPlanOptions, nil
 }
 
-const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day,meal_name,meal_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5,$6)"
+const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day,assigned_cook,meal_name,meal_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5,$6,$7)"
 
 // createMealPlanOption creates a meal plan option in the database.
 func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
@@ -371,6 +374,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 	args := []interface{}{
 		input.ID,
 		input.Day,
+		input.AssignedCook,
 		input.MealName,
 		input.MealID,
 		input.Notes,
@@ -385,6 +389,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 	x := &types.MealPlanOption{
 		ID:                input.ID,
 		Day:               input.Day,
+		AssignedCook:      input.AssignedCook,
 		Meal:              types.Meal{ID: input.MealID},
 		MealName:          input.MealName,
 		Notes:             input.Notes,
@@ -404,7 +409,18 @@ func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.Meal
 	return q.createMealPlanOption(ctx, q.db, input)
 }
 
-const updateMealPlanOptionQuery = "UPDATE meal_plan_options SET day = $1, meal_id = $2, meal_name = $3, notes = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan = $5 AND id = $6"
+const updateMealPlanOptionQuery = `UPDATE meal_plan_options
+SET 
+	day = $1,
+	assigned_cook = $2,
+	meal_id = $3,
+	meal_name = $4,
+	notes = $5,
+	last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+  AND belongs_to_meal_plan = $6 
+  AND id = $7
+`
 
 // UpdateMealPlanOption updates a particular meal plan option.
 func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.MealPlanOption) error {
@@ -420,6 +436,7 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 
 	args := []interface{}{
 		updated.Day,
+		updated.AssignedCook,
 		updated.Meal.ID,
 		updated.MealName,
 		updated.Notes,

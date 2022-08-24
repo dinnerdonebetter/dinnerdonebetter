@@ -31,6 +31,7 @@ func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, 
 		rowValues := []driver.Value{
 			x.ID,
 			x.Day,
+			x.AssignedCook,
 			x.MealName,
 			x.Chosen,
 			x.TieBroken,
@@ -582,6 +583,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Day,
+			exampleInput.AssignedCook,
 			exampleInput.MealName,
 			exampleInput.MealID,
 			exampleInput.Notes,
@@ -628,6 +630,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Day,
+			exampleInput.AssignedCook,
 			exampleInput.MealName,
 			exampleInput.MealID,
 			exampleInput.Notes,
@@ -664,6 +667,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 
 		args := []interface{}{
 			exampleMealPlanOption.Day,
+			exampleMealPlanOption.AssignedCook,
 			exampleMealPlanOption.Meal.ID,
 			exampleMealPlanOption.MealName,
 			exampleMealPlanOption.Notes,
@@ -699,6 +703,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 
 		args := []interface{}{
 			exampleMealPlanOption.Day,
+			exampleMealPlanOption.AssignedCook,
 			exampleMealPlanOption.Meal.ID,
 			exampleMealPlanOption.MealName,
 			exampleMealPlanOption.Notes,
