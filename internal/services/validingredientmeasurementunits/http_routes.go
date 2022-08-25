@@ -131,10 +131,10 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+		WithValue(keys.FilterSortByKey, filter.SortBy)
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -300,12 +300,12 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 	tracing.AttachRequestToSpan(span, req)
 
 	filter := types.ExtractQueryFilter(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+		WithValue(keys.FilterSortByKey, filter.SortBy)
 
 	validIngredientID := s.validIngredientIDFetcher(req)
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
@@ -339,12 +339,12 @@ func (s *service) SearchByMeasurementUnitHandler(res http.ResponseWriter, req *h
 	tracing.AttachRequestToSpan(span, req)
 
 	filter := types.ExtractQueryFilter(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+		WithValue(keys.FilterSortByKey, filter.SortBy)
 
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)

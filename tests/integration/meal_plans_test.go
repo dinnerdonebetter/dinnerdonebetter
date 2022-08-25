@@ -33,12 +33,13 @@ func createMealPlanForTest(ctx context.Context, t *testing.T, adminClient, clien
 	for i := range exampleMealPlan.Options {
 		createdMeal := createMealForTest(ctx, t, adminClient, client, nil)
 		exampleMealPlan.Options[i].Meal.ID = createdMeal.ID
+		exampleMealPlan.Options[i].AssignedCook = nil
 	}
 
 	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
 	createdMealPlan, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
-	require.NotEmpty(t, createdMealPlan.ID)
 	require.NoError(t, err)
+	require.NotEmpty(t, createdMealPlan.ID)
 
 	t.Logf("meal plan %q created", createdMealPlan.ID)
 

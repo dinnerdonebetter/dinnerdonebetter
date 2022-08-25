@@ -93,7 +93,7 @@ func (s *apiClientsTestSuite) TestClient_GetAPIClients() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleAPIClientList)
 
 		actual, err := c.GetAPIClients(s.ctx, nil)

@@ -15,6 +15,6 @@ COPY go.sum go.sum
 ENV SKIP_PASETO_TESTS=FALSE
 
 # to debug a specific test:
-# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "github.com/prixfixeco/api_server/tests/integration", "-run", "TestIntegration/TestRecipeStepInstruments_AsRecipeStepProducts" ]
+# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "github.com/prixfixeco/api_server/tests/integration", "-run", "TestIntegration/TestHouseholds_OwnershipTransfer" ]
 
 ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "github.com/prixfixeco/api_server/tests/integration" ]

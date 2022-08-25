@@ -20,6 +20,10 @@ func checkValidMeasurementUnitEquality(t *testing.T, expected, actual *types.Val
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.Volumetric, actual.Volumetric, "expected Volumetric for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Volumetric, actual.Volumetric)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
+	assert.Equal(t, expected.Universal, actual.Universal, "expected Universal for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Universal, actual.Universal)
+	assert.Equal(t, expected.Metric, actual.Metric, "expected Metric for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Metric, actual.Metric)
+	assert.Equal(t, expected.Imperial, actual.Imperial, "expected Imperial for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Imperial, actual.Imperial)
+	assert.Equal(t, expected.PluralName, actual.PluralName, "expected PluralName for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.PluralName, actual.PluralName)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -30,6 +34,10 @@ func convertValidMeasurementUnitToValidMeasurementUnitUpdateInput(x *types.Valid
 		Description: &x.Description,
 		Volumetric:  &x.Volumetric,
 		IconPath:    &x.IconPath,
+		Universal:   &x.Universal,
+		Metric:      &x.Metric,
+		Imperial:    &x.Imperial,
+		PluralName:  &x.PluralName,
 	}
 }
 

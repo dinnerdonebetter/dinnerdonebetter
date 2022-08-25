@@ -24,6 +24,8 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 	assert.Equal(t, expected.Source, actual.Source, "expected Source for recipe %s to be %v, but it was %v", expected.ID, expected.Source, actual.Source)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
+	assert.Equal(t, expected.YieldsPortions, actual.YieldsPortions, "expected YieldsPortions for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsPortions, actual.YieldsPortions)
+	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -34,6 +36,8 @@ func convertRecipeToRecipeUpdateInput(x *types.Recipe) *types.RecipeUpdateReques
 		Source:             &x.Source,
 		Description:        &x.Description,
 		InspiredByRecipeID: x.InspiredByRecipeID,
+		YieldsPortions:     &x.YieldsPortions,
+		SealOfApproval:     &x.SealOfApproval,
 	}
 }
 

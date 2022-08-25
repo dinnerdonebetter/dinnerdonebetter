@@ -108,7 +108,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanOptionList)
 		actual, err := c.GetMealPlanOptions(s.ctx, s.exampleMealPlanID, filter)
 
@@ -146,7 +146,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetMealPlanOptions(s.ctx, s.exampleMealPlanID, filter)
 

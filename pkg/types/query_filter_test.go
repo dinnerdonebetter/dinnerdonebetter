@@ -20,15 +20,16 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
+
 		qf := &QueryFilter{
-			Page:            100,
-			Limit:           MaxLimit,
-			CreatedAfter:    123456789,
-			CreatedBefore:   123456789,
-			UpdatedAfter:    123456789,
-			UpdatedBefore:   123456789,
+			Page:            func(x uint64) *uint64 { return &x }(100),
+			Limit:           func(x uint8) *uint8 { return &x }(MaxLimit),
+			CreatedAfter:    func(x uint64) *uint64 { return &x }(123456789),
+			CreatedBefore:   func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedAfter:    func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedBefore:   func(x uint64) *uint64 { return &x }(123456789),
 			SortBy:          SortDescending,
-			IncludeArchived: true,
+			IncludeArchived: boolPointer(true),
 		}
 
 		assert.NotNil(t, qf.AttachToLogger(logger))
@@ -48,33 +49,34 @@ func TestQueryFilter_FromParams(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
-			Page:            100,
-			Limit:           MaxLimit,
-			CreatedAfter:    123456789,
-			CreatedBefore:   123456789,
-			UpdatedAfter:    123456789,
-			UpdatedBefore:   123456789,
+			Page:            func(x uint64) *uint64 { return &x }(100),
+			Limit:           func(x uint8) *uint8 { return &x }(MaxLimit),
+			CreatedAfter:    func(x uint64) *uint64 { return &x }(123456789),
+			CreatedBefore:   func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedAfter:    func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedBefore:   func(x uint64) *uint64 { return &x }(123456789),
 			SortBy:          SortDescending,
-			IncludeArchived: true,
+			IncludeArchived: boolPointer(true),
 		}
 
 		exampleInput := url.Values{
-			pageQueryKey:            []string{strconv.Itoa(int(expected.Page))},
-			LimitQueryKey:           []string{strconv.Itoa(int(expected.Limit))},
-			createdBeforeQueryKey:   []string{strconv.Itoa(int(expected.CreatedAfter))},
-			createdAfterQueryKey:    []string{strconv.Itoa(int(expected.CreatedBefore))},
-			updatedBeforeQueryKey:   []string{strconv.Itoa(int(expected.UpdatedAfter))},
-			updatedAfterQueryKey:    []string{strconv.Itoa(int(expected.UpdatedBefore))},
-			sortByQueryKey:          []string{string(expected.SortBy)},
+			pageQueryKey:            []string{strconv.Itoa(int(*expected.Page))},
+			LimitQueryKey:           []string{strconv.Itoa(int(*expected.Limit))},
+			createdBeforeQueryKey:   []string{strconv.Itoa(int(*expected.CreatedAfter))},
+			createdAfterQueryKey:    []string{strconv.Itoa(int(*expected.CreatedBefore))},
+			updatedBeforeQueryKey:   []string{strconv.Itoa(int(*expected.UpdatedAfter))},
+			updatedAfterQueryKey:    []string{strconv.Itoa(int(*expected.UpdatedBefore))},
+			sortByQueryKey:          []string{*expected.SortBy},
 			includeArchivedQueryKey: []string{strconv.FormatBool(true)},
 		}
 
 		actual.FromParams(exampleInput)
 		assert.Equal(t, expected, actual)
 
-		exampleInput[sortByQueryKey] = []string{string(SortAscending)}
+		exampleInput[sortByQueryKey] = []string{*SortAscending}
 
 		actual.FromParams(exampleInput)
 		assert.Equal(t, SortAscending, actual.SortBy)
@@ -86,11 +88,12 @@ func TestQueryFilter_SetPage(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
-		qf := &QueryFilter{}
-		expected := uint64(123)
-		qf.SetPage(expected)
 
-		assert.Equal(t, expected, qf.Page)
+		expected := uint64(123)
+		qf := &QueryFilter{}
+		qf.SetPage(&expected)
+
+		assert.Equal(t, expected, *qf.Page)
 	})
 }
 
@@ -99,7 +102,7 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
-		qf := &QueryFilter{Limit: 10, Page: 11}
+		qf := &QueryFilter{Limit: func(x uint8) *uint8 { return &x }(10), Page: func(x uint64) *uint64 { return &x }(11)}
 		expected := uint64(100)
 		actual := qf.QueryPage()
 
@@ -113,24 +116,25 @@ func TestQueryFilter_ToValues(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 		qf := &QueryFilter{
-			Page:            100,
-			Limit:           50,
-			CreatedAfter:    123456789,
-			CreatedBefore:   123456789,
-			UpdatedAfter:    123456789,
-			UpdatedBefore:   123456789,
-			IncludeArchived: true,
+			Page:            func(x uint64) *uint64 { return &x }(100),
+			Limit:           func(x uint8) *uint8 { return &x }(MaxLimit),
+			CreatedAfter:    func(x uint64) *uint64 { return &x }(123456789),
+			CreatedBefore:   func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedAfter:    func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedBefore:   func(x uint64) *uint64 { return &x }(123456789),
 			SortBy:          SortDescending,
+			IncludeArchived: boolPointer(true),
 		}
+
 		expected := url.Values{
-			pageQueryKey:            []string{strconv.Itoa(int(qf.Page))},
-			LimitQueryKey:           []string{strconv.Itoa(int(qf.Limit))},
-			createdBeforeQueryKey:   []string{strconv.Itoa(int(qf.CreatedAfter))},
-			createdAfterQueryKey:    []string{strconv.Itoa(int(qf.CreatedBefore))},
-			updatedBeforeQueryKey:   []string{strconv.Itoa(int(qf.UpdatedAfter))},
-			updatedAfterQueryKey:    []string{strconv.Itoa(int(qf.UpdatedBefore))},
-			includeArchivedQueryKey: []string{strconv.FormatBool(qf.IncludeArchived)},
-			sortByQueryKey:          []string{string(qf.SortBy)},
+			pageQueryKey:            []string{strconv.Itoa(int(*qf.Page))},
+			LimitQueryKey:           []string{strconv.Itoa(int(*qf.Limit))},
+			createdBeforeQueryKey:   []string{strconv.Itoa(int(*qf.CreatedAfter))},
+			createdAfterQueryKey:    []string{strconv.Itoa(int(*qf.CreatedBefore))},
+			updatedBeforeQueryKey:   []string{strconv.Itoa(int(*qf.UpdatedAfter))},
+			updatedAfterQueryKey:    []string{strconv.Itoa(int(*qf.UpdatedBefore))},
+			includeArchivedQueryKey: []string{strconv.FormatBool(*qf.IncludeArchived)},
+			sortByQueryKey:          []string{*qf.SortBy},
 		}
 
 		actual := qf.ToValues()
@@ -155,22 +159,22 @@ func TestExtractQueryFilter(T *testing.T) {
 		ctx := context.Background()
 
 		expected := &QueryFilter{
-			Page:          100,
-			Limit:         MaxLimit,
-			CreatedAfter:  123456789,
-			CreatedBefore: 123456789,
-			UpdatedAfter:  123456789,
-			UpdatedBefore: 123456789,
+			Page:          func(x uint64) *uint64 { return &x }(100),
+			Limit:         func(x uint8) *uint8 { return &x }(MaxLimit),
+			CreatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
+			CreatedBefore: func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
+			UpdatedBefore: func(x uint64) *uint64 { return &x }(123456789),
 			SortBy:        SortDescending,
 		}
 		exampleInput := url.Values{
-			pageQueryKey:          []string{strconv.Itoa(int(expected.Page))},
-			LimitQueryKey:         []string{strconv.Itoa(int(expected.Limit))},
-			createdBeforeQueryKey: []string{strconv.Itoa(int(expected.CreatedAfter))},
-			createdAfterQueryKey:  []string{strconv.Itoa(int(expected.CreatedBefore))},
-			updatedBeforeQueryKey: []string{strconv.Itoa(int(expected.UpdatedAfter))},
-			updatedAfterQueryKey:  []string{strconv.Itoa(int(expected.UpdatedBefore))},
-			sortByQueryKey:        []string{string(expected.SortBy)},
+			pageQueryKey:          []string{strconv.Itoa(int(*expected.Page))},
+			LimitQueryKey:         []string{strconv.Itoa(int(*expected.Limit))},
+			createdBeforeQueryKey: []string{strconv.Itoa(int(*expected.CreatedAfter))},
+			createdAfterQueryKey:  []string{strconv.Itoa(int(*expected.CreatedBefore))},
+			updatedBeforeQueryKey: []string{strconv.Itoa(int(*expected.UpdatedAfter))},
+			updatedAfterQueryKey:  []string{strconv.Itoa(int(*expected.UpdatedBefore))},
+			sortByQueryKey:        []string{*expected.SortBy},
 		}
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://verygoodsoftwarenotvirus.ru", http.NoBody)

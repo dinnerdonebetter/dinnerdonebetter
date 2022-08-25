@@ -19,7 +19,8 @@ func checkHouseholdEquality(t *testing.T, expected, actual *types.Household) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name, "expected BucketName for household %s to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
+	assert.Equal(t, expected.Name, actual.Name, "expected Name for household %s to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
+	assert.Equal(t, expected.TimeZone, actual.TimeZone, "expected TimeZone for household %s to be %v, but it was %v ", expected.ID, expected.TimeZone, actual.TimeZone)
 	assert.NotZero(t, actual.CreatedOn)
 }
 

@@ -15,6 +15,10 @@ func BuildFakeValidMeasurementUnit() *types.ValidMeasurementUnit {
 		Description: buildUniqueString(),
 		Volumetric:  fake.Bool(),
 		IconPath:    buildUniqueString(),
+		Universal:   fake.Bool(),
+		Metric:      fake.Bool(),
+		Imperial:    fake.Bool(),
+		PluralName:  buildUniqueString(),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }
@@ -45,6 +49,10 @@ func BuildFakeValidMeasurementUnitUpdateRequestInput() *types.ValidMeasurementUn
 		Description: &validMeasurementUnit.Description,
 		Volumetric:  &validMeasurementUnit.Volumetric,
 		IconPath:    &validMeasurementUnit.IconPath,
+		Universal:   &validMeasurementUnit.Universal,
+		Metric:      &validMeasurementUnit.Metric,
+		Imperial:    &validMeasurementUnit.Imperial,
+		PluralName:  &validMeasurementUnit.PluralName,
 	}
 }
 
@@ -55,6 +63,10 @@ func BuildFakeValidMeasurementUnitUpdateRequestInputFromValidMeasurementUnit(val
 		Description: &validMeasurementUnit.Description,
 		Volumetric:  &validMeasurementUnit.Volumetric,
 		IconPath:    &validMeasurementUnit.IconPath,
+		Universal:   &validMeasurementUnit.Universal,
+		Metric:      &validMeasurementUnit.Metric,
+		Imperial:    &validMeasurementUnit.Imperial,
+		PluralName:  &validMeasurementUnit.PluralName,
 	}
 }
 
@@ -71,13 +83,11 @@ func BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(v
 		Description: validMeasurementUnit.Description,
 		Volumetric:  validMeasurementUnit.Volumetric,
 		IconPath:    validMeasurementUnit.IconPath,
+		Universal:   validMeasurementUnit.Universal,
+		Metric:      validMeasurementUnit.Metric,
+		Imperial:    validMeasurementUnit.Imperial,
+		PluralName:  validMeasurementUnit.PluralName,
 	}
-}
-
-// BuildFakeValidMeasurementUnitDatabaseCreationInput builds a faked ValidMeasurementUnitDatabaseCreationInput.
-func BuildFakeValidMeasurementUnitDatabaseCreationInput() *types.ValidMeasurementUnitDatabaseCreationInput {
-	validMeasurementUnit := BuildFakeValidMeasurementUnit()
-	return BuildFakeValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnit(validMeasurementUnit)
 }
 
 // BuildFakeValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnit builds a faked ValidMeasurementUnitDatabaseCreationInput from a valid ingredient.
@@ -88,5 +98,9 @@ func BuildFakeValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnit(
 		Description: validMeasurementUnit.Description,
 		Volumetric:  validMeasurementUnit.Volumetric,
 		IconPath:    validMeasurementUnit.IconPath,
+		Universal:   validMeasurementUnit.Universal,
+		Metric:      validMeasurementUnit.Metric,
+		Imperial:    validMeasurementUnit.Imperial,
+		PluralName:  validMeasurementUnit.PluralName,
 	}
 }

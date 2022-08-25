@@ -83,7 +83,7 @@ func TestBuilder_BuildGetRecipeStepsRequest(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, exampleRecipeID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleRecipeID)
 
 		actual, err := helper.builder.BuildGetRecipeStepsRequest(helper.ctx, exampleRecipeID, filter)
 		assert.NoError(t, err)

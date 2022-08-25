@@ -33,29 +33,39 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.Equal(t, expected.IsMeasuredVolumetrically, actual.IsMeasuredVolumetrically, "expected IsMeasuredVolumetrically for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsMeasuredVolumetrically, actual.IsMeasuredVolumetrically)
 	assert.Equal(t, expected.IsLiquid, actual.IsLiquid, "expected IsLiquid for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsLiquid, actual.IsLiquid)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
+	assert.Equal(t, expected.PluralName, actual.PluralName, "expected PluralName for valid ingredient %s to be %v, but it was %v", expected.ID, expected.PluralName, actual.PluralName)
+	assert.Equal(t, expected.AnimalDerived, actual.AnimalDerived, "expected AnimalDerived for valid ingredient %s to be %v, but it was %v", expected.ID, expected.AnimalDerived, actual.AnimalDerived)
+	assert.Equal(t, expected.RestrictToPreparations, actual.RestrictToPreparations, "expected RestrictToPreparations for valid ingredient %s to be %v, but it was %v", expected.ID, expected.RestrictToPreparations, actual.RestrictToPreparations)
+	assert.Equal(t, expected.MinimumIdealStorageTemperatureInCelsius, actual.MinimumIdealStorageTemperatureInCelsius, "expected MinimumIdealStorageTemperatureInCelsius for valid ingredient %s to be %v, but it was %v", expected.ID, expected.MinimumIdealStorageTemperatureInCelsius, actual.MinimumIdealStorageTemperatureInCelsius)
+	assert.Equal(t, expected.MaximumIdealStorageTemperatureInCelsius, actual.MaximumIdealStorageTemperatureInCelsius, "expected MaximumIdealStorageTemperatureInCelsius for valid ingredient %s to be %v, but it was %v", expected.ID, expected.MaximumIdealStorageTemperatureInCelsius, actual.MaximumIdealStorageTemperatureInCelsius)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
 // convertValidIngredientToValidIngredientUpdateInput creates an ValidIngredientUpdateRequestInput struct from a valid ingredient.
 func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient) *types.ValidIngredientUpdateRequestInput {
 	return &types.ValidIngredientUpdateRequestInput{
-		Name:                     &x.Name,
-		Description:              &x.Description,
-		Warning:                  &x.Warning,
-		ContainsEgg:              &x.ContainsEgg,
-		ContainsDairy:            &x.ContainsDairy,
-		ContainsPeanut:           &x.ContainsPeanut,
-		ContainsTreeNut:          &x.ContainsTreeNut,
-		ContainsSoy:              &x.ContainsSoy,
-		ContainsWheat:            &x.ContainsWheat,
-		ContainsShellfish:        &x.ContainsShellfish,
-		ContainsSesame:           &x.ContainsSesame,
-		ContainsFish:             &x.ContainsFish,
-		ContainsGluten:           &x.ContainsGluten,
-		AnimalFlesh:              &x.AnimalFlesh,
-		IsMeasuredVolumetrically: &x.IsMeasuredVolumetrically,
-		IsLiquid:                 &x.IsLiquid,
-		IconPath:                 &x.IconPath,
+		Name:                                    &x.Name,
+		Description:                             &x.Description,
+		Warning:                                 &x.Warning,
+		ContainsEgg:                             &x.ContainsEgg,
+		ContainsDairy:                           &x.ContainsDairy,
+		ContainsPeanut:                          &x.ContainsPeanut,
+		ContainsTreeNut:                         &x.ContainsTreeNut,
+		ContainsSoy:                             &x.ContainsSoy,
+		ContainsWheat:                           &x.ContainsWheat,
+		ContainsShellfish:                       &x.ContainsShellfish,
+		ContainsSesame:                          &x.ContainsSesame,
+		ContainsFish:                            &x.ContainsFish,
+		ContainsGluten:                          &x.ContainsGluten,
+		AnimalFlesh:                             &x.AnimalFlesh,
+		IsMeasuredVolumetrically:                &x.IsMeasuredVolumetrically,
+		IsLiquid:                                &x.IsLiquid,
+		IconPath:                                &x.IconPath,
+		PluralName:                              &x.PluralName,
+		AnimalDerived:                           &x.AnimalDerived,
+		RestrictToPreparations:                  &x.RestrictToPreparations,
+		MinimumIdealStorageTemperatureInCelsius: &x.MinimumIdealStorageTemperatureInCelsius,
+		MaximumIdealStorageTemperatureInCelsius: &x.MaximumIdealStorageTemperatureInCelsius,
 	}
 }
 

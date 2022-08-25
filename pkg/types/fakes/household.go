@@ -28,17 +28,15 @@ func BuildFakeHousehold() *types.Household {
 		CreatedOn:                  uint64(uint32(fake.Date().Unix())),
 		BelongsToUser:              fake.UUID(),
 		Members:                    memberships,
+		TimeZone:                   types.DefaultHouseholdTimeZone,
 	}
 }
 
 // BuildFakeHouseholdForUser builds a faked household.
 func BuildFakeHouseholdForUser(u *types.User) *types.Household {
-	return &types.Household{
-		ID:            ksuid.New().String(),
-		Name:          u.Username,
-		CreatedOn:     uint64(uint32(fake.Date().Unix())),
-		BelongsToUser: u.ID,
-	}
+	h := BuildFakeHousehold()
+	h.BelongsToUser = u.ID
+	return h
 }
 
 // BuildFakeHouseholdList builds a faked HouseholdList.
@@ -65,6 +63,7 @@ func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateRequestInput {
 	return &types.HouseholdUpdateRequestInput{
 		Name:          &household.Name,
 		BelongsToUser: household.BelongsToUser,
+		TimeZone:      &household.TimeZone,
 	}
 }
 
@@ -82,6 +81,7 @@ func BuildFakeHouseholdCreationRequestInputFromHousehold(household *types.Househ
 		ContactEmail:  household.ContactEmail,
 		ContactPhone:  household.ContactPhone,
 		BelongsToUser: household.BelongsToUser,
+		TimeZone:      household.TimeZone,
 	}
 }
 
@@ -93,5 +93,6 @@ func BuildFakeHouseholdDatabaseCreationInputFromHousehold(household *types.House
 		ContactEmail:  household.ContactEmail,
 		ContactPhone:  household.ContactPhone,
 		BelongsToUser: household.BelongsToUser,
+		TimeZone:      household.TimeZone,
 	}
 }

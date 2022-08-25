@@ -67,7 +67,6 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 			observability.AcknowledgeError(err, logger, span, "retrieving session context data")
 			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		}
-
 		return
 	}
 

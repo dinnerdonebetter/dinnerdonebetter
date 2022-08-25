@@ -69,7 +69,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.Onion.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  mushroomRisottoStep1ID,
@@ -94,7 +94,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.Water.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_milliliter",
+						MeasurementUnitID:    padID("vmu_milliliter"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  mushroomRisottoStep2ID,
@@ -129,7 +129,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.ChickenBreast.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  grilledChickenStep1ID,
@@ -139,7 +139,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.BlackPepper.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  grilledChickenStep1ID,
@@ -149,7 +149,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.Garlic.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  grilledChickenStep1ID,
@@ -174,7 +174,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.ChickenBreast.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  grilledChickenStep2ID,
@@ -209,7 +209,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.Tomato.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  capreseSaladStep1ID,
@@ -219,7 +219,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.Mozzarella.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  capreseSaladStep1ID,
@@ -244,7 +244,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.Tomato.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  capreseSaladStep2ID,
@@ -254,7 +254,7 @@ var recipeCollection = struct {
 					{
 						IngredientID:         sp(validIngredientCollection.Mozzarella.ID),
 						ID:                   ksuid.New().String(),
-						MeasurementUnitID:    "vmu_gram",
+						MeasurementUnitID:    padID("vmu_gram"),
 						QuantityNotes:        "",
 						IngredientNotes:      "",
 						BelongsToRecipeStep:  capreseSaladStep2ID,

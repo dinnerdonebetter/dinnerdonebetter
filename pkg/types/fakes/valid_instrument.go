@@ -12,7 +12,7 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 	return &types.ValidInstrument{
 		ID:          ksuid.New().String(),
 		Name:        buildUniqueString(),
-		Variant:     buildUniqueString(),
+		PluralName:  buildUniqueString(),
 		Description: buildUniqueString(),
 		IconPath:    buildUniqueString(),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
@@ -42,7 +42,7 @@ func BuildFakeValidInstrumentUpdateRequestInput() *types.ValidInstrumentUpdateRe
 	validInstrument := BuildFakeValidInstrument()
 	return &types.ValidInstrumentUpdateRequestInput{
 		Name:        &validInstrument.Name,
-		Variant:     &validInstrument.Variant,
+		PluralName:  &validInstrument.PluralName,
 		Description: &validInstrument.Description,
 		IconPath:    &validInstrument.IconPath,
 	}
@@ -52,7 +52,7 @@ func BuildFakeValidInstrumentUpdateRequestInput() *types.ValidInstrumentUpdateRe
 func BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
 	return &types.ValidInstrumentUpdateRequestInput{
 		Name:        &validInstrument.Name,
-		Variant:     &validInstrument.Variant,
+		PluralName:  &validInstrument.PluralName,
 		Description: &validInstrument.Description,
 		IconPath:    &validInstrument.IconPath,
 	}
@@ -69,7 +69,7 @@ func BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(validInstru
 	return &types.ValidInstrumentCreationRequestInput{
 		ID:          validInstrument.ID,
 		Name:        validInstrument.Name,
-		Variant:     validInstrument.Variant,
+		PluralName:  validInstrument.PluralName,
 		Description: validInstrument.Description,
 		IconPath:    validInstrument.IconPath,
 	}
@@ -86,7 +86,7 @@ func BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(validInstr
 	return &types.ValidInstrumentDatabaseCreationInput{
 		ID:          validInstrument.ID,
 		Name:        validInstrument.Name,
-		Variant:     validInstrument.Variant,
+		PluralName:  validInstrument.PluralName,
 		Description: validInstrument.Description,
 		IconPath:    validInstrument.IconPath,
 	}

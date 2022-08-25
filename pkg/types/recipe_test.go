@@ -22,6 +22,8 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 			},
+			SealOfApproval: fake.Bool(),
+			YieldsPortions: fake.Uint8(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -49,6 +51,8 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 			Source:             stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Description:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			InspiredByRecipeID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			SealOfApproval:     boolPointer(fake.Bool()),
+			YieldsPortions:     uint8Pointer(fake.Uint8()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -35,21 +35,21 @@ const (
 type QueryFilter struct {
 	_ struct{}
 
-	SortBy          sortType `json:"sortBy"`
-	Page            uint64   `json:"page"`
-	CreatedAfter    uint64   `json:"createdBefore,omitempty"`
-	CreatedBefore   uint64   `json:"createdAfter,omitempty"`
-	UpdatedAfter    uint64   `json:"updatedBefore,omitempty"`
-	UpdatedBefore   uint64   `json:"updatedAfter,omitempty"`
-	Limit           uint8    `json:"limit"`
-	IncludeArchived bool     `json:"includeArchived,omitempty"`
+	SortBy          *string `json:"sortBy"`
+	Page            *uint64 `json:"page"`
+	CreatedAfter    *uint64 `json:"createdBefore,omitempty"`
+	CreatedBefore   *uint64 `json:"createdAfter,omitempty"`
+	UpdatedAfter    *uint64 `json:"updatedBefore,omitempty"`
+	UpdatedBefore   *uint64 `json:"updatedAfter,omitempty"`
+	Limit           *uint8  `json:"limit"`
+	IncludeArchived *bool   `json:"includeArchived,omitempty"`
 }
 
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
-		Page:   1,
-		Limit:  DefaultLimit,
+		Page:   func(x uint64) *uint64 { return &x }(1),
+		Limit:  func(x uint8) *uint8 { return &x }(DefaultLimit),
 		SortBy: SortAscending,
 	}
 }
@@ -62,31 +62,31 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 		return l.WithValue(keys.FilterIsNilKey, true)
 	}
 
-	if qf.Page != 0 {
+	if qf.Page != nil {
 		l = l.WithValue(pageQueryKey, qf.Page)
 	}
 
-	if qf.Limit != 0 {
+	if qf.Limit != nil {
 		l = l.WithValue(LimitQueryKey, qf.Limit)
 	}
 
-	if qf.SortBy != "" {
+	if qf.SortBy != nil {
 		l = l.WithValue(sortByQueryKey, qf.SortBy)
 	}
 
-	if qf.CreatedBefore != 0 {
+	if qf.CreatedBefore != nil {
 		l = l.WithValue(createdBeforeQueryKey, qf.CreatedBefore)
 	}
 
-	if qf.CreatedAfter != 0 {
+	if qf.CreatedAfter != nil {
 		l = l.WithValue(createdAfterQueryKey, qf.CreatedAfter)
 	}
 
-	if qf.UpdatedBefore != 0 {
+	if qf.UpdatedBefore != nil {
 		l = l.WithValue(updatedBeforeQueryKey, qf.UpdatedBefore)
 	}
 
-	if qf.UpdatedAfter != 0 {
+	if qf.UpdatedAfter != nil {
 		l = l.WithValue(updatedAfterQueryKey, qf.UpdatedAfter)
 	}
 
@@ -96,49 +96,54 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 // FromParams overrides the core QueryFilter values with values retrieved from url.Params.
 func (qf *QueryFilter) FromParams(params url.Values) {
 	if i, err := strconv.ParseUint(params.Get(pageQueryKey), 10, 64); err == nil {
-		qf.Page = uint64(math.Max(float64(i), 1))
+		qf.Page = uint64Pointer(uint64(math.Max(float64(i), 1)))
 	}
 
 	if i, err := strconv.ParseUint(params.Get(LimitQueryKey), 10, 64); err == nil {
-		qf.Limit = uint8(math.Min(math.Max(float64(i), 0), MaxLimit))
+		qf.Limit = uint8Pointer(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
 	}
 
 	if i, err := strconv.ParseUint(params.Get(createdBeforeQueryKey), 10, 64); err == nil {
-		qf.CreatedBefore = uint64(math.Max(float64(i), 0))
+		qf.CreatedBefore = uint64Pointer(uint64(math.Max(float64(i), 0)))
 	}
 
 	if i, err := strconv.ParseUint(params.Get(createdAfterQueryKey), 10, 64); err == nil {
-		qf.CreatedAfter = uint64(math.Max(float64(i), 0))
+		qf.CreatedAfter = uint64Pointer(uint64(math.Max(float64(i), 0)))
 	}
 
 	if i, err := strconv.ParseUint(params.Get(updatedBeforeQueryKey), 10, 64); err == nil {
-		qf.UpdatedBefore = uint64(math.Max(float64(i), 0))
+		qf.UpdatedBefore = uint64Pointer(uint64(math.Max(float64(i), 0)))
 	}
 
 	if i, err := strconv.ParseUint(params.Get(updatedAfterQueryKey), 10, 64); err == nil {
-		qf.UpdatedAfter = uint64(math.Max(float64(i), 0))
+		qf.UpdatedAfter = uint64Pointer(uint64(math.Max(float64(i), 0)))
 	}
 
 	if i, err := strconv.ParseBool(params.Get(includeArchivedQueryKey)); err == nil {
-		qf.IncludeArchived = i
+		qf.IncludeArchived = &i
 	}
 
 	switch strings.ToLower(params.Get(sortByQueryKey)) {
-	case string(SortAscending):
+	case "asc":
 		qf.SortBy = SortAscending
-	case string(SortDescending):
+	case "desc":
 		qf.SortBy = SortDescending
 	}
 }
 
 // SetPage sets the current page with certain constraints.
-func (qf *QueryFilter) SetPage(page uint64) {
-	qf.Page = uint64(math.Max(1, float64(page)))
+func (qf *QueryFilter) SetPage(page *uint64) {
+	if page != nil {
+		qf.Page = uint64Pointer(uint64(math.Max(1, float64(*page))))
+	}
 }
 
 // QueryPage calculates a query page from the current filter values.
 func (qf *QueryFilter) QueryPage() uint64 {
-	return uint64(qf.Limit) * (qf.Page - 1)
+	if qf.Limit != nil && qf.Page != nil {
+		return uint64(*qf.Limit) * (*qf.Page - 1)
+	}
+	return 0
 }
 
 // ToValues returns a url.Values from a QueryFilter.
@@ -149,35 +154,37 @@ func (qf *QueryFilter) ToValues() url.Values {
 
 	v := url.Values{}
 
-	if qf.Page != 0 {
-		v.Set(pageQueryKey, strconv.FormatUint(qf.Page, 10))
+	if qf.Page != nil {
+		v.Set(pageQueryKey, strconv.FormatUint(*qf.Page, 10))
 	}
 
-	if qf.Limit != 0 {
-		v.Set(LimitQueryKey, strconv.FormatUint(uint64(qf.Limit), 10))
+	if qf.Limit != nil {
+		v.Set(LimitQueryKey, strconv.FormatUint(uint64(*qf.Limit), 10))
 	}
 
-	if qf.SortBy != "" {
-		v.Set(sortByQueryKey, string(qf.SortBy))
+	if qf.SortBy != nil {
+		v.Set(sortByQueryKey, *qf.SortBy)
 	}
 
-	if qf.CreatedBefore != 0 {
-		v.Set(createdBeforeQueryKey, strconv.FormatUint(qf.CreatedBefore, 10))
+	if qf.CreatedBefore != nil {
+		v.Set(createdBeforeQueryKey, strconv.FormatUint(*qf.CreatedBefore, 10))
 	}
 
-	if qf.CreatedAfter != 0 {
-		v.Set(createdAfterQueryKey, strconv.FormatUint(qf.CreatedAfter, 10))
+	if qf.CreatedAfter != nil {
+		v.Set(createdAfterQueryKey, strconv.FormatUint(*qf.CreatedAfter, 10))
 	}
 
-	if qf.UpdatedBefore != 0 {
-		v.Set(updatedBeforeQueryKey, strconv.FormatUint(qf.UpdatedBefore, 10))
+	if qf.UpdatedBefore != nil {
+		v.Set(updatedBeforeQueryKey, strconv.FormatUint(*qf.UpdatedBefore, 10))
 	}
 
-	if qf.UpdatedAfter != 0 {
-		v.Set(updatedAfterQueryKey, strconv.FormatUint(qf.UpdatedAfter, 10))
+	if qf.UpdatedAfter != nil {
+		v.Set(updatedAfterQueryKey, strconv.FormatUint(*qf.UpdatedAfter, 10))
 	}
 
-	v.Set(includeArchivedQueryKey, strconv.FormatBool(qf.IncludeArchived))
+	if qf.IncludeArchived != nil {
+		v.Set(includeArchivedQueryKey, strconv.FormatBool(*qf.IncludeArchived))
+	}
 
 	return v
 }
@@ -187,11 +194,16 @@ func ExtractQueryFilter(req *http.Request) *QueryFilter {
 	qf := &QueryFilter{}
 	qf.FromParams(req.URL.Query())
 
-	if qf.Page == 0 {
-		qf.Page = 1
+	if qf.Page != nil {
+		if *qf.Page == 0 {
+			qf.Page = uint64Pointer(1)
+		}
 	}
-	if qf.Limit == 0 {
-		qf.Limit = DefaultLimit
+
+	if qf.Limit != nil {
+		if *qf.Limit == 0 {
+			qf.Limit = uint8Pointer(DefaultLimit)
+		}
 	}
 
 	return qf

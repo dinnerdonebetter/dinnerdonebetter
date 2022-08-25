@@ -25,6 +25,8 @@ func BuildFakeRecipe() *types.Recipe {
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		CreatedByUser:      ksuid.New().String(),
 		Steps:              steps,
+		SealOfApproval:     false,
+		YieldsPortions:     fake.Uint8(),
 	}
 }
 
@@ -55,6 +57,8 @@ func BuildFakeRecipeUpdateRequestInput() *types.RecipeUpdateRequestInput {
 		Description:        &recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		CreatedByUser:      &recipe.CreatedByUser,
+		SealOfApproval:     &recipe.SealOfApproval,
+		YieldsPortions:     &recipe.YieldsPortions,
 	}
 }
 
@@ -66,6 +70,8 @@ func BuildFakeRecipeUpdateRequestInputFromRecipe(recipe *types.Recipe) *types.Re
 		Description:        &recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		CreatedByUser:      &recipe.CreatedByUser,
+		SealOfApproval:     &recipe.SealOfApproval,
+		YieldsPortions:     &recipe.YieldsPortions,
 	}
 }
 
@@ -88,14 +94,10 @@ func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		CreatedByUser:      recipe.CreatedByUser,
+		SealOfApproval:     recipe.SealOfApproval,
+		YieldsPortions:     recipe.YieldsPortions,
 		Steps:              steps,
 	}
-}
-
-// BuildFakeRecipeDatabaseCreationInput builds a faked RecipeDatabaseCreationInput.
-func BuildFakeRecipeDatabaseCreationInput() *types.RecipeDatabaseCreationInput {
-	recipe := BuildFakeRecipe()
-	return BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe)
 }
 
 // BuildFakeRecipeDatabaseCreationInputFromRecipe builds a faked RecipeDatabaseCreationInput from a recipe.
@@ -112,6 +114,8 @@ func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		CreatedByUser:      recipe.CreatedByUser,
+		SealOfApproval:     recipe.SealOfApproval,
+		YieldsPortions:     recipe.YieldsPortions,
 		Steps:              steps,
 	}
 }

@@ -3,7 +3,9 @@ package types
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -29,6 +31,9 @@ const (
 	PaidHouseholdBillingStatus HouseholdBillingStatus = "paid"
 	// UnpaidHouseholdBillingStatus indicates a household is not paid.
 	UnpaidHouseholdBillingStatus HouseholdBillingStatus = "unpaid"
+
+	// DefaultHouseholdTimeZone is the default time zone we will assign to a household.
+	DefaultHouseholdTimeZone = "US/Central"
 )
 
 type (
@@ -37,18 +42,18 @@ type (
 
 	// Household represents a household.
 	Household struct {
-		_ struct{}
-
+		_                          struct{}
 		ArchivedOn                 *uint64                            `json:"archivedOn"`
 		SubscriptionPlanID         *uint64                            `json:"subscriptionPlanID"`
 		LastUpdatedOn              *uint64                            `json:"lastUpdatedOn"`
-		Name                       string                             `json:"name"`
+		ContactPhone               string                             `json:"contactPhone"`
 		BillingStatus              HouseholdBillingStatus             `json:"billingStatus"`
 		ContactEmail               string                             `json:"contactEmail"`
-		ContactPhone               string                             `json:"contactPhone"`
+		Name                       string                             `json:"name"`
 		PaymentProcessorCustomerID string                             `json:"paymentProcessorCustomer"`
 		BelongsToUser              string                             `json:"belongsToUser"`
 		ID                         string                             `json:"id"`
+		TimeZone                   string                             `json:"timeZone"`
 		Members                    []*HouseholdUserMembershipWithUser `json:"members"`
 		CreatedOn                  uint64                             `json:"createdOn"`
 	}
@@ -69,6 +74,7 @@ type (
 		Name          string `json:"name"`
 		ContactEmail  string `json:"contactEmail"`
 		ContactPhone  string `json:"contactPhone"`
+		TimeZone      string `json:"timeZone"`
 		BelongsToUser string `json:"-"`
 	}
 
@@ -80,6 +86,7 @@ type (
 		Name          string `json:"name"`
 		ContactEmail  string `json:"contactEmail"`
 		ContactPhone  string `json:"contactPhone"`
+		TimeZone      string `json:"timeZone"`
 		BelongsToUser string `json:"-"`
 	}
 
@@ -90,6 +97,7 @@ type (
 		Name          *string `json:"name"`
 		ContactEmail  *string `json:"contactEmail"`
 		ContactPhone  *string `json:"contactPhone"`
+		TimeZone      *string `json:"timeZone"`
 		BelongsToUser string  `json:"-"`
 	}
 
@@ -133,6 +141,14 @@ func (x *Household) Update(input *HouseholdUpdateRequestInput) {
 	if input.ContactPhone != nil && *input.ContactPhone != x.ContactPhone {
 		x.ContactPhone = *input.ContactPhone
 	}
+
+	if input.TimeZone != nil && *input.TimeZone != x.TimeZone {
+		if _, err := time.LoadLocation(*input.TimeZone); err != nil {
+			// FIXME: we should return an error here, right?
+			log.Println(err)
+		}
+		x.TimeZone = *input.TimeZone
+	}
 }
 
 var _ validation.ValidatableWithContext = (*HouseholdCreationRequestInput)(nil)
@@ -169,6 +185,7 @@ func HouseholdDatabaseCreationInputFromHouseholdCreationInput(input *HouseholdCr
 		ContactEmail:  input.ContactEmail,
 		ContactPhone:  input.ContactPhone,
 		BelongsToUser: input.BelongsToUser,
+		TimeZone:      input.TimeZone,
 	}
 
 	return x
@@ -181,6 +198,7 @@ func HouseholdUpdateRequestInputFromHousehold(input *Household) *HouseholdUpdate
 		ContactEmail:  &input.ContactEmail,
 		ContactPhone:  &input.ContactPhone,
 		BelongsToUser: input.BelongsToUser,
+		TimeZone:      &input.TimeZone,
 	}
 
 	return x

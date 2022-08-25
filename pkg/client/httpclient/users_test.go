@@ -107,7 +107,7 @@ func (s *usersTestSuite) TestClient_GetUsers() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserList)
 
 		actual, err := c.GetUsers(s.ctx, nil)

@@ -16,6 +16,7 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionCreationRequestInput{
+			AssignedCook:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			BelongsToMealPlan: fake.LoremIpsumSentence(exampleQuantity),
 			Day: time.Weekday(fake.RandomInt([]int{
 				int(time.Monday),
@@ -78,6 +79,7 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 		}))
 
 		x := &MealPlanOptionUpdateRequestInput{
+			AssignedCook:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			BelongsToMealPlan: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Day:               &day,
 			MealName:          &mealName,

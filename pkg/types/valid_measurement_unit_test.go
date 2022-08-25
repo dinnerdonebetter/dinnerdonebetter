@@ -19,6 +19,10 @@ func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 			Description: fake.LoremIpsumSentence(exampleQuantity),
 			Volumetric:  fake.Bool(),
 			IconPath:    fake.LoremIpsumSentence(exampleQuantity),
+			Universal:   fake.Bool(),
+			Metric:      fake.Bool(),
+			Imperial:    fake.Bool(),
+			PluralName:  fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -46,6 +50,10 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 			Description: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Volumetric:  boolPointer(fake.Bool()),
 			IconPath:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Universal:   boolPointer(fake.Bool()),
+			Metric:      boolPointer(fake.Bool()),
+			Imperial:    boolPointer(fake.Bool()),
+			PluralName:  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

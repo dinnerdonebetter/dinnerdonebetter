@@ -133,7 +133,7 @@ func (s *validInstrumentsTestSuite) TestClient_GetValidInstruments() {
 
 		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidInstrumentList)
 		actual, err := c.GetValidInstruments(s.ctx, filter)
 
@@ -159,7 +159,7 @@ func (s *validInstrumentsTestSuite) TestClient_GetValidInstruments() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidInstruments(s.ctx, filter)
 

@@ -33,11 +33,11 @@ type (
 		_             struct{}
 		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
 		ArchivedOn    *uint64 `json:"archivedOn"`
-		Variant       string  `json:"variant"`
 		Description   string  `json:"description"`
 		IconPath      string  `json:"iconPath"`
 		ID            string  `json:"id"`
 		Name          string  `json:"name"`
+		PluralName    string  `json:"pluralName"`
 		CreatedOn     uint64  `json:"createdOn"`
 	}
 
@@ -46,11 +46,11 @@ type (
 		_             struct{}
 		LastUpdatedOn *uint64
 		ArchivedOn    *uint64
-		Variant       *string
 		Description   *string
 		IconPath      *string
 		ID            *string
 		Name          *string
+		PluralName    *string
 		CreatedOn     *uint64
 	}
 
@@ -66,7 +66,7 @@ type (
 		_           struct{}
 		ID          string `json:"-"`
 		Name        string `json:"name"`
-		Variant     string `json:"variant"`
+		PluralName  string `json:"pluralName"`
 		Description string `json:"description"`
 		IconPath    string `json:"iconPath"`
 	}
@@ -77,7 +77,7 @@ type (
 
 		ID          string `json:"id"`
 		Name        string `json:"name"`
-		Variant     string `json:"variant"`
+		PluralName  string `json:"pluralName"`
 		Description string `json:"description"`
 		IconPath    string `json:"iconPath"`
 	}
@@ -87,7 +87,7 @@ type (
 		_ struct{}
 
 		Name        *string `json:"name"`
-		Variant     *string `json:"variant"`
+		PluralName  *string `json:"pluralName"`
 		Description *string `json:"description"`
 		IconPath    *string `json:"iconPath"`
 	}
@@ -100,8 +100,6 @@ type (
 		GetTotalValidInstrumentCount(ctx context.Context) (uint64, error)
 		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*ValidInstrumentList, error)
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
-		SearchForValidInstrumentsForPreparation(ctx context.Context, preparationID, query string) ([]*ValidInstrument, error)
-		GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
@@ -125,8 +123,8 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 		x.Name = *input.Name
 	}
 
-	if input.Variant != nil && *input.Variant != x.Variant {
-		x.Variant = *input.Variant
+	if input.PluralName != nil && *input.PluralName != x.PluralName {
+		x.PluralName = *input.PluralName
 	}
 
 	if input.Description != nil && *input.Description != x.Description {
@@ -165,7 +163,7 @@ func (x *ValidInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.C
 func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument) *ValidInstrumentUpdateRequestInput {
 	x := &ValidInstrumentUpdateRequestInput{
 		Name:        &input.Name,
-		Variant:     &input.Variant,
+		PluralName:  &input.PluralName,
 		Description: &input.Description,
 		IconPath:    &input.IconPath,
 	}
@@ -177,7 +175,7 @@ func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument
 func ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput(input *ValidInstrumentCreationRequestInput) *ValidInstrumentDatabaseCreationInput {
 	x := &ValidInstrumentDatabaseCreationInput{
 		Name:        input.Name,
-		Variant:     input.Variant,
+		PluralName:  input.PluralName,
 		Description: input.Description,
 		IconPath:    input.IconPath,
 	}
@@ -201,11 +199,11 @@ func (x *NullableValidInstrument) ToValidInstrument() *ValidInstrument {
 	return &ValidInstrument{
 		LastUpdatedOn: x.LastUpdatedOn,
 		ArchivedOn:    x.ArchivedOn,
-		Variant:       *x.Variant,
 		Description:   *x.Description,
 		IconPath:      *x.IconPath,
 		ID:            *x.ID,
 		Name:          *x.Name,
+		PluralName:    *x.PluralName,
 		CreatedOn:     *x.CreatedOn,
 	}
 }

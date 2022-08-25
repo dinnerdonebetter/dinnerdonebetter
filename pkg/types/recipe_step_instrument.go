@@ -42,6 +42,9 @@ type (
 		CreatedOn           uint64           `json:"createdOn"`
 		ProductOfRecipeStep bool             `json:"productOfRecipeStep"`
 		PreferenceRank      uint8            `json:"preferenceRank"`
+		Optional            bool             `json:"optional"`
+		MinimumQuantity     uint32           `json:"minimumQuantity"`
+		MaximumQuantity     uint32           `json:"maximumQuantity"`
 	}
 
 	// RecipeStepInstrumentList represents a list of recipe step instruments.
@@ -62,6 +65,9 @@ type (
 		BelongsToRecipeStep string  `json:"-"`
 		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 		PreferenceRank      uint8   `json:"preferenceRank"`
+		Optional            bool    `json:"optional"`
+		MinimumQuantity     uint32  `json:"minimumQuantity"`
+		MaximumQuantity     uint32  `json:"maximumQuantity"`
 	}
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
@@ -75,6 +81,9 @@ type (
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
 		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 		PreferenceRank      uint8   `json:"preferenceRank"`
+		Optional            bool    `json:"optional"`
+		MinimumQuantity     uint32  `json:"minimumQuantity"`
+		MaximumQuantity     uint32  `json:"maximumQuantity"`
 	}
 
 	// RecipeStepInstrumentUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
@@ -87,6 +96,9 @@ type (
 		PreferenceRank      *uint8  `json:"preferenceRank"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
 		Name                *string `json:"name"`
+		Optional            *bool   `json:"optional"`
+		MinimumQuantity     *uint32 `json:"minimumQuantity"`
+		MaximumQuantity     *uint32 `json:"maximumQuantity"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -136,6 +148,18 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 	if input.PreferenceRank != nil && *input.PreferenceRank != x.PreferenceRank {
 		x.PreferenceRank = *input.PreferenceRank
 	}
+
+	if input.Optional != nil && *input.Optional != x.Optional {
+		x.Optional = *input.Optional
+	}
+
+	if input.MinimumQuantity != nil && *input.MinimumQuantity != x.MinimumQuantity {
+		x.MinimumQuantity = *input.MinimumQuantity
+	}
+
+	if input.MaximumQuantity != nil && *input.MaximumQuantity != x.MaximumQuantity {
+		x.MaximumQuantity = *input.MaximumQuantity
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepInstrumentCreationRequestInput)(nil)
@@ -176,6 +200,9 @@ func RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(input *Recip
 		ProductOfRecipeStep: &input.ProductOfRecipeStep,
 		PreferenceRank:      &input.PreferenceRank,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
+		Optional:            &input.Optional,
+		MinimumQuantity:     &input.MinimumQuantity,
+		MaximumQuantity:     &input.MaximumQuantity,
 	}
 
 	return x
@@ -191,6 +218,9 @@ func RecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrumentCreationIn
 		Notes:               input.Notes,
 		PreferenceRank:      input.PreferenceRank,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		Optional:            input.Optional,
+		MinimumQuantity:     input.MinimumQuantity,
+		MaximumQuantity:     input.MaximumQuantity,
 	}
 
 	return x

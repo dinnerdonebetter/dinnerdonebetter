@@ -12,6 +12,7 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 LOCAL_ADDRESS                 := api.prixfixe.local
 DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
+SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.15.0
 
 ## non-PHONY folders/files
 
@@ -170,6 +171,10 @@ frontend_tests:
 	--always-recreate-deps \
 	--abort-on-container-exit
 
+.PHONY: check_queries
+check_queries:
+	$(SQL_GENERATOR) compile
+
 ## Generated files
 
 clean_ts:
@@ -178,7 +183,6 @@ clean_ts:
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
 	go run cmd/tools/gen_ts/main.go
-
 ## Integration tests
 
 .PHONY: wipe_docker
@@ -266,3 +270,4 @@ line_count: ensure_scc_installed
 .PHONY: start_dev_cloud_sql_proxy
 start_dev_cloud_sql_proxy:
 	cloud_sql_proxy -dir=/cloudsql -instances='prixfixe-dev:us-central1:dev=tcp:5434'
+

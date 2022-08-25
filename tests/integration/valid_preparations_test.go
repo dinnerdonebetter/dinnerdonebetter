@@ -19,15 +19,23 @@ func checkValidPreparationEquality(t *testing.T, expected, actual *types.ValidPr
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid preparation %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid preparation %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid preparation %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
+	assert.Equal(t, expected.PastTense, actual.PastTense, "expected PastTense for valid preparation %s to be %v, but it was %v", expected.ID, expected.PastTense, actual.PastTense)
+	assert.Equal(t, expected.YieldsNothing, actual.YieldsNothing, "expected YieldsNothing for valid preparation %s to be %v, but it was %v", expected.ID, expected.YieldsNothing, actual.YieldsNothing)
+	assert.Equal(t, expected.RestrictToIngredients, actual.RestrictToIngredients, "expected RestrictToIngredients for valid preparation %s to be %v, but it was %v", expected.ID, expected.RestrictToIngredients, actual.RestrictToIngredients)
+	assert.Equal(t, expected.ZeroIngredientsAllowable, actual.ZeroIngredientsAllowable, "expected ZeroIngredientsAllowable for valid preparation %s to be %v, but it was %v", expected.ID, expected.ZeroIngredientsAllowable, actual.ZeroIngredientsAllowable)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
 // convertValidPreparationToValidPreparationUpdateInput creates an ValidPreparationUpdateRequestInput struct from a valid preparation.
 func convertValidPreparationToValidPreparationUpdateInput(x *types.ValidPreparation) *types.ValidPreparationUpdateRequestInput {
 	return &types.ValidPreparationUpdateRequestInput{
-		Name:        &x.Name,
-		Description: &x.Description,
-		IconPath:    &x.IconPath,
+		Name:                     &x.Name,
+		Description:              &x.Description,
+		IconPath:                 &x.IconPath,
+		PastTense:                &x.PastTense,
+		YieldsNothing:            &x.YieldsNothing,
+		RestrictToIngredients:    &x.RestrictToIngredients,
+		ZeroIngredientsAllowable: &x.ZeroIngredientsAllowable,
 	}
 }
 

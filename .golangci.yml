@@ -22,6 +22,7 @@ run:
   #   	vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
   skip-dirs:
     - cmd/tools
+    - internal/database/postgres/generated
     - cmd/email_debugger
     - tests/integration
 

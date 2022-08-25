@@ -18,15 +18,17 @@ func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanO
 	assert.Equal(t, expected.Day, actual.Day, "expected Day for meal plan option %s to be %v, but it was %v", expected.ID, expected.Day, actual.Day)
 	assert.Equal(t, expected.Meal.ID, actual.Meal.ID, "expected MealID for meal plan option %s to be %v, but it was %v", expected.ID, expected.Meal.ID, actual.Meal.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan option %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.AssignedCook, actual.AssignedCook, "expected AssignedCook for meal plan option %s to be %v, but it was %v", expected.ID, expected.AssignedCook, actual.AssignedCook)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
 // convertMealPlanOptionToMealPlanOptionUpdateInput creates an MealPlanOptionUpdateRequestInput struct from a meal plan option.
 func convertMealPlanOptionToMealPlanOptionUpdateInput(x *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:    &x.Day,
-		MealID: &x.Meal.ID,
-		Notes:  &x.Notes,
+		Day:          &x.Day,
+		MealID:       &x.Meal.ID,
+		Notes:        &x.Notes,
+		AssignedCook: x.AssignedCook,
 	}
 }
 
@@ -51,6 +53,7 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			newMealPlanOption := fakes.BuildFakeMealPlanOption()
 			newMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
 			newMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
+			newMealPlanOption.AssignedCook = nil
 			createdMealPlanOption.Update(convertMealPlanOptionToMealPlanOptionUpdateInput(newMealPlanOption))
 			assert.NoError(t, testClients.user.UpdateMealPlanOption(ctx, createdMealPlanOption))
 
@@ -86,6 +89,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 				exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
+				exampleMealPlanOption.AssignedCook = nil
 
 				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 				exampleMealPlanOption.Meal.ID = createdMeal.ID

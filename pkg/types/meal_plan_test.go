@@ -45,10 +45,7 @@ func TestMealPlanUpdateRequestInput_Validate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		status := AwaitingVotesMealPlanStatus
-
 		x := &MealPlanUpdateRequestInput{
-			Status:         &status,
 			VotingDeadline: uint64Pointer(uint64(time.Now().Unix())),
 			StartsAt:       uint64Pointer(uint64(fake.Uint32())),
 			EndsAt:         uint64Pointer(uint64(fake.Uint32())),

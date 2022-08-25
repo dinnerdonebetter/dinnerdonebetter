@@ -33,10 +33,10 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+		WithValue(keys.FilterSortByKey, filter.SortBy)
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	// fetch session context data
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -96,6 +96,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
+	}
+
+	if providedInput.TimeZone == "" {
+		providedInput.TimeZone = types.DefaultHouseholdTimeZone
 	}
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {

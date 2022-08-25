@@ -30,14 +30,18 @@ func init() {
 type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
-		_             struct{}
-		ArchivedOn    *uint64 `json:"archivedOn"`
-		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
-		Name          string  `json:"name"`
-		Description   string  `json:"description"`
-		IconPath      string  `json:"iconPath"`
-		ID            string  `json:"id"`
-		CreatedOn     uint64  `json:"createdOn"`
+		_                        struct{}
+		ArchivedOn               *uint64 `json:"archivedOn"`
+		LastUpdatedOn            *uint64 `json:"lastUpdatedOn"`
+		Name                     string  `json:"name"`
+		Description              string  `json:"description"`
+		IconPath                 string  `json:"iconPath"`
+		PastTense                string  `json:"pastTense"`
+		ID                       string  `json:"id"`
+		CreatedOn                uint64  `json:"createdOn"`
+		YieldsNothing            bool    `json:"yieldsNothing"`
+		RestrictToIngredients    bool    `json:"restrictToIngredients"`
+		ZeroIngredientsAllowable bool    `json:"zeroIngredientsAllowable"`
 	}
 
 	// ValidPreparationList represents a list of valid preparations.
@@ -49,31 +53,41 @@ type (
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationCreationRequestInput struct {
-		_ struct{}
-
-		ID          string `json:"-"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		_                        struct{}
+		ID                       string `json:"-"`
+		Name                     string `json:"name"`
+		Description              string `json:"description"`
+		IconPath                 string `json:"iconPath"`
+		PastTense                string `json:"pastTense"`
+		YieldsNothing            bool   `json:"yieldsNothing"`
+		RestrictToIngredients    bool   `json:"restrictToIngredients"`
+		ZeroIngredientsAllowable bool   `json:"zeroIngredientsAllowable"`
 	}
 
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationDatabaseCreationInput struct {
-		_ struct{}
-
-		ID          string `json:"id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		_                        struct{}
+		ID                       string `json:"id"`
+		Name                     string `json:"name"`
+		Description              string `json:"description"`
+		IconPath                 string `json:"iconPath"`
+		PastTense                string `json:"pastTense"`
+		YieldsNothing            bool   `json:"yieldsNothing"`
+		RestrictToIngredients    bool   `json:"restrictToIngredients"`
+		ZeroIngredientsAllowable bool   `json:"zeroIngredientsAllowable"`
 	}
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
 	ValidPreparationUpdateRequestInput struct {
 		_ struct{}
 
-		Name        *string `json:"name"`
-		Description *string `json:"description"`
-		IconPath    *string `json:"iconPath"`
+		Name                     *string `json:"name"`
+		Description              *string `json:"description"`
+		IconPath                 *string `json:"iconPath"`
+		YieldsNothing            *bool   `json:"yieldsNothing"`
+		RestrictToIngredients    *bool   `json:"restrictToIngredients"`
+		ZeroIngredientsAllowable *bool   `json:"zeroIngredientsAllowable"`
+		PastTense                *string `json:"pastTense"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -115,6 +129,19 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 	if input.IconPath != nil && *input.IconPath != x.IconPath {
 		x.IconPath = *input.IconPath
 	}
+
+	if input.YieldsNothing != nil && *input.YieldsNothing != x.YieldsNothing {
+		x.YieldsNothing = *input.YieldsNothing
+	}
+	if input.RestrictToIngredients != nil && *input.RestrictToIngredients != x.RestrictToIngredients {
+		x.RestrictToIngredients = *input.RestrictToIngredients
+	}
+	if input.ZeroIngredientsAllowable != nil && *input.ZeroIngredientsAllowable != x.ZeroIngredientsAllowable {
+		x.ZeroIngredientsAllowable = *input.ZeroIngredientsAllowable
+	}
+	if input.PastTense != nil && *input.PastTense != x.PastTense {
+		x.PastTense = *input.PastTense
+	}
 }
 
 var _ validation.ValidatableWithContext = (*ValidPreparationCreationRequestInput)(nil)
@@ -143,9 +170,13 @@ func (x *ValidPreparationDatabaseCreationInput) ValidateWithContext(ctx context.
 // ValidPreparationUpdateRequestInputFromValidPreparation creates a DatabaseCreationInput from a CreationInput.
 func ValidPreparationUpdateRequestInputFromValidPreparation(input *ValidPreparation) *ValidPreparationUpdateRequestInput {
 	x := &ValidPreparationUpdateRequestInput{
-		Name:        &input.Name,
-		Description: &input.Description,
-		IconPath:    &input.IconPath,
+		Name:                     &input.Name,
+		Description:              &input.Description,
+		IconPath:                 &input.IconPath,
+		YieldsNothing:            &input.YieldsNothing,
+		RestrictToIngredients:    &input.RestrictToIngredients,
+		ZeroIngredientsAllowable: &input.ZeroIngredientsAllowable,
+		PastTense:                &input.PastTense,
 	}
 
 	return x
@@ -154,9 +185,13 @@ func ValidPreparationUpdateRequestInputFromValidPreparation(input *ValidPreparat
 // ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput(input *ValidPreparationCreationRequestInput) *ValidPreparationDatabaseCreationInput {
 	x := &ValidPreparationDatabaseCreationInput{
-		Name:        input.Name,
-		Description: input.Description,
-		IconPath:    input.IconPath,
+		Name:                     input.Name,
+		Description:              input.Description,
+		IconPath:                 input.IconPath,
+		YieldsNothing:            input.YieldsNothing,
+		RestrictToIngredients:    input.RestrictToIngredients,
+		ZeroIngredientsAllowable: input.ZeroIngredientsAllowable,
+		PastTense:                input.PastTense,
 	}
 
 	return x

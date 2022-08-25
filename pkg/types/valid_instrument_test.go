@@ -16,7 +16,6 @@ func TestValidInstrumentCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidInstrumentCreationRequestInput{
 			Name:        fake.LoremIpsumSentence(exampleQuantity),
-			Variant:     fake.LoremIpsumSentence(exampleQuantity),
 			Description: fake.LoremIpsumSentence(exampleQuantity),
 			IconPath:    fake.LoremIpsumSentence(exampleQuantity),
 		}
@@ -43,7 +42,6 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidInstrumentUpdateRequestInput{
 			Name:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Variant:     stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Description: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			IconPath:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}

@@ -19,6 +19,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		MaximumQuantityValue: float32(fake.Uint32()),
 		QuantityNotes:        buildUniqueString(),
 		ProductOfRecipeStep:  false,
+		Optional:             fake.Bool(),
 		IngredientNotes:      buildUniqueString(),
 		CreatedOn:            uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep:  ksuid.New().String(),
@@ -48,6 +49,7 @@ func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredie
 	recipeStepIngredient := BuildFakeRecipeStepIngredient()
 	return &types.RecipeStepIngredientUpdateRequestInput{
 		Name:                 &recipeStepIngredient.Name,
+		Optional:             &recipeStepIngredient.Optional,
 		IngredientID:         recipeStepIngredient.IngredientID,
 		MeasurementUnitID:    &recipeStepIngredient.MeasurementUnit.ID,
 		MinimumQuantityValue: &recipeStepIngredient.MinimumQuantityValue,
@@ -63,6 +65,7 @@ func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredie
 func BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
 	return &types.RecipeStepIngredientUpdateRequestInput{
 		Name:                 &recipeStepIngredient.Name,
+		Optional:             &recipeStepIngredient.Optional,
 		IngredientID:         recipeStepIngredient.IngredientID,
 		MeasurementUnitID:    &recipeStepIngredient.MeasurementUnit.ID,
 		MinimumQuantityValue: &recipeStepIngredient.MinimumQuantityValue,
@@ -85,6 +88,7 @@ func BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(r
 	return &types.RecipeStepIngredientCreationRequestInput{
 		ID:                   recipeStepIngredient.ID,
 		Name:                 recipeStepIngredient.Name,
+		Optional:             recipeStepIngredient.Optional,
 		IngredientID:         recipeStepIngredient.IngredientID,
 		MeasurementUnitID:    recipeStepIngredient.MeasurementUnit.ID,
 		MinimumQuantityValue: recipeStepIngredient.MinimumQuantityValue,
@@ -96,17 +100,12 @@ func BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(r
 	}
 }
 
-// BuildFakeRecipeStepIngredientDatabaseCreationInput builds a faked RecipeStepIngredientDatabaseCreationInput.
-func BuildFakeRecipeStepIngredientDatabaseCreationInput() *types.RecipeStepIngredientDatabaseCreationInput {
-	recipeStepIngredient := BuildFakeRecipeStepIngredient()
-	return BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(recipeStepIngredient)
-}
-
 // BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient builds a faked RecipeStepIngredientDatabaseCreationInput from a recipe step ingredient.
 func BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientDatabaseCreationInput {
 	return &types.RecipeStepIngredientDatabaseCreationInput{
 		ID:                   recipeStepIngredient.ID,
 		Name:                 recipeStepIngredient.Name,
+		Optional:             recipeStepIngredient.Optional,
 		IngredientID:         recipeStepIngredient.IngredientID,
 		MeasurementUnitID:    recipeStepIngredient.MeasurementUnit.ID,
 		MinimumQuantityValue: recipeStepIngredient.MinimumQuantityValue,

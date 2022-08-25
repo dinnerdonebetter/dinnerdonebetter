@@ -22,6 +22,7 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 	assert.Equal(t, expected.MinimumTemperatureInCelsius, actual.MinimumTemperatureInCelsius, "expected MinimumTemperatureInCelsius for recipe step %s to be %v, but it was %v", expected.ID, expected.MinimumTemperatureInCelsius, actual.MinimumTemperatureInCelsius)
 	assert.Equal(t, expected.MaximumTemperatureInCelsius, actual.MaximumTemperatureInCelsius, "expected MaximumTemperatureInCelsius for recipe step %s to be %v, but it was %v", expected.ID, expected.MaximumTemperatureInCelsius, actual.MaximumTemperatureInCelsius)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected ExplicitInstructions for recipe step %s to be %v, but it was %v", expected.ID, expected.ExplicitInstructions, actual.ExplicitInstructions)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -36,6 +37,7 @@ func convertRecipeStepToRecipeStepUpdateInput(x *types.RecipeStep) *types.Recipe
 		Preparation:                   &x.Preparation,
 		Optional:                      &x.Optional,
 		Notes:                         &x.Notes,
+		ExplicitInstructions:          &x.ExplicitInstructions,
 		BelongsToRecipe:               x.BelongsToRecipe,
 	}
 }
