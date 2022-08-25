@@ -38,13 +38,14 @@ type router struct {
 }
 
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
+	//corsHandler := cors.AllowAll()
 	corsHandler := cors.New(cors.Options{
 		// Use this to allow specific origin hosts,
 		AllowedOrigins: []string{
 			"http://localhost:9000",
 			"http://localhost:7000",
-			"http://www.prixfixe.local:5555",
-			"http://admin.prixfixe.local:5555",
+			"https://www.prixfixe.local:5555",
+			"https://admin.prixfixe.local:5555",
 			"https://prixfixe.dev",
 			"https://www.prixfixe.dev",
 			"https://api.prixfixe.dev",
@@ -58,7 +59,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 			http.MethodDelete,
 			http.MethodOptions,
 		},
-		AllowedHeaders:   []string{"Cookie", "Content-Type"},
+		AllowedHeaders:   []string{"*"},
 		ExposedHeaders:   []string{"Set-Cookie"},
 		AllowCredentials: true,
 		MaxAge:           maxCORSAge,
