@@ -29,5 +29,3 @@ ALTER TABLE recipes ADD COLUMN "seal_of_approval" BOOLEAN NOT NULL DEFAULT 'fals
 ALTER TABLE recipe_steps ADD COLUMN "explicit_instructions" TEXT NOT NULL DEFAULT '';                                           -- #243
 CREATE TYPE time_zone AS ENUM ('UTC', 'US/Pacific', 'US/Mountain', 'US/Central', 'US/Eastern');                                                             -- #260
 ALTER TABLE households ADD COLUMN "time_zone" time_zone NOT NULL DEFAULT 'US/Central';                                                  -- #260
--- CREATE TYPE component_type AS ENUM ('main', 'appetizer', 'side', 'garnish');                                                    -- #267
--- ALTER TABLE meal_recipes ADD COLUMN "component_type" component_type;                                                            -- #267
