@@ -29,9 +29,9 @@ var (
 		"household_user_memberships.belongs_to_household",
 		"household_user_memberships.household_roles",
 		"household_user_memberships.default_household",
-		"household_user_memberships.created_on",
-		"household_user_memberships.last_updated_on",
-		"household_user_memberships.archived_on",
+		"household_user_memberships.created_at",
+		"household_user_memberships.last_updated_at",
+		"household_user_memberships.archived_at",
 	}
 )
 
@@ -109,12 +109,12 @@ const getHouseholdMembershipsForUserQuery = `
 		household_user_memberships.belongs_to_household,
 		household_user_memberships.household_roles,
 		household_user_memberships.default_household,
-		household_user_memberships.created_on,
-		household_user_memberships.last_updated_on,
-		household_user_memberships.archived_on
+		household_user_memberships.created_at,
+		household_user_memberships.last_updated_at,
+		household_user_memberships.archived_at
 	FROM household_user_memberships
 	JOIN households ON households.id = household_user_memberships.belongs_to_household
-	WHERE household_user_memberships.archived_on IS NULL
+	WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_user = $1
 `
 
@@ -201,7 +201,7 @@ func (q *SQLQuerier) GetDefaultHouseholdIDForUser(ctx context.Context, userID st
 const markHouseholdAsUserDefaultQuery = `
 	UPDATE household_user_memberships
 	SET default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
-	WHERE archived_on IS NULL
+	WHERE archived_at IS NULL
 	AND belongs_to_user = $3
 `
 
@@ -247,7 +247,7 @@ const userIsMemberOfHouseholdQuery = `
 	SELECT EXISTS ( 
 		SELECT household_user_memberships.id 
 		FROM household_user_memberships 
-		WHERE household_user_memberships.archived_on IS NULL 
+		WHERE household_user_memberships.archived_at IS NULL 
 		AND household_user_memberships.belongs_to_household = $1 
 		AND household_user_memberships.belongs_to_user = $2 
 	)
@@ -326,11 +326,11 @@ func (q *SQLQuerier) ModifyUserPermissions(ctx context.Context, householdID, use
 }
 
 const transferHouseholdOwnershipQuery = `
-	UPDATE households SET belongs_to_user = $1 WHERE archived_on IS NULL AND belongs_to_user = $2 AND id = $3
+	UPDATE households SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_user = $2 AND id = $3
 `
 
 const transferHouseholdMembershipQuery = `
-	UPDATE household_user_memberships SET belongs_to_user = $1 WHERE archived_on IS NULL AND belongs_to_household = $2 AND belongs_to_user = $3
+	UPDATE household_user_memberships SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_household = $2 AND belongs_to_user = $3
 `
 
 // TransferHouseholdOwnership does a thing.
@@ -435,9 +435,9 @@ func (q *SQLQuerier) addUserToHousehold(ctx context.Context, querier database.SQ
 
 const removeUserFromHouseholdQuery = `
 	UPDATE household_user_memberships
-	SET archived_on = extract(epoch from NOW()), 
+	SET archived_at = extract(epoch from NOW()), 
 		default_household = 'false'
-	WHERE household_user_memberships.archived_on IS NULL
+	WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_household = $1 
 	AND household_user_memberships.belongs_to_user = $2
 `

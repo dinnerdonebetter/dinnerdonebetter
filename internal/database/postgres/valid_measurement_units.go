@@ -32,9 +32,9 @@ var (
 		"valid_measurement_units.metric",
 		"valid_measurement_units.imperial",
 		"valid_measurement_units.plural_name",
-		"valid_measurement_units.created_on",
-		"valid_measurement_units.last_updated_on",
-		"valid_measurement_units.archived_on",
+		"valid_measurement_units.created_at",
+		"valid_measurement_units.last_updated_at",
+		"valid_measurement_units.archived_at",
 	}
 )
 
@@ -106,7 +106,7 @@ func (q *SQLQuerier) scanValidMeasurementUnits(ctx context.Context, rows databas
 	return validMeasurementUnits, filteredCount, totalCount, nil
 }
 
-const validMeasurementUnitExistenceQuery = "SELECT EXISTS ( SELECT valid_measurement_units.id FROM valid_measurement_units WHERE valid_measurement_units.archived_on IS NULL AND valid_measurement_units.id = $1 )"
+const validMeasurementUnitExistenceQuery = "SELECT EXISTS ( SELECT valid_measurement_units.id FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL AND valid_measurement_units.id = $1 )"
 
 // ValidMeasurementUnitExists fetches whether a valid measurement unit exists from the database.
 func (q *SQLQuerier) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (exists bool, err error) {
@@ -143,11 +143,11 @@ const getValidMeasurementUnitBaseQuery = `SELECT
 	valid_measurement_units.metric,
 	valid_measurement_units.imperial,
 	valid_measurement_units.plural_name,
-	valid_measurement_units.created_on, 
-	valid_measurement_units.last_updated_on, 
-	valid_measurement_units.archived_on 
+	valid_measurement_units.created_at, 
+	valid_measurement_units.last_updated_at, 
+	valid_measurement_units.archived_at 
 FROM valid_measurement_units 
-WHERE valid_measurement_units.archived_on IS NULL
+WHERE valid_measurement_units.archived_at IS NULL
 `
 
 const getValidMeasurementUnitQuery = getValidMeasurementUnitBaseQuery + `AND valid_measurement_units.id = $1`
@@ -209,12 +209,12 @@ const validMeasurementUnitSearchQuery = `SELECT
 	valid_measurement_units.metric,
 	valid_measurement_units.imperial,
 	valid_measurement_units.plural_name,
-	valid_measurement_units.created_on,
-	valid_measurement_units.last_updated_on,
-	valid_measurement_units.archived_on
+	valid_measurement_units.created_at,
+	valid_measurement_units.last_updated_at,
+	valid_measurement_units.archived_at
 FROM valid_measurement_units
 WHERE valid_measurement_units.name ILIKE $1
-AND valid_measurement_units.archived_on IS NULL
+AND valid_measurement_units.archived_at IS NULL
 LIMIT 50`
 
 // SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
@@ -247,7 +247,7 @@ func (q *SQLQuerier) SearchForValidMeasurementUnits(ctx context.Context, query s
 	return x, nil
 }
 
-const getTotalValidMeasurementUnitsCountQuery = "SELECT COUNT(valid_measurement_units.id) FROM valid_measurement_units WHERE valid_measurement_units.archived_on IS NULL"
+const getTotalValidMeasurementUnitsCountQuery = "SELECT COUNT(valid_measurement_units.id) FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL"
 
 // GetTotalValidMeasurementUnitCount fetches the count of valid measurement units from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalValidMeasurementUnitCount(ctx context.Context) (uint64, error) {
@@ -305,7 +305,7 @@ func (q *SQLQuerier) buildGetValidMeasurementUnitsWithIDsQuery(ctx context.Conte
 
 	withIDsWhere := squirrel.Eq{
 		"valid_measurement_units.id":          ids,
-		"valid_measurement_units.archived_on": nil,
+		"valid_measurement_units.archived_at": nil,
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(validMeasurementUnitsTableColumns...).
@@ -419,8 +419,8 @@ UPDATE valid_measurement_units SET
 	metric = $6,
 	imperial = $7,
 	plural_name = $8,
-	last_updated_on = extract(epoch FROM NOW()) 
-WHERE archived_on IS NULL AND id = $9
+	last_updated_at = extract(epoch FROM NOW()) 
+WHERE archived_at IS NULL AND id = $9
 `
 
 // UpdateValidMeasurementUnit updates a particular valid measurement unit.
@@ -456,7 +456,7 @@ func (q *SQLQuerier) UpdateValidMeasurementUnit(ctx context.Context, updated *ty
 	return nil
 }
 
-const archiveValidMeasurementUnitQuery = "UPDATE valid_measurement_units SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
+const archiveValidMeasurementUnitQuery = "UPDATE valid_measurement_units SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.
 func (q *SQLQuerier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {

@@ -37,25 +37,25 @@ var (
 		"households.payment_processor_customer_id",
 		"households.subscription_plan_id",
 		"households.time_zone",
-		"households.created_on",
-		"households.last_updated_on",
-		"households.archived_on",
+		"households.created_at",
+		"households.last_updated_at",
+		"households.archived_at",
 		"households.belongs_to_user",
 		"users.id",
 		"users.username",
 		"users.email_address",
 		"users.avatar_src",
 		"users.requires_password_change",
-		"users.password_last_changed_on",
-		"users.two_factor_secret_verified_on",
+		"users.password_last_changed_at",
+		"users.two_factor_secret_verified_at",
 		"users.service_roles",
 		"users.user_account_status",
 		"users.user_account_status_explanation",
 		"users.birth_day",
 		"users.birth_month",
-		"users.created_on",
-		"users.last_updated_on",
-		"users.archived_on",
+		"users.created_at",
+		"users.last_updated_at",
+		"users.archived_at",
 	}
 )
 
@@ -92,7 +92,7 @@ func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, i
 		&membership.BelongsToUser.EmailAddress,
 		&membership.BelongsToUser.AvatarSrc,
 		&membership.BelongsToUser.RequiresPasswordChange,
-		&membership.BelongsToUser.PasswordLastChangedOn,
+		&membership.BelongsToUser.PasswordLastChangedAt,
 		&membership.BelongsToUser.TwoFactorSecretVerifiedAt,
 		&rawServiceRoles,
 		&membership.BelongsToUser.AccountStatus,
@@ -185,38 +185,38 @@ const getHouseholdQuery = `
 		households.payment_processor_customer_id,
 		households.subscription_plan_id,
 		households.time_zone,
-		households.created_on,
-		households.last_updated_on,
-		households.archived_on,
+		households.created_at,
+		households.last_updated_at,
+		households.archived_at,
 		households.belongs_to_user,
 		users.id,
 		users.username,
 		users.email_address,
 		users.avatar_src,
 		users.requires_password_change,
-		users.password_last_changed_on,
-		users.two_factor_secret_verified_on,
+		users.password_last_changed_at,
+		users.two_factor_secret_verified_at,
 		users.service_roles,
 		users.user_account_status,
 		users.user_account_status_explanation,
 		users.birth_day,
 		users.birth_month,
-		users.created_on,
-		users.last_updated_on,
-		users.archived_on,
+		users.created_at,
+		users.last_updated_at,
+		users.archived_at,
 		household_user_memberships.id,
 		household_user_memberships.belongs_to_user,
 		household_user_memberships.belongs_to_household,
 		household_user_memberships.household_roles,
 		household_user_memberships.default_household,
-		household_user_memberships.created_on,
-		household_user_memberships.last_updated_on,
-		household_user_memberships.archived_on
+		household_user_memberships.created_at,
+		household_user_memberships.last_updated_at,
+		household_user_memberships.archived_at
 	FROM household_user_memberships
 	JOIN households ON household_user_memberships.belongs_to_household = households.id
 	JOIN users ON household_user_memberships.belongs_to_user = users.id
-	WHERE households.archived_on IS NULL
-	AND household_user_memberships.archived_on IS NULL
+	WHERE households.archived_at IS NULL
+	AND household_user_memberships.archived_at IS NULL
 	AND households.id = $1
 `
 
@@ -273,37 +273,37 @@ const getHouseholdByIDQuery = `
 		households.payment_processor_customer_id,
 		households.subscription_plan_id,
 		households.time_zone,
-		households.created_on,
-		households.last_updated_on,
-		households.archived_on,
+		households.created_at,
+		households.last_updated_at,
+		households.archived_at,
 		households.belongs_to_user,
         users.id,
         users.username,
         users.email_address,
         users.avatar_src,
         users.requires_password_change,
-        users.password_last_changed_on,
-        users.two_factor_secret_verified_on,
+        users.password_last_changed_at,
+        users.two_factor_secret_verified_at,
         users.service_roles,
         users.user_account_status,
         users.user_account_status_explanation,
         users.birth_day,
         users.birth_month,
-        users.created_on,
-        users.last_updated_on,
-        users.archived_on,
+        users.created_at,
+        users.last_updated_at,
+        users.archived_at,
 		household_user_memberships.id,
 		household_user_memberships.belongs_to_user,
 		household_user_memberships.belongs_to_household,
 		household_user_memberships.household_roles,
 		household_user_memberships.default_household,
-		household_user_memberships.created_on,
-		household_user_memberships.last_updated_on,
-		household_user_memberships.archived_on
+		household_user_memberships.created_at,
+		household_user_memberships.last_updated_at,
+		household_user_memberships.archived_at
 	FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 	JOIN users ON household_user_memberships.belongs_to_user = users.id
-	WHERE households.archived_on IS NULL
+	WHERE households.archived_at IS NULL
 	AND households.id = $1
 `
 
@@ -346,7 +346,7 @@ func (q *SQLQuerier) GetHouseholdByID(ctx context.Context, householdID string) (
 }
 
 const getAllHouseholdsCountQuery = `
-	SELECT COUNT(households.id) FROM households WHERE households.archived_on IS NULL
+	SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL
 `
 
 // GetAllHouseholdsCount fetches the count of households from the database that meet a particular filter.
@@ -395,8 +395,8 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 
 	if !forAdmin {
 		where := squirrel.Eq{
-			"households.archived_on":                 nil,
-			"household_user_memberships.archived_on": nil,
+			"households.archived_at":                 nil,
+			"household_user_memberships.archived_at": nil,
 		}
 
 		if userID != "" {
@@ -557,8 +557,8 @@ SET
     contact_email = $2,
     contact_phone = $3,
     time_zone = $4,
-    last_updated_on = extract(epoch FROM NOW()) 
-WHERE archived_on IS NULL 
+    last_updated_at = extract(epoch FROM NOW()) 
+WHERE archived_at IS NULL 
   AND belongs_to_user = $5 
   AND id = $6
 `
@@ -595,7 +595,7 @@ func (q *SQLQuerier) UpdateHousehold(ctx context.Context, updated *types.Househo
 	return nil
 }
 
-const archiveHouseholdQuery = `UPDATE households SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2`
+const archiveHouseholdQuery = `UPDATE households SET last_updated_at = extract(epoch FROM NOW()), archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2`
 
 // ArchiveHousehold archives a household from the database by its ID.
 func (q *SQLQuerier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {

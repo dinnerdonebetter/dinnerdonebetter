@@ -89,7 +89,7 @@ type (
 		Name        *string `json:"name"`
 		Description *string `json:"description"`
 		IconPath    *string `json:"iconPath"`
-		CreatedOn   *uint64 `json:"createdAt"`
+		CreatedAt   *uint64 `json:"createdAt"`
 		Volumetric  *bool   `json:"volumetric"`
 		Universal   *bool   `json:"universal"`
 		Metric      *bool   `json:"metric"`

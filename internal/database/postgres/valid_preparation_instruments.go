@@ -33,20 +33,20 @@ var (
 		"valid_preparations.restrict_to_ingredients",
 		"valid_preparations.zero_ingredients_allowable",
 		"valid_preparations.past_tense",
-		"valid_preparations.created_on",
-		"valid_preparations.last_updated_on",
-		"valid_preparations.archived_on",
+		"valid_preparations.created_at",
+		"valid_preparations.last_updated_at",
+		"valid_preparations.archived_at",
 		"valid_instruments.id",
 		"valid_instruments.name",
 		"valid_instruments.plural_name",
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
-		"valid_instruments.created_on",
-		"valid_instruments.last_updated_on",
-		"valid_instruments.archived_on",
-		"valid_preparation_instruments.created_on",
-		"valid_preparation_instruments.last_updated_on",
-		"valid_preparation_instruments.archived_on",
+		"valid_instruments.created_at",
+		"valid_instruments.last_updated_at",
+		"valid_instruments.archived_at",
+		"valid_preparation_instruments.created_at",
+		"valid_preparation_instruments.last_updated_at",
+		"valid_preparation_instruments.archived_at",
 	}
 )
 
@@ -130,7 +130,7 @@ func (q *SQLQuerier) scanValidPreparationInstruments(ctx context.Context, rows d
 	return validPreparationInstruments, filteredCount, totalCount, nil
 }
 
-const validPreparationInstrumentExistenceQuery = "SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_on IS NULL AND valid_preparation_instruments.id = $1 )"
+const validPreparationInstrumentExistenceQuery = "SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = $1 )"
 
 // ValidPreparationInstrumentExists fetches whether a valid ingredient preparation exists from the database.
 func (q *SQLQuerier) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
@@ -168,26 +168,26 @@ const getValidPreparationInstrumentQuery = `SELECT
 	valid_preparations.restrict_to_ingredients,
 	valid_preparations.zero_ingredients_allowable,
 	valid_preparations.past_tense,
-	valid_preparations.created_on,
-	valid_preparations.last_updated_on,
-	valid_preparations.archived_on,
+	valid_preparations.created_at,
+	valid_preparations.last_updated_at,
+	valid_preparations.archived_at,
 	valid_instruments.id,
 	valid_instruments.name,
     valid_instruments.plural_name,
 	valid_instruments.description,
 	valid_instruments.icon_path,
-	valid_instruments.created_on,
-	valid_instruments.last_updated_on,
-	valid_instruments.archived_on,
-	valid_preparation_instruments.created_on,
-	valid_preparation_instruments.last_updated_on,
-	valid_preparation_instruments.archived_on
+	valid_instruments.created_at,
+	valid_instruments.last_updated_at,
+	valid_instruments.archived_at,
+	valid_preparation_instruments.created_at,
+	valid_preparation_instruments.last_updated_at,
+	valid_preparation_instruments.archived_at
 FROM
   valid_preparation_instruments
 JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
 JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
-  valid_preparation_instruments.archived_on IS NULL
+  valid_preparation_instruments.archived_at IS NULL
   AND valid_preparation_instruments.id = $1
 `
 
@@ -218,7 +218,7 @@ func (q *SQLQuerier) GetValidPreparationInstrument(ctx context.Context, validPre
 	return validPreparationInstrument, nil
 }
 
-const getTotalValidPreparationInstrumentsCountQuery = "SELECT COUNT(valid_preparation_instruments.id) FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_on IS NULL"
+const getTotalValidPreparationInstrumentsCountQuery = "SELECT COUNT(valid_preparation_instruments.id) FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL"
 
 // GetTotalValidPreparationInstrumentCount fetches the count of valid ingredient preparations from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalValidPreparationInstrumentCount(ctx context.Context) (uint64, error) {
@@ -291,7 +291,7 @@ func (q *SQLQuerier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx
 		Join(validPreparationsOnValidPreparationInstrumentsJoinClause).
 		Where(squirrel.Eq{
 			fmt.Sprintf("valid_preparation_instruments.%s", column): ids,
-			"valid_preparation_instruments.archived_on":             nil,
+			"valid_preparation_instruments.archived_at":             nil,
 		}).
 		Limit(uint64(limit)).
 		ToSql()
@@ -440,7 +440,7 @@ func (q *SQLQuerier) CreateValidPreparationInstrument(ctx context.Context, input
 	return x, nil
 }
 
-const updateValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4"
+const updateValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $4"
 
 // UpdateValidPreparationInstrument updates a particular valid ingredient preparation.
 func (q *SQLQuerier) UpdateValidPreparationInstrument(ctx context.Context, updated *types.ValidPreparationInstrument) error {
@@ -470,7 +470,7 @@ func (q *SQLQuerier) UpdateValidPreparationInstrument(ctx context.Context, updat
 	return nil
 }
 
-const archiveValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
+const archiveValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidPreparationInstrument archives a valid ingredient preparation from the database by its ID.
 func (q *SQLQuerier) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {

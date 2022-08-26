@@ -23,9 +23,9 @@ var (
 		"valid_instruments.plural_name",
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
-		"valid_instruments.created_on",
-		"valid_instruments.last_updated_on",
-		"valid_instruments.archived_on",
+		"valid_instruments.created_at",
+		"valid_instruments.last_updated_at",
+		"valid_instruments.archived_at",
 	}
 )
 
@@ -93,7 +93,7 @@ func (q *SQLQuerier) scanValidInstruments(ctx context.Context, rows database.Res
 	return validInstruments, filteredCount, totalCount, nil
 }
 
-const validInstrumentExistenceQuery = "SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.id = $1 )"
+const validInstrumentExistenceQuery = "SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = $1 )"
 
 // ValidInstrumentExists fetches whether a valid instrument exists from the database.
 func (q *SQLQuerier) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
@@ -126,11 +126,11 @@ const getValidInstrumentBaseQuery = `SELECT
 	valid_instruments.plural_name,
 	valid_instruments.description,
 	valid_instruments.icon_path,
-	valid_instruments.created_on,
-	valid_instruments.last_updated_on,
-	valid_instruments.archived_on
+	valid_instruments.created_at,
+	valid_instruments.last_updated_at,
+	valid_instruments.archived_at
 FROM valid_instruments
-WHERE valid_instruments.archived_on IS NULL
+WHERE valid_instruments.archived_at IS NULL
 `
 
 const getValidInstrumentQuery = getValidInstrumentBaseQuery + `AND valid_instruments.id = $1`
@@ -182,7 +182,7 @@ func (q *SQLQuerier) GetRandomValidInstrument(ctx context.Context) (*types.Valid
 	return validInstrument, nil
 }
 
-const validInstrumentSearchQuery = `SELECT valid_instruments.id, valid_instruments.name, valid_instruments.plural_name, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_on, valid_instruments.last_updated_on, valid_instruments.archived_on FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50`
+const validInstrumentSearchQuery = `SELECT valid_instruments.id, valid_instruments.name, valid_instruments.plural_name, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_at, valid_instruments.last_updated_at, valid_instruments.archived_at FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50`
 
 // SearchForValidInstruments fetches a valid instrument from the database.
 func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
@@ -246,7 +246,7 @@ func (q *SQLQuerier) SearchForValidInstrumentsForPreparation(ctx context.Context
 	return validInstruments, nil
 }
 
-const getTotalValidInstrumentsCountQuery = "SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL"
+const getTotalValidInstrumentsCountQuery = "SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_at IS NULL"
 
 // GetTotalValidInstrumentCount fetches the count of valid instruments from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalValidInstrumentCount(ctx context.Context) (uint64, error) {
@@ -306,7 +306,7 @@ func (q *SQLQuerier) buildGetValidInstrumentsWithIDsQuery(ctx context.Context, l
 
 	withIDsWhere := squirrel.Eq{
 		"valid_instruments.id":          ids,
-		"valid_instruments.archived_on": nil,
+		"valid_instruments.archived_at": nil,
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(validInstrumentsTableColumns...).
@@ -399,7 +399,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 	return x, nil
 }
 
-const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $5"
+const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $5"
 
 // UpdateValidInstrument updates a particular valid instrument.
 func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
@@ -430,7 +430,7 @@ func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.V
 	return nil
 }
 
-const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
+const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
 func (q *SQLQuerier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {

@@ -26,9 +26,9 @@ var (
 		"meal_plans.voting_deadline",
 		"meal_plans.starts_at",
 		"meal_plans.ends_at",
-		"meal_plans.created_on",
-		"meal_plans.last_updated_on",
-		"meal_plans.archived_on",
+		"meal_plans.created_at",
+		"meal_plans.last_updated_at",
+		"meal_plans.archived_at",
 		"meal_plans.belongs_to_household",
 	}
 )
@@ -171,7 +171,7 @@ func (q *SQLQuerier) scanMealPlans(ctx context.Context, rows database.ResultIter
 	return mealPlans, filteredCount, totalCount, nil
 }
 
-const mealPlanExistenceQuery = "SELECT EXISTS ( SELECT meal_plans.id FROM meal_plans WHERE meal_plans.archived_on IS NULL AND meal_plans.id = $1 )"
+const mealPlanExistenceQuery = "SELECT EXISTS ( SELECT meal_plans.id FROM meal_plans WHERE meal_plans.archived_at IS NULL AND meal_plans.id = $1 )"
 
 // MealPlanExists fetches whether a meal plan exists from the database.
 func (q *SQLQuerier) MealPlanExists(ctx context.Context, mealPlanID, householdID string) (exists bool, err error) {
@@ -211,9 +211,9 @@ const baseGetMealPlanQuery = `SELECT
 	meal_plans.voting_deadline,
 	meal_plans.starts_at,
 	meal_plans.ends_at,
-	meal_plans.created_on,
-	meal_plans.last_updated_on,
-	meal_plans.archived_on,
+	meal_plans.created_at,
+	meal_plans.last_updated_at,
+	meal_plans.archived_at,
 	meal_plans.belongs_to_household,
     meal_plan_options.id,
     meal_plan_options.day,
@@ -223,31 +223,31 @@ const baseGetMealPlanQuery = `SELECT
     meal_plan_options.tiebroken,
     meal_plan_options.meal_id,
     meal_plan_options.notes,
-    meal_plan_options.created_on,
-    meal_plan_options.last_updated_on,
-	meal_plan_options.archived_on,
+    meal_plan_options.created_at,
+    meal_plan_options.last_updated_at,
+	meal_plan_options.archived_at,
     meal_plan_options.belongs_to_meal_plan,
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,
 	meal_plan_option_votes.abstain,
 	meal_plan_option_votes.notes,
 	meal_plan_option_votes.by_user,
-	meal_plan_option_votes.created_on,
-	meal_plan_option_votes.last_updated_on,
-	meal_plan_option_votes.archived_on,
+	meal_plan_option_votes.created_at,
+	meal_plan_option_votes.last_updated_at,
+	meal_plan_option_votes.archived_at,
 	meal_plan_option_votes.belongs_to_meal_plan_option,
 	meals.id,
 	meals.name,
 	meals.description,
-	meals.created_on,
-	meals.last_updated_on,
-	meals.archived_on,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
 	meals.created_by_user
 FROM meal_plans 
 	FULL OUTER JOIN meal_plan_options ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
 	FULL OUTER JOIN meal_plan_option_votes ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
 	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
-WHERE meal_plans.archived_on IS NULL 
+WHERE meal_plans.archived_at IS NULL 
 AND meal_plans.id = $1
 AND meal_plans.belongs_to_household = $2
 `
@@ -336,7 +336,7 @@ func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID, householdID st
 	return q.getMealPlan(ctx, mealPlanID, householdID, false)
 }
 
-const getTotalMealPlansCountQuery = "SELECT COUNT(meal_plans.id) FROM meal_plans WHERE meal_plans.archived_on IS NULL"
+const getTotalMealPlansCountQuery = "SELECT COUNT(meal_plans.id) FROM meal_plans WHERE meal_plans.archived_at IS NULL"
 
 // GetTotalMealPlanCount fetches the count of meal plans from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalMealPlanCount(ctx context.Context) (uint64, error) {
@@ -394,7 +394,7 @@ func (q *SQLQuerier) buildGetMealPlansWithIDsQuery(ctx context.Context, househol
 
 	withIDsWhere := squirrel.Eq{
 		"meal_plans.id":          ids,
-		"meal_plans.archived_on": nil,
+		"meal_plans.archived_at": nil,
 	}
 
 	if householdID != "" {
@@ -515,7 +515,7 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	return x, nil
 }
 
-const updateMealPlanQuery = "UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, starts_at = $4, ends_at = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $6 AND id = $7"
+const updateMealPlanQuery = "UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, starts_at = $4, ends_at = $5, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_household = $6 AND id = $7"
 
 // UpdateMealPlan updates a particular meal plan.
 func (q *SQLQuerier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
@@ -549,7 +549,7 @@ func (q *SQLQuerier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan
 	return nil
 }
 
-const archiveMealPlanQuery = "UPDATE meal_plans SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $1 AND id = $2"
+const archiveMealPlanQuery = "UPDATE meal_plans SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_household = $1 AND id = $2"
 
 // ArchiveMealPlan archives a meal plan from the database by its ID.
 func (q *SQLQuerier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {
@@ -616,7 +616,7 @@ func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal types.MealNa
 }
 
 const finalizeMealPlanQuery = `
-	UPDATE meal_plans SET status = $1 WHERE archived_on IS NULL AND id = $2
+	UPDATE meal_plans SET status = $1 WHERE archived_at IS NULL AND id = $2
 `
 
 // AttemptToFinalizeMealPlan finalizes a meal plan if all of its options have a selection.
@@ -741,12 +741,12 @@ SELECT
 	meal_plans.voting_deadline,
 	meal_plans.starts_at,
 	meal_plans.ends_at,
-	meal_plans.created_on,
-	meal_plans.last_updated_on,
-	meal_plans.archived_on,
+	meal_plans.created_at,
+	meal_plans.last_updated_at,
+	meal_plans.archived_at,
 	meal_plans.belongs_to_household
 FROM meal_plans
-WHERE meal_plans.archived_on IS NULL 
+WHERE meal_plans.archived_at IS NULL 
 	AND meal_plans.status = 'awaiting_votes'
 	AND to_timestamp(voting_deadline)::date < now()
 GROUP BY meal_plans.id

@@ -37,7 +37,7 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.AvatarSrc,
 			user.HashedPassword,
 			user.RequiresPasswordChange,
-			user.PasswordLastChangedOn,
+			user.PasswordLastChangedAt,
 			user.TwoFactorSecret,
 			user.TwoFactorSecretVerifiedAt,
 			strings.Join(user.ServiceRoles, serviceRolesSeparator),

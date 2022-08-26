@@ -33,9 +33,9 @@ var (
 		"webhooks.events",
 		"webhooks.data_types",
 		"webhooks.topics",
-		"webhooks.created_on",
-		"webhooks.last_updated_on",
-		"webhooks.archived_on",
+		"webhooks.created_at",
+		"webhooks.last_updated_at",
+		"webhooks.archived_at",
 		"webhooks.belongs_to_household",
 	}
 )
@@ -129,7 +129,7 @@ func (q *SQLQuerier) scanWebhooks(ctx context.Context, rows database.ResultItera
 	return webhooks, filteredCount, totalCount, nil
 }
 
-const webhookExistenceQuery = "SELECT EXISTS ( SELECT webhooks.id FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2 )"
+const webhookExistenceQuery = "SELECT EXISTS ( SELECT webhooks.id FROM webhooks WHERE webhooks.archived_at IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2 )"
 
 // WebhookExists fetches whether a webhook exists from the database.
 func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
@@ -164,7 +164,7 @@ func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, householdID s
 }
 
 const getWebhookQuery = `
-	SELECT webhooks.id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_household FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2
+	SELECT webhooks.id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_at, webhooks.last_updated_at, webhooks.archived_at, webhooks.belongs_to_household FROM webhooks WHERE webhooks.archived_at IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2
 `
 
 // GetWebhook fetches a webhook from the database.
@@ -200,7 +200,7 @@ func (q *SQLQuerier) GetWebhook(ctx context.Context, webhookID, householdID stri
 }
 
 const getAllWebhooksCountQuery = `
-	SELECT COUNT(webhooks.id) FROM webhooks WHERE webhooks.archived_on IS NULL
+	SELECT COUNT(webhooks.id) FROM webhooks WHERE webhooks.archived_at IS NULL
 `
 
 // GetAllWebhooksCount fetches the count of webhooks from the database that meet a particular filter.
@@ -310,9 +310,9 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 
 const archiveWebhookQuery = `
 UPDATE webhooks SET
-	last_updated_on = extract(epoch FROM NOW()), 
-	archived_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL 
+	last_updated_at = extract(epoch FROM NOW()), 
+	archived_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL 
 AND belongs_to_household = $1
 AND id = $2
 `

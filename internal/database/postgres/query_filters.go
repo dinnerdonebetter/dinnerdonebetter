@@ -27,19 +27,19 @@ func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBui
 	}
 
 	if qf.CreatedAfter != nil && *qf.CreatedAfter > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "created_on"): qf.CreatedAfter})
+		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "created_at"): qf.CreatedAfter})
 	}
 
 	if qf.CreatedBefore != nil && *qf.CreatedBefore > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "created_on"): qf.CreatedBefore})
+		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "created_at"): qf.CreatedBefore})
 	}
 
 	if qf.UpdatedAfter != nil && *qf.UpdatedAfter > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "last_updated_on"): qf.UpdatedAfter})
+		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "last_updated_at"): qf.UpdatedAfter})
 	}
 
 	if qf.UpdatedBefore != nil && *qf.UpdatedBefore > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "last_updated_on"): qf.UpdatedBefore})
+		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "last_updated_at"): qf.UpdatedBefore})
 	}
 
 	return queryBuilder
@@ -52,19 +52,19 @@ func applyFilterToSubCountQueryBuilder(qf *types.QueryFilter, tableName string, 
 	}
 
 	if qf.CreatedAfter != nil && *qf.CreatedAfter > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "created_on"): qf.CreatedAfter})
+		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "created_at"): qf.CreatedAfter})
 	}
 
 	if qf.CreatedBefore != nil && *qf.CreatedBefore > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "created_on"): qf.CreatedBefore})
+		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "created_at"): qf.CreatedBefore})
 	}
 
 	if qf.UpdatedAfter != nil && *qf.UpdatedAfter > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "last_updated_on"): qf.UpdatedAfter})
+		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "last_updated_at"): qf.UpdatedAfter})
 	}
 
 	if qf.UpdatedBefore != nil && *qf.UpdatedBefore > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "last_updated_on"): qf.UpdatedBefore})
+		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "last_updated_at"): qf.UpdatedBefore})
 	}
 
 	return queryBuilder

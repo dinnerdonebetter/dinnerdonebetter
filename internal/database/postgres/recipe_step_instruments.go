@@ -29,9 +29,9 @@ var (
 		"valid_instruments.plural_name",
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
-		"valid_instruments.created_on",
-		"valid_instruments.last_updated_on",
-		"valid_instruments.archived_on",
+		"valid_instruments.created_at",
+		"valid_instruments.last_updated_at",
+		"valid_instruments.archived_at",
 		"recipe_step_instruments.recipe_step_product_id",
 		"recipe_step_instruments.name",
 		"recipe_step_instruments.product_of_recipe_step",
@@ -40,9 +40,9 @@ var (
 		"recipe_step_instruments.optional",
 		"recipe_step_instruments.minimum_quantity",
 		"recipe_step_instruments.maximum_quantity",
-		"recipe_step_instruments.created_on",
-		"recipe_step_instruments.last_updated_on",
-		"recipe_step_instruments.archived_on",
+		"recipe_step_instruments.created_at",
+		"recipe_step_instruments.last_updated_at",
+		"recipe_step_instruments.archived_at",
 		"recipe_step_instruments.belongs_to_recipe_step",
 	}
 
@@ -135,7 +135,7 @@ func (q *SQLQuerier) scanRecipeStepInstruments(ctx context.Context, rows databas
 	return recipeStepInstruments, filteredCount, totalCount, nil
 }
 
-const recipeStepInstrumentExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_instruments.id FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_on IS NULL AND recipe_step_instruments.belongs_to_recipe_step = $1 AND recipe_step_instruments.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5 )"
+const recipeStepInstrumentExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_instruments.id FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_at IS NULL AND recipe_step_instruments.belongs_to_recipe_step = $1 AND recipe_step_instruments.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )"
 
 // RecipeStepInstrumentExists fetches whether a recipe step instrument exists from the database.
 func (q *SQLQuerier) RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (exists bool, err error) {
@@ -185,9 +185,9 @@ const getRecipeStepInstrumentQuery = `SELECT
     valid_instruments.plural_name,
 	valid_instruments.description,
 	valid_instruments.icon_path,
-	valid_instruments.created_on,
-	valid_instruments.last_updated_on,
-	valid_instruments.archived_on,
+	valid_instruments.created_at,
+	valid_instruments.last_updated_at,
+	valid_instruments.archived_at,
 	recipe_step_instruments.recipe_step_product_id,
 	recipe_step_instruments.name,
 	recipe_step_instruments.product_of_recipe_step,
@@ -196,21 +196,21 @@ const getRecipeStepInstrumentQuery = `SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
-	recipe_step_instruments.created_on,
-	recipe_step_instruments.last_updated_on,
-	recipe_step_instruments.archived_on,
+	recipe_step_instruments.created_at,
+	recipe_step_instruments.last_updated_at,
+	recipe_step_instruments.archived_at,
 	recipe_step_instruments.belongs_to_recipe_step
 FROM recipe_step_instruments
 LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
 JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-WHERE recipe_step_instruments.archived_on IS NULL
+WHERE recipe_step_instruments.archived_at IS NULL
   AND recipe_step_instruments.belongs_to_recipe_step = $1
   AND recipe_step_instruments.id = $2
-  AND recipe_steps.archived_on IS NULL
+  AND recipe_steps.archived_at IS NULL
   AND recipe_steps.belongs_to_recipe = $3
   AND recipe_steps.id = $4
-  AND recipes.archived_on IS NULL
+  AND recipes.archived_at IS NULL
   AND recipes.id = $5`
 
 // GetRecipeStepInstrument fetches a recipe step instrument from the database.
@@ -256,7 +256,7 @@ func (q *SQLQuerier) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 	return recipeStepInstrument, nil
 }
 
-const getTotalRecipeStepInstrumentsCountQuery = "SELECT COUNT(recipe_step_instruments.id) FROM recipe_step_instruments WHERE recipe_step_instruments.archived_on IS NULL"
+const getTotalRecipeStepInstrumentsCountQuery = "SELECT COUNT(recipe_step_instruments.id) FROM recipe_step_instruments WHERE recipe_step_instruments.archived_at IS NULL"
 
 // GetTotalRecipeStepInstrumentCount fetches the count of recipe step instruments from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalRecipeStepInstrumentCount(ctx context.Context) (uint64, error) {
@@ -326,7 +326,7 @@ func (q *SQLQuerier) buildGetRecipeStepInstrumentsWithIDsQuery(ctx context.Conte
 
 	withIDsWhere := squirrel.Eq{
 		"recipe_step_instruments.id":                     ids,
-		"recipe_step_instruments.archived_on":            nil,
+		"recipe_step_instruments.archived_at":            nil,
 		"recipe_step_instruments.belongs_to_recipe_step": recipeStepID,
 	}
 
@@ -392,9 +392,9 @@ const getRecipeStepInstrumentsForRecipeQuery = `SELECT
 	valid_instruments.plural_name,
 	valid_instruments.description,
 	valid_instruments.icon_path,
-	valid_instruments.created_on,
-	valid_instruments.last_updated_on,
-	valid_instruments.archived_on,
+	valid_instruments.created_at,
+	valid_instruments.last_updated_at,
+	valid_instruments.archived_at,
 	recipe_step_instruments.recipe_step_product_id,
 	recipe_step_instruments.name,
 	recipe_step_instruments.product_of_recipe_step,
@@ -403,18 +403,18 @@ const getRecipeStepInstrumentsForRecipeQuery = `SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
-	recipe_step_instruments.created_on,
-	recipe_step_instruments.last_updated_on,
-	recipe_step_instruments.archived_on,
+	recipe_step_instruments.created_at,
+	recipe_step_instruments.last_updated_at,
+	recipe_step_instruments.archived_at,
 	recipe_step_instruments.belongs_to_recipe_step
 FROM recipe_step_instruments
 LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
 JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-WHERE recipe_step_instruments.archived_on IS NULL
-AND recipe_steps.archived_on IS NULL
+WHERE recipe_step_instruments.archived_at IS NULL
+AND recipe_steps.archived_at IS NULL
 AND recipe_steps.belongs_to_recipe = $1
-AND recipes.archived_on IS NULL 
+AND recipes.archived_at IS NULL 
 AND recipes.id = $2
 `
 
@@ -523,8 +523,8 @@ const updateRecipeStepInstrumentQuery = `UPDATE recipe_step_instruments SET
    optional = $7,
    minimum_quantity = $8,
    maximum_quantity = $9,
-   last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL
+   last_updated_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL
   AND belongs_to_recipe_step = $10
   AND id = $11
 `
@@ -569,7 +569,7 @@ func (q *SQLQuerier) UpdateRecipeStepInstrument(ctx context.Context, updated *ty
 	return nil
 }
 
-const archiveRecipeStepInstrumentQuery = "UPDATE recipe_step_instruments SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
+const archiveRecipeStepInstrumentQuery = "UPDATE recipe_step_instruments SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
 
 // ArchiveRecipeStepInstrument archives a recipe step instrument from the database by its ID.
 func (q *SQLQuerier) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error {

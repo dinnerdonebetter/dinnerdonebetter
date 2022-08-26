@@ -46,7 +46,7 @@ func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, house
 				&y.BelongsToUser.EmailAddress,
 				&y.BelongsToUser.AvatarSrc,
 				&y.BelongsToUser.RequiresPasswordChange,
-				&y.BelongsToUser.PasswordLastChangedOn,
+				&y.BelongsToUser.PasswordLastChangedAt,
 				&y.BelongsToUser.TwoFactorSecretVerifiedAt,
 				strings.Join(y.BelongsToUser.ServiceRoles, serviceRolesSeparator),
 				&y.BelongsToUser.AccountStatus,

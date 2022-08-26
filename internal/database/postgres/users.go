@@ -29,17 +29,17 @@ var (
 		"users.avatar_src",
 		"users.hashed_password",
 		"users.requires_password_change",
-		"users.password_last_changed_on",
+		"users.password_last_changed_at",
 		"users.two_factor_secret",
-		"users.two_factor_secret_verified_on",
+		"users.two_factor_secret_verified_at",
 		"users.service_roles",
 		"users.user_account_status",
 		"users.user_account_status_explanation",
 		"users.birth_day",
 		"users.birth_month",
-		"users.created_on",
-		"users.last_updated_on",
-		"users.archived_on",
+		"users.created_at",
+		"users.last_updated_at",
+		"users.archived_at",
 	}
 )
 
@@ -65,7 +65,7 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 		&user.AvatarSrc,
 		&user.HashedPassword,
 		&user.RequiresPasswordChange,
-		&user.PasswordLastChangedOn,
+		&user.PasswordLastChangedAt,
 		&user.TwoFactorSecret,
 		&user.TwoFactorSecretVerifiedAt,
 		&rawRoles,
@@ -132,24 +132,24 @@ const getUserByIDQuery = `
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
-		users.password_last_changed_on,
+		users.password_last_changed_at,
 		users.two_factor_secret,
-		users.two_factor_secret_verified_on,
+		users.two_factor_secret_verified_at,
 		users.service_roles,
 		users.user_account_status,
 		users.user_account_status_explanation,
 		users.birth_day,
 		users.birth_month,
-		users.created_on,
-		users.last_updated_on,
-		users.archived_on
+		users.created_at,
+		users.last_updated_at,
+		users.archived_at
 	FROM users
-	WHERE users.archived_on IS NULL
+	WHERE users.archived_at IS NULL
 	AND users.id = $1
 `
 
 const getUserWithVerified2FAQuery = getUserByIDQuery + `
-	AND users.two_factor_secret_verified_on IS NOT NULL
+	AND users.two_factor_secret_verified_at IS NOT NULL
 `
 
 // getUser fetches a user.
@@ -184,7 +184,7 @@ func (q *SQLQuerier) getUser(ctx context.Context, userID string, withVerifiedTOT
 }
 
 const userHasStatusQuery = `
-	SELECT EXISTS ( SELECT users.id FROM users WHERE users.archived_on IS NULL AND users.id = $1 AND (users.user_account_status = $2 OR users.user_account_status = $3) )
+	SELECT EXISTS ( SELECT users.id FROM users WHERE users.archived_at IS NULL AND users.id = $1 AND (users.user_account_status = $2 OR users.user_account_status = $3) )
 `
 
 // UserHasStatus fetches whether an user has a particular status.
@@ -252,19 +252,19 @@ const getUserByUsernameQuery = `
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
-		users.password_last_changed_on,
+		users.password_last_changed_at,
 		users.two_factor_secret,
-		users.two_factor_secret_verified_on,
+		users.two_factor_secret_verified_at,
 		users.service_roles,
 		users.user_account_status,
 		users.user_account_status_explanation,
 		users.birth_day,
 		users.birth_month,
-		users.created_on,
-		users.last_updated_on,
-		users.archived_on
+		users.created_at,
+		users.last_updated_at,
+		users.archived_at
 	FROM users
-	WHERE users.archived_on IS NULL
+	WHERE users.archived_at IS NULL
 	AND users.username = $1
 `
 
@@ -304,22 +304,22 @@ const getAdminUserByUsernameQuery = `
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
-		users.password_last_changed_on,
+		users.password_last_changed_at,
 		users.two_factor_secret,
-		users.two_factor_secret_verified_on,
+		users.two_factor_secret_verified_at,
 		users.service_roles,
 		users.user_account_status,
 		users.user_account_status_explanation,
 		users.birth_day,
 		users.birth_month,
-		users.created_on,
-		users.last_updated_on,
-		users.archived_on
+		users.created_at,
+		users.last_updated_at,
+		users.archived_at
 	FROM users
-	WHERE users.archived_on IS NULL
+	WHERE users.archived_at IS NULL
 	AND users.service_roles ILIKE '%service_admin%'
 	AND users.username = $1
-	AND users.two_factor_secret_verified_on IS NOT NULL
+	AND users.two_factor_secret_verified_at IS NOT NULL
 `
 
 // GetAdminUserByUsername fetches a user by their username.
@@ -358,19 +358,19 @@ const getUserIDByEmailQuery = `
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
-		users.password_last_changed_on,
+		users.password_last_changed_at,
 		users.two_factor_secret,
-		users.two_factor_secret_verified_on,
+		users.two_factor_secret_verified_at,
 		users.service_roles,
 		users.user_account_status,
 		users.user_account_status_explanation,
 		users.birth_day,
 		users.birth_month,
-		users.created_on,
-		users.last_updated_on,
-		users.archived_on 
+		users.created_at,
+		users.last_updated_at,
+		users.archived_at 
 	FROM users
-	WHERE users.archived_on IS NULL
+	WHERE users.archived_at IS NULL
 	AND users.email_address = $1
 `
 
@@ -408,21 +408,21 @@ const searchForUserByUsernameQuery = `SELECT
 	users.avatar_src,
 	users.hashed_password,
 	users.requires_password_change,
-	users.password_last_changed_on,
+	users.password_last_changed_at,
 	users.two_factor_secret,
-	users.two_factor_secret_verified_on,
+	users.two_factor_secret_verified_at,
 	users.service_roles,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birth_day,
 	users.birth_month,
-	users.created_on,
-	users.last_updated_on,
-	users.archived_on 
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at 
 FROM users
 WHERE users.username ILIKE $1
-AND users.archived_on IS NULL
-AND users.two_factor_secret_verified_on IS NOT NULL
+AND users.archived_at IS NULL
+AND users.two_factor_secret_verified_at IS NOT NULL
 `
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
@@ -458,7 +458,7 @@ func (q *SQLQuerier) SearchForUsersByUsername(ctx context.Context, usernameQuery
 	return u, nil
 }
 
-const getAllUsersCountQuery = `SELECT COUNT(users.id) FROM users WHERE users.archived_on IS NULL`
+const getAllUsersCountQuery = `SELECT COUNT(users.id) FROM users WHERE users.archived_at IS NULL`
 
 // GetAllUsersCount fetches a count of users from the database that meet a particular filter.
 func (q *SQLQuerier) GetAllUsersCount(ctx context.Context) (uint64, error) {
@@ -667,11 +667,11 @@ const updateUserQuery = `UPDATE users SET
 	hashed_password = $2,
 	avatar_src = $3,
 	two_factor_secret = $4,
-	two_factor_secret_verified_on = $5,
+	two_factor_secret_verified_at = $5,
 	birth_day = $6,
 	birth_month = $7,
-	last_updated_on = extract(epoch FROM NOW()) 
-WHERE archived_on IS NULL 
+	last_updated_at = extract(epoch FROM NOW()) 
+WHERE archived_at IS NULL 
 AND id = $8
 `
 
@@ -712,9 +712,9 @@ func (q *SQLQuerier) UpdateUser(ctx context.Context, updated *types.User) error 
 const updateUserPasswordQuery = `UPDATE users SET
 	hashed_password = $1,
 	requires_password_change = $2,
-	password_last_changed_on = extract(epoch FROM NOW()),
-	last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL
+	password_last_changed_at = extract(epoch FROM NOW()),
+	last_updated_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL
 AND id = $3
 `
 
@@ -751,9 +751,9 @@ func (q *SQLQuerier) UpdateUserPassword(ctx context.Context, userID, newHash str
 
 /* #nosec G101 */
 const updateUserTwoFactorSecretQuery = `UPDATE users SET 
-	two_factor_secret_verified_on = $1,
+	two_factor_secret_verified_at = $1,
 	two_factor_secret = $2
-WHERE archived_on IS NULL
+WHERE archived_at IS NULL
 AND id = $3
 `
 
@@ -789,9 +789,9 @@ func (q *SQLQuerier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newS
 
 /* #nosec G101 */
 const markUserTwoFactorSecretAsVerified = `UPDATE users SET
-	two_factor_secret_verified_on = extract(epoch FROM NOW()),
+	two_factor_secret_verified_at = extract(epoch FROM NOW()),
 	user_account_status = $1
-WHERE archived_on IS NULL
+WHERE archived_at IS NULL
 AND id = $2
 `
 
@@ -822,14 +822,14 @@ func (q *SQLQuerier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, user
 }
 
 const archiveUserQuery = `UPDATE users SET
-	archived_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL
+	archived_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL
 AND id = $1
 `
 
 const archiveMembershipsQuery = `UPDATE household_user_memberships SET
-	archived_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL
+	archived_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL
 AND belongs_to_user = $1
 `
 

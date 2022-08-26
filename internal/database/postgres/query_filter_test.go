@@ -35,7 +35,7 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 
 		sb := squirrel.StatementBuilder.Select("*").From("testing")
 		sb = applyFilterToQueryBuilder(qf, exampleTableName, sb)
-		expected := "SELECT * FROM testing WHERE stuff.created_on > ? AND stuff.created_on < ? AND stuff.last_updated_on > ? AND stuff.last_updated_on < ? LIMIT 50 OFFSET 4950"
+		expected := "SELECT * FROM testing WHERE stuff.created_at > ? AND stuff.created_at < ? AND stuff.last_updated_at > ? AND stuff.last_updated_at < ? LIMIT 50 OFFSET 4950"
 		actual, _, err := sb.ToSql()
 
 		assert.NoError(t, err)
@@ -83,7 +83,7 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 			UpdatedBefore: func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
 		}
 
-		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 AND stuff.created_on > $2 AND stuff.created_on < $3 AND stuff.last_updated_on > $4 AND stuff.last_updated_on < $5 LIMIT 20 OFFSET 100"
+		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 AND stuff.created_at > $2 AND stuff.created_at < $3 AND stuff.last_updated_at > $4 AND stuff.last_updated_at < $5 LIMIT 20 OFFSET 100"
 		x := applyFilterToQueryBuilder(qf, exampleTableName, baseQueryBuilder)
 		actual, args, err := x.ToSql()
 
@@ -129,7 +129,7 @@ func TestQueryFilter_ApplyFilterToSubCountQueryBuilder(T *testing.T) {
 
 		sb := squirrel.StatementBuilder.Select("*").From("testing")
 		sb = applyFilterToSubCountQueryBuilder(qf, exampleTableName, sb)
-		expected := "SELECT * FROM testing WHERE stuff.created_on > ? AND stuff.created_on < ? AND stuff.last_updated_on > ? AND stuff.last_updated_on < ?"
+		expected := "SELECT * FROM testing WHERE stuff.created_at > ? AND stuff.created_at < ? AND stuff.last_updated_at > ? AND stuff.last_updated_at < ?"
 		actual, _, err := sb.ToSql()
 
 		assert.NoError(t, err)

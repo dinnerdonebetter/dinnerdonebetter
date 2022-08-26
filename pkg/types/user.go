@@ -38,10 +38,10 @@ type (
 	// User represents a User.
 	User struct {
 		_                         struct{}
-		PasswordLastChangedOn     *uint64           `json:"passwordLastChangedOn"`
+		PasswordLastChangedAt     *uint64           `json:"passwordLastChangedAt"`
 		ArchivedAt                *uint64           `json:"archivedAt"`
 		LastUpdatedAt             *uint64           `json:"lastUpdatedAt"`
-		TwoFactorSecretVerifiedAt *uint64           `json:"twoFactorSecretVerifiedOn"`
+		TwoFactorSecretVerifiedAt *uint64           `json:"twoFactorSecretVerifiedAt"`
 		AvatarSrc                 *string           `json:"avatar"`
 		BirthMonth                *uint8            `json:"birthMonth"`
 		BirthDay                  *uint8            `json:"birthDay"`

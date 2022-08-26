@@ -41,9 +41,9 @@ var (
 		"valid_ingredients.restrict_to_preparations",
 		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
 		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
-		"valid_ingredients.created_on",
-		"valid_ingredients.last_updated_on",
-		"valid_ingredients.archived_on",
+		"valid_ingredients.created_at",
+		"valid_ingredients.last_updated_at",
+		"valid_ingredients.archived_at",
 	}
 )
 
@@ -129,7 +129,7 @@ func (q *SQLQuerier) scanValidIngredients(ctx context.Context, rows database.Res
 	return validIngredients, filteredCount, totalCount, nil
 }
 
-const validIngredientExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredients.id FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL AND valid_ingredients.id = $1 )"
+const validIngredientExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredients.id FROM valid_ingredients WHERE valid_ingredients.archived_at IS NULL AND valid_ingredients.id = $1 )"
 
 // ValidIngredientExists fetches whether a valid ingredient exists from the database.
 func (q *SQLQuerier) ValidIngredientExists(ctx context.Context, validIngredientID string) (exists bool, err error) {
@@ -180,11 +180,11 @@ const getValidIngredientBaseQuery = `SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.created_on, 
-	valid_ingredients.last_updated_on, 
-	valid_ingredients.archived_on 
+	valid_ingredients.created_at, 
+	valid_ingredients.last_updated_at, 
+	valid_ingredients.archived_at 
 FROM valid_ingredients 
-WHERE valid_ingredients.archived_on IS NULL
+WHERE valid_ingredients.archived_at IS NULL
 `
 
 const getValidIngredientQuery = getValidIngredientBaseQuery + `AND valid_ingredients.id = $1`
@@ -260,12 +260,12 @@ const validIngredientSearchQuery = `SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.created_on,
-    valid_ingredients.last_updated_on,
-    valid_ingredients.archived_on 
+    valid_ingredients.created_at,
+    valid_ingredients.last_updated_at,
+    valid_ingredients.archived_at 
 FROM valid_ingredients
 WHERE valid_ingredients.name ILIKE $1 
-    AND valid_ingredients.archived_on IS NULL
+    AND valid_ingredients.archived_at IS NULL
 LIMIT 50`
 
 // SearchForValidIngredients fetches a valid ingredient from the database.
@@ -330,7 +330,7 @@ func (q *SQLQuerier) SearchForValidIngredientsForPreparation(ctx context.Context
 	return x, nil
 }
 
-const getTotalValidIngredientsCountQuery = "SELECT COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL"
+const getTotalValidIngredientsCountQuery = "SELECT COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_at IS NULL"
 
 // GetTotalValidIngredientCount fetches the count of valid ingredients from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalValidIngredientCount(ctx context.Context) (uint64, error) {
@@ -388,7 +388,7 @@ func (q *SQLQuerier) buildGetValidIngredientsWithIDsQuery(ctx context.Context, l
 
 	withIDsWhere := squirrel.Eq{
 		"valid_ingredients.id":          ids,
-		"valid_ingredients.archived_on": nil,
+		"valid_ingredients.archived_at": nil,
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(validIngredientsTableColumns...).
@@ -566,8 +566,8 @@ UPDATE valid_ingredients SET
 	restrict_to_preparations = $20,
 	minimum_ideal_storage_temperature_in_celsius = $21,
 	maximum_ideal_storage_temperature_in_celsius = $22,
-	last_updated_on = extract(epoch FROM NOW()) 
-WHERE archived_on IS NULL AND id = $23
+	last_updated_at = extract(epoch FROM NOW()) 
+WHERE archived_at IS NULL AND id = $23
 `
 
 // UpdateValidIngredient updates a particular valid ingredient.
@@ -617,7 +617,7 @@ func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.V
 	return nil
 }
 
-const archiveValidIngredientQuery = `UPDATE valid_ingredients SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1`
+const archiveValidIngredientQuery = `UPDATE valid_ingredients SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1`
 
 // ArchiveValidIngredient archives a valid ingredient from the database by its ID.
 func (q *SQLQuerier) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
