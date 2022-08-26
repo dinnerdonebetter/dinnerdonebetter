@@ -31,14 +31,14 @@ type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
 		_                        struct{}
-		ArchivedOn               *uint64 `json:"archivedOn"`
-		LastUpdatedOn            *uint64 `json:"lastUpdatedOn"`
+		ArchivedAt               *uint64 `json:"archivedAt"`
+		LastUpdatedAt            *uint64 `json:"lastUpdatedAt"`
 		Name                     string  `json:"name"`
 		Description              string  `json:"description"`
 		IconPath                 string  `json:"iconPath"`
 		PastTense                string  `json:"pastTense"`
 		ID                       string  `json:"id"`
-		CreatedOn                uint64  `json:"createdOn"`
+		CreatedAt                uint64  `json:"createdAt"`
 		YieldsNothing            bool    `json:"yieldsNothing"`
 		RestrictToIngredients    bool    `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable bool    `json:"zeroIngredientsAllowable"`

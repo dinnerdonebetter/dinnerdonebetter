@@ -1238,7 +1238,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
@@ -1279,7 +1279,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
@@ -1300,7 +1300,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
@@ -1331,7 +1331,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
@@ -1376,7 +1376,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
@@ -1389,12 +1389,12 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		og := helper.exampleUser.TwoFactorSecretVerifiedOn
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		og := helper.exampleUser.TwoFactorSecretVerifiedAt
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = og
+		helper.exampleUser.TwoFactorSecretVerifiedAt = og
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
@@ -1431,7 +1431,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
@@ -1462,7 +1462,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
@@ -1498,7 +1498,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(

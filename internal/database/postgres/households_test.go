@@ -37,33 +37,33 @@ func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, house
 				x.PaymentProcessorCustomerID,
 				x.SubscriptionPlanID,
 				x.TimeZone,
-				x.CreatedOn,
-				x.LastUpdatedOn,
-				x.ArchivedOn,
+				x.CreatedAt,
+				x.LastUpdatedAt,
+				x.ArchivedAt,
 				x.BelongsToUser,
 				&y.BelongsToUser.ID,
 				&y.BelongsToUser.Username,
 				&y.BelongsToUser.EmailAddress,
 				&y.BelongsToUser.AvatarSrc,
 				&y.BelongsToUser.RequiresPasswordChange,
-				&y.BelongsToUser.PasswordLastChangedOn,
-				&y.BelongsToUser.TwoFactorSecretVerifiedOn,
+				&y.BelongsToUser.PasswordLastChangedAt,
+				&y.BelongsToUser.TwoFactorSecretVerifiedAt,
 				strings.Join(y.BelongsToUser.ServiceRoles, serviceRolesSeparator),
 				&y.BelongsToUser.AccountStatus,
 				&y.BelongsToUser.AccountStatusExplanation,
 				&y.BelongsToUser.BirthDay,
 				&y.BelongsToUser.BirthMonth,
-				&y.BelongsToUser.CreatedOn,
-				&y.BelongsToUser.LastUpdatedOn,
-				&y.BelongsToUser.ArchivedOn,
+				&y.BelongsToUser.CreatedAt,
+				&y.BelongsToUser.LastUpdatedAt,
+				&y.BelongsToUser.ArchivedAt,
 				y.ID,
 				y.BelongsToUser.ID,
 				y.BelongsToHousehold,
 				strings.Join(y.HouseholdRoles, householdMemberRolesSeparator),
 				y.DefaultHousehold,
-				y.CreatedOn,
-				x.LastUpdatedOn,
-				y.ArchivedOn,
+				y.CreatedAt,
+				x.LastUpdatedAt,
+				y.ArchivedAt,
 			}
 
 			if includeCounts {
@@ -651,7 +651,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
-			return exampleHousehold.CreatedOn
+			return exampleHousehold.CreatedAt
 		}
 
 		actual, err := c.CreateHousehold(ctx, exampleInput)
@@ -728,7 +728,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleHousehold.CreatedOn
+			return exampleHousehold.CreatedAt
 		}
 
 		actual, err := c.CreateHousehold(ctx, exampleInput)
@@ -779,7 +779,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleHousehold.CreatedOn
+			return exampleHousehold.CreatedAt
 		}
 
 		actual, err := c.CreateHousehold(ctx, exampleInput)
@@ -830,7 +830,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleHousehold.CreatedOn
+			return exampleHousehold.CreatedAt
 		}
 
 		actual, err := c.CreateHousehold(ctx, exampleInput)

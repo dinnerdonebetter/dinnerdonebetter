@@ -31,13 +31,13 @@ type (
 	// MealPlanOptionVote represents a meal plan option vote.
 	MealPlanOptionVote struct {
 		_                       struct{}
-		LastUpdatedOn           *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn              *uint64 `json:"archivedOn"`
+		LastUpdatedAt           *uint64 `json:"lastUpdatedAt"`
+		ArchivedAt              *uint64 `json:"archivedAt"`
 		ID                      string  `json:"id"`
 		Notes                   string  `json:"notes"`
 		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
 		ByUser                  string  `json:"byUser"`
-		CreatedOn               uint64  `json:"createdOn"`
+		CreatedAt               uint64  `json:"createdAt"`
 		Rank                    uint8   `json:"rank"`
 		Abstain                 bool    `json:"abstain"`
 	}

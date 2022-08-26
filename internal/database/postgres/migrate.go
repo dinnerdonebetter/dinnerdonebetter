@@ -195,6 +195,11 @@ var (
 			Description: "a ton of various additions",
 			Script:      fetchMigration("00036_myriad_schema_additions"),
 		},
+		{
+			Version:     37,
+			Description: "rename time fields",
+			Script:      fetchMigration("00037_better_time_field_names"),
+		},
 	}
 )
 

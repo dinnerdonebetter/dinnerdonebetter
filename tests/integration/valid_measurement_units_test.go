@@ -24,7 +24,7 @@ func checkValidMeasurementUnitEquality(t *testing.T, expected, actual *types.Val
 	assert.Equal(t, expected.Metric, actual.Metric, "expected Metric for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Metric, actual.Metric)
 	assert.Equal(t, expected.Imperial, actual.Imperial, "expected Imperial for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Imperial, actual.Imperial)
 	assert.Equal(t, expected.PluralName, actual.PluralName, "expected PluralName for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.PluralName, actual.PluralName)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertValidMeasurementUnitToValidMeasurementUnitUpdateInput creates an ValidMeasurementUnitUpdateRequestInput struct from a valid measurement unit.
@@ -72,7 +72,7 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 
 			// assert valid measurement unit equality
 			checkValidMeasurementUnitEquality(t, newValidMeasurementUnit, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up valid measurement unit")
 			assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))

@@ -27,9 +27,9 @@ var (
 		"meal_plan_option_votes.abstain",
 		"meal_plan_option_votes.notes",
 		"meal_plan_option_votes.by_user",
-		"meal_plan_option_votes.created_on",
-		"meal_plan_option_votes.last_updated_on",
-		"meal_plan_option_votes.archived_on",
+		"meal_plan_option_votes.created_at",
+		"meal_plan_option_votes.last_updated_at",
+		"meal_plan_option_votes.archived_at",
 		"meal_plan_option_votes.belongs_to_meal_plan_option",
 	}
 
@@ -41,13 +41,13 @@ var (
 
 type nullableMealPlanOptionVote struct {
 	_                       struct{}
-	LastUpdatedOn           *uint64
-	ArchivedOn              *uint64
+	LastUpdatedAT           *uint64
+	ArchivedAt              *uint64
 	ID                      *string
 	Notes                   *string
 	BelongsToMealPlanOption *string
 	ByUser                  *string
-	CreatedOn               *uint64
+	CreatedAt               *uint64
 	Rank                    *uint8
 	Abstain                 *bool
 }
@@ -67,9 +67,9 @@ func (q *SQLQuerier) scanMealPlanOptionVote(ctx context.Context, scan database.S
 		&x.Abstain,
 		&x.Notes,
 		&x.ByUser,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.BelongsToMealPlanOption,
 	}
 
@@ -117,7 +117,7 @@ func (q *SQLQuerier) scanMealPlanOptionVotes(ctx context.Context, rows database.
 	return mealPlanOptionVotes, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionVoteExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_option_votes.id FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_option_votes.archived_on IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_on IS NULL AND meal_plans.id = $5 )"
+const mealPlanOptionVoteExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_option_votes.id FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_option_votes.archived_at IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_at IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_at IS NULL AND meal_plans.id = $5 )"
 
 // MealPlanOptionVoteExists fetches whether a meal plan option vote exists from the database.
 func (q *SQLQuerier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (exists bool, err error) {
@@ -160,7 +160,7 @@ func (q *SQLQuerier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, m
 	return result, nil
 }
 
-const getMealPlanOptionVoteQuery = "SELECT meal_plan_option_votes.id, meal_plan_option_votes.rank, meal_plan_option_votes.abstain, meal_plan_option_votes.notes, meal_plan_option_votes.by_user, meal_plan_option_votes.created_on, meal_plan_option_votes.last_updated_on, meal_plan_option_votes.archived_on, meal_plan_option_votes.belongs_to_meal_plan_option FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_option_votes.archived_on IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_on IS NULL AND meal_plans.id = $5"
+const getMealPlanOptionVoteQuery = "SELECT meal_plan_option_votes.id, meal_plan_option_votes.rank, meal_plan_option_votes.abstain, meal_plan_option_votes.notes, meal_plan_option_votes.by_user, meal_plan_option_votes.created_at, meal_plan_option_votes.last_updated_at, meal_plan_option_votes.archived_at, meal_plan_option_votes.belongs_to_meal_plan_option FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_option_votes.archived_at IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_at IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_at IS NULL AND meal_plans.id = $5"
 
 // GetMealPlanOptionVote fetches a meal plan option vote from the database.
 func (q *SQLQuerier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
@@ -205,7 +205,7 @@ func (q *SQLQuerier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 	return mealPlanOptionVote, nil
 }
 
-const getTotalMealPlanOptionVotesCountQuery = "SELECT COUNT(meal_plan_option_votes.id) FROM meal_plan_option_votes WHERE meal_plan_option_votes.archived_on IS NULL"
+const getTotalMealPlanOptionVotesCountQuery = "SELECT COUNT(meal_plan_option_votes.id) FROM meal_plan_option_votes WHERE meal_plan_option_votes.archived_at IS NULL"
 
 // GetTotalMealPlanOptionVoteCount fetches the count of meal plan option votes from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalMealPlanOptionVoteCount(ctx context.Context) (uint64, error) {
@@ -275,7 +275,7 @@ func (q *SQLQuerier) buildGetMealPlanOptionVotesWithIDsQuery(ctx context.Context
 
 	withIDsWhere := squirrel.Eq{
 		"meal_plan_option_votes.id":                          ids,
-		"meal_plan_option_votes.archived_on":                 nil,
+		"meal_plan_option_votes.archived_at":                 nil,
 		"meal_plan_option_votes.belongs_to_meal_plan_option": mealPlanOptionID,
 	}
 
@@ -377,7 +377,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 			Notes:                   vote.Notes,
 			ByUser:                  vote.ByUser,
 			BelongsToMealPlanOption: vote.BelongsToMealPlanOption,
-			CreatedOn:               q.currentTime(),
+			CreatedAt:               q.currentTime(),
 		}
 
 		tracing.AttachMealPlanOptionVoteIDToSpan(span, x.ID)
@@ -393,7 +393,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 	return votes, nil
 }
 
-const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6"
+const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6"
 
 // UpdateMealPlanOptionVote updates a particular meal plan option vote.
 func (q *SQLQuerier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.MealPlanOptionVote) error {
@@ -425,7 +425,7 @@ func (q *SQLQuerier) UpdateMealPlanOptionVote(ctx context.Context, updated *type
 	return nil
 }
 
-const archiveMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2"
+const archiveMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2"
 
 // ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its ID.
 func (q *SQLQuerier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionID, mealPlanOptionVoteID string) error {

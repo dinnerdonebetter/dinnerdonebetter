@@ -22,7 +22,7 @@ func checkUserCreationEquality(t *testing.T, expected *types.UserRegistrationInp
 	assert.NotZero(t, actual.CreatedUserID)
 	assert.Equal(t, expected.Username, actual.Username)
 	assert.NotEmpty(t, actual.TwoFactorSecret)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 func checkUserEquality(t *testing.T, expected, actual *types.User) {
@@ -30,9 +30,9 @@ func checkUserEquality(t *testing.T, expected, actual *types.User) {
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Username, actual.Username)
-	assert.NotZero(t, actual.CreatedOn)
-	assert.Nil(t, actual.LastUpdatedOn)
-	assert.Nil(t, actual.ArchivedOn)
+	assert.NotZero(t, actual.CreatedAt)
+	assert.Nil(t, actual.LastUpdatedAt)
+	assert.Nil(t, actual.ArchivedAt)
 }
 
 func (s *TestSuite) TestUsers_Creating() {

@@ -32,9 +32,9 @@ func buildMockRowsFromMealPlanOptionVotes(includeCounts bool, filteredCount uint
 			x.Abstain,
 			x.Notes,
 			x.ByUser,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 			x.BelongsToMealPlanOption,
 		}
 
@@ -636,7 +636,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlanOptionVote.CreatedOn
+			return exampleMealPlanOptionVote.CreatedAt
 		}
 
 		expected := []*types.MealPlanOptionVote{exampleMealPlanOptionVote}
@@ -708,7 +708,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlanOptionVote.CreatedOn
+			return exampleMealPlanOptionVote.CreatedAt
 		}
 
 		actual, err := c.CreateMealPlanOptionVote(ctx, exampleInput)
@@ -749,7 +749,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlanOptionVote.CreatedOn
+			return exampleMealPlanOptionVote.CreatedAt
 		}
 
 		actual, err := c.CreateMealPlanOptionVote(ctx, exampleInput)

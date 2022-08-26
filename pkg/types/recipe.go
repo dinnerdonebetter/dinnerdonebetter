@@ -32,8 +32,8 @@ type (
 	Recipe struct {
 		_ struct{}
 
-		LastUpdatedOn      *uint64       `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64       `json:"archivedOn"`
+		LastUpdatedAt      *uint64       `json:"lastUpdatedAt"`
+		ArchivedAt         *uint64       `json:"archivedAt"`
 		InspiredByRecipeID *string       `json:"inspiredByRecipeID"`
 		Source             string        `json:"source"`
 		Description        string        `json:"description"`
@@ -43,7 +43,7 @@ type (
 		Steps              []*RecipeStep `json:"steps"`
 		SealOfApproval     bool          `json:"sealOfApproval"`
 		YieldsPortions     uint8         `json:"yieldsPortions"`
-		CreatedOn          uint64        `json:"createdOn"`
+		CreatedAt          uint64        `json:"createdAt"`
 	}
 
 	// RecipeList represents a list of recipes.

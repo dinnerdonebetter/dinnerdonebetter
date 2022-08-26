@@ -20,9 +20,9 @@ var (
 		"api_clients.name",
 		"api_clients.client_id",
 		"api_clients.secret_key",
-		"api_clients.created_on",
-		"api_clients.last_updated_on",
-		"api_clients.archived_on",
+		"api_clients.created_at",
+		"api_clients.last_updated_at",
+		"api_clients.archived_at",
 		"api_clients.belongs_to_user",
 	}
 )
@@ -41,9 +41,9 @@ func (q *SQLQuerier) scanAPIClient(ctx context.Context, scan database.Scanner, i
 		&client.Name,
 		&client.ClientID,
 		&client.ClientSecret,
-		&client.CreatedOn,
-		&client.LastUpdatedOn,
-		&client.ArchivedOn,
+		&client.CreatedAt,
+		&client.LastUpdatedAt,
+		&client.ArchivedAt,
 		&client.BelongsToUser,
 	}
 
@@ -97,12 +97,12 @@ const getAPIClientByClientIDQuery = `
 		api_clients.name,
 		api_clients.client_id,
 		api_clients.secret_key,
-		api_clients.created_on,
-		api_clients.last_updated_on,
-		api_clients.archived_on,
+		api_clients.created_at,
+		api_clients.last_updated_at,
+		api_clients.archived_at,
 		api_clients.belongs_to_user
 	FROM api_clients
-	WHERE api_clients.archived_on IS NULL
+	WHERE api_clients.archived_at IS NULL
 	AND api_clients.client_id = $1
 `
 
@@ -140,12 +140,12 @@ const getAPIClientByDatabaseIDQuery = `
 		api_clients.name,
 		api_clients.client_id,
 		api_clients.secret_key,
-		api_clients.created_on,
-		api_clients.last_updated_on,
-		api_clients.archived_on,
+		api_clients.created_at,
+		api_clients.last_updated_at,
+		api_clients.archived_at,
 		api_clients.belongs_to_user
 	FROM api_clients
-	WHERE api_clients.archived_on IS NULL
+	WHERE api_clients.archived_at IS NULL
 	AND api_clients.belongs_to_user = $1
 	AND api_clients.id = $2
 `
@@ -184,7 +184,7 @@ func (q *SQLQuerier) GetAPIClientByDatabaseID(ctx context.Context, clientID, use
 }
 
 const getTotalAPIClientCountQuery = `
-	SELECT COUNT(api_clients.id) FROM api_clients WHERE api_clients.archived_on IS NULL
+	SELECT COUNT(api_clients.id) FROM api_clients WHERE api_clients.archived_at IS NULL
 `
 
 // GetTotalAPIClientCount gets the count of API clients that match the current filter.
@@ -282,7 +282,7 @@ func (q *SQLQuerier) CreateAPIClient(ctx context.Context, input *types.APIClient
 		ClientID:      input.ClientID,
 		ClientSecret:  input.ClientSecret,
 		BelongsToUser: input.BelongsToUser,
-		CreatedOn:     q.currentTime(),
+		CreatedAt:     q.currentTime(),
 	}
 
 	logger.Info("API client created")
@@ -292,9 +292,9 @@ func (q *SQLQuerier) CreateAPIClient(ctx context.Context, input *types.APIClient
 
 const archiveAPIClientQuery = `
 	UPDATE api_clients SET
-		last_updated_on = extract(epoch FROM NOW()),
-		archived_on = extract(epoch FROM NOW())
-	WHERE archived_on IS NULL
+		last_updated_at = extract(epoch FROM NOW()),
+		archived_at = extract(epoch FROM NOW())
+	WHERE archived_at IS NULL
 	AND belongs_to_user = $1 AND id = $2
 `
 

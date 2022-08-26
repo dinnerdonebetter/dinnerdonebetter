@@ -18,9 +18,9 @@ var (
 		"password_reset_tokens.id",
 		"password_reset_tokens.token",
 		"password_reset_tokens.expires_at",
-		"password_reset_tokens.created_on",
-		"password_reset_tokens.last_updated_on",
-		"password_reset_tokens.redeemed_on",
+		"password_reset_tokens.created_at",
+		"password_reset_tokens.last_updated_at",
+		"password_reset_tokens.redeemed_at",
 		"password_reset_tokens.belongs_to_user",
 	}
 )
@@ -36,9 +36,9 @@ func (q *SQLQuerier) scanPasswordResetToken(ctx context.Context, scan database.S
 		&x.ID,
 		&x.Token,
 		&x.ExpiresAt,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.RedeemedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.RedeemedAt,
 		&x.BelongsToUser,
 	}
 
@@ -53,12 +53,12 @@ const getPasswordResetTokenQuery = `SELECT
 	password_reset_tokens.id,
 	password_reset_tokens.token,
 	password_reset_tokens.expires_at,
-	password_reset_tokens.created_on,
-	password_reset_tokens.last_updated_on,
-	password_reset_tokens.redeemed_on,
+	password_reset_tokens.created_at,
+	password_reset_tokens.last_updated_at,
+	password_reset_tokens.redeemed_at,
 	password_reset_tokens.belongs_to_user
 FROM password_reset_tokens
-WHERE password_reset_tokens.redeemed_on IS NULL
+WHERE password_reset_tokens.redeemed_at IS NULL
 AND extract(epoch from NOW()) < password_reset_tokens.expires_at
 AND password_reset_tokens.token = $1
 `
@@ -117,7 +117,7 @@ func (q *SQLQuerier) CreatePasswordResetToken(ctx context.Context, input *types.
 		ID:            input.ID,
 		Token:         input.Token,
 		ExpiresAt:     input.ExpiresAt,
-		CreatedOn:     q.currentTime(),
+		CreatedAt:     q.currentTime(),
 		BelongsToUser: input.BelongsToUser,
 	}
 
@@ -127,7 +127,7 @@ func (q *SQLQuerier) CreatePasswordResetToken(ctx context.Context, input *types.
 	return x, nil
 }
 
-const redeemPasswordResetTokenQuery = "UPDATE password_reset_tokens SET redeemed_on = extract(epoch FROM NOW()) WHERE redeemed_on IS NULL AND id = $1"
+const redeemPasswordResetTokenQuery = "UPDATE password_reset_tokens SET redeemed_at = extract(epoch FROM NOW()) WHERE redeemed_at IS NULL AND id = $1"
 
 // RedeemPasswordResetToken redeems a password reset token from the database by its ID.
 func (q *SQLQuerier) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {

@@ -31,9 +31,9 @@ func buildMockRowsFromAPIClients(includeCounts bool, filteredCount uint64, clien
 			c.Name,
 			c.ClientID,
 			c.ClientSecret,
-			c.CreatedOn,
-			c.LastUpdatedOn,
-			c.ArchivedOn,
+			c.CreatedAt,
+			c.LastUpdatedAt,
+			c.ArchivedAt,
 			c.BelongsToUser,
 		}
 
@@ -450,7 +450,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleAPIClient.CreatedOn
+			return exampleAPIClient.CreatedAt
 		}
 
 		actual, err := c.CreateAPIClient(ctx, exampleInput)
@@ -508,7 +508,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleAPIClient.CreatedOn
+			return exampleAPIClient.CreatedAt
 		}
 
 		actual, err := c.CreateAPIClient(ctx, exampleInput)

@@ -33,9 +33,9 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 			x.Instrument.PluralName,
 			x.Instrument.Description,
 			x.Instrument.IconPath,
-			x.Instrument.CreatedOn,
-			x.Instrument.LastUpdatedOn,
-			x.Instrument.ArchivedOn,
+			x.Instrument.CreatedAt,
+			x.Instrument.LastUpdatedAt,
+			x.Instrument.ArchivedAt,
 			x.RecipeStepProductID,
 			x.Name,
 			x.ProductOfRecipeStep,
@@ -44,9 +44,9 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 			&x.Optional,
 			&x.MinimumQuantity,
 			&x.MaximumQuantity,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 			x.BelongsToRecipeStep,
 		}
 
@@ -648,7 +648,7 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStepInstrument.CreatedOn
+			return exampleRecipeStepInstrument.CreatedAt
 		}
 
 		actual, err := c.CreateRecipeStepInstrument(ctx, exampleInput)
@@ -698,7 +698,7 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStepInstrument.CreatedOn
+			return exampleRecipeStepInstrument.CreatedAt
 		}
 
 		actual, err := c.CreateRecipeStepInstrument(ctx, exampleInput)

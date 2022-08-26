@@ -37,20 +37,20 @@ func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCo
 			x.Preparation.RestrictToIngredients,
 			x.Preparation.ZeroIngredientsAllowable,
 			x.Preparation.PastTense,
-			x.Preparation.CreatedOn,
-			x.Preparation.LastUpdatedOn,
-			x.Preparation.ArchivedOn,
+			x.Preparation.CreatedAt,
+			x.Preparation.LastUpdatedAt,
+			x.Preparation.ArchivedAt,
 			x.Instrument.ID,
 			x.Instrument.Name,
 			x.Instrument.PluralName,
 			x.Instrument.Description,
 			x.Instrument.IconPath,
-			x.Instrument.CreatedOn,
-			x.Instrument.LastUpdatedOn,
-			x.Instrument.ArchivedOn,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.Instrument.CreatedAt,
+			x.Instrument.LastUpdatedAt,
+			x.Instrument.ArchivedAt,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 		}
 
 		if includeCounts {
@@ -414,7 +414,7 @@ func TestQuerier_CreateValidPreparationInstrument(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleValidPreparationInstrument.CreatedOn
+			return exampleValidPreparationInstrument.CreatedAt
 		}
 
 		actual, err := c.CreateValidPreparationInstrument(ctx, exampleInput)
@@ -457,7 +457,7 @@ func TestQuerier_CreateValidPreparationInstrument(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleValidPreparationInstrument.CreatedOn
+			return exampleValidPreparationInstrument.CreatedAt
 		}
 
 		actual, err := c.CreateValidPreparationInstrument(ctx, exampleInput)

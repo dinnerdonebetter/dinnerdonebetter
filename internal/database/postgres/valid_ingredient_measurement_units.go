@@ -34,9 +34,9 @@ var (
 		"valid_measurement_units.metric",
 		"valid_measurement_units.imperial",
 		"valid_measurement_units.plural_name",
-		"valid_measurement_units.created_on",
-		"valid_measurement_units.last_updated_on",
-		"valid_measurement_units.archived_on",
+		"valid_measurement_units.created_at",
+		"valid_measurement_units.last_updated_at",
+		"valid_measurement_units.archived_at",
 		"valid_ingredients.id",
 		"valid_ingredients.name",
 		"valid_ingredients.description",
@@ -60,14 +60,14 @@ var (
 		"valid_ingredients.restrict_to_preparations",
 		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
 		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
-		"valid_ingredients.created_on",
-		"valid_ingredients.last_updated_on",
-		"valid_ingredients.archived_on",
+		"valid_ingredients.created_at",
+		"valid_ingredients.last_updated_at",
+		"valid_ingredients.archived_at",
 		"valid_ingredient_measurement_units.minimum_allowable_quantity",
 		"valid_ingredient_measurement_units.maximum_allowable_quantity",
-		"valid_ingredient_measurement_units.created_on",
-		"valid_ingredient_measurement_units.last_updated_on",
-		"valid_ingredient_measurement_units.archived_on",
+		"valid_ingredient_measurement_units.created_at",
+		"valid_ingredient_measurement_units.last_updated_at",
+		"valid_ingredient_measurement_units.archived_at",
 	}
 )
 
@@ -92,9 +92,9 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnit(ctx context.Context, sca
 		&x.MeasurementUnit.Metric,
 		&x.MeasurementUnit.Imperial,
 		&x.MeasurementUnit.PluralName,
-		&x.MeasurementUnit.CreatedOn,
-		&x.MeasurementUnit.LastUpdatedOn,
-		&x.MeasurementUnit.ArchivedOn,
+		&x.MeasurementUnit.CreatedAt,
+		&x.MeasurementUnit.LastUpdatedAt,
+		&x.MeasurementUnit.ArchivedAt,
 		&x.Ingredient.ID,
 		&x.Ingredient.Name,
 		&x.Ingredient.Description,
@@ -118,14 +118,14 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnit(ctx context.Context, sca
 		&x.Ingredient.RestrictToPreparations,
 		&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
 		&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
-		&x.Ingredient.CreatedOn,
-		&x.Ingredient.LastUpdatedOn,
-		&x.Ingredient.ArchivedOn,
+		&x.Ingredient.CreatedAt,
+		&x.Ingredient.LastUpdatedAt,
+		&x.Ingredient.ArchivedAt,
 		&x.MinimumAllowableQuantity,
 		&x.MaximumAllowableQuantity,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -172,7 +172,7 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnits(ctx context.Context, ro
 	return validIngredientMeasurementUnits, filteredCount, totalCount, nil
 }
 
-const validIngredientMeasurementUnitExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_on IS NULL AND valid_ingredient_measurement_units.id = $1 )"
+const validIngredientMeasurementUnitExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL AND valid_ingredient_measurement_units.id = $1 )"
 
 // ValidIngredientMeasurementUnitExists fetches whether a valid ingredient measurement unit exists from the database.
 func (q *SQLQuerier) ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (exists bool, err error) {
@@ -212,9 +212,9 @@ SELECT
 	valid_measurement_units.metric,
 	valid_measurement_units.imperial,
 	valid_measurement_units.plural_name,
-	valid_measurement_units.created_on,
-	valid_measurement_units.last_updated_on,
-	valid_measurement_units.archived_on,
+	valid_measurement_units.created_at,
+	valid_measurement_units.last_updated_at,
+	valid_measurement_units.archived_at,
 	valid_ingredients.id,
 	valid_ingredients.name,
 	valid_ingredients.description,
@@ -238,18 +238,18 @@ SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.created_on,
-	valid_ingredients.last_updated_on,
-	valid_ingredients.archived_on,
+	valid_ingredients.created_at,
+	valid_ingredients.last_updated_at,
+	valid_ingredients.archived_at,
 	valid_ingredient_measurement_units.minimum_allowable_quantity,
 	valid_ingredient_measurement_units.maximum_allowable_quantity,
-	valid_ingredient_measurement_units.created_on,
-	valid_ingredient_measurement_units.last_updated_on,
-	valid_ingredient_measurement_units.archived_on
+	valid_ingredient_measurement_units.created_at,
+	valid_ingredient_measurement_units.last_updated_at,
+	valid_ingredient_measurement_units.archived_at
 FROM valid_ingredient_measurement_units 
 JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
-WHERE valid_ingredient_measurement_units.archived_on IS NULL 
+WHERE valid_ingredient_measurement_units.archived_at IS NULL 
   AND valid_ingredient_measurement_units.id = $1
 `
 
@@ -280,7 +280,7 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 	return validIngredientMeasurementUnit, nil
 }
 
-const getTotalValidIngredientMeasurementUnitsCountQuery = "SELECT COUNT(valid_ingredient_measurement_units.id) FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_on IS NULL"
+const getTotalValidIngredientMeasurementUnitsCountQuery = "SELECT COUNT(valid_ingredient_measurement_units.id) FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL"
 
 // GetTotalValidIngredientMeasurementUnitCount fetches the count of valid ingredient measurement units from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalValidIngredientMeasurementUnitCount(ctx context.Context) (uint64, error) {
@@ -307,7 +307,7 @@ func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(
 		Join(validMeasurementUnitsOnValidIngredientMeasurementUnitsJoinClause).
 		Where(squirrel.Eq{
 			fmt.Sprintf("valid_ingredient_measurement_units.%s", column): ids,
-			"valid_ingredient_measurement_units.archived_on":             nil,
+			"valid_ingredient_measurement_units.archived_at":             nil,
 		}).
 		Limit(uint64(limit)).
 		ToSql()
@@ -499,7 +499,7 @@ func (q *SQLQuerier) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 		Ingredient:               types.ValidIngredient{ID: input.ValidIngredientID},
 		MinimumAllowableQuantity: input.MinimumAllowableQuantity,
 		MaximumAllowableQuantity: input.MaximumAllowableQuantity,
-		CreatedOn:                q.currentTime(),
+		CreatedAt:                q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, x.ID)
@@ -515,8 +515,8 @@ SET
     valid_ingredient_id = $3,
 	minimum_allowable_quantity = $4,
 	maximum_allowable_quantity = $5,
-    last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL 
+    last_updated_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL 
   AND id = $6
 `
 
@@ -550,7 +550,7 @@ func (q *SQLQuerier) UpdateValidIngredientMeasurementUnit(ctx context.Context, u
 	return nil
 }
 
-const archiveValidIngredientMeasurementUnitQuery = "UPDATE valid_ingredient_measurement_units SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
+const archiveValidIngredientMeasurementUnitQuery = "UPDATE valid_ingredient_measurement_units SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its ID.
 func (q *SQLQuerier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {

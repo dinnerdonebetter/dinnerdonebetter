@@ -30,9 +30,9 @@ var (
 		"valid_preparations.restrict_to_ingredients",
 		"valid_preparations.zero_ingredients_allowable",
 		"valid_preparations.past_tense",
-		"valid_preparations.created_on",
-		"valid_preparations.last_updated_on",
-		"valid_preparations.archived_on",
+		"valid_preparations.created_at",
+		"valid_preparations.last_updated_at",
+		"valid_preparations.archived_at",
 	}
 )
 
@@ -54,9 +54,9 @@ func (q *SQLQuerier) scanValidPreparation(ctx context.Context, scan database.Sca
 		&x.RestrictToIngredients,
 		&x.ZeroIngredientsAllowable,
 		&x.PastTense,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -103,7 +103,7 @@ func (q *SQLQuerier) scanValidPreparations(ctx context.Context, rows database.Re
 	return validPreparations, filteredCount, totalCount, nil
 }
 
-const validPreparationExistenceQuery = "SELECT EXISTS ( SELECT valid_preparations.id FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.id = $1 )"
+const validPreparationExistenceQuery = "SELECT EXISTS ( SELECT valid_preparations.id FROM valid_preparations WHERE valid_preparations.archived_at IS NULL AND valid_preparations.id = $1 )"
 
 // ValidPreparationExists fetches whether a valid preparation exists from the database.
 func (q *SQLQuerier) ValidPreparationExists(ctx context.Context, validPreparationID string) (exists bool, err error) {
@@ -139,11 +139,11 @@ const getValidPreparationBaseQuery = `SELECT
 	valid_preparations.restrict_to_ingredients,
 	valid_preparations.zero_ingredients_allowable,
 	valid_preparations.past_tense,
-	valid_preparations.created_on,
-	valid_preparations.last_updated_on,
-	valid_preparations.archived_on
+	valid_preparations.created_at,
+	valid_preparations.last_updated_at,
+	valid_preparations.archived_at
 FROM valid_preparations
-WHERE valid_preparations.archived_on IS NULL
+WHERE valid_preparations.archived_at IS NULL
 `
 
 const getValidPreparationQuery = getValidPreparationBaseQuery + `AND valid_preparations.id = $1`
@@ -204,11 +204,11 @@ const validPreparationSearchQuery = `SELECT
 	valid_preparations.restrict_to_ingredients,
 	valid_preparations.zero_ingredients_allowable,
 	valid_preparations.past_tense,
-    valid_preparations.created_on,
-    valid_preparations.last_updated_on,
-    valid_preparations.archived_on 
+    valid_preparations.created_at,
+    valid_preparations.last_updated_at,
+    valid_preparations.archived_at 
 FROM valid_preparations 
-WHERE valid_preparations.archived_on IS NULL 
+WHERE valid_preparations.archived_at IS NULL 
   AND valid_preparations.name ILIKE $1 
 LIMIT 50`
 
@@ -242,7 +242,7 @@ func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query strin
 	return x, nil
 }
 
-const getTotalValidPreparationsCountQuery = "SELECT COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_on IS NULL"
+const getTotalValidPreparationsCountQuery = "SELECT COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_at IS NULL"
 
 // GetTotalValidPreparationCount fetches the count of valid preparations from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalValidPreparationCount(ctx context.Context) (uint64, error) {
@@ -300,7 +300,7 @@ func (q *SQLQuerier) buildGetValidPreparationsWithIDsQuery(ctx context.Context, 
 
 	withIDsWhere := squirrel.Eq{
 		"valid_preparations.id":          ids,
-		"valid_preparations.archived_on": nil,
+		"valid_preparations.archived_at": nil,
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(validPreparationsTableColumns...).
@@ -390,7 +390,7 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 		RestrictToIngredients:    input.RestrictToIngredients,
 		ZeroIngredientsAllowable: input.ZeroIngredientsAllowable,
 		PastTense:                input.PastTense,
-		CreatedOn:                q.currentTime(),
+		CreatedAt:                q.currentTime(),
 	}
 
 	tracing.AttachValidPreparationIDToSpan(span, x.ID)
@@ -408,8 +408,8 @@ SET
 	restrict_to_ingredients = $5,
 	zero_ingredients_allowable = $6,
 	past_tense = $7,
-    last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL 
+    last_updated_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL 
   AND id = $8
 `
 
@@ -445,7 +445,7 @@ func (q *SQLQuerier) UpdateValidPreparation(ctx context.Context, updated *types.
 	return nil
 }
 
-const archiveValidPreparationQuery = "UPDATE valid_preparations SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
+const archiveValidPreparationQuery = "UPDATE valid_preparations SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidPreparation archives a valid preparation from the database by its ID.
 func (q *SQLQuerier) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {

@@ -19,8 +19,8 @@ func TestQuerier_Migrate(T *testing.T) {
 		exampleCreationTime := fakes.BuildFakeTime()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleUser.TwoFactorSecretVerifiedOn = nil
-		exampleUser.CreatedOn = exampleCreationTime
+		exampleUser.TwoFactorSecretVerifiedAt = nil
+		exampleUser.CreatedAt = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

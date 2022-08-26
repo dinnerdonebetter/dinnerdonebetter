@@ -14,7 +14,7 @@ func BuildFakeValidPreparationInstrument() *types.ValidPreparationInstrument {
 		Notes:       buildUniqueString(),
 		Preparation: *BuildFakeValidPreparation(),
 		Instrument:  *BuildFakeValidInstrument(),
-		CreatedOn:   uint64(uint32(fake.Date().Unix())),
+		CreatedAt:   uint64(uint32(fake.Date().Unix())),
 	}
 }
 

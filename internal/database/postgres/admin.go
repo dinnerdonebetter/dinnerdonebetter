@@ -12,7 +12,7 @@ import (
 var _ types.AdminUserDataManager = (*SQLQuerier)(nil)
 
 const setUserAccountStatusQuery = `
-	UPDATE users SET user_account_status = $1, user_account_status_explanation = $2 WHERE archived_on IS NULL AND id = $3
+	UPDATE users SET user_account_status = $1, user_account_status_explanation = $2 WHERE archived_at IS NULL AND id = $3
 `
 
 // UpdateUserAccountStatus updates a user's household status.

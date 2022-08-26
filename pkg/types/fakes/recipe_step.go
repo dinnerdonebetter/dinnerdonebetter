@@ -43,7 +43,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		Notes:                         buildUniqueString(),
 		Products:                      products,
 		Optional:                      false,
-		CreatedOn:                     uint64(uint32(fake.Date().Unix())),
+		CreatedAt:                     uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipe:               ksuid.New().String(),
 		Ingredients:                   ingredients,
 		ExplicitInstructions:          buildUniqueString(),

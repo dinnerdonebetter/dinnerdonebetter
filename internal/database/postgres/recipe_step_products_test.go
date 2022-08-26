@@ -39,9 +39,9 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.MeasurementUnit.Metric,
 			x.MeasurementUnit.Imperial,
 			x.MeasurementUnit.PluralName,
-			x.MeasurementUnit.CreatedOn,
-			x.MeasurementUnit.LastUpdatedOn,
-			x.MeasurementUnit.ArchivedOn,
+			x.MeasurementUnit.CreatedAt,
+			x.MeasurementUnit.LastUpdatedAt,
+			x.MeasurementUnit.ArchivedAt,
 			x.MinimumQuantityValue,
 			x.MaximumQuantityValue,
 			x.QuantityNotes,
@@ -49,9 +49,9 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.MaximumStorageDurationInSeconds,
 			x.MinimumStorageTemperatureInCelsius,
 			x.MaximumStorageTemperatureInCelsius,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 			x.BelongsToRecipeStep,
 		}
 
@@ -741,7 +741,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStepProduct.CreatedOn
+			return exampleRecipeStepProduct.CreatedAt
 		}
 
 		actual, err := c.CreateRecipeStepProduct(ctx, exampleInput)
@@ -792,7 +792,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStepProduct.CreatedOn
+			return exampleRecipeStepProduct.CreatedAt
 		}
 
 		actual, err := c.CreateRecipeStepProduct(ctx, exampleInput)

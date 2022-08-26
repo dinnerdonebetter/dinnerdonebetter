@@ -38,7 +38,7 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.Equal(t, expected.RestrictToPreparations, actual.RestrictToPreparations, "expected RestrictToPreparations for valid ingredient %s to be %v, but it was %v", expected.ID, expected.RestrictToPreparations, actual.RestrictToPreparations)
 	assert.Equal(t, expected.MinimumIdealStorageTemperatureInCelsius, actual.MinimumIdealStorageTemperatureInCelsius, "expected MinimumIdealStorageTemperatureInCelsius for valid ingredient %s to be %v, but it was %v", expected.ID, expected.MinimumIdealStorageTemperatureInCelsius, actual.MinimumIdealStorageTemperatureInCelsius)
 	assert.Equal(t, expected.MaximumIdealStorageTemperatureInCelsius, actual.MaximumIdealStorageTemperatureInCelsius, "expected MaximumIdealStorageTemperatureInCelsius for valid ingredient %s to be %v, but it was %v", expected.ID, expected.MaximumIdealStorageTemperatureInCelsius, actual.MaximumIdealStorageTemperatureInCelsius)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertValidIngredientToValidIngredientUpdateInput creates an ValidIngredientUpdateRequestInput struct from a valid ingredient.
@@ -100,7 +100,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 
 			// assert valid ingredient equality
 			checkValidIngredientEquality(t, newValidIngredient, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up valid ingredient")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))

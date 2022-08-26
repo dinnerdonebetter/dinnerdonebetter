@@ -29,7 +29,7 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step instrument %s to be %v, but was %v", expected.ID, expected.Optional, actual.Optional)
 	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step instrument %s to be %v, but was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
 	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step instrument %s to be %v, but was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput creates an RecipeStepInstrumentUpdateRequestInput struct from a recipe step instrument.
@@ -87,7 +87,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			requireNotNilAndNoProblems(t, createdRecipeStepInstrument, err)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepInstrument.BelongsToRecipeStep)
 			exampleRecipeStepInstrument.Instrument = createdValidInstrument
-			exampleRecipeStepInstrument.Instrument.CreatedOn = createdRecipeStepInstrument.Instrument.CreatedOn
+			exampleRecipeStepInstrument.Instrument.CreatedAt = createdRecipeStepInstrument.Instrument.CreatedAt
 
 			checkRecipeStepInstrumentEquality(t, exampleRecipeStepInstrument, createdRecipeStepInstrument, false)
 
@@ -112,7 +112,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 
 			// assert recipe step instrument equality
 			checkRecipeStepInstrumentEquality(t, newRecipeStepInstrument, actual, false)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up recipe step instrument")
 			assert.NoError(t, testClients.user.ArchiveRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID))

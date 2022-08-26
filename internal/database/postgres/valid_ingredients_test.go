@@ -50,9 +50,9 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 			x.RestrictToPreparations,
 			x.MinimumIdealStorageTemperatureInCelsius,
 			x.MaximumIdealStorageTemperatureInCelsius,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 		}
 
 		if includeCounts {
@@ -719,7 +719,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleValidIngredient.CreatedOn
+			return exampleValidIngredient.CreatedAt
 		}
 
 		actual, err := c.CreateValidIngredient(ctx, exampleInput)
@@ -781,7 +781,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleValidIngredient.CreatedOn
+			return exampleValidIngredient.CreatedAt
 		}
 
 		actual, err := c.CreateValidIngredient(ctx, exampleInput)

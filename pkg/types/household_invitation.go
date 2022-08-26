@@ -62,8 +62,8 @@ type (
 	HouseholdInvitation struct {
 		_                    struct{}
 		ToUser               *string                   `json:"toUser"`
-		LastUpdatedOn        *uint64                   `json:"lastUpdatedOn"`
-		ArchivedOn           *uint64                   `json:"archivedOn"`
+		LastUpdatedAt        *uint64                   `json:"lastUpdatedAt"`
+		ArchivedAt           *uint64                   `json:"archivedAt"`
 		Note                 string                    `json:"note"`
 		ToEmail              string                    `json:"toEmail"`
 		Status               HouseholdInvitationStatus `json:"status"`
@@ -72,7 +72,7 @@ type (
 		ID                   string                    `json:"id"`
 		DestinationHousehold Household                 `json:"destinationHousehold"`
 		FromUser             User                      `json:"fromUser"`
-		CreatedOn            uint64                    `json:"createdOn"`
+		CreatedAt            uint64                    `json:"createdAt"`
 	}
 
 	// HouseholdInvitationList represents a list of households.

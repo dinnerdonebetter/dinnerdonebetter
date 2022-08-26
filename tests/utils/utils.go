@@ -59,7 +59,7 @@ func CreateServiceUser(ctx context.Context, address string, in *types.UserRegist
 		Username:        ucr.Username,
 		EmailAddress:    ucr.EmailAddress,
 		TwoFactorSecret: ucr.TwoFactorSecret,
-		CreatedOn:       ucr.CreatedOn,
+		CreatedAt:       ucr.CreatedAt,
 		// this is a dirty trick to reuse most of this model,
 		HashedPassword: in.Password,
 	}

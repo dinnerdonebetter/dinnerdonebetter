@@ -34,9 +34,9 @@ var (
 		"valid_measurement_units.metric",
 		"valid_measurement_units.imperial",
 		"valid_measurement_units.plural_name",
-		"valid_measurement_units.created_on",
-		"valid_measurement_units.last_updated_on",
-		"valid_measurement_units.archived_on",
+		"valid_measurement_units.created_at",
+		"valid_measurement_units.last_updated_at",
+		"valid_measurement_units.archived_at",
 		"recipe_step_products.minimum_quantity_value",
 		"recipe_step_products.maximum_quantity_value",
 		"recipe_step_products.quantity_notes",
@@ -44,9 +44,9 @@ var (
 		"recipe_step_products.maximum_storage_duration_in_seconds",
 		"recipe_step_products.minimum_storage_temperature_in_celsius",
 		"recipe_step_products.maximum_storage_temperature_in_celsius",
-		"recipe_step_products.created_on",
-		"recipe_step_products.last_updated_on",
-		"recipe_step_products.archived_on",
+		"recipe_step_products.created_at",
+		"recipe_step_products.last_updated_at",
+		"recipe_step_products.archived_at",
 		"recipe_step_products.belongs_to_recipe_step",
 	}
 
@@ -79,9 +79,9 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.MeasurementUnit.Metric,
 		&x.MeasurementUnit.Imperial,
 		&x.MeasurementUnit.PluralName,
-		&x.MeasurementUnit.CreatedOn,
-		&x.MeasurementUnit.LastUpdatedOn,
-		&x.MeasurementUnit.ArchivedOn,
+		&x.MeasurementUnit.CreatedAt,
+		&x.MeasurementUnit.LastUpdatedAt,
+		&x.MeasurementUnit.ArchivedAt,
 		&x.MinimumQuantityValue,
 		&x.MaximumQuantityValue,
 		&x.QuantityNotes,
@@ -89,9 +89,9 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.MaximumStorageDurationInSeconds,
 		&x.MinimumStorageTemperatureInCelsius,
 		&x.MaximumStorageTemperatureInCelsius,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.BelongsToRecipeStep,
 	}
 
@@ -139,7 +139,7 @@ func (q *SQLQuerier) scanRecipeStepProducts(ctx context.Context, rows database.R
 	return recipeStepProducts, filteredCount, totalCount, nil
 }
 
-const recipeStepProductExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_products.id FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5 )"
+const recipeStepProductExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_products.id FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_at IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )"
 
 // RecipeStepProductExists fetches whether a recipe step product exists from the database.
 func (q *SQLQuerier) RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (exists bool, err error) {
@@ -195,9 +195,9 @@ const getRecipeStepProductQuery = `SELECT
 	valid_measurement_units.metric,
 	valid_measurement_units.imperial,
 	valid_measurement_units.plural_name,
-	valid_measurement_units.created_on,
-	valid_measurement_units.last_updated_on,
-	valid_measurement_units.archived_on,
+	valid_measurement_units.created_at,
+	valid_measurement_units.last_updated_at,
+	valid_measurement_units.archived_at,
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
@@ -205,21 +205,21 @@ const getRecipeStepProductQuery = `SELECT
 	recipe_step_products.maximum_storage_duration_in_seconds,
 	recipe_step_products.minimum_storage_temperature_in_celsius,
 	recipe_step_products.maximum_storage_temperature_in_celsius,
-	recipe_step_products.created_on,
-	recipe_step_products.last_updated_on,
-	recipe_step_products.archived_on,
+	recipe_step_products.created_at,
+	recipe_step_products.last_updated_at,
+	recipe_step_products.archived_at,
 	recipe_step_products.belongs_to_recipe_step
 FROM recipe_step_products
 JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
-WHERE recipe_step_products.archived_on IS NULL
+WHERE recipe_step_products.archived_at IS NULL
 AND recipe_step_products.belongs_to_recipe_step = $1 
 AND recipe_step_products.id = $2
-AND recipe_steps.archived_on IS NULL
+AND recipe_steps.archived_at IS NULL
 AND recipe_steps.belongs_to_recipe = $3
 AND recipe_steps.id = $4
-AND recipes.archived_on IS NULL 
+AND recipes.archived_at IS NULL 
 AND recipes.id = $5
 `
 
@@ -266,7 +266,7 @@ func (q *SQLQuerier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeS
 	return recipeStepProduct, nil
 }
 
-const getTotalRecipeStepProductsCountQuery = "SELECT COUNT(recipe_step_products.id) FROM recipe_step_products WHERE recipe_step_products.archived_on IS NULL"
+const getTotalRecipeStepProductsCountQuery = "SELECT COUNT(recipe_step_products.id) FROM recipe_step_products WHERE recipe_step_products.archived_at IS NULL"
 
 // GetTotalRecipeStepProductCount fetches the count of recipe step products from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalRecipeStepProductCount(ctx context.Context) (uint64, error) {
@@ -296,9 +296,9 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 	valid_measurement_units.metric,
 	valid_measurement_units.imperial,
 	valid_measurement_units.plural_name,
-	valid_measurement_units.created_on,
-	valid_measurement_units.last_updated_on,
-	valid_measurement_units.archived_on,
+	valid_measurement_units.created_at,
+	valid_measurement_units.last_updated_at,
+	valid_measurement_units.archived_at,
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
@@ -306,18 +306,18 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 	recipe_step_products.maximum_storage_duration_in_seconds,
 	recipe_step_products.minimum_storage_temperature_in_celsius,
 	recipe_step_products.maximum_storage_temperature_in_celsius,
-	recipe_step_products.created_on,
-	recipe_step_products.last_updated_on,
-	recipe_step_products.archived_on,
+	recipe_step_products.created_at,
+	recipe_step_products.last_updated_at,
+	recipe_step_products.archived_at,
 	recipe_step_products.belongs_to_recipe_step
 FROM recipe_step_products
 JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 LEFT OUTER JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
-WHERE recipe_step_products.archived_on IS NULL
-AND recipe_steps.archived_on IS NULL
+WHERE recipe_step_products.archived_at IS NULL
+AND recipe_steps.archived_at IS NULL
 AND recipe_steps.belongs_to_recipe = $1
-AND recipes.archived_on IS NULL 
+AND recipes.archived_at IS NULL 
 AND recipes.id = $2
 `
 
@@ -405,7 +405,7 @@ func (q *SQLQuerier) buildGetRecipeStepProductsWithIDsQuery(ctx context.Context,
 
 	withIDsWhere := squirrel.Eq{
 		"recipe_step_products.id":                     ids,
-		"recipe_step_products.archived_on":            nil,
+		"recipe_step_products.archived_at":            nil,
 		"recipe_step_products.belongs_to_recipe_step": recipeStepID,
 	}
 
@@ -512,7 +512,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
-		CreatedOn:                          q.currentTime(),
+		CreatedAt:                          q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)
@@ -538,8 +538,8 @@ SET
 	maximum_storage_duration_in_seconds = $8,
 	minimum_storage_temperature_in_celsius = $9,
 	maximum_storage_temperature_in_celsius = $10,
-    last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL
+    last_updated_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL
   AND belongs_to_recipe_step = $11
   AND id = $12
 `
@@ -580,7 +580,7 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 	return nil
 }
 
-const archiveRecipeStepProductQuery = "UPDATE recipe_step_products SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
+const archiveRecipeStepProductQuery = "UPDATE recipe_step_products SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
 
 // ArchiveRecipeStepProduct archives a recipe step product from the database by its ID.
 func (q *SQLQuerier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error {

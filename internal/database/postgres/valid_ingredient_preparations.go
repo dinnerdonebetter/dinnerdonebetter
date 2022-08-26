@@ -33,9 +33,9 @@ var (
 		"valid_preparations.restrict_to_ingredients",
 		"valid_preparations.zero_ingredients_allowable",
 		"valid_preparations.past_tense",
-		"valid_preparations.created_on",
-		"valid_preparations.last_updated_on",
-		"valid_preparations.archived_on",
+		"valid_preparations.created_at",
+		"valid_preparations.last_updated_at",
+		"valid_preparations.archived_at",
 		"valid_ingredients.id",
 		"valid_ingredients.name",
 		"valid_ingredients.description",
@@ -59,12 +59,12 @@ var (
 		"valid_ingredients.restrict_to_preparations",
 		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
 		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
-		"valid_ingredients.created_on",
-		"valid_ingredients.last_updated_on",
-		"valid_ingredients.archived_on",
-		"valid_ingredient_preparations.created_on",
-		"valid_ingredient_preparations.last_updated_on",
-		"valid_ingredient_preparations.archived_on",
+		"valid_ingredients.created_at",
+		"valid_ingredients.last_updated_at",
+		"valid_ingredients.archived_at",
+		"valid_ingredient_preparations.created_at",
+		"valid_ingredient_preparations.last_updated_at",
+		"valid_ingredient_preparations.archived_at",
 	}
 )
 
@@ -88,9 +88,9 @@ func (q *SQLQuerier) scanValidIngredientPreparation(ctx context.Context, scan da
 		&x.Preparation.RestrictToIngredients,
 		&x.Preparation.ZeroIngredientsAllowable,
 		&x.Preparation.PastTense,
-		&x.Preparation.CreatedOn,
-		&x.Preparation.LastUpdatedOn,
-		&x.Preparation.ArchivedOn,
+		&x.Preparation.CreatedAt,
+		&x.Preparation.LastUpdatedAt,
+		&x.Preparation.ArchivedAt,
 		&x.Ingredient.ID,
 		&x.Ingredient.Name,
 		&x.Ingredient.Description,
@@ -114,12 +114,12 @@ func (q *SQLQuerier) scanValidIngredientPreparation(ctx context.Context, scan da
 		&x.Ingredient.RestrictToPreparations,
 		&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
 		&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
-		&x.Ingredient.CreatedOn,
-		&x.Ingredient.LastUpdatedOn,
-		&x.Ingredient.ArchivedOn,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.Ingredient.CreatedAt,
+		&x.Ingredient.LastUpdatedAt,
+		&x.Ingredient.ArchivedAt,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -166,7 +166,7 @@ func (q *SQLQuerier) scanValidIngredientPreparations(ctx context.Context, rows d
 	return validIngredientPreparations, filteredCount, totalCount, nil
 }
 
-const validIngredientPreparationExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL AND valid_ingredient_preparations.id = $1 )"
+const validIngredientPreparationExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_at IS NULL AND valid_ingredient_preparations.id = $1 )"
 
 // ValidIngredientPreparationExists fetches whether a valid ingredient preparation exists from the database.
 func (q *SQLQuerier) ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (exists bool, err error) {
@@ -204,9 +204,9 @@ const getValidIngredientPreparationQuery = `SELECT
 	valid_preparations.restrict_to_ingredients,
 	valid_preparations.zero_ingredients_allowable,
 	valid_preparations.past_tense,
-	valid_preparations.created_on,
-	valid_preparations.last_updated_on,
-	valid_preparations.archived_on,
+	valid_preparations.created_at,
+	valid_preparations.last_updated_at,
+	valid_preparations.archived_at,
 	valid_ingredients.id,
 	valid_ingredients.name,
 	valid_ingredients.description,
@@ -230,16 +230,16 @@ const getValidIngredientPreparationQuery = `SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.created_on,
-	valid_ingredients.last_updated_on,
-	valid_ingredients.archived_on,
-	valid_ingredient_preparations.created_on,
-	valid_ingredient_preparations.last_updated_on,
-	valid_ingredient_preparations.archived_on
+	valid_ingredients.created_at,
+	valid_ingredients.last_updated_at,
+	valid_ingredients.archived_at,
+	valid_ingredient_preparations.created_at,
+	valid_ingredient_preparations.last_updated_at,
+	valid_ingredient_preparations.archived_at
 FROM valid_ingredient_preparations
 JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
 JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
-WHERE valid_ingredient_preparations.archived_on IS NULL
+WHERE valid_ingredient_preparations.archived_at IS NULL
 AND valid_ingredient_preparations.id = $1
 `
 
@@ -270,7 +270,7 @@ func (q *SQLQuerier) GetValidIngredientPreparation(ctx context.Context, validIng
 	return validIngredientPreparation, nil
 }
 
-const getTotalValidIngredientPreparationsCountQuery = "SELECT COUNT(valid_ingredient_preparations.id) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL"
+const getTotalValidIngredientPreparationsCountQuery = "SELECT COUNT(valid_ingredient_preparations.id) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_at IS NULL"
 
 // GetTotalValidIngredientPreparationCount fetches the count of valid ingredient preparations from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalValidIngredientPreparationCount(ctx context.Context) (uint64, error) {
@@ -339,7 +339,7 @@ func (q *SQLQuerier) buildGetValidIngredientPreparationsWithIDsQuery(ctx context
 
 	withIDsWhere := squirrel.Eq{
 		"valid_ingredient_preparations.id":          ids,
-		"valid_ingredient_preparations.archived_on": nil,
+		"valid_ingredient_preparations.archived_at": nil,
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(validIngredientPreparationsTableColumns...).
@@ -401,7 +401,7 @@ func (q *SQLQuerier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx
 		Join(validPreparationsOnValidIngredientPreparationsJoinClause).
 		Where(squirrel.Eq{
 			fmt.Sprintf("valid_ingredient_preparations.%s", column): ids,
-			"valid_ingredient_preparations.archived_on":             nil,
+			"valid_ingredient_preparations.archived_at":             nil,
 		}).
 		Limit(uint64(limit)).
 		ToSql()
@@ -537,7 +537,7 @@ func (q *SQLQuerier) CreateValidIngredientPreparation(ctx context.Context, input
 		Notes:       input.Notes,
 		Preparation: types.ValidPreparation{ID: input.ValidPreparationID},
 		Ingredient:  types.ValidIngredient{ID: input.ValidIngredientID},
-		CreatedOn:   q.currentTime(),
+		CreatedAt:   q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientPreparationIDToSpan(span, x.ID)
@@ -546,7 +546,7 @@ func (q *SQLQuerier) CreateValidIngredientPreparation(ctx context.Context, input
 	return x, nil
 }
 
-const updateValidIngredientPreparationQuery = "UPDATE valid_ingredient_preparations SET notes = $1, valid_preparation_id = $2, valid_ingredient_id = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4"
+const updateValidIngredientPreparationQuery = "UPDATE valid_ingredient_preparations SET notes = $1, valid_preparation_id = $2, valid_ingredient_id = $3, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $4"
 
 // UpdateValidIngredientPreparation updates a particular valid ingredient preparation.
 func (q *SQLQuerier) UpdateValidIngredientPreparation(ctx context.Context, updated *types.ValidIngredientPreparation) error {
@@ -576,7 +576,7 @@ func (q *SQLQuerier) UpdateValidIngredientPreparation(ctx context.Context, updat
 	return nil
 }
 
-const archiveValidIngredientPreparationQuery = "UPDATE valid_ingredient_preparations SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1"
+const archiveValidIngredientPreparationQuery = "UPDATE valid_ingredient_preparations SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidIngredientPreparation archives a valid ingredient preparation from the database by its ID.
 func (q *SQLQuerier) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {

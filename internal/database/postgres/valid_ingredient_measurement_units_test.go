@@ -38,9 +38,9 @@ func buildMockRowsFromValidIngredientMeasurementUnits(includeCounts bool, filter
 			&x.MeasurementUnit.Metric,
 			&x.MeasurementUnit.Imperial,
 			&x.MeasurementUnit.PluralName,
-			&x.MeasurementUnit.CreatedOn,
-			&x.MeasurementUnit.LastUpdatedOn,
-			&x.MeasurementUnit.ArchivedOn,
+			&x.MeasurementUnit.CreatedAt,
+			&x.MeasurementUnit.LastUpdatedAt,
+			&x.MeasurementUnit.ArchivedAt,
 			&x.Ingredient.ID,
 			&x.Ingredient.Name,
 			&x.Ingredient.Description,
@@ -64,14 +64,14 @@ func buildMockRowsFromValidIngredientMeasurementUnits(includeCounts bool, filter
 			&x.Ingredient.RestrictToPreparations,
 			&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
 			&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
-			&x.Ingredient.CreatedOn,
-			&x.Ingredient.LastUpdatedOn,
-			&x.Ingredient.ArchivedOn,
+			&x.Ingredient.CreatedAt,
+			&x.Ingredient.LastUpdatedAt,
+			&x.Ingredient.ArchivedAt,
 			&x.MinimumAllowableQuantity,
 			&x.MaximumAllowableQuantity,
-			&x.CreatedOn,
-			&x.LastUpdatedOn,
-			&x.ArchivedOn,
+			&x.CreatedAt,
+			&x.LastUpdatedAt,
+			&x.ArchivedAt,
 		}
 
 		if includeCounts {
@@ -437,7 +437,7 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleValidIngredientMeasurementUnit.CreatedOn
+			return exampleValidIngredientMeasurementUnit.CreatedAt
 		}
 
 		actual, err := c.CreateValidIngredientMeasurementUnit(ctx, exampleInput)
@@ -485,7 +485,7 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleValidIngredientMeasurementUnit.CreatedOn
+			return exampleValidIngredientMeasurementUnit.CreatedAt
 		}
 
 		actual, err := c.CreateValidIngredientMeasurementUnit(ctx, exampleInput)

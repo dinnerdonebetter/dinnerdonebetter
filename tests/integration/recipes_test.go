@@ -26,7 +26,7 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
 	assert.Equal(t, expected.YieldsPortions, actual.YieldsPortions, "expected YieldsPortions for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsPortions, actual.YieldsPortions)
 	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertRecipeToRecipeUpdateInput creates an RecipeUpdateRequestInput struct from a recipe.
@@ -347,7 +347,7 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 
 			// assert recipe equality
 			checkRecipeEquality(t, newRecipe, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))

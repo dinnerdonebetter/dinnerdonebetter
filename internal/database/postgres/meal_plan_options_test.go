@@ -37,16 +37,16 @@ func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, 
 			x.TieBroken,
 			x.Meal.ID,
 			x.Notes,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 			x.BelongsToMealPlan,
 			x.Meal.ID,
 			x.Meal.Name,
 			x.Meal.Description,
-			x.Meal.CreatedOn,
-			x.Meal.LastUpdatedOn,
-			x.Meal.ArchivedOn,
+			x.Meal.CreatedAt,
+			x.Meal.LastUpdatedAt,
+			x.Meal.ArchivedAt,
 			x.Meal.CreatedByUser,
 		}
 
@@ -595,7 +595,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlanOption.CreatedOn
+			return exampleMealPlanOption.CreatedAt
 		}
 
 		actual, err := c.CreateMealPlanOption(ctx, exampleInput)
@@ -642,7 +642,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlanOption.CreatedOn
+			return exampleMealPlanOption.CreatedAt
 		}
 
 		actual, err := c.CreateMealPlanOption(ctx, exampleInput)

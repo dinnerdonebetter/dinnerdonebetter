@@ -28,9 +28,9 @@ func buildMockRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types.Ho
 			&x.BelongsToHousehold,
 			strings.Join(x.HouseholdRoles, householdMemberRolesSeparator),
 			&x.DefaultHousehold,
-			&x.CreatedOn,
-			&x.LastUpdatedOn,
-			&x.ArchivedOn,
+			&x.CreatedAt,
+			&x.LastUpdatedAt,
+			&x.ArchivedAt,
 		}
 
 		exampleRows.AddRow(rowValues...)
@@ -44,14 +44,14 @@ func buildInvalidRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types
 
 	for _, x := range memberships {
 		rowValues := []driver.Value{
-			&x.ArchivedOn,
+			&x.ArchivedAt,
 			&x.ID,
 			&x.BelongsToUser.ID,
 			&x.BelongsToHousehold,
 			strings.Join(x.HouseholdRoles, householdMemberRolesSeparator),
 			&x.DefaultHousehold,
-			&x.CreatedOn,
-			&x.LastUpdatedOn,
+			&x.CreatedAt,
+			&x.LastUpdatedAt,
 		}
 
 		exampleRows.AddRow(rowValues...)

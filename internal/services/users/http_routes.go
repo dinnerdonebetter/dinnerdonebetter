@@ -236,7 +236,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		CreatedUserID:   user.ID,
 		Username:        user.Username,
 		EmailAddress:    user.EmailAddress,
-		CreatedOn:       user.CreatedOn,
+		CreatedAt:       user.CreatedAt,
 		TwoFactorSecret: user.TwoFactorSecret,
 		BirthDay:        user.BirthDay,
 		BirthMonth:      user.BirthMonth,
@@ -444,7 +444,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	tracing.AttachUserIDToSpan(span, user.ID)
 	tracing.AttachUsernameToSpan(span, user.Username)
 
-	if user.TwoFactorSecretVerifiedOn != nil {
+	if user.TwoFactorSecretVerifiedAt != nil {
 		// I suppose if this happens too many times, we might want to keep track of that
 		logger.Debug("two factor secret already verified")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "TOTP secret already verified", http.StatusAlreadyReported)
@@ -523,7 +523,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	if user.TwoFactorSecretVerifiedOn != nil {
+	if user.TwoFactorSecretVerifiedAt != nil {
 		// validate login.
 		valid, validationErr := s.authenticator.ValidateLogin(ctx, user.HashedPassword, input.CurrentPassword, user.TwoFactorSecret, input.TOTPToken)
 		if validationErr != nil {
@@ -551,7 +551,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	user.TwoFactorSecret = tfs
-	user.TwoFactorSecretVerifiedOn = nil
+	user.TwoFactorSecretVerifiedAt = nil
 
 	// update the user in the database.
 	if err = s.userDataManager.UpdateUser(ctx, user); err != nil {

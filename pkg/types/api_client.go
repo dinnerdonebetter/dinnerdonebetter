@@ -24,14 +24,14 @@ type (
 	APIClient struct {
 		_ struct{}
 
-		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn    *uint64 `json:"archivedOn"`
+		LastUpdatedAt *uint64 `json:"lastUpdatedAt"`
+		ArchivedAt    *uint64 `json:"archivedAt"`
 		Name          string  `json:"name"`
 		ClientID      string  `json:"clientID"`
 		ID            string  `json:"id"`
 		BelongsToUser string  `json:"belongsToUser"`
 		ClientSecret  []byte  `json:"-"`
-		CreatedOn     uint64  `json:"createdOn"`
+		CreatedAt     uint64  `json:"createdAt"`
 	}
 
 	// APIClientList is a response struct containing a list of API clients.

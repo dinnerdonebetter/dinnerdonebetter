@@ -36,9 +36,9 @@ func buildMockRowsFromValidMeasurementUnits(includeCounts bool, filteredCount ui
 			x.Metric,
 			x.Imperial,
 			x.PluralName,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 		}
 
 		if includeCounts {
@@ -609,7 +609,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleValidMeasurementUnit.CreatedOn
+			return exampleValidMeasurementUnit.CreatedAt
 		}
 
 		actual, err := c.CreateValidMeasurementUnit(ctx, exampleInput)
@@ -657,7 +657,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleValidMeasurementUnit.CreatedOn
+			return exampleValidMeasurementUnit.CreatedAt
 		}
 
 		actual, err := c.CreateValidMeasurementUnit(ctx, exampleInput)

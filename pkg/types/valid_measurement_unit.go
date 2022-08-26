@@ -33,14 +33,14 @@ type (
 	// ValidMeasurementUnit represents a valid measurement unit.
 	ValidMeasurementUnit struct {
 		_             struct{}
-		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn    *uint64 `json:"archivedOn"`
+		LastUpdatedAt *uint64 `json:"lastUpdatedAt"`
+		ArchivedAt    *uint64 `json:"archivedAt"`
 		Name          string  `json:"name"`
 		Description   string  `json:"description"`
 		ID            string  `json:"id"`
 		IconPath      string  `json:"iconPath"`
 		PluralName    string  `json:"pluralName"`
-		CreatedOn     uint64  `json:"createdOn"`
+		CreatedAt     uint64  `json:"createdAt"`
 		Volumetric    bool    `json:"volumetric"`
 		Universal     bool    `json:"universal"`
 		Metric        bool    `json:"metric"`
@@ -61,7 +61,7 @@ type (
 		Description string `json:"description"`
 		IconPath    string `json:"iconPath"`
 		PluralName  string `json:"pluralName"`
-		CreatedOn   uint64 `json:"createdOn"`
+		CreatedAt   uint64 `json:"createdAt"`
 		Volumetric  bool   `json:"volumetric"`
 		Universal   bool   `json:"universal"`
 		Metric      bool   `json:"metric"`
@@ -76,7 +76,7 @@ type (
 		ID          string `json:"id"`
 		IconPath    string `json:"iconPath"`
 		PluralName  string `json:"pluralName"`
-		CreatedOn   uint64 `json:"createdOn"`
+		CreatedAt   uint64 `json:"createdAt"`
 		Volumetric  bool   `json:"volumetric"`
 		Universal   bool   `json:"universal"`
 		Metric      bool   `json:"metric"`
@@ -89,7 +89,7 @@ type (
 		Name        *string `json:"name"`
 		Description *string `json:"description"`
 		IconPath    *string `json:"iconPath"`
-		CreatedOn   *uint64 `json:"createdOn"`
+		CreatedAt   *uint64 `json:"createdAt"`
 		Volumetric  *bool   `json:"volumetric"`
 		Universal   *bool   `json:"universal"`
 		Metric      *bool   `json:"metric"`

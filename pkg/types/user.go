@@ -38,10 +38,10 @@ type (
 	// User represents a User.
 	User struct {
 		_                         struct{}
-		PasswordLastChangedOn     *uint64           `json:"passwordLastChangedOn"`
-		ArchivedOn                *uint64           `json:"archivedOn"`
-		LastUpdatedOn             *uint64           `json:"lastUpdatedOn"`
-		TwoFactorSecretVerifiedOn *uint64           `json:"twoFactorSecretVerifiedOn"`
+		PasswordLastChangedAt     *uint64           `json:"passwordLastChangedAt"`
+		ArchivedAt                *uint64           `json:"archivedAt"`
+		LastUpdatedAt             *uint64           `json:"lastUpdatedAt"`
+		TwoFactorSecretVerifiedAt *uint64           `json:"twoFactorSecretVerifiedAt"`
 		AvatarSrc                 *string           `json:"avatar"`
 		BirthMonth                *uint8            `json:"birthMonth"`
 		BirthDay                  *uint8            `json:"birthDay"`
@@ -53,7 +53,7 @@ type (
 		AccountStatus             userAccountStatus `json:"accountStatus"`
 		Username                  string            `json:"username"`
 		ServiceRoles              []string          `json:"serviceRoles"`
-		CreatedOn                 uint64            `json:"createdOn"`
+		CreatedAt                 uint64            `json:"createdAt"`
 		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}
 
@@ -104,7 +104,7 @@ type (
 		CreatedUserID   string            `json:"createdUserID"`
 		AccountStatus   userAccountStatus `json:"accountStatus"`
 		TwoFactorSecret string            `json:"twoFactorSecret"`
-		CreatedOn       uint64            `json:"createdOn"`
+		CreatedAt       uint64            `json:"createdAt"`
 		IsAdmin         bool              `json:"isAdmin"`
 	}
 

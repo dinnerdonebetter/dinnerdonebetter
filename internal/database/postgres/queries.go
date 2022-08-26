@@ -79,9 +79,9 @@ func (q *SQLQuerier) buildTotalCountQuery(
 			where[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = userID
 		}
 
-		where[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		where[fmt.Sprintf("%s.archived_at", tableName)] = nil
 	} else if !includeArchived {
-		where[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		where[fmt.Sprintf("%s.archived_at", tableName)] = nil
 	}
 
 	if len(where) > 0 {
@@ -119,9 +119,9 @@ func (q *SQLQuerier) buildTotalCountQueryWithILike(
 			equalsWhere[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = userID
 		}
 
-		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		equalsWhere[fmt.Sprintf("%s.archived_at", tableName)] = nil
 	} else if !includeArchived {
-		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		equalsWhere[fmt.Sprintf("%s.archived_at", tableName)] = nil
 	}
 
 	if where != nil {
@@ -171,9 +171,9 @@ func (q *SQLQuerier) buildFilteredCountQuery(
 			where[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = userID
 		}
 
-		where[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		where[fmt.Sprintf("%s.archived_at", tableName)] = nil
 	} else if !includeArchived {
-		where[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		where[fmt.Sprintf("%s.archived_at", tableName)] = nil
 	}
 
 	if len(where) > 0 {
@@ -221,9 +221,9 @@ func (q *SQLQuerier) buildFilteredCountQueryWithILike(
 			equalsWhere[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = userID
 		}
 
-		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		equalsWhere[fmt.Sprintf("%s.archived_at", tableName)] = nil
 	} else if !includeArchived {
-		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		equalsWhere[fmt.Sprintf("%s.archived_at", tableName)] = nil
 	}
 
 	if len(equalsWhere) > 0 {
@@ -286,7 +286,7 @@ func (q *SQLQuerier) buildListQuery(
 		if where == nil {
 			where = squirrel.Eq{}
 		}
-		where[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		where[fmt.Sprintf("%s.archived_at", tableName)] = nil
 
 		if ownershipColumn != "" && ownerID != "" {
 			where[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = ownerID
@@ -361,7 +361,7 @@ func (q *SQLQuerier) buildListQueryWithILike(
 
 	equalsWhere := squirrel.Eq{}
 	if !forAdmin {
-		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+		equalsWhere[fmt.Sprintf("%s.archived_at", tableName)] = nil
 
 		if ownershipColumn != "" && ownerID != "" {
 			equalsWhere[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = ownerID

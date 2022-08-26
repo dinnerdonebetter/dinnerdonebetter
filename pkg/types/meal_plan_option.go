@@ -50,8 +50,8 @@ type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
 		_                 struct{}
-		ArchivedOn        *uint64               `json:"archivedOn"`
-		LastUpdatedOn     *uint64               `json:"lastUpdatedOn"`
+		ArchivedAt        *uint64               `json:"archivedAt"`
+		LastUpdatedAt     *uint64               `json:"lastUpdatedAt"`
 		ID                string                `json:"id"`
 		BelongsToMealPlan string                `json:"belongsToMealPlan"`
 		Notes             string                `json:"notes"`
@@ -59,7 +59,7 @@ type (
 		AssignedCook      *string               `json:"assignedCook"`
 		Votes             []*MealPlanOptionVote `json:"votes"`
 		Meal              Meal                  `json:"meal"`
-		CreatedOn         uint64                `json:"createdOn"`
+		CreatedAt         uint64                `json:"createdAt"`
 		Day               time.Weekday          `json:"day"`
 		Chosen            bool                  `json:"chosen"`
 		TieBroken         bool                  `json:"tieBroken"`

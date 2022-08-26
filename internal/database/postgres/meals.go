@@ -23,9 +23,9 @@ var (
 		"meals.id",
 		"meals.name",
 		"meals.description",
-		"meals.created_on",
-		"meals.last_updated_on",
-		"meals.archived_on",
+		"meals.created_at",
+		"meals.last_updated_at",
+		"meals.archived_at",
 		"meals.created_by_user",
 	}
 
@@ -34,9 +34,9 @@ var (
 		"meals.id",
 		"meals.name",
 		"meals.description",
-		"meals.created_on",
-		"meals.last_updated_on",
-		"meals.archived_on",
+		"meals.created_at",
+		"meals.last_updated_at",
+		"meals.archived_at",
 		"meals.created_by_user",
 		"meal_recipes.recipe_id",
 	}
@@ -55,9 +55,9 @@ func (q *SQLQuerier) scanMeal(ctx context.Context, scan database.Scanner, includ
 		&x.ID,
 		&x.Name,
 		&x.Description,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.CreatedByUser,
 	}
 
@@ -120,9 +120,9 @@ func (q *SQLQuerier) scanMealWithRecipes(ctx context.Context, rows database.Resu
 			&x.ID,
 			&x.Name,
 			&x.Description,
-			&x.CreatedOn,
-			&x.LastUpdatedOn,
-			&x.ArchivedOn,
+			&x.CreatedAt,
+			&x.LastUpdatedAt,
+			&x.ArchivedAt,
 			&x.CreatedByUser,
 			&recipeID,
 		}
@@ -136,7 +136,7 @@ func (q *SQLQuerier) scanMealWithRecipes(ctx context.Context, rows database.Resu
 	return x, recipeIDs, nil
 }
 
-const mealExistenceQuery = "SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_on IS NULL AND meals.id = $1 )"
+const mealExistenceQuery = "SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = $1 )"
 
 // MealExists fetches whether a meal exists from the database.
 func (q *SQLQuerier) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
@@ -167,15 +167,15 @@ const getMealByIDQuery = `SELECT
 	meals.id,
 	meals.name,
 	meals.description,
-	meals.created_on,
-	meals.last_updated_on,
-	meals.archived_on,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
 	meals.created_by_user,
 	meal_recipes.recipe_id
 FROM meals
 	FULL OUTER JOIN meal_recipes ON meal_recipes.meal_id=meals.id
-WHERE meals.archived_on IS NULL
-	AND meal_recipes.archived_on IS NULL
+WHERE meals.archived_at IS NULL
+	AND meal_recipes.archived_at IS NULL
 	AND meals.id = $1
 `
 
@@ -222,7 +222,7 @@ func (q *SQLQuerier) GetMeal(ctx context.Context, mealID string) (*types.Meal, e
 	return m, nil
 }
 
-const getTotalMealsCountQuery = "SELECT COUNT(meals.id) FROM meals WHERE meals.archived_on IS NULL"
+const getTotalMealsCountQuery = "SELECT COUNT(meals.id) FROM meals WHERE meals.archived_at IS NULL"
 
 // GetTotalMealCount fetches the count of meals from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalMealCount(ctx context.Context) (uint64, error) {
@@ -316,7 +316,7 @@ func (q *SQLQuerier) buildGetMealsWithIDsQuery(ctx context.Context, userID strin
 
 	withIDsWhere := squirrel.Eq{
 		"meals.id":          ids,
-		"meals.archived_on": nil,
+		"meals.archived_at": nil,
 	}
 
 	if userID != "" {
@@ -403,7 +403,7 @@ func (q *SQLQuerier) createMeal(ctx context.Context, querier database.SQLQueryEx
 		Name:          input.Name,
 		Description:   input.Description,
 		CreatedByUser: input.CreatedByUser,
-		CreatedOn:     q.currentTime(),
+		CreatedAt:     q.currentTime(),
 	}
 
 	for _, recipeID := range input.Recipes {
@@ -482,7 +482,7 @@ func (q *SQLQuerier) CreateMealRecipe(ctx context.Context, querier database.SQLQ
 	return nil
 }
 
-const archiveMealQuery = "UPDATE meals SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND created_by_user = $1 AND id = $2"
+const archiveMealQuery = "UPDATE meals SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
 
 // ArchiveMeal archives a meal from the database by its ID.
 func (q *SQLQuerier) ArchiveMeal(ctx context.Context, mealID, userID string) error {

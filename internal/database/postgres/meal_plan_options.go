@@ -34,16 +34,16 @@ var (
 		"meal_plan_options.tiebroken",
 		"meal_plan_options.meal_id",
 		"meal_plan_options.notes",
-		"meal_plan_options.created_on",
-		"meal_plan_options.last_updated_on",
-		"meal_plan_options.archived_on",
+		"meal_plan_options.created_at",
+		"meal_plan_options.last_updated_at",
+		"meal_plan_options.archived_at",
 		"meal_plan_options.belongs_to_meal_plan",
 		"meals.id",
 		"meals.name",
 		"meals.description",
-		"meals.created_on",
-		"meals.last_updated_on",
-		"meals.archived_on",
+		"meals.created_at",
+		"meals.last_updated_at",
+		"meals.archived_at",
 		"meals.created_by_user",
 	}
 
@@ -77,16 +77,16 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 		&x.TieBroken,
 		&x.Meal.ID,
 		&x.Notes,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.BelongsToMealPlan,
 		&x.Meal.ID,
 		&x.Meal.Name,
 		&x.Meal.Description,
-		&x.Meal.CreatedOn,
-		&x.Meal.LastUpdatedOn,
-		&x.Meal.ArchivedOn,
+		&x.Meal.CreatedAt,
+		&x.Meal.LastUpdatedAt,
+		&x.Meal.ArchivedAt,
 		&x.Meal.CreatedByUser,
 	}
 
@@ -134,7 +134,7 @@ func (q *SQLQuerier) scanMealPlanOptions(ctx context.Context, rows database.Resu
 	return mealPlanOptions, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_options.id FROM meal_plan_options JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $1 AND meal_plan_options.id = $2 AND meal_plans.archived_on IS NULL AND meal_plans.id = $3 )"
+const mealPlanOptionExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_options.id FROM meal_plan_options JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_options.archived_at IS NULL AND meal_plan_options.belongs_to_meal_plan = $1 AND meal_plan_options.id = $2 AND meal_plans.archived_at IS NULL AND meal_plans.id = $3 )"
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
 func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (exists bool, err error) {
@@ -178,24 +178,24 @@ const getMealPlanOptionQuery = `SELECT
 	meal_plan_options.tiebroken,
 	meal_plan_options.meal_id,
 	meal_plan_options.notes,
-	meal_plan_options.created_on,
-	meal_plan_options.last_updated_on,
-	meal_plan_options.archived_on,
+	meal_plan_options.created_at,
+	meal_plan_options.last_updated_at,
+	meal_plan_options.archived_at,
 	meal_plan_options.belongs_to_meal_plan,
 	meals.id,
 	meals.name,
 	meals.description,
-	meals.created_on,
-	meals.last_updated_on,
-	meals.archived_on,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
 	meals.created_by_user
 FROM meal_plan_options
 JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
 JOIN meals ON meal_plan_options.meal_id=meals.id
-WHERE meal_plan_options.archived_on IS NULL
+WHERE meal_plan_options.archived_at IS NULL
 AND meal_plan_options.belongs_to_meal_plan = $1
 AND meal_plan_options.id = $2
-AND meal_plans.archived_on IS NULL
+AND meal_plans.archived_at IS NULL
 AND meal_plans.id = $3
 `
 
@@ -234,7 +234,7 @@ func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 	return mealPlanOption, nil
 }
 
-const getTotalMealPlanOptionsCountQuery = "SELECT COUNT(meal_plan_options.id) FROM meal_plan_options WHERE meal_plan_options.archived_on IS NULL"
+const getTotalMealPlanOptionsCountQuery = "SELECT COUNT(meal_plan_options.id) FROM meal_plan_options WHERE meal_plan_options.archived_at IS NULL"
 
 // GetTotalMealPlanOptionCount fetches the count of meal plan options from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalMealPlanOptionCount(ctx context.Context) (uint64, error) {
@@ -299,7 +299,7 @@ func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, me
 
 	withIDsWhere := squirrel.Eq{
 		"meal_plan_options.id":                   ids,
-		"meal_plan_options.archived_on":          nil,
+		"meal_plan_options.archived_at":          nil,
 		"meal_plan_options.belongs_to_meal_plan": mealPlanID,
 	}
 
@@ -394,7 +394,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 		MealName:          input.MealName,
 		Notes:             input.Notes,
 		BelongsToMealPlan: input.BelongsToMealPlan,
-		CreatedOn:         q.currentTime(),
+		CreatedAt:         q.currentTime(),
 		Votes:             []*types.MealPlanOptionVote{},
 	}
 
@@ -416,8 +416,8 @@ SET
 	meal_id = $3,
 	meal_name = $4,
 	notes = $5,
-	last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL
+	last_updated_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL
   AND belongs_to_meal_plan = $6 
   AND id = $7
 `
@@ -453,7 +453,7 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 	return nil
 }
 
-const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan = $1 AND id = $2"
+const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2"
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
 func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {
@@ -556,7 +556,7 @@ func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.Me
 }
 
 const finalizeMealPlanOptionQuery = `
-	UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_on IS NULL AND belongs_to_meal_plan = $1 AND id = $2
+	UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2
 `
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.

@@ -20,7 +20,7 @@ func checkValidIngredientMeasurementUnitEquality(t *testing.T, expected, actual 
 	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected Ingredient for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
 	assert.Equal(t, expected.MinimumAllowableQuantity, actual.MinimumAllowableQuantity, "expected MinimumAllowableQuantity for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.MinimumAllowableQuantity, actual.MinimumAllowableQuantity)
 	assert.Equal(t, expected.MaximumAllowableQuantity, actual.MaximumAllowableQuantity, "expected MaximumAllowableQuantity for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.MaximumAllowableQuantity, actual.MaximumAllowableQuantity)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateInput creates an ValidIngredientMeasurementUnitUpdateRequestInput struct from a valid ingredient measurement unit.
@@ -97,7 +97,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 
 			// assert valid ingredient measurement unit equality
 			checkValidIngredientMeasurementUnitEquality(t, newValidIngredientMeasurementUnit, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up valid ingredient measurement unit")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID))

@@ -37,9 +37,9 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.Preparation.RestrictToIngredients,
 			x.Preparation.ZeroIngredientsAllowable,
 			x.Preparation.PastTense,
-			x.Preparation.CreatedOn,
-			x.Preparation.LastUpdatedOn,
-			x.Preparation.ArchivedOn,
+			x.Preparation.CreatedAt,
+			x.Preparation.LastUpdatedAt,
+			x.Preparation.ArchivedAt,
 			x.MinimumEstimatedTimeInSeconds,
 			x.MaximumEstimatedTimeInSeconds,
 			x.MinimumTemperatureInCelsius,
@@ -47,9 +47,9 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.Notes,
 			x.ExplicitInstructions,
 			x.Optional,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAT,
 			x.BelongsToRecipe,
 		}
 
@@ -604,7 +604,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStep.CreatedOn
+			return exampleRecipeStep.CreatedAt
 		}
 
 		actual, err := c.CreateRecipeStep(ctx, exampleInput)
@@ -654,7 +654,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStep.CreatedOn
+			return exampleRecipeStep.CreatedAt
 		}
 
 		actual, err := c.CreateRecipeStep(ctx, exampleInput)
@@ -777,7 +777,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		}
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStep.CreatedOn
+			return exampleRecipeStep.CreatedAt
 		}
 
 		actual, err := c.createRecipeStep(ctx, c.db, exampleInput)
@@ -842,7 +842,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStep.CreatedOn
+			return exampleRecipeStep.CreatedAt
 		}
 
 		actual, err := c.createRecipeStep(ctx, c.db, exampleInput)
@@ -933,7 +933,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStep.CreatedOn
+			return exampleRecipeStep.CreatedAt
 		}
 
 		actual, err := c.createRecipeStep(ctx, c.db, exampleInput)

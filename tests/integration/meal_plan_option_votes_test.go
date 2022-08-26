@@ -18,7 +18,7 @@ func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealP
 	assert.Equal(t, expected.Rank, actual.Rank, "expected Rank for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Rank, actual.Rank)
 	assert.Equal(t, expected.Abstain, actual.Abstain, "expected Abstain for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Abstain, actual.Abstain)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput creates an MealPlanOptionVoteUpdateRequestInput struct from a meal plan option vote.
@@ -76,7 +76,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 
 				// assert meal plan option vote equality
 				checkMealPlanOptionVoteEquality(t, newMealPlanOptionVote, actual)
-				assert.NotNil(t, actual.LastUpdatedOn)
+				assert.NotNil(t, actual.LastUpdatedAt)
 
 				t.Log("cleaning up meal plan option vote")
 				assert.NoError(t, testClients.user.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))

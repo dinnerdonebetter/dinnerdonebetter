@@ -37,9 +37,9 @@ var (
 		"households.payment_processor_customer_id",
 		"households.subscription_plan_id",
 		"households.time_zone",
-		"households.created_on",
-		"households.last_updated_on",
-		"households.archived_on",
+		"households.created_at",
+		"households.last_updated_at",
+		"households.archived_at",
 		"households.belongs_to_user",
 		"household_invitations.to_email",
 		"household_invitations.to_user",
@@ -49,24 +49,24 @@ var (
 		"users.avatar_src",
 		"users.hashed_password",
 		"users.requires_password_change",
-		"users.password_last_changed_on",
+		"users.password_last_changed_at",
 		"users.two_factor_secret",
-		"users.two_factor_secret_verified_on",
+		"users.two_factor_secret_verified_at",
 		"users.service_roles",
 		"users.user_account_status",
 		"users.user_account_status_explanation",
 		"users.birth_day",
 		"users.birth_month",
-		"users.created_on",
-		"users.last_updated_on",
-		"users.archived_on",
+		"users.created_at",
+		"users.last_updated_at",
+		"users.archived_at",
 		"household_invitations.status",
 		"household_invitations.note",
 		"household_invitations.status_note",
 		"household_invitations.token",
-		"household_invitations.created_on",
-		"household_invitations.last_updated_on",
-		"household_invitations.archived_on",
+		"household_invitations.created_at",
+		"household_invitations.last_updated_at",
+		"household_invitations.archived_at",
 	}
 )
 
@@ -94,9 +94,9 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 		&householdInvitation.DestinationHousehold.PaymentProcessorCustomerID,
 		&householdInvitation.DestinationHousehold.SubscriptionPlanID,
 		&householdInvitation.DestinationHousehold.TimeZone,
-		&householdInvitation.DestinationHousehold.CreatedOn,
-		&householdInvitation.DestinationHousehold.LastUpdatedOn,
-		&householdInvitation.DestinationHousehold.ArchivedOn,
+		&householdInvitation.DestinationHousehold.CreatedAt,
+		&householdInvitation.DestinationHousehold.LastUpdatedAt,
+		&householdInvitation.DestinationHousehold.ArchivedAt,
 		&householdInvitation.DestinationHousehold.BelongsToUser,
 		&householdInvitation.ToEmail,
 		&householdInvitation.ToUser,
@@ -106,24 +106,24 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 		&householdInvitation.FromUser.AvatarSrc,
 		&householdInvitation.FromUser.HashedPassword,
 		&householdInvitation.FromUser.RequiresPasswordChange,
-		&householdInvitation.FromUser.PasswordLastChangedOn,
+		&householdInvitation.FromUser.PasswordLastChangedAt,
 		&householdInvitation.FromUser.TwoFactorSecret,
-		&householdInvitation.FromUser.TwoFactorSecretVerifiedOn,
+		&householdInvitation.FromUser.TwoFactorSecretVerifiedAt,
 		&rawServiceRoles,
 		&householdInvitation.FromUser.AccountStatus,
 		&householdInvitation.FromUser.AccountStatusExplanation,
 		&householdInvitation.FromUser.BirthDay,
 		&householdInvitation.FromUser.BirthMonth,
-		&householdInvitation.FromUser.CreatedOn,
-		&householdInvitation.FromUser.LastUpdatedOn,
-		&householdInvitation.FromUser.ArchivedOn,
+		&householdInvitation.FromUser.CreatedAt,
+		&householdInvitation.FromUser.LastUpdatedAt,
+		&householdInvitation.FromUser.ArchivedAt,
 		&householdInvitation.Status,
 		&householdInvitation.Note,
 		&householdInvitation.StatusNote,
 		&householdInvitation.Token,
-		&householdInvitation.CreatedOn,
-		&householdInvitation.LastUpdatedOn,
-		&householdInvitation.ArchivedOn,
+		&householdInvitation.CreatedAt,
+		&householdInvitation.LastUpdatedAt,
+		&householdInvitation.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -176,7 +176,7 @@ func (q *SQLQuerier) scanHouseholdInvitations(ctx context.Context, rows database
 	return householdInvitations, filteredCount, totalCount, nil
 }
 
-const householdInvitationExistenceQuery = "SELECT EXISTS ( SELECT household_invitations.id FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.id = $1 )"
+const householdInvitationExistenceQuery = "SELECT EXISTS ( SELECT household_invitations.id FROM household_invitations WHERE household_invitations.archived_at IS NULL AND household_invitations.id = $1 )"
 
 // HouseholdInvitationExists fetches whether a household invitation exists from the database.
 func (q *SQLQuerier) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
@@ -214,9 +214,9 @@ SELECT
 	households.payment_processor_customer_id,
 	households.subscription_plan_id,
 	households.time_zone,
-	households.created_on,
-	households.last_updated_on,
-	households.archived_on,
+	households.created_at,
+	households.last_updated_at,
+	households.archived_at,
 	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
@@ -226,28 +226,28 @@ SELECT
 	users.avatar_src,
 	users.hashed_password,
 	users.requires_password_change,
-	users.password_last_changed_on,
+	users.password_last_changed_at,
 	users.two_factor_secret,
-	users.two_factor_secret_verified_on,
+	users.two_factor_secret_verified_at,
 	users.service_roles,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birth_day,
 	users.birth_month,
-	users.created_on,
-	users.last_updated_on,
-	users.archived_on,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
 	household_invitations.status,
 	household_invitations.note,
 	household_invitations.status_note,
 	household_invitations.token,
-	household_invitations.created_on,
-	household_invitations.last_updated_on,
-	household_invitations.archived_on
+	household_invitations.created_at,
+	household_invitations.last_updated_at,
+	household_invitations.archived_at
 FROM household_invitations
 JOIN households ON household_invitations.destination_household = households.id
 JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_on IS NULL
+WHERE household_invitations.archived_at IS NULL
 AND household_invitations.destination_household = $1
 AND household_invitations.id = $2
 `
@@ -298,9 +298,9 @@ SELECT
 	households.payment_processor_customer_id,
 	households.subscription_plan_id,
 	households.time_zone,
-	households.created_on,
-	households.last_updated_on,
-	households.archived_on,
+	households.created_at,
+	households.last_updated_at,
+	households.archived_at,
 	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
@@ -310,28 +310,28 @@ SELECT
 	users.avatar_src,
 	users.hashed_password,
 	users.requires_password_change,
-	users.password_last_changed_on,
+	users.password_last_changed_at,
 	users.two_factor_secret,
-	users.two_factor_secret_verified_on,
+	users.two_factor_secret_verified_at,
 	users.service_roles,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birth_day,
 	users.birth_month,
-	users.created_on,
-	users.last_updated_on,
-	users.archived_on,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
 	household_invitations.status,
 	household_invitations.note,
 	household_invitations.status_note,
 	household_invitations.token,
-	household_invitations.created_on,
-	household_invitations.last_updated_on,
-	household_invitations.archived_on
+	household_invitations.created_at,
+	household_invitations.last_updated_at,
+	household_invitations.archived_at
 FROM household_invitations
 JOIN households ON household_invitations.destination_household = households.id
 JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_on IS NULL
+WHERE household_invitations.archived_at IS NULL
 AND household_invitations.token = $1
 AND household_invitations.id = $2
 `
@@ -382,9 +382,9 @@ SELECT
 	households.payment_processor_customer_id,
 	households.subscription_plan_id,
 	households.time_zone,
-	households.created_on,
-	households.last_updated_on,
-	households.archived_on,
+	households.created_at,
+	households.last_updated_at,
+	households.archived_at,
 	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
@@ -394,28 +394,28 @@ SELECT
 	users.avatar_src,
 	users.hashed_password,
 	users.requires_password_change,
-	users.password_last_changed_on,
+	users.password_last_changed_at,
 	users.two_factor_secret,
-	users.two_factor_secret_verified_on,
+	users.two_factor_secret_verified_at,
 	users.service_roles,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birth_day,
 	users.birth_month,
-	users.created_on,
-	users.last_updated_on,
-	users.archived_on,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
 	household_invitations.status,
 	household_invitations.note,
 	household_invitations.status_note,
 	household_invitations.token,
-	household_invitations.created_on,
-	household_invitations.last_updated_on,
-	household_invitations.archived_on
+	household_invitations.created_at,
+	household_invitations.last_updated_at,
+	household_invitations.archived_at
 FROM household_invitations
 JOIN households ON household_invitations.destination_household = households.id
 JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_on IS NULL
+WHERE household_invitations.archived_at IS NULL
 AND household_invitations.to_email = LOWER($1)
 AND household_invitations.token = $2
 `
@@ -455,7 +455,7 @@ func (q *SQLQuerier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, 
 }
 
 const getAllHouseholdInvitationsCountQuery = `
-	SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL
+	SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_at IS NULL
 `
 
 // GetAllHouseholdInvitationsCount fetches the count of household invitations from the database that meet a particular filter.
@@ -512,7 +512,7 @@ func (q *SQLQuerier) CreateHouseholdInvitation(ctx context.Context, input *types
 		StatusNote:           "",
 		Status:               types.PendingHouseholdInvitationStatus,
 		DestinationHousehold: types.Household{ID: input.DestinationHouseholdID},
-		CreatedOn:            q.currentTime(),
+		CreatedAt:            q.currentTime(),
 	}
 
 	tracing.AttachHouseholdInvitationIDToSpan(span, x.ID)
@@ -530,7 +530,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx contex
 
 	where := squirrel.Eq{
 		"household_invitations.from_user":   userID,
-		"household_invitations.archived_on": nil,
+		"household_invitations.archived_at": nil,
 		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
 	}
 
@@ -607,7 +607,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context
 
 	where := squirrel.Eq{
 		"household_invitations.to_user":     userID,
-		"household_invitations.archived_on": nil,
+		"household_invitations.archived_at": nil,
 		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
 	}
 
@@ -681,9 +681,9 @@ const setInvitationStatusQuery = `
 UPDATE household_invitations SET
 	status = $1,
 	status_note = $2,
-	last_updated_on = extract(epoch FROM NOW()),
-	archived_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL
+	last_updated_at = extract(epoch FROM NOW()),
+	archived_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL
 AND id = $3
 `
 
@@ -778,8 +778,8 @@ func (q *SQLQuerier) RejectHouseholdInvitation(ctx context.Context, householdInv
 const attachInvitationsToUserIDQuery = `
 UPDATE household_invitations SET
 	to_user = $1,
-	last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL
+	last_updated_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL
 AND to_email = LOWER($2)
 `
 

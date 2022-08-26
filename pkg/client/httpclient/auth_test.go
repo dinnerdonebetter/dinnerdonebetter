@@ -42,7 +42,7 @@ func (s *authTestSuite) SetupTest() {
 	// the two factor secret is transmitted over the wire only on creation.
 	s.exampleUser.TwoFactorSecret = ""
 	// the two factor secret validation is never transmitted over the wire.
-	s.exampleUser.TwoFactorSecretVerifiedOn = nil
+	s.exampleUser.TwoFactorSecretVerifiedAt = nil
 }
 
 func (s *authTestSuite) TestClient_UserStatus() {

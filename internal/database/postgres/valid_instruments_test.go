@@ -32,9 +32,9 @@ func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64,
 			x.PluralName,
 			x.Description,
 			x.IconPath,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 		}
 
 		if includeCounts {
@@ -683,7 +683,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleValidInstrument.CreatedOn
+			return exampleValidInstrument.CreatedAt
 		}
 
 		actual, err := c.CreateValidInstrument(ctx, exampleInput)
@@ -727,7 +727,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleValidInstrument.CreatedOn
+			return exampleValidInstrument.CreatedAt
 		}
 
 		actual, err := c.CreateValidInstrument(ctx, exampleInput)

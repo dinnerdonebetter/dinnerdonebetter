@@ -31,13 +31,13 @@ type (
 	// ValidPreparationInstrument represents a valid preparation instrument.
 	ValidPreparationInstrument struct {
 		_             struct{}
-		ArchivedOn    *uint64          `json:"archivedOn"`
-		LastUpdatedOn *uint64          `json:"lastUpdatedOn"`
+		ArchivedAt    *uint64          `json:"archivedAt"`
+		LastUpdatedAt *uint64          `json:"lastUpdatedAt"`
 		Notes         string           `json:"notes"`
 		ID            string           `json:"id"`
 		Instrument    ValidInstrument  `json:"instrument"`
 		Preparation   ValidPreparation `json:"preparation"`
-		CreatedOn     uint64           `json:"createdOn"`
+		CreatedAt     uint64           `json:"createdAt"`
 	}
 
 	// ValidPreparationInstrumentList represents a list of valid preparation instruments.

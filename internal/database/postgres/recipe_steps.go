@@ -32,9 +32,9 @@ var (
 		"valid_preparations.restrict_to_ingredients",
 		"valid_preparations.zero_ingredients_allowable",
 		"valid_preparations.past_tense",
-		"valid_preparations.created_on",
-		"valid_preparations.last_updated_on",
-		"valid_preparations.archived_on",
+		"valid_preparations.created_at",
+		"valid_preparations.last_updated_at",
+		"valid_preparations.archived_at",
 		"recipe_steps.minimum_estimated_time_in_seconds",
 		"recipe_steps.maximum_estimated_time_in_seconds",
 		"recipe_steps.minimum_temperature_in_celsius",
@@ -42,9 +42,9 @@ var (
 		"recipe_steps.notes",
 		"recipe_steps.explicit_instructions",
 		"recipe_steps.optional",
-		"recipe_steps.created_on",
-		"recipe_steps.last_updated_on",
-		"recipe_steps.archived_on",
+		"recipe_steps.created_at",
+		"recipe_steps.last_updated_at",
+		"recipe_steps.archived_at",
 		"recipe_steps.belongs_to_recipe",
 	}
 
@@ -74,9 +74,9 @@ func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, 
 		&x.Preparation.RestrictToIngredients,
 		&x.Preparation.ZeroIngredientsAllowable,
 		&x.Preparation.PastTense,
-		&x.Preparation.CreatedOn,
-		&x.Preparation.LastUpdatedOn,
-		&x.Preparation.ArchivedOn,
+		&x.Preparation.CreatedAt,
+		&x.Preparation.LastUpdatedAt,
+		&x.Preparation.ArchivedAt,
 		&x.MinimumEstimatedTimeInSeconds,
 		&x.MaximumEstimatedTimeInSeconds,
 		&x.MinimumTemperatureInCelsius,
@@ -84,9 +84,9 @@ func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, 
 		&x.Notes,
 		&x.ExplicitInstructions,
 		&x.Optional,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAT,
 		&x.BelongsToRecipe,
 	}
 
@@ -134,7 +134,7 @@ func (q *SQLQuerier) scanRecipeSteps(ctx context.Context, rows database.ResultIt
 	return recipeSteps, filteredCount, totalCount, nil
 }
 
-const recipeStepExistenceQuery = "SELECT EXISTS ( SELECT recipe_steps.id FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id = $2 AND recipes.archived_on IS NULL AND recipes.id = $3 )"
+const recipeStepExistenceQuery = "SELECT EXISTS ( SELECT recipe_steps.id FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id = $2 AND recipes.archived_at IS NULL AND recipes.id = $3 )"
 
 // RecipeStepExists fetches whether a recipe step exists from the database.
 func (q *SQLQuerier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (exists bool, err error) {
@@ -180,9 +180,9 @@ const getRecipeStepQuery = `SELECT
 	valid_preparations.restrict_to_ingredients,
 	valid_preparations.zero_ingredients_allowable,
 	valid_preparations.past_tense,
-	valid_preparations.created_on,
-	valid_preparations.last_updated_on,
-	valid_preparations.archived_on,
+	valid_preparations.created_at,
+	valid_preparations.last_updated_at,
+	valid_preparations.archived_at,
 	recipe_steps.minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius,
@@ -190,17 +190,17 @@ const getRecipeStepQuery = `SELECT
 	recipe_steps.notes,
 	recipe_steps.explicit_instructions,
 	recipe_steps.optional,
-	recipe_steps.created_on,
-	recipe_steps.last_updated_on,
-	recipe_steps.archived_on,
+	recipe_steps.created_at,
+	recipe_steps.last_updated_at,
+	recipe_steps.archived_at,
 	recipe_steps.belongs_to_recipe 
 FROM recipe_steps
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
-WHERE recipe_steps.archived_on IS NULL
+WHERE recipe_steps.archived_at IS NULL
 AND recipe_steps.belongs_to_recipe = $1
 AND recipe_steps.id = $2
-AND recipes.archived_on IS NULL 
+AND recipes.archived_at IS NULL 
 AND recipes.id = $3
 `
 
@@ -239,7 +239,7 @@ func (q *SQLQuerier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	return recipeStep, nil
 }
 
-const getTotalRecipeStepsCountQuery = "SELECT COUNT(recipe_steps.id) FROM recipe_steps WHERE recipe_steps.archived_on IS NULL"
+const getTotalRecipeStepsCountQuery = "SELECT COUNT(recipe_steps.id) FROM recipe_steps WHERE recipe_steps.archived_at IS NULL"
 
 // GetTotalRecipeStepCount fetches the count of recipe steps from the database that meet a particular filter.
 func (q *SQLQuerier) GetTotalRecipeStepCount(ctx context.Context) (uint64, error) {
@@ -303,7 +303,7 @@ func (q *SQLQuerier) buildGetRecipeStepsWithIDsQuery(ctx context.Context, recipe
 
 	withIDsWhere := squirrel.Eq{
 		"recipe_steps.id":                ids,
-		"recipe_steps.archived_on":       nil,
+		"recipe_steps.archived_at":       nil,
 		"recipe_steps.belongs_to_recipe": recipeID,
 	}
 
@@ -409,7 +409,7 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		ExplicitInstructions:          input.ExplicitInstructions,
 		Optional:                      input.Optional,
 		BelongsToRecipe:               input.BelongsToRecipe,
-		CreatedOn:                     q.currentTime(),
+		CreatedAt:                     q.currentTime(),
 	}
 
 	for i, ingredientInput := range input.Ingredients {
@@ -462,8 +462,8 @@ const updateRecipeStepQuery = `UPDATE recipe_steps SET
 	notes = $7,
 	explicit_instructions = $8, 
 	optional = $9,
-	last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL 
+	last_updated_at = extract(epoch FROM NOW())
+WHERE archived_at IS NULL 
   AND belongs_to_recipe = $10 
   AND id = $11
 `
@@ -503,7 +503,7 @@ func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.Recipe
 	return nil
 }
 
-const archiveRecipeStepQuery = "UPDATE recipe_steps SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $1 AND id = $2"
+const archiveRecipeStepQuery = "UPDATE recipe_steps SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe = $1 AND id = $2"
 
 // ArchiveRecipeStep archives a recipe step from the database by its ID.
 func (q *SQLQuerier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {

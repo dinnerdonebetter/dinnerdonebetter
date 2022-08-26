@@ -24,9 +24,9 @@ func BuildFakeUser() *types.User {
 		BirthMonth:                func(x uint8) *uint8 { return &x }(fake.Uint8()),
 		AccountStatus:             types.GoodStandingUserAccountStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
-		TwoFactorSecretVerifiedOn: func(i uint64) *uint64 { return &i }(uint64(uint32(fake.Date().Unix()))),
+		TwoFactorSecretVerifiedAt: func(i uint64) *uint64 { return &i }(uint64(uint32(fake.Date().Unix()))),
 		ServiceRoles:              []string{authorization.ServiceUserRole.String()},
-		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
+		CreatedAt:                 uint64(uint32(fake.Date().Unix())),
 	}
 }
 
@@ -35,7 +35,7 @@ func BuildUserCreationResponseFromUser(user *types.User) *types.UserCreationResp
 	return &types.UserCreationResponse{
 		CreatedUserID: user.ID,
 		Username:      user.Username,
-		CreatedOn:     user.CreatedOn,
+		CreatedAt:     user.CreatedAt,
 	}
 }
 
@@ -201,7 +201,7 @@ func BuildFakePasswordResetToken() *types.PasswordResetToken {
 		Token:         fake.UUID(),
 		BelongsToUser: ksuid.New().String(),
 		ExpiresAt:     uint64(uint32(fakeDate.Add(30 * time.Minute).Unix())),
-		CreatedOn:     uint64(uint32(fakeDate.Unix())),
+		CreatedAt:     uint64(uint32(fakeDate.Unix())),
 	}
 }
 
