@@ -15,7 +15,7 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 		PluralName:  buildUniqueString(),
 		Description: buildUniqueString(),
 		IconPath:    buildUniqueString(),
-		CreatedOn:   uint64(uint32(fake.Date().Unix())),
+		CreatedAt:   uint64(uint32(fake.Date().Unix())),
 	}
 }
 

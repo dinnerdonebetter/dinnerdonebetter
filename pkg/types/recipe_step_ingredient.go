@@ -33,15 +33,15 @@ type (
 		_                    struct{}
 		IngredientID         *string              `json:"ingredientID"`
 		RecipeStepProductID  *string              `json:"recipeStepProductID"`
-		LastUpdatedOn        *uint64              `json:"lastUpdatedOn"`
-		ArchivedOn           *uint64              `json:"archivedOn"`
+		LastUpdatedAt        *uint64              `json:"lastUpdatedAt"`
+		ArchivedAt           *uint64              `json:"archivedAt"`
 		Name                 string               `json:"name"`
 		QuantityNotes        string               `json:"quantityNotes"`
 		BelongsToRecipeStep  string               `json:"belongsToRecipeStep"`
 		ID                   string               `json:"id"`
 		IngredientNotes      string               `json:"ingredientNotes"`
 		MeasurementUnit      ValidMeasurementUnit `json:"measurementUnit"`
-		CreatedOn            uint64               `json:"createdOn"`
+		CreatedAt            uint64               `json:"createdAt"`
 		MinimumQuantityValue float32              `json:"minimumQuantityValue"`
 		MaximumQuantityValue float32              `json:"maximumQuantityValue"`
 		Optional             bool                 `json:"optional"`

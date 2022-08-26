@@ -43,9 +43,9 @@ type (
 	// Household represents a household.
 	Household struct {
 		_                          struct{}
-		ArchivedOn                 *uint64                            `json:"archivedOn"`
+		ArchivedAt                 *uint64                            `json:"archivedAt"`
 		SubscriptionPlanID         *uint64                            `json:"subscriptionPlanID"`
-		LastUpdatedOn              *uint64                            `json:"lastUpdatedOn"`
+		LastUpdatedAt              *uint64                            `json:"lastUpdatedAt"`
 		ContactPhone               string                             `json:"contactPhone"`
 		BillingStatus              HouseholdBillingStatus             `json:"billingStatus"`
 		ContactEmail               string                             `json:"contactEmail"`
@@ -55,7 +55,7 @@ type (
 		ID                         string                             `json:"id"`
 		TimeZone                   string                             `json:"timeZone"`
 		Members                    []*HouseholdUserMembershipWithUser `json:"members"`
-		CreatedOn                  uint64                             `json:"createdOn"`
+		CreatedAt                  uint64                             `json:"createdAt"`
 	}
 
 	// HouseholdList represents a list of households.

@@ -14,7 +14,7 @@ func BuildFakeValidIngredientPreparation() *types.ValidIngredientPreparation {
 		Notes:       buildUniqueString(),
 		Preparation: *BuildFakeValidPreparation(),
 		Ingredient:  *BuildFakeValidIngredient(),
-		CreatedOn:   uint64(uint32(fake.Date().Unix())),
+		CreatedAt:   uint64(uint32(fake.Date().Unix())),
 	}
 }
 

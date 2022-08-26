@@ -28,9 +28,9 @@ func buildMockRowsFromPasswordResetTokens(includeCounts bool, filteredCount uint
 			w.ID,
 			w.Token,
 			w.ExpiresAt,
-			w.CreatedOn,
-			w.LastUpdatedOn,
-			w.RedeemedOn,
+			w.CreatedAt,
+			w.LastUpdatedAt,
+			w.RedeemedAt,
 			w.BelongsToUser,
 		}
 
@@ -118,7 +118,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		c.timeFunc = func() uint64 {
-			return exampleToken.CreatedOn
+			return exampleToken.CreatedAt
 		}
 
 		args := []interface{}{
@@ -159,7 +159,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		c.timeFunc = func() uint64 {
-			return exampleToken.CreatedOn
+			return exampleToken.CreatedAt
 		}
 
 		args := []interface{}{

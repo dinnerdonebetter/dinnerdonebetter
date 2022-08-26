@@ -22,13 +22,13 @@ type (
 	// PasswordResetToken represents a password reset token.
 	PasswordResetToken struct {
 		_             struct{}
-		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
-		RedeemedOn    *uint64 `json:"archivedOn"`
+		LastUpdatedAt *uint64 `json:"lastUpdatedAt"`
+		RedeemedAt    *uint64 `json:"archivedAt"`
 		ID            string  `json:"id"`
 		Token         string  `json:"token"`
 		BelongsToUser string  `json:"belongsToUser"`
 		ExpiresAt     uint64  `json:"expiresAt"`
-		CreatedOn     uint64  `json:"createdOn"`
+		CreatedAt     uint64  `json:"createdAt"`
 	}
 
 	// UsernameReminderRequestInput represents what a user could set as input for creating password reset tokens.

@@ -54,9 +54,9 @@ func (q *SQLQuerier) scanValidPreparation(ctx context.Context, scan database.Sca
 		&x.RestrictToIngredients,
 		&x.ZeroIngredientsAllowable,
 		&x.PastTense,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -390,7 +390,7 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 		RestrictToIngredients:    input.RestrictToIngredients,
 		ZeroIngredientsAllowable: input.ZeroIngredientsAllowable,
 		PastTense:                input.PastTense,
-		CreatedOn:                q.currentTime(),
+		CreatedAt:                q.currentTime(),
 	}
 
 	tracing.AttachValidPreparationIDToSpan(span, x.ID)

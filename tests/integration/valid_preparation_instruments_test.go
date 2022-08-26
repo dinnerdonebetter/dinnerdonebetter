@@ -18,7 +18,7 @@ func checkValidPreparationInstrumentEquality(t *testing.T, expected, actual *typ
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.Preparation.ID, actual.Preparation.ID, "expected Preparation for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Preparation.ID, actual.Preparation.ID)
 	assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Instrument for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertValidPreparationInstrumentToValidPreparationInstrumentUpdateInput creates an ValidPreparationInstrumentUpdateRequestInput struct from a valid preparation instrument.
@@ -93,7 +93,7 @@ func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 
 			// assert valid preparation instrument equality
 			checkValidPreparationInstrumentEquality(t, newValidPreparationInstrument, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up valid preparation instrument")
 			assert.NoError(t, testClients.admin.ArchiveValidPreparationInstrument(ctx, createdValidPreparationInstrument.ID))

@@ -36,9 +36,9 @@ func (q *SQLQuerier) scanPasswordResetToken(ctx context.Context, scan database.S
 		&x.ID,
 		&x.Token,
 		&x.ExpiresAt,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.RedeemedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.RedeemedAt,
 		&x.BelongsToUser,
 	}
 
@@ -117,7 +117,7 @@ func (q *SQLQuerier) CreatePasswordResetToken(ctx context.Context, input *types.
 		ID:            input.ID,
 		Token:         input.Token,
 		ExpiresAt:     input.ExpiresAt,
-		CreatedOn:     q.currentTime(),
+		CreatedAt:     q.currentTime(),
 		BelongsToUser: input.BelongsToUser,
 	}
 

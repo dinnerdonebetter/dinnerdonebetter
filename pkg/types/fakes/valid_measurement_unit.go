@@ -19,7 +19,7 @@ func BuildFakeValidMeasurementUnit() *types.ValidMeasurementUnit {
 		Metric:      fake.Bool(),
 		Imperial:    fake.Bool(),
 		PluralName:  buildUniqueString(),
-		CreatedOn:   uint64(uint32(fake.Date().Unix())),
+		CreatedAt:   uint64(uint32(fake.Date().Unix())),
 	}
 }
 

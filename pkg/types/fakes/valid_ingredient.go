@@ -28,7 +28,7 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		IsMeasuredVolumetrically:                fake.Bool(),
 		IsLiquid:                                fake.Bool(),
 		IconPath:                                buildUniqueString(),
-		CreatedOn:                               uint64(uint32(fake.Date().Unix())),
+		CreatedAt:                               uint64(uint32(fake.Date().Unix())),
 		PluralName:                              buildUniqueString(),
 		AnimalDerived:                           fake.Bool(),
 		RestrictToPreparations:                  fake.Bool(),

@@ -131,7 +131,7 @@ func buildTestHelper() *testHelper {
 	// the two factor secret is transmitted over the wire only on creation.
 	helper.exampleUser.TwoFactorSecret = ""
 	// the two factor secret validation is never transmitted over the wire.
-	helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+	helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 	return helper
 }

@@ -34,9 +34,9 @@ func buildMockRowsFromMealPlans(includeCounts bool, filteredCount uint64, mealPl
 			x.VotingDeadline,
 			x.StartsAt,
 			x.EndsAt,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 			x.BelongsToHousehold,
 		}
 
@@ -108,9 +108,9 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 					x.VotingDeadline,
 					x.StartsAt,
 					x.EndsAt,
-					x.CreatedOn,
-					x.LastUpdatedOn,
-					x.ArchivedOn,
+					x.CreatedAt,
+					x.LastUpdatedAt,
+					x.ArchivedAt,
 					x.BelongsToHousehold,
 					opt.ID,
 					opt.Day,
@@ -120,25 +120,25 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 					opt.TieBroken,
 					opt.Meal.ID,
 					opt.Notes,
-					opt.CreatedOn,
-					opt.LastUpdatedOn,
-					opt.ArchivedOn,
+					opt.CreatedAt,
+					opt.LastUpdatedAt,
+					opt.ArchivedAt,
 					opt.BelongsToMealPlan,
 					vote.ID,
 					vote.Rank,
 					vote.Abstain,
 					vote.Notes,
 					vote.ByUser,
-					vote.CreatedOn,
-					vote.LastUpdatedOn,
-					vote.ArchivedOn,
+					vote.CreatedAt,
+					vote.LastUpdatedAt,
+					vote.ArchivedAt,
 					vote.BelongsToMealPlanOption,
 					opt.Meal.ID,
 					opt.Meal.Name,
 					opt.Meal.Description,
-					opt.Meal.CreatedOn,
-					opt.Meal.LastUpdatedOn,
-					opt.Meal.ArchivedOn,
+					opt.Meal.CreatedAt,
+					opt.Meal.LastUpdatedAt,
+					opt.Meal.ArchivedAt,
 					opt.Meal.CreatedByUser,
 				}
 
@@ -645,7 +645,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			exampleMealPlan.Options[i].ID = "2"
 			exampleMealPlan.Options[i].BelongsToMealPlan = "1"
 			exampleMealPlan.Options[i].Meal = types.Meal{ID: exampleMealPlan.Options[i].Meal.ID}
-			exampleMealPlan.Options[i].CreatedOn = exampleMealPlan.CreatedOn
+			exampleMealPlan.Options[i].CreatedAt = exampleMealPlan.CreatedAt
 			exampleMealPlan.Options[i].Votes = []*types.MealPlanOptionVote{}
 		}
 		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
@@ -688,7 +688,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlan.CreatedOn
+			return exampleMealPlan.CreatedAt
 		}
 
 		actual, err := c.CreateMealPlan(ctx, exampleInput)
@@ -717,7 +717,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		for i := range exampleMealPlan.Options {
 			exampleMealPlan.Options[i].ID = "2"
 			exampleMealPlan.Options[i].BelongsToMealPlan = "1"
-			exampleMealPlan.Options[i].CreatedOn = exampleMealPlan.CreatedOn
+			exampleMealPlan.Options[i].CreatedAt = exampleMealPlan.CreatedAt
 			exampleMealPlan.Options[i].Votes = []*types.MealPlanOptionVote{}
 		}
 		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
@@ -742,7 +742,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		for i := range exampleMealPlan.Options {
 			exampleMealPlan.Options[i].ID = "2"
 			exampleMealPlan.Options[i].BelongsToMealPlan = "1"
-			exampleMealPlan.Options[i].CreatedOn = exampleMealPlan.CreatedOn
+			exampleMealPlan.Options[i].CreatedAt = exampleMealPlan.CreatedAt
 		}
 		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
 
@@ -768,7 +768,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlan.CreatedOn
+			return exampleMealPlan.CreatedAt
 		}
 
 		actual, err := c.CreateMealPlan(ctx, exampleInput)
@@ -787,7 +787,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		for i := range exampleMealPlan.Options {
 			exampleMealPlan.Options[i].ID = "2"
 			exampleMealPlan.Options[i].BelongsToMealPlan = "1"
-			exampleMealPlan.Options[i].CreatedOn = exampleMealPlan.CreatedOn
+			exampleMealPlan.Options[i].CreatedAt = exampleMealPlan.CreatedAt
 			exampleMealPlan.Options[i].Votes = []*types.MealPlanOptionVote{}
 		}
 		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
@@ -828,7 +828,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlan.CreatedOn
+			return exampleMealPlan.CreatedAt
 		}
 
 		actual, err := c.CreateMealPlan(ctx, exampleInput)
@@ -846,7 +846,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		for i := range exampleMealPlan.Options {
 			exampleMealPlan.Options[i].ID = "2"
 			exampleMealPlan.Options[i].BelongsToMealPlan = "1"
-			exampleMealPlan.Options[i].CreatedOn = exampleMealPlan.CreatedOn
+			exampleMealPlan.Options[i].CreatedAt = exampleMealPlan.CreatedAt
 			exampleMealPlan.Options[i].Votes = []*types.MealPlanOptionVote{}
 		}
 		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
@@ -889,7 +889,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleMealPlan.CreatedOn
+			return exampleMealPlan.CreatedAt
 		}
 
 		actual, err := c.CreateMealPlan(ctx, exampleInput)

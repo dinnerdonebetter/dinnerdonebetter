@@ -37,9 +37,9 @@ func buildMockRowsFromHouseholdInvitations(includeCounts bool, filteredCount uin
 			w.DestinationHousehold.PaymentProcessorCustomerID,
 			w.DestinationHousehold.SubscriptionPlanID,
 			w.DestinationHousehold.TimeZone,
-			w.DestinationHousehold.CreatedOn,
-			w.DestinationHousehold.LastUpdatedOn,
-			w.DestinationHousehold.ArchivedOn,
+			w.DestinationHousehold.CreatedAt,
+			w.DestinationHousehold.LastUpdatedAt,
+			w.DestinationHousehold.ArchivedAt,
 			w.DestinationHousehold.BelongsToUser,
 			w.ToEmail,
 			w.ToUser,
@@ -51,22 +51,22 @@ func buildMockRowsFromHouseholdInvitations(includeCounts bool, filteredCount uin
 			w.FromUser.RequiresPasswordChange,
 			w.FromUser.PasswordLastChangedOn,
 			w.FromUser.TwoFactorSecret,
-			w.FromUser.TwoFactorSecretVerifiedOn,
+			w.FromUser.TwoFactorSecretVerifiedAt,
 			strings.Join(w.FromUser.ServiceRoles, serviceRolesSeparator),
 			w.FromUser.AccountStatus,
 			w.FromUser.AccountStatusExplanation,
 			w.FromUser.BirthDay,
 			w.FromUser.BirthMonth,
-			w.FromUser.CreatedOn,
-			w.FromUser.LastUpdatedOn,
-			w.FromUser.ArchivedOn,
+			w.FromUser.CreatedAt,
+			w.FromUser.LastUpdatedAt,
+			w.FromUser.ArchivedAt,
 			w.Status,
 			w.Note,
 			w.StatusNote,
 			w.Token,
-			w.CreatedOn,
-			w.LastUpdatedOn,
-			w.ArchivedOn,
+			w.CreatedAt,
+			w.LastUpdatedAt,
+			w.ArchivedAt,
 		}
 
 		if includeCounts {
@@ -423,7 +423,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleHouseholdInvitation.CreatedOn
+			return exampleHouseholdInvitation.CreatedAt
 		}
 
 		actual, err := c.CreateHouseholdInvitation(ctx, exampleInput)
@@ -470,7 +470,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleHouseholdInvitation.CreatedOn
+			return exampleHouseholdInvitation.CreatedAt
 		}
 
 		actual, err := c.CreateHouseholdInvitation(ctx, exampleInput)

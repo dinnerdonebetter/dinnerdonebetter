@@ -88,9 +88,9 @@ func (q *SQLQuerier) scanValidIngredientPreparation(ctx context.Context, scan da
 		&x.Preparation.RestrictToIngredients,
 		&x.Preparation.ZeroIngredientsAllowable,
 		&x.Preparation.PastTense,
-		&x.Preparation.CreatedOn,
-		&x.Preparation.LastUpdatedOn,
-		&x.Preparation.ArchivedOn,
+		&x.Preparation.CreatedAt,
+		&x.Preparation.LastUpdatedAt,
+		&x.Preparation.ArchivedAt,
 		&x.Ingredient.ID,
 		&x.Ingredient.Name,
 		&x.Ingredient.Description,
@@ -114,12 +114,12 @@ func (q *SQLQuerier) scanValidIngredientPreparation(ctx context.Context, scan da
 		&x.Ingredient.RestrictToPreparations,
 		&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
 		&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
-		&x.Ingredient.CreatedOn,
-		&x.Ingredient.LastUpdatedOn,
-		&x.Ingredient.ArchivedOn,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.Ingredient.CreatedAt,
+		&x.Ingredient.LastUpdatedAt,
+		&x.Ingredient.ArchivedAt,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -537,7 +537,7 @@ func (q *SQLQuerier) CreateValidIngredientPreparation(ctx context.Context, input
 		Notes:       input.Notes,
 		Preparation: types.ValidPreparation{ID: input.ValidPreparationID},
 		Ingredient:  types.ValidIngredient{ID: input.ValidIngredientID},
-		CreatedOn:   q.currentTime(),
+		CreatedAt:   q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientPreparationIDToSpan(span, x.ID)

@@ -144,7 +144,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		if loginValid && user.TwoFactorSecretVerifiedOn != nil && loginData.TOTPToken == "" {
+		if loginValid && user.TwoFactorSecretVerifiedAt != nil && loginData.TOTPToken == "" {
 			logger.Debug("user with two factor verification active attempted to log in without providing TOTP")
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, "TOTP required", http.StatusResetContent)
 			return

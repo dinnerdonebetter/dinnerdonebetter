@@ -23,8 +23,8 @@ type (
 	Webhook struct {
 		_ struct{}
 
-		LastUpdatedOn      *uint64  `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64  `json:"archivedOn"`
+		LastUpdatedAt      *uint64  `json:"lastUpdatedAt"`
+		ArchivedAt         *uint64  `json:"archivedAt"`
 		Name               string   `json:"name"`
 		URL                string   `json:"url"`
 		Method             string   `json:"method"`
@@ -34,7 +34,7 @@ type (
 		Events             []string `json:"events"`
 		DataTypes          []string `json:"dataTypes"`
 		Topics             []string `json:"topics"`
-		CreatedOn          uint64   `json:"createdOn"`
+		CreatedAt          uint64   `json:"createdAt"`
 	}
 
 	// WebhookCreationRequestInput represents what a User could set as input for creating a webhook.

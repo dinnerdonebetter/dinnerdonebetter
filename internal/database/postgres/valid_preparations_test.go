@@ -35,9 +35,9 @@ func buildMockRowsFromValidPreparations(includeCounts bool, filteredCount uint64
 			x.RestrictToIngredients,
 			x.ZeroIngredientsAllowable,
 			x.PastTense,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 		}
 
 		if includeCounts {
@@ -607,7 +607,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleValidPreparation.CreatedOn
+			return exampleValidPreparation.CreatedAt
 		}
 
 		actual, err := c.CreateValidPreparation(ctx, exampleInput)
@@ -654,7 +654,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleValidPreparation.CreatedOn
+			return exampleValidPreparation.CreatedAt
 		}
 
 		actual, err := c.CreateValidPreparation(ctx, exampleInput)

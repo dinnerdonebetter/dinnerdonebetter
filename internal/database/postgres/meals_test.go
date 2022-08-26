@@ -31,9 +31,9 @@ func buildMockRowsFromMeals(includeCounts bool, filteredCount uint64, meals ...*
 			x.ID,
 			x.Name,
 			x.Description,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 			x.CreatedByUser,
 		}
 
@@ -55,9 +55,9 @@ func buildMockFullRowsFromMeal(meal *types.Meal) *sqlmock.Rows {
 			&meal.ID,
 			&meal.Name,
 			&meal.Description,
-			&meal.CreatedOn,
-			&meal.LastUpdatedOn,
-			&meal.ArchivedOn,
+			&meal.CreatedAt,
+			&meal.LastUpdatedAt,
+			&meal.ArchivedAt,
 			&meal.CreatedByUser,
 			&recipe.ID,
 		)
@@ -709,7 +709,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
-			return exampleMeal.CreatedOn
+			return exampleMeal.CreatedAt
 		}
 
 		actual, err := c.CreateMeal(ctx, exampleInput)
@@ -822,7 +822,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleMeal.CreatedOn
+			return exampleMeal.CreatedAt
 		}
 
 		actual, err := c.CreateMeal(ctx, exampleInput)
@@ -871,7 +871,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleMeal.CreatedOn
+			return exampleMeal.CreatedAt
 		}
 
 		actual, err := c.CreateMeal(ctx, exampleInput)
@@ -905,7 +905,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleMeal.CreatedOn
+			return exampleMeal.CreatedAt
 		}
 
 		err := c.CreateMealRecipe(ctx, c.db, exampleMeal.ID, exampleRecipe.ID)
@@ -962,7 +962,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleMeal.CreatedOn
+			return exampleMeal.CreatedAt
 		}
 
 		err := c.CreateMealRecipe(ctx, c.db, exampleMeal.ID, exampleRecipe.ID)

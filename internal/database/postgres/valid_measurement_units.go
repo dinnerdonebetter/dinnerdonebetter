@@ -57,9 +57,9 @@ func (q *SQLQuerier) scanValidMeasurementUnit(ctx context.Context, scan database
 		&x.Metric,
 		&x.Imperial,
 		&x.PluralName,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -400,7 +400,7 @@ func (q *SQLQuerier) CreateValidMeasurementUnit(ctx context.Context, input *type
 		Metric:      input.Metric,
 		Imperial:    input.Imperial,
 		PluralName:  input.PluralName,
-		CreatedOn:   q.currentTime(),
+		CreatedAt:   q.currentTime(),
 	}
 
 	tracing.AttachValidMeasurementUnitIDToSpan(span, x.ID)

@@ -94,7 +94,7 @@ func (s *householdsTestSuite) TestClient_GetCurrentHousehold() {
 		actual, err := c.GetCurrentHousehold(s.ctx)
 
 		for i := range actual.Members {
-			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn
+			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedAt = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedAt
 		}
 
 		require.NotNil(t, actual)
@@ -138,7 +138,7 @@ func (s *householdsTestSuite) TestClient_GetHousehold() {
 		actual, err := c.GetHousehold(s.ctx, s.exampleHousehold.ID)
 
 		for i := range actual.Members {
-			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn
+			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedAt = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedAt
 		}
 
 		require.NotNil(t, actual)
@@ -193,7 +193,7 @@ func (s *householdsTestSuite) TestClient_GetHouseholds() {
 
 		for i, household := range actual.Households {
 			for j := range household.Members {
-				actual.Households[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedOn = s.exampleHouseholdList.Households[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedOn
+				actual.Households[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt = s.exampleHouseholdList.Households[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt
 			}
 		}
 
@@ -238,7 +238,7 @@ func (s *householdsTestSuite) TestClient_CreateHousehold() {
 		actual, err := c.CreateHousehold(s.ctx, exampleInput)
 
 		for i := range actual.Members {
-			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn
+			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedAt = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedAt
 		}
 
 		require.NotNil(t, actual)

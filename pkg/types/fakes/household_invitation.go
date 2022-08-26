@@ -18,7 +18,7 @@ func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 		DestinationHousehold: *BuildFakeHousehold(),
 		ID:                   buildUniqueString(),
 		Status:               types.PendingHouseholdInvitationStatus,
-		CreatedOn:            uint64(uint32(fake.Date().Unix())),
+		CreatedAt:            uint64(uint32(fake.Date().Unix())),
 	}
 }
 

@@ -77,16 +77,16 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 		&x.TieBroken,
 		&x.Meal.ID,
 		&x.Notes,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.BelongsToMealPlan,
 		&x.Meal.ID,
 		&x.Meal.Name,
 		&x.Meal.Description,
-		&x.Meal.CreatedOn,
-		&x.Meal.LastUpdatedOn,
-		&x.Meal.ArchivedOn,
+		&x.Meal.CreatedAt,
+		&x.Meal.LastUpdatedAt,
+		&x.Meal.ArchivedAt,
 		&x.Meal.CreatedByUser,
 	}
 
@@ -394,7 +394,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 		MealName:          input.MealName,
 		Notes:             input.Notes,
 		BelongsToMealPlan: input.BelongsToMealPlan,
-		CreatedOn:         q.currentTime(),
+		CreatedAt:         q.currentTime(),
 		Votes:             []*types.MealPlanOptionVote{},
 	}
 

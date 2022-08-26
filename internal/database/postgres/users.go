@@ -67,15 +67,15 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 		&user.RequiresPasswordChange,
 		&user.PasswordLastChangedOn,
 		&user.TwoFactorSecret,
-		&user.TwoFactorSecretVerifiedOn,
+		&user.TwoFactorSecretVerifiedAt,
 		&rawRoles,
 		&user.AccountStatus,
 		&user.AccountStatusExplanation,
 		&user.BirthDay,
 		&user.BirthMonth,
-		&user.CreatedOn,
-		&user.LastUpdatedOn,
-		&user.ArchivedOn,
+		&user.CreatedAt,
+		&user.LastUpdatedAt,
+		&user.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -557,7 +557,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 		BirthMonth:      input.BirthMonth,
 		BirthDay:        input.BirthDay,
 		ServiceRoles:    []string{authorization.ServiceUserRole.String()},
-		CreatedOn:       q.currentTime(),
+		CreatedAt:       q.currentTime(),
 	}
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachUserIDToSpan(span, user.ID)
@@ -693,7 +693,7 @@ func (q *SQLQuerier) UpdateUser(ctx context.Context, updated *types.User) error 
 		updated.HashedPassword,
 		updated.AvatarSrc,
 		updated.TwoFactorSecret,
-		updated.TwoFactorSecretVerifiedOn,
+		updated.TwoFactorSecretVerifiedAt,
 		updated.BirthDay,
 		updated.BirthMonth,
 		updated.ID,

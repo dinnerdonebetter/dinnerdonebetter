@@ -70,9 +70,9 @@ func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database
 		&instrument.PluralName,
 		&instrument.Description,
 		&instrument.IconPath,
-		&instrument.CreatedOn,
-		&instrument.LastUpdatedOn,
-		&instrument.ArchivedOn,
+		&instrument.CreatedAt,
+		&instrument.LastUpdatedAt,
+		&instrument.ArchivedAt,
 		&x.RecipeStepProductID,
 		&x.Name,
 		&x.ProductOfRecipeStep,
@@ -81,9 +81,9 @@ func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database
 		&x.Optional,
 		&x.MinimumQuantity,
 		&x.MaximumQuantity,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.BelongsToRecipeStep,
 	}
 
@@ -495,7 +495,7 @@ func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier dat
 		Optional:            input.Optional,
 		MinimumQuantity:     input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
-		CreatedOn:           q.currentTime(),
+		CreatedAt:           q.currentTime(),
 	}
 
 	if input.InstrumentID != nil {

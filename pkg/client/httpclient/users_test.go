@@ -37,7 +37,7 @@ func (s *usersBaseSuite) SetupTest() {
 	// the two factor secret is transmitted over the wire only on creation.
 	s.exampleUser.TwoFactorSecret = ""
 	// the two factor secret validation is never transmitted over the wire.
-	s.exampleUser.TwoFactorSecretVerifiedOn = nil
+	s.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 	s.exampleUserList = fakes.BuildFakeUserList()
 	for i := 0; i < len(s.exampleUserList.Users); i++ {
@@ -46,7 +46,7 @@ func (s *usersBaseSuite) SetupTest() {
 		// the two factor secret is transmitted over the wire only on creation.
 		s.exampleUserList.Users[i].TwoFactorSecret = ""
 		// the two factor secret validation is never transmitted over the wire.
-		s.exampleUserList.Users[i].TwoFactorSecretVerifiedOn = nil
+		s.exampleUserList.Users[i].TwoFactorSecretVerifiedAt = nil
 	}
 }
 

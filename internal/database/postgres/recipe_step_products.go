@@ -79,9 +79,9 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.MeasurementUnit.Metric,
 		&x.MeasurementUnit.Imperial,
 		&x.MeasurementUnit.PluralName,
-		&x.MeasurementUnit.CreatedOn,
-		&x.MeasurementUnit.LastUpdatedOn,
-		&x.MeasurementUnit.ArchivedOn,
+		&x.MeasurementUnit.CreatedAt,
+		&x.MeasurementUnit.LastUpdatedAt,
+		&x.MeasurementUnit.ArchivedAt,
 		&x.MinimumQuantityValue,
 		&x.MaximumQuantityValue,
 		&x.QuantityNotes,
@@ -89,9 +89,9 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.MaximumStorageDurationInSeconds,
 		&x.MinimumStorageTemperatureInCelsius,
 		&x.MaximumStorageTemperatureInCelsius,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.BelongsToRecipeStep,
 	}
 
@@ -512,7 +512,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
-		CreatedOn:                          q.currentTime(),
+		CreatedAt:                          q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)

@@ -41,9 +41,9 @@ func (q *SQLQuerier) scanAPIClient(ctx context.Context, scan database.Scanner, i
 		&client.Name,
 		&client.ClientID,
 		&client.ClientSecret,
-		&client.CreatedOn,
-		&client.LastUpdatedOn,
-		&client.ArchivedOn,
+		&client.CreatedAt,
+		&client.LastUpdatedAt,
+		&client.ArchivedAt,
 		&client.BelongsToUser,
 	}
 
@@ -282,7 +282,7 @@ func (q *SQLQuerier) CreateAPIClient(ctx context.Context, input *types.APIClient
 		ClientID:      input.ClientID,
 		ClientSecret:  input.ClientSecret,
 		BelongsToUser: input.BelongsToUser,
-		CreatedOn:     q.currentTime(),
+		CreatedAt:     q.currentTime(),
 	}
 
 	logger.Info("API client created")

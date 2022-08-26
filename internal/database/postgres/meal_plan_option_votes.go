@@ -41,13 +41,13 @@ var (
 
 type nullableMealPlanOptionVote struct {
 	_                       struct{}
-	LastUpdatedOn           *uint64
-	ArchivedOn              *uint64
+	LastUpdatedAT           *uint64
+	ArchivedAt              *uint64
 	ID                      *string
 	Notes                   *string
 	BelongsToMealPlanOption *string
 	ByUser                  *string
-	CreatedOn               *uint64
+	CreatedAt               *uint64
 	Rank                    *uint8
 	Abstain                 *bool
 }
@@ -67,9 +67,9 @@ func (q *SQLQuerier) scanMealPlanOptionVote(ctx context.Context, scan database.S
 		&x.Abstain,
 		&x.Notes,
 		&x.ByUser,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.BelongsToMealPlanOption,
 	}
 
@@ -377,7 +377,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 			Notes:                   vote.Notes,
 			ByUser:                  vote.ByUser,
 			BelongsToMealPlanOption: vote.BelongsToMealPlanOption,
-			CreatedOn:               q.currentTime(),
+			CreatedAt:               q.currentTime(),
 		}
 
 		tracing.AttachMealPlanOptionVoteIDToSpan(span, x.ID)

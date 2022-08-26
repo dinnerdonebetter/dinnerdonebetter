@@ -18,7 +18,7 @@ func checkValidIngredientPreparationEquality(t *testing.T, expected, actual *typ
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.Preparation.ID, actual.Preparation.ID, "expected Preparation for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.Preparation.ID, actual.Preparation.ID)
 	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected Ingredient for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertValidIngredientPreparationToValidIngredientPreparationUpdateInput creates an ValidIngredientPreparationUpdateRequestInput struct from a valid ingredient preparation.
@@ -93,7 +93,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 
 			// assert valid ingredient preparation equality
 			checkValidIngredientPreparationEquality(t, newValidIngredientPreparation, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up valid ingredient preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))

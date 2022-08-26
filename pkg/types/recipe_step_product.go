@@ -36,15 +36,15 @@ type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
 		_                                  struct{}
-		LastUpdatedOn                      *uint64              `json:"lastUpdatedOn"`
-		ArchivedOn                         *uint64              `json:"archivedOn"`
+		LastUpdatedAt                      *uint64              `json:"lastUpdatedAt"`
+		ArchivedAt                         *uint64              `json:"archivedAt"`
 		ID                                 string               `json:"id"`
 		Name                               string               `json:"name"`
 		Type                               string               `json:"type"`
 		QuantityNotes                      string               `json:"quantityNotes"`
 		BelongsToRecipeStep                string               `json:"belongsToRecipeStep"`
 		MeasurementUnit                    ValidMeasurementUnit `json:"measurementUnit"`
-		CreatedOn                          uint64               `json:"createdOn"`
+		CreatedAt                          uint64               `json:"createdAt"`
 		MinimumQuantityValue               float32              `json:"minimumQuantityValue"`
 		MaximumQuantityValue               float32              `json:"maximumQuantityValue"`
 		Compostable                        bool                 `json:"compostable"`

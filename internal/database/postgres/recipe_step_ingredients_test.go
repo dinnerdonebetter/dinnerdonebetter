@@ -40,18 +40,18 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			&x.MeasurementUnit.Metric,
 			&x.MeasurementUnit.Imperial,
 			&x.MeasurementUnit.PluralName,
-			x.MeasurementUnit.CreatedOn,
-			x.MeasurementUnit.LastUpdatedOn,
-			x.MeasurementUnit.ArchivedOn,
+			x.MeasurementUnit.CreatedAt,
+			x.MeasurementUnit.LastUpdatedAt,
+			x.MeasurementUnit.ArchivedAt,
 			x.MinimumQuantityValue,
 			x.MaximumQuantityValue,
 			x.QuantityNotes,
 			x.ProductOfRecipeStep,
 			x.RecipeStepProductID,
 			x.IngredientNotes,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 			x.BelongsToRecipeStep,
 		}
 
@@ -708,7 +708,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStepIngredient.CreatedOn
+			return exampleRecipeStepIngredient.CreatedAt
 		}
 
 		actual, err := c.CreateRecipeStepIngredient(ctx, exampleInput)
@@ -759,7 +759,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStepIngredient.CreatedOn
+			return exampleRecipeStepIngredient.CreatedAt
 		}
 
 		actual, err := c.CreateRecipeStepIngredient(ctx, exampleInput)
@@ -806,7 +806,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipeStepIngredient.CreatedOn
+			return exampleRecipeStepIngredient.CreatedAt
 		}
 
 		actual, err := c.createRecipeStepIngredient(ctx, c.db, exampleInput)

@@ -26,7 +26,7 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 	assert.Equal(t, expected.MaximumStorageDurationInSeconds, actual.MaximumStorageDurationInSeconds, "expected MaximumStorageDurationInSeconds for recipe step product %s to be %v, but was %v", expected.ID, expected.MaximumStorageDurationInSeconds, actual.MaximumStorageDurationInSeconds)
 	assert.Equal(t, expected.MinimumStorageTemperatureInCelsius, actual.MinimumStorageTemperatureInCelsius, "expected MinimumStorageTemperatureInCelsius for recipe step product %s to be %v, but was %v", expected.ID, expected.MinimumStorageTemperatureInCelsius, actual.MinimumStorageTemperatureInCelsius)
 	assert.Equal(t, expected.MaximumStorageTemperatureInCelsius, actual.MaximumStorageTemperatureInCelsius, "expected MaximumStorageTemperatureInCelsius for recipe step product %s to be %v, but was %v", expected.ID, expected.MaximumStorageTemperatureInCelsius, actual.MaximumStorageTemperatureInCelsius)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertRecipeStepProductToRecipeStepProductUpdateInput creates an RecipeStepProductUpdateRequestInput struct from a recipe step product.
@@ -105,7 +105,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 
 			// assert recipe step product equality
 			checkRecipeStepProductEquality(t, newRecipeStepProduct, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up recipe step product")
 			assert.NoError(t, testClients.user.ArchiveRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID))

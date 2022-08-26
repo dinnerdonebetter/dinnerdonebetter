@@ -31,15 +31,15 @@ type (
 	// ValidIngredient represents a valid ingredient.
 	ValidIngredient struct {
 		_                                       struct{}
-		LastUpdatedOn                           *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn                              *uint64 `json:"archivedOn"`
+		LastUpdatedAt                           *uint64 `json:"lastUpdatedAt"`
+		ArchivedAt                              *uint64 `json:"archivedAt"`
 		Name                                    string  `json:"name"`
 		Description                             string  `json:"description"`
 		Warning                                 string  `json:"warning"`
 		ID                                      string  `json:"id"`
 		IconPath                                string  `json:"iconPath"`
 		PluralName                              string  `json:"pluralName"`
-		CreatedOn                               uint64  `json:"createdOn"`
+		CreatedAt                               uint64  `json:"createdAt"`
 		MinimumIdealStorageTemperatureInCelsius float32 `json:"minimumIdealStorageTemperatureInCelsius"`
 		MaximumIdealStorageTemperatureInCelsius float32 `json:"maximumIdealStorageTemperatureInCelsius"`
 		ContainsTreeNut                         bool    `json:"containsTreeNut"`

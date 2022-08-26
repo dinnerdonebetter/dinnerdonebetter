@@ -23,13 +23,13 @@ type (
 	HouseholdUserMembership struct {
 		_ struct{}
 
-		ArchivedOn         *uint64  `json:"archivedOn"`
-		LastUpdatedOn      *uint64  `json:"lastUpdatedOn"`
+		ArchivedAt         *uint64  `json:"archivedAt"`
+		LastUpdatedAt      *uint64  `json:"lastUpdatedAt"`
 		ID                 string   `json:"id"`
 		BelongsToUser      string   `json:"belongsToUser"`
 		BelongsToHousehold string   `json:"belongsToHousehold"`
 		HouseholdRoles     []string `json:"householdRole"`
-		CreatedOn          uint64   `json:"createdOn"`
+		CreatedAt          uint64   `json:"createdAt"`
 		DefaultHousehold   bool     `json:"defaultHousehold"`
 	}
 
@@ -37,13 +37,13 @@ type (
 	HouseholdUserMembershipWithUser struct {
 		_ struct{}
 
-		ArchivedOn         *uint64  `json:"archivedOn"`
-		LastUpdatedOn      *uint64  `json:"lastUpdatedOn"`
+		ArchivedAt         *uint64  `json:"archivedAt"`
+		LastUpdatedAt      *uint64  `json:"lastUpdatedAt"`
 		ID                 string   `json:"id"`
 		BelongsToUser      *User    `json:"belongsToUser"`
 		BelongsToHousehold string   `json:"belongsToHousehold"`
 		HouseholdRoles     []string `json:"householdRole"`
-		CreatedOn          uint64   `json:"createdOn"`
+		CreatedAt          uint64   `json:"createdAt"`
 		DefaultHousehold   bool     `json:"defaultHousehold"`
 	}
 

@@ -21,7 +21,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		ProductOfRecipeStep:  false,
 		Optional:             fake.Bool(),
 		IngredientNotes:      buildUniqueString(),
-		CreatedOn:            uint64(uint32(fake.Date().Unix())),
+		CreatedAt:            uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep:  ksuid.New().String(),
 	}
 }

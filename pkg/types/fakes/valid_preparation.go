@@ -18,7 +18,7 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 		RestrictToIngredients:    fake.Bool(),
 		ZeroIngredientsAllowable: fake.Bool(),
 		PastTense:                buildUniqueString(),
-		CreatedOn:                uint64(uint32(fake.Date().Unix())),
+		CreatedAt:                uint64(uint32(fake.Date().Unix())),
 	}
 }
 

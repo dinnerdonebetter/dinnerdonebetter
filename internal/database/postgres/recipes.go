@@ -51,9 +51,9 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 		&x.InspiredByRecipeID,
 		&x.YieldsPortions,
 		&x.SealOfApproval,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.CreatedByUser,
 	}
 
@@ -233,9 +233,9 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&x.InspiredByRecipeID,
 		&x.YieldsPortions,
 		&x.SealOfApproval,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.CreatedByUser,
 		&y.ID,
 		&y.Index,
@@ -247,9 +247,9 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&y.Preparation.RestrictToIngredients,
 		&y.Preparation.ZeroIngredientsAllowable,
 		&y.Preparation.PastTense,
-		&y.Preparation.CreatedOn,
-		&y.Preparation.LastUpdatedOn,
-		&y.Preparation.ArchivedOn,
+		&y.Preparation.CreatedAt,
+		&y.Preparation.LastUpdatedAt,
+		&y.Preparation.ArchivedAt,
 		&y.MinimumEstimatedTimeInSeconds,
 		&y.MaximumEstimatedTimeInSeconds,
 		&y.MinimumTemperatureInCelsius,
@@ -257,9 +257,9 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&y.Notes,
 		&y.ExplicitInstructions,
 		&y.Optional,
-		&y.CreatedOn,
-		&y.LastUpdatedOn,
-		&y.ArchivedOn,
+		&y.CreatedAt,
+		&y.LastUpdatedAt,
+		&y.ArchivedAT,
 		&y.BelongsToRecipe,
 	}
 
@@ -561,7 +561,7 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		CreatedByUser:      input.CreatedByUser,
 		YieldsPortions:     input.YieldsPortions,
 		SealOfApproval:     input.SealOfApproval,
-		CreatedOn:          q.currentTime(),
+		CreatedAt:          q.currentTime(),
 	}
 
 	for i, stepInput := range input.Steps {

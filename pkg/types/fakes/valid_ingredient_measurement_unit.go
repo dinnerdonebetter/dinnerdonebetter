@@ -16,7 +16,7 @@ func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurement
 		Ingredient:               *BuildFakeValidIngredient(),
 		MinimumAllowableQuantity: fake.Float32(),
 		MaximumAllowableQuantity: fake.Float32(),
-		CreatedOn:                uint64(uint32(fake.Date().Unix())),
+		CreatedAt:                uint64(uint32(fake.Date().Unix())),
 	}
 }
 

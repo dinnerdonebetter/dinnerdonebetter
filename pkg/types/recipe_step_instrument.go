@@ -31,15 +31,15 @@ type (
 	// RecipeStepInstrument represents a recipe step instrument.
 	RecipeStepInstrument struct {
 		_                   struct{}
-		ArchivedOn          *uint64          `json:"archivedOn"`
+		ArchivedAt          *uint64          `json:"archivedAt"`
 		Instrument          *ValidInstrument `json:"instrument"`
-		LastUpdatedOn       *uint64          `json:"lastUpdatedOn"`
+		LastUpdatedAt       *uint64          `json:"lastUpdatedAt"`
 		RecipeStepProductID *string          `json:"recipeStepProductID"`
 		Notes               string           `json:"notes"`
 		Name                string           `json:"name"`
 		ID                  string           `json:"id"`
 		BelongsToRecipeStep string           `json:"belongsToRecipeStep"`
-		CreatedOn           uint64           `json:"createdOn"`
+		CreatedAt           uint64           `json:"createdAt"`
 		ProductOfRecipeStep bool             `json:"productOfRecipeStep"`
 		PreferenceRank      uint8            `json:"preferenceRank"`
 		Optional            bool             `json:"optional"`

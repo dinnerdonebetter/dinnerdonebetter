@@ -80,9 +80,9 @@ func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scan
 		&x.RestrictToPreparations,
 		&x.MinimumIdealStorageTemperatureInCelsius,
 		&x.MaximumIdealStorageTemperatureInCelsius,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -533,7 +533,7 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 		RestrictToPreparations:                  input.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
-		CreatedOn:                               q.currentTime(),
+		CreatedAt:                               q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientIDToSpan(span, x.ID)

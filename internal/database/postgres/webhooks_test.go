@@ -36,9 +36,9 @@ func buildMockRowsFromWebhooks(includeCounts bool, filteredCount uint64, webhook
 			strings.Join(w.Events, webhooksTableEventsSeparator),
 			strings.Join(w.DataTypes, webhooksTableDataTypesSeparator),
 			strings.Join(w.Topics, webhooksTableTopicsSeparator),
-			w.CreatedOn,
-			w.LastUpdatedOn,
-			w.ArchivedOn,
+			w.CreatedAt,
+			w.LastUpdatedAt,
+			w.ArchivedAt,
 			w.BelongsToHousehold,
 		}
 
@@ -63,7 +63,7 @@ func buildErroneousMockRowsFromWebhooks(includeCounts bool, filteredCount uint64
 
 	for _, w := range webhooks {
 		rowValues := []driver.Value{
-			w.ArchivedOn,
+			w.ArchivedAt,
 			strings.Join(w.Events, webhooksTableEventsSeparator),
 			strings.Join(w.DataTypes, webhooksTableDataTypesSeparator),
 			strings.Join(w.Topics, webhooksTableTopicsSeparator),
@@ -72,8 +72,8 @@ func buildErroneousMockRowsFromWebhooks(includeCounts bool, filteredCount uint64
 			w.ContentType,
 			w.URL,
 			w.Method,
-			w.CreatedOn,
-			w.LastUpdatedOn,
+			w.CreatedAt,
+			w.LastUpdatedAt,
 			w.BelongsToHousehold,
 		}
 
@@ -485,7 +485,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
-			return exampleWebhook.CreatedOn
+			return exampleWebhook.CreatedAt
 		}
 
 		actual, err := c.CreateWebhook(ctx, exampleInput)
@@ -532,7 +532,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleWebhook.CreatedOn
+			return exampleWebhook.CreatedAt
 		}
 
 		actual, err := c.CreateWebhook(ctx, exampleInput)

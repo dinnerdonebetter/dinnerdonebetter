@@ -31,27 +31,27 @@ type (
 	// ValidInstrument represents a valid instrument.
 	ValidInstrument struct {
 		_             struct{}
-		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn    *uint64 `json:"archivedOn"`
+		LastUpdatedAt *uint64 `json:"lastUpdatedAt"`
+		ArchivedAt    *uint64 `json:"archivedAt"`
 		Description   string  `json:"description"`
 		IconPath      string  `json:"iconPath"`
 		ID            string  `json:"id"`
 		Name          string  `json:"name"`
 		PluralName    string  `json:"pluralName"`
-		CreatedOn     uint64  `json:"createdOn"`
+		CreatedAt     uint64  `json:"createdAt"`
 	}
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
 	NullableValidInstrument struct {
 		_             struct{}
-		LastUpdatedOn *uint64
-		ArchivedOn    *uint64
+		LastUpdatedAt *uint64
+		ArchivedAt    *uint64
 		Description   *string
 		IconPath      *string
 		ID            *string
 		Name          *string
 		PluralName    *string
-		CreatedOn     *uint64
+		CreatedAt     *uint64
 	}
 
 	// ValidInstrumentList represents a list of valid instruments.
@@ -197,13 +197,13 @@ func (x *ValidInstrumentUpdateRequestInput) ValidateWithContext(ctx context.Cont
 // ToValidInstrument produces a ValidInstrument from a NullableValidInstrument.
 func (x *NullableValidInstrument) ToValidInstrument() *ValidInstrument {
 	return &ValidInstrument{
-		LastUpdatedOn: x.LastUpdatedOn,
-		ArchivedOn:    x.ArchivedOn,
+		LastUpdatedAt: x.LastUpdatedAt,
+		ArchivedAt:    x.ArchivedAt,
 		Description:   *x.Description,
 		IconPath:      *x.IconPath,
 		ID:            *x.ID,
 		Name:          *x.Name,
 		PluralName:    *x.PluralName,
-		CreatedOn:     *x.CreatedOn,
+		CreatedAt:     *x.CreatedAt,
 	}
 }

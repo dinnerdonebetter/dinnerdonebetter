@@ -55,9 +55,9 @@ func (q *SQLQuerier) scanMeal(ctx context.Context, scan database.Scanner, includ
 		&x.ID,
 		&x.Name,
 		&x.Description,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.CreatedByUser,
 	}
 
@@ -120,9 +120,9 @@ func (q *SQLQuerier) scanMealWithRecipes(ctx context.Context, rows database.Resu
 			&x.ID,
 			&x.Name,
 			&x.Description,
-			&x.CreatedOn,
-			&x.LastUpdatedOn,
-			&x.ArchivedOn,
+			&x.CreatedAt,
+			&x.LastUpdatedAt,
+			&x.ArchivedAt,
 			&x.CreatedByUser,
 			&recipeID,
 		}
@@ -403,7 +403,7 @@ func (q *SQLQuerier) createMeal(ctx context.Context, querier database.SQLQueryEx
 		Name:          input.Name,
 		Description:   input.Description,
 		CreatedByUser: input.CreatedByUser,
-		CreatedOn:     q.currentTime(),
+		CreatedAt:     q.currentTime(),
 	}
 
 	for _, recipeID := range input.Recipes {

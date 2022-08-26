@@ -20,7 +20,7 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid instrument %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid instrument %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid instrument %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertValidInstrumentToValidInstrumentUpdateInput creates an ValidInstrumentUpdateRequestInput struct from a valid instrument.
@@ -59,7 +59,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 
 			// assert valid instrument equality
 			checkValidInstrumentEquality(t, newValidInstrument, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up valid instrument")
 			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))

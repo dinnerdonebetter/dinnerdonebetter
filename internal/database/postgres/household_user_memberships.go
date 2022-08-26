@@ -58,9 +58,9 @@ func (q *SQLQuerier) scanHouseholdUserMembership(ctx context.Context, scan datab
 		&x.BelongsToHousehold,
 		&rawHouseholdRoles,
 		&x.DefaultHousehold,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {

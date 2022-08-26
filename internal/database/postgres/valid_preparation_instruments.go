@@ -70,20 +70,20 @@ func (q *SQLQuerier) scanValidPreparationInstrument(ctx context.Context, scan da
 		&x.Preparation.RestrictToIngredients,
 		&x.Preparation.ZeroIngredientsAllowable,
 		&x.Preparation.PastTense,
-		&x.Preparation.CreatedOn,
-		&x.Preparation.LastUpdatedOn,
-		&x.Preparation.ArchivedOn,
+		&x.Preparation.CreatedAt,
+		&x.Preparation.LastUpdatedAt,
+		&x.Preparation.ArchivedAt,
 		&x.Instrument.ID,
 		&x.Instrument.Name,
 		&x.Instrument.PluralName,
 		&x.Instrument.Description,
 		&x.Instrument.IconPath,
-		&x.Instrument.CreatedOn,
-		&x.Instrument.LastUpdatedOn,
-		&x.Instrument.ArchivedOn,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.Instrument.CreatedAt,
+		&x.Instrument.LastUpdatedAt,
+		&x.Instrument.ArchivedAt,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -431,7 +431,7 @@ func (q *SQLQuerier) CreateValidPreparationInstrument(ctx context.Context, input
 		Notes:       input.Notes,
 		Preparation: types.ValidPreparation{ID: input.ValidPreparationID},
 		Instrument:  types.ValidInstrument{ID: input.ValidInstrumentID},
-		CreatedOn:   q.currentTime(),
+		CreatedAt:   q.currentTime(),
 	}
 
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, x.ID)

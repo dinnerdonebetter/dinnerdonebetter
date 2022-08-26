@@ -63,9 +63,9 @@ func (q *SQLQuerier) scanWebhook(ctx context.Context, scan database.Scanner, inc
 		&eventsStr,
 		&dataTypesStr,
 		&topicsStr,
-		&webhook.CreatedOn,
-		&webhook.LastUpdatedOn,
-		&webhook.ArchivedOn,
+		&webhook.CreatedAt,
+		&webhook.LastUpdatedAt,
+		&webhook.ArchivedAt,
 		&webhook.BelongsToHousehold,
 	}
 
@@ -300,7 +300,7 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 		DataTypes:          input.DataTypes,
 		Topics:             input.Topics,
 		BelongsToHousehold: input.BelongsToHousehold,
-		CreatedOn:          q.currentTime(),
+		CreatedAt:          q.currentTime(),
 	}
 
 	tracing.AttachWebhookIDToSpan(span, x.ID)

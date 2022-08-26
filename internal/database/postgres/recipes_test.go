@@ -37,9 +37,9 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 			x.InspiredByRecipeID,
 			x.YieldsPortions,
 			x.SealOfApproval,
-			x.CreatedOn,
-			x.LastUpdatedOn,
-			x.ArchivedOn,
+			x.CreatedAt,
+			x.LastUpdatedAt,
+			x.ArchivedAt,
 			x.CreatedByUser,
 		}
 
@@ -104,9 +104,9 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&recipe.InspiredByRecipeID,
 			&recipe.YieldsPortions,
 			&recipe.SealOfApproval,
-			&recipe.CreatedOn,
-			&recipe.LastUpdatedOn,
-			&recipe.ArchivedOn,
+			&recipe.CreatedAt,
+			&recipe.LastUpdatedAt,
+			&recipe.ArchivedAt,
 			&recipe.CreatedByUser,
 			&step.ID,
 			&step.Index,
@@ -118,9 +118,9 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Preparation.RestrictToIngredients,
 			&step.Preparation.ZeroIngredientsAllowable,
 			&step.Preparation.PastTense,
-			&step.Preparation.CreatedOn,
-			&step.Preparation.LastUpdatedOn,
-			&step.Preparation.ArchivedOn,
+			&step.Preparation.CreatedAt,
+			&step.Preparation.LastUpdatedAt,
+			&step.Preparation.ArchivedAt,
 			&step.MinimumEstimatedTimeInSeconds,
 			&step.MaximumEstimatedTimeInSeconds,
 			&step.MinimumTemperatureInCelsius,
@@ -128,9 +128,9 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Notes,
 			&step.ExplicitInstructions,
 			&step.Optional,
-			&step.CreatedOn,
-			&step.LastUpdatedOn,
-			&step.ArchivedOn,
+			&step.CreatedAt,
+			&step.LastUpdatedAt,
+			&step.ArchivedAT,
 			&step.BelongsToRecipe,
 		)
 	}
@@ -1123,7 +1123,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipe.CreatedOn
+			return exampleRecipe.CreatedAt
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
@@ -1133,16 +1133,16 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		for i, step := range exampleRecipe.Steps {
 			step.BelongsToRecipe = actual.ID
-			step.CreatedOn = actual.Steps[i].CreatedOn
+			step.CreatedAt = actual.Steps[i].CreatedAt
 
 			for j, ingredient := range step.Ingredients {
 				ingredient.BelongsToRecipeStep = step.ID
-				ingredient.CreatedOn = actual.Steps[i].Ingredients[j].CreatedOn
+				ingredient.CreatedAt = actual.Steps[i].Ingredients[j].CreatedAt
 			}
 
 			for j, instrument := range step.Instruments {
 				instrument.BelongsToRecipeStep = step.ID
-				instrument.CreatedOn = actual.Steps[i].Instruments[j].CreatedOn
+				instrument.CreatedAt = actual.Steps[i].Instruments[j].CreatedAt
 			}
 		}
 
@@ -1206,7 +1206,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipe.CreatedOn
+			return exampleRecipe.CreatedAt
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
@@ -1216,11 +1216,11 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		for i, step := range exampleRecipe.Steps {
 			step.BelongsToRecipe = actual.ID
-			step.CreatedOn = actual.Steps[i].CreatedOn
+			step.CreatedAt = actual.Steps[i].CreatedAt
 
 			for j, ingredient := range step.Ingredients {
 				ingredient.BelongsToRecipeStep = step.ID
-				ingredient.CreatedOn = actual.Steps[i].Ingredients[j].CreatedOn
+				ingredient.CreatedAt = actual.Steps[i].Ingredients[j].CreatedAt
 			}
 		}
 
@@ -1242,7 +1242,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipe.CreatedOn
+			return exampleRecipe.CreatedAt
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
@@ -1302,7 +1302,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipe.CreatedOn
+			return exampleRecipe.CreatedAt
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
@@ -1371,7 +1371,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipe.CreatedOn
+			return exampleRecipe.CreatedAt
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
@@ -1412,7 +1412,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleRecipe.CreatedOn
+			return exampleRecipe.CreatedAt
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)

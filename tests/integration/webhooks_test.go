@@ -19,7 +19,7 @@ func checkWebhookEquality(t *testing.T, expected, actual *types.Webhook) {
 	assert.Equal(t, expected.ContentType, actual.ContentType)
 	assert.Equal(t, expected.URL, actual.URL)
 	assert.Equal(t, expected.Method, actual.Method)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 func (s *TestSuite) TestWebhooks_Creating() {

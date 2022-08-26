@@ -44,9 +44,9 @@ func (q *SQLQuerier) scanValidInstrument(ctx context.Context, scan database.Scan
 		&x.PluralName,
 		&x.Description,
 		&x.IconPath,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -390,7 +390,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 		PluralName:  input.PluralName,
 		Description: input.Description,
 		IconPath:    input.IconPath,
-		CreatedOn:   q.currentTime(),
+		CreatedAt:   q.currentTime(),
 	}
 
 	tracing.AttachValidInstrumentIDToSpan(span, x.ID)

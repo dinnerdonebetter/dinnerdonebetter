@@ -21,7 +21,7 @@ func checkHouseholdEquality(t *testing.T, expected, actual *types.Household) {
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for household %s to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.TimeZone, actual.TimeZone, "expected TimeZone for household %s to be %v, but it was %v ", expected.ID, expected.TimeZone, actual.TimeZone)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 func (s *TestSuite) TestHouseholds_Creating() {
@@ -176,7 +176,7 @@ func (s *TestSuite) TestHouseholds_Updating() {
 
 			// Assert household equality.
 			checkHouseholdEquality(t, exampleHousehold, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedAt)
 
 			// Clean up household.
 			assert.NoError(t, testClients.user.ArchiveHousehold(ctx, createdHousehold.ID))

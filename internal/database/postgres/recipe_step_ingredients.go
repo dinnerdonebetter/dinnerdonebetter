@@ -80,18 +80,18 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.MeasurementUnit.Metric,
 		&x.MeasurementUnit.Imperial,
 		&x.MeasurementUnit.PluralName,
-		&x.MeasurementUnit.CreatedOn,
-		&x.MeasurementUnit.LastUpdatedOn,
-		&x.MeasurementUnit.ArchivedOn,
+		&x.MeasurementUnit.CreatedAt,
+		&x.MeasurementUnit.LastUpdatedAt,
+		&x.MeasurementUnit.ArchivedAt,
 		&x.MinimumQuantityValue,
 		&x.MaximumQuantityValue,
 		&x.QuantityNotes,
 		&x.ProductOfRecipeStep,
 		&x.RecipeStepProductID,
 		&x.IngredientNotes,
-		&x.CreatedOn,
-		&x.LastUpdatedOn,
-		&x.ArchivedOn,
+		&x.CreatedAt,
+		&x.LastUpdatedAt,
+		&x.ArchivedAt,
 		&x.BelongsToRecipeStep,
 	}
 
@@ -482,7 +482,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		IngredientNotes:      input.IngredientNotes,
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
 		RecipeStepProductID:  input.RecipeStepProductID,
-		CreatedOn:            q.currentTime(),
+		CreatedAt:            q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)

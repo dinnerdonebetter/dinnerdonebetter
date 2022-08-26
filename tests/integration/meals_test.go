@@ -20,7 +20,7 @@ func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for meal %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for meal %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
-	assert.NotZero(t, actual.CreatedOn)
+	assert.NotZero(t, actual.CreatedAt)
 }
 
 func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *httpclient.Client, mealInput *types.Meal) *types.Meal {
