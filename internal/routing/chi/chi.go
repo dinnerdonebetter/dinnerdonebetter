@@ -38,7 +38,6 @@ type router struct {
 }
 
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
-	//corsHandler := cors.AllowAll()
 	corsHandler := cors.New(cors.Options{
 		// Use this to allow specific origin hosts,
 		AllowedOrigins: []string{
