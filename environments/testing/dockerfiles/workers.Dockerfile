@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.18-stretch AS build-stage
+FROM golang:1.19-bullseye AS build-stage
 
 WORKDIR /go/src/github.com/prixfixeco/api_server
 

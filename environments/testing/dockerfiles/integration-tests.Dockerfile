@@ -1,4 +1,4 @@
-FROM golang:1.18-stretch
+FROM golang:1.19-bullseye
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates make git gcc musl-dev
 

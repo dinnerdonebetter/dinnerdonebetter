@@ -96,7 +96,7 @@ func scaffoldUsers(ctx context.Context, db database.DataManager) error {
 		return fmt.Errorf("creating admin input: %w", err)
 	}
 
-	const adminUpdateQuery = `UPDATE users SET service_roles = 'service_admin', two_factor_secret_verified_on=extract(epoch FROM NOW()) WHERE username = 'admin';`
+	const adminUpdateQuery = `UPDATE users SET service_roles = 'service_admin', two_factor_secret_verified_at=extract(epoch FROM NOW()) WHERE username = 'admin';`
 	if _, err := db.DB().ExecContext(ctx, adminUpdateQuery); err != nil {
 		return fmt.Errorf("modifying admin input permissions: %w", err)
 	}

@@ -1066,6 +1066,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionA,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionA,
@@ -1093,6 +1094,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionB,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionB,
@@ -1120,6 +1122,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionC,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionC,
@@ -1148,14 +1151,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanArgs := []interface{}{
-			exampleMealPlan.ID,
-			exampleHousehold.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
 
 		getMealPlanOptionArgs := []interface{}{
 			exampleMealPlan.ID,
@@ -1225,6 +1221,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionA,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionA,
@@ -1242,6 +1239,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionB,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionB,
@@ -1259,6 +1257,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionC,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionC,
@@ -1276,14 +1275,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanArgs := []interface{}{
-			exampleMealPlan.ID,
-			exampleHousehold.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
 
 		getMealPlanOptionArgs := []interface{}{
 			exampleMealPlan.ID,
@@ -1382,14 +1374,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanArgs := []interface{}{
-			exampleMealPlan.ID,
-			exampleHousehold.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
 
 		getMealPlanOptionArgs := []interface{}{
 			exampleMealPlan.ID,
@@ -1415,14 +1400,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanArgs := []interface{}{
-			exampleMealPlan.ID,
-			exampleHousehold.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
 
 		getMealPlanOptionArgs := []interface{}{
 			exampleMealPlan.ID,
@@ -1482,6 +1460,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionA,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionA,
@@ -1509,6 +1488,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionB,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionB,
@@ -1536,6 +1516,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 				ID:       optionC,
 				Day:      time.Monday,
 				MealName: types.BreakfastMealName,
+				Meal:     *fakes.BuildFakeMeal(),
 				Votes: []*types.MealPlanOptionVote{
 					{
 						BelongsToMealPlanOption: optionC,
@@ -1564,14 +1545,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanArgs := []interface{}{
-			exampleMealPlan.ID,
-			exampleHousehold.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
 
 		getMealPlanOptionArgs := []interface{}{
 			exampleMealPlan.ID,

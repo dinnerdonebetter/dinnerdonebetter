@@ -66,6 +66,39 @@ func (q *SQLQuerier) scanMealPlan(ctx context.Context, scan database.Scanner, in
 	return x, filteredCount, totalCount, nil
 }
 
+// scanMealPlans takes some database rows and turns them into a slice of meal plans.
+func (q *SQLQuerier) scanMealPlans(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlans []*types.MealPlan, filteredCount, totalCount uint64, err error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.WithValue("include_counts", includeCounts)
+
+	for rows.Next() {
+		x, fc, tc, scanErr := q.scanMealPlan(ctx, rows, includeCounts)
+		if scanErr != nil {
+			return nil, 0, 0, scanErr
+		}
+
+		if includeCounts {
+			if filteredCount == 0 {
+				filteredCount = fc
+			}
+
+			if totalCount == 0 {
+				totalCount = tc
+			}
+		}
+
+		mealPlans = append(mealPlans, x)
+	}
+
+	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
+		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+	}
+
+	return mealPlans, filteredCount, totalCount, nil
+}
+
 // scanFullMealPlan takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan struct.
 func (q *SQLQuerier) scanFullMealPlan(ctx context.Context, scan database.Scanner) (mealPlan *types.MealPlan, mealPlanOption *types.MealPlanOption, mealPlanOptionVote *types.MealPlanOptionVote, err error) {
 	_, span := q.tracer.StartSpan(ctx)
@@ -73,7 +106,9 @@ func (q *SQLQuerier) scanFullMealPlan(ctx context.Context, scan database.Scanner
 
 	logger := q.logger
 	mealPlan = &types.MealPlan{}
-	mealPlanOption = &types.MealPlanOption{}
+	mealPlanOption = &types.MealPlanOption{
+		Meal: types.Meal{Recipes: []*types.Recipe{{}}},
+	}
 	nmpov := &nullableMealPlanOptionVote{}
 
 	targetVars := []interface{}{
@@ -115,6 +150,7 @@ func (q *SQLQuerier) scanFullMealPlan(ctx context.Context, scan database.Scanner
 		&mealPlanOption.Meal.LastUpdatedAt,
 		&mealPlanOption.Meal.ArchivedAt,
 		&mealPlanOption.Meal.CreatedByUser,
+		&mealPlanOption.Meal.Recipes[0].ID,
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
@@ -136,39 +172,6 @@ func (q *SQLQuerier) scanFullMealPlan(ctx context.Context, scan database.Scanner
 	}
 
 	return mealPlan, mealPlanOption, mealPlanOptionVote, nil
-}
-
-// scanMealPlans takes some database rows and turns them into a slice of meal plans.
-func (q *SQLQuerier) scanMealPlans(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlans []*types.MealPlan, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanMealPlan(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		mealPlans = append(mealPlans, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
-	}
-
-	return mealPlans, filteredCount, totalCount, nil
 }
 
 const mealPlanExistenceQuery = "SELECT EXISTS ( SELECT meal_plans.id FROM meal_plans WHERE meal_plans.archived_at IS NULL AND meal_plans.id = $1 )"
@@ -242,10 +245,12 @@ const baseGetMealPlanQuery = `SELECT
 	meals.created_at,
 	meals.last_updated_at,
 	meals.archived_at,
-	meals.created_by_user
-FROM meal_plans 
+	meals.created_by_user,
+    meal_recipes.recipe_id
+FROM meal_plans
 	FULL OUTER JOIN meal_plan_options ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
 	FULL OUTER JOIN meal_plan_option_votes ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+	FULL OUTER JOIN meal_recipes ON meal_plan_options.meal_id=meal_recipes.meal_id
 	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
 WHERE meal_plans.archived_at IS NULL 
 AND meal_plans.id = $1
@@ -297,6 +302,9 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 	}
 
 	var (
+		// this is Go parlance for "map of string to set of strings"
+		mealRecipeIDs      = map[string]map[string]struct{}{}
+		allRecipeIDs       = []string{}
 		mealPlan           *types.MealPlan
 		currentOptionIndex = 0
 	)
@@ -304,6 +312,15 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 		rowMealPlan, rowMealPlanOption, rowMealPlanOptionVote, scanErr := q.scanFullMealPlan(ctx, rows)
 		if scanErr != nil {
 			return nil, scanErr
+		}
+
+		if len(rowMealPlanOption.Meal.Recipes) > 0 {
+			allRecipeIDs = append(allRecipeIDs, rowMealPlanOption.Meal.Recipes[0].ID)
+			if _, ok := mealRecipeIDs[rowMealPlanOption.Meal.ID]; ok {
+				mealRecipeIDs[rowMealPlanOption.Meal.ID][rowMealPlanOption.Meal.Recipes[0].ID] = struct{}{}
+			} else {
+				mealRecipeIDs[rowMealPlanOption.Meal.ID] = map[string]struct{}{rowMealPlanOption.Meal.Recipes[0].ID: {}}
+			}
 		}
 
 		if mealPlan == nil {
@@ -326,6 +343,30 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 
 	if mealPlan == nil {
 		return nil, sql.ErrNoRows
+	}
+
+	// I'm sure this is like `O((n^5)^2)` or something, but fuck off, it works, and I'm busy.
+	// go through all the meal recipe IDs and fetch the into a map, so that we only fetch them once.
+	// as of this writing they have to be unique across a meal plan, but we shouldn't bank on that.
+	fetchedRecipes := map[string]*types.Recipe{}
+	for _, recipeID := range allRecipeIDs {
+		if _, ok := fetchedRecipes[recipeID]; !ok {
+			recipe, getRecipeErr := q.getRecipe(ctx, recipeID, "")
+			if getRecipeErr != nil {
+				tracing.AttachRecipeIDToSpan(span, recipeID)
+				return nil, observability.PrepareError(getRecipeErr, logger, span, "fetching recipe from meal plan")
+			}
+
+			fetchedRecipes[recipeID] = recipe
+		}
+	}
+
+	// hydrate the options in the meal plan with the appropriate recipes.
+	for i, option := range mealPlan.Options {
+		mealPlan.Options[i].Meal.Recipes = []*types.Recipe{}
+		for recipeID := range mealRecipeIDs[option.Meal.ID] {
+			option.Meal.Recipes = append(option.Meal.Recipes, fetchedRecipes[recipeID])
+		}
 	}
 
 	return mealPlan, nil
@@ -645,7 +686,7 @@ func (q *SQLQuerier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 	}
 
 	// fetch meal plan
-	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
+	mealPlan, err := q.getMealPlan(ctx, mealPlanID, householdID, false)
 	if err != nil {
 		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
 	}
