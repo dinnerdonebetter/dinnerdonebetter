@@ -306,6 +306,7 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 		mealRecipeIDs      = map[string]map[string]struct{}{}
 		mealPlan           *types.MealPlan
 		currentOptionIndex = 0
+		appendedVotes      = map[string]bool{}
 	)
 	for rows.Next() {
 		rowMealPlan, rowMealPlanOption, rowMealPlanOptionVote, scanErr := q.scanFullMealPlan(ctx, rows)
@@ -335,7 +336,10 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 		}
 
 		if rowMealPlanOptionVote != nil {
-			mealPlan.Options[currentOptionIndex].Votes = append(mealPlan.Options[currentOptionIndex].Votes, rowMealPlanOptionVote)
+			if _, ok := appendedVotes[rowMealPlanOptionVote.ID]; !ok {
+				mealPlan.Options[currentOptionIndex].Votes = append(mealPlan.Options[currentOptionIndex].Votes, rowMealPlanOptionVote)
+				appendedVotes[rowMealPlanOptionVote.ID] = true
+			}
 		}
 	}
 
