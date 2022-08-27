@@ -302,11 +302,11 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 	}
 
 	var (
-		// this is old school Go parlance for "map of string to set of strings"
+		// this is Go parlance for "map of string to set of strings"
 		mealRecipeIDs      = map[string]map[string]struct{}{}
+		allRecipeIDs       = []string{}
 		mealPlan           *types.MealPlan
 		currentOptionIndex = 0
-		appendedVotes      = map[string]bool{}
 	)
 	for rows.Next() {
 		rowMealPlan, rowMealPlanOption, rowMealPlanOptionVote, scanErr := q.scanFullMealPlan(ctx, rows)
@@ -315,6 +315,7 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 		}
 
 		if len(rowMealPlanOption.Meal.Recipes) > 0 {
+			allRecipeIDs = append(allRecipeIDs, rowMealPlanOption.Meal.Recipes[0].ID)
 			if _, ok := mealRecipeIDs[rowMealPlanOption.Meal.ID]; ok {
 				mealRecipeIDs[rowMealPlanOption.Meal.ID][rowMealPlanOption.Meal.Recipes[0].ID] = struct{}{}
 			} else {
@@ -336,10 +337,7 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 		}
 
 		if rowMealPlanOptionVote != nil {
-			if _, ok := appendedVotes[rowMealPlanOptionVote.ID]; !ok {
-				mealPlan.Options[currentOptionIndex].Votes = append(mealPlan.Options[currentOptionIndex].Votes, rowMealPlanOptionVote)
-				appendedVotes[rowMealPlanOptionVote.ID] = true
-			}
+			mealPlan.Options[currentOptionIndex].Votes = append(mealPlan.Options[currentOptionIndex].Votes, rowMealPlanOptionVote)
 		}
 	}
 
@@ -347,21 +345,19 @@ func (q *SQLQuerier) getMealPlan(ctx context.Context, mealPlanID, householdID st
 		return nil, sql.ErrNoRows
 	}
 
-	// I'm sure this is like `O((n^5)^2` or some shit, but fuck off, it works, and I'm busy.
+	// I'm sure this is like `O((n^5)^2)` or something, but fuck off, it works, and I'm busy.
 	// go through all the meal recipe IDs and fetch the into a map, so that we only fetch them once.
 	// as of this writing they have to be unique across a meal plan, but we shouldn't bank on that.
 	fetchedRecipes := map[string]*types.Recipe{}
-	for _, recipeIDs := range mealRecipeIDs {
-		for recipeID := range recipeIDs {
-			if _, ok := fetchedRecipes[recipeID]; !ok {
-				recipe, getRecipeErr := q.getRecipe(ctx, recipeID, "")
-				if getRecipeErr != nil {
-					tracing.AttachRecipeIDToSpan(span, recipeID)
-					return nil, observability.PrepareError(err, logger, span, "fetching recipe from meal plan")
-				}
-
-				fetchedRecipes[recipeID] = recipe
+	for _, recipeID := range allRecipeIDs {
+		if _, ok := fetchedRecipes[recipeID]; !ok {
+			recipe, getRecipeErr := q.getRecipe(ctx, recipeID, "")
+			if getRecipeErr != nil {
+				tracing.AttachRecipeIDToSpan(span, recipeID)
+				return nil, observability.PrepareError(getRecipeErr, logger, span, "fetching recipe from meal plan")
 			}
+
+			fetchedRecipes[recipeID] = recipe
 		}
 	}
 
@@ -690,7 +686,7 @@ func (q *SQLQuerier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 	}
 
 	// fetch meal plan
-	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
+	mealPlan, err := q.getMealPlan(ctx, mealPlanID, householdID, false)
 	if err != nil {
 		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
 	}
