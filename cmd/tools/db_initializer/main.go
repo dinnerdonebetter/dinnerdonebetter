@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
 	"log"
+	"os"
+	"strings"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -83,6 +85,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	dumpBytes, err := os.ReadFile("cmd/tools/db_initializer/dump.sql")
+	if err != nil {
+		log.Fatal(fmt.Errorf("error reading dump file: %w", err))
+	}
+
 	dbConfig := &dbconfig.Config{
 		ConnectionDetails: database.ConnectionDetails(dbString),
 	}
@@ -92,8 +99,7 @@ func main() {
 		log.Fatal(fmt.Errorf("initializing database client: %w", err))
 	}
 
-	_, err = dataManager.DB().ExecContext(ctx, clearAllQuery)
-	if err != nil {
+	if _, err = dataManager.DB().ExecContext(ctx, clearAllQuery); err != nil {
 		log.Fatal(fmt.Errorf("error clearing database: %w", err))
 	}
 
@@ -101,48 +107,15 @@ func main() {
 		log.Fatal(fmt.Errorf("error creating users: %w", err))
 	}
 
-	if err = scaffoldValidIngredients(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating valid ingredients: %w", err))
+	momJones, err := dataManager.GetUserByUsername(ctx, userCollection.MomJones.Username)
+	if err != nil {
+		log.Fatal(fmt.Errorf("error fetching momJones user: %w", err))
 	}
 
-	if err = scaffoldValidPreparations(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating valid preparations: %w", err))
-	}
+	replacedDump := strings.ReplaceAll(string(dumpBytes), "2751SjGkKN5AzdVbcNP0eblooTC", momJones.ID)
 
-	if err = scaffoldValidInstruments(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating valid instruments: %w", err))
-	}
-
-	if err = scaffoldValidMeasurementUnits(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating valid measurement units: %w", err))
-	}
-
-	if err = scaffoldValidPreparationInstruments(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating valid preparation instruments: %w", err))
-	}
-
-	if err = scaffoldValidIngredientPreparations(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating valid ingredient preparations: %w", err))
-	}
-
-	if err = scaffoldValidIngredientMeasurementUnits(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating valid ingredient preparations: %w", err))
-	}
-
-	if err = scaffoldRecipes(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating recipes: %w", err))
-	}
-
-	if err = scaffoldMeals(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating meals: %w", err))
-	}
-
-	if err = scaffoldMealPlans(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating meals: %w", err))
-	}
-
-	if err = scaffoldMealPlanVotes(ctx, dataManager); err != nil {
-		log.Fatal(fmt.Errorf("error creating meals: %w", err))
+	if _, err = dataManager.DB().ExecContext(ctx, replacedDump); err != nil {
+		log.Fatal(fmt.Errorf("initializing running query: %w", err))
 	}
 }
 
