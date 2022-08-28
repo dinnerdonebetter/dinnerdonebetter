@@ -52,3 +52,5 @@ internal/services/frontend/_vendor_/*
 # TLS certificates
 environments/testing/certificates
 *.pem
+
+cmd/tools/db_initializer/dump.sql
