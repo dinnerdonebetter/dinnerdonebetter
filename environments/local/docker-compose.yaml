@@ -1,7 +1,7 @@
 version: "3.8"
 services:
     worker_queue:
-        image: redis:6-buster
+        image: redis:7-bullseye
         container_name: worker_queue
         logging:
           driver: none

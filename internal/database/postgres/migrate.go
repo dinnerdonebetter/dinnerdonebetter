@@ -196,9 +196,14 @@ var (
 			Script:      fetchMigration("00036_myriad_schema_additions"),
 		},
 		{
-			Version:     37,
+			Version:     38,
 			Description: "rename time fields",
 			Script:      fetchMigration("00037_better_time_field_names"),
+		},
+		{
+			Version:     37,
+			Description: "add advanced prep notifications",
+			Script:      fetchMigration("00038_advanced_prep_notifications"),
 		},
 	}
 )
