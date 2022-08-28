@@ -45,12 +45,6 @@ func (m *ValidInstrumentDataManager) GetValidInstruments(ctx context.Context, fi
 	return args.Get(0).(*types.ValidInstrumentList), args.Error(1)
 }
 
-// GetValidInstrumentsWithIDs is a mock function.
-func (m *ValidInstrumentDataManager) GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidInstrument, error) {
-	args := m.Called(ctx, limit, ids)
-	return args.Get(0).([]*types.ValidInstrument), args.Error(1)
-}
-
 // CreateValidInstrument is a mock function.
 func (m *ValidInstrumentDataManager) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
 	args := m.Called(ctx, input)

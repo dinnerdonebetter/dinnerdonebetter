@@ -105,7 +105,6 @@ type (
 		GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*Recipe, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
 		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*RecipeList, error)
-		GetRecipesWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*Recipe, error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error

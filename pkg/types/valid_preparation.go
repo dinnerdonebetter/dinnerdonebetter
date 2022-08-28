@@ -97,7 +97,6 @@ type (
 		GetRandomValidPreparation(ctx context.Context) (*ValidPreparation, error)
 		GetValidPreparations(ctx context.Context, filter *QueryFilter) (*ValidPreparationList, error)
 		SearchForValidPreparations(ctx context.Context, query string) ([]*ValidPreparation, error)
-		GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidPreparation, error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error
 		ArchiveValidPreparation(ctx context.Context, validPreparationID string) error

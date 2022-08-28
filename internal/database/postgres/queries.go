@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/Masterminds/squirrel"
 
@@ -14,7 +13,6 @@ import (
 )
 
 const (
-	defaultLimit             = types.DefaultLimit
 	commaSeparator           = ","
 	columnCountQueryTemplate = `COUNT(%s.id)`
 	userOwnershipColumn      = "belongs_to_user"
@@ -23,10 +21,6 @@ const (
 
 func wrapQueryForILIKE(s string) string {
 	return fmt.Sprintf("%%%s%%", s)
-}
-
-func joinIDs(ids []string) string {
-	return strings.Join(ids, commaSeparator)
 }
 
 // logQueryBuildingError logs errs that may occur during query construction. Such errors should be few and far between,

@@ -51,12 +51,6 @@ func (m *ValidIngredientDataManager) GetValidIngredients(ctx context.Context, fi
 	return args.Get(0).(*types.ValidIngredientList), args.Error(1)
 }
 
-// GetValidIngredientsWithIDs is a mock function.
-func (m *ValidIngredientDataManager) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidIngredient, error) {
-	args := m.Called(ctx, limit, ids)
-	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
-}
-
 // CreateValidIngredient is a mock function.
 func (m *ValidIngredientDataManager) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
 	args := m.Called(ctx, input)

@@ -2,9 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -301,71 +298,6 @@ func (q *SQLQuerier) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetRecipeStepInstrumentsWithIDsQuery(ctx context.Context, recipeStepID string, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"recipe_step_instruments.id":                     ids,
-		"recipe_step_instruments.archived_at":            nil,
-		"recipe_step_instruments.belongs_to_recipe_step": recipeStepID,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(recipeStepInstrumentsTableColumns...).
-		From("recipe_step_instruments").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(recipeStepInstrumentsTableColumns...).
-		FromSelect(subqueryBuilder, "recipe_step_instruments").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetRecipeStepInstrumentsWithIDs fetches recipe step instruments from the database within a given set of IDs.
-func (q *SQLQuerier) GetRecipeStepInstrumentsWithIDs(ctx context.Context, recipeStepID string, limit uint8, ids []string) ([]*types.RecipeStepInstrument, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if recipeStepID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetRecipeStepInstrumentsWithIDsQuery(ctx, recipeStepID, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "recipe step instruments with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching recipe step instruments from database")
-	}
-
-	recipeStepInstruments, _, _, err := q.scanRecipeStepInstruments(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipe step instruments")
-	}
-
-	return recipeStepInstruments, nil
 }
 
 const getRecipeStepInstrumentsForRecipeQuery = `SELECT

@@ -33,12 +33,6 @@ func (m *MealPlanDataManager) GetMealPlans(ctx context.Context, householdID stri
 	return args.Get(0).(*types.MealPlanList), args.Error(1)
 }
 
-// GetMealPlansWithIDs is a mock function.
-func (m *MealPlanDataManager) GetMealPlansWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.MealPlan, error) {
-	args := m.Called(ctx, householdID, limit, ids)
-	return args.Get(0).([]*types.MealPlan), args.Error(1)
-}
-
 // CreateMealPlan is a mock function.
 func (m *MealPlanDataManager) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
 	args := m.Called(ctx, input)

@@ -45,12 +45,6 @@ func (m *ValidPreparationDataManager) GetValidPreparations(ctx context.Context, 
 	return args.Get(0).(*types.ValidPreparationList), args.Error(1)
 }
 
-// GetValidPreparationsWithIDs is a mock function.
-func (m *ValidPreparationDataManager) GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidPreparation, error) {
-	args := m.Called(ctx, limit, ids)
-	return args.Get(0).([]*types.ValidPreparation), args.Error(1)
-}
-
 // CreateValidPreparation is a mock function.
 func (m *ValidPreparationDataManager) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationDatabaseCreationInput) (*types.ValidPreparation, error) {
 	args := m.Called(ctx, input)

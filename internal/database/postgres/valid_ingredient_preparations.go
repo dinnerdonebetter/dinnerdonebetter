@@ -316,64 +316,6 @@ func (q *SQLQuerier) GetValidIngredientPreparations(ctx context.Context, filter 
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidIngredientPreparationsWithIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"valid_ingredient_preparations.id":          ids,
-		"valid_ingredient_preparations.archived_at": nil,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(validIngredientPreparationsTableColumns...).
-		From("valid_ingredient_preparations").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(validIngredientPreparationsTableColumns...).
-		FromSelect(subqueryBuilder, "valid_ingredient_preparations").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetValidIngredientPreparationsWithIDs fetches valid ingredient preparations from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidIngredientPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidIngredientPreparation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetValidIngredientPreparationsWithIDsQuery(ctx, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredient preparations with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient preparations from database")
-	}
-
-	validIngredientPreparations, _, _, err := q.scanValidIngredientPreparations(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient preparations")
-	}
-
-	return validIngredientPreparations, nil
-}
-
 func (q *SQLQuerier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()

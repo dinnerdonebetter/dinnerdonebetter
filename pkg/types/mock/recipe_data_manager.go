@@ -45,12 +45,6 @@ func (m *RecipeDataManager) GetRecipes(ctx context.Context, filter *types.QueryF
 	return args.Get(0).(*types.RecipeList), args.Error(1)
 }
 
-// GetRecipesWithIDs is a mock function.
-func (m *RecipeDataManager) GetRecipesWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.Recipe, error) {
-	args := m.Called(ctx, householdID, limit, ids)
-	return args.Get(0).([]*types.Recipe), args.Error(1)
-}
-
 // CreateRecipe is a mock function.
 func (m *RecipeDataManager) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
 	args := m.Called(ctx, input)

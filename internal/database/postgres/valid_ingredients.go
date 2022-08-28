@@ -2,9 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -363,64 +360,6 @@ func (q *SQLQuerier) GetValidIngredients(ctx context.Context, filter *types.Quer
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetValidIngredientsWithIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"valid_ingredients.id":          ids,
-		"valid_ingredients.archived_at": nil,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(validIngredientsTableColumns...).
-		From("valid_ingredients").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(validIngredientsTableColumns...).
-		FromSelect(subqueryBuilder, "valid_ingredients").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetValidIngredientsWithIDs fetches valid ingredients from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidIngredient, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetValidIngredientsWithIDsQuery(ctx, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredients from database")
-	}
-
-	validIngredients, _, _, err := q.scanValidIngredients(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredients")
-	}
-
-	return validIngredients, nil
 }
 
 const validIngredientCreationQuery = `INSERT INTO valid_ingredients

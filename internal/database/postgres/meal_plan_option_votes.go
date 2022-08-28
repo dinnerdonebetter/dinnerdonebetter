@@ -2,9 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -250,71 +247,6 @@ func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mea
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetMealPlanOptionVotesWithIDsQuery(ctx context.Context, mealPlanOptionID string, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"meal_plan_option_votes.id":                          ids,
-		"meal_plan_option_votes.archived_at":                 nil,
-		"meal_plan_option_votes.belongs_to_meal_plan_option": mealPlanOptionID,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(mealPlanOptionVotesTableColumns...).
-		From("meal_plan_option_votes").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(mealPlanOptionVotesTableColumns...).
-		FromSelect(subqueryBuilder, "meal_plan_option_votes").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetMealPlanOptionVotesWithIDs fetches meal plan option votes from the database within a given set of IDs.
-func (q *SQLQuerier) GetMealPlanOptionVotesWithIDs(ctx context.Context, mealPlanOptionID string, limit uint8, ids []string) ([]*types.MealPlanOptionVote, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if mealPlanOptionID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetMealPlanOptionVotesWithIDsQuery(ctx, mealPlanOptionID, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan option votes with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching meal plan option votes from database")
-	}
-
-	mealPlanOptionVotes, _, _, err := q.scanMealPlanOptionVotes(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meal plan option votes")
-	}
-
-	return mealPlanOptionVotes, nil
 }
 
 const mealPlanOptionVoteCreationQuery = "INSERT INTO meal_plan_option_votes (id,rank,abstain,notes,by_user,belongs_to_meal_plan_option) VALUES ($1,$2,$3,$4,$5,$6)"

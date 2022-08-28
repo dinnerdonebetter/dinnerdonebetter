@@ -2,11 +2,9 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"time"
 
-	"github.com/Masterminds/squirrel"
 	"resenje.org/schulze"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -274,71 +272,6 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, 
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, mealPlanID string, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"meal_plan_options.id":                   ids,
-		"meal_plan_options.archived_at":          nil,
-		"meal_plan_options.belongs_to_meal_plan": mealPlanID,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(mealPlanOptionsTableColumns...).
-		From("meal_plan_options").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(mealPlanOptionsTableColumns...).
-		FromSelect(subqueryBuilder, "meal_plan_options").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetMealPlanOptionsWithIDs fetches meal plan options from the database within a given set of IDs.
-func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if mealPlanID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetMealPlanOptionsWithIDsQuery(ctx, mealPlanID, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan options with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching meal plan options from database")
-	}
-
-	mealPlanOptions, _, _, err := q.scanMealPlanOptions(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meal plan options")
-	}
-
-	return mealPlanOptions, nil
 }
 
 const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day,assigned_cook,meal_name,meal_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5,$6,$7)"

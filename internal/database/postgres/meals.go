@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
@@ -291,68 +290,6 @@ func (q *SQLQuerier) SearchForMeals(ctx context.Context, mealNameQuery string, f
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetMealsWithIDsQuery(ctx context.Context, userID string, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"meals.id":          ids,
-		"meals.archived_at": nil,
-	}
-
-	if userID != "" {
-		withIDsWhere["meals.created_by_user"] = userID
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(mealsTableColumns...).
-		From("meals").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(mealsTableColumns...).
-		FromSelect(subqueryBuilder, "meals").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetMealsWithIDs fetches meals from the database within a given set of IDs.
-func (q *SQLQuerier) GetMealsWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*types.Meal, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetMealsWithIDsQuery(ctx, userID, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "meals with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching meals from database")
-	}
-
-	meals, _, _, err := q.scanMeals(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meals")
-	}
-
-	return meals, nil
 }
 
 const mealCreationQuery = "INSERT INTO meals (id,name,description,created_by_user) VALUES ($1,$2,$3,$4)"

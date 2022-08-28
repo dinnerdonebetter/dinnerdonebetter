@@ -33,12 +33,6 @@ func (m *RecipeStepDataManager) GetRecipeSteps(ctx context.Context, recipeID str
 	return args.Get(0).(*types.RecipeStepList), args.Error(1)
 }
 
-// GetRecipeStepsWithIDs is a mock function.
-func (m *RecipeStepDataManager) GetRecipeStepsWithIDs(ctx context.Context, recipeID string, limit uint8, ids []string) ([]*types.RecipeStep, error) {
-	args := m.Called(ctx, recipeID, limit, ids)
-	return args.Get(0).([]*types.RecipeStep), args.Error(1)
-}
-
 // CreateRecipeStep is a mock function.
 func (m *RecipeStepDataManager) CreateRecipeStep(ctx context.Context, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
 	args := m.Called(ctx, input)
