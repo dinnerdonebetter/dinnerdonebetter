@@ -246,23 +246,6 @@ func (q *SQLQuerier) SearchForValidInstrumentsForPreparation(ctx context.Context
 	return validInstruments, nil
 }
 
-const getTotalValidInstrumentsCountQuery = "SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_at IS NULL"
-
-// GetTotalValidInstrumentCount fetches the count of valid instruments from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalValidInstrumentCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidInstrumentsCountQuery, "fetching count of valid instruments")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of valid instruments")
-	}
-
-	return count, nil
-}
-
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
 func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.ValidInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

@@ -183,25 +183,6 @@ func (q *SQLQuerier) GetAPIClientByDatabaseID(ctx context.Context, clientID, use
 	return client, nil
 }
 
-const getTotalAPIClientCountQuery = `
-	SELECT COUNT(api_clients.id) FROM api_clients WHERE api_clients.archived_at IS NULL
-`
-
-// GetTotalAPIClientCount gets the count of API clients that match the current filter.
-func (q *SQLQuerier) GetTotalAPIClientCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalAPIClientCountQuery, "fetching count of API clients")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of API clients")
-	}
-
-	return count, nil
-}
-
 // GetAPIClients gets a list of API clients.
 func (q *SQLQuerier) GetAPIClients(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.APIClientList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

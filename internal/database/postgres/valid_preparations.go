@@ -242,23 +242,6 @@ func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query strin
 	return x, nil
 }
 
-const getTotalValidPreparationsCountQuery = "SELECT COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_at IS NULL"
-
-// GetTotalValidPreparationCount fetches the count of valid preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalValidPreparationCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidPreparationsCountQuery, "fetching count of valid preparations")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of valid preparations")
-	}
-
-	return count, nil
-}
-
 // GetValidPreparations fetches a list of valid preparations from the database that meet a particular filter.
 func (q *SQLQuerier) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidPreparationList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

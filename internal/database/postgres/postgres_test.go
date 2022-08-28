@@ -51,10 +51,6 @@ func assertArgCountMatchesQuery(t *testing.T, query string, args []interface{}) 
 	}
 }
 
-func newCountDBRowResponse(count uint64) *sqlmock.Rows {
-	return sqlmock.NewRows([]string{"count"}).AddRow(count)
-}
-
 func newArbitraryDatabaseResult() driver.Result {
 	return sqlmock.NewResult(1, 1)
 }

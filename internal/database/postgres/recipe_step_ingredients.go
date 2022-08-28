@@ -267,23 +267,6 @@ func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 	return recipeStepIngredient, nil
 }
 
-const getTotalRecipeStepIngredientsCountQuery = "SELECT COUNT(recipe_step_ingredients.id) FROM recipe_step_ingredients WHERE recipe_step_ingredients.archived_at IS NULL"
-
-// GetTotalRecipeStepIngredientCount fetches the count of recipe step ingredients from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalRecipeStepIngredientCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalRecipeStepIngredientsCountQuery, "fetching count of recipe step ingredients")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of recipe step ingredients")
-	}
-
-	return count, nil
-}
-
 // getRecipeStepIngredientsForRecipe fetches a list of recipe step ingredients from the database that meet a particular filter.
 func (q *SQLQuerier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

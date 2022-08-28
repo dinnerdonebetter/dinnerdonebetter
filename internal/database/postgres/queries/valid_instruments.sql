@@ -88,9 +88,6 @@ ORDER BY
     valid_instruments.id
     LIMIT sqlc.narg('limit');
 
--- name: GetTotalValidInstrumentCount :one
-SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL;
-
 -- name: CreateValidInstrument :exec
 INSERT INTO valid_instruments (id,name,plural_name,description,icon_path) VALUES ($1,$2,$3,$4,$5);
 

@@ -338,47 +338,6 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetTotalRecipeStepIngredientCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipeStepIngredientsCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalRecipeStepIngredientCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipeStepIngredientsCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalRecipeStepIngredientCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 	T.Parallel()
 

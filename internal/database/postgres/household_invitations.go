@@ -454,25 +454,6 @@ func (q *SQLQuerier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, 
 	return invitation, nil
 }
 
-const getAllHouseholdInvitationsCountQuery = `
-	SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_at IS NULL
-`
-
-// GetAllHouseholdInvitationsCount fetches the count of household invitations from the database that meet a particular filter.
-func (q *SQLQuerier) GetAllHouseholdInvitationsCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getAllHouseholdInvitationsCountQuery, "fetching count of household invitations")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of household invitations")
-	}
-
-	return count, nil
-}
-
 const createHouseholdInvitationQuery = `
 	INSERT INTO household_invitations (id,from_user,to_user,note,to_email,token,destination_household) VALUES ($1,$2,$3,$4,$5,$6,$7)
 `

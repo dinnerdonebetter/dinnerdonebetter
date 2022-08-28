@@ -78,7 +78,6 @@ type (
 	WebhookDataManager interface {
 		WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error)
 		GetWebhook(ctx context.Context, webhookID, householdID string) (*Webhook, error)
-		GetAllWebhooksCount(ctx context.Context) (uint64, error)
 		GetWebhooks(ctx context.Context, householdID string, filter *QueryFilter) (*WebhookList, error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
 		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error

@@ -97,7 +97,6 @@ type (
 		ValidInstrumentExists(ctx context.Context, validInstrumentID string) (bool, error)
 		GetValidInstrument(ctx context.Context, validInstrumentID string) (*ValidInstrument, error)
 		GetRandomValidInstrument(ctx context.Context) (*ValidInstrument, error)
-		GetTotalValidInstrumentCount(ctx context.Context) (uint64, error)
 		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*ValidInstrumentList, error)
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)

@@ -154,7 +154,6 @@ type (
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error)
 		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
-		GetTotalValidIngredientCount(ctx context.Context) (uint64, error)
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*ValidIngredientList, error)
 		SearchForValidIngredients(ctx context.Context, query string) ([]*ValidIngredient, error)
 		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*ValidIngredient, error)

@@ -166,7 +166,6 @@ type (
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
-		GetAllUsersCount(ctx context.Context) (uint64, error)
 		GetUsers(ctx context.Context, filter *QueryFilter) (*UserList, error)
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
 		UpdateUser(ctx context.Context, updated *User) error

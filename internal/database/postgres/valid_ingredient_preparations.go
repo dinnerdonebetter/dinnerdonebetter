@@ -270,23 +270,6 @@ func (q *SQLQuerier) GetValidIngredientPreparation(ctx context.Context, validIng
 	return validIngredientPreparation, nil
 }
 
-const getTotalValidIngredientPreparationsCountQuery = "SELECT COUNT(valid_ingredient_preparations.id) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_at IS NULL"
-
-// GetTotalValidIngredientPreparationCount fetches the count of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalValidIngredientPreparationCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidIngredientPreparationsCountQuery, "fetching count of valid ingredient preparations")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of valid ingredient preparations")
-	}
-
-	return count, nil
-}
-
 // GetValidIngredientPreparations fetches a list of valid ingredient preparations from the database that meet a particular filter.
 func (q *SQLQuerier) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

@@ -117,7 +117,6 @@ type (
 	RecipeStepDataManager interface {
 		RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (bool, error)
 		GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*RecipeStep, error)
-		GetTotalRecipeStepCount(ctx context.Context) (uint64, error)
 		GetRecipeSteps(ctx context.Context, recipeID string, filter *QueryFilter) (*RecipeStepList, error)
 		GetRecipeStepsWithIDs(ctx context.Context, recipeID string, limit uint8, ids []string) ([]*RecipeStep, error)
 		CreateRecipeStep(ctx context.Context, input *RecipeStepDatabaseCreationInput) (*RecipeStep, error)

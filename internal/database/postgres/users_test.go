@@ -664,46 +664,6 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetAllUsersCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleCount := uint64(123)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getAllUsersCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(exampleCount))
-
-		actual, err := c.GetAllUsersCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getAllUsersCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetAllUsersCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t)
-	})
-}
-
 func TestQuerier_GetUsers(T *testing.T) {
 	T.Parallel()
 

@@ -27,12 +27,6 @@ func (m *RecipeStepIngredientDataManager) GetRecipeStepIngredient(ctx context.Co
 	return args.Get(0).(*types.RecipeStepIngredient), args.Error(1)
 }
 
-// GetTotalRecipeStepIngredientCount is a mock function.
-func (m *RecipeStepIngredientDataManager) GetTotalRecipeStepIngredientCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetRecipeStepIngredients is a mock function.
 func (m *RecipeStepIngredientDataManager) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.RecipeStepIngredientList, error) {
 	args := m.Called(ctx, recipeID, recipeStepID, filter)

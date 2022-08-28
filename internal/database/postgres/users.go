@@ -458,23 +458,6 @@ func (q *SQLQuerier) SearchForUsersByUsername(ctx context.Context, usernameQuery
 	return u, nil
 }
 
-const getAllUsersCountQuery = `SELECT COUNT(users.id) FROM users WHERE users.archived_at IS NULL`
-
-// GetAllUsersCount fetches a count of users from the database that meet a particular filter.
-func (q *SQLQuerier) GetAllUsersCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getAllUsersCountQuery, "fetching count of users")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of users")
-	}
-
-	return count, nil
-}
-
 // GetUsers fetches a list of users from the database that meet a particular filter.
 func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *types.UserList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

@@ -79,7 +79,6 @@ type (
 	ValidIngredientPreparationDataManager interface {
 		ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (bool, error)
 		GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*ValidIngredientPreparation, error)
-		GetTotalValidIngredientPreparationCount(ctx context.Context) (uint64, error)
 		GetValidIngredientPreparations(ctx context.Context, filter *QueryFilter) (*ValidIngredientPreparationList, error)
 		GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*ValidIngredientPreparationList, error)
 		GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*ValidIngredientPreparationList, error)
