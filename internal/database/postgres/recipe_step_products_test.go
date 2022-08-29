@@ -49,6 +49,7 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.MaximumStorageDurationInSeconds,
 			x.MinimumStorageTemperatureInCelsius,
 			x.MaximumStorageTemperatureInCelsius,
+			x.StorageInstructions,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -579,6 +580,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.MaximumStorageDurationInSeconds,
 			exampleInput.MinimumStorageTemperatureInCelsius,
 			exampleInput.MaximumStorageTemperatureInCelsius,
+			exampleInput.StorageInstructions,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -630,6 +632,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.MaximumStorageDurationInSeconds,
 			exampleInput.MinimumStorageTemperatureInCelsius,
 			exampleInput.MaximumStorageTemperatureInCelsius,
+			exampleInput.StorageInstructions,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -672,6 +675,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
 			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
+			exampleRecipeStepProduct.StorageInstructions,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}
@@ -713,6 +717,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
 			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
+			exampleRecipeStepProduct.StorageInstructions,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}

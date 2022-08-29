@@ -41,6 +41,7 @@ var (
 		"recipe_step_products.maximum_storage_duration_in_seconds",
 		"recipe_step_products.minimum_storage_temperature_in_celsius",
 		"recipe_step_products.maximum_storage_temperature_in_celsius",
+		"recipe_step_products.storage_instructions",
 		"recipe_step_products.created_at",
 		"recipe_step_products.last_updated_at",
 		"recipe_step_products.archived_at",
@@ -86,6 +87,7 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.MaximumStorageDurationInSeconds,
 		&x.MinimumStorageTemperatureInCelsius,
 		&x.MaximumStorageTemperatureInCelsius,
+		&x.StorageInstructions,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -202,6 +204,7 @@ const getRecipeStepProductQuery = `SELECT
 	recipe_step_products.maximum_storage_duration_in_seconds,
 	recipe_step_products.minimum_storage_temperature_in_celsius,
 	recipe_step_products.maximum_storage_temperature_in_celsius,
+	recipe_step_products.storage_instructions,
 	recipe_step_products.created_at,
 	recipe_step_products.last_updated_at,
 	recipe_step_products.archived_at,
@@ -286,6 +289,7 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 	recipe_step_products.maximum_storage_duration_in_seconds,
 	recipe_step_products.minimum_storage_temperature_in_celsius,
 	recipe_step_products.maximum_storage_temperature_in_celsius,
+	recipe_step_products.storage_instructions,
 	recipe_step_products.created_at,
 	recipe_step_products.last_updated_at,
 	recipe_step_products.archived_at,
@@ -380,8 +384,8 @@ func (q *SQLQuerier) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 }
 
 const recipeStepProductCreationQuery = `INSERT INTO recipe_step_products
-    (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,maximum_storage_duration_in_seconds,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,belongs_to_recipe_step) 
-	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
+    (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,maximum_storage_duration_in_seconds,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,storage_instructions,belongs_to_recipe_step) 
+	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
@@ -406,6 +410,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		input.MaximumStorageDurationInSeconds,
 		input.MinimumStorageTemperatureInCelsius,
 		input.MaximumStorageTemperatureInCelsius,
+		input.StorageInstructions,
 		input.BelongsToRecipeStep,
 	}
 
@@ -427,6 +432,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
+		StorageInstructions:                input.StorageInstructions,
 		CreatedAt:                          q.currentTime(),
 	}
 
@@ -453,10 +459,11 @@ SET
 	maximum_storage_duration_in_seconds = $8,
 	minimum_storage_temperature_in_celsius = $9,
 	maximum_storage_temperature_in_celsius = $10,
+	storage_instructions = $11,
     last_updated_at = extract(epoch FROM NOW())
 WHERE archived_at IS NULL
-  AND belongs_to_recipe_step = $11
-  AND id = $12
+  AND belongs_to_recipe_step = $12
+  AND id = $13
 `
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
@@ -482,6 +489,7 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 		updated.MaximumStorageDurationInSeconds,
 		updated.MinimumStorageTemperatureInCelsius,
 		updated.MaximumStorageTemperatureInCelsius,
+		updated.StorageInstructions,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

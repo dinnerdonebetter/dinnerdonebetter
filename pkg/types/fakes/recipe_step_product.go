@@ -23,6 +23,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		MaximumStorageDurationInSeconds:    fake.Uint32(),
 		MinimumStorageTemperatureInCelsius: fake.Float32(),
 		MaximumStorageTemperatureInCelsius: fake.Float32(),
+		StorageInstructions:                buildUniqueString(),
 	}
 }
 
@@ -59,6 +60,7 @@ func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpda
 		MaximumStorageDurationInSeconds:    &recipeStepProduct.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: &recipeStepProduct.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: &recipeStepProduct.MaximumStorageTemperatureInCelsius,
+		StorageInstructions:                &recipeStepProduct.StorageInstructions,
 	}
 }
 
@@ -76,6 +78,7 @@ func BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(recipeSte
 		MaximumStorageDurationInSeconds:    &recipeStepProduct.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: &recipeStepProduct.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: &recipeStepProduct.MaximumStorageTemperatureInCelsius,
+		StorageInstructions:                &recipeStepProduct.StorageInstructions,
 	}
 }
 
@@ -100,6 +103,7 @@ func BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(recipeS
 		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
+		StorageInstructions:                recipeStepProduct.StorageInstructions,
 	}
 }
 
@@ -118,5 +122,6 @@ func BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(recipe
 		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
+		StorageInstructions:                recipeStepProduct.StorageInstructions,
 	}
 }

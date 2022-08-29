@@ -26,6 +26,7 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 	assert.Equal(t, expected.MaximumStorageDurationInSeconds, actual.MaximumStorageDurationInSeconds, "expected MaximumStorageDurationInSeconds for recipe step product %s to be %v, but was %v", expected.ID, expected.MaximumStorageDurationInSeconds, actual.MaximumStorageDurationInSeconds)
 	assert.Equal(t, expected.MinimumStorageTemperatureInCelsius, actual.MinimumStorageTemperatureInCelsius, "expected MinimumStorageTemperatureInCelsius for recipe step product %s to be %v, but was %v", expected.ID, expected.MinimumStorageTemperatureInCelsius, actual.MinimumStorageTemperatureInCelsius)
 	assert.Equal(t, expected.MaximumStorageTemperatureInCelsius, actual.MaximumStorageTemperatureInCelsius, "expected MaximumStorageTemperatureInCelsius for recipe step product %s to be %v, but was %v", expected.ID, expected.MaximumStorageTemperatureInCelsius, actual.MaximumStorageTemperatureInCelsius)
+	assert.Equal(t, expected.StorageInstructions, actual.StorageInstructions, "expected StorageInstructions for recipe step product %s to be %v, but was %v", expected.ID, expected.StorageInstructions, actual.StorageInstructions)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -42,6 +43,7 @@ func convertRecipeStepProductToRecipeStepProductUpdateInput(x *types.RecipeStepP
 		MaximumStorageDurationInSeconds:    &x.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: &x.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: &x.MaximumStorageTemperatureInCelsius,
+		StorageInstructions:                &x.StorageInstructions,
 	}
 }
 
