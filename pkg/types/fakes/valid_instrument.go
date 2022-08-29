@@ -10,12 +10,13 @@ import (
 // BuildFakeValidInstrument builds a faked valid instrument.
 func BuildFakeValidInstrument() *types.ValidInstrument {
 	return &types.ValidInstrument{
-		ID:          ksuid.New().String(),
-		Name:        buildUniqueString(),
-		PluralName:  buildUniqueString(),
-		Description: buildUniqueString(),
-		IconPath:    buildUniqueString(),
-		CreatedAt:   uint64(uint32(fake.Date().Unix())),
+		ID:               ksuid.New().String(),
+		Name:             buildUniqueString(),
+		PluralName:       buildUniqueString(),
+		Description:      buildUniqueString(),
+		IconPath:         buildUniqueString(),
+		UsableForStorage: fake.Bool(),
+		CreatedAt:        uint64(uint32(fake.Date().Unix())),
 	}
 }
 
@@ -41,20 +42,22 @@ func BuildFakeValidInstrumentList() *types.ValidInstrumentList {
 func BuildFakeValidInstrumentUpdateRequestInput() *types.ValidInstrumentUpdateRequestInput {
 	validInstrument := BuildFakeValidInstrument()
 	return &types.ValidInstrumentUpdateRequestInput{
-		Name:        &validInstrument.Name,
-		PluralName:  &validInstrument.PluralName,
-		Description: &validInstrument.Description,
-		IconPath:    &validInstrument.IconPath,
+		Name:             &validInstrument.Name,
+		PluralName:       &validInstrument.PluralName,
+		Description:      &validInstrument.Description,
+		IconPath:         &validInstrument.IconPath,
+		UsableForStorage: &validInstrument.UsableForStorage,
 	}
 }
 
 // BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument builds a faked ValidInstrumentUpdateRequestInput from a valid instrument.
 func BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
 	return &types.ValidInstrumentUpdateRequestInput{
-		Name:        &validInstrument.Name,
-		PluralName:  &validInstrument.PluralName,
-		Description: &validInstrument.Description,
-		IconPath:    &validInstrument.IconPath,
+		Name:             &validInstrument.Name,
+		PluralName:       &validInstrument.PluralName,
+		Description:      &validInstrument.Description,
+		IconPath:         &validInstrument.IconPath,
+		UsableForStorage: &validInstrument.UsableForStorage,
 	}
 }
 
@@ -67,27 +70,23 @@ func BuildFakeValidInstrumentCreationRequestInput() *types.ValidInstrumentCreati
 // BuildFakeValidInstrumentCreationRequestInputFromValidInstrument builds a faked ValidInstrumentCreationRequestInput from a valid instrument.
 func BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentCreationRequestInput {
 	return &types.ValidInstrumentCreationRequestInput{
-		ID:          validInstrument.ID,
-		Name:        validInstrument.Name,
-		PluralName:  validInstrument.PluralName,
-		Description: validInstrument.Description,
-		IconPath:    validInstrument.IconPath,
+		ID:               validInstrument.ID,
+		Name:             validInstrument.Name,
+		PluralName:       validInstrument.PluralName,
+		Description:      validInstrument.Description,
+		IconPath:         validInstrument.IconPath,
+		UsableForStorage: validInstrument.UsableForStorage,
 	}
-}
-
-// BuildFakeValidInstrumentDatabaseCreationInput builds a faked ValidInstrumentDatabaseCreationInput.
-func BuildFakeValidInstrumentDatabaseCreationInput() *types.ValidInstrumentDatabaseCreationInput {
-	validInstrument := BuildFakeValidInstrument()
-	return BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(validInstrument)
 }
 
 // BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument builds a faked ValidInstrumentDatabaseCreationInput from a valid instrument.
 func BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentDatabaseCreationInput {
 	return &types.ValidInstrumentDatabaseCreationInput{
-		ID:          validInstrument.ID,
-		Name:        validInstrument.Name,
-		PluralName:  validInstrument.PluralName,
-		Description: validInstrument.Description,
-		IconPath:    validInstrument.IconPath,
+		ID:               validInstrument.ID,
+		Name:             validInstrument.Name,
+		PluralName:       validInstrument.PluralName,
+		Description:      validInstrument.Description,
+		IconPath:         validInstrument.IconPath,
+		UsableForStorage: validInstrument.UsableForStorage,
 	}
 }

@@ -15,6 +15,6 @@ CREATE TABLE IF NOT EXISTS advanced_prep_notifications (
     "completed_at" BIGINT DEFAULT NULL
 );
 
-ALTER TABLE valid_instruments ADD COLUMN "capable_of_storage" BOOLEAN NOT NULL DEFAULT 'false';
+ALTER TABLE valid_instruments ADD COLUMN "usable_for_storage" BOOLEAN NOT NULL DEFAULT 'false';
 ALTER TABLE valid_ingredients ADD COLUMN "storage_instructions" TEXT NOT NULL DEFAULT '';
 ALTER TABLE recipe_step_products ADD COLUMN "storage_instructions" TEXT NOT NULL DEFAULT '';

@@ -20,6 +20,7 @@ var (
 		"valid_instruments.plural_name",
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
+		"valid_instruments.usable_for_storage",
 		"valid_instruments.created_at",
 		"valid_instruments.last_updated_at",
 		"valid_instruments.archived_at",
@@ -41,6 +42,7 @@ func (q *SQLQuerier) scanValidInstrument(ctx context.Context, scan database.Scan
 		&x.PluralName,
 		&x.Description,
 		&x.IconPath,
+		&x.UsableForStorage,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -123,6 +125,7 @@ const getValidInstrumentBaseQuery = `SELECT
 	valid_instruments.plural_name,
 	valid_instruments.description,
 	valid_instruments.icon_path,
+	valid_instruments.usable_for_storage,
 	valid_instruments.created_at,
 	valid_instruments.last_updated_at,
 	valid_instruments.archived_at
@@ -179,7 +182,20 @@ func (q *SQLQuerier) GetRandomValidInstrument(ctx context.Context) (*types.Valid
 	return validInstrument, nil
 }
 
-const validInstrumentSearchQuery = `SELECT valid_instruments.id, valid_instruments.name, valid_instruments.plural_name, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_at, valid_instruments.last_updated_at, valid_instruments.archived_at FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50`
+const validInstrumentSearchQuery = `SELECT 
+    valid_instruments.id,
+    valid_instruments.name,
+    valid_instruments.plural_name,
+    valid_instruments.description,
+    valid_instruments.icon_path,
+    valid_instruments.usable_for_storage,
+    valid_instruments.created_at,
+    valid_instruments.last_updated_at,
+    valid_instruments.archived_at
+FROM valid_instruments
+WHERE valid_instruments.archived_at IS NULL
+  AND valid_instruments.name ILIKE $1 LIMIT 50
+`
 
 // SearchForValidInstruments fetches a valid instrument from the database.
 func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
@@ -280,7 +296,7 @@ func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.Quer
 	return x, nil
 }
 
-const validInstrumentCreationQuery = "INSERT INTO valid_instruments (id,name,plural_name,description,icon_path) VALUES ($1,$2,$3,$4,$5)"
+const validInstrumentCreationQuery = "INSERT INTO valid_instruments (id,name,plural_name,description,icon_path,usable_for_storage) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // CreateValidInstrument creates a valid instrument in the database.
 func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
@@ -299,6 +315,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 		input.PluralName,
 		input.Description,
 		input.IconPath,
+		input.UsableForStorage,
 	}
 
 	// create the valid instrument.
@@ -307,12 +324,13 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 	}
 
 	x := &types.ValidInstrument{
-		ID:          input.ID,
-		Name:        input.Name,
-		PluralName:  input.PluralName,
-		Description: input.Description,
-		IconPath:    input.IconPath,
-		CreatedAt:   q.currentTime(),
+		ID:               input.ID,
+		Name:             input.Name,
+		PluralName:       input.PluralName,
+		Description:      input.Description,
+		IconPath:         input.IconPath,
+		UsableForStorage: input.UsableForStorage,
+		CreatedAt:        q.currentTime(),
 	}
 
 	tracing.AttachValidInstrumentIDToSpan(span, x.ID)
@@ -321,7 +339,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 	return x, nil
 }
 
-const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $5"
+const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, usable_for_storage = $5, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $6"
 
 // UpdateValidInstrument updates a particular valid instrument.
 func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
@@ -340,6 +358,7 @@ func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.V
 		updated.PluralName,
 		updated.Description,
 		updated.IconPath,
+		updated.UsableForStorage,
 		updated.ID,
 	}
 

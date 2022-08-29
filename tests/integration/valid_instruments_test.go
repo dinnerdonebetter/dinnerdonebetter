@@ -20,15 +20,17 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid instrument %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid instrument %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid instrument %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
+	assert.Equal(t, expected.UsableForStorage, actual.UsableForStorage, "expected UsableForStorage for valid instrument %s to be %v, but it was %v", expected.ID, expected.UsableForStorage, actual.UsableForStorage)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertValidInstrumentToValidInstrumentUpdateInput creates an ValidInstrumentUpdateRequestInput struct from a valid instrument.
 func convertValidInstrumentToValidInstrumentUpdateInput(x *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
 	return &types.ValidInstrumentUpdateRequestInput{
-		Name:        &x.Name,
-		Description: &x.Description,
-		IconPath:    &x.IconPath,
+		Name:             &x.Name,
+		Description:      &x.Description,
+		IconPath:         &x.IconPath,
+		UsableForStorage: &x.UsableForStorage,
 	}
 }
 
