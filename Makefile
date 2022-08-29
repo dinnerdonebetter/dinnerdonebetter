@@ -120,11 +120,6 @@ check_terraform:
 .PHONY: fmt
 fmt: format terraformat
 
-.PHONY: check_formatting
-check_formatting: vendor
-	docker build --tag check_formatting --file environments/testing/dockerfiles/formatting.Dockerfile .
-	docker run --interactive --tty --rm check_formatting
-
 ## Testing things
 
 .PHONY: pre_lint

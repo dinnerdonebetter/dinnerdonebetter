@@ -56,8 +56,8 @@ services:
         - source: '../../environments/local/config_files/grafana/dashboards'
           target: '/etc/grafana/provisioning/dashboards/dashboards'
           type: 'bind'
-    workers:
-      container_name: workers
+    queue_loader:
+      container_name: queue_loader
       environment:
         TARGET_ADDRESS: 'http://api_server:8000'
         CONFIGURATION_FILEPATH: '/etc/config'
@@ -66,12 +66,28 @@ services:
         - source: '../..'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/worker-config.json'
+        - source: '../../environments/local/config_files/queue-loader-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
         context: '../../'
-        dockerfile: 'environments/local/workers.Dockerfile'
+        dockerfile: 'environments/local/queue_loader.Dockerfile'
+    meal_plan_finalizer:
+      container_name: meal_plan_finalizer
+      environment:
+        TARGET_ADDRESS: 'http://api_server:8000'
+        CONFIGURATION_FILEPATH: '/etc/config'
+        JAEGER_DISABLED: 'false'
+      volumes:
+        - source: '../..'
+          target: '/go/src/github.com/prixfixeco/api_server'
+          type: 'bind'
+        - source: '../../environments/local/config_files/meal-plan-finalizer-config.json'
+          target: '/etc/config'
+          type: 'bind'
+      build:
+        context: '../../'
+        dockerfile: 'environments/local/meal_plan_finalizer.Dockerfile'
     prixfixe-server:
       container_name: api_server
       depends_on:
@@ -90,4 +106,4 @@ services:
           type: 'bind'
       build:
         context: '../../'
-        dockerfile: 'environments/local/Dockerfile'
+        dockerfile: 'environments/local/server.Dockerfile'
