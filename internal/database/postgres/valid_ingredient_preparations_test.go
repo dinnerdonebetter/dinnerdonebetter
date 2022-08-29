@@ -63,6 +63,7 @@ func buildMockRowsFromValidIngredientPreparations(includeCounts bool, filteredCo
 			&x.Ingredient.RestrictToPreparations,
 			&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
 			&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
+			&x.Ingredient.StorageInstructions,
 			&x.Ingredient.CreatedAt,
 			&x.Ingredient.LastUpdatedAt,
 			&x.Ingredient.ArchivedAt,

@@ -38,6 +38,7 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.Equal(t, expected.RestrictToPreparations, actual.RestrictToPreparations, "expected RestrictToPreparations for valid ingredient %s to be %v, but it was %v", expected.ID, expected.RestrictToPreparations, actual.RestrictToPreparations)
 	assert.Equal(t, expected.MinimumIdealStorageTemperatureInCelsius, actual.MinimumIdealStorageTemperatureInCelsius, "expected MinimumIdealStorageTemperatureInCelsius for valid ingredient %s to be %v, but it was %v", expected.ID, expected.MinimumIdealStorageTemperatureInCelsius, actual.MinimumIdealStorageTemperatureInCelsius)
 	assert.Equal(t, expected.MaximumIdealStorageTemperatureInCelsius, actual.MaximumIdealStorageTemperatureInCelsius, "expected MaximumIdealStorageTemperatureInCelsius for valid ingredient %s to be %v, but it was %v", expected.ID, expected.MaximumIdealStorageTemperatureInCelsius, actual.MaximumIdealStorageTemperatureInCelsius)
+	assert.Equal(t, expected.StorageInstructions, actual.StorageInstructions, "expected StorageInstructions for valid ingredient %s to be %v, but it was %v", expected.ID, expected.StorageInstructions, actual.StorageInstructions)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -66,6 +67,7 @@ func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient
 		RestrictToPreparations:                  &x.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: &x.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: &x.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     &x.StorageInstructions,
 	}
 }
 

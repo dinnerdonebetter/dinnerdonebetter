@@ -50,6 +50,7 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 			x.RestrictToPreparations,
 			x.MinimumIdealStorageTemperatureInCelsius,
 			x.MaximumIdealStorageTemperatureInCelsius,
+			x.StorageInstructions,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -581,6 +582,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.RestrictToPreparations,
 			exampleInput.MinimumIdealStorageTemperatureInCelsius,
 			exampleInput.MaximumIdealStorageTemperatureInCelsius,
+			exampleInput.StorageInstructions,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -643,6 +645,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.RestrictToPreparations,
 			exampleInput.MinimumIdealStorageTemperatureInCelsius,
 			exampleInput.MaximumIdealStorageTemperatureInCelsius,
+			exampleInput.StorageInstructions,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -696,6 +699,7 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.RestrictToPreparations,
 			exampleValidIngredient.MinimumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.MaximumIdealStorageTemperatureInCelsius,
+			exampleValidIngredient.StorageInstructions,
 			exampleValidIngredient.ID,
 		}
 
@@ -748,6 +752,7 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.RestrictToPreparations,
 			exampleValidIngredient.MinimumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.MaximumIdealStorageTemperatureInCelsius,
+			exampleValidIngredient.StorageInstructions,
 			exampleValidIngredient.ID,
 		}
 

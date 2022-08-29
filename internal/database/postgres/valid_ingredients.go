@@ -38,6 +38,7 @@ var (
 		"valid_ingredients.restrict_to_preparations",
 		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
 		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
+		"valid_ingredients.storage_instructions",
 		"valid_ingredients.created_at",
 		"valid_ingredients.last_updated_at",
 		"valid_ingredients.archived_at",
@@ -77,6 +78,7 @@ func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scan
 		&x.RestrictToPreparations,
 		&x.MinimumIdealStorageTemperatureInCelsius,
 		&x.MaximumIdealStorageTemperatureInCelsius,
+		&x.StorageInstructions,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -177,6 +179,7 @@ const getValidIngredientBaseQuery = `SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions,
 	valid_ingredients.created_at, 
 	valid_ingredients.last_updated_at, 
 	valid_ingredients.archived_at 
@@ -257,6 +260,7 @@ const validIngredientSearchQuery = `SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions,
     valid_ingredients.created_at,
     valid_ingredients.last_updated_at,
     valid_ingredients.archived_at 
@@ -386,8 +390,9 @@ const validIngredientCreationQuery = `INSERT INTO valid_ingredients
 	plural_name,
 	restrict_to_preparations,
 	minimum_ideal_storage_temperature_in_celsius,
-	maximum_ideal_storage_temperature_in_celsius
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)`
+	maximum_ideal_storage_temperature_in_celsius,
+ 	storage_instructions
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)`
 
 // CreateValidIngredient creates a valid ingredient in the database.
 func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
@@ -424,6 +429,7 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 		input.RestrictToPreparations,
 		input.MinimumIdealStorageTemperatureInCelsius,
 		input.MaximumIdealStorageTemperatureInCelsius,
+		input.StorageInstructions,
 	}
 
 	// create the valid ingredient.
@@ -455,6 +461,7 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 		RestrictToPreparations:                  input.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     input.StorageInstructions,
 		CreatedAt:                               q.currentTime(),
 	}
 
@@ -488,8 +495,9 @@ UPDATE valid_ingredients SET
 	restrict_to_preparations = $20,
 	minimum_ideal_storage_temperature_in_celsius = $21,
 	maximum_ideal_storage_temperature_in_celsius = $22,
+	storage_instructions = $23,
 	last_updated_at = extract(epoch FROM NOW()) 
-WHERE archived_at IS NULL AND id = $23
+WHERE archived_at IS NULL AND id = $24
 `
 
 // UpdateValidIngredient updates a particular valid ingredient.
@@ -527,6 +535,7 @@ func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.V
 		updated.RestrictToPreparations,
 		updated.MinimumIdealStorageTemperatureInCelsius,
 		updated.MaximumIdealStorageTemperatureInCelsius,
+		updated.StorageInstructions,
 		updated.ID,
 	}
 
