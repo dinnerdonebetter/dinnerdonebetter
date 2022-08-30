@@ -32,6 +32,7 @@ var (
 		"meal_plan_options.tiebroken",
 		"meal_plan_options.meal_id",
 		"meal_plan_options.notes",
+		"meal_plan_options.prep_steps_created",
 		"meal_plan_options.created_at",
 		"meal_plan_options.last_updated_at",
 		"meal_plan_options.archived_at",
@@ -75,6 +76,7 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 		&x.TieBroken,
 		&x.Meal.ID,
 		&x.Notes,
+		&x.PrepStepsCreated,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -176,6 +178,7 @@ const getMealPlanOptionQuery = `SELECT
 	meal_plan_options.tiebroken,
 	meal_plan_options.meal_id,
 	meal_plan_options.notes,
+	meal_plan_options.prep_steps_created,
 	meal_plan_options.created_at,
 	meal_plan_options.last_updated_at,
 	meal_plan_options.archived_at,
@@ -287,6 +290,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, input.ID)
 
+	// we're leaving PrepStepsCreated out on purpose since it would be false by default.
 	args := []interface{}{
 		input.ID,
 		input.Day,
@@ -332,10 +336,11 @@ SET
 	meal_id = $3,
 	meal_name = $4,
 	notes = $5,
+	prep_steps_created = $6,
 	last_updated_at = extract(epoch FROM NOW())
 WHERE archived_at IS NULL
-  AND belongs_to_meal_plan = $6 
-  AND id = $7
+  AND belongs_to_meal_plan = $7 
+  AND id = $8
 `
 
 // UpdateMealPlanOption updates a particular meal plan option.
@@ -356,6 +361,7 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 		updated.Meal.ID,
 		updated.MealName,
 		updated.Notes,
+		updated.PrepStepsCreated,
 		updated.BelongsToMealPlan,
 		updated.ID,
 	}
@@ -471,9 +477,7 @@ func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.Me
 	return "", false, false
 }
 
-const finalizeMealPlanOptionQuery = `
-	UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2
-`
+const finalizeMealPlanOptionQuery = `UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2`
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
 func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error) {

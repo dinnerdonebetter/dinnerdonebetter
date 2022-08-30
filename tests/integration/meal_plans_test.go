@@ -60,7 +60,7 @@ var allDays = []time.Weekday{
 	time.Sunday,
 }
 
-var allMealNames = []types.MealName{
+var allMealNames = []string{
 	types.BreakfastMealName,
 	types.SecondBreakfastMealName,
 	types.BrunchMealName,
@@ -69,7 +69,7 @@ var allMealNames = []types.MealName{
 	types.DinnerMealName,
 }
 
-func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal types.MealName) []*types.MealPlanOption {
+func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal string) []*types.MealPlanOption {
 	out := []*types.MealPlanOption{}
 
 	for _, o := range l {

@@ -27,16 +27,17 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 				int(time.Saturday),
 				int(time.Sunday),
 			})),
-			MealName: MealName(fake.RandomString([]string{
-				string(BreakfastMealName),
-				string(SecondBreakfastMealName),
-				string(BrunchMealName),
-				string(LunchMealName),
-				string(SupperMealName),
-				string(DinnerMealName),
-			})),
-			MealID: fake.LoremIpsumSentence(exampleQuantity),
-			Notes:  fake.LoremIpsumSentence(exampleQuantity),
+			MealName: fake.RandomString([]string{
+				BreakfastMealName,
+				SecondBreakfastMealName,
+				BrunchMealName,
+				LunchMealName,
+				SupperMealName,
+				DinnerMealName,
+			}),
+			MealID:           fake.LoremIpsumSentence(exampleQuantity),
+			Notes:            fake.LoremIpsumSentence(exampleQuantity),
+			PrepStepsCreated: false,
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -69,14 +70,14 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 			int(time.Sunday),
 		}))
 
-		mealName := MealName(fake.RandomString([]string{
-			string(BreakfastMealName),
-			string(SecondBreakfastMealName),
-			string(BrunchMealName),
-			string(LunchMealName),
-			string(SupperMealName),
-			string(DinnerMealName),
-		}))
+		mealName := fake.RandomString([]string{
+			BreakfastMealName,
+			SecondBreakfastMealName,
+			BrunchMealName,
+			LunchMealName,
+			SupperMealName,
+			DinnerMealName,
+		})
 
 		x := &MealPlanOptionUpdateRequestInput{
 			AssignedCook:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
@@ -85,6 +86,7 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 			MealName:          &mealName,
 			MealID:            stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:             stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			PrepStepsCreated:  boolPointer(false),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

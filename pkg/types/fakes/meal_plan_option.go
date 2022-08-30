@@ -24,19 +24,20 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 		Day:          time.Monday,
 		AssignedCook: func(s string) *string { return &s }(BuildFakeID()),
 		Meal:         *meal,
-		MealName: types.MealName(fake.RandomString([]string{
-			string(types.BreakfastMealName),
-			string(types.SecondBreakfastMealName),
-			string(types.BrunchMealName),
-			string(types.LunchMealName),
-			string(types.SupperMealName),
-			string(types.DinnerMealName),
-		})),
+		MealName: fake.RandomString([]string{
+			types.BreakfastMealName,
+			types.SecondBreakfastMealName,
+			types.BrunchMealName,
+			types.LunchMealName,
+			types.SupperMealName,
+			types.DinnerMealName,
+		}),
 		Votes:             examples,
 		Chosen:            false,
 		Notes:             buildUniqueString(),
 		CreatedAt:         uint64(uint32(fake.Date().Unix())),
 		BelongsToMealPlan: fake.UUID(),
+		PrepStepsCreated:  false,
 	}
 }
 
@@ -68,6 +69,7 @@ func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequ
 		MealName:          &mealPlanOption.MealName,
 		AssignedCook:      mealPlanOption.AssignedCook,
 		BelongsToMealPlan: &mealPlanOption.BelongsToMealPlan,
+		PrepStepsCreated:  &mealPlanOption.PrepStepsCreated,
 	}
 }
 
@@ -80,6 +82,7 @@ func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption 
 		MealName:          &mealPlanOption.MealName,
 		AssignedCook:      mealPlanOption.AssignedCook,
 		BelongsToMealPlan: &mealPlanOption.BelongsToMealPlan,
+		PrepStepsCreated:  &mealPlanOption.PrepStepsCreated,
 	}
 }
 
@@ -99,6 +102,7 @@ func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOptio
 		MealName:          mealPlanOption.MealName,
 		AssignedCook:      mealPlanOption.AssignedCook,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
+		PrepStepsCreated:  mealPlanOption.PrepStepsCreated,
 	}
 }
 
@@ -112,5 +116,6 @@ func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOpti
 		Notes:             mealPlanOption.Notes,
 		AssignedCook:      mealPlanOption.AssignedCook,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
+		PrepStepsCreated:  mealPlanOption.PrepStepsCreated,
 	}
 }
