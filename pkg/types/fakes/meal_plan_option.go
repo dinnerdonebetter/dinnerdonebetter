@@ -63,26 +63,28 @@ func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
 func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequestInput {
 	mealPlanOption := BuildFakeMealPlanOption()
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:               &mealPlanOption.Day,
-		MealID:            &mealPlanOption.Meal.ID,
-		Notes:             &mealPlanOption.Notes,
-		MealName:          &mealPlanOption.MealName,
-		AssignedCook:      mealPlanOption.AssignedCook,
-		BelongsToMealPlan: &mealPlanOption.BelongsToMealPlan,
-		PrepStepsCreated:  &mealPlanOption.PrepStepsCreated,
+		Day:                &mealPlanOption.Day,
+		MealID:             &mealPlanOption.Meal.ID,
+		Notes:              &mealPlanOption.Notes,
+		MealName:           &mealPlanOption.MealName,
+		AssignedCook:       mealPlanOption.AssignedCook,
+		AssignedDishwasher: mealPlanOption.AssignedDishwasher,
+		BelongsToMealPlan:  &mealPlanOption.BelongsToMealPlan,
+		PrepStepsCreated:   &mealPlanOption.PrepStepsCreated,
 	}
 }
 
 // BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption builds a faked MealPlanOptionUpdateRequestInput from a meal plan option.
 func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:               &mealPlanOption.Day,
-		MealID:            &mealPlanOption.Meal.ID,
-		Notes:             &mealPlanOption.Notes,
-		MealName:          &mealPlanOption.MealName,
-		AssignedCook:      mealPlanOption.AssignedCook,
-		BelongsToMealPlan: &mealPlanOption.BelongsToMealPlan,
-		PrepStepsCreated:  &mealPlanOption.PrepStepsCreated,
+		Day:                &mealPlanOption.Day,
+		MealID:             &mealPlanOption.Meal.ID,
+		Notes:              &mealPlanOption.Notes,
+		MealName:           &mealPlanOption.MealName,
+		AssignedCook:       mealPlanOption.AssignedCook,
+		AssignedDishwasher: mealPlanOption.AssignedDishwasher,
+		BelongsToMealPlan:  &mealPlanOption.BelongsToMealPlan,
+		PrepStepsCreated:   &mealPlanOption.PrepStepsCreated,
 	}
 }
 
@@ -95,27 +97,29 @@ func BuildFakeMealPlanOptionCreationRequestInput() *types.MealPlanOptionCreation
 // BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption builds a faked MealPlanOptionCreationRequestInput from a meal plan option.
 func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionCreationRequestInput {
 	return &types.MealPlanOptionCreationRequestInput{
-		ID:                mealPlanOption.ID,
-		Day:               mealPlanOption.Day,
-		MealID:            mealPlanOption.Meal.ID,
-		Notes:             mealPlanOption.Notes,
-		MealName:          mealPlanOption.MealName,
-		AssignedCook:      mealPlanOption.AssignedCook,
-		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
-		PrepStepsCreated:  mealPlanOption.PrepStepsCreated,
+		ID:                 mealPlanOption.ID,
+		Day:                mealPlanOption.Day,
+		MealID:             mealPlanOption.Meal.ID,
+		Notes:              mealPlanOption.Notes,
+		MealName:           mealPlanOption.MealName,
+		AssignedCook:       mealPlanOption.AssignedCook,
+		AssignedDishwasher: mealPlanOption.AssignedDishwasher,
+		BelongsToMealPlan:  mealPlanOption.BelongsToMealPlan,
+		PrepStepsCreated:   mealPlanOption.PrepStepsCreated,
 	}
 }
 
 // BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption builds a faked MealPlanOptionDatabaseCreationInput from a meal plan option.
 func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionDatabaseCreationInput {
 	return &types.MealPlanOptionDatabaseCreationInput{
-		ID:                mealPlanOption.ID,
-		Day:               mealPlanOption.Day,
-		MealID:            mealPlanOption.Meal.ID,
-		MealName:          mealPlanOption.MealName,
-		Notes:             mealPlanOption.Notes,
-		AssignedCook:      mealPlanOption.AssignedCook,
-		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
-		PrepStepsCreated:  mealPlanOption.PrepStepsCreated,
+		ID:                 mealPlanOption.ID,
+		Day:                mealPlanOption.Day,
+		MealID:             mealPlanOption.Meal.ID,
+		MealName:           mealPlanOption.MealName,
+		Notes:              mealPlanOption.Notes,
+		AssignedCook:       mealPlanOption.AssignedCook,
+		AssignedDishwasher: mealPlanOption.AssignedDishwasher,
+		BelongsToMealPlan:  mealPlanOption.BelongsToMealPlan,
+		PrepStepsCreated:   mealPlanOption.PrepStepsCreated,
 	}
 }

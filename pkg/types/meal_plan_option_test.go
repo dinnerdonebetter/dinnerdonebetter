@@ -16,8 +16,9 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionCreationRequestInput{
-			AssignedCook:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToMealPlan: fake.LoremIpsumSentence(exampleQuantity),
+			AssignedCook:       stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedDishwasher: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			BelongsToMealPlan:  fake.LoremIpsumSentence(exampleQuantity),
 			Day: time.Weekday(fake.RandomInt([]int{
 				int(time.Monday),
 				int(time.Tuesday),
@@ -80,13 +81,14 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 		})
 
 		x := &MealPlanOptionUpdateRequestInput{
-			AssignedCook:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToMealPlan: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Day:               &day,
-			MealName:          &mealName,
-			MealID:            stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:             stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PrepStepsCreated:  boolPointer(false),
+			AssignedCook:       stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedDishwasher: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			BelongsToMealPlan:  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Day:                &day,
+			MealName:           &mealName,
+			MealID:             stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:              stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			PrepStepsCreated:   boolPointer(false),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -46,21 +46,22 @@ func init() {
 type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
-		_                 struct{}
-		ArchivedAt        *uint64               `json:"archivedAt"`
-		LastUpdatedAt     *uint64               `json:"lastUpdatedAt"`
-		ID                string                `json:"id"`
-		BelongsToMealPlan string                `json:"belongsToMealPlan"`
-		Notes             string                `json:"notes"`
-		MealName          string                `json:"mealName"`
-		AssignedCook      *string               `json:"assignedCook"`
-		Votes             []*MealPlanOptionVote `json:"votes"`
-		Meal              Meal                  `json:"meal"`
-		CreatedAt         uint64                `json:"createdAt"`
-		Day               time.Weekday          `json:"day"`
-		Chosen            bool                  `json:"chosen"`
-		TieBroken         bool                  `json:"tieBroken"`
-		PrepStepsCreated  bool                  `json:"prepStepsCreated"`
+		_                  struct{}
+		ArchivedAt         *uint64               `json:"archivedAt"`
+		LastUpdatedAt      *uint64               `json:"lastUpdatedAt"`
+		ID                 string                `json:"id"`
+		BelongsToMealPlan  string                `json:"belongsToMealPlan"`
+		Notes              string                `json:"notes"`
+		MealName           string                `json:"mealName"`
+		AssignedCook       *string               `json:"assignedCook"`
+		AssignedDishwasher *string               `json:"assignedDishwasher"`
+		Votes              []*MealPlanOptionVote `json:"votes"`
+		Meal               Meal                  `json:"meal"`
+		CreatedAt          uint64                `json:"createdAt"`
+		Day                time.Weekday          `json:"day"`
+		Chosen             bool                  `json:"chosen"`
+		TieBroken          bool                  `json:"tieBroken"`
+		PrepStepsCreated   bool                  `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionList represents a list of meal plan options.
@@ -72,40 +73,43 @@ type (
 
 	// MealPlanOptionCreationRequestInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionCreationRequestInput struct {
-		_                 struct{}
-		ID                string       `json:"-"`
-		MealID            string       `json:"mealID"`
-		Notes             string       `json:"notes"`
-		AssignedCook      *string      `json:"assignedCook"`
-		MealName          string       `json:"mealName"`
-		BelongsToMealPlan string       `json:"-"`
-		Day               time.Weekday `json:"day"`
-		PrepStepsCreated  bool         `json:"prepStepsCreated"`
+		_                  struct{}
+		ID                 string       `json:"-"`
+		MealID             string       `json:"mealID"`
+		Notes              string       `json:"notes"`
+		AssignedCook       *string      `json:"assignedCook"`
+		AssignedDishwasher *string      `json:"assignedDishwasher"`
+		MealName           string       `json:"mealName"`
+		BelongsToMealPlan  string       `json:"-"`
+		Day                time.Weekday `json:"day"`
+		PrepStepsCreated   bool         `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionDatabaseCreationInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionDatabaseCreationInput struct {
-		_                 struct{}
-		ID                string       `json:"id"`
-		MealID            string       `json:"mealID"`
-		Notes             string       `json:"notes"`
-		AssignedCook      *string      `json:"assignedCook"`
-		MealName          string       `json:"mealName"`
-		BelongsToMealPlan string       `json:"belongsToMealPlan"`
-		Day               time.Weekday `json:"day"`
-		PrepStepsCreated  bool         `json:"prepStepsCreated"`
+		_                  struct{}
+		ID                 string       `json:"id"`
+		MealID             string       `json:"mealID"`
+		Notes              string       `json:"notes"`
+		AssignedCook       *string      `json:"assignedCook"`
+		AssignedDishwasher *string      `json:"assignedDishwasher"`
+		MealName           string       `json:"mealName"`
+		BelongsToMealPlan  string       `json:"belongsToMealPlan"`
+		Day                time.Weekday `json:"day"`
+		PrepStepsCreated   bool         `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
 	MealPlanOptionUpdateRequestInput struct {
-		_                 struct{}
-		MealID            *string       `json:"mealID"`
-		Notes             *string       `json:"notes"`
-		AssignedCook      *string       `json:"assignedCook"`
-		MealName          *string       `json:"mealName"`
-		BelongsToMealPlan *string       `json:"-"`
-		Day               *time.Weekday `json:"day"`
-		PrepStepsCreated  *bool         `json:"prepStepsCreated"`
+		_                  struct{}
+		MealID             *string       `json:"mealID"`
+		Notes              *string       `json:"notes"`
+		AssignedCook       *string       `json:"assignedCook"`
+		AssignedDishwasher *string       `json:"assignedDishwasher"`
+		MealName           *string       `json:"mealName"`
+		BelongsToMealPlan  *string       `json:"-"`
+		Day                *time.Weekday `json:"day"`
+		PrepStepsCreated   *bool         `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.
@@ -151,6 +155,10 @@ func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
 
 	if input.AssignedCook != nil && input.AssignedCook != x.AssignedCook {
 		x.AssignedCook = input.AssignedCook
+	}
+
+	if input.AssignedDishwasher != nil && input.AssignedDishwasher != x.AssignedDishwasher {
+		x.AssignedDishwasher = input.AssignedDishwasher
 	}
 
 	if input.PrepStepsCreated != nil && *input.PrepStepsCreated != x.PrepStepsCreated {
