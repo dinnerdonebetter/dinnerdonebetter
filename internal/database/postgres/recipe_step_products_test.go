@@ -49,6 +49,7 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.MaximumStorageDurationInSeconds,
 			x.MinimumStorageTemperatureInCelsius,
 			x.MaximumStorageTemperatureInCelsius,
+			x.StorageInstructions,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -338,47 +339,6 @@ func TestQuerier_GetRecipeStepProduct(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetTotalRecipeStepProductCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipeStepProductsCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalRecipeStepProductCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipeStepProductsCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalRecipeStepProductCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 	T.Parallel()
 
@@ -594,119 +554,6 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetRecipeStepProductsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepProductList := fakes.BuildFakeRecipeStepProductList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeStepProductList.RecipeStepProducts {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipeStepProductsWithIDsQuery(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, exampleRecipeStepProductList.RecipeStepProducts...))
-
-		actual, err := c.GetRecipeStepProductsWithIDs(ctx, exampleRecipeStepID, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepProductList.RecipeStepProducts, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetRecipeStepProductsWithIDs(ctx, exampleRecipeStepID, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepProductList := fakes.BuildFakeRecipeStepProductList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeStepProductList.RecipeStepProducts {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetRecipeStepProductsWithIDs(ctx, "", defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepProductList := fakes.BuildFakeRecipeStepProductList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeStepProductList.RecipeStepProducts {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipeStepProductsWithIDsQuery(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetRecipeStepProductsWithIDs(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepProductList := fakes.BuildFakeRecipeStepProductList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeStepProductList.RecipeStepProducts {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipeStepProductsWithIDsQuery(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetRecipeStepProductsWithIDs(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 	T.Parallel()
 
@@ -733,6 +580,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.MaximumStorageDurationInSeconds,
 			exampleInput.MinimumStorageTemperatureInCelsius,
 			exampleInput.MaximumStorageTemperatureInCelsius,
+			exampleInput.StorageInstructions,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -784,6 +632,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.MaximumStorageDurationInSeconds,
 			exampleInput.MinimumStorageTemperatureInCelsius,
 			exampleInput.MaximumStorageTemperatureInCelsius,
+			exampleInput.StorageInstructions,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -826,6 +675,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
 			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
+			exampleRecipeStepProduct.StorageInstructions,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}
@@ -867,6 +717,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
 			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
+			exampleRecipeStepProduct.StorageInstructions,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}

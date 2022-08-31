@@ -33,12 +33,6 @@ func (m *RecipeDataManager) GetRecipeByIDAndUser(ctx context.Context, recipeID, 
 	return args.Get(0).(*types.Recipe), args.Error(1)
 }
 
-// GetTotalRecipeCount is a mock function.
-func (m *RecipeDataManager) GetTotalRecipeCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // SearchForRecipes is a mock function.
 func (m *RecipeDataManager) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.RecipeList, error) {
 	args := m.Called(ctx, query, filter)
@@ -49,12 +43,6 @@ func (m *RecipeDataManager) SearchForRecipes(ctx context.Context, query string, 
 func (m *RecipeDataManager) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*types.RecipeList, error) {
 	args := m.Called(ctx, filter)
 	return args.Get(0).(*types.RecipeList), args.Error(1)
-}
-
-// GetRecipesWithIDs is a mock function.
-func (m *RecipeDataManager) GetRecipesWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.Recipe, error) {
-	args := m.Called(ctx, householdID, limit, ids)
-	return args.Get(0).([]*types.Recipe), args.Error(1)
 }
 
 // CreateRecipe is a mock function.

@@ -27,12 +27,6 @@ func (m *APIClientDataManager) GetAPIClientByDatabaseID(ctx context.Context, cli
 	return args.Get(0).(*types.APIClient), args.Error(1)
 }
 
-// GetTotalAPIClientCount is a mock function.
-func (m *APIClientDataManager) GetTotalAPIClientCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetAPIClients is a mock function.
 func (m *APIClientDataManager) GetAPIClients(ctx context.Context, userID string, filter *types.QueryFilter) (*types.APIClientList, error) {
 	args := m.Called(ctx, userID, filter)

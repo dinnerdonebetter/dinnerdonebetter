@@ -27,22 +27,10 @@ func (m *MealPlanOptionDataManager) GetMealPlanOption(ctx context.Context, mealP
 	return args.Get(0).(*types.MealPlanOption), args.Error(1)
 }
 
-// GetTotalMealPlanOptionCount is a mock function.
-func (m *MealPlanOptionDataManager) GetTotalMealPlanOptionCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetMealPlanOptions is a mock function.
 func (m *MealPlanOptionDataManager) GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*types.MealPlanOptionList, error) {
 	args := m.Called(ctx, mealPlanID, filter)
 	return args.Get(0).(*types.MealPlanOptionList), args.Error(1)
-}
-
-// GetMealPlanOptionsWithIDs is a mock function.
-func (m *MealPlanOptionDataManager) GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
-	args := m.Called(ctx, mealPlanID, limit, ids)
-	return args.Get(0).([]*types.MealPlanOption), args.Error(1)
 }
 
 // CreateMealPlanOption is a mock function.

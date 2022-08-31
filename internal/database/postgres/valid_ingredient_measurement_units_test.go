@@ -64,6 +64,7 @@ func buildMockRowsFromValidIngredientMeasurementUnits(includeCounts bool, filter
 			&x.Ingredient.RestrictToPreparations,
 			&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
 			&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
+			&x.Ingredient.StorageInstructions,
 			&x.Ingredient.CreatedAt,
 			&x.Ingredient.LastUpdatedAt,
 			&x.Ingredient.ArchivedAt,
@@ -258,47 +259,6 @@ func TestQuerier_GetValidIngredientMeasurementUnit(T *testing.T) {
 		actual, err := c.GetValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnit.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetTotalValidIngredientMeasurementUnitCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalValidIngredientMeasurementUnitsCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalValidIngredientMeasurementUnitCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalValidIngredientMeasurementUnitsCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalValidIngredientMeasurementUnitCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

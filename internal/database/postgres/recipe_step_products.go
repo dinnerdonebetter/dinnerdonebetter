@@ -2,9 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -44,6 +41,7 @@ var (
 		"recipe_step_products.maximum_storage_duration_in_seconds",
 		"recipe_step_products.minimum_storage_temperature_in_celsius",
 		"recipe_step_products.maximum_storage_temperature_in_celsius",
+		"recipe_step_products.storage_instructions",
 		"recipe_step_products.created_at",
 		"recipe_step_products.last_updated_at",
 		"recipe_step_products.archived_at",
@@ -89,6 +87,7 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.MaximumStorageDurationInSeconds,
 		&x.MinimumStorageTemperatureInCelsius,
 		&x.MaximumStorageTemperatureInCelsius,
+		&x.StorageInstructions,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -205,6 +204,7 @@ const getRecipeStepProductQuery = `SELECT
 	recipe_step_products.maximum_storage_duration_in_seconds,
 	recipe_step_products.minimum_storage_temperature_in_celsius,
 	recipe_step_products.maximum_storage_temperature_in_celsius,
+	recipe_step_products.storage_instructions,
 	recipe_step_products.created_at,
 	recipe_step_products.last_updated_at,
 	recipe_step_products.archived_at,
@@ -266,23 +266,6 @@ func (q *SQLQuerier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeS
 	return recipeStepProduct, nil
 }
 
-const getTotalRecipeStepProductsCountQuery = "SELECT COUNT(recipe_step_products.id) FROM recipe_step_products WHERE recipe_step_products.archived_at IS NULL"
-
-// GetTotalRecipeStepProductCount fetches the count of recipe step products from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalRecipeStepProductCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalRecipeStepProductsCountQuery, "fetching count of recipe step products")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of recipe step products")
-	}
-
-	return count, nil
-}
-
 const getRecipeStepProductsForRecipeQuery = `SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
@@ -306,6 +289,7 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 	recipe_step_products.maximum_storage_duration_in_seconds,
 	recipe_step_products.minimum_storage_temperature_in_celsius,
 	recipe_step_products.maximum_storage_temperature_in_celsius,
+	recipe_step_products.storage_instructions,
 	recipe_step_products.created_at,
 	recipe_step_products.last_updated_at,
 	recipe_step_products.archived_at,
@@ -399,74 +383,9 @@ func (q *SQLQuerier) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetRecipeStepProductsWithIDsQuery(ctx context.Context, recipeStepID string, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"recipe_step_products.id":                     ids,
-		"recipe_step_products.archived_at":            nil,
-		"recipe_step_products.belongs_to_recipe_step": recipeStepID,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(recipeStepProductsTableColumns...).
-		From("recipe_step_products").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(recipeStepProductsTableColumns...).
-		FromSelect(subqueryBuilder, "recipe_step_products").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetRecipeStepProductsWithIDs fetches recipe step products from the database within a given set of IDs.
-func (q *SQLQuerier) GetRecipeStepProductsWithIDs(ctx context.Context, recipeStepID string, limit uint8, ids []string) ([]*types.RecipeStepProduct, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if recipeStepID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetRecipeStepProductsWithIDsQuery(ctx, recipeStepID, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "recipe step products with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching recipe step products from database")
-	}
-
-	recipeStepProducts, _, _, err := q.scanRecipeStepProducts(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipe step products")
-	}
-
-	return recipeStepProducts, nil
-}
-
 const recipeStepProductCreationQuery = `INSERT INTO recipe_step_products
-    (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,maximum_storage_duration_in_seconds,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,belongs_to_recipe_step) 
-	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
+    (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,maximum_storage_duration_in_seconds,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,storage_instructions,belongs_to_recipe_step) 
+	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
@@ -491,6 +410,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		input.MaximumStorageDurationInSeconds,
 		input.MinimumStorageTemperatureInCelsius,
 		input.MaximumStorageTemperatureInCelsius,
+		input.StorageInstructions,
 		input.BelongsToRecipeStep,
 	}
 
@@ -512,6 +432,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
+		StorageInstructions:                input.StorageInstructions,
 		CreatedAt:                          q.currentTime(),
 	}
 
@@ -538,10 +459,11 @@ SET
 	maximum_storage_duration_in_seconds = $8,
 	minimum_storage_temperature_in_celsius = $9,
 	maximum_storage_temperature_in_celsius = $10,
+	storage_instructions = $11,
     last_updated_at = extract(epoch FROM NOW())
 WHERE archived_at IS NULL
-  AND belongs_to_recipe_step = $11
-  AND id = $12
+  AND belongs_to_recipe_step = $12
+  AND id = $13
 `
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
@@ -567,6 +489,7 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 		updated.MaximumStorageDurationInSeconds,
 		updated.MinimumStorageTemperatureInCelsius,
 		updated.MaximumStorageTemperatureInCelsius,
+		updated.StorageInstructions,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

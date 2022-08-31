@@ -39,22 +39,10 @@ func (m *ValidPreparationDataManager) SearchForValidPreparations(ctx context.Con
 	return args.Get(0).([]*types.ValidPreparation), args.Error(1)
 }
 
-// GetTotalValidPreparationCount is a mock function.
-func (m *ValidPreparationDataManager) GetTotalValidPreparationCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetValidPreparations is a mock function.
 func (m *ValidPreparationDataManager) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (*types.ValidPreparationList, error) {
 	args := m.Called(ctx, filter)
 	return args.Get(0).(*types.ValidPreparationList), args.Error(1)
-}
-
-// GetValidPreparationsWithIDs is a mock function.
-func (m *ValidPreparationDataManager) GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidPreparation, error) {
-	args := m.Called(ctx, limit, ids)
-	return args.Get(0).([]*types.ValidPreparation), args.Error(1)
 }
 
 // CreateValidPreparation is a mock function.

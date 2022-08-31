@@ -2,9 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -23,6 +20,7 @@ var (
 		"valid_instruments.plural_name",
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
+		"valid_instruments.usable_for_storage",
 		"valid_instruments.created_at",
 		"valid_instruments.last_updated_at",
 		"valid_instruments.archived_at",
@@ -44,6 +42,7 @@ func (q *SQLQuerier) scanValidInstrument(ctx context.Context, scan database.Scan
 		&x.PluralName,
 		&x.Description,
 		&x.IconPath,
+		&x.UsableForStorage,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -126,6 +125,7 @@ const getValidInstrumentBaseQuery = `SELECT
 	valid_instruments.plural_name,
 	valid_instruments.description,
 	valid_instruments.icon_path,
+	valid_instruments.usable_for_storage,
 	valid_instruments.created_at,
 	valid_instruments.last_updated_at,
 	valid_instruments.archived_at
@@ -182,7 +182,20 @@ func (q *SQLQuerier) GetRandomValidInstrument(ctx context.Context) (*types.Valid
 	return validInstrument, nil
 }
 
-const validInstrumentSearchQuery = `SELECT valid_instruments.id, valid_instruments.name, valid_instruments.plural_name, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_at, valid_instruments.last_updated_at, valid_instruments.archived_at FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50`
+const validInstrumentSearchQuery = `SELECT 
+    valid_instruments.id,
+    valid_instruments.name,
+    valid_instruments.plural_name,
+    valid_instruments.description,
+    valid_instruments.icon_path,
+    valid_instruments.usable_for_storage,
+    valid_instruments.created_at,
+    valid_instruments.last_updated_at,
+    valid_instruments.archived_at
+FROM valid_instruments
+WHERE valid_instruments.archived_at IS NULL
+  AND valid_instruments.name ILIKE $1 LIMIT 50
+`
 
 // SearchForValidInstruments fetches a valid instrument from the database.
 func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
@@ -246,23 +259,6 @@ func (q *SQLQuerier) SearchForValidInstrumentsForPreparation(ctx context.Context
 	return validInstruments, nil
 }
 
-const getTotalValidInstrumentsCountQuery = "SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_at IS NULL"
-
-// GetTotalValidInstrumentCount fetches the count of valid instruments from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalValidInstrumentCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidInstrumentsCountQuery, "fetching count of valid instruments")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of valid instruments")
-	}
-
-	return count, nil
-}
-
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
 func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.ValidInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -300,65 +296,7 @@ func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.Quer
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidInstrumentsWithIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"valid_instruments.id":          ids,
-		"valid_instruments.archived_at": nil,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(validInstrumentsTableColumns...).
-		From("valid_instruments").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(validInstrumentsTableColumns...).
-		FromSelect(subqueryBuilder, "valid_instruments").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetValidInstrumentsWithIDs fetches valid instruments from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidInstrument, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetValidInstrumentsWithIDsQuery(ctx, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "valid instruments with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching valid instruments from database")
-	}
-
-	validInstruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid instruments")
-	}
-
-	return validInstruments, nil
-}
-
-const validInstrumentCreationQuery = "INSERT INTO valid_instruments (id,name,plural_name,description,icon_path) VALUES ($1,$2,$3,$4,$5)"
+const validInstrumentCreationQuery = "INSERT INTO valid_instruments (id,name,plural_name,description,icon_path,usable_for_storage) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // CreateValidInstrument creates a valid instrument in the database.
 func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
@@ -377,6 +315,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 		input.PluralName,
 		input.Description,
 		input.IconPath,
+		input.UsableForStorage,
 	}
 
 	// create the valid instrument.
@@ -385,12 +324,13 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 	}
 
 	x := &types.ValidInstrument{
-		ID:          input.ID,
-		Name:        input.Name,
-		PluralName:  input.PluralName,
-		Description: input.Description,
-		IconPath:    input.IconPath,
-		CreatedAt:   q.currentTime(),
+		ID:               input.ID,
+		Name:             input.Name,
+		PluralName:       input.PluralName,
+		Description:      input.Description,
+		IconPath:         input.IconPath,
+		UsableForStorage: input.UsableForStorage,
+		CreatedAt:        q.currentTime(),
 	}
 
 	tracing.AttachValidInstrumentIDToSpan(span, x.ID)
@@ -399,7 +339,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 	return x, nil
 }
 
-const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $5"
+const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, usable_for_storage = $5, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $6"
 
 // UpdateValidInstrument updates a particular valid instrument.
 func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
@@ -418,6 +358,7 @@ func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.V
 		updated.PluralName,
 		updated.Description,
 		updated.IconPath,
+		updated.UsableForStorage,
 		updated.ID,
 	}
 

@@ -39,12 +39,6 @@ func (m *HouseholdInvitationDataManager) GetHouseholdInvitationByEmailAndToken(c
 	return args.Get(0).(*types.HouseholdInvitation), args.Error(1)
 }
 
-// GetAllHouseholdInvitationsCount is a mock function.
-func (m *HouseholdInvitationDataManager) GetAllHouseholdInvitationsCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetPendingHouseholdInvitationsFromUser is a mock function.
 func (m *HouseholdInvitationDataManager) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
 	args := m.Called(ctx, userID, filter)

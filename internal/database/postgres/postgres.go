@@ -243,31 +243,6 @@ func (q *SQLQuerier) performReadQuery(ctx context.Context, querier database.SQLQ
 	return rows, nil
 }
 
-func (q *SQLQuerier) performCountQuery(ctx context.Context, querier database.SQLQueryExecutor, query, queryDesc string) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	query = strings.TrimSpace(query)
-
-	logger := q.logger.WithValue("query_desc", queryDesc)
-	if q.logQueries {
-		logger = logger.WithValue("query", query)
-	}
-
-	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s count query", queryDesc), query, nil)
-
-	var count uint64
-	if err := q.getOneRow(ctx, querier, queryDesc, query, []interface{}{}).Scan(&count); err != nil {
-		return 0, observability.PrepareError(err, logger, span, "executing count query")
-	}
-
-	if q.logQueries {
-		logger.Debug("count query performed")
-	}
-
-	return count, nil
-}
-
 func (q *SQLQuerier) performBooleanQuery(ctx context.Context, querier database.SQLQueryExecutor, query string, args []interface{}) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

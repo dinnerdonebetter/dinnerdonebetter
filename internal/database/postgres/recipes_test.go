@@ -713,47 +713,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetTotalRecipeCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipesCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalRecipeCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipesCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalRecipeCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_GetRecipes(T *testing.T) {
 	T.Parallel()
 
@@ -932,104 +891,6 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 		actual, err := c.SearchForRecipes(ctx, recipeNameQuery, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetRecipesWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Recipes {
-			exampleRecipeList.Recipes[i].Steps = nil
-		}
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeList.Recipes {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipes(false, 0, exampleRecipeList.Recipes...))
-
-		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeList.Recipes, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeList.Recipes {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeList.Recipes {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -1783,6 +1644,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					MaximumStorageDurationInSeconds:    product.MaximumStorageDurationInSeconds,
 					MinimumStorageTemperatureInCelsius: product.MinimumStorageTemperatureInCelsius,
 					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
+					StorageInstructions:                product.StorageInstructions,
 					BelongsToRecipeStep:                product.BelongsToRecipeStep,
 					MinimumQuantityValue:               product.MinimumQuantityValue,
 					MaximumQuantityValue:               product.MaximumQuantityValue,
@@ -1992,6 +1854,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					MaximumStorageDurationInSeconds:    product.MaximumStorageDurationInSeconds,
 					MinimumStorageTemperatureInCelsius: product.MinimumStorageTemperatureInCelsius,
 					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
+					StorageInstructions:                product.StorageInstructions,
 					BelongsToRecipeStep:                product.BelongsToRecipeStep,
 					MinimumQuantityValue:               product.MinimumQuantityValue,
 					MaximumQuantityValue:               product.MaximumQuantityValue,
@@ -2168,6 +2031,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					MaximumStorageDurationInSeconds:    product.MaximumStorageDurationInSeconds,
 					MinimumStorageTemperatureInCelsius: product.MinimumStorageTemperatureInCelsius,
 					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
+					StorageInstructions:                product.StorageInstructions,
 					BelongsToRecipeStep:                product.BelongsToRecipeStep,
 					MinimumQuantityValue:               product.MinimumQuantityValue,
 					MaximumQuantityValue:               product.MaximumQuantityValue,

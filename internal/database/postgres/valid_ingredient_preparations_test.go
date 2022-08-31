@@ -63,6 +63,7 @@ func buildMockRowsFromValidIngredientPreparations(includeCounts bool, filteredCo
 			&x.Ingredient.RestrictToPreparations,
 			&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
 			&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
+			&x.Ingredient.StorageInstructions,
 			&x.Ingredient.CreatedAt,
 			&x.Ingredient.LastUpdatedAt,
 			&x.Ingredient.ArchivedAt,
@@ -260,47 +261,6 @@ func TestQuerier_GetValidIngredientPreparation(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetTotalValidIngredientPreparationCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalValidIngredientPreparationsCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalValidIngredientPreparationCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalValidIngredientPreparationsCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalValidIngredientPreparationCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 	T.Parallel()
 
@@ -399,96 +359,6 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		actual, err := c.GetValidIngredientPreparations(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetValidIngredientPreparationsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientPreparationList := fakes.BuildFakeValidIngredientPreparationList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientPreparationList.ValidIngredientPreparations {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientPreparationsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientPreparations(false, 0, exampleValidIngredientPreparationList.ValidIngredientPreparations...))
-
-		actual, err := c.GetValidIngredientPreparationsWithIDs(ctx, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientPreparationList.ValidIngredientPreparations, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetValidIngredientPreparationsWithIDs(ctx, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientPreparationList := fakes.BuildFakeValidIngredientPreparationList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientPreparationList.ValidIngredientPreparations {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientPreparationsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetValidIngredientPreparationsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientPreparationList := fakes.BuildFakeValidIngredientPreparationList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientPreparationList.ValidIngredientPreparations {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientPreparationsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetValidIngredientPreparationsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

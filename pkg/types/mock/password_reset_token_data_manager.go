@@ -22,13 +22,6 @@ func (m *PasswordResetTokenDataManager) GetPasswordResetTokenByToken(ctx context
 	return args.Get(0).(*types.PasswordResetToken), args.Error(1)
 }
 
-// GetTotalPasswordResetTokenCount implements our interface requirements.
-func (m *PasswordResetTokenDataManager) GetTotalPasswordResetTokenCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // CreatePasswordResetToken implements our interface requirements.
 func (m *PasswordResetTokenDataManager) CreatePasswordResetToken(ctx context.Context, input *types.PasswordResetTokenDatabaseCreationInput) (*types.PasswordResetToken, error) {
 	args := m.Called(ctx, input)

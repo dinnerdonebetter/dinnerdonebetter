@@ -2,9 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -41,6 +38,7 @@ var (
 		"valid_ingredients.restrict_to_preparations",
 		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
 		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
+		"valid_ingredients.storage_instructions",
 		"valid_ingredients.created_at",
 		"valid_ingredients.last_updated_at",
 		"valid_ingredients.archived_at",
@@ -80,6 +78,7 @@ func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scan
 		&x.RestrictToPreparations,
 		&x.MinimumIdealStorageTemperatureInCelsius,
 		&x.MaximumIdealStorageTemperatureInCelsius,
+		&x.StorageInstructions,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -180,6 +179,7 @@ const getValidIngredientBaseQuery = `SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions,
 	valid_ingredients.created_at, 
 	valid_ingredients.last_updated_at, 
 	valid_ingredients.archived_at 
@@ -260,6 +260,7 @@ const validIngredientSearchQuery = `SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions,
     valid_ingredients.created_at,
     valid_ingredients.last_updated_at,
     valid_ingredients.archived_at 
@@ -330,23 +331,6 @@ func (q *SQLQuerier) SearchForValidIngredientsForPreparation(ctx context.Context
 	return x, nil
 }
 
-const getTotalValidIngredientsCountQuery = "SELECT COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_at IS NULL"
-
-// GetTotalValidIngredientCount fetches the count of valid ingredients from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalValidIngredientCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidIngredientsCountQuery, "fetching count of valid ingredients")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of valid ingredients")
-	}
-
-	return count, nil
-}
-
 // GetValidIngredients fetches a list of valid ingredients from the database that meet a particular filter.
 func (q *SQLQuerier) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -382,64 +366,6 @@ func (q *SQLQuerier) GetValidIngredients(ctx context.Context, filter *types.Quer
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidIngredientsWithIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"valid_ingredients.id":          ids,
-		"valid_ingredients.archived_at": nil,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(validIngredientsTableColumns...).
-		From("valid_ingredients").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(validIngredientsTableColumns...).
-		FromSelect(subqueryBuilder, "valid_ingredients").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetValidIngredientsWithIDs fetches valid ingredients from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidIngredient, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetValidIngredientsWithIDsQuery(ctx, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredients from database")
-	}
-
-	validIngredients, _, _, err := q.scanValidIngredients(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredients")
-	}
-
-	return validIngredients, nil
-}
-
 const validIngredientCreationQuery = `INSERT INTO valid_ingredients
 (
 	id,
@@ -464,8 +390,9 @@ const validIngredientCreationQuery = `INSERT INTO valid_ingredients
 	plural_name,
 	restrict_to_preparations,
 	minimum_ideal_storage_temperature_in_celsius,
-	maximum_ideal_storage_temperature_in_celsius
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)`
+	maximum_ideal_storage_temperature_in_celsius,
+ 	storage_instructions
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)`
 
 // CreateValidIngredient creates a valid ingredient in the database.
 func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
@@ -502,6 +429,7 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 		input.RestrictToPreparations,
 		input.MinimumIdealStorageTemperatureInCelsius,
 		input.MaximumIdealStorageTemperatureInCelsius,
+		input.StorageInstructions,
 	}
 
 	// create the valid ingredient.
@@ -533,6 +461,7 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 		RestrictToPreparations:                  input.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     input.StorageInstructions,
 		CreatedAt:                               q.currentTime(),
 	}
 
@@ -566,8 +495,9 @@ UPDATE valid_ingredients SET
 	restrict_to_preparations = $20,
 	minimum_ideal_storage_temperature_in_celsius = $21,
 	maximum_ideal_storage_temperature_in_celsius = $22,
+	storage_instructions = $23,
 	last_updated_at = extract(epoch FROM NOW()) 
-WHERE archived_at IS NULL AND id = $23
+WHERE archived_at IS NULL AND id = $24
 `
 
 // UpdateValidIngredient updates a particular valid ingredient.
@@ -605,6 +535,7 @@ func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.V
 		updated.RestrictToPreparations,
 		updated.MinimumIdealStorageTemperatureInCelsius,
 		updated.MaximumIdealStorageTemperatureInCelsius,
+		updated.StorageInstructions,
 		updated.ID,
 	}
 

@@ -33,22 +33,10 @@ func (m *ValidMeasurementUnitDataManager) SearchForValidMeasurementUnits(ctx con
 	return args.Get(0).([]*types.ValidMeasurementUnit), args.Error(1)
 }
 
-// GetTotalValidMeasurementUnitCount is a mock function.
-func (m *ValidMeasurementUnitDataManager) GetTotalValidMeasurementUnitCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetValidMeasurementUnits is a mock function.
 func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.ValidMeasurementUnitList, error) {
 	args := m.Called(ctx, filter)
 	return args.Get(0).(*types.ValidMeasurementUnitList), args.Error(1)
-}
-
-// GetValidMeasurementUnitsWithIDs is a mock function.
-func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnitsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidMeasurementUnit, error) {
-	args := m.Called(ctx, limit, ids)
-	return args.Get(0).([]*types.ValidMeasurementUnit), args.Error(1)
 }
 
 // CreateValidMeasurementUnit is a mock function.

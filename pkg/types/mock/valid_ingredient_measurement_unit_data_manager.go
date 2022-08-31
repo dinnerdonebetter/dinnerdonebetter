@@ -27,12 +27,6 @@ func (m *ValidIngredientMeasurementUnitDataManager) GetValidIngredientMeasuremen
 	return args.Get(0).(*types.ValidIngredientMeasurementUnit), args.Error(1)
 }
 
-// GetTotalValidIngredientMeasurementUnitCount is a mock function.
-func (m *ValidIngredientMeasurementUnitDataManager) GetTotalValidIngredientMeasurementUnitCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetValidIngredientMeasurementUnits is a mock function.
 func (m *ValidIngredientMeasurementUnitDataManager) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.ValidIngredientMeasurementUnitList, error) {
 	args := m.Called(ctx, filter)

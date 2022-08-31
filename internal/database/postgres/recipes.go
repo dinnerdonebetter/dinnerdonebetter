@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
@@ -367,23 +366,6 @@ func (q *SQLQuerier) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID 
 	return q.getRecipe(ctx, recipeID, userID)
 }
 
-const getTotalRecipesCountQuery = "SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_at IS NULL"
-
-// GetTotalRecipeCount fetches the count of recipes from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalRecipeCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalRecipesCountQuery, "fetching count of recipes")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of recipes")
-	}
-
-	return count, nil
-}
-
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
 func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x *types.RecipeList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -453,68 +435,6 @@ func (q *SQLQuerier) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetRecipesWithIDsQuery(ctx context.Context, userID string, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"recipes.id":          ids,
-		"recipes.archived_at": nil,
-	}
-
-	if userID != "" {
-		withIDsWhere["recipes.created_by_user"] = userID
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(recipesTableColumns...).
-		From("recipes").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(recipesTableColumns...).
-		FromSelect(subqueryBuilder, "recipes").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetRecipesWithIDs fetches recipes from the database within a given set of IDs.
-func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*types.Recipe, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetRecipesWithIDsQuery(ctx, userID, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "recipes with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching recipes from database")
-	}
-
-	recipes, _, _, err := q.scanRecipes(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipes")
-	}
-
-	return recipes, nil
 }
 
 const recipeCreationQuery = "INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,yields_portions,seal_of_approval,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"

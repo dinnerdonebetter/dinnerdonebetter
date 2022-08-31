@@ -90,9 +90,7 @@ type (
 	MealDataManager interface {
 		MealExists(ctx context.Context, mealID string) (bool, error)
 		GetMeal(ctx context.Context, mealID string) (*Meal, error)
-		GetTotalMealCount(ctx context.Context) (uint64, error)
 		GetMeals(ctx context.Context, filter *QueryFilter) (*MealList, error)
-		GetMealsWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*Meal, error)
 		SearchForMeals(ctx context.Context, query string, filter *QueryFilter) (*MealList, error)
 		CreateMeal(ctx context.Context, input *MealDatabaseCreationInput) (*Meal, error)
 		ArchiveMeal(ctx context.Context, mealID, userID string) error

@@ -37,9 +37,9 @@ type (
 		ID                       string               `json:"id"`
 		MeasurementUnit          ValidMeasurementUnit `json:"measurementUnit"`
 		Ingredient               ValidIngredient      `json:"ingredient"`
+		CreatedAt                uint64               `json:"createdAt"`
 		MinimumAllowableQuantity float32              `json:"minimumAllowableQuantity"`
 		MaximumAllowableQuantity float32              `json:"maximumAllowableQuantity"`
-		CreatedAt                uint64               `json:"createdAt"`
 	}
 
 	// ValidIngredientMeasurementUnitList represents a list of valid ingredient measurement units.

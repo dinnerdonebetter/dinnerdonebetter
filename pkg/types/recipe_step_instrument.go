@@ -105,9 +105,7 @@ type (
 	RecipeStepInstrumentDataManager interface {
 		RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (bool, error)
 		GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*RecipeStepInstrument, error)
-		GetTotalRecipeStepInstrumentCount(ctx context.Context) (uint64, error)
 		GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*RecipeStepInstrumentList, error)
-		GetRecipeStepInstrumentsWithIDs(ctx context.Context, recipeStepID string, limit uint8, ids []string) ([]*RecipeStepInstrument, error)
 		CreateRecipeStepInstrument(ctx context.Context, input *RecipeStepInstrumentDatabaseCreationInput) (*RecipeStepInstrument, error)
 		UpdateRecipeStepInstrument(ctx context.Context, updated *RecipeStepInstrument) error
 		ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error

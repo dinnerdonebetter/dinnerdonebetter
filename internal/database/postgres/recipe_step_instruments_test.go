@@ -33,6 +33,7 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 			x.Instrument.PluralName,
 			x.Instrument.Description,
 			x.Instrument.IconPath,
+			x.Instrument.UsableForStorage,
 			x.Instrument.CreatedAt,
 			x.Instrument.LastUpdatedAt,
 			x.Instrument.ArchivedAt,
@@ -333,47 +334,6 @@ func TestQuerier_GetRecipeStepInstrument(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetTotalRecipeStepInstrumentCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipeStepInstrumentsCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalRecipeStepInstrumentCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipeStepInstrumentsCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalRecipeStepInstrumentCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 	T.Parallel()
 
@@ -497,119 +457,6 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		actual, err := c.GetRecipeStepInstruments(ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetRecipeStepInstrumentsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepInstrumentList := fakes.BuildFakeRecipeStepInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeStepInstrumentList.RecipeStepInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipeStepInstrumentsWithIDsQuery(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, exampleRecipeStepInstrumentList.RecipeStepInstruments...))
-
-		actual, err := c.GetRecipeStepInstrumentsWithIDs(ctx, exampleRecipeStepID, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepInstrumentList.RecipeStepInstruments, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetRecipeStepInstrumentsWithIDs(ctx, exampleRecipeStepID, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepInstrumentList := fakes.BuildFakeRecipeStepInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeStepInstrumentList.RecipeStepInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetRecipeStepInstrumentsWithIDs(ctx, "", defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepInstrumentList := fakes.BuildFakeRecipeStepInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeStepInstrumentList.RecipeStepInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipeStepInstrumentsWithIDsQuery(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetRecipeStepInstrumentsWithIDs(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepInstrumentList := fakes.BuildFakeRecipeStepInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleRecipeStepInstrumentList.RecipeStepInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetRecipeStepInstrumentsWithIDsQuery(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetRecipeStepInstrumentsWithIDs(ctx, exampleRecipeStepID, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

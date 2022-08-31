@@ -2,9 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -242,23 +239,6 @@ func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query strin
 	return x, nil
 }
 
-const getTotalValidPreparationsCountQuery = "SELECT COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_at IS NULL"
-
-// GetTotalValidPreparationCount fetches the count of valid preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalValidPreparationCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidPreparationsCountQuery, "fetching count of valid preparations")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of valid preparations")
-	}
-
-	return count, nil
-}
-
 // GetValidPreparations fetches a list of valid preparations from the database that meet a particular filter.
 func (q *SQLQuerier) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidPreparationList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -292,64 +272,6 @@ func (q *SQLQuerier) GetValidPreparations(ctx context.Context, filter *types.Que
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetValidPreparationsWithIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"valid_preparations.id":          ids,
-		"valid_preparations.archived_at": nil,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(validPreparationsTableColumns...).
-		From("valid_preparations").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(validPreparationsTableColumns...).
-		FromSelect(subqueryBuilder, "valid_preparations").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetValidPreparationsWithIDs fetches valid preparations from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidPreparation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetValidPreparationsWithIDsQuery(ctx, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "valid preparations with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching valid preparations from database")
-	}
-
-	validPreparations, _, _, err := q.scanValidPreparations(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid preparations")
-	}
-
-	return validPreparations, nil
 }
 
 const validPreparationCreationQuery = "INSERT INTO valid_preparations (id,name,description,icon_path,yields_nothing,restrict_to_ingredients,zero_ingredients_allowable,past_tense) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"

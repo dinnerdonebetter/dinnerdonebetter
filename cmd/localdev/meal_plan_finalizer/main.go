@@ -20,13 +20,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/workers"
-	"github.com/prixfixeco/api_server/pkg/types"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 const (
-	dataChangesTopicName = "data_changes"
-	choresTopicName      = "meal_plan_finalizer"
+	dataChangesTopicName      = "data_changes"
+	mealPlanFinalizationTopic = "meal_plan_finalizer"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
@@ -101,7 +100,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	everySecond := time.Tick(time.Second)
 	choresWorker := workers.ProvideChoresWorker(
 		logger,
 		dataManager,
@@ -111,25 +109,12 @@ func main() {
 		tracerProvider,
 	)
 
-	choresConsumer, err := consumerProvider.ProvideConsumer(ctx, choresTopicName, choresWorker.HandleMessage)
+	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, choresWorker.HandleMessage)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	go choresConsumer.Consume(nil, nil)
-
-	choresPublisher, err := publisherProvider.ProviderPublisher(choresTopicName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	go func() {
-		for range everySecond {
-			if err = choresPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType}); err != nil {
-				log.Fatal(err)
-			}
-		}
-	}()
+	go mealPlanFinalizerConsumer.Consume(nil, nil)
 
 	logger.Info("working...")
 

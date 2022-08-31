@@ -2,9 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -247,23 +244,6 @@ func (q *SQLQuerier) SearchForValidMeasurementUnits(ctx context.Context, query s
 	return x, nil
 }
 
-const getTotalValidMeasurementUnitsCountQuery = "SELECT COUNT(valid_measurement_units.id) FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL"
-
-// GetTotalValidMeasurementUnitCount fetches the count of valid measurement units from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalValidMeasurementUnitCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidMeasurementUnitsCountQuery, "fetching count of valid measurement units")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of valid measurement units")
-	}
-
-	return count, nil
-}
-
 // GetValidMeasurementUnits fetches a list of valid measurement units from the database that meet a particular filter.
 func (q *SQLQuerier) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.ValidMeasurementUnitList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -297,64 +277,6 @@ func (q *SQLQuerier) GetValidMeasurementUnits(ctx context.Context, filter *types
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetValidMeasurementUnitsWithIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"valid_measurement_units.id":          ids,
-		"valid_measurement_units.archived_at": nil,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(validMeasurementUnitsTableColumns...).
-		From("valid_measurement_units").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(validMeasurementUnitsTableColumns...).
-		FromSelect(subqueryBuilder, "valid_measurement_units").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetValidMeasurementUnitsWithIDs fetches valid measurement units from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidMeasurementUnitsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidMeasurementUnit, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetValidMeasurementUnitsWithIDsQuery(ctx, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching valid measurement units from database")
-	}
-
-	validMeasurementUnits, _, _, err := q.scanValidMeasurementUnits(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid measurement units")
-	}
-
-	return validMeasurementUnits, nil
 }
 
 const validMeasurementUnitCreationQuery = `INSERT INTO valid_measurement_units

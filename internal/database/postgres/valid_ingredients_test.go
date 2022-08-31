@@ -50,6 +50,7 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 			x.RestrictToPreparations,
 			x.MinimumIdealStorageTemperatureInCelsius,
 			x.MaximumIdealStorageTemperatureInCelsius,
+			x.StorageInstructions,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -452,47 +453,6 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetTotalValidIngredientCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalValidIngredientsCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalValidIngredientCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalValidIngredientsCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalValidIngredientCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_GetValidIngredients(T *testing.T) {
 	T.Parallel()
 
@@ -585,96 +545,6 @@ func TestQuerier_GetValidIngredients(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientList.ValidIngredients {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredientList.ValidIngredients...))
-
-		actual, err := c.GetValidIngredientsWithIDs(ctx, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientList.ValidIngredients, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientList.ValidIngredients {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientList.ValidIngredients {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateValidIngredient(T *testing.T) {
 	T.Parallel()
 
@@ -712,6 +582,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.RestrictToPreparations,
 			exampleInput.MinimumIdealStorageTemperatureInCelsius,
 			exampleInput.MaximumIdealStorageTemperatureInCelsius,
+			exampleInput.StorageInstructions,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -774,6 +645,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.RestrictToPreparations,
 			exampleInput.MinimumIdealStorageTemperatureInCelsius,
 			exampleInput.MaximumIdealStorageTemperatureInCelsius,
+			exampleInput.StorageInstructions,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -827,6 +699,7 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.RestrictToPreparations,
 			exampleValidIngredient.MinimumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.MaximumIdealStorageTemperatureInCelsius,
+			exampleValidIngredient.StorageInstructions,
 			exampleValidIngredient.ID,
 		}
 
@@ -879,6 +752,7 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.RestrictToPreparations,
 			exampleValidIngredient.MinimumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.MaximumIdealStorageTemperatureInCelsius,
+			exampleValidIngredient.StorageInstructions,
 			exampleValidIngredient.ID,
 		}
 

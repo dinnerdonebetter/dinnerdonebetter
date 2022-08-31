@@ -3,10 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
-
-	"github.com/Masterminds/squirrel"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -125,6 +122,7 @@ func (q *SQLQuerier) scanFullMealPlan(ctx context.Context, scan database.Scanner
 		&mealPlanOption.ID,
 		&mealPlanOption.Day,
 		&mealPlanOption.AssignedCook,
+		&mealPlanOption.AssignedDishwasher,
 		&mealPlanOption.MealName,
 		&mealPlanOption.Chosen,
 		&mealPlanOption.TieBroken,
@@ -221,6 +219,7 @@ const baseGetMealPlanQuery = `SELECT
     meal_plan_options.id,
     meal_plan_options.day,
     meal_plan_options.assigned_cook,
+    meal_plan_options.assigned_dishwasher,
     meal_plan_options.meal_name,
     meal_plan_options.chosen,
     meal_plan_options.tiebroken,
@@ -377,23 +376,6 @@ func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID, householdID st
 	return q.getMealPlan(ctx, mealPlanID, householdID, false)
 }
 
-const getTotalMealPlansCountQuery = "SELECT COUNT(meal_plans.id) FROM meal_plans WHERE meal_plans.archived_at IS NULL"
-
-// GetTotalMealPlanCount fetches the count of meal plans from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalMealPlanCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalMealPlansCountQuery, "fetching count of meal plans")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of meal plans")
-	}
-
-	return count, nil
-}
-
 // GetMealPlans fetches a list of meal plans from the database that meet a particular filter.
 func (q *SQLQuerier) GetMealPlans(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.MealPlanList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -427,68 +409,6 @@ func (q *SQLQuerier) GetMealPlans(ctx context.Context, householdID string, filte
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetMealPlansWithIDsQuery(ctx context.Context, householdID string, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"meal_plans.id":          ids,
-		"meal_plans.archived_at": nil,
-	}
-
-	if householdID != "" {
-		withIDsWhere["meal_plans.belongs_to_household"] = householdID
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(mealPlansTableColumns...).
-		From("meal_plans").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(mealPlansTableColumns...).
-		FromSelect(subqueryBuilder, "meal_plans").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetMealPlansWithIDs fetches meal plans from the database within a given set of IDs.
-func (q *SQLQuerier) GetMealPlansWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.MealPlan, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetMealPlansWithIDsQuery(ctx, householdID, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "meal plans with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching meal plans from database")
-	}
-
-	mealPlans, _, _, err := q.scanMealPlans(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meal plans")
-	}
-
-	return mealPlans, nil
 }
 
 const mealPlanCreationQuery = "INSERT INTO meal_plans (id,notes,status,voting_deadline,starts_at,ends_at,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6,$7)"
@@ -635,7 +555,7 @@ var allDays = []time.Weekday{
 	time.Sunday,
 }
 
-var allMealNames = []types.MealName{
+var allMealNames = []string{
 	types.BreakfastMealName,
 	types.SecondBreakfastMealName,
 	types.BrunchMealName,
@@ -644,7 +564,7 @@ var allMealNames = []types.MealName{
 	types.DinnerMealName,
 }
 
-func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal types.MealName) []*types.MealPlanOption {
+func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal string) []*types.MealPlanOption {
 	out := []*types.MealPlanOption{}
 
 	for _, o := range l {

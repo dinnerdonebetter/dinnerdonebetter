@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
-	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
@@ -24,21 +23,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/uploads/images"
 	mockuploads "github.com/prixfixeco/api_server/internal/uploads/mock"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func buildTestService(t *testing.T) *service {
 	t.Helper()
 
-	expectedUserCount := uint64(123)
-
 	uc := &mockmetrics.UnitCounter{}
-	mockDB := database.NewMockDatabase()
-	mockDB.UserDataManager.On(
-		"GetAllUsersCount",
-		testutils.ContextMatcher,
-	).Return(expectedUserCount, nil)
-
 	cfg := &Config{}
 
 	pp := &mockpublishers.ProducerProvider{}
@@ -67,7 +57,7 @@ func buildTestService(t *testing.T) *service {
 	)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, mockDB, uc)
+	mock.AssertExpectationsForObjects(t, uc)
 
 	return s.(*service)
 }

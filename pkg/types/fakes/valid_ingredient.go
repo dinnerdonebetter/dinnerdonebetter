@@ -34,6 +34,7 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		RestrictToPreparations:                  fake.Bool(),
 		MinimumIdealStorageTemperatureInCelsius: fake.Float32(),
 		MaximumIdealStorageTemperatureInCelsius: fake.Float32(),
+		StorageInstructions:                     buildUniqueString(),
 	}
 }
 
@@ -81,6 +82,7 @@ func BuildFakeValidIngredientUpdateRequestInput() *types.ValidIngredientUpdateRe
 		RestrictToPreparations:                  &validIngredient.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: &validIngredient.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: &validIngredient.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     &validIngredient.StorageInstructions,
 	}
 }
 
@@ -109,6 +111,7 @@ func BuildFakeValidIngredientUpdateRequestInputFromValidIngredient(validIngredie
 		RestrictToPreparations:                  &validIngredient.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: &validIngredient.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: &validIngredient.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     &validIngredient.StorageInstructions,
 	}
 }
 
@@ -144,6 +147,7 @@ func BuildFakeValidIngredientCreationRequestInputFromValidIngredient(validIngred
 		RestrictToPreparations:                  validIngredient.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: validIngredient.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: validIngredient.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     validIngredient.StorageInstructions,
 	}
 }
 
@@ -173,5 +177,6 @@ func BuildFakeValidIngredientDatabaseCreationInputFromValidIngredient(validIngre
 		RestrictToPreparations:                  validIngredient.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: validIngredient.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: validIngredient.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     validIngredient.StorageInstructions,
 	}
 }

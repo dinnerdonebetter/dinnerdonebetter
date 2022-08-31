@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -11,9 +12,8 @@ import (
 
 var _ types.AdminUserDataManager = (*SQLQuerier)(nil)
 
-const setUserAccountStatusQuery = `
-	UPDATE users SET user_account_status = $1, user_account_status_explanation = $2 WHERE archived_at IS NULL AND id = $3
-`
+//go:embed queries/admin_set_user_account_status.sql
+var setUserAccountStatusQuery string
 
 // UpdateUserAccountStatus updates a user's household status.
 func (q *SQLQuerier) UpdateUserAccountStatus(ctx context.Context, userID string, input *types.UserAccountStatusUpdateInput) error {

@@ -65,6 +65,7 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 		"meal_plan_options.id",
 		"meal_plan_options.day",
 		"meal_plan_options.assigned_cook",
+		"meal_plan_options.assigned_dishwasher",
 		"meal_plan_options.meal_name",
 		"meal_plan_options.chosen",
 		"meal_plan_options.tiebroken",
@@ -116,6 +117,7 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 					opt.ID,
 					opt.Day,
 					opt.AssignedCook,
+					opt.AssignedDishwasher,
 					opt.MealName,
 					opt.Chosen,
 					opt.TieBroken,
@@ -423,47 +425,6 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetTotalMealPlanCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalMealPlansCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalMealPlanCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalMealPlansCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalMealPlanCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_GetMealPlans(T *testing.T) {
 	T.Parallel()
 
@@ -566,104 +527,6 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetMealPlansWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for i := range exampleMealPlanList.MealPlans {
-			exampleMealPlanList.MealPlans[i].Options = nil
-		}
-
-		var exampleIDs []string
-		for _, x := range exampleMealPlanList.MealPlans {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetMealPlansWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlanList.MealPlans...))
-
-		actual, err := c.GetMealPlansWithIDs(ctx, exampleHouseholdID, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanList.MealPlans, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetMealPlansWithIDs(ctx, exampleHouseholdID, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-
-		var exampleIDs []string
-		for _, x := range exampleMealPlanList.MealPlans {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetMealPlansWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetMealPlansWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-
-		var exampleIDs []string
-		for _, x := range exampleMealPlanList.MealPlans {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetMealPlansWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetMealPlansWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateMealPlan(T *testing.T) {
 	T.Parallel()
 
@@ -705,6 +568,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 				option.ID,
 				option.Day,
 				option.AssignedCook,
+				option.AssignedDishwasher,
 				option.MealName,
 				option.MealID,
 				option.Notes,
@@ -846,6 +710,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			exampleInput.Options[0].ID,
 			exampleInput.Options[0].Day,
 			exampleInput.Options[0].AssignedCook,
+			exampleInput.Options[0].AssignedDishwasher,
 			exampleInput.Options[0].MealName,
 			exampleInput.Options[0].MealID,
 			exampleInput.Options[0].Notes,
@@ -906,6 +771,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 				option.ID,
 				option.Day,
 				option.AssignedCook,
+				option.AssignedDishwasher,
 				option.MealName,
 				option.MealID,
 				option.Notes,

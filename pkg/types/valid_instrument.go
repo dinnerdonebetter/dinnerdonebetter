@@ -30,28 +30,30 @@ func init() {
 type (
 	// ValidInstrument represents a valid instrument.
 	ValidInstrument struct {
-		_             struct{}
-		LastUpdatedAt *uint64 `json:"lastUpdatedAt"`
-		ArchivedAt    *uint64 `json:"archivedAt"`
-		Description   string  `json:"description"`
-		IconPath      string  `json:"iconPath"`
-		ID            string  `json:"id"`
-		Name          string  `json:"name"`
-		PluralName    string  `json:"pluralName"`
-		CreatedAt     uint64  `json:"createdAt"`
+		_                struct{}
+		LastUpdatedAt    *uint64 `json:"lastUpdatedAt"`
+		ArchivedAt       *uint64 `json:"archivedAt"`
+		Description      string  `json:"description"`
+		IconPath         string  `json:"iconPath"`
+		ID               string  `json:"id"`
+		Name             string  `json:"name"`
+		PluralName       string  `json:"pluralName"`
+		UsableForStorage bool    `json:"usedForStorage"`
+		CreatedAt        uint64  `json:"createdAt"`
 	}
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
 	NullableValidInstrument struct {
-		_             struct{}
-		LastUpdatedAt *uint64
-		ArchivedAt    *uint64
-		Description   *string
-		IconPath      *string
-		ID            *string
-		Name          *string
-		PluralName    *string
-		CreatedAt     *uint64
+		_                struct{}
+		LastUpdatedAt    *uint64
+		ArchivedAt       *uint64
+		Description      *string
+		IconPath         *string
+		ID               *string
+		Name             *string
+		PluralName       *string
+		UsableForStorage *bool
+		CreatedAt        *uint64
 	}
 
 	// ValidInstrumentList represents a list of valid instruments.
@@ -63,33 +65,36 @@ type (
 
 	// ValidInstrumentCreationRequestInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentCreationRequestInput struct {
-		_           struct{}
-		ID          string `json:"-"`
-		Name        string `json:"name"`
-		PluralName  string `json:"pluralName"`
-		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		_                struct{}
+		ID               string `json:"-"`
+		Name             string `json:"name"`
+		PluralName       string `json:"pluralName"`
+		Description      string `json:"description"`
+		IconPath         string `json:"iconPath"`
+		UsableForStorage bool   `json:"usedForStorage"`
 	}
 
 	// ValidInstrumentDatabaseCreationInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentDatabaseCreationInput struct {
 		_ struct{}
 
-		ID          string `json:"id"`
-		Name        string `json:"name"`
-		PluralName  string `json:"pluralName"`
-		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		ID               string `json:"id"`
+		Name             string `json:"name"`
+		PluralName       string `json:"pluralName"`
+		Description      string `json:"description"`
+		IconPath         string `json:"iconPath"`
+		UsableForStorage bool   `json:"usedForStorage"`
 	}
 
 	// ValidInstrumentUpdateRequestInput represents what a user could set as input for updating valid instruments.
 	ValidInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		Name        *string `json:"name"`
-		PluralName  *string `json:"pluralName"`
-		Description *string `json:"description"`
-		IconPath    *string `json:"iconPath"`
+		Name             *string `json:"name"`
+		PluralName       *string `json:"pluralName"`
+		Description      *string `json:"description"`
+		IconPath         *string `json:"iconPath"`
+		UsableForStorage *bool   `json:"usedForStorage"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
@@ -97,7 +102,6 @@ type (
 		ValidInstrumentExists(ctx context.Context, validInstrumentID string) (bool, error)
 		GetValidInstrument(ctx context.Context, validInstrumentID string) (*ValidInstrument, error)
 		GetRandomValidInstrument(ctx context.Context) (*ValidInstrument, error)
-		GetTotalValidInstrumentCount(ctx context.Context) (uint64, error)
 		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*ValidInstrumentList, error)
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
@@ -134,6 +138,10 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 	if input.IconPath != nil && *input.IconPath != x.IconPath {
 		x.IconPath = *input.IconPath
 	}
+
+	if input.UsableForStorage != nil && *input.UsableForStorage != x.UsableForStorage {
+		x.UsableForStorage = *input.UsableForStorage
+	}
 }
 
 var _ validation.ValidatableWithContext = (*ValidInstrumentCreationRequestInput)(nil)
@@ -162,10 +170,11 @@ func (x *ValidInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.C
 // ValidInstrumentUpdateRequestInputFromValidInstrument creates a DatabaseCreationInput from a CreationInput.
 func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument) *ValidInstrumentUpdateRequestInput {
 	x := &ValidInstrumentUpdateRequestInput{
-		Name:        &input.Name,
-		PluralName:  &input.PluralName,
-		Description: &input.Description,
-		IconPath:    &input.IconPath,
+		Name:             &input.Name,
+		PluralName:       &input.PluralName,
+		Description:      &input.Description,
+		IconPath:         &input.IconPath,
+		UsableForStorage: &input.UsableForStorage,
 	}
 
 	return x
@@ -174,10 +183,11 @@ func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument
 // ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput(input *ValidInstrumentCreationRequestInput) *ValidInstrumentDatabaseCreationInput {
 	x := &ValidInstrumentDatabaseCreationInput{
-		Name:        input.Name,
-		PluralName:  input.PluralName,
-		Description: input.Description,
-		IconPath:    input.IconPath,
+		Name:             input.Name,
+		PluralName:       input.PluralName,
+		Description:      input.Description,
+		IconPath:         input.IconPath,
+		UsableForStorage: input.UsableForStorage,
 	}
 
 	return x
@@ -197,13 +207,14 @@ func (x *ValidInstrumentUpdateRequestInput) ValidateWithContext(ctx context.Cont
 // ToValidInstrument produces a ValidInstrument from a NullableValidInstrument.
 func (x *NullableValidInstrument) ToValidInstrument() *ValidInstrument {
 	return &ValidInstrument{
-		LastUpdatedAt: x.LastUpdatedAt,
-		ArchivedAt:    x.ArchivedAt,
-		Description:   *x.Description,
-		IconPath:      *x.IconPath,
-		ID:            *x.ID,
-		Name:          *x.Name,
-		PluralName:    *x.PluralName,
-		CreatedAt:     *x.CreatedAt,
+		LastUpdatedAt:    x.LastUpdatedAt,
+		ArchivedAt:       x.ArchivedAt,
+		Description:      *x.Description,
+		IconPath:         *x.IconPath,
+		ID:               *x.ID,
+		Name:             *x.Name,
+		PluralName:       *x.PluralName,
+		CreatedAt:        *x.CreatedAt,
+		UsableForStorage: *x.UsableForStorage,
 	}
 }

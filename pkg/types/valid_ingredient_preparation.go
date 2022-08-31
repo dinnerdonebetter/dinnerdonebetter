@@ -79,11 +79,9 @@ type (
 	ValidIngredientPreparationDataManager interface {
 		ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (bool, error)
 		GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*ValidIngredientPreparation, error)
-		GetTotalValidIngredientPreparationCount(ctx context.Context) (uint64, error)
 		GetValidIngredientPreparations(ctx context.Context, filter *QueryFilter) (*ValidIngredientPreparationList, error)
 		GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*ValidIngredientPreparationList, error)
 		GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*ValidIngredientPreparationList, error)
-		GetValidIngredientPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidIngredientPreparation, error)
 		CreateValidIngredientPreparation(ctx context.Context, input *ValidIngredientPreparationDatabaseCreationInput) (*ValidIngredientPreparation, error)
 		UpdateValidIngredientPreparation(ctx context.Context, updated *ValidIngredientPreparation) error
 		ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error

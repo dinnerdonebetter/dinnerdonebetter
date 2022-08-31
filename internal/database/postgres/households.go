@@ -345,25 +345,6 @@ func (q *SQLQuerier) GetHouseholdByID(ctx context.Context, householdID string) (
 	return household, nil
 }
 
-const getAllHouseholdsCountQuery = `
-	SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL
-`
-
-// GetAllHouseholdsCount fetches the count of households from the database that meet a particular filter.
-func (q *SQLQuerier) GetAllHouseholdsCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getAllHouseholdsCountQuery, "fetching count of all households")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of households")
-	}
-
-	return count, nil
-}
-
 // buildGetHouseholdsQuery builds a SQL query selecting households that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {

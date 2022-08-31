@@ -303,45 +303,6 @@ func TestQuerier_GetWebhook(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetAllWebhooksCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := uint64(123)
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getAllWebhooksCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(expected))
-
-		actual, err := c.GetAllWebhooksCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getAllWebhooksCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetAllWebhooksCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_GetWebhooks(T *testing.T) {
 	T.Parallel()
 

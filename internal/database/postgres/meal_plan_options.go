@@ -2,11 +2,9 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"time"
 
-	"github.com/Masterminds/squirrel"
 	"resenje.org/schulze"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -29,11 +27,13 @@ var (
 		"meal_plan_options.id",
 		"meal_plan_options.day",
 		"meal_plan_options.assigned_cook",
+		"meal_plan_options.assigned_dishwasher",
 		"meal_plan_options.meal_name",
 		"meal_plan_options.chosen",
 		"meal_plan_options.tiebroken",
 		"meal_plan_options.meal_id",
 		"meal_plan_options.notes",
+		"meal_plan_options.prep_steps_created",
 		"meal_plan_options.created_at",
 		"meal_plan_options.last_updated_at",
 		"meal_plan_options.archived_at",
@@ -72,11 +72,13 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 		&x.ID,
 		&x.Day,
 		&x.AssignedCook,
+		&x.AssignedDishwasher,
 		&x.MealName,
 		&x.Chosen,
 		&x.TieBroken,
 		&x.Meal.ID,
 		&x.Notes,
+		&x.PrepStepsCreated,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -173,11 +175,13 @@ const getMealPlanOptionQuery = `SELECT
 	meal_plan_options.id,
 	meal_plan_options.day,
 	meal_plan_options.assigned_cook,
+	meal_plan_options.assigned_dishwasher,
 	meal_plan_options.meal_name,
 	meal_plan_options.chosen,
 	meal_plan_options.tiebroken,
 	meal_plan_options.meal_id,
 	meal_plan_options.notes,
+	meal_plan_options.prep_steps_created,
 	meal_plan_options.created_at,
 	meal_plan_options.last_updated_at,
 	meal_plan_options.archived_at,
@@ -234,23 +238,6 @@ func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 	return mealPlanOption, nil
 }
 
-const getTotalMealPlanOptionsCountQuery = "SELECT COUNT(meal_plan_options.id) FROM meal_plan_options WHERE meal_plan_options.archived_at IS NULL"
-
-// GetTotalMealPlanOptionCount fetches the count of meal plan options from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalMealPlanOptionCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalMealPlanOptionsCountQuery, "fetching count of meal plan options")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of meal plan options")
-	}
-
-	return count, nil
-}
-
 // GetMealPlanOptions fetches a list of meal plan options from the database that meet a particular filter.
 func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.MealPlanOptionList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -293,72 +280,7 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, 
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, mealPlanID string, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"meal_plan_options.id":                   ids,
-		"meal_plan_options.archived_at":          nil,
-		"meal_plan_options.belongs_to_meal_plan": mealPlanID,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(mealPlanOptionsTableColumns...).
-		From("meal_plan_options").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(mealPlanOptionsTableColumns...).
-		FromSelect(subqueryBuilder, "meal_plan_options").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetMealPlanOptionsWithIDs fetches meal plan options from the database within a given set of IDs.
-func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if mealPlanID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetMealPlanOptionsWithIDsQuery(ctx, mealPlanID, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan options with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching meal plan options from database")
-	}
-
-	mealPlanOptions, _, _, err := q.scanMealPlanOptions(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meal plan options")
-	}
-
-	return mealPlanOptions, nil
-}
-
-const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day,assigned_cook,meal_name,meal_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5,$6,$7)"
+const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day,assigned_cook,assigned_dishwasher,meal_name,meal_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
 // createMealPlanOption creates a meal plan option in the database.
 func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
@@ -371,10 +293,12 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, input.ID)
 
+	// we're leaving PrepStepsCreated out on purpose since it would be false by default.
 	args := []interface{}{
 		input.ID,
 		input.Day,
 		input.AssignedCook,
+		input.AssignedDishwasher,
 		input.MealName,
 		input.MealID,
 		input.Notes,
@@ -413,13 +337,15 @@ const updateMealPlanOptionQuery = `UPDATE meal_plan_options
 SET 
 	day = $1,
 	assigned_cook = $2,
-	meal_id = $3,
-	meal_name = $4,
-	notes = $5,
+	assigned_dishwasher = $3,
+	meal_id = $4,
+	meal_name = $5,
+	notes = $6,
+	prep_steps_created = $7,
 	last_updated_at = extract(epoch FROM NOW())
 WHERE archived_at IS NULL
-  AND belongs_to_meal_plan = $6 
-  AND id = $7
+  AND belongs_to_meal_plan = $8 
+  AND id = $9
 `
 
 // UpdateMealPlanOption updates a particular meal plan option.
@@ -437,9 +363,11 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 	args := []interface{}{
 		updated.Day,
 		updated.AssignedCook,
+		updated.AssignedDishwasher,
 		updated.Meal.ID,
 		updated.MealName,
 		updated.Notes,
+		updated.PrepStepsCreated,
 		updated.BelongsToMealPlan,
 		updated.ID,
 	}
@@ -555,9 +483,7 @@ func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.Me
 	return "", false, false
 }
 
-const finalizeMealPlanOptionQuery = `
-	UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2
-`
+const finalizeMealPlanOptionQuery = `UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2`
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
 func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error) {

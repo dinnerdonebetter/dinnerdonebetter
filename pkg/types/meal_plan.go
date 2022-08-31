@@ -102,9 +102,7 @@ type (
 	MealPlanDataManager interface {
 		MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error)
 		GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*MealPlan, error)
-		GetTotalMealPlanCount(ctx context.Context) (uint64, error)
 		GetMealPlans(ctx context.Context, householdID string, filter *QueryFilter) (*MealPlanList, error)
-		GetMealPlansWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*MealPlan, error)
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error

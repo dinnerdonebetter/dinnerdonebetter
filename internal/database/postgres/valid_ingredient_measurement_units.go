@@ -60,6 +60,7 @@ var (
 		"valid_ingredients.restrict_to_preparations",
 		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
 		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
+		"valid_ingredients.storage_instructions",
 		"valid_ingredients.created_at",
 		"valid_ingredients.last_updated_at",
 		"valid_ingredients.archived_at",
@@ -118,6 +119,7 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnit(ctx context.Context, sca
 		&x.Ingredient.RestrictToPreparations,
 		&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
 		&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
+		&x.Ingredient.StorageInstructions,
 		&x.Ingredient.CreatedAt,
 		&x.Ingredient.LastUpdatedAt,
 		&x.Ingredient.ArchivedAt,
@@ -238,6 +240,7 @@ SELECT
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions,
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at,
@@ -278,23 +281,6 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 	}
 
 	return validIngredientMeasurementUnit, nil
-}
-
-const getTotalValidIngredientMeasurementUnitsCountQuery = "SELECT COUNT(valid_ingredient_measurement_units.id) FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL"
-
-// GetTotalValidIngredientMeasurementUnitCount fetches the count of valid ingredient measurement units from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalValidIngredientMeasurementUnitCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalValidIngredientMeasurementUnitsCountQuery, "fetching count of valid ingredient measurement units")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of valid ingredient measurement units")
-	}
-
-	return count, nil
 }
 
 func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {

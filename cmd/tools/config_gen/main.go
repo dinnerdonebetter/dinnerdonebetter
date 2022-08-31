@@ -176,7 +176,8 @@ type configFunc func(ctx context.Context, filePath string) error
 var files = map[string]configFunc{
 	"environments/dev/config_files/service-config.json":               devEnvironmentServerConfig,
 	"environments/local/config_files/service-config.json":             localDevelopmentServiceConfig,
-	"environments/local/config_files/worker-config.json":              localDevelopmentWorkerConfig,
+	"environments/local/config_files/queue-loader-config.json":        localDevelopmentWorkerConfig,
+	"environments/local/config_files/meal-plan-finalizer-config.json": localDevelopmentWorkerConfig,
 	"environments/testing/config_files/integration-tests-config.json": integrationTestConfig,
 }
 

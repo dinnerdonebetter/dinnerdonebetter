@@ -39,17 +39,17 @@ type (
 		ID                                      string  `json:"id"`
 		IconPath                                string  `json:"iconPath"`
 		PluralName                              string  `json:"pluralName"`
+		StorageInstructions                     string  `json:"storageInstructions"`
 		CreatedAt                               uint64  `json:"createdAt"`
-		MinimumIdealStorageTemperatureInCelsius float32 `json:"minimumIdealStorageTemperatureInCelsius"`
 		MaximumIdealStorageTemperatureInCelsius float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		ContainsTreeNut                         bool    `json:"containsTreeNut"`
+		MinimumIdealStorageTemperatureInCelsius float32 `json:"minimumIdealStorageTemperatureInCelsius"`
+		ContainsDairy                           bool    `json:"containsDairy"`
 		ContainsShellfish                       bool    `json:"containsShellfish"`
-		ContainsGluten                          bool    `json:"containsGluten"`
 		AnimalFlesh                             bool    `json:"animalFlesh"`
 		IsMeasuredVolumetrically                bool    `json:"isMeasuredVolumetrically"`
 		IsLiquid                                bool    `json:"isLiquid"`
 		ContainsPeanut                          bool    `json:"containsPeanut"`
-		ContainsDairy                           bool    `json:"containsDairy"`
+		ContainsTreeNut                         bool    `json:"containsTreeNut"`
 		ContainsEgg                             bool    `json:"containsEgg"`
 		ContainsWheat                           bool    `json:"containsWheat"`
 		ContainsSoy                             bool    `json:"containsSoy"`
@@ -57,6 +57,7 @@ type (
 		RestrictToPreparations                  bool    `json:"restrictToPreparations"`
 		ContainsSesame                          bool    `json:"containsSesame"`
 		ContainsFish                            bool    `json:"containsFish"`
+		ContainsGluten                          bool    `json:"containsGluten"`
 	}
 
 	// ValidIngredientList represents a list of valid ingredients.
@@ -75,16 +76,16 @@ type (
 		Warning                                 string  `json:"warning"`
 		IconPath                                string  `json:"iconPath"`
 		PluralName                              string  `json:"pluralName"`
+		StorageInstructions                     string  `json:"storageInstructions"`
 		MinimumIdealStorageTemperatureInCelsius float32 `json:"minimumIdealStorageTemperatureInCelsius"`
 		MaximumIdealStorageTemperatureInCelsius float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		ContainsEgg                             bool    `json:"containsEgg"`
-		ContainsWheat                           bool    `json:"containsWheat"`
+		IsMeasuredVolumetrically                bool    `json:"isMeasuredVolumetrically"`
 		ContainsShellfish                       bool    `json:"containsShellfish"`
-		ContainsTreeNut                         bool    `json:"containsTreeNut"`
+		ContainsWheat                           bool    `json:"containsWheat"`
 		ContainsFish                            bool    `json:"containsFish"`
 		ContainsGluten                          bool    `json:"containsGluten"`
 		AnimalFlesh                             bool    `json:"animalFlesh"`
-		IsMeasuredVolumetrically                bool    `json:"isMeasuredVolumetrically"`
+		ContainsEgg                             bool    `json:"containsEgg"`
 		IsLiquid                                bool    `json:"isLiquid"`
 		ContainsSoy                             bool    `json:"containsSoy"`
 		ContainsPeanut                          bool    `json:"containsPeanut"`
@@ -92,6 +93,7 @@ type (
 		RestrictToPreparations                  bool    `json:"restrictToPreparations"`
 		ContainsDairy                           bool    `json:"containsDairy"`
 		ContainsSesame                          bool    `json:"containsSesame"`
+		ContainsTreeNut                         bool    `json:"containsTreeNut"`
 	}
 
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
@@ -103,16 +105,16 @@ type (
 		Warning                                 string  `json:"warning"`
 		IconPath                                string  `json:"iconPath"`
 		PluralName                              string  `json:"pluralName"`
+		StorageInstructions                     string  `json:"storageInstructions"`
 		MinimumIdealStorageTemperatureInCelsius float32 `json:"minimumIdealStorageTemperatureInCelsius"`
 		MaximumIdealStorageTemperatureInCelsius float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		ContainsEgg                             bool    `json:"containsEgg"`
-		ContainsWheat                           bool    `json:"containsWheat"`
+		IsMeasuredVolumetrically                bool    `json:"isMeasuredVolumetrically"`
 		ContainsShellfish                       bool    `json:"containsShellfish"`
-		ContainsTreeNut                         bool    `json:"containsTreeNut"`
+		ContainsWheat                           bool    `json:"containsWheat"`
 		ContainsFish                            bool    `json:"containsFish"`
 		ContainsGluten                          bool    `json:"containsGluten"`
 		AnimalFlesh                             bool    `json:"animalFlesh"`
-		IsMeasuredVolumetrically                bool    `json:"isMeasuredVolumetrically"`
+		ContainsEgg                             bool    `json:"containsEgg"`
 		IsLiquid                                bool    `json:"isLiquid"`
 		ContainsSoy                             bool    `json:"containsSoy"`
 		ContainsPeanut                          bool    `json:"containsPeanut"`
@@ -120,6 +122,7 @@ type (
 		RestrictToPreparations                  bool    `json:"restrictToPreparations"`
 		ContainsDairy                           bool    `json:"containsDairy"`
 		ContainsSesame                          bool    `json:"containsSesame"`
+		ContainsTreeNut                         bool    `json:"containsTreeNut"`
 	}
 
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.
@@ -147,6 +150,7 @@ type (
 		RestrictToPreparations                  *bool    `json:"restrictToPreparations"`
 		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius"`
 		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius"`
+		StorageInstructions                     *string  `json:"storageInstructions"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
@@ -154,11 +158,9 @@ type (
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error)
 		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
-		GetTotalValidIngredientCount(ctx context.Context) (uint64, error)
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*ValidIngredientList, error)
 		SearchForValidIngredients(ctx context.Context, query string) ([]*ValidIngredient, error)
 		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*ValidIngredient, error)
-		GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error
@@ -265,6 +267,10 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 	if input.MaximumIdealStorageTemperatureInCelsius != nil && *input.MaximumIdealStorageTemperatureInCelsius != x.MaximumIdealStorageTemperatureInCelsius {
 		x.MaximumIdealStorageTemperatureInCelsius = *input.MaximumIdealStorageTemperatureInCelsius
 	}
+
+	if input.StorageInstructions != nil && *input.StorageInstructions != x.StorageInstructions {
+		x.StorageInstructions = *input.StorageInstructions
+	}
 }
 
 var _ validation.ValidatableWithContext = (*ValidIngredientCreationRequestInput)(nil)
@@ -315,6 +321,7 @@ func ValidIngredientUpdateRequestInputFromValidIngredient(input *ValidIngredient
 		RestrictToPreparations:                  &input.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: &input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: &input.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     &input.StorageInstructions,
 	}
 
 	return x
@@ -345,6 +352,7 @@ func ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput(input 
 		RestrictToPreparations:                  input.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
+		StorageInstructions:                     input.StorageInstructions,
 	}
 
 	return x

@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"math"
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
@@ -21,7 +22,7 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			ProductOfRecipeStep: fake.Bool(),
 			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               fake.LoremIpsumSentence(exampleQuantity),
-			PreferenceRank:      fake.Uint8(),
+			PreferenceRank:      uint8(fake.Number(0, math.MaxUint8)),
 			Optional:            fake.Bool(),
 			MinimumQuantity:     fake.Uint32(),
 			MaximumQuantity:     fake.Uint32(),

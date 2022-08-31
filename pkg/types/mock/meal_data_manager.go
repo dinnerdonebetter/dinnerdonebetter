@@ -33,12 +33,6 @@ func (m *MealDataManager) GetMealByIDAndUser(ctx context.Context, recipeID, user
 	return args.Get(0).(*types.Meal), args.Error(1)
 }
 
-// GetTotalMealCount is a mock function.
-func (m *MealDataManager) GetTotalMealCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetMeals is a mock function.
 func (m *MealDataManager) GetMeals(ctx context.Context, filter *types.QueryFilter) (*types.MealList, error) {
 	args := m.Called(ctx, filter)
@@ -49,12 +43,6 @@ func (m *MealDataManager) GetMeals(ctx context.Context, filter *types.QueryFilte
 func (m *MealDataManager) SearchForMeals(ctx context.Context, query string, filter *types.QueryFilter) (*types.MealList, error) {
 	args := m.Called(ctx, query, filter)
 	return args.Get(0).(*types.MealList), args.Error(1)
-}
-
-// GetMealsWithIDs is a mock function.
-func (m *MealDataManager) GetMealsWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.Meal, error) {
-	args := m.Called(ctx, householdID, limit, ids)
-	return args.Get(0).([]*types.Meal), args.Error(1)
 }
 
 // CreateMeal is a mock function.

@@ -19,16 +19,20 @@ func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanO
 	assert.Equal(t, expected.Meal.ID, actual.Meal.ID, "expected MealID for meal plan option %s to be %v, but it was %v", expected.ID, expected.Meal.ID, actual.Meal.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan option %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.AssignedCook, actual.AssignedCook, "expected AssignedCook for meal plan option %s to be %v, but it was %v", expected.ID, expected.AssignedCook, actual.AssignedCook)
+	assert.Equal(t, expected.AssignedDishwasher, actual.AssignedDishwasher, "expected AssignedDishwasher for meal plan option %s to be %v, but it was %v", expected.ID, expected.AssignedDishwasher, actual.AssignedDishwasher)
+	assert.Equal(t, expected.PrepStepsCreated, actual.PrepStepsCreated, "expected PrepStepsCreated for meal plan option %s to be %v, but it was %v", expected.ID, expected.PrepStepsCreated, actual.PrepStepsCreated)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
 // convertMealPlanOptionToMealPlanOptionUpdateInput creates an MealPlanOptionUpdateRequestInput struct from a meal plan option.
 func convertMealPlanOptionToMealPlanOptionUpdateInput(x *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:          &x.Day,
-		MealID:       &x.Meal.ID,
-		Notes:        &x.Notes,
-		AssignedCook: x.AssignedCook,
+		Day:                &x.Day,
+		MealID:             &x.Meal.ID,
+		Notes:              &x.Notes,
+		AssignedCook:       x.AssignedCook,
+		AssignedDishwasher: x.AssignedDishwasher,
+		PrepStepsCreated:   &x.PrepStepsCreated,
 	}
 }
 
