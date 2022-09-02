@@ -42,6 +42,20 @@ type (
 		Abstain                 bool    `json:"abstain"`
 	}
 
+	// NullableMealPlanOptionVote represents a fully nullable meal plan option vote.
+	NullableMealPlanOptionVote struct {
+		_                       struct{}
+		LastUpdatedAT           *uint64
+		ArchivedAt              *uint64
+		ID                      *string
+		Notes                   *string
+		BelongsToMealPlanOption *string
+		ByUser                  *string
+		CreatedAt               *uint64
+		Rank                    *uint8
+		Abstain                 *bool
+	}
+
 	// MealPlanOptionVoteList represents a list of meal plan option votes.
 	MealPlanOptionVoteList struct {
 		_                   struct{}

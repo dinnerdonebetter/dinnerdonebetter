@@ -36,19 +36,6 @@ var (
 	}
 )
 
-type nullableMealPlanOptionVote struct {
-	_                       struct{}
-	LastUpdatedAT           *uint64
-	ArchivedAt              *uint64
-	ID                      *string
-	Notes                   *string
-	BelongsToMealPlanOption *string
-	ByUser                  *string
-	CreatedAt               *uint64
-	Rank                    *uint8
-	Abstain                 *bool
-}
-
 // scanMealPlanOptionVote takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan option vote struct.
 func (q *SQLQuerier) scanMealPlanOptionVote(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanOptionVote, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)

@@ -106,7 +106,7 @@ func (q *SQLQuerier) scanFullMealPlan(ctx context.Context, scan database.Scanner
 	mealPlanOption = &types.MealPlanOption{
 		Meal: types.Meal{Recipes: []*types.Recipe{{}}},
 	}
-	nmpov := &nullableMealPlanOptionVote{}
+	nmpov := &types.NullableMealPlanOptionVote{}
 
 	targetVars := []interface{}{
 		&mealPlan.ID,

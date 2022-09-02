@@ -27,18 +27,6 @@ var (
 		"meals.archived_at",
 		"meals.created_by_user",
 	}
-
-	// mealsTableWithRecipeIDColumns are the columns for the meals table.
-	mealsTableWithRecipeIDColumns = []string{
-		"meals.id",
-		"meals.name",
-		"meals.description",
-		"meals.created_at",
-		"meals.last_updated_at",
-		"meals.archived_at",
-		"meals.created_by_user",
-		"meal_recipes.recipe_id",
-	}
 )
 
 // scanMeal takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.

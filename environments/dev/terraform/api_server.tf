@@ -255,3 +255,15 @@ resource "cloudflare_record" "api_cname_record" {
   ttl     = 1
   proxied = true
 }
+
+#data "google_dns_managed_zone" "dns_zone" {
+#  name = "dev"
+#}
+#
+#resource "google_dns_record_set" "cname" {
+#  name         = "api.${data.google_dns_managed_zone.dns_zone.dns_name}"
+#  managed_zone = data.google_dns_managed_zone.dns_zone.name
+#  type         = "CNAME"
+#  ttl          = 300
+#  rrdatas      = ["ghs.googlehosted.com"]
+#}

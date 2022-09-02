@@ -48,7 +48,16 @@ func buildMockRowsFromMeals(includeCounts bool, filteredCount uint64, meals ...*
 }
 
 func buildMockFullRowsFromMeal(meal *types.Meal) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows(mealsTableWithRecipeIDColumns)
+	exampleRows := sqlmock.NewRows([]string{
+		"meals.id",
+		"meals.name",
+		"meals.description",
+		"meals.created_at",
+		"meals.last_updated_at",
+		"meals.archived_at",
+		"meals.created_by_user",
+		"meal_recipes.recipe_id",
+	})
 
 	for _, recipe := range meal.Recipes {
 		exampleRows.AddRow(
