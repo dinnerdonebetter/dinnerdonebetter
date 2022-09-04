@@ -269,5 +269,5 @@ start_dev_cloud_sql_proxy:
 dump_dev_db:
 	rm -f cmd/tools/db_initializer/db_dumps/dump.sql
 	for table in valid_preparations valid_measurement_units valid_instruments valid_ingredients valid_ingredient_preparations valid_ingredient_measurement_units valid_preparation_instruments recipes recipe_steps recipe_step_products recipe_step_instruments recipe_step_ingredients meals meal_recipes; do \
-			pg_dump "user=api_db_user password=`gcloud secrets versions access --secret=api_user_database_password 1` host=127.0.0.1 port=5434 sslmode=disable dbname=prixfixe" --table="$$table" --data-only --column-inserts >> cmd/tools/db_initializer/dump.sql; \
+		pg_dump "user=api_db_user password=`gcloud secrets versions access --secret=api_user_database_password 1` host=127.0.0.1 port=5434 sslmode=disable dbname=prixfixe" --table="$$table" --data-only --column-inserts >> cmd/tools/db_initializer/dump.sql; \
 	done

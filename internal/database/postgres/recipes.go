@@ -258,7 +258,7 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&y.Optional,
 		&y.CreatedAt,
 		&y.LastUpdatedAt,
-		&y.ArchivedAT,
+		&y.ArchivedAt,
 		&y.BelongsToRecipe,
 	}
 

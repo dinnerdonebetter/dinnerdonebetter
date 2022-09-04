@@ -36,7 +36,7 @@ type (
 		_                             struct{}
 		LastUpdatedAt                 *uint64                 `json:"lastUpdatedAt"`
 		MaximumTemperatureInCelsius   *uint16                 `json:"maximumTemperatureInCelsius"`
-		ArchivedAT                    *uint64                 `json:"archivedAt"`
+		ArchivedAt                    *uint64                 `json:"archivedAt"`
 		MinimumTemperatureInCelsius   *uint16                 `json:"minimumTemperatureInCelsius"`
 		Notes                         string                  `json:"notes"`
 		BelongsToRecipe               string                  `json:"belongsToRecipe"`

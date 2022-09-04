@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/Masterminds/squirrel"
 
@@ -23,6 +24,12 @@ func wrapQueryForILIKE(s string) string {
 	return fmt.Sprintf("%%%s%%", s)
 }
 
+var queryReplacer = regexp.MustCompile(`(\n|\t|\s{1,})+`)
+
+func minimizeSQL(query string) string {
+	return queryReplacer.ReplaceAllString(query, " ")
+}
+
 // logQueryBuildingError logs errs that may occur during query construction. Such errors should be few and far between,
 // as the generally only occur with type discrepancies or other misuses of SQL. An alert should be set up for any log
 // entries with the given name, and those alerts should be investigated quickly.
@@ -36,10 +43,8 @@ func (q *SQLQuerier) logQueryBuildingError(span tracing.Span, err error) {
 // BuildQuery builds a given query, handles whatever errs and returns just the query and args.
 func (q *SQLQuerier) buildQuery(span tracing.Span, builder squirrel.Sqlizer) (query string, args []interface{}) {
 	query, args, err := builder.ToSql()
-
 	q.logQueryBuildingError(span, err)
-
-	return query, args
+	return minimizeSQL(query), args
 }
 
 func (q *SQLQuerier) buildTotalCountQuery(

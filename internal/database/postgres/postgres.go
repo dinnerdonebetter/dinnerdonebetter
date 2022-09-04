@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -196,7 +195,7 @@ func (q *SQLQuerier) getOneRow(ctx context.Context, querier database.SQLQueryExe
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = strings.TrimSpace(query)
+	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
@@ -218,7 +217,7 @@ func (q *SQLQuerier) performReadQuery(ctx context.Context, querier database.SQLQ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = strings.TrimSpace(query)
+	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
@@ -248,7 +247,7 @@ func (q *SQLQuerier) performBooleanQuery(ctx context.Context, querier database.S
 	defer span.End()
 
 	var exists bool
-	query = strings.TrimSpace(query)
+	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue(keys.DatabaseQueryKey, query).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, "boolean query", query, args)
@@ -272,7 +271,7 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQL
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = strings.TrimSpace(query)
+	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
