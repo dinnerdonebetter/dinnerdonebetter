@@ -34,6 +34,7 @@ const (
 	gcpSegmentTokenEnvVarKey = "PRIXFIXE_SEGMENT_API_TOKEN"
 
 	dataChangesTopicAccessName = "data_changes_topic_name"
+	googleCloudCloudSQLSocket  = "/cloudsql"
 )
 
 // SecretVersionAccessor is an interface abstraction of the GCP Secret Manager API call we use during config hydration.
@@ -43,7 +44,7 @@ type SecretVersionAccessor interface {
 	AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error)
 }
 
-// GetAPIServerConfigFromGoogleCloudRunEnvironment fetches and InstanceConfig from GCP Secret Manager.
+// GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
 	logger.Debug("setting up secret manager client")
@@ -69,7 +70,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 
 	socketDir, isSet := os.LookupEnv(gcpDatabaseSocketDirEnvVarKey)
 	if !isSet {
-		socketDir = "/cloudsql"
+		socketDir = googleCloudCloudSQLSocket
 	}
 
 	// fetch supplementary data from env vars
@@ -151,7 +152,7 @@ func fetchSecretFromSecretStore(ctx context.Context, client SecretVersionAccesso
 	return result.Payload.Data, nil
 }
 
-// GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches and InstanceConfig from GCP Secret Manager.
+// GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
 
@@ -179,7 +180,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
 	if !isSet {
-		socketDir = "/cloudsql"
+		socketDir = googleCloudCloudSQLSocket
 	}
 
 	// fetch supplementary data from env vars
@@ -210,7 +211,66 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	return cfg, nil
 }
 
-// GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches and InstanceConfig from GCP Secret Manager.
+// GetAdvancedPrepStepCreatorWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetAdvancedPrepStepCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	logger := zerolog.NewZerologLogger()
+
+	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
+	if secretManagerCreationErr != nil {
+		return nil, fmt.Errorf("failed to create secretmanager client: %w", secretManagerCreationErr)
+	}
+
+	var cfg *InstanceConfig
+	configBytes, configFetchErr := fetchSecretFromSecretStore(ctx, client, "api_service_config")
+	if configFetchErr != nil {
+		return nil, fmt.Errorf("fetching config from secret store: %w", configFetchErr)
+	}
+
+	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
+		return nil, encodeErr
+	}
+
+	rawPort := os.Getenv("PORT")
+	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
+	if portParseErr != nil {
+		return nil, fmt.Errorf("parsing port: %w", portParseErr)
+	}
+	cfg.Server.HTTPPort = uint16(port)
+
+	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
+	if !isSet {
+		socketDir = googleCloudCloudSQLSocket
+	}
+
+	// fetch supplementary data from env vars
+	dbURI := fmt.Sprintf(
+		"user=%s password=%s database=%s host=%s/%s",
+		os.Getenv("PRIXFIXE_DATABASE_USER"),
+		os.Getenv("PRIXFIXE_DATABASE_PASSWORD"),
+		os.Getenv("PRIXFIXE_DATABASE_NAME"),
+		socketDir,
+		os.Getenv("PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"),
+	)
+
+	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
+	cfg.Database.RunMigrations = false
+
+	logger.Debug("fetched database values")
+
+	cfg.Events.Publishers.PubSubConfig.TopicName = "data_changes"
+
+	// we don't actually need these, except for validation
+	cfg.CustomerData.APIToken = " "
+	cfg.Email.Sendgrid.APIToken = " "
+
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
+	}
+
+	return cfg, nil
+}
+
+// GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {

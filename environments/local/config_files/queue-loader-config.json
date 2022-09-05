@@ -87,6 +87,10 @@
 			}
 		}
 	},
+	"featureFlags": {
+		"LaunchDarkly": null,
+		"Provider": ""
+	},
 	"server": {
 		"startupDeadline": 60000000000,
 		"httpPort": 8000,

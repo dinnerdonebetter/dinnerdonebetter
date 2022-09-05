@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"go.opentelemetry.io/otel"
+
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
@@ -15,9 +18,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
-
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"go.opentelemetry.io/otel"
 )
 
 const (

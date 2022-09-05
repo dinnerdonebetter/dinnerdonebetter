@@ -24,7 +24,7 @@ func wrapQueryForILIKE(s string) string {
 	return fmt.Sprintf("%%%s%%", s)
 }
 
-var queryReplacer = regexp.MustCompile(`(\n|\t|\s{1,})+`)
+var queryReplacer = regexp.MustCompile(`(\n|\t|\s+)+`)
 
 func minimizeSQL(query string) string {
 	return queryReplacer.ReplaceAllString(query, " ")

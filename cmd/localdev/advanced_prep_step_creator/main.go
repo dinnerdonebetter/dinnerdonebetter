@@ -5,16 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -24,8 +21,8 @@ import (
 )
 
 const (
-	dataChangesTopicName      = "data_changes"
-	mealPlanFinalizationTopic = "meal_plan_finalizer"
+	dataChangesTopicName          = "data_changes"
+	advancedPrepStepCreationTopic = "advanced_prep_step_creation"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
@@ -37,11 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logger.Info("starting meal plan finalizer workers...")
-
-	client := &http.Client{
-		Timeout: 5 * time.Second,
-	}
+	logger.Info("starting advanced prep step worker...")
 
 	// find and validate our configuration filepath.
 	configFilepath := os.Getenv(configFilepathEnvVar)
@@ -59,7 +52,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.Observability.Tracing.Jaeger.ServiceName = "meal_plan_finalizer_workers"
+	cfg.Observability.Tracing.Jaeger.ServiceName = "advanced_prep_step_creation_workers"
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
@@ -67,11 +60,6 @@ func main() {
 	}
 
 	cfg.Database.RunMigrations = false
-
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
 	if err != nil {
@@ -100,21 +88,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
+	advancedPrepStepCreationEnsurerWorker := workers.ProvideAdvancedPrepStepCreationEnsurerWorker(
 		logger,
 		dataManager,
 		dataChangesPublisher,
-		emailer,
 		cdp,
 		tracerProvider,
 	)
 
-	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, mealPlanFinalizationWorker.HandleMessage)
+	advancedPrepStepCreationConsumer, err := consumerProvider.ProvideConsumer(ctx, advancedPrepStepCreationTopic, advancedPrepStepCreationEnsurerWorker.HandleMessage)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	go mealPlanFinalizerConsumer.Consume(nil, nil)
+	go advancedPrepStepCreationConsumer.Consume(nil, nil)
 
 	logger.Info("working...")
 

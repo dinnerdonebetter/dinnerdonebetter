@@ -3,11 +3,11 @@ package postgres
 import (
 	"context"
 	_ "embed"
+
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-
-	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
