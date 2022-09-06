@@ -818,7 +818,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		ID:            ksuid.New().String(),
 		Token:         token,
 		BelongsToUser: u.ID,
-		ExpiresAt:     uint64(time.Now().Add(30 * time.Minute).Unix()),
+		ExpiresAt:     time.Now().Add(30 * time.Minute),
 	}
 
 	t, err := s.passwordResetTokenDataManager.CreatePasswordResetToken(ctx, dbInput)
