@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	_ types.ValidPreparationDataManager = (*SQLQuerier)(nil)
+	_ types.ValidPreparationDataManager = (*Querier)(nil)
 
 	// validPreparationsTableColumns are the columns for the valid_preparations table.
 	validPreparationsTableColumns = []string{
@@ -34,7 +34,7 @@ var (
 )
 
 // scanValidPreparation takes a database Scanner (i.e. *sql.Row) and scans the result into a valid preparation struct.
-func (q *SQLQuerier) scanValidPreparation(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidPreparation, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidPreparation(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidPreparation, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -68,7 +68,7 @@ func (q *SQLQuerier) scanValidPreparation(ctx context.Context, scan database.Sca
 }
 
 // scanValidPreparations takes some database rows and turns them into a slice of valid preparations.
-func (q *SQLQuerier) scanValidPreparations(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validPreparations []*types.ValidPreparation, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidPreparations(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validPreparations []*types.ValidPreparation, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,7 +103,7 @@ func (q *SQLQuerier) scanValidPreparations(ctx context.Context, rows database.Re
 const validPreparationExistenceQuery = "SELECT EXISTS ( SELECT valid_preparations.id FROM valid_preparations WHERE valid_preparations.archived_at IS NULL AND valid_preparations.id = $1 )"
 
 // ValidPreparationExists fetches whether a valid preparation exists from the database.
-func (q *SQLQuerier) ValidPreparationExists(ctx context.Context, validPreparationID string) (exists bool, err error) {
+func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -146,7 +146,7 @@ WHERE valid_preparations.archived_at IS NULL
 const getValidPreparationQuery = getValidPreparationBaseQuery + `AND valid_preparations.id = $1`
 
 // GetValidPreparation fetches a valid preparation from the database.
-func (q *SQLQuerier) GetValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
+func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -175,7 +175,7 @@ func (q *SQLQuerier) GetValidPreparation(ctx context.Context, validPreparationID
 const getRandomValidPreparationQuery = getValidPreparationBaseQuery + `ORDER BY random() LIMIT 1`
 
 // GetRandomValidPreparation fetches a valid preparation from the database.
-func (q *SQLQuerier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPreparation, error) {
+func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -210,7 +210,7 @@ WHERE valid_preparations.archived_at IS NULL
 LIMIT 50`
 
 // SearchForValidPreparations fetches a valid preparation from the database.
-func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query string) ([]*types.ValidPreparation, error) {
+func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) ([]*types.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -240,7 +240,7 @@ func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query strin
 }
 
 // GetValidPreparations fetches a list of valid preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidPreparationList, err error) {
+func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidPreparationList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -277,7 +277,7 @@ func (q *SQLQuerier) GetValidPreparations(ctx context.Context, filter *types.Que
 const validPreparationCreationQuery = "INSERT INTO valid_preparations (id,name,description,icon_path,yields_nothing,restrict_to_ingredients,zero_ingredients_allowable,past_tense) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
 // CreateValidPreparation creates a valid preparation in the database.
-func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationDatabaseCreationInput) (*types.ValidPreparation, error) {
+func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationDatabaseCreationInput) (*types.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -336,7 +336,7 @@ WHERE archived_at IS NULL
 `
 
 // UpdateValidPreparation updates a particular valid preparation.
-func (q *SQLQuerier) UpdateValidPreparation(ctx context.Context, updated *types.ValidPreparation) error {
+func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.ValidPreparation) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -370,7 +370,7 @@ func (q *SQLQuerier) UpdateValidPreparation(ctx context.Context, updated *types.
 const archiveValidPreparationQuery = "UPDATE valid_preparations SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidPreparation archives a valid preparation from the database by its ID.
-func (q *SQLQuerier) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
+func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

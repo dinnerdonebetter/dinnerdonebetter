@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	_ types.HouseholdUserMembershipDataManager = (*SQLQuerier)(nil)
+	_ types.HouseholdUserMembershipDataManager = (*Querier)(nil)
 
 	// householdsUserMembershipTableColumns are the columns for the household user memberships table.
 	householdsUserMembershipTableColumns = []string{
@@ -40,7 +40,7 @@ const (
 )
 
 // scanHouseholdUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into a householdUserMembership struct.
-func (q *SQLQuerier) scanHouseholdUserMembership(ctx context.Context, scan database.Scanner) (x *types.HouseholdUserMembership, err error) {
+func (q *Querier) scanHouseholdUserMembership(ctx context.Context, scan database.Scanner) (x *types.HouseholdUserMembership, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -75,7 +75,7 @@ func (q *SQLQuerier) scanHouseholdUserMembership(ctx context.Context, scan datab
 }
 
 // scanHouseholdUserMemberships takes some database rows and turns them into a slice of memberships.
-func (q *SQLQuerier) scanHouseholdUserMemberships(ctx context.Context, rows database.ResultIterator) (defaultHousehold string, householdRolesMap map[string][]string, err error) {
+func (q *Querier) scanHouseholdUserMemberships(ctx context.Context, rows database.ResultIterator) (defaultHousehold string, householdRolesMap map[string][]string, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -119,7 +119,7 @@ const getHouseholdMembershipsForUserQuery = `
 `
 
 // BuildSessionContextDataForUser queries the database for the memberships of a user and constructs a SessionContextData struct from the results.
-func (q *SQLQuerier) BuildSessionContextDataForUser(ctx context.Context, userID string) (*types.SessionContextData, error) {
+func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID string) (*types.SessionContextData, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -179,7 +179,7 @@ const getDefaultHouseholdIDForUserQuery = `
 `
 
 // GetDefaultHouseholdIDForUser retrieves the default household ID for a user.
-func (q *SQLQuerier) GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error) {
+func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -206,7 +206,7 @@ const markHouseholdAsUserDefaultQuery = `
 `
 
 // markHouseholdAsUserDefault does a thing.
-func (q *SQLQuerier) markHouseholdAsUserDefault(ctx context.Context, querier database.SQLQueryExecutor, userID, householdID string) error {
+func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier database.SQLQueryExecutor, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -239,7 +239,7 @@ func (q *SQLQuerier) markHouseholdAsUserDefault(ctx context.Context, querier dat
 }
 
 // MarkHouseholdAsUserDefault does a thing.
-func (q *SQLQuerier) MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID string) error {
+func (q *Querier) MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID string) error {
 	return q.markHouseholdAsUserDefault(ctx, q.db, userID, householdID)
 }
 
@@ -254,7 +254,7 @@ const userIsMemberOfHouseholdQuery = `
 `
 
 // UserIsMemberOfHousehold does a thing.
-func (q *SQLQuerier) UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error) {
+func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -288,7 +288,7 @@ const modifyUserPermissionsQuery = `
 `
 
 // ModifyUserPermissions does a thing.
-func (q *SQLQuerier) ModifyUserPermissions(ctx context.Context, householdID, userID string, input *types.ModifyUserPermissionsInput) error {
+func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID string, input *types.ModifyUserPermissionsInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -334,7 +334,7 @@ const transferHouseholdMembershipQuery = `
 `
 
 // TransferHouseholdOwnership does a thing.
-func (q *SQLQuerier) TransferHouseholdOwnership(ctx context.Context, householdID string, input *types.HouseholdOwnershipTransferInput) error {
+func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID string, input *types.HouseholdOwnershipTransferInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -400,7 +400,7 @@ const addUserToHouseholdQuery = `
 `
 
 // addUserToHousehold does a thing.
-func (q *SQLQuerier) addUserToHousehold(ctx context.Context, querier database.SQLQueryExecutor, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
+func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQueryExecutor, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -443,7 +443,7 @@ const removeUserFromHouseholdQuery = `
 `
 
 // RemoveUserFromHousehold removes a user's membership to a household.
-func (q *SQLQuerier) RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error {
+func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

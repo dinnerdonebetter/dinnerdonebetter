@@ -293,7 +293,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 	})
 }
 
-func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exampleMealPlan *types.MealPlan, exampleHouseholdID string, c *SQLQuerier, db *sqlmockExpecterWrapper) {
+func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exampleMealPlan *types.MealPlan, exampleHouseholdID string, c *Querier, db *sqlmockExpecterWrapper) {
 	t.Helper()
 
 	if exampleHouseholdID == "" {

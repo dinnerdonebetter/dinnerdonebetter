@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	_ types.RecipeStepDataManager = (*SQLQuerier)(nil)
+	_ types.RecipeStepDataManager = (*Querier)(nil)
 
 	// recipeStepsTableColumns are the columns for the recipe_steps table.
 	recipeStepsTableColumns = []string{
@@ -52,7 +52,7 @@ var (
 )
 
 // scanRecipeStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step struct.
-func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStep, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeStep(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -99,7 +99,7 @@ func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, 
 }
 
 // scanRecipeSteps takes some database rows and turns them into a slice of recipe steps.
-func (q *SQLQuerier) scanRecipeSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeSteps []*types.RecipeStep, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeSteps []*types.RecipeStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -134,7 +134,7 @@ func (q *SQLQuerier) scanRecipeSteps(ctx context.Context, rows database.ResultIt
 const recipeStepExistenceQuery = "SELECT EXISTS ( SELECT recipe_steps.id FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id = $2 AND recipes.archived_at IS NULL AND recipes.id = $3 )"
 
 // RecipeStepExists fetches whether a recipe step exists from the database.
-func (q *SQLQuerier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (exists bool, err error) {
+func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -202,7 +202,7 @@ AND recipes.id = $3
 `
 
 // GetRecipeStep fetches a recipe step from the database.
-func (q *SQLQuerier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
+func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -237,7 +237,7 @@ func (q *SQLQuerier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 }
 
 // GetRecipeSteps fetches a list of recipe steps from the database that meet a particular filter.
-func (q *SQLQuerier) GetRecipeSteps(ctx context.Context, recipeID string, filter *types.QueryFilter) (x *types.RecipeStepList, err error) {
+func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *types.QueryFilter) (x *types.RecipeStepList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -283,7 +283,7 @@ const recipeStepCreationQuery = `INSERT INTO recipe_steps
 `
 
 // CreateRecipeStep creates a recipe step in the database.
-func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
+func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -363,7 +363,7 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 }
 
 // CreateRecipeStep creates a recipe step in the database.
-func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
+func (q *Querier) CreateRecipeStep(ctx context.Context, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
 	return q.createRecipeStep(ctx, q.db, input)
 }
 
@@ -384,7 +384,7 @@ WHERE archived_at IS NULL
 `
 
 // UpdateRecipeStep updates a particular recipe step.
-func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeStep) error {
+func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeStep) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -421,7 +421,7 @@ func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.Recipe
 const archiveRecipeStepQuery = "UPDATE recipe_steps SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe = $1 AND id = $2"
 
 // ArchiveRecipeStep archives a recipe step from the database by its ID.
-func (q *SQLQuerier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {
+func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

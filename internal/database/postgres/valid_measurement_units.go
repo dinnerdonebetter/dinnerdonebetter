@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	_ types.ValidMeasurementUnitDataManager = (*SQLQuerier)(nil)
+	_ types.ValidMeasurementUnitDataManager = (*Querier)(nil)
 
 	// validMeasurementUnitsTableColumns are the columns for the valid_measurement_units table.
 	validMeasurementUnitsTableColumns = []string{
@@ -36,7 +36,7 @@ var (
 )
 
 // scanValidMeasurementUnit takes a database Scanner (i.e. *sql.Row) and scans the result into a valid measurement unit struct.
-func (q *SQLQuerier) scanValidMeasurementUnit(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidMeasurementUnit, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidMeasurementUnit(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidMeasurementUnit, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -71,7 +71,7 @@ func (q *SQLQuerier) scanValidMeasurementUnit(ctx context.Context, scan database
 }
 
 // scanValidMeasurementUnits takes some database rows and turns them into a slice of valid measurement units.
-func (q *SQLQuerier) scanValidMeasurementUnits(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validMeasurementUnits []*types.ValidMeasurementUnit, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidMeasurementUnits(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validMeasurementUnits []*types.ValidMeasurementUnit, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -106,7 +106,7 @@ func (q *SQLQuerier) scanValidMeasurementUnits(ctx context.Context, rows databas
 const validMeasurementUnitExistenceQuery = "SELECT EXISTS ( SELECT valid_measurement_units.id FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL AND valid_measurement_units.id = $1 )"
 
 // ValidMeasurementUnitExists fetches whether a valid measurement unit exists from the database.
-func (q *SQLQuerier) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (exists bool, err error) {
+func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -150,7 +150,7 @@ WHERE valid_measurement_units.archived_at IS NULL
 const getValidMeasurementUnitQuery = getValidMeasurementUnitBaseQuery + `AND valid_measurement_units.id = $1`
 
 // GetValidMeasurementUnit fetches a valid measurement unit from the database.
-func (q *SQLQuerier) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
+func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -179,7 +179,7 @@ func (q *SQLQuerier) GetValidMeasurementUnit(ctx context.Context, validMeasureme
 const getRandomValidMeasurementUnitQuery = getValidMeasurementUnitBaseQuery + `ORDER BY random() LIMIT 1`
 
 // GetRandomValidMeasurementUnit fetches a valid measurement unit from the database.
-func (q *SQLQuerier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.ValidMeasurementUnit, error) {
+func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -215,7 +215,7 @@ AND valid_measurement_units.archived_at IS NULL
 LIMIT 50`
 
 // SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
-func (q *SQLQuerier) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
+func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -245,7 +245,7 @@ func (q *SQLQuerier) SearchForValidMeasurementUnits(ctx context.Context, query s
 }
 
 // GetValidMeasurementUnits fetches a list of valid measurement units from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.ValidMeasurementUnitList, err error) {
+func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.ValidMeasurementUnitList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -285,7 +285,7 @@ const validMeasurementUnitCreationQuery = `INSERT INTO valid_measurement_units
 `
 
 // CreateValidMeasurementUnit creates a valid measurement unit in the database.
-func (q *SQLQuerier) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
+func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -346,7 +346,7 @@ WHERE archived_at IS NULL AND id = $9
 `
 
 // UpdateValidMeasurementUnit updates a particular valid measurement unit.
-func (q *SQLQuerier) UpdateValidMeasurementUnit(ctx context.Context, updated *types.ValidMeasurementUnit) error {
+func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types.ValidMeasurementUnit) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -381,7 +381,7 @@ func (q *SQLQuerier) UpdateValidMeasurementUnit(ctx context.Context, updated *ty
 const archiveValidMeasurementUnitQuery = "UPDATE valid_measurement_units SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.
-func (q *SQLQuerier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
+func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	_ types.ValidIngredientDataManager = (*SQLQuerier)(nil)
+	_ types.ValidIngredientDataManager = (*Querier)(nil)
 
 	// validIngredientsTableColumns are the columns for the valid_ingredients table.
 	validIngredientsTableColumns = []string{
@@ -46,7 +46,7 @@ var (
 )
 
 // scanValidIngredient takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient struct.
-func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredient, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidIngredient(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredient, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -96,7 +96,7 @@ func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scan
 }
 
 // scanValidIngredients takes some database rows and turns them into a slice of valid ingredients.
-func (q *SQLQuerier) scanValidIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredients []*types.ValidIngredient, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredients []*types.ValidIngredient, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -131,7 +131,7 @@ func (q *SQLQuerier) scanValidIngredients(ctx context.Context, rows database.Res
 const validIngredientExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredients.id FROM valid_ingredients WHERE valid_ingredients.archived_at IS NULL AND valid_ingredients.id = $1 )"
 
 // ValidIngredientExists fetches whether a valid ingredient exists from the database.
-func (q *SQLQuerier) ValidIngredientExists(ctx context.Context, validIngredientID string) (exists bool, err error) {
+func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -190,7 +190,7 @@ WHERE valid_ingredients.archived_at IS NULL
 const getValidIngredientQuery = getValidIngredientBaseQuery + `AND valid_ingredients.id = $1`
 
 // GetValidIngredient fetches a valid ingredient from the database.
-func (q *SQLQuerier) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
+func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -219,7 +219,7 @@ func (q *SQLQuerier) GetValidIngredient(ctx context.Context, validIngredientID s
 const getRandomValidIngredientQuery = getValidIngredientBaseQuery + `ORDER BY random() LIMIT 1`
 
 // GetRandomValidIngredient fetches a valid ingredient from the database.
-func (q *SQLQuerier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
+func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -270,7 +270,7 @@ WHERE valid_ingredients.name ILIKE $1
 LIMIT 50`
 
 // SearchForValidIngredients fetches a valid ingredient from the database.
-func (q *SQLQuerier) SearchForValidIngredients(ctx context.Context, query string) ([]*types.ValidIngredient, error) {
+func (q *Querier) SearchForValidIngredients(ctx context.Context, query string) ([]*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -300,7 +300,7 @@ func (q *SQLQuerier) SearchForValidIngredients(ctx context.Context, query string
 }
 
 // SearchForValidIngredientsForPreparation fetches a valid ingredient from the database.
-func (q *SQLQuerier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidIngredient, error) {
+func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -332,7 +332,7 @@ func (q *SQLQuerier) SearchForValidIngredientsForPreparation(ctx context.Context
 }
 
 // GetValidIngredients fetches a list of valid ingredients from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientList, err error) {
+func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -395,7 +395,7 @@ const validIngredientCreationQuery = `INSERT INTO valid_ingredients
 ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)`
 
 // CreateValidIngredient creates a valid ingredient in the database.
-func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
+func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -501,7 +501,7 @@ WHERE archived_at IS NULL AND id = $24
 `
 
 // UpdateValidIngredient updates a particular valid ingredient.
-func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.ValidIngredient) error {
+func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.ValidIngredient) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -551,7 +551,7 @@ func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.V
 const archiveValidIngredientQuery = `UPDATE valid_ingredients SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1`
 
 // ArchiveValidIngredient archives a valid ingredient from the database by its ID.
-func (q *SQLQuerier) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
+func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

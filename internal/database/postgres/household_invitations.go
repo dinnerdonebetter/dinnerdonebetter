@@ -24,7 +24,7 @@ const (
 )
 
 var (
-	_ types.HouseholdInvitationDataManager = (*SQLQuerier)(nil)
+	_ types.HouseholdInvitationDataManager = (*Querier)(nil)
 
 	// householdInvitationsTableColumns are the columns for the household invitations table.
 	householdInvitationsTableColumns = []string{
@@ -71,7 +71,7 @@ var (
 )
 
 // scanHouseholdInvitation is a consistent way to turn a *sql.Row into an invitation struct.
-func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.Scanner, includeCounts bool) (householdInvitation *types.HouseholdInvitation, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Scanner, includeCounts bool) (householdInvitation *types.HouseholdInvitation, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -140,7 +140,7 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 }
 
 // scanHouseholdInvitations provides a consistent way to turn sql rows into a slice of household_invitations.
-func (q *SQLQuerier) scanHouseholdInvitations(ctx context.Context, rows database.ResultIterator, includeCounts bool) (householdInvitations []*types.HouseholdInvitation, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanHouseholdInvitations(ctx context.Context, rows database.ResultIterator, includeCounts bool) (householdInvitations []*types.HouseholdInvitation, filteredCount, totalCount uint64, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -179,7 +179,7 @@ func (q *SQLQuerier) scanHouseholdInvitations(ctx context.Context, rows database
 const householdInvitationExistenceQuery = "SELECT EXISTS ( SELECT household_invitations.id FROM household_invitations WHERE household_invitations.archived_at IS NULL AND household_invitations.id = $1 )"
 
 // HouseholdInvitationExists fetches whether a household invitation exists from the database.
-func (q *SQLQuerier) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
+func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -253,7 +253,7 @@ AND household_invitations.id = $2
 `
 
 // GetHouseholdInvitationByHouseholdAndID fetches an invitation from the database.
-func (q *SQLQuerier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
+func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -337,7 +337,7 @@ AND household_invitations.id = $2
 `
 
 // GetHouseholdInvitationByTokenAndID fetches an invitation from the database.
-func (q *SQLQuerier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*types.HouseholdInvitation, error) {
+func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -421,7 +421,7 @@ AND household_invitations.token = $2
 `
 
 // GetHouseholdInvitationByEmailAndToken fetches an invitation from the database.
-func (q *SQLQuerier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.HouseholdInvitation, error) {
+func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -459,7 +459,7 @@ const createHouseholdInvitationQuery = `
 `
 
 // CreateHouseholdInvitation creates an invitation in a database.
-func (q *SQLQuerier) CreateHouseholdInvitation(ctx context.Context, input *types.HouseholdInvitationDatabaseCreationInput) (*types.HouseholdInvitation, error) {
+func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.HouseholdInvitationDatabaseCreationInput) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -505,7 +505,7 @@ func (q *SQLQuerier) CreateHouseholdInvitation(ctx context.Context, input *types
 }
 
 // BuildGetPendingHouseholdInvitationsFromUserQuery builds a query for fetching pending household invitations sent by a given user.
-func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []interface{}) {
+func (q *Querier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -541,7 +541,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx contex
 }
 
 // GetPendingHouseholdInvitationsFromUser fetches pending household invitations sent from a given user.
-func (q *SQLQuerier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -582,7 +582,7 @@ func (q *SQLQuerier) GetPendingHouseholdInvitationsFromUser(ctx context.Context,
 }
 
 // BuildGetPendingHouseholdInvitationsForUserQuery builds a query for fetching pending household invitations sent to a given user.
-func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []interface{}) {
+func (q *Querier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -618,7 +618,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context
 }
 
 // GetPendingHouseholdInvitationsForUser fetches pending household invitations sent to a given user.
-func (q *SQLQuerier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -668,7 +668,7 @@ WHERE archived_at IS NULL
 AND id = $3
 `
 
-func (q *SQLQuerier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note string, status types.HouseholdInvitationStatus) error {
+func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note string, status types.HouseholdInvitationStatus) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -696,12 +696,12 @@ func (q *SQLQuerier) setInvitationStatus(ctx context.Context, querier database.S
 }
 
 // CancelHouseholdInvitation cancels a household invitation by its ID with a note.
-func (q *SQLQuerier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+func (q *Querier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.CancelledHouseholdInvitationStatus)
 }
 
 // AcceptHouseholdInvitation accepts a household invitation by its ID with a note.
-func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -752,7 +752,7 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdInv
 }
 
 // RejectHouseholdInvitation rejects a household invitation by its ID with a note.
-func (q *SQLQuerier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
 }
 
@@ -764,7 +764,7 @@ WHERE archived_at IS NULL
 AND to_email = LOWER($2)
 `
 
-func (q *SQLQuerier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
+func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -793,7 +793,7 @@ func (q *SQLQuerier) attachInvitationsToUser(ctx context.Context, querier databa
 	return nil
 }
 
-func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.UserDatabaseCreationInput) error {
+func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.UserDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	_ types.RecipeStepInstrumentDataManager = (*SQLQuerier)(nil)
+	_ types.RecipeStepInstrumentDataManager = (*Querier)(nil)
 
 	// recipeStepInstrumentsTableColumns are the columns for the recipe_step_instruments table.
 	recipeStepInstrumentsTableColumns = []string{
@@ -52,7 +52,7 @@ var (
 )
 
 // scanRecipeStepInstrument takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step instrument struct.
-func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStepInstrument, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStepInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -102,7 +102,7 @@ func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database
 }
 
 // scanRecipeStepInstruments takes some database rows and turns them into a slice of recipe step instruments.
-func (q *SQLQuerier) scanRecipeStepInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepInstruments []*types.RecipeStepInstrument, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeStepInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepInstruments []*types.RecipeStepInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -137,7 +137,7 @@ func (q *SQLQuerier) scanRecipeStepInstruments(ctx context.Context, rows databas
 const recipeStepInstrumentExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_instruments.id FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_at IS NULL AND recipe_step_instruments.belongs_to_recipe_step = $1 AND recipe_step_instruments.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )"
 
 // RecipeStepInstrumentExists fetches whether a recipe step instrument exists from the database.
-func (q *SQLQuerier) RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (exists bool, err error) {
+func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -214,7 +214,7 @@ WHERE recipe_step_instruments.archived_at IS NULL
   AND recipes.id = $5`
 
 // GetRecipeStepInstrument fetches a recipe step instrument from the database.
-func (q *SQLQuerier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*types.RecipeStepInstrument, error) {
+func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*types.RecipeStepInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -257,7 +257,7 @@ func (q *SQLQuerier) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 }
 
 // GetRecipeStepInstruments fetches a list of recipe step instruments from the database that meet a particular filter.
-func (q *SQLQuerier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepInstrumentList, err error) {
+func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -338,7 +338,7 @@ AND recipes.id = $2
 `
 
 // getRecipeStepInstrumentsForRecipe fetches a list of recipe step instruments from the database that meet a particular filter.
-func (q *SQLQuerier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepInstrument, error) {
+func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -373,7 +373,7 @@ const recipeStepInstrumentCreationQuery = `INSERT INTO recipe_step_instruments
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
-func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
+func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -428,7 +428,7 @@ func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier dat
 }
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
-func (q *SQLQuerier) CreateRecipeStepInstrument(ctx context.Context, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
+func (q *Querier) CreateRecipeStepInstrument(ctx context.Context, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
 	return q.createRecipeStepInstrument(ctx, q.db, input)
 }
 
@@ -449,7 +449,7 @@ WHERE archived_at IS NULL
 `
 
 // UpdateRecipeStepInstrument updates a particular recipe step instrument.
-func (q *SQLQuerier) UpdateRecipeStepInstrument(ctx context.Context, updated *types.RecipeStepInstrument) error {
+func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types.RecipeStepInstrument) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -491,7 +491,7 @@ func (q *SQLQuerier) UpdateRecipeStepInstrument(ctx context.Context, updated *ty
 const archiveRecipeStepInstrumentQuery = "UPDATE recipe_step_instruments SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
 
 // ArchiveRecipeStepInstrument archives a recipe step instrument from the database by its ID.
-func (q *SQLQuerier) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error {
+func (q *Querier) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

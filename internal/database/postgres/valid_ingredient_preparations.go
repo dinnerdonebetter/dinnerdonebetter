@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	_ types.ValidIngredientPreparationDataManager = (*SQLQuerier)(nil)
+	_ types.ValidIngredientPreparationDataManager = (*Querier)(nil)
 
 	// validIngredientPreparationsTableColumns are the columns for the valid_ingredient_preparations table.
 	validIngredientPreparationsTableColumns = []string{
@@ -70,7 +70,7 @@ var (
 )
 
 // scanValidIngredientPreparation takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient preparation struct.
-func (q *SQLQuerier) scanValidIngredientPreparation(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredientPreparation, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidIngredientPreparation(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredientPreparation, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -136,7 +136,7 @@ func (q *SQLQuerier) scanValidIngredientPreparation(ctx context.Context, scan da
 }
 
 // scanValidIngredientPreparations takes some database rows and turns them into a slice of valid ingredient preparations.
-func (q *SQLQuerier) scanValidIngredientPreparations(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredientPreparations []*types.ValidIngredientPreparation, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidIngredientPreparations(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredientPreparations []*types.ValidIngredientPreparation, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -171,7 +171,7 @@ func (q *SQLQuerier) scanValidIngredientPreparations(ctx context.Context, rows d
 const validIngredientPreparationExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_at IS NULL AND valid_ingredient_preparations.id = $1 )"
 
 // ValidIngredientPreparationExists fetches whether a valid ingredient preparation exists from the database.
-func (q *SQLQuerier) ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (exists bool, err error) {
+func (q *Querier) ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -247,7 +247,7 @@ AND valid_ingredient_preparations.id = $1
 `
 
 // GetValidIngredientPreparation fetches a valid ingredient preparation from the database.
-func (q *SQLQuerier) GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*types.ValidIngredientPreparation, error) {
+func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*types.ValidIngredientPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -274,7 +274,7 @@ func (q *SQLQuerier) GetValidIngredientPreparation(ctx context.Context, validIng
 }
 
 // GetValidIngredientPreparations fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
+func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -319,7 +319,7 @@ func (q *SQLQuerier) GetValidIngredientPreparations(ctx context.Context, filter 
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -339,12 +339,12 @@ func (q *SQLQuerier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx
 	return query, args
 }
 
-func (q *SQLQuerier) buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
 }
 
 // GetValidIngredientPreparationsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
+func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -385,12 +385,12 @@ func (q *SQLQuerier) GetValidIngredientPreparationsForPreparation(ctx context.Co
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx, "valid_ingredient_id", limit, ids)
 }
 
 // GetValidIngredientPreparationsForIngredient fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
+func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -438,7 +438,7 @@ func (q *SQLQuerier) GetValidIngredientPreparationsForIngredient(ctx context.Con
 const validIngredientPreparationCreationQuery = "INSERT INTO valid_ingredient_preparations (id,notes,valid_preparation_id,valid_ingredient_id) VALUES ($1,$2,$3,$4)"
 
 // CreateValidIngredientPreparation creates a valid ingredient preparation in the database.
-func (q *SQLQuerier) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationDatabaseCreationInput) (*types.ValidIngredientPreparation, error) {
+func (q *Querier) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationDatabaseCreationInput) (*types.ValidIngredientPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -477,7 +477,7 @@ func (q *SQLQuerier) CreateValidIngredientPreparation(ctx context.Context, input
 const updateValidIngredientPreparationQuery = "UPDATE valid_ingredient_preparations SET notes = $1, valid_preparation_id = $2, valid_ingredient_id = $3, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $4"
 
 // UpdateValidIngredientPreparation updates a particular valid ingredient preparation.
-func (q *SQLQuerier) UpdateValidIngredientPreparation(ctx context.Context, updated *types.ValidIngredientPreparation) error {
+func (q *Querier) UpdateValidIngredientPreparation(ctx context.Context, updated *types.ValidIngredientPreparation) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -507,7 +507,7 @@ func (q *SQLQuerier) UpdateValidIngredientPreparation(ctx context.Context, updat
 const archiveValidIngredientPreparationQuery = "UPDATE valid_ingredient_preparations SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidIngredientPreparation archives a valid ingredient preparation from the database by its ID.
-func (q *SQLQuerier) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
+func (q *Querier) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

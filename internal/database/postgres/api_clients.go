@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	_ types.APIClientDataManager = (*SQLQuerier)(nil)
+	_ types.APIClientDataManager = (*Querier)(nil)
 
 	apiClientsTableColumns = []string{
 		"api_clients.id",
@@ -28,7 +28,7 @@ var (
 )
 
 // scanAPIClient takes a Scanner (i.e. *sql.Row) and scans its results into an APIClient struct.
-func (q *SQLQuerier) scanAPIClient(ctx context.Context, scan database.Scanner, includeCounts bool) (client *types.APIClient, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanAPIClient(ctx context.Context, scan database.Scanner, includeCounts bool) (client *types.APIClient, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -59,7 +59,7 @@ func (q *SQLQuerier) scanAPIClient(ctx context.Context, scan database.Scanner, i
 }
 
 // scanAPIClients takes sql rows and turns them into a slice of API Clients.
-func (q *SQLQuerier) scanAPIClients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (clients []*types.APIClient, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanAPIClients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (clients []*types.APIClient, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -107,7 +107,7 @@ const getAPIClientByClientIDQuery = `
 `
 
 // GetAPIClientByClientID gets an API client from the database.
-func (q *SQLQuerier) GetAPIClientByClientID(ctx context.Context, clientID string) (*types.APIClient, error) {
+func (q *Querier) GetAPIClientByClientID(ctx context.Context, clientID string) (*types.APIClient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -151,7 +151,7 @@ const getAPIClientByDatabaseIDQuery = `
 `
 
 // GetAPIClientByDatabaseID gets an API client from the database.
-func (q *SQLQuerier) GetAPIClientByDatabaseID(ctx context.Context, clientID, userID string) (*types.APIClient, error) {
+func (q *Querier) GetAPIClientByDatabaseID(ctx context.Context, clientID, userID string) (*types.APIClient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -184,7 +184,7 @@ func (q *SQLQuerier) GetAPIClientByDatabaseID(ctx context.Context, clientID, use
 }
 
 // GetAPIClients gets a list of API clients.
-func (q *SQLQuerier) GetAPIClients(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.APIClientList, err error) {
+func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.APIClientList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -230,7 +230,7 @@ const createAPIClientQuery = `
 `
 
 // CreateAPIClient creates an API client.
-func (q *SQLQuerier) CreateAPIClient(ctx context.Context, input *types.APIClientCreationRequestInput) (*types.APIClient, error) {
+func (q *Querier) CreateAPIClient(ctx context.Context, input *types.APIClientCreationRequestInput) (*types.APIClient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -280,7 +280,7 @@ const archiveAPIClientQuery = `
 `
 
 // ArchiveAPIClient archives an API client.
-func (q *SQLQuerier) ArchiveAPIClient(ctx context.Context, clientID, userID string) error {
+func (q *Querier) ArchiveAPIClient(ctx context.Context, clientID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

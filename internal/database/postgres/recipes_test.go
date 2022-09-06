@@ -256,7 +256,7 @@ func TestQuerier_RecipeExists(T *testing.T) {
 	})
 }
 
-func prepareMockToSuccessfullyGetRecipe(ctx context.Context, t *testing.T, recipe *types.Recipe, userID string, c *SQLQuerier, db *sqlmockExpecterWrapper) {
+func prepareMockToSuccessfullyGetRecipe(ctx context.Context, t *testing.T, recipe *types.Recipe, userID string, c *Querier, db *sqlmockExpecterWrapper) {
 	t.Helper()
 
 	var (

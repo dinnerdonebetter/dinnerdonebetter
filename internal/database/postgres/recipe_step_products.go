@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	_ types.RecipeStepProductDataManager = (*SQLQuerier)(nil)
+	_ types.RecipeStepProductDataManager = (*Querier)(nil)
 
 	// recipeStepProductsTableColumns are the columns for the recipe_step_products table.
 	recipeStepProductsTableColumns = []string{
@@ -56,7 +56,7 @@ var (
 )
 
 // scanRecipeStepProduct takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step product struct.
-func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStepProduct, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeStepProduct(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStepProduct, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -106,7 +106,7 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 }
 
 // scanRecipeStepProducts takes some database rows and turns them into a slice of recipe step products.
-func (q *SQLQuerier) scanRecipeStepProducts(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepProducts []*types.RecipeStepProduct, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeStepProducts(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepProducts []*types.RecipeStepProduct, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -141,7 +141,7 @@ func (q *SQLQuerier) scanRecipeStepProducts(ctx context.Context, rows database.R
 const recipeStepProductExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_products.id FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_at IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )"
 
 // RecipeStepProductExists fetches whether a recipe step product exists from the database.
-func (q *SQLQuerier) RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (exists bool, err error) {
+func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -224,7 +224,7 @@ AND recipes.id = $5
 `
 
 // GetRecipeStepProduct fetches a recipe step product from the database.
-func (q *SQLQuerier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*types.RecipeStepProduct, error) {
+func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*types.RecipeStepProduct, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -306,7 +306,7 @@ AND recipes.id = $2
 `
 
 // getRecipeStepProductsForRecipe fetches a list of recipe step products from the database that meet a particular filter.
-func (q *SQLQuerier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepProduct, error) {
+func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepProduct, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -337,7 +337,7 @@ func (q *SQLQuerier) getRecipeStepProductsForRecipe(ctx context.Context, recipeI
 }
 
 // GetRecipeStepProducts fetches a list of recipe step products from the database that meet a particular filter.
-func (q *SQLQuerier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepProductList, err error) {
+func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepProductList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -388,7 +388,7 @@ const recipeStepProductCreationQuery = `INSERT INTO recipe_step_products
 	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
-func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
+func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -442,7 +442,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 }
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
-func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
+func (q *Querier) CreateRecipeStepProduct(ctx context.Context, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
 	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
@@ -467,7 +467,7 @@ WHERE archived_at IS NULL
 `
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
-func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types.RecipeStepProduct) error {
+func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.RecipeStepProduct) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -506,7 +506,7 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 const archiveRecipeStepProductQuery = "UPDATE recipe_step_products SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
 
 // ArchiveRecipeStepProduct archives a recipe step product from the database by its ID.
-func (q *SQLQuerier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error {
+func (q *Querier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

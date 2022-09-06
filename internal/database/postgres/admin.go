@@ -10,13 +10,13 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-var _ types.AdminUserDataManager = (*SQLQuerier)(nil)
+var _ types.AdminUserDataManager = (*Querier)(nil)
 
 //go:embed queries/admin_set_user_account_status.sql
 var setUserAccountStatusQuery string
 
 // UpdateUserAccountStatus updates a user's household status.
-func (q *SQLQuerier) UpdateUserAccountStatus(ctx context.Context, userID string, input *types.UserAccountStatusUpdateInput) error {
+func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, input *types.UserAccountStatusUpdateInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

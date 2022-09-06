@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	_ types.ValidInstrumentDataManager = (*SQLQuerier)(nil)
+	_ types.ValidInstrumentDataManager = (*Querier)(nil)
 
 	// validInstrumentsTableColumns are the columns for the valid_instruments table.
 	validInstrumentsTableColumns = []string{
@@ -28,7 +28,7 @@ var (
 )
 
 // scanValidInstrument takes a database Scanner (i.e. *sql.Row) and scans the result into a valid instrument struct.
-func (q *SQLQuerier) scanValidInstrument(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidInstrument, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidInstrument(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -60,7 +60,7 @@ func (q *SQLQuerier) scanValidInstrument(ctx context.Context, scan database.Scan
 }
 
 // scanValidInstruments takes some database rows and turns them into a slice of valid instruments.
-func (q *SQLQuerier) scanValidInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validInstruments []*types.ValidInstrument, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validInstruments []*types.ValidInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -95,7 +95,7 @@ func (q *SQLQuerier) scanValidInstruments(ctx context.Context, rows database.Res
 const validInstrumentExistenceQuery = "SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = $1 )"
 
 // ValidInstrumentExists fetches whether a valid instrument exists from the database.
-func (q *SQLQuerier) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
+func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -136,7 +136,7 @@ WHERE valid_instruments.archived_at IS NULL
 const getValidInstrumentQuery = getValidInstrumentBaseQuery + `AND valid_instruments.id = $1`
 
 // GetValidInstrument fetches a valid instrument from the database.
-func (q *SQLQuerier) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
+func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -165,7 +165,7 @@ func (q *SQLQuerier) GetValidInstrument(ctx context.Context, validInstrumentID s
 const getRandomValidInstrumentQuery = getValidInstrumentBaseQuery + `ORDER BY random() LIMIT 1`
 
 // GetRandomValidInstrument fetches a valid instrument from the database.
-func (q *SQLQuerier) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
+func (q *Querier) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -198,7 +198,7 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 // SearchForValidInstruments fetches a valid instrument from the database.
-func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
+func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -228,7 +228,7 @@ func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string
 }
 
 // SearchForValidInstrumentsForPreparation fetches a valid instrument from the database.
-func (q *SQLQuerier) SearchForValidInstrumentsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidInstrument, error) {
+func (q *Querier) SearchForValidInstrumentsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -260,7 +260,7 @@ func (q *SQLQuerier) SearchForValidInstrumentsForPreparation(ctx context.Context
 }
 
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.ValidInstrumentList, err error) {
+func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.ValidInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -299,7 +299,7 @@ func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.Quer
 const validInstrumentCreationQuery = "INSERT INTO valid_instruments (id,name,plural_name,description,icon_path,usable_for_storage) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // CreateValidInstrument creates a valid instrument in the database.
-func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
+func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -342,7 +342,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, usable_for_storage = $5, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $6"
 
 // UpdateValidInstrument updates a particular valid instrument.
-func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
+func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -374,7 +374,7 @@ func (q *SQLQuerier) UpdateValidInstrument(ctx context.Context, updated *types.V
 const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
-func (q *SQLQuerier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
+func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

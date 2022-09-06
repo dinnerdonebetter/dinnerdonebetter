@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	_ types.MealDataManager = (*SQLQuerier)(nil)
+	_ types.MealDataManager = (*Querier)(nil)
 
 	// mealsTableColumns are the columns for the meals table.
 	mealsTableColumns = []string{
@@ -30,7 +30,7 @@ var (
 )
 
 // scanMeal takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *SQLQuerier) scanMeal(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.Meal, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanMeal(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.Meal, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -60,7 +60,7 @@ func (q *SQLQuerier) scanMeal(ctx context.Context, scan database.Scanner, includ
 }
 
 // scanMeals takes some database rows and turns them into a slice of meals.
-func (q *SQLQuerier) scanMeals(ctx context.Context, rows database.ResultIterator, includeCounts bool) (meals []*types.Meal, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanMeals(ctx context.Context, rows database.ResultIterator, includeCounts bool) (meals []*types.Meal, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -93,7 +93,7 @@ func (q *SQLQuerier) scanMeals(ctx context.Context, rows database.ResultIterator
 }
 
 // scanMealWithRecipes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *SQLQuerier) scanMealWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.Meal, recipeIDs []string, err error) {
+func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.Meal, recipeIDs []string, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -126,7 +126,7 @@ func (q *SQLQuerier) scanMealWithRecipes(ctx context.Context, rows database.Resu
 const mealExistenceQuery = "SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = $1 )"
 
 // MealExists fetches whether a meal exists from the database.
-func (q *SQLQuerier) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
+func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -167,7 +167,7 @@ WHERE meals.archived_at IS NULL
 `
 
 // GetMeal fetches a meal from the database.
-func (q *SQLQuerier) GetMeal(ctx context.Context, mealID string) (*types.Meal, error) {
+func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -210,7 +210,7 @@ func (q *SQLQuerier) GetMeal(ctx context.Context, mealID string) (*types.Meal, e
 }
 
 // GetMeals fetches a list of meals from the database that meet a particular filter.
-func (q *SQLQuerier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *types.MealList, err error) {
+func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *types.MealList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -245,7 +245,7 @@ func (q *SQLQuerier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x
 }
 
 // SearchForMeals fetches a list of recipes from the database that match a query.
-func (q *SQLQuerier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *types.QueryFilter) (x *types.MealList, err error) {
+func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *types.QueryFilter) (x *types.MealList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -283,7 +283,7 @@ func (q *SQLQuerier) SearchForMeals(ctx context.Context, mealNameQuery string, f
 const mealCreationQuery = "INSERT INTO meals (id,name,description,created_by_user) VALUES ($1,$2,$3,$4)"
 
 // CreateMeal creates a meal in the database.
-func (q *SQLQuerier) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
+func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -328,7 +328,7 @@ func (q *SQLQuerier) createMeal(ctx context.Context, querier database.SQLQueryEx
 }
 
 // CreateMeal creates a meal in the database.
-func (q *SQLQuerier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
+func (q *Querier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -358,7 +358,7 @@ func (q *SQLQuerier) CreateMeal(ctx context.Context, input *types.MealDatabaseCr
 const mealRecipeCreationQuery = "INSERT INTO meal_recipes (id,meal_id,recipe_id) VALUES ($1,$2,$3)"
 
 // CreateMealRecipe creates a meal in the database.
-func (q *SQLQuerier) CreateMealRecipe(ctx context.Context, querier database.SQLQueryExecutor, mealID, recipeID string) error {
+func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQueryExecutor, mealID, recipeID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -393,7 +393,7 @@ func (q *SQLQuerier) CreateMealRecipe(ctx context.Context, querier database.SQLQ
 const archiveMealQuery = "UPDATE meals SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
 
 // ArchiveMeal archives a meal from the database by its ID.
-func (q *SQLQuerier) ArchiveMeal(ctx context.Context, mealID, userID string) error {
+func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

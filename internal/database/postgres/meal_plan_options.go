@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	_ types.MealPlanOptionDataManager = (*SQLQuerier)(nil)
+	_ types.MealPlanOptionDataManager = (*Querier)(nil)
 
 	// mealPlanOptionsTableColumns are the columns for the meal_plan_options table.
 	mealPlanOptionsTableColumns = []string{
@@ -58,7 +58,7 @@ func init() {
 }
 
 // scanMealPlanOption takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan option struct.
-func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanOption, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanOption, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -104,7 +104,7 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 }
 
 // scanMealPlanOptions takes some database rows and turns them into a slice of meal plan options.
-func (q *SQLQuerier) scanMealPlanOptions(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlanOptions []*types.MealPlanOption, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanMealPlanOptions(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlanOptions []*types.MealPlanOption, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -139,7 +139,7 @@ func (q *SQLQuerier) scanMealPlanOptions(ctx context.Context, rows database.Resu
 const mealPlanOptionExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_options.id FROM meal_plan_options JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_options.archived_at IS NULL AND meal_plan_options.belongs_to_meal_plan = $1 AND meal_plan_options.id = $2 AND meal_plans.archived_at IS NULL AND meal_plans.id = $3 )"
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
-func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (exists bool, err error) {
+func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -204,7 +204,7 @@ AND meal_plans.id = $3
 `
 
 // GetMealPlanOption fetches a meal plan option from the database.
-func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*types.MealPlanOption, error) {
+func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -239,7 +239,7 @@ func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 }
 
 // GetMealPlanOptions fetches a list of meal plan options from the database that meet a particular filter.
-func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.MealPlanOptionList, err error) {
+func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.MealPlanOptionList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -283,7 +283,7 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, 
 const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day,assigned_cook,assigned_dishwasher,meal_name,meal_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
 // createMealPlanOption creates a meal plan option in the database.
-func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
+func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -329,7 +329,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 }
 
 // CreateMealPlanOption creates a meal plan option in the database.
-func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
+func (q *Querier) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
 	return q.createMealPlanOption(ctx, q.db, input)
 }
 
@@ -349,7 +349,7 @@ WHERE archived_at IS NULL
 `
 
 // UpdateMealPlanOption updates a particular meal plan option.
-func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.MealPlanOption) error {
+func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealPlanOption) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -384,7 +384,7 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2"
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
-func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {
+func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -416,7 +416,7 @@ func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, meal
 	return nil
 }
 
-func (q *SQLQuerier) determineWinner(winners []schulze.Score) string {
+func (q *Querier) determineWinner(winners []schulze.Score) string {
 	var (
 		highestScore int
 		scoreWinners []string
@@ -435,7 +435,7 @@ func (q *SQLQuerier) determineWinner(winners []schulze.Score) string {
 	return scoreWinners[rand.Intn(len(scoreWinners))]
 }
 
-func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.MealPlanOption) (_ string, _, _ bool) {
+func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealPlanOption) (_ string, _, _ bool) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -486,7 +486,7 @@ func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.Me
 const finalizeMealPlanOptionQuery = `UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2`
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
-func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error) {
+func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

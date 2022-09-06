@@ -11,10 +11,10 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-var _ types.AdminUserDataManager = (*SQLQuerier)(nil)
+var _ types.AdminUserDataManager = (*Querier)(nil)
 
 // scanAdvancedPrepStep takes a database Scanner (i.e. *sql.Row) and scans the result into a valid instrument struct.
-func (q *SQLQuerier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -80,7 +80,7 @@ func (q *SQLQuerier) scanAdvancedPrepStep(ctx context.Context, scan database.Sca
 }
 
 // scanAdvancedPrepSteps takes some database rows and turns them into a slice of valid instruments.
-func (q *SQLQuerier) scanAdvancedPrepSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validInstruments []*types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validInstruments []*types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -116,7 +116,7 @@ func (q *SQLQuerier) scanAdvancedPrepSteps(ctx context.Context, rows database.Re
 var listAdvancedPrepStepsQuery string
 
 // GetAdvancedPrepStepsForMealPlanOptionID lists advanced prep steps for a given meal plan option.
-func (q *SQLQuerier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context, mealPlanOptionID string, filter *types.QueryFilter) (x *types.AdvancedPrepStepList, err error) {
+func (q *Querier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context, mealPlanOptionID string, filter *types.QueryFilter) (x *types.AdvancedPrepStepList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -152,7 +152,7 @@ func (q *SQLQuerier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context
 var createAdvancedPrepStepQuery string
 
 // CreateAdvancedPrepStep updates a user's household status.
-func (q *SQLQuerier) CreateAdvancedPrepStep(ctx context.Context, input *types.AdvancedPrepStepDatabaseCreationInput) error {
+func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.AdvancedPrepStepDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

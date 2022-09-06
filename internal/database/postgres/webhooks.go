@@ -21,7 +21,7 @@ const (
 )
 
 var (
-	_ types.WebhookDataManager = (*SQLQuerier)(nil)
+	_ types.WebhookDataManager = (*Querier)(nil)
 
 	// webhooksTableColumns are the columns for the webhooks table.
 	webhooksTableColumns = []string{
@@ -41,7 +41,7 @@ var (
 )
 
 // scanWebhook is a consistent way to turn a *sql.Row into a webhook struct.
-func (q *SQLQuerier) scanWebhook(ctx context.Context, scan database.Scanner, includeCounts bool) (webhook *types.Webhook, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanWebhook(ctx context.Context, scan database.Scanner, includeCounts bool) (webhook *types.Webhook, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -93,7 +93,7 @@ func (q *SQLQuerier) scanWebhook(ctx context.Context, scan database.Scanner, inc
 }
 
 // scanWebhooks provides a consistent way to turn sql rows into a slice of webhooks.
-func (q *SQLQuerier) scanWebhooks(ctx context.Context, rows database.ResultIterator, includeCounts bool) (webhooks []*types.Webhook, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanWebhooks(ctx context.Context, rows database.ResultIterator, includeCounts bool) (webhooks []*types.Webhook, filteredCount, totalCount uint64, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -132,7 +132,7 @@ func (q *SQLQuerier) scanWebhooks(ctx context.Context, rows database.ResultItera
 const webhookExistenceQuery = "SELECT EXISTS ( SELECT webhooks.id FROM webhooks WHERE webhooks.archived_at IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2 )"
 
 // WebhookExists fetches whether a webhook exists from the database.
-func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
+func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -168,7 +168,7 @@ const getWebhookQuery = `
 `
 
 // GetWebhook fetches a webhook from the database.
-func (q *SQLQuerier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
+func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -200,7 +200,7 @@ func (q *SQLQuerier) GetWebhook(ctx context.Context, webhookID, householdID stri
 }
 
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
-func (q *SQLQuerier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
+func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -242,7 +242,7 @@ const createWebhookQuery = `
 `
 
 // CreateWebhook creates a webhook in a database.
-func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
+func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -299,7 +299,7 @@ AND id = $2
 `
 
 // ArchiveWebhook archives a webhook from the database.
-func (q *SQLQuerier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
+func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
