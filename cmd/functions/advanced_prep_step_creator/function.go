@@ -3,8 +3,10 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
+	"github.com/prixfixeco/api_server/pkg/types"
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
@@ -70,9 +72,27 @@ func CreateAdvancedPrepSteps(ctx context.Context, m PubSubMessage) error {
 	return nil
 }
 
-func ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx context.Context, tracer tracing.Tracer, publisher messagequeue.Publisher) error {
+func stepIsPure(x *types.RecipeStep) bool {
+	productFound := false
+
+	for _, ingredient := range x.Ingredients {
+		if ingredient.IngredientID == nil {
+			productFound = true
+		}
+	}
+
+	return productFound
+}
+
+func ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx context.Context, tracer tracing.Tracer, dbmanager database.DataManager, publisher messagequeue.Publisher) error {
 	_, span := tracer.StartSpan(ctx)
 	defer span.End()
+
+	// get all meal plans that are due to start in the coming week
+
+	// iterate through the chosen meal plan options and for the chosen ones, check to see if they have any pure steps
+
+	// for all pure steps, figure out which, if any, need to be created in the database
 
 	return nil
 }

@@ -20,3 +20,7 @@ ALTER TABLE valid_ingredients ADD COLUMN "storage_instructions" TEXT NOT NULL DE
 ALTER TABLE recipe_step_products ADD COLUMN "storage_instructions" TEXT NOT NULL DEFAULT '';
 ALTER TABLE meal_plan_options ADD COLUMN "prep_steps_created" BOOLEAN NOT NULL DEFAULT 'false';
 ALTER TABLE meal_plan_options ADD COLUMN "assigned_dishwasher" CHAR(27) REFERENCES users("id") ON DELETE CASCADE;
+
+-- ALTER TABLE meal_plan_options ALTER COLUMN created_at DROP DEFAULT;
+-- ALTER TABLE meal_plan_options ALTER COLUMN created_at TYPE timestamp with time zone USING to_timestamp(created_at);
+-- ALTER TABLE meal_plan_options ALTER COLUMN created_at SET DEFAULT NOW();
