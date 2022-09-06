@@ -27,7 +27,7 @@ resource "google_cloud_scheduler_job" "advanced_prep_step_creation" {
   region  = local.gcp_region
   name    = "advanced-prep-step-creation-scheduler"
 
-  schedule  = "* * * * *" # every minute
+  schedule  = "*/5 * * * *" # every five minutes
   time_zone = "America/Chicago"
 
   pubsub_target {
