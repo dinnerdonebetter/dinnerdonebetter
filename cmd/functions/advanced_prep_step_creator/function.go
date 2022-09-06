@@ -3,6 +3,9 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
+	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"go.opentelemetry.io/otel"
@@ -37,26 +40,39 @@ func CreateAdvancedPrepSteps(ctx context.Context, m PubSubMessage) error {
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 	otel.SetTracerProvider(tracerProvider)
-	//tracer := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer"))
+	tracer := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer"))
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
 		return fmt.Errorf("error setting up database client: %w", err)
 	}
 
-	//publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	//dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if mainErr := ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx, tracer, dataChangesPublisher); mainErr != nil {
+		observability.AcknowledgeError(mainErr, logger, nil, "closing database connection")
+		return mainErr
+	}
 
 	if closeErr := dataManager.DB().Close(); closeErr != nil {
 		observability.AcknowledgeError(closeErr, logger, nil, "closing database connection")
+		return closeErr
 	}
+
+	return nil
+}
+
+func ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx context.Context, tracer tracing.Tracer, publisher messagequeue.Publisher) error {
+	_, span := tracer.StartSpan(ctx)
+	defer span.End()
 
 	return nil
 }
