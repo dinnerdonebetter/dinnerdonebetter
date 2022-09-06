@@ -341,7 +341,7 @@ UPDATE valid_measurement_units SET
 	metric = $6,
 	imperial = $7,
 	plural_name = $8,
-	last_updated_at = extract(epoch FROM NOW()) 
+	last_updated_at = NOW() 
 WHERE archived_at IS NULL AND id = $9
 `
 
@@ -378,7 +378,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 	return nil
 }
 
-const archiveValidMeasurementUnitQuery = "UPDATE valid_measurement_units SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
+const archiveValidMeasurementUnitQuery = "UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.
 func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {

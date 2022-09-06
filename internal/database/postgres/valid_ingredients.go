@@ -496,7 +496,7 @@ UPDATE valid_ingredients SET
 	minimum_ideal_storage_temperature_in_celsius = $21,
 	maximum_ideal_storage_temperature_in_celsius = $22,
 	storage_instructions = $23,
-	last_updated_at = extract(epoch FROM NOW()) 
+	last_updated_at = NOW() 
 WHERE archived_at IS NULL AND id = $24
 `
 
@@ -548,7 +548,7 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 	return nil
 }
 
-const archiveValidIngredientQuery = `UPDATE valid_ingredients SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1`
+const archiveValidIngredientQuery = `UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1`
 
 // ArchiveValidIngredient archives a valid ingredient from the database by its ID.
 func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {

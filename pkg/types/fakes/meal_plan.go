@@ -31,7 +31,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 		VotingDeadline:     uint64(now.Unix()),
 		StartsAt:           uint64(inTenMinutes.Unix()),
 		EndsAt:             uint64(inOneWeek.Unix()),
-		CreatedAt:          uint64(uint32(fake.Date().Unix())),
+		CreatedAt:          fake.Date(),
 		BelongsToHousehold: fake.UUID(),
 		Options:            options,
 	}

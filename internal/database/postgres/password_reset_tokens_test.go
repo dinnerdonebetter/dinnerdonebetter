@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -117,7 +118,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleToken.CreatedAt
 		}
 
@@ -158,7 +159,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleToken.CreatedAt
 		}
 

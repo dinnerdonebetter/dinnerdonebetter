@@ -43,8 +43,8 @@ type (
 	// MealPlan represents a meal plan.
 	MealPlan struct {
 		_                  struct{}
-		ArchivedAt         *uint64           `json:"archivedAt"`
-		LastUpdatedAt      *uint64           `json:"lastUpdatedAt"`
+		ArchivedAt         *time.Time        `json:"archivedAt"`
+		LastUpdatedAt      *time.Time        `json:"lastUpdatedAt"`
 		Status             MealPlanStatus    `json:"status"`
 		ID                 string            `json:"id"`
 		BelongsToHousehold string            `json:"belongsToHousehold"`
@@ -53,7 +53,7 @@ type (
 		VotingDeadline     uint64            `json:"votingDeadline"`
 		StartsAt           uint64            `json:"startsAt"`
 		EndsAt             uint64            `json:"endsAt"`
-		CreatedAt          uint64            `json:"createdAt"`
+		CreatedAt          time.Time         `json:"createdAt"`
 	}
 
 	// MealPlanList represents a list of meal plans.

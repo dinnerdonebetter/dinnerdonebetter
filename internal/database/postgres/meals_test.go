@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/Masterminds/squirrel"
@@ -578,7 +579,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		db.ExpectCommit()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMeal.CreatedAt
 		}
 
@@ -691,7 +692,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMeal.CreatedAt
 		}
 
@@ -740,7 +741,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMeal.CreatedAt
 		}
 
@@ -774,7 +775,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMeal.CreatedAt
 		}
 
@@ -831,7 +832,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMeal.CreatedAt
 		}
 

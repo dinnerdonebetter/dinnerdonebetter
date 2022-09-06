@@ -426,7 +426,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 	return x, nil
 }
 
-const updateValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $4"
+const updateValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4"
 
 // UpdateValidPreparationInstrument updates a particular valid ingredient preparation.
 func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated *types.ValidPreparationInstrument) error {
@@ -456,7 +456,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	return nil
 }
 
-const archiveValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
+const archiveValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidPreparationInstrument archives a valid ingredient preparation from the database by its ID.
 func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {

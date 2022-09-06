@@ -3,6 +3,7 @@ package types
 import (
 	"context"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -23,18 +24,18 @@ type (
 	Webhook struct {
 		_ struct{}
 
-		LastUpdatedAt      *uint64  `json:"lastUpdatedAt"`
-		ArchivedAt         *uint64  `json:"archivedAt"`
-		Name               string   `json:"name"`
-		URL                string   `json:"url"`
-		Method             string   `json:"method"`
-		ContentType        string   `json:"contentType"`
-		ID                 string   `json:"id"`
-		BelongsToHousehold string   `json:"belongsToHousehold"`
-		Events             []string `json:"events"`
-		DataTypes          []string `json:"dataTypes"`
-		Topics             []string `json:"topics"`
-		CreatedAt          uint64   `json:"createdAt"`
+		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt         *time.Time `json:"archivedAt"`
+		Name               string     `json:"name"`
+		URL                string     `json:"url"`
+		Method             string     `json:"method"`
+		ContentType        string     `json:"contentType"`
+		ID                 string     `json:"id"`
+		BelongsToHousehold string     `json:"belongsToHousehold"`
+		Events             []string   `json:"events"`
+		DataTypes          []string   `json:"dataTypes"`
+		Topics             []string   `json:"topics"`
+		CreatedAt          time.Time  `json:"createdAt"`
 	}
 
 	// WebhookCreationRequestInput represents what a User could set as input for creating a webhook.

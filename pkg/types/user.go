@@ -4,6 +4,7 @@ import (
 	"context"
 	"math"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -38,10 +39,10 @@ type (
 	// User represents a User.
 	User struct {
 		_                         struct{}
-		PasswordLastChangedAt     *uint64           `json:"passwordLastChangedAt"`
-		ArchivedAt                *uint64           `json:"archivedAt"`
-		LastUpdatedAt             *uint64           `json:"lastUpdatedAt"`
-		TwoFactorSecretVerifiedAt *uint64           `json:"twoFactorSecretVerifiedAt"`
+		PasswordLastChangedAt     *time.Time        `json:"passwordLastChangedAt"`
+		ArchivedAt                *time.Time        `json:"archivedAt"`
+		LastUpdatedAt             *time.Time        `json:"lastUpdatedAt"`
+		TwoFactorSecretVerifiedAt *time.Time        `json:"twoFactorSecretVerifiedAt"`
 		AvatarSrc                 *string           `json:"avatar"`
 		BirthMonth                *uint8            `json:"birthMonth"`
 		BirthDay                  *uint8            `json:"birthDay"`
@@ -53,7 +54,7 @@ type (
 		AccountStatus             userAccountStatus `json:"accountStatus"`
 		Username                  string            `json:"username"`
 		ServiceRoles              []string          `json:"serviceRoles"`
-		CreatedAt                 uint64            `json:"createdAt"`
+		CreatedAt                 time.Time         `json:"createdAt"`
 		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}
 
@@ -104,7 +105,7 @@ type (
 		CreatedUserID   string            `json:"createdUserID"`
 		AccountStatus   userAccountStatus `json:"accountStatus"`
 		TwoFactorSecret string            `json:"twoFactorSecret"`
-		CreatedAt       uint64            `json:"createdAt"`
+		CreatedAt       time.Time         `json:"createdAt"`
 		IsAdmin         bool              `json:"isAdmin"`
 	}
 

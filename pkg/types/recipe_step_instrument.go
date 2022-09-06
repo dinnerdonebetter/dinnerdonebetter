@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,15 +32,15 @@ type (
 	// RecipeStepInstrument represents a recipe step instrument.
 	RecipeStepInstrument struct {
 		_                   struct{}
-		ArchivedAt          *uint64          `json:"archivedAt"`
+		ArchivedAt          *time.Time       `json:"archivedAt"`
 		Instrument          *ValidInstrument `json:"instrument"`
-		LastUpdatedAt       *uint64          `json:"lastUpdatedAt"`
+		LastUpdatedAt       *time.Time       `json:"lastUpdatedAt"`
 		RecipeStepProductID *string          `json:"recipeStepProductID"`
 		Notes               string           `json:"notes"`
 		Name                string           `json:"name"`
 		ID                  string           `json:"id"`
 		BelongsToRecipeStep string           `json:"belongsToRecipeStep"`
-		CreatedAt           uint64           `json:"createdAt"`
+		CreatedAt           time.Time        `json:"createdAt"`
 		ProductOfRecipeStep bool             `json:"productOfRecipeStep"`
 		PreferenceRank      uint8            `json:"preferenceRank"`
 		Optional            bool             `json:"optional"`

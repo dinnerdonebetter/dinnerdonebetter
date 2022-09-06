@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -33,15 +34,15 @@ type (
 		_                   struct{}
 		IngredientID        *string              `json:"ingredientID"`
 		RecipeStepProductID *string              `json:"recipeStepProductID"`
-		LastUpdatedAt       *uint64              `json:"lastUpdatedAt"`
-		ArchivedAt          *uint64              `json:"archivedAt"`
+		LastUpdatedAt       *time.Time           `json:"lastUpdatedAt"`
+		ArchivedAt          *time.Time           `json:"archivedAt"`
 		Name                string               `json:"name"`
 		QuantityNotes       string               `json:"quantityNotes"`
 		BelongsToRecipeStep string               `json:"belongsToRecipeStep"`
 		ID                  string               `json:"id"`
 		IngredientNotes     string               `json:"ingredientNotes"`
 		MeasurementUnit     ValidMeasurementUnit `json:"measurementUnit"`
-		CreatedAt           uint64               `json:"createdAt"`
+		CreatedAt           time.Time            `json:"createdAt"`
 		MinimumQuantity     float32              `json:"minimumQuantity"`
 		MaximumQuantity     float32              `json:"maximumQuantity"`
 		Optional            bool                 `json:"optional"`

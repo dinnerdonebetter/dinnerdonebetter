@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,13 +32,13 @@ type (
 	// ValidPreparationInstrument represents a valid preparation instrument.
 	ValidPreparationInstrument struct {
 		_             struct{}
-		ArchivedAt    *uint64          `json:"archivedAt"`
-		LastUpdatedAt *uint64          `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time       `json:"archivedAt"`
+		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
 		Notes         string           `json:"notes"`
 		ID            string           `json:"id"`
 		Instrument    ValidInstrument  `json:"instrument"`
 		Preparation   ValidPreparation `json:"preparation"`
-		CreatedAt     uint64           `json:"createdAt"`
+		CreatedAt     time.Time        `json:"createdAt"`
 	}
 
 	// ValidPreparationInstrumentList represents a list of valid preparation instruments.

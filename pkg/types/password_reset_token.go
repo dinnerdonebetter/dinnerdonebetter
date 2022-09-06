@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// PasswordResetTokenDataType indicates an event is related to a password reset token.
-	PasswordResetTokenDataType dataType = "valid_ingredient"
+	PasswordResetTokenDataType dataType = "password_reset_token"
 )
 
 func init() {
@@ -22,13 +23,13 @@ type (
 	// PasswordResetToken represents a password reset token.
 	PasswordResetToken struct {
 		_             struct{}
-		LastUpdatedAt *uint64 `json:"lastUpdatedAt"`
-		RedeemedAt    *uint64 `json:"archivedAt"`
-		ID            string  `json:"id"`
-		Token         string  `json:"token"`
-		BelongsToUser string  `json:"belongsToUser"`
-		ExpiresAt     uint64  `json:"expiresAt"`
-		CreatedAt     uint64  `json:"createdAt"`
+		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
+		RedeemedAt    *uint64    `json:"archivedAt"`
+		ID            string     `json:"id"`
+		Token         string     `json:"token"`
+		BelongsToUser string     `json:"belongsToUser"`
+		ExpiresAt     time.Time  `json:"expiresAt"`
+		CreatedAt     time.Time  `json:"createdAt"`
 	}
 
 	// UsernameReminderRequestInput represents what a user could set as input for creating password reset tokens.
@@ -46,10 +47,10 @@ type (
 	// PasswordResetTokenDatabaseCreationInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenDatabaseCreationInput struct {
 		_             struct{}
-		ID            string `json:"id"`
-		Token         string `json:"token"`
-		BelongsToUser string `json:"belongsToUser"`
-		ExpiresAt     uint64 `json:"expiresAt"`
+		ID            string    `json:"id"`
+		Token         string    `json:"token"`
+		BelongsToUser string    `json:"belongsToUser"`
+		ExpiresAt     time.Time `json:"expiresAt"`
 	}
 
 	// PasswordResetTokenRedemptionRequestInput represents what a user could set as input for creating password reset tokens.

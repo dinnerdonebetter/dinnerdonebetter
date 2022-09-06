@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -475,7 +476,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleValidPreparation.CreatedAt
 		}
 
@@ -522,7 +523,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(expectedErr)
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleValidPreparation.CreatedAt
 		}
 

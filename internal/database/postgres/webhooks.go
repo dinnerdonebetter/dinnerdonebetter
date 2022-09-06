@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
+	_ "embed"
 	"strings"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -52,6 +54,9 @@ func (q *Querier) scanWebhook(ctx context.Context, scan database.Scanner, includ
 		eventsStr,
 		dataTypesStr,
 		topicsStr string
+
+		lastUpdatedAt,
+		archivedAt sql.NullTime
 	)
 
 	targetVars := []interface{}{
@@ -64,8 +69,8 @@ func (q *Querier) scanWebhook(ctx context.Context, scan database.Scanner, includ
 		&dataTypesStr,
 		&topicsStr,
 		&webhook.CreatedAt,
-		&webhook.LastUpdatedAt,
-		&webhook.ArchivedAt,
+		&lastUpdatedAt,
+		&archivedAt,
 		&webhook.BelongsToHousehold,
 	}
 
@@ -87,6 +92,14 @@ func (q *Querier) scanWebhook(ctx context.Context, scan database.Scanner, includ
 
 	if topics := strings.Split(topicsStr, webhooksTableTopicsSeparator); len(topics) >= 1 && topics[0] != "" {
 		webhook.Topics = topics
+	}
+
+	if lastUpdatedAt.Valid {
+		webhook.LastUpdatedAt = &lastUpdatedAt.Time
+	}
+
+	if archivedAt.Valid {
+		webhook.ArchivedAt = &archivedAt.Time
 	}
 
 	return webhook, filteredCount, totalCount, nil
@@ -129,7 +142,8 @@ func (q *Querier) scanWebhooks(ctx context.Context, rows database.ResultIterator
 	return webhooks, filteredCount, totalCount, nil
 }
 
-const webhookExistenceQuery = "SELECT EXISTS ( SELECT webhooks.id FROM webhooks WHERE webhooks.archived_at IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2 )"
+//go:embed queries/webhooks_get_exists.sql
+var webhookExistenceQuery string
 
 // WebhookExists fetches whether a webhook exists from the database.
 func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
@@ -163,9 +177,8 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 	return result, nil
 }
 
-const getWebhookQuery = `
-	SELECT webhooks.id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_at, webhooks.last_updated_at, webhooks.archived_at, webhooks.belongs_to_household FROM webhooks WHERE webhooks.archived_at IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2
-`
+//go:embed queries/webhooks_get_one.sql
+var getWebhookQuery string
 
 // GetWebhook fetches a webhook from the database.
 func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
@@ -237,9 +250,8 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	return x, nil
 }
 
-const createWebhookQuery = `
-	INSERT INTO webhooks (id,name,content_type,url,method,events,data_types,topics,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-`
+//go:embed queries/webhooks_create.sql
+var createWebhookQuery string
 
 // CreateWebhook creates a webhook in a database.
 func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
@@ -289,14 +301,8 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 	return x, nil
 }
 
-const archiveWebhookQuery = `
-UPDATE webhooks SET
-	last_updated_at = extract(epoch FROM NOW()), 
-	archived_at = extract(epoch FROM NOW())
-WHERE archived_at IS NULL 
-AND belongs_to_household = $1
-AND id = $2
-`
+//go:embed queries/webhooks_archive.sql
+var archiveWebhookQuery string
 
 // ArchiveWebhook archives a webhook from the database.
 func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {

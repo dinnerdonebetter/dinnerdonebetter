@@ -342,7 +342,7 @@ SET
 	meal_name = $5,
 	notes = $6,
 	prep_steps_created = $7,
-	last_updated_at = extract(epoch FROM NOW())
+	last_updated_at = NOW()
 WHERE archived_at IS NULL
   AND belongs_to_meal_plan = $8 
   AND id = $9
@@ -381,7 +381,7 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	return nil
 }
 
-const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2"
+const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2"
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
 func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {

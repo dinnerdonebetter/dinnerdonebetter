@@ -20,7 +20,7 @@ func BuildFakeWebhook() *types.Webhook {
 		Events:             []string{buildUniqueString()},
 		DataTypes:          []string{buildUniqueString()},
 		Topics:             []string{buildUniqueString()},
-		CreatedAt:          uint64(uint32(fake.Date().Unix())),
+		CreatedAt:          fake.Date(),
 		ArchivedAt:         nil,
 		BelongsToHousehold: fake.UUID(),
 	}

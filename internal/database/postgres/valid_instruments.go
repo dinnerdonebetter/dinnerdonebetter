@@ -339,7 +339,7 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 	return x, nil
 }
 
-const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, usable_for_storage = $5, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $6"
+const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, usable_for_storage = $5, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $6"
 
 // UpdateValidInstrument updates a particular valid instrument.
 func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
@@ -371,7 +371,7 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 	return nil
 }
 
-const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
+const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
 func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {

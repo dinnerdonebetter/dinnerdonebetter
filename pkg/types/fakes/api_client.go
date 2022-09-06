@@ -17,7 +17,7 @@ func BuildFakeAPIClient() *types.APIClient {
 		ClientID:      ksuid.New().String(),
 		ClientSecret:  []byte(fake.Password(true, true, true, true, false, 32)),
 		BelongsToUser: fake.UUID(),
-		CreatedAt:     uint64(uint32(fake.Date().Unix())),
+		CreatedAt:     fake.Date(),
 	}
 }
 

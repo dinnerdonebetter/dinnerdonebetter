@@ -390,7 +390,7 @@ func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQuer
 	return nil
 }
 
-const archiveMealQuery = "UPDATE meals SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
+const archiveMealQuery = "UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
 
 // ArchiveMeal archives a meal from the database by its ID.
 func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error {

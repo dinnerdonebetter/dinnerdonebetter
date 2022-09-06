@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,13 +32,13 @@ type (
 	// ValidIngredientMeasurementUnit represents a valid ingredient measurement unit.
 	ValidIngredientMeasurementUnit struct {
 		_                        struct{}
-		ArchivedAt               *uint64              `json:"archivedAt"`
-		LastUpdatedAt            *uint64              `json:"lastUpdatedAt"`
+		ArchivedAt               *time.Time           `json:"archivedAt"`
+		LastUpdatedAt            *time.Time           `json:"lastUpdatedAt"`
 		Notes                    string               `json:"notes"`
 		ID                       string               `json:"id"`
 		MeasurementUnit          ValidMeasurementUnit `json:"measurementUnit"`
 		Ingredient               ValidIngredient      `json:"ingredient"`
-		CreatedAt                uint64               `json:"createdAt"`
+		CreatedAt                time.Time            `json:"createdAt"`
 		MinimumAllowableQuantity float32              `json:"minimumAllowableQuantity"`
 		MaximumAllowableQuantity float32              `json:"maximumAllowableQuantity"`
 	}

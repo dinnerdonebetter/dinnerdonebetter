@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -33,9 +34,9 @@ type (
 		ID                   string         `json:"id"`
 		RecipeStep           RecipeStep     `json:"recipeStep"`
 		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
-		CannotCompleteBefore uint64         `json:"cannotCompleteBefore"`
-		CannotCompleteAfter  uint64         `json:"cannotCompleteAfter"`
-		CreatedAt            uint64         `json:"createdAt"`
+		CannotCompleteBefore time.Time      `json:"cannotCompleteBefore"`
+		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
+		CreatedAt            time.Time      `json:"createdAt"`
 	}
 
 	// AdvancedPrepStepList represents a list of valid preparations.
@@ -48,13 +49,13 @@ type (
 	// AdvancedPrepStepDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	AdvancedPrepStepDatabaseCreationInput struct {
 		_                    struct{}
-		CompletedAt          *uint64 `json:"completedAt"`
-		MealPlanOptionID     string  `json:"mealPlanOptionID"`
-		RecipeStepID         string  `json:"recipeStepID"`
-		ID                   string  `json:"id"`
-		CannotCompleteBefore uint64  `json:"cannotCompleteBefore"`
-		CannotCompleteAfter  uint64  `json:"cannotCompleteAfter"`
-		CreatedAt            uint64  `json:"createdAt"`
+		CompletedAt          *uint64   `json:"completedAt"`
+		MealPlanOptionID     string    `json:"mealPlanOptionID"`
+		RecipeStepID         string    `json:"recipeStepID"`
+		ID                   string    `json:"id"`
+		CannotCompleteBefore time.Time `json:"cannotCompleteBefore"`
+		CannotCompleteAfter  time.Time `json:"cannotCompleteAfter"`
+		CreatedAt            time.Time `json:"createdAt"`
 	}
 
 	// AdvancedPrepStepDataManager describes a structure capable of storing valid preparations permanently.

@@ -422,7 +422,7 @@ UPDATE recipe_step_ingredients SET
 	product_of_recipe_step = $8,
 	recipe_step_product_id = $9,
 	ingredient_notes = $10,
-	last_updated_at = extract(epoch FROM NOW()) 
+	last_updated_at = NOW() 
 WHERE archived_at IS NULL AND belongs_to_recipe_step = $11
 AND id = $12
 `
@@ -463,7 +463,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 	return nil
 }
 
-const archiveRecipeStepIngredientQuery = "UPDATE recipe_step_ingredients SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
+const archiveRecipeStepIngredientQuery = "UPDATE recipe_step_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
 
 // ArchiveRecipeStepIngredient archives a recipe step ingredient from the database by its ID.
 func (q *Querier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID string) error {

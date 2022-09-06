@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -36,8 +37,8 @@ type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
 		_                                  struct{}
-		LastUpdatedAt                      *uint64              `json:"lastUpdatedAt"`
-		ArchivedAt                         *uint64              `json:"archivedAt"`
+		LastUpdatedAt                      *time.Time           `json:"lastUpdatedAt"`
+		ArchivedAt                         *time.Time           `json:"archivedAt"`
 		ID                                 string               `json:"id"`
 		Name                               string               `json:"name"`
 		Type                               string               `json:"type"`
@@ -45,7 +46,7 @@ type (
 		BelongsToRecipeStep                string               `json:"belongsToRecipeStep"`
 		StorageInstructions                string               `json:"storageInstructions"`
 		MeasurementUnit                    ValidMeasurementUnit `json:"measurementUnit"`
-		CreatedAt                          uint64               `json:"createdAt"`
+		CreatedAt                          time.Time            `json:"createdAt"`
 		MaximumQuantity                    float32              `json:"maximumQuantity"`
 		MaximumStorageDurationInSeconds    uint32               `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius float32              `json:"minimumStorageTemperatureInCelsius"`

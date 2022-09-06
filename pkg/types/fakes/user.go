@@ -16,6 +16,8 @@ import (
 
 // BuildFakeUser builds a faked User.
 func BuildFakeUser() *types.User {
+	fakeDate := fake.Date()
+
 	return &types.User{
 		ID:                        ksuid.New().String(),
 		EmailAddress:              fake.Email(),
@@ -24,9 +26,9 @@ func BuildFakeUser() *types.User {
 		BirthMonth:                func(x uint8) *uint8 { return &x }(fake.Uint8()),
 		AccountStatus:             types.GoodStandingUserAccountStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
-		TwoFactorSecretVerifiedAt: func(i uint64) *uint64 { return &i }(uint64(uint32(fake.Date().Unix()))),
+		TwoFactorSecretVerifiedAt: &fakeDate,
 		ServiceRoles:              []string{authorization.ServiceUserRole.String()},
-		CreatedAt:                 uint64(uint32(fake.Date().Unix())),
+		CreatedAt:                 fake.Date(),
 	}
 }
 
@@ -200,8 +202,8 @@ func BuildFakePasswordResetToken() *types.PasswordResetToken {
 		ID:            ksuid.New().String(),
 		Token:         fake.UUID(),
 		BelongsToUser: ksuid.New().String(),
-		ExpiresAt:     uint64(uint32(fakeDate.Add(30 * time.Minute).Unix())),
-		CreatedAt:     uint64(uint32(fakeDate.Unix())),
+		ExpiresAt:     fakeDate.Add(30 * time.Minute),
+		CreatedAt:     fakeDate,
 	}
 }
 
@@ -223,7 +225,7 @@ func BuildFakePasswordResetTokenDatabaseCreationInput() *types.PasswordResetToke
 		ID:            ksuid.New().String(),
 		Token:         fake.UUID(),
 		BelongsToUser: ksuid.New().String(),
-		ExpiresAt:     uint64(uint32(time.Now().Add(30 * time.Minute).Unix())),
+		ExpiresAt:     time.Now().Add(30 * time.Minute),
 	}
 }
 

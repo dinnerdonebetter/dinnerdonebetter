@@ -37,7 +37,7 @@ type Querier struct {
 	tracer        tracing.Tracer
 	sqlBuilder    squirrel.StatementBuilderType
 	logger        logging.Logger
-	timeFunc      func() uint64
+	timeFunc      func() time.Time
 	config        *dbconfig.Config
 	db            *sql.DB
 	connectionURL string
@@ -147,11 +147,11 @@ func (q *Querier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool) {
 	return false
 }
 
-func defaultTimeFunc() uint64 {
-	return uint64(time.Now().Unix())
+func defaultTimeFunc() time.Time {
+	return time.Now()
 }
 
-func (q *Querier) currentTime() uint64 {
+func (q *Querier) currentTime() time.Time {
 	if q == nil || q.timeFunc == nil {
 		return defaultTimeFunc()
 	}

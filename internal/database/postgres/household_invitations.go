@@ -662,8 +662,8 @@ const setInvitationStatusQuery = `
 UPDATE household_invitations SET
 	status = $1,
 	status_note = $2,
-	last_updated_at = extract(epoch FROM NOW()),
-	archived_at = extract(epoch FROM NOW())
+	last_updated_at = NOW(),
+	archived_at = NOW()
 WHERE archived_at IS NULL
 AND id = $3
 `
@@ -759,7 +759,7 @@ func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvita
 const attachInvitationsToUserIDQuery = `
 UPDATE household_invitations SET
 	to_user = $1,
-	last_updated_at = extract(epoch FROM NOW())
+	last_updated_at = NOW()
 WHERE archived_at IS NULL
 AND to_email = LOWER($2)
 `

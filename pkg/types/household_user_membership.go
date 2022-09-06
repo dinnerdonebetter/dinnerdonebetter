@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -23,28 +24,28 @@ type (
 	HouseholdUserMembership struct {
 		_ struct{}
 
-		ArchivedAt         *uint64  `json:"archivedAt"`
-		LastUpdatedAt      *uint64  `json:"lastUpdatedAt"`
-		ID                 string   `json:"id"`
-		BelongsToUser      string   `json:"belongsToUser"`
-		BelongsToHousehold string   `json:"belongsToHousehold"`
-		HouseholdRoles     []string `json:"householdRole"`
-		CreatedAt          uint64   `json:"createdAt"`
-		DefaultHousehold   bool     `json:"defaultHousehold"`
+		ArchivedAt         *time.Time `json:"archivedAt"`
+		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
+		ID                 string     `json:"id"`
+		BelongsToUser      string     `json:"belongsToUser"`
+		BelongsToHousehold string     `json:"belongsToHousehold"`
+		HouseholdRoles     []string   `json:"householdRole"`
+		CreatedAt          time.Time  `json:"createdAt"`
+		DefaultHousehold   bool       `json:"defaultHousehold"`
 	}
 
 	// HouseholdUserMembershipWithUser defines a relationship between a user and a household.
 	HouseholdUserMembershipWithUser struct {
 		_ struct{}
 
-		ArchivedAt         *uint64  `json:"archivedAt"`
-		LastUpdatedAt      *uint64  `json:"lastUpdatedAt"`
-		ID                 string   `json:"id"`
-		BelongsToUser      *User    `json:"belongsToUser"`
-		BelongsToHousehold string   `json:"belongsToHousehold"`
-		HouseholdRoles     []string `json:"householdRole"`
-		CreatedAt          uint64   `json:"createdAt"`
-		DefaultHousehold   bool     `json:"defaultHousehold"`
+		ArchivedAt         *time.Time `json:"archivedAt"`
+		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
+		ID                 string     `json:"id"`
+		BelongsToUser      *User      `json:"belongsToUser"`
+		BelongsToHousehold string     `json:"belongsToHousehold"`
+		HouseholdRoles     []string   `json:"householdRole"`
+		CreatedAt          time.Time  `json:"createdAt"`
+		DefaultHousehold   bool       `json:"defaultHousehold"`
 	}
 
 	// HouseholdUserMembershipList represents a list of household user memberships.

@@ -653,7 +653,7 @@ const updateUserQuery = `UPDATE users SET
 	two_factor_secret_verified_at = $5,
 	birth_day = $6,
 	birth_month = $7,
-	last_updated_at = extract(epoch FROM NOW()) 
+	last_updated_at = NOW() 
 WHERE archived_at IS NULL 
 AND id = $8
 `
@@ -695,8 +695,8 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 const updateUserPasswordQuery = `UPDATE users SET
 	hashed_password = $1,
 	requires_password_change = $2,
-	password_last_changed_at = extract(epoch FROM NOW()),
-	last_updated_at = extract(epoch FROM NOW())
+	password_last_changed_at = NOW(),
+	last_updated_at = NOW()
 WHERE archived_at IS NULL
 AND id = $3
 `
@@ -772,7 +772,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 
 /* #nosec G101 */
 const markUserTwoFactorSecretAsVerified = `UPDATE users SET
-	two_factor_secret_verified_at = extract(epoch FROM NOW()),
+	two_factor_secret_verified_at = NOW(),
 	user_account_status = $1
 WHERE archived_at IS NULL
 AND id = $2
@@ -805,13 +805,13 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 }
 
 const archiveUserQuery = `UPDATE users SET
-	archived_at = extract(epoch FROM NOW())
+	archived_at = NOW()
 WHERE archived_at IS NULL
 AND id = $1
 `
 
 const archiveMembershipsQuery = `UPDATE household_user_memberships SET
-	archived_at = extract(epoch FROM NOW())
+	archived_at = NOW()
 WHERE archived_at IS NULL
 AND belongs_to_user = $1
 `

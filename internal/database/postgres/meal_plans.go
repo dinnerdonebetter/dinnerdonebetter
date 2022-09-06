@@ -138,7 +138,7 @@ func (q *Querier) scanFullMealPlan(ctx context.Context, scan database.Scanner) (
 		&nmpov.Notes,
 		&nmpov.ByUser,
 		&nmpov.CreatedAt,
-		&nmpov.LastUpdatedAT,
+		&nmpov.LastUpdatedAt,
 		&nmpov.ArchivedAt,
 		&nmpov.BelongsToMealPlanOption,
 		&mealPlanOption.Meal.ID,
@@ -157,15 +157,21 @@ func (q *Querier) scanFullMealPlan(ctx context.Context, scan database.Scanner) (
 
 	if nmpov.ID != nil {
 		mealPlanOptionVote = &types.MealPlanOptionVote{
-			LastUpdatedAt:           nmpov.LastUpdatedAT,
-			ArchivedAt:              nmpov.ArchivedAt,
 			ID:                      *nmpov.ID,
 			Notes:                   *nmpov.Notes,
 			BelongsToMealPlanOption: *nmpov.BelongsToMealPlanOption,
 			ByUser:                  *nmpov.ByUser,
-			CreatedAt:               *nmpov.CreatedAt,
 			Rank:                    *nmpov.Rank,
 			Abstain:                 *nmpov.Abstain,
+		}
+		if nmpov.CreatedAt.Valid {
+			mealPlanOptionVote.CreatedAt = nmpov.CreatedAt.Time
+		}
+		if nmpov.LastUpdatedAt.Valid {
+			mealPlanOptionVote.LastUpdatedAt = &nmpov.LastUpdatedAt.Time
+		}
+		if nmpov.ArchivedAt.Valid {
+			mealPlanOptionVote.ArchivedAt = &nmpov.ArchivedAt.Time
 		}
 	}
 
@@ -262,7 +268,7 @@ ORDER BY meal_plan_options.id
 
 const getMealPlanPastVotingDeadlineQuery = baseGetMealPlanQuery + `
 AND meal_plans.status = 'awaiting_votes'
-AND extract(epoch from NOW()) > meal_plans.voting_deadline
+AND NOW() > meal_plans.voting_deadline
 ORDER BY meal_plan_options.id
 `
 
@@ -476,7 +482,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 	return x, nil
 }
 
-const updateMealPlanQuery = "UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, starts_at = $4, ends_at = $5, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_household = $6 AND id = $7"
+const updateMealPlanQuery = "UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, starts_at = $4, ends_at = $5, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $6 AND id = $7"
 
 // UpdateMealPlan updates a particular meal plan.
 func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
@@ -510,7 +516,7 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 	return nil
 }
 
-const archiveMealPlanQuery = "UPDATE meal_plans SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_household = $1 AND id = $2"
+const archiveMealPlanQuery = "UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $1 AND id = $2"
 
 // ArchiveMealPlan archives a meal plan from the database by its ID.
 func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {

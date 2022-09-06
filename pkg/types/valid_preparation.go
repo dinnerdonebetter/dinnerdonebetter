@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,17 +32,17 @@ type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
 		_                        struct{}
-		ArchivedAt               *uint64 `json:"archivedAt"`
-		LastUpdatedAt            *uint64 `json:"lastUpdatedAt"`
-		Name                     string  `json:"name"`
-		Description              string  `json:"description"`
-		IconPath                 string  `json:"iconPath"`
-		PastTense                string  `json:"pastTense"`
-		ID                       string  `json:"id"`
-		CreatedAt                uint64  `json:"createdAt"`
-		YieldsNothing            bool    `json:"yieldsNothing"`
-		RestrictToIngredients    bool    `json:"restrictToIngredients"`
-		ZeroIngredientsAllowable bool    `json:"zeroIngredientsAllowable"`
+		ArchivedAt               *time.Time `json:"archivedAt"`
+		LastUpdatedAt            *time.Time `json:"lastUpdatedAt"`
+		Name                     string     `json:"name"`
+		Description              string     `json:"description"`
+		IconPath                 string     `json:"iconPath"`
+		PastTense                string     `json:"pastTense"`
+		ID                       string     `json:"id"`
+		CreatedAt                time.Time  `json:"createdAt"`
+		YieldsNothing            bool       `json:"yieldsNothing"`
+		RestrictToIngredients    bool       `json:"restrictToIngredients"`
+		ZeroIngredientsAllowable bool       `json:"zeroIngredientsAllowable"`
 	}
 
 	// ValidPreparationList represents a list of valid preparations.

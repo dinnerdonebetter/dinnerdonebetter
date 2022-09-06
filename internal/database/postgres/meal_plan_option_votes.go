@@ -295,7 +295,7 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 	return votes, nil
 }
 
-const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6"
+const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6"
 
 // UpdateMealPlanOptionVote updates a particular meal plan option vote.
 func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.MealPlanOptionVote) error {
@@ -327,7 +327,7 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 	return nil
 }
 
-const archiveMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2"
+const archiveMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2"
 
 // ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its ID.
 func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionID, mealPlanOptionVoteID string) error {

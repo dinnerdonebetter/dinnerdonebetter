@@ -15,7 +15,7 @@ func BuildFakeHouseholdUserMembership() *types.HouseholdUserMembership {
 		BelongsToUser:      fake.UUID(),
 		BelongsToHousehold: fake.UUID(),
 		HouseholdRoles:     []string{authorization.HouseholdMemberRole.String()},
-		CreatedAt:          0,
+		CreatedAt:          fake.Date(),
 		ArchivedAt:         nil,
 	}
 }
@@ -30,7 +30,7 @@ func BuildFakeHouseholdUserMembershipWithUser() *types.HouseholdUserMembershipWi
 		BelongsToUser:      u,
 		BelongsToHousehold: fake.UUID(),
 		HouseholdRoles:     []string{authorization.HouseholdMemberRole.String()},
-		CreatedAt:          0,
+		CreatedAt:          fake.Date(),
 		ArchivedAt:         nil,
 	}
 }

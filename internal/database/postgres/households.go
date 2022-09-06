@@ -538,7 +538,7 @@ SET
     contact_email = $2,
     contact_phone = $3,
     time_zone = $4,
-    last_updated_at = extract(epoch FROM NOW()) 
+    last_updated_at = NOW() 
 WHERE archived_at IS NULL 
   AND belongs_to_user = $5 
   AND id = $6
@@ -576,7 +576,7 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	return nil
 }
 
-const archiveHouseholdQuery = `UPDATE households SET last_updated_at = extract(epoch FROM NOW()), archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2`
+const archiveHouseholdQuery = `UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2`
 
 // ArchiveHousehold archives a household from the database by its ID.
 func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {

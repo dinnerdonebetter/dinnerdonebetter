@@ -460,7 +460,7 @@ SET
 	minimum_storage_temperature_in_celsius = $9,
 	maximum_storage_temperature_in_celsius = $10,
 	storage_instructions = $11,
-    last_updated_at = extract(epoch FROM NOW())
+    last_updated_at = NOW()
 WHERE archived_at IS NULL
   AND belongs_to_recipe_step = $12
   AND id = $13
@@ -503,7 +503,7 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 	return nil
 }
 
-const archiveRecipeStepProductQuery = "UPDATE recipe_step_products SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
+const archiveRecipeStepProductQuery = "UPDATE recipe_step_products SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
 
 // ArchiveRecipeStepProduct archives a recipe step product from the database by its ID.
 func (q *Querier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error {

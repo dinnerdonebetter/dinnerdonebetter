@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/require"
@@ -1009,7 +1010,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectCommit()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1092,7 +1093,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectCommit()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1128,7 +1129,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1188,7 +1189,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1257,7 +1258,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1298,7 +1299,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 

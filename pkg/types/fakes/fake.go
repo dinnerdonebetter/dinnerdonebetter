@@ -37,8 +37,8 @@ func BuildFakeNumericID() uint64 {
 }
 
 // BuildFakeTime builds a fake time.
-func BuildFakeTime() uint64 {
-	return fake.Uint64()
+func BuildFakeTime() time.Time {
+	return fake.Date()
 }
 
 // buildUniqueString builds a fake string.

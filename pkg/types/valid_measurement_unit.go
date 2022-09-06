@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	"github.com/segmentio/ksuid"
 
@@ -33,18 +34,18 @@ type (
 	// ValidMeasurementUnit represents a valid measurement unit.
 	ValidMeasurementUnit struct {
 		_             struct{}
-		LastUpdatedAt *uint64 `json:"lastUpdatedAt"`
-		ArchivedAt    *uint64 `json:"archivedAt"`
-		Name          string  `json:"name"`
-		Description   string  `json:"description"`
-		ID            string  `json:"id"`
-		IconPath      string  `json:"iconPath"`
-		PluralName    string  `json:"pluralName"`
-		CreatedAt     uint64  `json:"createdAt"`
-		Volumetric    bool    `json:"volumetric"`
-		Universal     bool    `json:"universal"`
-		Metric        bool    `json:"metric"`
-		Imperial      bool    `json:"imperial"`
+		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time `json:"archivedAt"`
+		Name          string     `json:"name"`
+		Description   string     `json:"description"`
+		ID            string     `json:"id"`
+		IconPath      string     `json:"iconPath"`
+		PluralName    string     `json:"pluralName"`
+		CreatedAt     time.Time  `json:"createdAt"`
+		Volumetric    bool       `json:"volumetric"`
+		Universal     bool       `json:"universal"`
+		Metric        bool       `json:"metric"`
+		Imperial      bool       `json:"imperial"`
 	}
 
 	// ValidMeasurementUnitList represents a list of valid measurement units.
@@ -57,44 +58,44 @@ type (
 	// ValidMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitCreationRequestInput struct {
 		_           struct{}
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
-		PluralName  string `json:"pluralName"`
-		CreatedAt   uint64 `json:"createdAt"`
-		Volumetric  bool   `json:"volumetric"`
-		Universal   bool   `json:"universal"`
-		Metric      bool   `json:"metric"`
-		Imperial    bool   `json:"imperial"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+		IconPath    string    `json:"iconPath"`
+		PluralName  string    `json:"pluralName"`
+		CreatedAt   time.Time `json:"createdAt"`
+		Volumetric  bool      `json:"volumetric"`
+		Universal   bool      `json:"universal"`
+		Metric      bool      `json:"metric"`
+		Imperial    bool      `json:"imperial"`
 	}
 
 	// ValidMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitDatabaseCreationInput struct {
 		_           struct{}
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		ID          string `json:"id"`
-		IconPath    string `json:"iconPath"`
-		PluralName  string `json:"pluralName"`
-		CreatedAt   uint64 `json:"createdAt"`
-		Volumetric  bool   `json:"volumetric"`
-		Universal   bool   `json:"universal"`
-		Metric      bool   `json:"metric"`
-		Imperial    bool   `json:"imperial"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+		ID          string    `json:"id"`
+		IconPath    string    `json:"iconPath"`
+		PluralName  string    `json:"pluralName"`
+		CreatedAt   time.Time `json:"createdAt"`
+		Volumetric  bool      `json:"volumetric"`
+		Universal   bool      `json:"universal"`
+		Metric      bool      `json:"metric"`
+		Imperial    bool      `json:"imperial"`
 	}
 
 	// ValidMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid measurement units.
 	ValidMeasurementUnitUpdateRequestInput struct {
 		_           struct{}
-		Name        *string `json:"name"`
-		Description *string `json:"description"`
-		IconPath    *string `json:"iconPath"`
-		CreatedAt   *uint64 `json:"createdAt"`
-		Volumetric  *bool   `json:"volumetric"`
-		Universal   *bool   `json:"universal"`
-		Metric      *bool   `json:"metric"`
-		Imperial    *bool   `json:"imperial"`
-		PluralName  *string `json:"pluralName"`
+		Name        *string    `json:"name"`
+		Description *string    `json:"description"`
+		IconPath    *string    `json:"iconPath"`
+		CreatedAt   *time.Time `json:"createdAt"`
+		Volumetric  *bool      `json:"volumetric"`
+		Universal   *bool      `json:"universal"`
+		Metric      *bool      `json:"metric"`
+		Imperial    *bool      `json:"imperial"`
+		PluralName  *string    `json:"pluralName"`
 	}
 
 	// ValidMeasurementUnitDataManager describes a structure capable of storing valid measurement units permanently.

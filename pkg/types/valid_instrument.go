@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,29 +32,29 @@ type (
 	// ValidInstrument represents a valid instrument.
 	ValidInstrument struct {
 		_                struct{}
-		LastUpdatedAt    *uint64 `json:"lastUpdatedAt"`
-		ArchivedAt       *uint64 `json:"archivedAt"`
-		Description      string  `json:"description"`
-		IconPath         string  `json:"iconPath"`
-		ID               string  `json:"id"`
-		Name             string  `json:"name"`
-		PluralName       string  `json:"pluralName"`
-		UsableForStorage bool    `json:"usedForStorage"`
-		CreatedAt        uint64  `json:"createdAt"`
+		LastUpdatedAt    *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt       *time.Time `json:"archivedAt"`
+		Description      string     `json:"description"`
+		IconPath         string     `json:"iconPath"`
+		ID               string     `json:"id"`
+		Name             string     `json:"name"`
+		PluralName       string     `json:"pluralName"`
+		UsableForStorage bool       `json:"usedForStorage"`
+		CreatedAt        time.Time  `json:"createdAt"`
 	}
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
 	NullableValidInstrument struct {
 		_                struct{}
-		LastUpdatedAt    *uint64
-		ArchivedAt       *uint64
+		LastUpdatedAt    *time.Time
+		ArchivedAt       *time.Time
 		Description      *string
 		IconPath         *string
 		ID               *string
 		Name             *string
 		PluralName       *string
 		UsableForStorage *bool
-		CreatedAt        *uint64
+		CreatedAt        *time.Time
 	}
 
 	// ValidInstrumentList represents a list of valid instruments.

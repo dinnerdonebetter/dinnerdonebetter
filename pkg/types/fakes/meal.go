@@ -18,7 +18,7 @@ func BuildFakeMeal() *types.Meal {
 		ID:            ksuid.New().String(),
 		Name:          buildUniqueString(),
 		Description:   buildUniqueString(),
-		CreatedAt:     uint64(uint32(fake.Date().Unix())),
+		CreatedAt:     fake.Date(),
 		CreatedByUser: ksuid.New().String(),
 		Recipes:       recipes,
 	}

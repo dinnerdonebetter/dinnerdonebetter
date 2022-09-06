@@ -330,7 +330,7 @@ SET
 	restrict_to_ingredients = $5,
 	zero_ingredients_allowable = $6,
 	past_tense = $7,
-    last_updated_at = extract(epoch FROM NOW())
+    last_updated_at = NOW()
 WHERE archived_at IS NULL 
   AND id = $8
 `
@@ -367,7 +367,7 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	return nil
 }
 
-const archiveValidPreparationQuery = "UPDATE valid_preparations SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
+const archiveValidPreparationQuery = "UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidPreparation archives a valid preparation from the database by its ID.
 func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {

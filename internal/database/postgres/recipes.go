@@ -602,7 +602,7 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 	}
 }
 
-const updateRecipeQuery = `UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, yields_portions = $5, seal_of_approval = $6, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND created_by_user = $7 AND id = $8`
+const updateRecipeQuery = `UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, yields_portions = $5, seal_of_approval = $6, last_updated_at = NOW() WHERE archived_at IS NULL AND created_by_user = $7 AND id = $8`
 
 // UpdateRecipe updates a particular recipe.
 func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
@@ -637,7 +637,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	return nil
 }
 
-const archiveRecipeQuery = "UPDATE recipes SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
+const archiveRecipeQuery = "UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
 
 // ArchiveRecipe archives a recipe from the database by its ID.
 func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {

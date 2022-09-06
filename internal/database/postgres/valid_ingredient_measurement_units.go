@@ -501,7 +501,7 @@ SET
     valid_ingredient_id = $3,
 	minimum_allowable_quantity = $4,
 	maximum_allowable_quantity = $5,
-    last_updated_at = extract(epoch FROM NOW())
+    last_updated_at = NOW()
 WHERE archived_at IS NULL 
   AND id = $6
 `
@@ -536,7 +536,7 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 	return nil
 }
 
-const archiveValidIngredientMeasurementUnitQuery = "UPDATE valid_ingredient_measurement_units SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
+const archiveValidIngredientMeasurementUnitQuery = "UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its ID.
 func (q *Querier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {

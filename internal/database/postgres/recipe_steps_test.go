@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -446,7 +447,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 
@@ -496,7 +497,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(expectedErr)
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 
@@ -620,7 +621,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				WillReturnResult(newArbitraryDatabaseResult())
 		}
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 
@@ -685,7 +686,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 
@@ -777,7 +778,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 

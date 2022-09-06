@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,33 +32,33 @@ type (
 	// ValidIngredient represents a valid ingredient.
 	ValidIngredient struct {
 		_                                       struct{}
-		LastUpdatedAt                           *uint64 `json:"lastUpdatedAt"`
-		ArchivedAt                              *uint64 `json:"archivedAt"`
-		Name                                    string  `json:"name"`
-		Description                             string  `json:"description"`
-		Warning                                 string  `json:"warning"`
-		ID                                      string  `json:"id"`
-		IconPath                                string  `json:"iconPath"`
-		PluralName                              string  `json:"pluralName"`
-		StorageInstructions                     string  `json:"storageInstructions"`
-		CreatedAt                               uint64  `json:"createdAt"`
-		MaximumIdealStorageTemperatureInCelsius float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		MinimumIdealStorageTemperatureInCelsius float32 `json:"minimumIdealStorageTemperatureInCelsius"`
-		ContainsDairy                           bool    `json:"containsDairy"`
-		ContainsShellfish                       bool    `json:"containsShellfish"`
-		AnimalFlesh                             bool    `json:"animalFlesh"`
-		IsMeasuredVolumetrically                bool    `json:"isMeasuredVolumetrically"`
-		IsLiquid                                bool    `json:"isLiquid"`
-		ContainsPeanut                          bool    `json:"containsPeanut"`
-		ContainsTreeNut                         bool    `json:"containsTreeNut"`
-		ContainsEgg                             bool    `json:"containsEgg"`
-		ContainsWheat                           bool    `json:"containsWheat"`
-		ContainsSoy                             bool    `json:"containsSoy"`
-		AnimalDerived                           bool    `json:"animalDerived"`
-		RestrictToPreparations                  bool    `json:"restrictToPreparations"`
-		ContainsSesame                          bool    `json:"containsSesame"`
-		ContainsFish                            bool    `json:"containsFish"`
-		ContainsGluten                          bool    `json:"containsGluten"`
+		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt                              *time.Time `json:"archivedAt"`
+		Name                                    string     `json:"name"`
+		Description                             string     `json:"description"`
+		Warning                                 string     `json:"warning"`
+		ID                                      string     `json:"id"`
+		IconPath                                string     `json:"iconPath"`
+		PluralName                              string     `json:"pluralName"`
+		StorageInstructions                     string     `json:"storageInstructions"`
+		CreatedAt                               time.Time  `json:"createdAt"`
+		MaximumIdealStorageTemperatureInCelsius float32    `json:"maximumIdealStorageTemperatureInCelsius"`
+		MinimumIdealStorageTemperatureInCelsius float32    `json:"minimumIdealStorageTemperatureInCelsius"`
+		ContainsDairy                           bool       `json:"containsDairy"`
+		ContainsShellfish                       bool       `json:"containsShellfish"`
+		AnimalFlesh                             bool       `json:"animalFlesh"`
+		IsMeasuredVolumetrically                bool       `json:"isMeasuredVolumetrically"`
+		IsLiquid                                bool       `json:"isLiquid"`
+		ContainsPeanut                          bool       `json:"containsPeanut"`
+		ContainsTreeNut                         bool       `json:"containsTreeNut"`
+		ContainsEgg                             bool       `json:"containsEgg"`
+		ContainsWheat                           bool       `json:"containsWheat"`
+		ContainsSoy                             bool       `json:"containsSoy"`
+		AnimalDerived                           bool       `json:"animalDerived"`
+		RestrictToPreparations                  bool       `json:"restrictToPreparations"`
+		ContainsSesame                          bool       `json:"containsSesame"`
+		ContainsFish                            bool       `json:"containsFish"`
+		ContainsGluten                          bool       `json:"containsGluten"`
 	}
 
 	// ValidIngredientList represents a list of valid ingredients.
