@@ -29,7 +29,7 @@ type (
 	FeatureFlagManager struct {
 		tracer tracing.Tracer
 		logger logging.Logger
-		client *ld.LDClient
+		client launchDarklyClient
 	}
 )
 
