@@ -79,7 +79,7 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 	return x, filteredCount, totalCount, nil
 }
 
-// scanAdvancedPrepSteps takes some database rows and turns them into a slice of valid instruments.
+// scanAdvancedPrepSteps takes some database rows and turns them into a slice of advanced prep steps.
 func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validInstruments []*types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -151,7 +151,7 @@ func (q *Querier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context, m
 //go:embed queries/advanced_prep_step_create.sql
 var createAdvancedPrepStepQuery string
 
-// CreateAdvancedPrepStep updates a user's household status.
+// CreateAdvancedPrepStep creates advanced prep steps.
 func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.AdvancedPrepStepDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

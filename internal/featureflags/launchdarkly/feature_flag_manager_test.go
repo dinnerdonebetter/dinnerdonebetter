@@ -2,12 +2,14 @@ package launchdarkly
 
 import (
 	"context"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/launchdarkly/go-sdk-common.v2/lduser"
+
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/launchdarkly/go-sdk-common.v2/lduser"
-	"testing"
 )
 
 func TestFeatureFlagManager_CanUseFeature(T *testing.T) {

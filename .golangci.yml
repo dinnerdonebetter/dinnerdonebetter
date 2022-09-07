@@ -402,6 +402,10 @@ issues:
       linters:
         - lll
 
+    - path: internal/featureflags/launchdarkly/mock_client.go
+      linters:
+        - gocritic
+
     - path: tests/testutil/testutils.go
       linters:
         - goerr113
