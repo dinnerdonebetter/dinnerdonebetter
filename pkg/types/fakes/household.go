@@ -25,7 +25,7 @@ func BuildFakeHousehold() *types.Household {
 		ContactEmail:               fake.Email(),
 		ContactPhone:               fake.PhoneFormatted(),
 		PaymentProcessorCustomerID: fake.UUID(),
-		CreatedAt:                  uint64(uint32(fake.Date().Unix())),
+		CreatedAt:                  fake.Date(),
 		BelongsToUser:              fake.UUID(),
 		Members:                    memberships,
 		TimeZone:                   types.DefaultHouseholdTimeZone,

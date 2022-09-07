@@ -37,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logger.Info("starting workers...")
+	logger.Info("starting meal plan finalizer workers...")
 
 	client := &http.Client{
 		Timeout: 5 * time.Second,
@@ -59,7 +59,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.Observability.Tracing.Jaeger.ServiceName = "workers"
+	cfg.Observability.Tracing.Jaeger.ServiceName = "meal_plan_finalizer_workers"
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
@@ -100,7 +100,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	choresWorker := workers.ProvideChoresWorker(
+	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
 		logger,
 		dataManager,
 		dataChangesPublisher,
@@ -109,7 +109,7 @@ func main() {
 		tracerProvider,
 	)
 
-	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, choresWorker.HandleMessage)
+	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, mealPlanFinalizationWorker.HandleMessage)
 	if err != nil {
 		log.Fatal(err)
 	}

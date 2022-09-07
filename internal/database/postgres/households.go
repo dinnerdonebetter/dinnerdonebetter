@@ -26,7 +26,7 @@ const (
 )
 
 var (
-	_ types.HouseholdDataManager = (*SQLQuerier)(nil)
+	_ types.HouseholdDataManager = (*Querier)(nil)
 
 	householdsTableColumns = []string{
 		"households.id",
@@ -60,7 +60,7 @@ var (
 )
 
 // scanHousehold takes a database Scanner (i.e. *sql.Row) and scans the result into a Household struct.
-func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, includeCounts bool) (household *types.Household, membership *types.HouseholdUserMembershipWithUser, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, includeCounts bool) (household *types.Household, membership *types.HouseholdUserMembershipWithUser, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -127,7 +127,7 @@ func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, i
 }
 
 // scanHouseholds takes some database rows and turns them into a slice of households.
-func (q *SQLQuerier) scanHouseholds(ctx context.Context, rows database.ResultIterator, includeCounts bool) (households []*types.Household, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanHouseholds(ctx context.Context, rows database.ResultIterator, includeCounts bool) (households []*types.Household, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -221,7 +221,7 @@ const getHouseholdQuery = `
 `
 
 // GetHousehold fetches a household from the database.
-func (q *SQLQuerier) GetHousehold(ctx context.Context, householdID, userID string) (*types.Household, error) {
+func (q *Querier) GetHousehold(ctx context.Context, householdID, userID string) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -308,7 +308,7 @@ const getHouseholdByIDQuery = `
 `
 
 // GetHouseholdByID fetches a household from the database by its ID.
-func (q *SQLQuerier) GetHouseholdByID(ctx context.Context, householdID string) (*types.Household, error) {
+func (q *Querier) GetHouseholdByID(ctx context.Context, householdID string) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -347,7 +347,7 @@ func (q *SQLQuerier) GetHouseholdByID(ctx context.Context, householdID string) (
 
 // buildGetHouseholdsQuery builds a SQL query selecting households that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
-func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {
+func (q *Querier) buildGetHouseholdsQuery(ctx context.Context, userID string, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -403,7 +403,7 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 }
 
 // getHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *SQLQuerier) getHouseholds(ctx context.Context, querier database.SQLQueryExecutor, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryExecutor, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -441,12 +441,12 @@ func (q *SQLQuerier) getHouseholds(ctx context.Context, querier database.SQLQuer
 }
 
 // GetHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *SQLQuerier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+func (q *Querier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
 	return q.getHouseholds(ctx, q.db, userID, false, filter)
 }
 
 // GetHouseholdsForAdmin fetches a list of households from the database that meet a particular filter for all users.
-func (q *SQLQuerier) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+func (q *Querier) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
 	return q.getHouseholds(ctx, q.db, userID, true, filter)
 }
 
@@ -460,7 +460,7 @@ const addUserToHouseholdDuringCreationQuery = `
 `
 
 // CreateHousehold creates a household in the database.
-func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
+func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -538,14 +538,14 @@ SET
     contact_email = $2,
     contact_phone = $3,
     time_zone = $4,
-    last_updated_at = extract(epoch FROM NOW()) 
+    last_updated_at = NOW() 
 WHERE archived_at IS NULL 
   AND belongs_to_user = $5 
   AND id = $6
 `
 
 // UpdateHousehold updates a particular household. Note that UpdateHousehold expects the provided input to have a valid ID.
-func (q *SQLQuerier) UpdateHousehold(ctx context.Context, updated *types.Household) error {
+func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -576,10 +576,10 @@ func (q *SQLQuerier) UpdateHousehold(ctx context.Context, updated *types.Househo
 	return nil
 }
 
-const archiveHouseholdQuery = `UPDATE households SET last_updated_at = extract(epoch FROM NOW()), archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2`
+const archiveHouseholdQuery = `UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2`
 
 // ArchiveHousehold archives a household from the database by its ID.
-func (q *SQLQuerier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {
+func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

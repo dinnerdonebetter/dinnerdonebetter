@@ -57,9 +57,24 @@ require (
 	gocloud.dev v0.23.0
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	google.golang.org/genproto v0.0.0-20220207185906-7721543eae58
+	gopkg.in/launchdarkly/go-sdk-common.v2 v2.5.1
+	gopkg.in/launchdarkly/go-server-sdk.v5 v5.10.0
 	gopkg.in/mikespook/gorbac.v2 v2.1.0
 	gopkg.in/segmentio/analytics-go.v3 v3.1.0
 	resenje.org/schulze v0.2.0
+)
+
+require (
+	github.com/gregjones/httpcache v0.0.0-20171119193500-2bcd89a1743f // indirect
+	github.com/josharian/intern v1.0.0 // indirect
+	github.com/launchdarkly/ccache v1.1.0 // indirect
+	github.com/launchdarkly/eventsource v1.6.2 // indirect
+	github.com/launchdarkly/go-semver v1.0.2 // indirect
+	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
+	gopkg.in/launchdarkly/go-jsonstream.v1 v1.0.1 // indirect
+	gopkg.in/launchdarkly/go-sdk-events.v1 v1.1.1 // indirect
+	gopkg.in/launchdarkly/go-server-sdk-evaluation.v1 v1.5.0 // indirect
 )
 
 require (

@@ -20,13 +20,29 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
+func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
+	t.Helper()
+
+	worker := ProvideMealPlanFinalizationWorker(
+		zerolog.NewZerologLogger(),
+		&database.MockDatabase{},
+		&mockpublishers.Publisher{},
+		&email.MockEmailer{},
+		&customerdata.MockCollector{},
+		tracing.NewNoopTracerProvider(),
+	)
+	assert.NotNil(t, worker)
+
+	return worker
+}
+
 func TestProvideChoresWorker(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideChoresWorker(
+		actual := ProvideMealPlanFinalizationWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},

@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/require"
@@ -130,7 +131,7 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Optional,
 			&step.CreatedAt,
 			&step.LastUpdatedAt,
-			&step.ArchivedAT,
+			&step.ArchivedAt,
 			&step.BelongsToRecipe,
 		)
 	}
@@ -256,7 +257,7 @@ func TestQuerier_RecipeExists(T *testing.T) {
 	})
 }
 
-func prepareMockToSuccessfullyGetRecipe(ctx context.Context, t *testing.T, recipe *types.Recipe, userID string, c *SQLQuerier, db *sqlmockExpecterWrapper) {
+func prepareMockToSuccessfullyGetRecipe(ctx context.Context, t *testing.T, recipe *types.Recipe, userID string, c *Querier, db *sqlmockExpecterWrapper) {
 	t.Helper()
 
 	var (
@@ -972,8 +973,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.Optional,
 					ingredient.IngredientID,
 					ingredient.MeasurementUnitID,
-					ingredient.MinimumQuantityValue,
-					ingredient.MaximumQuantityValue,
+					ingredient.MinimumQuantity,
+					ingredient.MaximumQuantity,
 					ingredient.QuantityNotes,
 					ingredient.ProductOfRecipeStep,
 					ingredient.RecipeStepProductID,
@@ -1009,7 +1010,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectCommit()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1092,7 +1093,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectCommit()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1128,7 +1129,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1188,7 +1189,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1257,7 +1258,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1298,7 +1299,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipe.CreatedAt
 		}
 
@@ -1543,20 +1544,20 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &pintoBeans.ID,
-							Name:                 "pinto beans",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 500,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &pintoBeans.ID,
+							Name:                "pinto beans",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     500,
+							ProductOfRecipeStep: false,
 						},
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &water.ID,
-							Name:                 "water",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 500,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &water.ID,
+							Name:                "water",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     500,
+							ProductOfRecipeStep: false,
 						},
 					},
 					Index: 0,
@@ -1575,20 +1576,20 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:         nil,
-							RecipeStepProductID:  nil,
-							Name:                 productName,
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 1000,
-							ProductOfRecipeStep:  true,
+							IngredientID:        nil,
+							RecipeStepProductID: nil,
+							Name:                productName,
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     1000,
+							ProductOfRecipeStep: true,
 						},
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &garlicPaste.ID,
-							Name:                 "garlic paste",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 10,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &garlicPaste.ID,
+							Name:                "garlic paste",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     10,
+							ProductOfRecipeStep: false,
 						},
 					},
 					Index: 1,
@@ -1618,17 +1619,17 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 
 			for _, ingredient := range step.Ingredients {
 				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
-					IngredientID:         ingredient.IngredientID,
-					ID:                   ingredient.ID,
-					BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
-					Name:                 ingredient.Name,
-					Optional:             ingredient.Optional,
-					RecipeStepProductID:  ingredient.RecipeStepProductID,
-					MeasurementUnitID:    ingredient.MeasurementUnit.ID,
-					QuantityNotes:        ingredient.QuantityNotes,
-					IngredientNotes:      ingredient.IngredientNotes,
-					MinimumQuantityValue: ingredient.MinimumQuantityValue,
-					ProductOfRecipeStep:  ingredient.ProductOfRecipeStep,
+					IngredientID:        ingredient.IngredientID,
+					ID:                  ingredient.ID,
+					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
+					Name:                ingredient.Name,
+					Optional:            ingredient.Optional,
+					RecipeStepProductID: ingredient.RecipeStepProductID,
+					MeasurementUnitID:   ingredient.MeasurementUnit.ID,
+					QuantityNotes:       ingredient.QuantityNotes,
+					IngredientNotes:     ingredient.IngredientNotes,
+					MinimumQuantity:     ingredient.MinimumQuantity,
+					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 			}
@@ -1646,8 +1647,8 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
 					StorageInstructions:                product.StorageInstructions,
 					BelongsToRecipeStep:                product.BelongsToRecipeStep,
-					MinimumQuantityValue:               product.MinimumQuantityValue,
-					MaximumQuantityValue:               product.MaximumQuantityValue,
+					MinimumQuantity:                    product.MinimumQuantity,
+					MaximumQuantity:                    product.MaximumQuantity,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -1689,20 +1690,20 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &pintoBeans.ID,
-							Name:                 "pinto beans",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 500,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &pintoBeans.ID,
+							Name:                "pinto beans",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     500,
+							ProductOfRecipeStep: false,
 						},
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &water.ID,
-							Name:                 "water",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 5,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &water.ID,
+							Name:                "water",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     5,
+							ProductOfRecipeStep: false,
 						},
 					},
 					Index: 0,
@@ -1721,20 +1722,20 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:         nil,
-							RecipeStepProductID:  nil,
-							Name:                 productName,
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 1000,
-							ProductOfRecipeStep:  true,
+							IngredientID:        nil,
+							RecipeStepProductID: nil,
+							Name:                productName,
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     1000,
+							ProductOfRecipeStep: true,
 						},
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &garlicPaste.ID,
-							Name:                 "garlic paste",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 10,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &garlicPaste.ID,
+							Name:                "garlic paste",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     10,
+							ProductOfRecipeStep: false,
 						},
 					},
 					Index: 1,
@@ -1754,20 +1755,20 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &pintoBeans.ID,
-							Name:                 "pinto beans",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 500,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &pintoBeans.ID,
+							Name:                "pinto beans",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     500,
+							ProductOfRecipeStep: false,
 						},
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &water.ID,
-							Name:                 "water",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 5,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &water.ID,
+							Name:                "water",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     5,
+							ProductOfRecipeStep: false,
 						},
 					},
 					Index: 2,
@@ -1786,20 +1787,20 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:         nil,
-							RecipeStepProductID:  nil,
-							Name:                 productName,
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 1000,
-							ProductOfRecipeStep:  true,
+							IngredientID:        nil,
+							RecipeStepProductID: nil,
+							Name:                productName,
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     1000,
+							ProductOfRecipeStep: true,
 						},
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         nil,
-							Name:                 "pressure cooked beans",
-							MeasurementUnit:      *fakes.BuildFakeValidMeasurementUnit(),
-							MinimumQuantityValue: 10,
-							ProductOfRecipeStep:  true,
+							RecipeStepProductID: nil,
+							IngredientID:        nil,
+							Name:                "pressure cooked beans",
+							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
+							MinimumQuantity:     10,
+							ProductOfRecipeStep: true,
 						},
 					},
 					Index: 3,
@@ -1829,16 +1830,16 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 
 			for _, ingredient := range step.Ingredients {
 				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
-					IngredientID:         ingredient.IngredientID,
-					ID:                   ingredient.ID,
-					BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
-					Name:                 ingredient.Name,
-					RecipeStepProductID:  ingredient.RecipeStepProductID,
-					MeasurementUnitID:    ingredient.MeasurementUnit.ID,
-					QuantityNotes:        ingredient.QuantityNotes,
-					IngredientNotes:      ingredient.IngredientNotes,
-					MinimumQuantityValue: ingredient.MinimumQuantityValue,
-					ProductOfRecipeStep:  ingredient.ProductOfRecipeStep,
+					IngredientID:        ingredient.IngredientID,
+					ID:                  ingredient.ID,
+					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
+					Name:                ingredient.Name,
+					RecipeStepProductID: ingredient.RecipeStepProductID,
+					MeasurementUnitID:   ingredient.MeasurementUnit.ID,
+					QuantityNotes:       ingredient.QuantityNotes,
+					IngredientNotes:     ingredient.IngredientNotes,
+					MinimumQuantity:     ingredient.MinimumQuantity,
+					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 			}
@@ -1856,8 +1857,8 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
 					StorageInstructions:                product.StorageInstructions,
 					BelongsToRecipeStep:                product.BelongsToRecipeStep,
-					MinimumQuantityValue:               product.MinimumQuantityValue,
-					MaximumQuantityValue:               product.MaximumQuantityValue,
+					MinimumQuantity:                    product.MinimumQuantity,
+					MaximumQuantity:                    product.MaximumQuantity,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -1918,12 +1919,12 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					Preparation: *line,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &aluminumFoil.ID,
-							Name:                 "aluminum foil",
-							MeasurementUnit:      *sheet,
-							MinimumQuantityValue: 1,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &aluminumFoil.ID,
+							Name:                "aluminum foil",
+							MeasurementUnit:     *sheet,
+							MinimumQuantity:     1,
+							ProductOfRecipeStep: false,
 						},
 					},
 					Index: 0,
@@ -1950,12 +1951,12 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					Preparation: *bake,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID:  nil,
-							IngredientID:         &asparagus.ID,
-							Name:                 "asparagus",
-							MeasurementUnit:      *grams,
-							MinimumQuantityValue: 1000,
-							ProductOfRecipeStep:  false,
+							RecipeStepProductID: nil,
+							IngredientID:        &asparagus.ID,
+							Name:                "asparagus",
+							MeasurementUnit:     *grams,
+							MinimumQuantity:     1000,
+							ProductOfRecipeStep: false,
 						},
 					},
 					Index: 1,
@@ -1985,16 +1986,16 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 
 			for _, ingredient := range step.Ingredients {
 				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
-					IngredientID:         ingredient.IngredientID,
-					ID:                   ingredient.ID,
-					BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
-					Name:                 ingredient.Name,
-					RecipeStepProductID:  ingredient.RecipeStepProductID,
-					MeasurementUnitID:    ingredient.MeasurementUnit.ID,
-					QuantityNotes:        ingredient.QuantityNotes,
-					IngredientNotes:      ingredient.IngredientNotes,
-					MinimumQuantityValue: ingredient.MinimumQuantityValue,
-					ProductOfRecipeStep:  ingredient.ProductOfRecipeStep,
+					IngredientID:        ingredient.IngredientID,
+					ID:                  ingredient.ID,
+					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
+					Name:                ingredient.Name,
+					RecipeStepProductID: ingredient.RecipeStepProductID,
+					MeasurementUnitID:   ingredient.MeasurementUnit.ID,
+					QuantityNotes:       ingredient.QuantityNotes,
+					IngredientNotes:     ingredient.IngredientNotes,
+					MinimumQuantity:     ingredient.MinimumQuantity,
+					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 			}
@@ -2033,8 +2034,8 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					MaximumStorageTemperatureInCelsius: product.MaximumStorageTemperatureInCelsius,
 					StorageInstructions:                product.StorageInstructions,
 					BelongsToRecipeStep:                product.BelongsToRecipeStep,
-					MinimumQuantityValue:               product.MinimumQuantityValue,
-					MaximumQuantityValue:               product.MaximumQuantityValue,
+					MinimumQuantity:                    product.MinimumQuantity,
+					MaximumQuantity:                    product.MaximumQuantity,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}

@@ -19,9 +19,9 @@ func TestAdvancedPrepStepDatabaseCreationInput_ValidateWithContext(T *testing.T)
 			ID:                   fake.LoremIpsumSentence(exampleQuantity),
 			MealPlanOptionID:     fake.LoremIpsumSentence(exampleQuantity),
 			RecipeStepID:         fake.LoremIpsumSentence(exampleQuantity),
-			CannotCompleteBefore: fake.Uint64(),
-			CannotCompleteAfter:  fake.Uint64(),
-			CreatedAt:            fake.Uint64(),
+			CannotCompleteBefore: fake.Date(),
+			CannotCompleteAfter:  fake.Date(),
+			CreatedAt:            fake.Date(),
 			CompletedAt:          nil,
 		}
 

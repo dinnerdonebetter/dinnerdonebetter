@@ -4,6 +4,7 @@ import (
 	"context"
 	"math"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -38,22 +39,22 @@ type (
 	// User represents a User.
 	User struct {
 		_                         struct{}
-		PasswordLastChangedAt     *uint64           `json:"passwordLastChangedAt"`
-		ArchivedAt                *uint64           `json:"archivedAt"`
-		LastUpdatedAt             *uint64           `json:"lastUpdatedAt"`
-		TwoFactorSecretVerifiedAt *uint64           `json:"twoFactorSecretVerifiedAt"`
+		CreatedAt                 time.Time         `json:"createdAt"`
+		PasswordLastChangedAt     *time.Time        `json:"passwordLastChangedAt"`
+		LastUpdatedAt             *time.Time        `json:"lastUpdatedAt"`
+		TwoFactorSecretVerifiedAt *time.Time        `json:"twoFactorSecretVerifiedAt"`
 		AvatarSrc                 *string           `json:"avatar"`
 		BirthMonth                *uint8            `json:"birthMonth"`
 		BirthDay                  *uint8            `json:"birthDay"`
-		EmailAddress              string            `json:"emailAddress"`
+		ArchivedAt                *time.Time        `json:"archivedAt"`
 		AccountStatusExplanation  string            `json:"accountStatusExplanation"`
 		TwoFactorSecret           string            `json:"-"`
 		HashedPassword            string            `json:"-"`
 		ID                        string            `json:"id"`
 		AccountStatus             userAccountStatus `json:"accountStatus"`
 		Username                  string            `json:"username"`
+		EmailAddress              string            `json:"emailAddress"`
 		ServiceRoles              []string          `json:"serviceRoles"`
-		CreatedAt                 uint64            `json:"createdAt"`
 		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}
 
@@ -95,16 +96,16 @@ type (
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
 		_               struct{}
+		CreatedAt       time.Time         `json:"createdAt"`
 		BirthMonth      *uint8            `json:"birthMonth"`
 		BirthDay        *uint8            `json:"birthDay"`
-		Username        string            `json:"username"`
 		AvatarSrc       *string           `json:"avatar"`
+		Username        string            `json:"username"`
 		EmailAddress    string            `json:"emailAddress"`
 		TwoFactorQRCode string            `json:"qrCode"`
 		CreatedUserID   string            `json:"createdUserID"`
 		AccountStatus   userAccountStatus `json:"accountStatus"`
 		TwoFactorSecret string            `json:"twoFactorSecret"`
-		CreatedAt       uint64            `json:"createdAt"`
 		IsAdmin         bool              `json:"isAdmin"`
 	}
 

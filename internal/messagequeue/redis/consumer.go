@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/prixfixeco/api_server/internal/messagequeue"
@@ -24,7 +23,6 @@ type (
 	}
 
 	redisConsumer struct {
-		tracer       tracing.Tracer
 		encoder      encoding.ClientEncoder
 		logger       logging.Logger
 		handlerFunc  func(context.Context, []byte) error
@@ -43,7 +41,6 @@ func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClien
 		handlerFunc:  handlerFunc,
 		subscription: subscription,
 		logger:       logging.EnsureLogger(logger),
-		tracer:       tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_consumer", topic))),
 		encoder:      encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 	}
 }
@@ -59,8 +56,7 @@ func (r *redisConsumer) Consume(stopChan chan bool, errs chan error) {
 	for {
 		select {
 		case msg := <-subChan:
-			ctx := context.Background()
-			if err := r.handlerFunc(ctx, []byte(msg.Payload)); err != nil {
+			if err := r.handlerFunc(context.Background(), []byte(msg.Payload)); err != nil {
 				r.logger.Error(err, "handling message")
 				if errs != nil {
 					errs <- err

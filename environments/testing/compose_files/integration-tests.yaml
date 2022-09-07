@@ -22,6 +22,7 @@ services:
         ports:
             - '5432:5432'
     queue_loader:
+        container_name: queue_loader
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/config'
@@ -37,6 +38,7 @@ services:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/queue_loader.Dockerfile'
     meal_plan_finalizer:
+        container_name: meal_plan_finalizer
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/config'
@@ -51,6 +53,22 @@ services:
         build:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/meal_plan_finalizer.Dockerfile'
+    advanced_prep_step_creator:
+        container_name: advanced_prep_step_creator
+        environment:
+            TARGET_ADDRESS: 'http://api_server:8000'
+            CONFIGURATION_FILEPATH: '/etc/config'
+            JAEGER_DISABLED: 'false'
+        volumes:
+            - source: '../../../'
+              target: '/go/src/github.com/prixfixeco/api_server'
+              type: 'bind'
+            - source: '../../../environments/local/config_files/advanced-prep-step-creator-config.json'
+              target: '/etc/config'
+              type: 'bind'
+        build:
+            context: '../../../'
+            dockerfile: 'environments/testing/dockerfiles/advanced_prep_step_creator.Dockerfile'
     prixfixe_api_server:
         # logging:
         #     driver: none
@@ -59,6 +77,7 @@ services:
         depends_on:
             - queue_loader
             - meal_plan_finalizer
+            - advanced_prep_step_creator
         environment:
             USE_NOOP_LOGGER: 'nope'
             CONFIGURATION_FILEPATH: '/etc/config'
@@ -78,6 +97,7 @@ services:
         depends_on:
             - queue_loader
             - meal_plan_finalizer
+            - advanced_prep_step_creator
         links:
             - prixfixe_api_server
         build:

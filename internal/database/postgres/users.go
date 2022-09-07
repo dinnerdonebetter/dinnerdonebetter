@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	_ types.UserDataManager = (*SQLQuerier)(nil)
+	_ types.UserDataManager = (*Querier)(nil)
 
 	// usersTableColumns are the columns for the users table.
 	usersTableColumns = []string{
@@ -48,7 +48,7 @@ const (
 )
 
 // scanUser provides a consistent way to scan something like a *sql.Row into a Requester struct.
-func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includeCounts bool) (user *types.User, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCounts bool) (user *types.User, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -94,7 +94,7 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 }
 
 // scanUsers takes database rows and loads them into a slice of Requester structs.
-func (q *SQLQuerier) scanUsers(ctx context.Context, rows database.ResultIterator, includeCounts bool) (users []*types.User, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanUsers(ctx context.Context, rows database.ResultIterator, includeCounts bool) (users []*types.User, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -153,7 +153,7 @@ const getUserWithVerified2FAQuery = getUserByIDQuery + `
 `
 
 // getUser fetches a user.
-func (q *SQLQuerier) getUser(ctx context.Context, userID string, withVerifiedTOTPSecret bool) (*types.User, error) {
+func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSecret bool) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -188,7 +188,7 @@ const userHasStatusQuery = `
 `
 
 // UserHasStatus fetches whether an user has a particular status.
-func (q *SQLQuerier) UserHasStatus(ctx context.Context, userID string, statuses ...string) (banned bool, err error) {
+func (q *Querier) UserHasStatus(ctx context.Context, userID string, statuses ...string) (banned bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -217,7 +217,7 @@ func (q *SQLQuerier) UserHasStatus(ctx context.Context, userID string, statuses 
 }
 
 // GetUser fetches a user.
-func (q *SQLQuerier) GetUser(ctx context.Context, userID string) (*types.User, error) {
+func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -231,7 +231,7 @@ func (q *SQLQuerier) GetUser(ctx context.Context, userID string) (*types.User, e
 }
 
 // GetUserWithUnverifiedTwoFactorSecret fetches a user with an unverified 2FA secret.
-func (q *SQLQuerier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*types.User, error) {
+func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -269,7 +269,7 @@ const getUserByUsernameQuery = `
 `
 
 // GetUserByUsername fetches a user by their username.
-func (q *SQLQuerier) GetUserByUsername(ctx context.Context, username string) (*types.User, error) {
+func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -323,7 +323,7 @@ const getAdminUserByUsernameQuery = `
 `
 
 // GetAdminUserByUsername fetches a user by their username.
-func (q *SQLQuerier) GetAdminUserByUsername(ctx context.Context, username string) (*types.User, error) {
+func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -375,7 +375,7 @@ const getUserIDByEmailQuery = `
 `
 
 // GetUserByEmail fetches a user by their email.
-func (q *SQLQuerier) GetUserByEmail(ctx context.Context, email string) (*types.User, error) {
+func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -426,7 +426,7 @@ AND users.two_factor_secret_verified_at IS NOT NULL
 `
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
-func (q *SQLQuerier) SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*types.User, error) {
+func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -459,7 +459,7 @@ func (q *SQLQuerier) SearchForUsersByUsername(ctx context.Context, usernameQuery
 }
 
 // GetUsers fetches a list of users from the database that meet a particular filter.
-func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *types.UserList, err error) {
+func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *types.UserList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -502,7 +502,7 @@ const createHouseholdMembershipForNewUserQuery = `
 `
 
 // CreateUser creates a user.
-func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
+func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -594,7 +594,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 	return user, nil
 }
 
-func (q *SQLQuerier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, userID string) error {
+func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -653,14 +653,14 @@ const updateUserQuery = `UPDATE users SET
 	two_factor_secret_verified_at = $5,
 	birth_day = $6,
 	birth_month = $7,
-	last_updated_at = extract(epoch FROM NOW()) 
+	last_updated_at = NOW() 
 WHERE archived_at IS NULL 
 AND id = $8
 `
 
 // UpdateUser receives a complete Requester struct and updates its record in the database.
 // NOTE: this function uses the ID provided in the input to make its query.
-func (q *SQLQuerier) UpdateUser(ctx context.Context, updated *types.User) error {
+func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -695,14 +695,14 @@ func (q *SQLQuerier) UpdateUser(ctx context.Context, updated *types.User) error 
 const updateUserPasswordQuery = `UPDATE users SET
 	hashed_password = $1,
 	requires_password_change = $2,
-	password_last_changed_at = extract(epoch FROM NOW()),
-	last_updated_at = extract(epoch FROM NOW())
+	password_last_changed_at = NOW(),
+	last_updated_at = NOW()
 WHERE archived_at IS NULL
 AND id = $3
 `
 
 // UpdateUserPassword updates a user's passwords hash in the database.
-func (q *SQLQuerier) UpdateUserPassword(ctx context.Context, userID, newHash string) error {
+func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -741,7 +741,7 @@ AND id = $3
 `
 
 // UpdateUserTwoFactorSecret marks a user's two factor secret as validated.
-func (q *SQLQuerier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecret string) error {
+func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecret string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -772,14 +772,14 @@ func (q *SQLQuerier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newS
 
 /* #nosec G101 */
 const markUserTwoFactorSecretAsVerified = `UPDATE users SET
-	two_factor_secret_verified_at = extract(epoch FROM NOW()),
+	two_factor_secret_verified_at = NOW(),
 	user_account_status = $1
 WHERE archived_at IS NULL
 AND id = $2
 `
 
 // MarkUserTwoFactorSecretAsVerified marks a user's two factor secret as validated.
-func (q *SQLQuerier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error {
+func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -805,19 +805,19 @@ func (q *SQLQuerier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, user
 }
 
 const archiveUserQuery = `UPDATE users SET
-	archived_at = extract(epoch FROM NOW())
+	archived_at = NOW()
 WHERE archived_at IS NULL
 AND id = $1
 `
 
 const archiveMembershipsQuery = `UPDATE household_user_memberships SET
-	archived_at = extract(epoch FROM NOW())
+	archived_at = NOW()
 WHERE archived_at IS NULL
 AND belongs_to_user = $1
 `
 
 // ArchiveUser archives a user.
-func (q *SQLQuerier) ArchiveUser(ctx context.Context, userID string) error {
+func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

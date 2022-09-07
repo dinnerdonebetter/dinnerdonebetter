@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -609,7 +610,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectCommit()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleHousehold.CreatedAt
 		}
 
@@ -686,7 +687,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleHousehold.CreatedAt
 		}
 
@@ -737,7 +738,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleHousehold.CreatedAt
 		}
 
@@ -788,7 +789,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleHousehold.CreatedAt
 		}
 

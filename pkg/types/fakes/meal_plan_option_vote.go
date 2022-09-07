@@ -16,7 +16,7 @@ func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 		Rank:                    uint8(fake.Number(1, math.MaxUint8)),
 		Abstain:                 fake.Bool(),
 		Notes:                   buildUniqueString(),
-		CreatedAt:               uint64(uint32(fake.Date().Unix())),
+		CreatedAt:               fake.Date(),
 		BelongsToMealPlanOption: fake.UUID(),
 	}
 }

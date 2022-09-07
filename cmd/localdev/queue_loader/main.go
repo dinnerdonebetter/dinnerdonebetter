@@ -20,7 +20,8 @@ import (
 )
 
 const (
-	mealPlanFinalizationTopic = "meal_plan_finalizer"
+	mealPlanFinalizationTopic     = "meal_plan_finalizer"
+	advancedPrepStepCreationTopic = "advanced_prep_step_creation"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
@@ -32,7 +33,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logger.Info("starting workers...")
+	logger.Info("starting queue loader...")
 
 	// find and validate our configuration filepath.
 	configFilepath := os.Getenv(configFilepathEnvVar)
@@ -50,7 +51,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.Observability.Tracing.Jaeger.ServiceName = "workers"
+	cfg.Observability.Tracing.Jaeger.ServiceName = "queue_loader"
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
@@ -83,6 +84,20 @@ func main() {
 	go func() {
 		for range mealPlanFinalizationTicker {
 			if err = mealPlanFinalizerPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType}); err != nil {
+				log.Fatal(err)
+			}
+		}
+	}()
+
+	advancedPrepStepCreationTicker := time.Tick(time.Second)
+	advancedPrepStepCreationPublisher, err := publisherProvider.ProviderPublisher(advancedPrepStepCreationTopic)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go func() {
+		for range advancedPrepStepCreationTicker {
+			if err = advancedPrepStepCreationPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.CreateAdvancedPrepStepsChoreType}); err != nil {
 				log.Fatal(err)
 			}
 		}

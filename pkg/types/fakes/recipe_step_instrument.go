@@ -17,7 +17,7 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		RecipeStepProductID: nil,
 		Notes:               buildUniqueString(),
 		PreferenceRank:      fake.Uint8(),
-		CreatedAt:           uint64(uint32(fake.Date().Unix())),
+		CreatedAt:           fake.Date(),
 		BelongsToRecipeStep: fake.UUID(),
 		Optional:            fake.Bool(),
 		MinimumQuantity:     fake.Uint32(),

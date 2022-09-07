@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -25,7 +26,7 @@ func TestQuerier_Migrate(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleCreationTime
 		}
 

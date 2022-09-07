@@ -440,7 +440,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMealPlanOption.CreatedAt
 		}
 
@@ -488,7 +488,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(expectedErr)
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMealPlanOption.CreatedAt
 		}
 

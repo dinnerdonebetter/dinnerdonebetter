@@ -100,13 +100,13 @@ func (e *sqlmockExpecterWrapper) AssertExpectations(t mock.TestingT) bool {
 	return assert.NoError(t, e.Sqlmock.ExpectationsWereMet(), "not all database expectations were met")
 }
 
-func buildTestClient(t *testing.T) (*SQLQuerier, *sqlmockExpecterWrapper) {
+func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	t.Helper()
 
 	fakeDB, sqlMock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
 
-	c := &SQLQuerier{
+	c := &Querier{
 		db:         fakeDB,
 		logQueries: true,
 		logger:     logging.NewNoopLogger(),
@@ -216,7 +216,7 @@ func TestQuerier_currentTime(T *testing.T) {
 	T.Run("handles nil", func(t *testing.T) {
 		t.Parallel()
 
-		var c *SQLQuerier
+		var c *Querier
 
 		assert.NotEmpty(t, c.currentTime())
 	})

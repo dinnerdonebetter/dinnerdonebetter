@@ -3,6 +3,7 @@ package types
 import (
 	"context"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -61,18 +62,18 @@ type (
 	// HouseholdInvitation represents a household invitation.
 	HouseholdInvitation struct {
 		_                    struct{}
+		CreatedAt            time.Time                 `json:"createdAt"`
+		LastUpdatedAt        *time.Time                `json:"lastUpdatedAt"`
+		ArchivedAt           *time.Time                `json:"archivedAt"`
 		ToUser               *string                   `json:"toUser"`
-		LastUpdatedAt        *uint64                   `json:"lastUpdatedAt"`
-		ArchivedAt           *uint64                   `json:"archivedAt"`
-		Note                 string                    `json:"note"`
-		ToEmail              string                    `json:"toEmail"`
 		Status               HouseholdInvitationStatus `json:"status"`
+		ToEmail              string                    `json:"toEmail"`
 		StatusNote           string                    `json:"statusNote"`
 		Token                string                    `json:"token"`
 		ID                   string                    `json:"id"`
+		Note                 string                    `json:"note"`
 		DestinationHousehold Household                 `json:"destinationHousehold"`
 		FromUser             User                      `json:"fromUser"`
-		CreatedAt            uint64                    `json:"createdAt"`
 	}
 
 	// HouseholdInvitationList represents a list of households.

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -36,21 +37,21 @@ type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
 		_                                  struct{}
-		LastUpdatedAt                      *uint64              `json:"lastUpdatedAt"`
-		ArchivedAt                         *uint64              `json:"archivedAt"`
+		CreatedAt                          time.Time            `json:"createdAt"`
+		ArchivedAt                         *time.Time           `json:"archivedAt"`
+		LastUpdatedAt                      *time.Time           `json:"lastUpdatedAt"`
 		ID                                 string               `json:"id"`
+		StorageInstructions                string               `json:"storageInstructions"`
 		Name                               string               `json:"name"`
 		Type                               string               `json:"type"`
 		QuantityNotes                      string               `json:"quantityNotes"`
 		BelongsToRecipeStep                string               `json:"belongsToRecipeStep"`
-		StorageInstructions                string               `json:"storageInstructions"`
 		MeasurementUnit                    ValidMeasurementUnit `json:"measurementUnit"`
-		CreatedAt                          uint64               `json:"createdAt"`
-		MaximumQuantityValue               float32              `json:"maximumQuantityValue"`
+		MaximumQuantity                    float32              `json:"maximumQuantity"`
 		MaximumStorageDurationInSeconds    uint32               `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius float32              `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius float32              `json:"maximumStorageTemperatureInCelsius"`
-		MinimumQuantityValue               float32              `json:"minimumQuantityValue"`
+		MinimumQuantity                    float32              `json:"minimumQuantity"`
 		Compostable                        bool                 `json:"compostable"`
 	}
 
@@ -71,11 +72,11 @@ type (
 		MeasurementUnitID                  string  `json:"measurementUnitID"`
 		BelongsToRecipeStep                string  `json:"-"`
 		StorageInstructions                string  `json:"storageInstructions"`
-		MaximumQuantityValue               float32 `json:"maximumQuantityValue"`
+		MaximumQuantity                    float32 `json:"maximumQuantity"`
 		MaximumStorageDurationInSeconds    uint32  `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius float32 `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius float32 `json:"maximumStorageTemperatureInCelsius"`
-		MinimumQuantityValue               float32 `json:"minimumQuantityValue"`
+		MinimumQuantity                    float32 `json:"minimumQuantity"`
 		Compostable                        bool    `json:"compostable"`
 	}
 
@@ -89,11 +90,11 @@ type (
 		QuantityNotes                      string  `json:"quantityNotes"`
 		BelongsToRecipeStep                string  `json:"belongsToRecipeStep"`
 		StorageInstructions                string  `json:"storageInstructions"`
-		MaximumQuantityValue               float32 `json:"maximumQuantityValue"`
+		MaximumQuantity                    float32 `json:"maximumQuantity"`
 		MaximumStorageDurationInSeconds    uint32  `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius float32 `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius float32 `json:"maximumStorageTemperatureInCelsius"`
-		MinimumQuantityValue               float32 `json:"minimumQuantityValue"`
+		MinimumQuantity                    float32 `json:"minimumQuantity"`
 		Compostable                        bool    `json:"compostable"`
 	}
 
@@ -105,8 +106,8 @@ type (
 		MeasurementUnitID                  *string  `json:"measurementUnitID"`
 		QuantityNotes                      *string  `json:"quantityNotes"`
 		BelongsToRecipeStep                *string  `json:"belongsToRecipeStep"`
-		MinimumQuantityValue               *float32 `json:"minimumQuantityValue"`
-		MaximumQuantityValue               *float32 `json:"maximumQuantityValue"`
+		MinimumQuantity                    *float32 `json:"minimumQuantity"`
+		MaximumQuantity                    *float32 `json:"maximumQuantity"`
 		Compostable                        *bool    `json:"compostable"`
 		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
@@ -148,12 +149,12 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
-	if input.MinimumQuantityValue != nil && *input.MinimumQuantityValue != x.MinimumQuantityValue {
-		x.MinimumQuantityValue = *input.MinimumQuantityValue
+	if input.MinimumQuantity != nil && *input.MinimumQuantity != x.MinimumQuantity {
+		x.MinimumQuantity = *input.MinimumQuantity
 	}
 
-	if input.MaximumQuantityValue != nil && *input.MaximumQuantityValue != x.MaximumQuantityValue {
-		x.MaximumQuantityValue = *input.MaximumQuantityValue
+	if input.MaximumQuantity != nil && *input.MaximumQuantity != x.MaximumQuantity {
+		x.MaximumQuantity = *input.MaximumQuantity
 	}
 
 	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
@@ -190,7 +191,7 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
-		validation.Field(&x.MinimumQuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
 }
 
@@ -204,7 +205,7 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType)),
-		validation.Field(&x.MinimumQuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantity, validation.Required),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 	)
 }
@@ -221,8 +222,8 @@ func RecipeStepProductUpdateRequestInputFromRecipeStepProduct(input *RecipeStepP
 		MeasurementUnitID:                  &input.MeasurementUnit.ID,
 		QuantityNotes:                      &input.QuantityNotes,
 		BelongsToRecipeStep:                &input.BelongsToRecipeStep,
-		MinimumQuantityValue:               &input.MinimumQuantityValue,
-		MaximumQuantityValue:               &input.MaximumQuantityValue,
+		MinimumQuantity:                    &input.MinimumQuantity,
+		MaximumQuantity:                    &input.MaximumQuantity,
 		Compostable:                        &input.Compostable,
 		MaximumStorageDurationInSeconds:    &input.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: &input.MinimumStorageTemperatureInCelsius,
@@ -244,8 +245,8 @@ func RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(in
 		Type:                               input.Type,
 		MeasurementUnitID:                  input.MeasurementUnitID,
 		QuantityNotes:                      input.QuantityNotes,
-		MinimumQuantityValue:               input.MinimumQuantityValue,
-		MaximumQuantityValue:               input.MaximumQuantityValue,
+		MinimumQuantity:                    input.MinimumQuantity,
+		MaximumQuantity:                    input.MaximumQuantity,
 		Compostable:                        input.Compostable,
 		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
@@ -266,7 +267,7 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
-		validation.Field(&x.MinimumQuantityValue, validation.Required),
-		validation.Field(&x.MaximumQuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantity, validation.Required),
+		validation.Field(&x.MaximumQuantity, validation.Required),
 	)
 }

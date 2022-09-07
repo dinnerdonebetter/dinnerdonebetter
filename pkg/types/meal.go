@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,14 +32,14 @@ type (
 	// Meal represents a meal.
 	Meal struct {
 		_             struct{}
-		ArchivedAt    *uint64   `json:"archivedAt"`
-		LastUpdatedAt *uint64   `json:"lastUpdatedAt"`
-		ID            string    `json:"id"`
-		Description   string    `json:"description"`
-		CreatedByUser string    `json:"createdByUser"`
-		Name          string    `json:"name"`
-		Recipes       []*Recipe `json:"recipes"`
-		CreatedAt     uint64    `json:"createdAt"`
+		CreatedAt     time.Time  `json:"createdAt"`
+		ArchivedAt    *time.Time `json:"archivedAt"`
+		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
+		ID            string     `json:"id"`
+		Description   string     `json:"description"`
+		CreatedByUser string     `json:"createdByUser"`
+		Name          string     `json:"name"`
+		Recipes       []*Recipe  `json:"recipes"`
 	}
 
 	// MealRecipe is a recipe with some extra data attached to it.

@@ -293,7 +293,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 	})
 }
 
-func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exampleMealPlan *types.MealPlan, exampleHouseholdID string, c *SQLQuerier, db *sqlmockExpecterWrapper) {
+func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exampleMealPlan *types.MealPlan, exampleHouseholdID string, c *Querier, db *sqlmockExpecterWrapper) {
 	t.Helper()
 
 	if exampleHouseholdID == "" {
@@ -582,7 +582,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 
 		db.ExpectCommit()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMealPlan.CreatedAt
 		}
 
@@ -662,7 +662,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMealPlan.CreatedAt
 		}
 
@@ -723,7 +723,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 
 		db.ExpectRollback()
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMealPlan.CreatedAt
 		}
 
@@ -785,7 +785,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleMealPlan.CreatedAt
 		}
 

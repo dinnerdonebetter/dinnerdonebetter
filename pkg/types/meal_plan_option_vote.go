@@ -2,8 +2,10 @@ package types
 
 import (
 	"context"
+	"database/sql"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,15 +33,29 @@ type (
 	// MealPlanOptionVote represents a meal plan option vote.
 	MealPlanOptionVote struct {
 		_                       struct{}
-		LastUpdatedAt           *uint64 `json:"lastUpdatedAt"`
-		ArchivedAt              *uint64 `json:"archivedAt"`
-		ID                      string  `json:"id"`
-		Notes                   string  `json:"notes"`
-		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
-		ByUser                  string  `json:"byUser"`
-		CreatedAt               uint64  `json:"createdAt"`
-		Rank                    uint8   `json:"rank"`
-		Abstain                 bool    `json:"abstain"`
+		CreatedAt               time.Time  `json:"createdAt"`
+		ArchivedAt              *time.Time `json:"archivedAt"`
+		LastUpdatedAt           *time.Time `json:"lastUpdatedAt"`
+		ID                      string     `json:"id"`
+		Notes                   string     `json:"notes"`
+		BelongsToMealPlanOption string     `json:"belongsToMealPlanOption"`
+		ByUser                  string     `json:"byUser"`
+		Rank                    uint8      `json:"rank"`
+		Abstain                 bool       `json:"abstain"`
+	}
+
+	// NullableMealPlanOptionVote represents a fully nullable meal plan option vote.
+	NullableMealPlanOptionVote struct {
+		_                       struct{}
+		Rank                    *uint8
+		ID                      *string
+		Notes                   *string
+		BelongsToMealPlanOption *string
+		ByUser                  *string
+		Abstain                 *bool
+		LastUpdatedAt           sql.NullTime
+		CreatedAt               sql.NullTime
+		ArchivedAt              sql.NullTime
 	}
 
 	// MealPlanOptionVoteList represents a list of meal plan option votes.

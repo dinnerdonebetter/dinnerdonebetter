@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -42,8 +43,8 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.MeasurementUnit.CreatedAt,
 			x.MeasurementUnit.LastUpdatedAt,
 			x.MeasurementUnit.ArchivedAt,
-			x.MinimumQuantityValue,
-			x.MaximumQuantityValue,
+			x.MinimumQuantity,
+			x.MaximumQuantity,
 			x.QuantityNotes,
 			x.Compostable,
 			x.MaximumStorageDurationInSeconds,
@@ -573,8 +574,8 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.Name,
 			exampleInput.Type,
 			exampleInput.MeasurementUnitID,
-			exampleInput.MinimumQuantityValue,
-			exampleInput.MaximumQuantityValue,
+			exampleInput.MinimumQuantity,
+			exampleInput.MaximumQuantity,
 			exampleInput.QuantityNotes,
 			exampleInput.Compostable,
 			exampleInput.MaximumStorageDurationInSeconds,
@@ -588,7 +589,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStepProduct.CreatedAt
 		}
 
@@ -625,8 +626,8 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.Name,
 			exampleInput.Type,
 			exampleInput.MeasurementUnitID,
-			exampleInput.MinimumQuantityValue,
-			exampleInput.MaximumQuantityValue,
+			exampleInput.MinimumQuantity,
+			exampleInput.MaximumQuantity,
 			exampleInput.QuantityNotes,
 			exampleInput.Compostable,
 			exampleInput.MaximumStorageDurationInSeconds,
@@ -640,7 +641,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(expectedErr)
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStepProduct.CreatedAt
 		}
 
@@ -668,8 +669,8 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.Name,
 			exampleRecipeStepProduct.Type,
 			exampleRecipeStepProduct.MeasurementUnit.ID,
-			exampleRecipeStepProduct.MinimumQuantityValue,
-			exampleRecipeStepProduct.MaximumQuantityValue,
+			exampleRecipeStepProduct.MinimumQuantity,
+			exampleRecipeStepProduct.MaximumQuantity,
 			exampleRecipeStepProduct.QuantityNotes,
 			exampleRecipeStepProduct.Compostable,
 			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
@@ -710,8 +711,8 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.Name,
 			exampleRecipeStepProduct.Type,
 			exampleRecipeStepProduct.MeasurementUnit.ID,
-			exampleRecipeStepProduct.MinimumQuantityValue,
-			exampleRecipeStepProduct.MaximumQuantityValue,
+			exampleRecipeStepProduct.MinimumQuantity,
+			exampleRecipeStepProduct.MaximumQuantity,
 			exampleRecipeStepProduct.QuantityNotes,
 			exampleRecipeStepProduct.Compostable,
 			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,

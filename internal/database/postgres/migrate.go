@@ -219,7 +219,7 @@ func fetchMigration(name string) string {
 
 // BuildMigrationFunc returns a sync.Once compatible function closure that will
 // migrate a postgres database.
-func (q *SQLQuerier) migrationFunc() {
+func (q *Querier) migrationFunc() {
 	driver := darwin.NewGenericDriver(q.db, darwin.PostgresDialect{})
 	if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {
 		panic(fmt.Errorf("migrating database: %w", err))
@@ -227,7 +227,7 @@ func (q *SQLQuerier) migrationFunc() {
 }
 
 // Migrate is a simple wrapper around the core querier Migrate call.
-func (q *SQLQuerier) Migrate(ctx context.Context, maxAttempts uint8) error {
+func (q *Querier) Migrate(ctx context.Context, maxAttempts uint8) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

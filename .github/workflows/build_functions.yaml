@@ -6,7 +6,10 @@ on:
       - internal/**
 name: Build
 jobs:
-  functions:
+  setup:
+    strategy:
+      matrix:
+        go-version: [ '1.16.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -15,13 +18,22 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.16.x'
+          go-version: ${{ matrix.go-version }}
+
+  functions:
+    needs: setup
+    strategy:
+      matrix:
+        function: [
+          'data_changes',
+          'meal_plan_finalizer',
+          'meal_planning_prober',
+          'advanced_prep_step_creator',
+        ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Build data changes cloud function directory
-        run: ./scripts/build_cloud_function.sh data_changes
-
-      - name: Build meal plan finalizer cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
-
-      - name: Build meal planning prober cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_planning_prober
+        run: ./scripts/build_cloud_function.sh ${{ matrix.function }}

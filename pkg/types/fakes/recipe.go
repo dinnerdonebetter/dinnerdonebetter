@@ -22,7 +22,7 @@ func BuildFakeRecipe() *types.Recipe {
 		Source:             buildUniqueString(),
 		Description:        buildUniqueString(),
 		InspiredByRecipeID: func(x string) *string { return &x }(buildUniqueString()),
-		CreatedAt:          uint64(uint32(fake.Date().Unix())),
+		CreatedAt:          fake.Date(),
 		CreatedByUser:      ksuid.New().String(),
 		Steps:              steps,
 		SealOfApproval:     false,

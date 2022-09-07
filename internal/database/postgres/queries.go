@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/Masterminds/squirrel"
 
@@ -23,10 +24,16 @@ func wrapQueryForILIKE(s string) string {
 	return fmt.Sprintf("%%%s%%", s)
 }
 
+var queryReplacer = regexp.MustCompile(`(\n|\t|\s+)+`)
+
+func minimizeSQL(query string) string {
+	return queryReplacer.ReplaceAllString(query, " ")
+}
+
 // logQueryBuildingError logs errs that may occur during query construction. Such errors should be few and far between,
 // as the generally only occur with type discrepancies or other misuses of SQL. An alert should be set up for any log
 // entries with the given name, and those alerts should be investigated quickly.
-func (q *SQLQuerier) logQueryBuildingError(span tracing.Span, err error) {
+func (q *Querier) logQueryBuildingError(span tracing.Span, err error) {
 	if err != nil {
 		logger := q.logger.WithValue(keys.QueryErrorKey, true)
 		observability.AcknowledgeError(err, logger, span, "building query")
@@ -34,15 +41,13 @@ func (q *SQLQuerier) logQueryBuildingError(span tracing.Span, err error) {
 }
 
 // BuildQuery builds a given query, handles whatever errs and returns just the query and args.
-func (q *SQLQuerier) buildQuery(span tracing.Span, builder squirrel.Sqlizer) (query string, args []interface{}) {
+func (q *Querier) buildQuery(span tracing.Span, builder squirrel.Sqlizer) (query string, args []interface{}) {
 	query, args, err := builder.ToSql()
-
 	q.logQueryBuildingError(span, err)
-
-	return query, args
+	return minimizeSQL(query), args
 }
 
-func (q *SQLQuerier) buildTotalCountQuery(
+func (q *Querier) buildTotalCountQuery(
 	ctx context.Context,
 	tableName string,
 	joins []string,
@@ -85,7 +90,7 @@ func (q *SQLQuerier) buildTotalCountQuery(
 	return q.buildQuery(span, totalCountQueryBuilder)
 }
 
-func (q *SQLQuerier) buildTotalCountQueryWithILike(
+func (q *Querier) buildTotalCountQueryWithILike(
 	ctx context.Context,
 	tableName string,
 	joins []string,
@@ -129,7 +134,7 @@ func (q *SQLQuerier) buildTotalCountQueryWithILike(
 	return q.buildQuery(span, totalCountQueryBuilder)
 }
 
-func (q *SQLQuerier) buildFilteredCountQuery(
+func (q *Querier) buildFilteredCountQuery(
 	ctx context.Context,
 	tableName string,
 	joins []string,
@@ -181,7 +186,7 @@ func (q *SQLQuerier) buildFilteredCountQuery(
 	return q.buildQuery(span, filteredCountQueryBuilder)
 }
 
-func (q *SQLQuerier) buildFilteredCountQueryWithILike(
+func (q *Querier) buildFilteredCountQueryWithILike(
 	ctx context.Context,
 	tableName string,
 	joins []string,
@@ -233,7 +238,7 @@ func (q *SQLQuerier) buildFilteredCountQueryWithILike(
 
 // BuildListQuery builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
-func (q *SQLQuerier) buildListQuery(
+func (q *Querier) buildListQuery(
 	ctx context.Context,
 	tableName string,
 	joins,
@@ -311,7 +316,7 @@ func (q *SQLQuerier) buildListQuery(
 
 // BuildListQueryWithILike builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
-func (q *SQLQuerier) buildListQueryWithILike(
+func (q *Querier) buildListQueryWithILike(
 	ctx context.Context,
 	tableName string,
 	joins,

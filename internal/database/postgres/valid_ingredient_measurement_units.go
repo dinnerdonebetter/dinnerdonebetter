@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	_ types.ValidIngredientMeasurementUnitDataManager = (*SQLQuerier)(nil)
+	_ types.ValidIngredientMeasurementUnitDataManager = (*Querier)(nil)
 
 	// validIngredientMeasurementUnitsTableColumns are the columns for the valid_ingredient_measurement_units table.
 	validIngredientMeasurementUnitsTableColumns = []string{
@@ -73,7 +73,7 @@ var (
 )
 
 // scanValidIngredientMeasurementUnit takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient measurement unit struct.
-func (q *SQLQuerier) scanValidIngredientMeasurementUnit(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredientMeasurementUnit, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidIngredientMeasurementUnit(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredientMeasurementUnit, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -142,7 +142,7 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnit(ctx context.Context, sca
 }
 
 // scanValidIngredientMeasurementUnits takes some database rows and turns them into a slice of valid ingredient measurement units.
-func (q *SQLQuerier) scanValidIngredientMeasurementUnits(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredientMeasurementUnits []*types.ValidIngredientMeasurementUnit, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidIngredientMeasurementUnits(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredientMeasurementUnits []*types.ValidIngredientMeasurementUnit, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -177,7 +177,7 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnits(ctx context.Context, ro
 const validIngredientMeasurementUnitExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL AND valid_ingredient_measurement_units.id = $1 )"
 
 // ValidIngredientMeasurementUnitExists fetches whether a valid ingredient measurement unit exists from the database.
-func (q *SQLQuerier) ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (exists bool, err error) {
+func (q *Querier) ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -257,7 +257,7 @@ WHERE valid_ingredient_measurement_units.archived_at IS NULL
 `
 
 // GetValidIngredientMeasurementUnit fetches a valid ingredient measurement unit from the database.
-func (q *SQLQuerier) GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*types.ValidIngredientMeasurementUnit, error) {
+func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*types.ValidIngredientMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -283,7 +283,7 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 	return validIngredientMeasurementUnit, nil
 }
 
-func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -303,12 +303,12 @@ func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(
 	return query, args
 }
 
-func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx, "valid_ingredient_id", limit, ids)
 }
 
 // GetValidIngredientMeasurementUnitsForIngredient fetches a list of valid measurement units from the database that belong to a given ingredient ID.
-func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
+func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -353,12 +353,12 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx, "valid_measurement_unit_id", limit, ids)
 }
 
 // GetValidIngredientMeasurementUnitsForMeasurementUnit fetches a list of valid measurement units from the database that belong to a given ingredient ID.
-func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
+func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -404,7 +404,7 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 }
 
 // GetValidIngredientMeasurementUnits fetches a list of valid ingredient measurement units from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
+func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -454,7 +454,7 @@ const validIngredientMeasurementUnitCreationQuery = `INSERT INTO valid_ingredien
 	VALUES ($1,$2,$3,$4,$5,$6)`
 
 // CreateValidIngredientMeasurementUnit creates a valid ingredient measurement unit in the database.
-func (q *SQLQuerier) CreateValidIngredientMeasurementUnit(ctx context.Context, input *types.ValidIngredientMeasurementUnitDatabaseCreationInput) (*types.ValidIngredientMeasurementUnit, error) {
+func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, input *types.ValidIngredientMeasurementUnitDatabaseCreationInput) (*types.ValidIngredientMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -501,13 +501,13 @@ SET
     valid_ingredient_id = $3,
 	minimum_allowable_quantity = $4,
 	maximum_allowable_quantity = $5,
-    last_updated_at = extract(epoch FROM NOW())
+    last_updated_at = NOW()
 WHERE archived_at IS NULL 
   AND id = $6
 `
 
 // UpdateValidIngredientMeasurementUnit updates a particular valid ingredient measurement unit.
-func (q *SQLQuerier) UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *types.ValidIngredientMeasurementUnit) error {
+func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *types.ValidIngredientMeasurementUnit) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -536,10 +536,10 @@ func (q *SQLQuerier) UpdateValidIngredientMeasurementUnit(ctx context.Context, u
 	return nil
 }
 
-const archiveValidIngredientMeasurementUnitQuery = "UPDATE valid_ingredient_measurement_units SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
+const archiveValidIngredientMeasurementUnitQuery = "UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its ID.
-func (q *SQLQuerier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
+func (q *Querier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

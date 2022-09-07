@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	_ types.RecipeDataManager = (*SQLQuerier)(nil)
+	_ types.RecipeDataManager = (*Querier)(nil)
 
 	// recipesTableColumns are the columns for the recipes table.
 	recipesTableColumns = []string{
@@ -34,7 +34,7 @@ var (
 )
 
 // scanRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
-func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.Recipe, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.Recipe, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -68,7 +68,7 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 }
 
 // scanRecipes takes some database rows and turns them into a slice of recipes.
-func (q *SQLQuerier) scanRecipes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipes []*types.Recipe, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipes []*types.Recipe, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,7 +103,7 @@ func (q *SQLQuerier) scanRecipes(ctx context.Context, rows database.ResultIterat
 const recipeExistenceQuery = "SELECT EXISTS ( SELECT recipes.id FROM recipes WHERE recipes.archived_at IS NULL AND recipes.id = $1 )"
 
 // RecipeExists fetches whether a recipe exists from the database.
-func (q *SQLQuerier) RecipeExists(ctx context.Context, recipeID string) (exists bool, err error) {
+func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -217,7 +217,7 @@ ORDER BY recipe_steps.index
 `
 
 // scanRecipeAndStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
-func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) (x *types.Recipe, y *types.RecipeStep, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) (x *types.Recipe, y *types.RecipeStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -258,7 +258,7 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&y.Optional,
 		&y.CreatedAt,
 		&y.LastUpdatedAt,
-		&y.ArchivedAT,
+		&y.ArchivedAt,
 		&y.BelongsToRecipe,
 	}
 
@@ -270,7 +270,7 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 }
 
 // getRecipe fetches a recipe from the database.
-func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
+func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -357,17 +357,17 @@ func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*t
 }
 
 // GetRecipe fetches a recipe from the database.
-func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
+func (q *Querier) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
 	return q.getRecipe(ctx, recipeID, "")
 }
 
 // GetRecipeByIDAndUser fetches a recipe from the database.
-func (q *SQLQuerier) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
+func (q *Querier) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
 	return q.getRecipe(ctx, recipeID, userID)
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
-func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x *types.RecipeList, err error) {
+func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x *types.RecipeList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -402,7 +402,7 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 }
 
 // SearchForRecipes fetches a list of recipes from the database that match a query.
-func (q *SQLQuerier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *types.QueryFilter) (x *types.RecipeList, err error) {
+func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *types.QueryFilter) (x *types.RecipeList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -440,7 +440,7 @@ func (q *SQLQuerier) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 const recipeCreationQuery = "INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,yields_portions,seal_of_approval,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
 // CreateRecipe creates a recipe in the database.
-func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
+func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -602,10 +602,10 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 	}
 }
 
-const updateRecipeQuery = `UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, yields_portions = $5, seal_of_approval = $6, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND created_by_user = $7 AND id = $8`
+const updateRecipeQuery = `UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, yields_portions = $5, seal_of_approval = $6, last_updated_at = NOW() WHERE archived_at IS NULL AND created_by_user = $7 AND id = $8`
 
 // UpdateRecipe updates a particular recipe.
-func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
+func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -637,10 +637,10 @@ func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe) er
 	return nil
 }
 
-const archiveRecipeQuery = "UPDATE recipes SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
+const archiveRecipeQuery = "UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
 
 // ArchiveRecipe archives a recipe from the database by its ID.
-func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {
+func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

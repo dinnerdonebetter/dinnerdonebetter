@@ -6,14 +6,14 @@ import (
 	"encoding/json"
 	"fmt"
 
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/pkg/types"
-
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 )
 
 // PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:

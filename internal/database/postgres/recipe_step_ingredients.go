@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	_ types.RecipeStepIngredientDataManager = (*SQLQuerier)(nil)
+	_ types.RecipeStepIngredientDataManager = (*Querier)(nil)
 
 	// recipeStepIngredientsTableColumns are the columns for the recipe_step_ingredients table.
 	recipeStepIngredientsTableColumns = []string{
@@ -55,7 +55,7 @@ var (
 )
 
 // scanRecipeStepIngredient takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step ingredient struct.
-func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStepIngredient, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStepIngredient, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -80,8 +80,8 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.MeasurementUnit.CreatedAt,
 		&x.MeasurementUnit.LastUpdatedAt,
 		&x.MeasurementUnit.ArchivedAt,
-		&x.MinimumQuantityValue,
-		&x.MaximumQuantityValue,
+		&x.MinimumQuantity,
+		&x.MaximumQuantity,
 		&x.QuantityNotes,
 		&x.ProductOfRecipeStep,
 		&x.RecipeStepProductID,
@@ -104,7 +104,7 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 }
 
 // scanRecipeStepIngredients takes some database rows and turns them into a slice of recipe step ingredients.
-func (q *SQLQuerier) scanRecipeStepIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepIngredients []*types.RecipeStepIngredient, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeStepIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepIngredients []*types.RecipeStepIngredient, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -139,7 +139,7 @@ func (q *SQLQuerier) scanRecipeStepIngredients(ctx context.Context, rows databas
 const recipeStepIngredientExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_ingredients.id FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_at IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )"
 
 // RecipeStepIngredientExists fetches whether a recipe step ingredient exists from the database.
-func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (exists bool, err error) {
+func (q *Querier) RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -222,7 +222,7 @@ AND recipes.id = $5
 `
 
 // GetRecipeStepIngredient fetches a recipe step ingredient from the database.
-func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*types.RecipeStepIngredient, error) {
+func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -265,7 +265,7 @@ func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 }
 
 // getRecipeStepIngredientsForRecipe fetches a list of recipe step ingredients from the database that meet a particular filter.
-func (q *SQLQuerier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepIngredient, error) {
+func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -292,7 +292,7 @@ func (q *SQLQuerier) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 }
 
 // GetRecipeStepIngredients fetches a list of recipe step ingredients from the database that meet a particular filter.
-func (q *SQLQuerier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepIngredientList, err error) {
+func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepIngredientList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -354,7 +354,7 @@ const recipeStepIngredientCreationQuery = `INSERT INTO recipe_step_ingredients (
 `
 
 // createRecipeStepIngredient creates a recipe step ingredient in the database.
-func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
+func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -370,8 +370,8 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		input.Optional,
 		input.IngredientID,
 		input.MeasurementUnitID,
-		input.MinimumQuantityValue,
-		input.MaximumQuantityValue,
+		input.MinimumQuantity,
+		input.MaximumQuantity,
 		input.QuantityNotes,
 		input.ProductOfRecipeStep,
 		input.RecipeStepProductID,
@@ -385,19 +385,19 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 	}
 
 	x := &types.RecipeStepIngredient{
-		ID:                   input.ID,
-		Name:                 input.Name,
-		Optional:             input.Optional,
-		IngredientID:         input.IngredientID,
-		MeasurementUnit:      types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
-		MinimumQuantityValue: input.MinimumQuantityValue,
-		MaximumQuantityValue: input.MaximumQuantityValue,
-		QuantityNotes:        input.QuantityNotes,
-		ProductOfRecipeStep:  input.ProductOfRecipeStep,
-		IngredientNotes:      input.IngredientNotes,
-		BelongsToRecipeStep:  input.BelongsToRecipeStep,
-		RecipeStepProductID:  input.RecipeStepProductID,
-		CreatedAt:            q.currentTime(),
+		ID:                  input.ID,
+		Name:                input.Name,
+		Optional:            input.Optional,
+		IngredientID:        input.IngredientID,
+		MeasurementUnit:     types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
+		MinimumQuantity:     input.MinimumQuantity,
+		MaximumQuantity:     input.MaximumQuantity,
+		QuantityNotes:       input.QuantityNotes,
+		ProductOfRecipeStep: input.ProductOfRecipeStep,
+		IngredientNotes:     input.IngredientNotes,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		RecipeStepProductID: input.RecipeStepProductID,
+		CreatedAt:           q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
@@ -406,7 +406,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 }
 
 // CreateRecipeStepIngredient creates a recipe step ingredient in the database.
-func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
+func (q *Querier) CreateRecipeStepIngredient(ctx context.Context, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
 	return q.createRecipeStepIngredient(ctx, q.db, input)
 }
 
@@ -422,13 +422,13 @@ UPDATE recipe_step_ingredients SET
 	product_of_recipe_step = $8,
 	recipe_step_product_id = $9,
 	ingredient_notes = $10,
-	last_updated_at = extract(epoch FROM NOW()) 
+	last_updated_at = NOW() 
 WHERE archived_at IS NULL AND belongs_to_recipe_step = $11
 AND id = $12
 `
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
-func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *types.RecipeStepIngredient) error {
+func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types.RecipeStepIngredient) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -444,8 +444,8 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 		updated.Name,
 		updated.Optional,
 		updated.MeasurementUnit.ID,
-		updated.MinimumQuantityValue,
-		updated.MaximumQuantityValue,
+		updated.MinimumQuantity,
+		updated.MaximumQuantity,
 		updated.QuantityNotes,
 		updated.ProductOfRecipeStep,
 		updated.RecipeStepProductID,
@@ -463,10 +463,10 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 	return nil
 }
 
-const archiveRecipeStepIngredientQuery = "UPDATE recipe_step_ingredients SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
+const archiveRecipeStepIngredientQuery = "UPDATE recipe_step_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
 
 // ArchiveRecipeStepIngredient archives a recipe step ingredient from the database by its ID.
-func (q *SQLQuerier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID string) error {
+func (q *Querier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

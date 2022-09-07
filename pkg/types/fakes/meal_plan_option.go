@@ -35,7 +35,7 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 		Votes:             examples,
 		Chosen:            false,
 		Notes:             buildUniqueString(),
-		CreatedAt:         uint64(uint32(fake.Date().Unix())),
+		CreatedAt:         fake.Date(),
 		BelongsToMealPlan: fake.UUID(),
 		PrepStepsCreated:  false,
 	}

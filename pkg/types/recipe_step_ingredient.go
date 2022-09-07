@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -30,22 +31,22 @@ func init() {
 type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
-		_                    struct{}
-		IngredientID         *string              `json:"ingredientID"`
-		RecipeStepProductID  *string              `json:"recipeStepProductID"`
-		LastUpdatedAt        *uint64              `json:"lastUpdatedAt"`
-		ArchivedAt           *uint64              `json:"archivedAt"`
-		Name                 string               `json:"name"`
-		QuantityNotes        string               `json:"quantityNotes"`
-		BelongsToRecipeStep  string               `json:"belongsToRecipeStep"`
-		ID                   string               `json:"id"`
-		IngredientNotes      string               `json:"ingredientNotes"`
-		MeasurementUnit      ValidMeasurementUnit `json:"measurementUnit"`
-		CreatedAt            uint64               `json:"createdAt"`
-		MinimumQuantityValue float32              `json:"minimumQuantityValue"`
-		MaximumQuantityValue float32              `json:"maximumQuantityValue"`
-		Optional             bool                 `json:"optional"`
-		ProductOfRecipeStep  bool                 `json:"productOfRecipeStep"`
+		_                   struct{}
+		CreatedAt           time.Time            `json:"createdAt"`
+		RecipeStepProductID *string              `json:"recipeStepProductID"`
+		LastUpdatedAt       *time.Time           `json:"lastUpdatedAt"`
+		ArchivedAt          *time.Time           `json:"archivedAt"`
+		IngredientID        *string              `json:"ingredientID"`
+		QuantityNotes       string               `json:"quantityNotes"`
+		Name                string               `json:"name"`
+		ID                  string               `json:"id"`
+		IngredientNotes     string               `json:"ingredientNotes"`
+		BelongsToRecipeStep string               `json:"belongsToRecipeStep"`
+		MeasurementUnit     ValidMeasurementUnit `json:"measurementUnit"`
+		MinimumQuantity     float32              `json:"minimumQuantity"`
+		MaximumQuantity     float32              `json:"maximumQuantity"`
+		Optional            bool                 `json:"optional"`
+		ProductOfRecipeStep bool                 `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
@@ -57,36 +58,36 @@ type (
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_                    struct{}
-		IngredientID         *string                                `json:"ingredientID"`
-		RecipeStepProduct    *RecipeStepProductCreationRequestInput `json:"recipeStepProduct"`
-		ID                   string                                 `json:"-"`
-		BelongsToRecipeStep  string                                 `json:"-"`
-		Name                 string                                 `json:"name"`
-		MeasurementUnitID    string                                 `json:"measurementUnitID"`
-		QuantityNotes        string                                 `json:"quantityNotes"`
-		IngredientNotes      string                                 `json:"ingredientNotes"`
-		MaximumQuantityValue float32                                `json:"maximumQuantityValue"`
-		MinimumQuantityValue float32                                `json:"minimumQuantityValue"`
-		Optional             bool                                   `json:"optional"`
-		ProductOfRecipeStep  bool                                   `json:"productOfRecipeStep"`
+		_                   struct{}
+		IngredientID        *string                                `json:"ingredientID"`
+		RecipeStepProduct   *RecipeStepProductCreationRequestInput `json:"recipeStepProduct"`
+		ID                  string                                 `json:"-"`
+		BelongsToRecipeStep string                                 `json:"-"`
+		Name                string                                 `json:"name"`
+		MeasurementUnitID   string                                 `json:"measurementUnitID"`
+		QuantityNotes       string                                 `json:"quantityNotes"`
+		IngredientNotes     string                                 `json:"ingredientNotes"`
+		MaximumQuantity     float32                                `json:"maximumQuantity"`
+		MinimumQuantity     float32                                `json:"minimumQuantity"`
+		Optional            bool                                   `json:"optional"`
+		ProductOfRecipeStep bool                                   `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
-		_                    struct{}
-		IngredientID         *string `json:"ingredientID"`
-		RecipeStepProductID  *string `json:"recipeStepProductID"`
-		MeasurementUnitID    string  `json:"measurementUnitID"`
-		Name                 string  `json:"name"`
-		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
-		ID                   string  `json:"id"`
-		QuantityNotes        string  `json:"quantityNotes"`
-		IngredientNotes      string  `json:"ingredientNotes"`
-		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
-		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
-		Optional             bool    `json:"optional"`
-		ProductOfRecipeStep  bool    `json:"productOfRecipeStep"`
+		_                   struct{}
+		IngredientID        *string `json:"ingredientID"`
+		RecipeStepProductID *string `json:"recipeStepProductID"`
+		MeasurementUnitID   string  `json:"measurementUnitID"`
+		Name                string  `json:"name"`
+		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		ID                  string  `json:"id"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
+		MinimumQuantity     float32 `json:"minimumQuantity"`
+		MaximumQuantity     float32 `json:"maximumQuantity"`
+		Optional            bool    `json:"optional"`
+		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
@@ -96,16 +97,16 @@ type (
 		// IngredientID is already a pointer, and I don't feel like making it a double pointer.
 		IngredientID *string `json:"ingredientID"`
 		// RecipeStepProductID is already a pointer, and I don't feel like making it a double pointer.
-		RecipeStepProductID  *string  `json:"recipeStepProductID"`
-		Name                 *string  `json:"name"`
-		Optional             *bool    `json:"optional"`
-		MeasurementUnitID    *string  `json:"measurementUnitID"`
-		QuantityNotes        *string  `json:"quantityNotes"`
-		IngredientNotes      *string  `json:"ingredientNotes"`
-		BelongsToRecipeStep  *string  `json:"belongsToRecipeStep"`
-		MinimumQuantityValue *float32 `json:"minimumQuantityValue"`
-		MaximumQuantityValue *float32 `json:"maximumQuantityValue"`
-		ProductOfRecipeStep  *bool    `json:"productOfRecipeStep"`
+		RecipeStepProductID *string  `json:"recipeStepProductID"`
+		Name                *string  `json:"name"`
+		Optional            *bool    `json:"optional"`
+		MeasurementUnitID   *string  `json:"measurementUnitID"`
+		QuantityNotes       *string  `json:"quantityNotes"`
+		IngredientNotes     *string  `json:"ingredientNotes"`
+		BelongsToRecipeStep *string  `json:"belongsToRecipeStep"`
+		MinimumQuantity     *float32 `json:"minimumQuantity"`
+		MaximumQuantity     *float32 `json:"maximumQuantity"`
+		ProductOfRecipeStep *bool    `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.
@@ -146,12 +147,12 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
-	if input.MinimumQuantityValue != nil && *input.MinimumQuantityValue != x.MinimumQuantityValue {
-		x.MinimumQuantityValue = *input.MinimumQuantityValue
+	if input.MinimumQuantity != nil && *input.MinimumQuantity != x.MinimumQuantity {
+		x.MinimumQuantity = *input.MinimumQuantity
 	}
 
-	if input.MaximumQuantityValue != nil && *input.MaximumQuantityValue != x.MaximumQuantityValue {
-		x.MaximumQuantityValue = *input.MaximumQuantityValue
+	if input.MaximumQuantity != nil && *input.MaximumQuantity != x.MaximumQuantity {
+		x.MaximumQuantity = *input.MaximumQuantity
 	}
 
 	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
@@ -179,7 +180,7 @@ func (x *RecipeStepIngredientCreationRequestInput) ValidateWithContext(ctx conte
 		ctx,
 		x,
 		validation.Field(&x.MeasurementUnitID, validation.Required),
-		validation.Field(&x.MinimumQuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
 }
 
@@ -192,24 +193,24 @@ func (x *RecipeStepIngredientDatabaseCreationInput) ValidateWithContext(ctx cont
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
-		validation.Field(&x.MinimumQuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
 }
 
 // RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient creates a DatabaseCreationInput from a CreationInput.
 func RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(input *RecipeStepIngredient) *RecipeStepIngredientUpdateRequestInput {
 	x := &RecipeStepIngredientUpdateRequestInput{
-		IngredientID:         input.IngredientID,
-		RecipeStepProductID:  input.RecipeStepProductID,
-		Name:                 &input.Name,
-		MeasurementUnitID:    &input.MeasurementUnit.ID,
-		QuantityNotes:        &input.QuantityNotes,
-		IngredientNotes:      &input.IngredientNotes,
-		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
-		MinimumQuantityValue: &input.MinimumQuantityValue,
-		MaximumQuantityValue: &input.MaximumQuantityValue,
-		ProductOfRecipeStep:  &input.ProductOfRecipeStep,
-		Optional:             &input.Optional,
+		IngredientID:        input.IngredientID,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Name:                &input.Name,
+		MeasurementUnitID:   &input.MeasurementUnit.ID,
+		QuantityNotes:       &input.QuantityNotes,
+		IngredientNotes:     &input.IngredientNotes,
+		BelongsToRecipeStep: &input.BelongsToRecipeStep,
+		MinimumQuantity:     &input.MinimumQuantity,
+		MaximumQuantity:     &input.MaximumQuantity,
+		ProductOfRecipeStep: &input.ProductOfRecipeStep,
+		Optional:            &input.Optional,
 	}
 
 	return x
@@ -218,16 +219,16 @@ func RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(input *Recip
 // RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput creates a DatabaseCreationInput from a CreationInput.
 func RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(input *RecipeStepIngredientCreationRequestInput) *RecipeStepIngredientDatabaseCreationInput {
 	x := &RecipeStepIngredientDatabaseCreationInput{
-		IngredientID:         input.IngredientID,
-		Name:                 input.Name,
-		MeasurementUnitID:    input.MeasurementUnitID,
-		MinimumQuantityValue: input.MinimumQuantityValue,
-		MaximumQuantityValue: input.MaximumQuantityValue,
-		QuantityNotes:        input.QuantityNotes,
-		ProductOfRecipeStep:  input.ProductOfRecipeStep,
-		IngredientNotes:      input.IngredientNotes,
-		BelongsToRecipeStep:  input.BelongsToRecipeStep,
-		Optional:             input.Optional,
+		IngredientID:        input.IngredientID,
+		Name:                input.Name,
+		MeasurementUnitID:   input.MeasurementUnitID,
+		MinimumQuantity:     input.MinimumQuantity,
+		MaximumQuantity:     input.MaximumQuantity,
+		QuantityNotes:       input.QuantityNotes,
+		ProductOfRecipeStep: input.ProductOfRecipeStep,
+		IngredientNotes:     input.IngredientNotes,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		Optional:            input.Optional,
 	}
 
 	return x
@@ -241,6 +242,6 @@ func (x *RecipeStepIngredientUpdateRequestInput) ValidateWithContext(ctx context
 		ctx,
 		x,
 		validation.Field(&x.MeasurementUnitID, validation.Required),
-		validation.Field(&x.MinimumQuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
 }

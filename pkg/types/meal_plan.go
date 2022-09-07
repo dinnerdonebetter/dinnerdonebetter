@@ -43,17 +43,17 @@ type (
 	// MealPlan represents a meal plan.
 	MealPlan struct {
 		_                  struct{}
-		ArchivedAt         *uint64           `json:"archivedAt"`
-		LastUpdatedAt      *uint64           `json:"lastUpdatedAt"`
+		CreatedAt          time.Time         `json:"createdAt"`
+		VotingDeadline     time.Time         `json:"votingDeadline"`
+		StartsAt           time.Time         `json:"startsAt"`
+		EndsAt             time.Time         `json:"endsAt"`
+		ArchivedAt         *time.Time        `json:"archivedAt"`
+		LastUpdatedAt      *time.Time        `json:"lastUpdatedAt"`
+		Notes              string            `json:"notes"`
+		BelongsToHousehold string            `json:"belongsToHousehold"`
 		Status             MealPlanStatus    `json:"status"`
 		ID                 string            `json:"id"`
-		BelongsToHousehold string            `json:"belongsToHousehold"`
-		Notes              string            `json:"notes"`
 		Options            []*MealPlanOption `json:"options"`
-		VotingDeadline     uint64            `json:"votingDeadline"`
-		StartsAt           uint64            `json:"startsAt"`
-		EndsAt             uint64            `json:"endsAt"`
-		CreatedAt          uint64            `json:"createdAt"`
 	}
 
 	// MealPlanList represents a list of meal plans.
@@ -66,36 +66,36 @@ type (
 	// MealPlanCreationRequestInput represents what a user could set as input for creating meal plans.
 	MealPlanCreationRequestInput struct {
 		_                  struct{}
-		ID                 string                                `json:"-"`
+		EndsAt             time.Time                             `json:"endsAt"`
+		VotingDeadline     time.Time                             `json:"votingDeadline"`
+		StartsAt           time.Time                             `json:"startsAt"`
 		BelongsToHousehold string                                `json:"-"`
 		Notes              string                                `json:"notes"`
+		ID                 string                                `json:"-"`
 		Options            []*MealPlanOptionCreationRequestInput `json:"options"`
-		VotingDeadline     uint64                                `json:"votingDeadline"`
-		StartsAt           uint64                                `json:"startsAt"`
-		EndsAt             uint64                                `json:"endsAt"`
 	}
 
 	// MealPlanDatabaseCreationInput represents what a user could set as input for creating meal plans.
 	MealPlanDatabaseCreationInput struct {
 		_                  struct{}
-		ID                 string                                 `json:"id"`
-		Status             MealPlanStatus                         `json:"status"`
+		StartsAt           time.Time                              `json:"startsAt"`
+		EndsAt             time.Time                              `json:"endsAt"`
+		VotingDeadline     time.Time                              `json:"votingDeadline"`
 		BelongsToHousehold string                                 `json:"belongsToHousehold"`
 		Notes              string                                 `json:"notes"`
+		ID                 string                                 `json:"id"`
+		Status             MealPlanStatus                         `json:"status"`
 		Options            []*MealPlanOptionDatabaseCreationInput `json:"options"`
-		VotingDeadline     uint64                                 `json:"votingDeadline"`
-		StartsAt           uint64                                 `json:"startsAt"`
-		EndsAt             uint64                                 `json:"endsAt"`
 	}
 
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.
 	MealPlanUpdateRequestInput struct {
 		_                  struct{}
-		BelongsToHousehold *string `json:"-"`
-		Notes              *string `json:"notes"`
-		VotingDeadline     *uint64 `json:"votingDeadline"`
-		StartsAt           *uint64 `json:"startsAt"`
-		EndsAt             *uint64 `json:"endsAt"`
+		BelongsToHousehold *string    `json:"-"`
+		Notes              *string    `json:"notes"`
+		VotingDeadline     *time.Time `json:"votingDeadline"`
+		StartsAt           *time.Time `json:"startsAt"`
+		EndsAt             *time.Time `json:"endsAt"`
 	}
 
 	// MealPlanDataManager describes a structure capable of storing meal plans permanently.
@@ -142,15 +142,11 @@ var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)
 
 // ValidateWithContext validates a MealPlanCreationRequestInput.
 func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	startTime := time.Unix(int64(x.StartsAt), 0)
-	endTime := time.Unix(int64(x.EndsAt), 0)
-	votingDeadline := time.Unix(int64(x.VotingDeadline), 0)
-
-	if x.StartsAt == x.EndsAt || startTime.After(endTime) {
+	if x.StartsAt == x.EndsAt || x.StartsAt.After(x.EndsAt) {
 		return errStartsAfterItEnds
 	}
 
-	if x.StartsAt == x.VotingDeadline || (votingDeadline.After(startTime)) {
+	if x.StartsAt == x.VotingDeadline || (x.VotingDeadline.After(x.StartsAt)) {
 		return errStartsAfterItEnds
 	}
 
@@ -169,7 +165,7 @@ func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) 
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.VotingDeadline, validation.Min(uint64(time.Now().Add(-time.Hour).Unix()))),
+		validation.Field(&x.VotingDeadline, validation.Min(time.Now().Add(-time.Hour))),
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),
 		validation.Field(&x.Options, validation.NilOrNotEmpty),

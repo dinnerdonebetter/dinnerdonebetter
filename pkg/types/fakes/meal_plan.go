@@ -20,18 +20,18 @@ func BuildFakeMealPlan() *types.MealPlan {
 		options = append(options, option)
 	}
 
-	now := time.Now()
-	inTenMinutes := time.Now().Add(time.Minute * 10)
-	inOneWeek := time.Now().Add((time.Hour * 24) * 7)
+	now := time.Now().Add(0)
+	inTenMinutes := now.Add(time.Minute * 10)
+	inOneWeek := now.Add((time.Hour * 24) * 7)
 
 	return &types.MealPlan{
 		ID:                 mealPlanID,
 		Notes:              buildUniqueString(),
 		Status:             types.AwaitingVotesMealPlanStatus,
-		VotingDeadline:     uint64(now.Unix()),
-		StartsAt:           uint64(inTenMinutes.Unix()),
-		EndsAt:             uint64(inOneWeek.Unix()),
-		CreatedAt:          uint64(uint32(fake.Date().Unix())),
+		VotingDeadline:     now,
+		StartsAt:           inTenMinutes,
+		EndsAt:             inOneWeek,
+		CreatedAt:          fake.Date(),
 		BelongsToHousehold: fake.UUID(),
 		Options:            options,
 	}
@@ -100,12 +100,6 @@ func BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan *types.MealPlan)
 		Options:            options,
 		BelongsToHousehold: mealPlan.BelongsToHousehold,
 	}
-}
-
-// BuildFakeMealPlanDatabaseCreationInput builds a faked MealPlanDatabaseCreationInput.
-func BuildFakeMealPlanDatabaseCreationInput() *types.MealPlanDatabaseCreationInput {
-	mealPlan := BuildFakeMealPlan()
-	return BuildFakeMealPlanDatabaseCreationInputFromMealPlan(mealPlan)
 }
 
 // BuildFakeMealPlanDatabaseCreationInputFromMealPlan builds a faked MealPlanDatabaseCreationInput from a meal plan.

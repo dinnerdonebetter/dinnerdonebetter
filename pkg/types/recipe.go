@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -30,20 +31,19 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_ struct{}
-
-		LastUpdatedAt      *uint64       `json:"lastUpdatedAt"`
-		ArchivedAt         *uint64       `json:"archivedAt"`
+		_                  struct{}
+		CreatedAt          time.Time     `json:"createdAt"`
+		ArchivedAt         *time.Time    `json:"archivedAt"`
 		InspiredByRecipeID *string       `json:"inspiredByRecipeID"`
+		LastUpdatedAt      *time.Time    `json:"lastUpdatedAt"`
 		Source             string        `json:"source"`
 		Description        string        `json:"description"`
-		ID                 string        `json:"id"`
 		Name               string        `json:"name"`
 		CreatedByUser      string        `json:"belongsToUser"`
+		ID                 string        `json:"id"`
 		Steps              []*RecipeStep `json:"steps"`
 		SealOfApproval     bool          `json:"sealOfApproval"`
 		YieldsPortions     uint8         `json:"yieldsPortions"`
-		CreatedAt          uint64        `json:"createdAt"`
 	}
 
 	// RecipeList represents a list of recipes.

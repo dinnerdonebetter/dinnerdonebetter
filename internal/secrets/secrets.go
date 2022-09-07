@@ -51,9 +51,9 @@ func ProvideSecretManager(logger logging.Logger, tracerProvider tracing.TracerPr
 }
 
 // Encrypt does the following:
-//		1. JSON encodes a given value
-//		2. encrypts that encoded data
-//		3. base64 URL encodes that encrypted data
+//  1. JSON encodes a given value
+//  2. encrypts that encoded data
+//  3. base64 URL encodes that encrypted data
 func (sm *secretManager) Encrypt(ctx context.Context, value interface{}) (string, error) {
 	ctx, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
@@ -75,9 +75,9 @@ func (sm *secretManager) Encrypt(ctx context.Context, value interface{}) (string
 }
 
 // Decrypt does the following:
-//		1. base64 URL decodes the provided data
-//		2. decrypts that encoded data
-//		3. JSON decodes that decrypted data into the target variable.
+//  1. base64 URL decodes the provided data
+//  2. decrypts that encoded data
+//  3. JSON decodes that decrypted data into the target variable.
 func (sm *secretManager) Decrypt(ctx context.Context, content string, v interface{}) error {
 	ctx, span := sm.tracer.StartSpan(ctx)
 	defer span.End()

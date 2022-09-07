@@ -9,6 +9,7 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	featureflagsconfig "github.com/prixfixeco/api_server/internal/featureflags/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/routing"
@@ -66,6 +67,7 @@ type (
 		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
 		Meta          MetaSettings              `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Events        msgconfig.Config          `json:"events" mapstructure:"events" toml:"events,omitempty"`
+		FeatureFlags  featureflagsconfig.Config `json:"featureFlags" mapstructure:"events" toml:"events,omitempty"`
 		Server        server.Config             `json:"server" mapstructure:"server" toml:"server,omitempty"`
 		Services      ServicesConfigurations    `json:"services" mapstructure:"services" toml:"services,omitempty"`
 	}
@@ -144,6 +146,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 	if err := cfg.Email.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Email portion of config: %w", err)
+	}
+
+	if err := cfg.FeatureFlags.ValidateWithContext(ctx); err != nil {
+		return fmt.Errorf("error validating FeatureFlags portion of config: %w", err)
 	}
 
 	if validateServices {

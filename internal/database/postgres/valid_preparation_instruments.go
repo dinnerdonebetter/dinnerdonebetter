@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	_ types.ValidPreparationInstrumentDataManager = (*SQLQuerier)(nil)
+	_ types.ValidPreparationInstrumentDataManager = (*Querier)(nil)
 
 	// fullValidPreparationInstrumentsTableColumns are the columns for the valid_preparation_instruments table.
 	fullValidPreparationInstrumentsTableColumns = []string{
@@ -52,7 +52,7 @@ var (
 )
 
 // scanValidPreparationInstrument takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient preparation struct.
-func (q *SQLQuerier) scanValidPreparationInstrument(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidPreparationInstrument, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidPreparationInstrument(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidPreparationInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -100,7 +100,7 @@ func (q *SQLQuerier) scanValidPreparationInstrument(ctx context.Context, scan da
 }
 
 // scanValidPreparationInstruments takes some database rows and turns them into a slice of valid ingredient preparations.
-func (q *SQLQuerier) scanValidPreparationInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validPreparationInstruments []*types.ValidPreparationInstrument, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanValidPreparationInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validPreparationInstruments []*types.ValidPreparationInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -135,7 +135,7 @@ func (q *SQLQuerier) scanValidPreparationInstruments(ctx context.Context, rows d
 const validPreparationInstrumentExistenceQuery = "SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = $1 )"
 
 // ValidPreparationInstrumentExists fetches whether a valid ingredient preparation exists from the database.
-func (q *SQLQuerier) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
+func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -195,7 +195,7 @@ WHERE
 `
 
 // GetValidPreparationInstrument fetches a valid ingredient preparation from the database.
-func (q *SQLQuerier) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*types.ValidPreparationInstrument, error) {
+func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*types.ValidPreparationInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -222,7 +222,7 @@ func (q *SQLQuerier) GetValidPreparationInstrument(ctx context.Context, validPre
 }
 
 // GetValidPreparationInstruments fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
+func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -267,7 +267,7 @@ func (q *SQLQuerier) GetValidPreparationInstruments(ctx context.Context, filter 
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -287,12 +287,12 @@ func (q *SQLQuerier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx
 	return query, args
 }
 
-func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
 }
 
 // GetValidPreparationInstrumentsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
+func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -337,12 +337,12 @@ func (q *SQLQuerier) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_instrument_id", limit, ids)
 }
 
 // GetValidPreparationInstrumentsForInstrument fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
+func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -390,7 +390,7 @@ func (q *SQLQuerier) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 const validPreparationInstrumentCreationQuery = "INSERT INTO valid_preparation_instruments (id,notes,valid_preparation_id,valid_instrument_id) VALUES ($1,$2,$3,$4)"
 
 // CreateValidPreparationInstrument creates a valid ingredient preparation in the database.
-func (q *SQLQuerier) CreateValidPreparationInstrument(ctx context.Context, input *types.ValidPreparationInstrumentDatabaseCreationInput) (*types.ValidPreparationInstrument, error) {
+func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *types.ValidPreparationInstrumentDatabaseCreationInput) (*types.ValidPreparationInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -426,10 +426,10 @@ func (q *SQLQuerier) CreateValidPreparationInstrument(ctx context.Context, input
 	return x, nil
 }
 
-const updateValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $4"
+const updateValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4"
 
 // UpdateValidPreparationInstrument updates a particular valid ingredient preparation.
-func (q *SQLQuerier) UpdateValidPreparationInstrument(ctx context.Context, updated *types.ValidPreparationInstrument) error {
+func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated *types.ValidPreparationInstrument) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -456,10 +456,10 @@ func (q *SQLQuerier) UpdateValidPreparationInstrument(ctx context.Context, updat
 	return nil
 }
 
-const archiveValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET archived_at = extract(epoch FROM NOW()) WHERE archived_at IS NULL AND id = $1"
+const archiveValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveValidPreparationInstrument archives a valid ingredient preparation from the database by its ID.
-func (q *SQLQuerier) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
+func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

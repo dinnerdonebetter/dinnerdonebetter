@@ -202,23 +202,23 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 					{
 						Products: []*types.RecipeStepProduct{
 							{
-								Name:                 linedBakingSheetName,
-								Type:                 types.RecipeStepProductInstrumentType,
-								MeasurementUnit:      *unit,
-								QuantityNotes:        "",
-								MinimumQuantityValue: 1,
+								Name:            linedBakingSheetName,
+								Type:            types.RecipeStepProductInstrumentType,
+								MeasurementUnit: *unit,
+								QuantityNotes:   "",
+								MinimumQuantity: 1,
 							},
 						},
 						Notes:       "first step",
 						Preparation: *line,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								RecipeStepProductID:  nil,
-								IngredientID:         &aluminumFoil.ID,
-								Name:                 "aluminum foil",
-								MeasurementUnit:      *sheets,
-								MinimumQuantityValue: 3,
-								ProductOfRecipeStep:  false,
+								RecipeStepProductID: nil,
+								IngredientID:        &aluminumFoil.ID,
+								Name:                "aluminum foil",
+								MeasurementUnit:     *sheets,
+								MinimumQuantity:     3,
+								ProductOfRecipeStep: false,
 							},
 						},
 						Instruments: []*types.RecipeStepInstrument{
@@ -238,22 +238,22 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 						},
 						Products: []*types.RecipeStepProduct{
 							{
-								Name:                 "roasted garlic",
-								Type:                 types.RecipeStepProductIngredientType,
-								MeasurementUnit:      *head,
-								QuantityNotes:        "",
-								MinimumQuantityValue: 1,
+								Name:            "roasted garlic",
+								Type:            types.RecipeStepProductIngredientType,
+								MeasurementUnit: *head,
+								QuantityNotes:   "",
+								MinimumQuantity: 1,
 							},
 						},
 						Notes:       "second step",
 						Preparation: *roast,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								IngredientID:         &garlic.ID,
-								Name:                 "garlic",
-								MeasurementUnit:      *head,
-								MinimumQuantityValue: 1,
-								ProductOfRecipeStep:  false,
+								IngredientID:        &garlic.ID,
+								Name:                "garlic",
+								MeasurementUnit:     *head,
+								MinimumQuantity:     1,
+								ProductOfRecipeStep: false,
 							},
 						},
 						Index: 1,
@@ -280,28 +280,28 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 				for _, ingredient := range step.Ingredients {
 					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						IngredientID:         ingredient.IngredientID,
-						ID:                   ingredient.ID,
-						BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
-						Name:                 ingredient.Name,
-						MeasurementUnitID:    ingredient.MeasurementUnit.ID,
-						QuantityNotes:        ingredient.QuantityNotes,
-						IngredientNotes:      ingredient.IngredientNotes,
-						MinimumQuantityValue: ingredient.MinimumQuantityValue,
-						ProductOfRecipeStep:  ingredient.ProductOfRecipeStep,
+						IngredientID:        ingredient.IngredientID,
+						ID:                  ingredient.ID,
+						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
+						Name:                ingredient.Name,
+						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
+						QuantityNotes:       ingredient.QuantityNotes,
+						IngredientNotes:     ingredient.IngredientNotes,
+						MinimumQuantity:     ingredient.MinimumQuantity,
+						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
 					}
 					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 				}
 
 				for _, product := range step.Products {
 					newProduct := &types.RecipeStepProductCreationRequestInput{
-						ID:                   product.ID,
-						Name:                 product.Name,
-						Type:                 product.Type,
-						MeasurementUnitID:    product.MeasurementUnit.ID,
-						QuantityNotes:        product.QuantityNotes,
-						BelongsToRecipeStep:  product.BelongsToRecipeStep,
-						MinimumQuantityValue: product.MinimumQuantityValue,
+						ID:                  product.ID,
+						Name:                product.Name,
+						Type:                product.Type,
+						MeasurementUnitID:   product.MeasurementUnit.ID,
+						QuantityNotes:       product.QuantityNotes,
+						BelongsToRecipeStep: product.BelongsToRecipeStep,
+						MinimumQuantity:     product.MinimumQuantity,
 					}
 					newStep.Products = append(newStep.Products, newProduct)
 				}

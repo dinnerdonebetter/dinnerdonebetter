@@ -3,6 +3,7 @@ package types
 import (
 	"context"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -22,16 +23,15 @@ const (
 type (
 	// APIClient represents a user-authorized API client.
 	APIClient struct {
-		_ struct{}
-
-		LastUpdatedAt *uint64 `json:"lastUpdatedAt"`
-		ArchivedAt    *uint64 `json:"archivedAt"`
-		Name          string  `json:"name"`
-		ClientID      string  `json:"clientID"`
-		ID            string  `json:"id"`
-		BelongsToUser string  `json:"belongsToUser"`
-		ClientSecret  []byte  `json:"-"`
-		CreatedAt     uint64  `json:"createdAt"`
+		_             struct{}
+		CreatedAt     time.Time  `json:"createdAt"`
+		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time `json:"archivedAt"`
+		Name          string     `json:"name"`
+		ClientID      string     `json:"clientID"`
+		ID            string     `json:"id"`
+		BelongsToUser string     `json:"belongsToUser"`
+		ClientSecret  []byte     `json:"-"`
 	}
 
 	// APIClientList is a response struct containing a list of API clients.

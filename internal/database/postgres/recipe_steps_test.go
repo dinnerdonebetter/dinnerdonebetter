@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -49,7 +50,7 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.Optional,
 			x.CreatedAt,
 			x.LastUpdatedAt,
-			x.ArchivedAT,
+			x.ArchivedAt,
 			x.BelongsToRecipe,
 		}
 
@@ -446,7 +447,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 
@@ -496,7 +497,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(expectedErr)
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 
@@ -564,8 +565,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.Optional,
 				ingredient.IngredientID,
 				ingredient.MeasurementUnitID,
-				ingredient.MinimumQuantityValue,
-				ingredient.MaximumQuantityValue,
+				ingredient.MinimumQuantity,
+				ingredient.MaximumQuantity,
 				ingredient.QuantityNotes,
 				ingredient.ProductOfRecipeStep,
 				ingredient.RecipeStepProductID,
@@ -584,8 +585,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				product.Name,
 				product.Type,
 				product.MeasurementUnitID,
-				product.MinimumQuantityValue,
-				product.MaximumQuantityValue,
+				product.MinimumQuantity,
+				product.MaximumQuantity,
 				product.QuantityNotes,
 				product.Compostable,
 				product.MaximumStorageDurationInSeconds,
@@ -620,7 +621,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				WillReturnResult(newArbitraryDatabaseResult())
 		}
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 
@@ -672,8 +673,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Ingredients[0].Optional,
 			exampleInput.Ingredients[0].IngredientID,
 			exampleInput.Ingredients[0].MeasurementUnitID,
-			exampleInput.Ingredients[0].MinimumQuantityValue,
-			exampleInput.Ingredients[0].MaximumQuantityValue,
+			exampleInput.Ingredients[0].MinimumQuantity,
+			exampleInput.Ingredients[0].MaximumQuantity,
 			exampleInput.Ingredients[0].QuantityNotes,
 			exampleInput.Ingredients[0].ProductOfRecipeStep,
 			exampleInput.Ingredients[0].RecipeStepProductID,
@@ -685,7 +686,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 
@@ -743,8 +744,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.Optional,
 				ingredient.IngredientID,
 				ingredient.MeasurementUnitID,
-				ingredient.MinimumQuantityValue,
-				ingredient.MaximumQuantityValue,
+				ingredient.MinimumQuantity,
+				ingredient.MaximumQuantity,
 				ingredient.QuantityNotes,
 				ingredient.ProductOfRecipeStep,
 				ingredient.RecipeStepProductID,
@@ -762,8 +763,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Products[0].Name,
 			exampleInput.Products[0].Type,
 			exampleInput.Products[0].MeasurementUnitID,
-			exampleInput.Products[0].MinimumQuantityValue,
-			exampleInput.Products[0].MaximumQuantityValue,
+			exampleInput.Products[0].MinimumQuantity,
+			exampleInput.Products[0].MaximumQuantity,
 			exampleInput.Products[0].QuantityNotes,
 			exampleInput.Products[0].Compostable,
 			exampleInput.Products[0].MaximumStorageDurationInSeconds,
@@ -777,7 +778,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		c.timeFunc = func() uint64 {
+		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
 

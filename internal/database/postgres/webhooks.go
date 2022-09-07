@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
+	_ "embed"
 	"strings"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -21,7 +23,7 @@ const (
 )
 
 var (
-	_ types.WebhookDataManager = (*SQLQuerier)(nil)
+	_ types.WebhookDataManager = (*Querier)(nil)
 
 	// webhooksTableColumns are the columns for the webhooks table.
 	webhooksTableColumns = []string{
@@ -41,7 +43,7 @@ var (
 )
 
 // scanWebhook is a consistent way to turn a *sql.Row into a webhook struct.
-func (q *SQLQuerier) scanWebhook(ctx context.Context, scan database.Scanner, includeCounts bool) (webhook *types.Webhook, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanWebhook(ctx context.Context, scan database.Scanner, includeCounts bool) (webhook *types.Webhook, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -52,6 +54,9 @@ func (q *SQLQuerier) scanWebhook(ctx context.Context, scan database.Scanner, inc
 		eventsStr,
 		dataTypesStr,
 		topicsStr string
+
+		lastUpdatedAt,
+		archivedAt sql.NullTime
 	)
 
 	targetVars := []interface{}{
@@ -64,8 +69,8 @@ func (q *SQLQuerier) scanWebhook(ctx context.Context, scan database.Scanner, inc
 		&dataTypesStr,
 		&topicsStr,
 		&webhook.CreatedAt,
-		&webhook.LastUpdatedAt,
-		&webhook.ArchivedAt,
+		&lastUpdatedAt,
+		&archivedAt,
 		&webhook.BelongsToHousehold,
 	}
 
@@ -89,11 +94,19 @@ func (q *SQLQuerier) scanWebhook(ctx context.Context, scan database.Scanner, inc
 		webhook.Topics = topics
 	}
 
+	if lastUpdatedAt.Valid {
+		webhook.LastUpdatedAt = &lastUpdatedAt.Time
+	}
+
+	if archivedAt.Valid {
+		webhook.ArchivedAt = &archivedAt.Time
+	}
+
 	return webhook, filteredCount, totalCount, nil
 }
 
 // scanWebhooks provides a consistent way to turn sql rows into a slice of webhooks.
-func (q *SQLQuerier) scanWebhooks(ctx context.Context, rows database.ResultIterator, includeCounts bool) (webhooks []*types.Webhook, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanWebhooks(ctx context.Context, rows database.ResultIterator, includeCounts bool) (webhooks []*types.Webhook, filteredCount, totalCount uint64, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -129,10 +142,11 @@ func (q *SQLQuerier) scanWebhooks(ctx context.Context, rows database.ResultItera
 	return webhooks, filteredCount, totalCount, nil
 }
 
-const webhookExistenceQuery = "SELECT EXISTS ( SELECT webhooks.id FROM webhooks WHERE webhooks.archived_at IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2 )"
+//go:embed queries/webhooks_get_exists.sql
+var webhookExistenceQuery string
 
 // WebhookExists fetches whether a webhook exists from the database.
-func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
+func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -163,12 +177,11 @@ func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, householdID s
 	return result, nil
 }
 
-const getWebhookQuery = `
-	SELECT webhooks.id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_at, webhooks.last_updated_at, webhooks.archived_at, webhooks.belongs_to_household FROM webhooks WHERE webhooks.archived_at IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2
-`
+//go:embed queries/webhooks_get_one.sql
+var getWebhookQuery string
 
 // GetWebhook fetches a webhook from the database.
-func (q *SQLQuerier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
+func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -200,7 +213,7 @@ func (q *SQLQuerier) GetWebhook(ctx context.Context, webhookID, householdID stri
 }
 
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
-func (q *SQLQuerier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
+func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -237,12 +250,11 @@ func (q *SQLQuerier) GetWebhooks(ctx context.Context, householdID string, filter
 	return x, nil
 }
 
-const createWebhookQuery = `
-	INSERT INTO webhooks (id,name,content_type,url,method,events,data_types,topics,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-`
+//go:embed queries/webhooks_create.sql
+var createWebhookQuery string
 
 // CreateWebhook creates a webhook in a database.
-func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
+func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -289,17 +301,11 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 	return x, nil
 }
 
-const archiveWebhookQuery = `
-UPDATE webhooks SET
-	last_updated_at = extract(epoch FROM NOW()), 
-	archived_at = extract(epoch FROM NOW())
-WHERE archived_at IS NULL 
-AND belongs_to_household = $1
-AND id = $2
-`
+//go:embed queries/webhooks_archive.sql
+var archiveWebhookQuery string
 
 // ArchiveWebhook archives a webhook from the database.
-func (q *SQLQuerier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
+func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

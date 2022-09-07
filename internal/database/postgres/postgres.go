@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -31,14 +30,14 @@ const (
 	postgresDuplicateEntryErrorCode = "23505"
 )
 
-var _ database.DataManager = (*SQLQuerier)(nil)
+var _ database.DataManager = (*Querier)(nil)
 
-// SQLQuerier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
-type SQLQuerier struct {
+// Querier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
+type Querier struct {
 	tracer        tracing.Tracer
 	sqlBuilder    squirrel.StatementBuilderType
 	logger        logging.Logger
-	timeFunc      func() uint64
+	timeFunc      func() time.Time
 	config        *dbconfig.Config
 	db            *sql.DB
 	connectionURL string
@@ -79,7 +78,7 @@ func ProvideDatabaseClient(
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
 
-	c := &SQLQuerier{
+	c := &Querier{
 		db:            db,
 		config:        cfg,
 		tracer:        tracer,
@@ -111,17 +110,17 @@ func ProvideDatabaseClient(
 }
 
 // DB provides the scs Store for MySQL.
-func (q *SQLQuerier) DB() *sql.DB {
+func (q *Querier) DB() *sql.DB {
 	return q.db
 }
 
 // ProvideSessionStore provides the scs Store for MySQL.
-func (q *SQLQuerier) ProvideSessionStore() scs.Store {
+func (q *Querier) ProvideSessionStore() scs.Store {
 	return postgresstore.New(q.db)
 }
 
 // IsReady is a simple wrapper around the core querier IsReady call.
-func (q *SQLQuerier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool) {
+func (q *Querier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -148,11 +147,11 @@ func (q *SQLQuerier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool
 	return false
 }
 
-func defaultTimeFunc() uint64 {
-	return uint64(time.Now().Unix())
+func defaultTimeFunc() time.Time {
+	return time.Now()
 }
 
-func (q *SQLQuerier) currentTime() uint64 {
+func (q *Querier) currentTime() time.Time {
 	if q == nil || q.timeFunc == nil {
 		return defaultTimeFunc()
 	}
@@ -160,7 +159,7 @@ func (q *SQLQuerier) currentTime() uint64 {
 	return q.timeFunc()
 }
 
-func (q *SQLQuerier) checkRowsForErrorAndClose(ctx context.Context, rows database.ResultIterator) error {
+func (q *Querier) checkRowsForErrorAndClose(ctx context.Context, rows database.ResultIterator) error {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -179,7 +178,7 @@ func (q *SQLQuerier) checkRowsForErrorAndClose(ctx context.Context, rows databas
 	return nil
 }
 
-func (q *SQLQuerier) rollbackTransaction(ctx context.Context, tx database.SQLQueryExecutorAndTransactionManager) {
+func (q *Querier) rollbackTransaction(ctx context.Context, tx database.SQLQueryExecutorAndTransactionManager) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -192,11 +191,11 @@ func (q *SQLQuerier) rollbackTransaction(ctx context.Context, tx database.SQLQue
 	q.logger.Debug("transaction rolled back")
 }
 
-func (q *SQLQuerier) getOneRow(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) *sql.Row {
+func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) *sql.Row {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = strings.TrimSpace(query)
+	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
@@ -214,11 +213,11 @@ func (q *SQLQuerier) getOneRow(ctx context.Context, querier database.SQLQueryExe
 	return row
 }
 
-func (q *SQLQuerier) performReadQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) (*sql.Rows, error) {
+func (q *Querier) performReadQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) (*sql.Rows, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = strings.TrimSpace(query)
+	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
@@ -243,12 +242,12 @@ func (q *SQLQuerier) performReadQuery(ctx context.Context, querier database.SQLQ
 	return rows, nil
 }
 
-func (q *SQLQuerier) performBooleanQuery(ctx context.Context, querier database.SQLQueryExecutor, query string, args []interface{}) (bool, error) {
+func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQueryExecutor, query string, args []interface{}) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	var exists bool
-	query = strings.TrimSpace(query)
+	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue(keys.DatabaseQueryKey, query).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, "boolean query", query, args)
@@ -268,11 +267,11 @@ func (q *SQLQuerier) performBooleanQuery(ctx context.Context, querier database.S
 	return exists, nil
 }
 
-func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) error {
+func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = strings.TrimSpace(query)
+	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
