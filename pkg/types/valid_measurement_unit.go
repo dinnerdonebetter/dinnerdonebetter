@@ -34,14 +34,14 @@ type (
 	// ValidMeasurementUnit represents a valid measurement unit.
 	ValidMeasurementUnit struct {
 		_             struct{}
+		CreatedAt     time.Time  `json:"createdAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time `json:"archivedAt"`
-		Name          string     `json:"name"`
-		Description   string     `json:"description"`
-		ID            string     `json:"id"`
 		IconPath      string     `json:"iconPath"`
+		ID            string     `json:"id"`
+		Description   string     `json:"description"`
 		PluralName    string     `json:"pluralName"`
-		CreatedAt     time.Time  `json:"createdAt"`
+		Name          string     `json:"name"`
 		Volumetric    bool       `json:"volumetric"`
 		Universal     bool       `json:"universal"`
 		Metric        bool       `json:"metric"`
@@ -58,11 +58,11 @@ type (
 	// ValidMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitCreationRequestInput struct {
 		_           struct{}
+		CreatedAt   time.Time `json:"createdAt"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
 		IconPath    string    `json:"iconPath"`
 		PluralName  string    `json:"pluralName"`
-		CreatedAt   time.Time `json:"createdAt"`
 		Volumetric  bool      `json:"volumetric"`
 		Universal   bool      `json:"universal"`
 		Metric      bool      `json:"metric"`
@@ -72,12 +72,12 @@ type (
 	// ValidMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitDatabaseCreationInput struct {
 		_           struct{}
+		CreatedAt   time.Time `json:"createdAt"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
 		ID          string    `json:"id"`
 		IconPath    string    `json:"iconPath"`
 		PluralName  string    `json:"pluralName"`
-		CreatedAt   time.Time `json:"createdAt"`
 		Volumetric  bool      `json:"volumetric"`
 		Universal   bool      `json:"universal"`
 		Metric      bool      `json:"metric"`

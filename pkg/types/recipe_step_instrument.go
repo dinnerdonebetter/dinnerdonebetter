@@ -32,20 +32,20 @@ type (
 	// RecipeStepInstrument represents a recipe step instrument.
 	RecipeStepInstrument struct {
 		_                   struct{}
-		ArchivedAt          *time.Time       `json:"archivedAt"`
+		CreatedAt           time.Time        `json:"createdAt"`
 		Instrument          *ValidInstrument `json:"instrument"`
 		LastUpdatedAt       *time.Time       `json:"lastUpdatedAt"`
 		RecipeStepProductID *string          `json:"recipeStepProductID"`
+		ArchivedAt          *time.Time       `json:"archivedAt"`
 		Notes               string           `json:"notes"`
 		Name                string           `json:"name"`
-		ID                  string           `json:"id"`
 		BelongsToRecipeStep string           `json:"belongsToRecipeStep"`
-		CreatedAt           time.Time        `json:"createdAt"`
+		ID                  string           `json:"id"`
+		MinimumQuantity     uint32           `json:"minimumQuantity"`
+		MaximumQuantity     uint32           `json:"maximumQuantity"`
 		ProductOfRecipeStep bool             `json:"productOfRecipeStep"`
 		PreferenceRank      uint8            `json:"preferenceRank"`
 		Optional            bool             `json:"optional"`
-		MinimumQuantity     uint32           `json:"minimumQuantity"`
-		MaximumQuantity     uint32           `json:"maximumQuantity"`
 	}
 
 	// RecipeStepInstrumentList represents a list of recipe step instruments.

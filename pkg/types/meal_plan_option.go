@@ -47,17 +47,17 @@ type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
 		_                  struct{}
-		ArchivedAt         *time.Time            `json:"archivedAt"`
-		LastUpdatedAt      *time.Time            `json:"lastUpdatedAt"`
-		ID                 string                `json:"id"`
-		BelongsToMealPlan  string                `json:"belongsToMealPlan"`
-		Notes              string                `json:"notes"`
-		MealName           string                `json:"mealName"`
-		AssignedCook       *string               `json:"assignedCook"`
-		AssignedDishwasher *string               `json:"assignedDishwasher"`
-		Votes              []*MealPlanOptionVote `json:"votes"`
 		Meal               Meal                  `json:"meal"`
 		CreatedAt          time.Time             `json:"createdAt"`
+		AssignedCook       *string               `json:"assignedCook"`
+		ArchivedAt         *time.Time            `json:"archivedAt"`
+		LastUpdatedAt      *time.Time            `json:"lastUpdatedAt"`
+		AssignedDishwasher *string               `json:"assignedDishwasher"`
+		MealName           string                `json:"mealName"`
+		Notes              string                `json:"notes"`
+		BelongsToMealPlan  string                `json:"belongsToMealPlan"`
+		ID                 string                `json:"id"`
+		Votes              []*MealPlanOptionVote `json:"votes"`
 		Day                time.Weekday          `json:"day"`
 		Chosen             bool                  `json:"chosen"`
 		TieBroken          bool                  `json:"tieBroken"`

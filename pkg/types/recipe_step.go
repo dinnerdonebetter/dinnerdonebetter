@@ -35,19 +35,19 @@ type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
 		_                             struct{}
+		CreatedAt                     time.Time               `json:"createdAt"`
 		LastUpdatedAt                 *time.Time              `json:"lastUpdatedAt"`
 		MaximumTemperatureInCelsius   *uint16                 `json:"maximumTemperatureInCelsius"`
 		ArchivedAt                    *time.Time              `json:"archivedAt"`
 		MinimumTemperatureInCelsius   *uint16                 `json:"minimumTemperatureInCelsius"`
+		Preparation                   ValidPreparation        `json:"preparation"`
 		Notes                         string                  `json:"notes"`
 		BelongsToRecipe               string                  `json:"belongsToRecipe"`
 		ID                            string                  `json:"id"`
 		ExplicitInstructions          string                  `json:"explicitInstructions"`
 		Products                      []*RecipeStepProduct    `json:"products"`
-		Ingredients                   []*RecipeStepIngredient `json:"ingredients"`
 		Instruments                   []*RecipeStepInstrument `json:"instruments"`
-		Preparation                   ValidPreparation        `json:"preparation"`
-		CreatedAt                     time.Time               `json:"createdAt"`
+		Ingredients                   []*RecipeStepIngredient `json:"ingredients"`
 		Index                         uint32                  `json:"index"`
 		MaximumEstimatedTimeInSeconds uint32                  `json:"maximumEstimatedTimeInSeconds"`
 		MinimumEstimatedTimeInSeconds uint32                  `json:"minimumEstimatedTimeInSeconds"`

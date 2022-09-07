@@ -22,29 +22,27 @@ const (
 type (
 	// HouseholdUserMembership defines a relationship between a user and a household.
 	HouseholdUserMembership struct {
-		_ struct{}
-
-		ArchivedAt         *time.Time `json:"archivedAt"`
+		_                  struct{}
+		CreatedAt          time.Time  `json:"createdAt"`
 		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt         *time.Time `json:"archivedAt"`
 		ID                 string     `json:"id"`
 		BelongsToUser      string     `json:"belongsToUser"`
 		BelongsToHousehold string     `json:"belongsToHousehold"`
 		HouseholdRoles     []string   `json:"householdRole"`
-		CreatedAt          time.Time  `json:"createdAt"`
 		DefaultHousehold   bool       `json:"defaultHousehold"`
 	}
 
 	// HouseholdUserMembershipWithUser defines a relationship between a user and a household.
 	HouseholdUserMembershipWithUser struct {
-		_ struct{}
-
-		ArchivedAt         *time.Time `json:"archivedAt"`
+		_                  struct{}
+		CreatedAt          time.Time  `json:"createdAt"`
 		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
-		ID                 string     `json:"id"`
 		BelongsToUser      *User      `json:"belongsToUser"`
+		ArchivedAt         *time.Time `json:"archivedAt"`
+		ID                 string     `json:"id"`
 		BelongsToHousehold string     `json:"belongsToHousehold"`
 		HouseholdRoles     []string   `json:"householdRole"`
-		CreatedAt          time.Time  `json:"createdAt"`
 		DefaultHousehold   bool       `json:"defaultHousehold"`
 	}
 

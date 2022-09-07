@@ -39,22 +39,22 @@ type (
 	// User represents a User.
 	User struct {
 		_                         struct{}
+		CreatedAt                 time.Time         `json:"createdAt"`
 		PasswordLastChangedAt     *time.Time        `json:"passwordLastChangedAt"`
-		ArchivedAt                *time.Time        `json:"archivedAt"`
 		LastUpdatedAt             *time.Time        `json:"lastUpdatedAt"`
 		TwoFactorSecretVerifiedAt *time.Time        `json:"twoFactorSecretVerifiedAt"`
 		AvatarSrc                 *string           `json:"avatar"`
 		BirthMonth                *uint8            `json:"birthMonth"`
 		BirthDay                  *uint8            `json:"birthDay"`
-		EmailAddress              string            `json:"emailAddress"`
+		ArchivedAt                *time.Time        `json:"archivedAt"`
 		AccountStatusExplanation  string            `json:"accountStatusExplanation"`
 		TwoFactorSecret           string            `json:"-"`
 		HashedPassword            string            `json:"-"`
 		ID                        string            `json:"id"`
 		AccountStatus             userAccountStatus `json:"accountStatus"`
 		Username                  string            `json:"username"`
+		EmailAddress              string            `json:"emailAddress"`
 		ServiceRoles              []string          `json:"serviceRoles"`
-		CreatedAt                 time.Time         `json:"createdAt"`
 		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}
 
@@ -96,16 +96,16 @@ type (
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
 		_               struct{}
+		CreatedAt       time.Time         `json:"createdAt"`
 		BirthMonth      *uint8            `json:"birthMonth"`
 		BirthDay        *uint8            `json:"birthDay"`
-		Username        string            `json:"username"`
 		AvatarSrc       *string           `json:"avatar"`
+		Username        string            `json:"username"`
 		EmailAddress    string            `json:"emailAddress"`
 		TwoFactorQRCode string            `json:"qrCode"`
 		CreatedUserID   string            `json:"createdUserID"`
 		AccountStatus   userAccountStatus `json:"accountStatus"`
 		TwoFactorSecret string            `json:"twoFactorSecret"`
-		CreatedAt       time.Time         `json:"createdAt"`
 		IsAdmin         bool              `json:"isAdmin"`
 	}
 

@@ -32,15 +32,15 @@ type (
 	// ValidInstrument represents a valid instrument.
 	ValidInstrument struct {
 		_                struct{}
+		CreatedAt        time.Time  `json:"createdAt"`
 		LastUpdatedAt    *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt       *time.Time `json:"archivedAt"`
-		Description      string     `json:"description"`
 		IconPath         string     `json:"iconPath"`
 		ID               string     `json:"id"`
 		Name             string     `json:"name"`
 		PluralName       string     `json:"pluralName"`
+		Description      string     `json:"description"`
 		UsableForStorage bool       `json:"usedForStorage"`
-		CreatedAt        time.Time  `json:"createdAt"`
 	}
 
 	// NullableValidInstrument represents a fully nullable valid instrument.

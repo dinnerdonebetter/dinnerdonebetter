@@ -32,13 +32,13 @@ type (
 	// ValidPreparationInstrument represents a valid preparation instrument.
 	ValidPreparationInstrument struct {
 		_             struct{}
-		ArchivedAt    *time.Time       `json:"archivedAt"`
-		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
-		Notes         string           `json:"notes"`
-		ID            string           `json:"id"`
-		Instrument    ValidInstrument  `json:"instrument"`
-		Preparation   ValidPreparation `json:"preparation"`
 		CreatedAt     time.Time        `json:"createdAt"`
+		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time       `json:"archivedAt"`
+		ID            string           `json:"id"`
+		Notes         string           `json:"notes"`
+		Preparation   ValidPreparation `json:"preparation"`
+		Instrument    ValidInstrument  `json:"instrument"`
 	}
 
 	// ValidPreparationInstrumentList represents a list of valid preparation instruments.

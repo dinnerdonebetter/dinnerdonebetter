@@ -32,13 +32,13 @@ type (
 	// ValidIngredientMeasurementUnit represents a valid ingredient measurement unit.
 	ValidIngredientMeasurementUnit struct {
 		_                        struct{}
-		ArchivedAt               *time.Time           `json:"archivedAt"`
+		CreatedAt                time.Time            `json:"createdAt"`
 		LastUpdatedAt            *time.Time           `json:"lastUpdatedAt"`
+		ArchivedAt               *time.Time           `json:"archivedAt"`
+		MeasurementUnit          ValidMeasurementUnit `json:"measurementUnit"`
 		Notes                    string               `json:"notes"`
 		ID                       string               `json:"id"`
-		MeasurementUnit          ValidMeasurementUnit `json:"measurementUnit"`
 		Ingredient               ValidIngredient      `json:"ingredient"`
-		CreatedAt                time.Time            `json:"createdAt"`
 		MinimumAllowableQuantity float32              `json:"minimumAllowableQuantity"`
 		MaximumAllowableQuantity float32              `json:"maximumAllowableQuantity"`
 	}

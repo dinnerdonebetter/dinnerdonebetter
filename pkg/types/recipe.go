@@ -31,20 +31,19 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_ struct{}
-
-		LastUpdatedAt      *time.Time    `json:"lastUpdatedAt"`
+		_                  struct{}
+		CreatedAt          time.Time     `json:"createdAt"`
 		ArchivedAt         *time.Time    `json:"archivedAt"`
 		InspiredByRecipeID *string       `json:"inspiredByRecipeID"`
+		LastUpdatedAt      *time.Time    `json:"lastUpdatedAt"`
 		Source             string        `json:"source"`
 		Description        string        `json:"description"`
-		ID                 string        `json:"id"`
 		Name               string        `json:"name"`
 		CreatedByUser      string        `json:"belongsToUser"`
+		ID                 string        `json:"id"`
 		Steps              []*RecipeStep `json:"steps"`
 		SealOfApproval     bool          `json:"sealOfApproval"`
 		YieldsPortions     uint8         `json:"yieldsPortions"`
-		CreatedAt          time.Time     `json:"createdAt"`
 	}
 
 	// RecipeList represents a list of recipes.

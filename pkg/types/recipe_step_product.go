@@ -37,16 +37,16 @@ type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
 		_                                  struct{}
-		LastUpdatedAt                      *time.Time           `json:"lastUpdatedAt"`
+		CreatedAt                          time.Time            `json:"createdAt"`
 		ArchivedAt                         *time.Time           `json:"archivedAt"`
+		LastUpdatedAt                      *time.Time           `json:"lastUpdatedAt"`
 		ID                                 string               `json:"id"`
+		StorageInstructions                string               `json:"storageInstructions"`
 		Name                               string               `json:"name"`
 		Type                               string               `json:"type"`
 		QuantityNotes                      string               `json:"quantityNotes"`
 		BelongsToRecipeStep                string               `json:"belongsToRecipeStep"`
-		StorageInstructions                string               `json:"storageInstructions"`
 		MeasurementUnit                    ValidMeasurementUnit `json:"measurementUnit"`
-		CreatedAt                          time.Time            `json:"createdAt"`
 		MaximumQuantity                    float32              `json:"maximumQuantity"`
 		MaximumStorageDurationInSeconds    uint32               `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius float32              `json:"minimumStorageTemperatureInCelsius"`

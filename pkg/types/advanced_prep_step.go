@@ -30,13 +30,13 @@ type (
 	// AdvancedPrepStep represents a valid preparation.
 	AdvancedPrepStep struct {
 		_                    struct{}
+		CreatedAt            time.Time      `json:"createdAt"`
+		CannotCompleteBefore time.Time      `json:"cannotCompleteBefore"`
+		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
 		CompletedAt          *uint64        `json:"completedAt"`
 		ID                   string         `json:"id"`
 		RecipeStep           RecipeStep     `json:"recipeStep"`
 		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
-		CannotCompleteBefore time.Time      `json:"cannotCompleteBefore"`
-		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
-		CreatedAt            time.Time      `json:"createdAt"`
 	}
 
 	// AdvancedPrepStepList represents a list of valid preparations.
@@ -49,13 +49,13 @@ type (
 	// AdvancedPrepStepDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	AdvancedPrepStepDatabaseCreationInput struct {
 		_                    struct{}
+		CreatedAt            time.Time `json:"createdAt"`
+		CannotCompleteBefore time.Time `json:"cannotCompleteBefore"`
+		CannotCompleteAfter  time.Time `json:"cannotCompleteAfter"`
 		CompletedAt          *uint64   `json:"completedAt"`
 		MealPlanOptionID     string    `json:"mealPlanOptionID"`
 		RecipeStepID         string    `json:"recipeStepID"`
 		ID                   string    `json:"id"`
-		CannotCompleteBefore time.Time `json:"cannotCompleteBefore"`
-		CannotCompleteAfter  time.Time `json:"cannotCompleteAfter"`
-		CreatedAt            time.Time `json:"createdAt"`
 	}
 
 	// AdvancedPrepStepDataManager describes a structure capable of storing valid preparations permanently.

@@ -33,13 +33,13 @@ type (
 	// MealPlanOptionVote represents a meal plan option vote.
 	MealPlanOptionVote struct {
 		_                       struct{}
-		LastUpdatedAt           *time.Time `json:"lastUpdatedAt"`
+		CreatedAt               time.Time  `json:"createdAt"`
 		ArchivedAt              *time.Time `json:"archivedAt"`
+		LastUpdatedAt           *time.Time `json:"lastUpdatedAt"`
 		ID                      string     `json:"id"`
 		Notes                   string     `json:"notes"`
 		BelongsToMealPlanOption string     `json:"belongsToMealPlanOption"`
 		ByUser                  string     `json:"byUser"`
-		CreatedAt               time.Time  `json:"createdAt"`
 		Rank                    uint8      `json:"rank"`
 		Abstain                 bool       `json:"abstain"`
 	}
@@ -47,15 +47,15 @@ type (
 	// NullableMealPlanOptionVote represents a fully nullable meal plan option vote.
 	NullableMealPlanOptionVote struct {
 		_                       struct{}
-		LastUpdatedAt           sql.NullTime
-		ArchivedAt              sql.NullTime
+		Rank                    *uint8
 		ID                      *string
 		Notes                   *string
 		BelongsToMealPlanOption *string
 		ByUser                  *string
-		CreatedAt               sql.NullTime
-		Rank                    *uint8
 		Abstain                 *bool
+		LastUpdatedAt           sql.NullTime
+		CreatedAt               sql.NullTime
+		ArchivedAt              sql.NullTime
 	}
 
 	// MealPlanOptionVoteList represents a list of meal plan option votes.

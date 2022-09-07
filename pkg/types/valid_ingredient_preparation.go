@@ -32,13 +32,13 @@ type (
 	// ValidIngredientPreparation represents a valid ingredient preparation.
 	ValidIngredientPreparation struct {
 		_             struct{}
-		ArchivedAt    *time.Time       `json:"archivedAt"`
+		CreatedAt     time.Time        `json:"createdAt"`
 		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time       `json:"archivedAt"`
+		Preparation   ValidPreparation `json:"preparation"`
 		Notes         string           `json:"notes"`
 		ID            string           `json:"id"`
-		Preparation   ValidPreparation `json:"preparation"`
 		Ingredient    ValidIngredient  `json:"ingredient"`
-		CreatedAt     time.Time        `json:"createdAt"`
 	}
 
 	// ValidIngredientPreparationList represents a list of valid ingredient preparations.

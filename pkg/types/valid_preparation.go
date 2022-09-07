@@ -32,6 +32,7 @@ type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
 		_                        struct{}
+		CreatedAt                time.Time  `json:"createdAt"`
 		ArchivedAt               *time.Time `json:"archivedAt"`
 		LastUpdatedAt            *time.Time `json:"lastUpdatedAt"`
 		Name                     string     `json:"name"`
@@ -39,7 +40,6 @@ type (
 		IconPath                 string     `json:"iconPath"`
 		PastTense                string     `json:"pastTense"`
 		ID                       string     `json:"id"`
-		CreatedAt                time.Time  `json:"createdAt"`
 		YieldsNothing            bool       `json:"yieldsNothing"`
 		RestrictToIngredients    bool       `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable bool       `json:"zeroIngredientsAllowable"`

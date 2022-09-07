@@ -32,20 +32,20 @@ type (
 	// ValidIngredient represents a valid ingredient.
 	ValidIngredient struct {
 		_                                       struct{}
+		CreatedAt                               time.Time  `json:"createdAt"`
 		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt                              *time.Time `json:"archivedAt"`
-		Name                                    string     `json:"name"`
-		Description                             string     `json:"description"`
-		Warning                                 string     `json:"warning"`
 		ID                                      string     `json:"id"`
+		Warning                                 string     `json:"warning"`
+		Description                             string     `json:"description"`
 		IconPath                                string     `json:"iconPath"`
 		PluralName                              string     `json:"pluralName"`
 		StorageInstructions                     string     `json:"storageInstructions"`
-		CreatedAt                               time.Time  `json:"createdAt"`
+		Name                                    string     `json:"name"`
 		MaximumIdealStorageTemperatureInCelsius float32    `json:"maximumIdealStorageTemperatureInCelsius"`
 		MinimumIdealStorageTemperatureInCelsius float32    `json:"minimumIdealStorageTemperatureInCelsius"`
-		ContainsDairy                           bool       `json:"containsDairy"`
 		ContainsShellfish                       bool       `json:"containsShellfish"`
+		ContainsDairy                           bool       `json:"containsDairy"`
 		AnimalFlesh                             bool       `json:"animalFlesh"`
 		IsMeasuredVolumetrically                bool       `json:"isMeasuredVolumetrically"`
 		IsLiquid                                bool       `json:"isLiquid"`

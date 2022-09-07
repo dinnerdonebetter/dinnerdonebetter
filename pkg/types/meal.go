@@ -32,6 +32,7 @@ type (
 	// Meal represents a meal.
 	Meal struct {
 		_             struct{}
+		CreatedAt     time.Time  `json:"createdAt"`
 		ArchivedAt    *time.Time `json:"archivedAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
 		ID            string     `json:"id"`
@@ -39,7 +40,6 @@ type (
 		CreatedByUser string     `json:"createdByUser"`
 		Name          string     `json:"name"`
 		Recipes       []*Recipe  `json:"recipes"`
-		CreatedAt     time.Time  `json:"createdAt"`
 	}
 
 	// MealRecipe is a recipe with some extra data attached to it.

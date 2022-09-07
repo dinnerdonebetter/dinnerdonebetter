@@ -23,13 +23,13 @@ type (
 	// PasswordResetToken represents a password reset token.
 	PasswordResetToken struct {
 		_             struct{}
-		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
+		CreatedAt     time.Time  `json:"createdAt"`
+		ExpiresAt     time.Time  `json:"expiresAt"`
 		RedeemedAt    *uint64    `json:"archivedAt"`
+		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
 		ID            string     `json:"id"`
 		Token         string     `json:"token"`
 		BelongsToUser string     `json:"belongsToUser"`
-		ExpiresAt     time.Time  `json:"expiresAt"`
-		CreatedAt     time.Time  `json:"createdAt"`
 	}
 
 	// UsernameReminderRequestInput represents what a user could set as input for creating password reset tokens.
@@ -47,10 +47,10 @@ type (
 	// PasswordResetTokenDatabaseCreationInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenDatabaseCreationInput struct {
 		_             struct{}
+		ExpiresAt     time.Time `json:"expiresAt"`
 		ID            string    `json:"id"`
 		Token         string    `json:"token"`
 		BelongsToUser string    `json:"belongsToUser"`
-		ExpiresAt     time.Time `json:"expiresAt"`
 	}
 
 	// PasswordResetTokenRedemptionRequestInput represents what a user could set as input for creating password reset tokens.

@@ -32,17 +32,17 @@ type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
 		_                   struct{}
-		IngredientID        *string              `json:"ingredientID"`
+		CreatedAt           time.Time            `json:"createdAt"`
 		RecipeStepProductID *string              `json:"recipeStepProductID"`
 		LastUpdatedAt       *time.Time           `json:"lastUpdatedAt"`
 		ArchivedAt          *time.Time           `json:"archivedAt"`
-		Name                string               `json:"name"`
+		IngredientID        *string              `json:"ingredientID"`
 		QuantityNotes       string               `json:"quantityNotes"`
-		BelongsToRecipeStep string               `json:"belongsToRecipeStep"`
+		Name                string               `json:"name"`
 		ID                  string               `json:"id"`
 		IngredientNotes     string               `json:"ingredientNotes"`
+		BelongsToRecipeStep string               `json:"belongsToRecipeStep"`
 		MeasurementUnit     ValidMeasurementUnit `json:"measurementUnit"`
-		CreatedAt           time.Time            `json:"createdAt"`
 		MinimumQuantity     float32              `json:"minimumQuantity"`
 		MaximumQuantity     float32              `json:"maximumQuantity"`
 		Optional            bool                 `json:"optional"`
