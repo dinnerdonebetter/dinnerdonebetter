@@ -56,7 +56,12 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 	user = &types.User{
 		ServiceRoles: []string{},
 	}
-	var rawRoles string
+
+	var (
+		rawRoles                  string
+		passwordLastChangedAt     sql.NullTime
+		twoFactorSecretVerifiedAt sql.NullTime
+	)
 
 	targetVars := []interface{}{
 		&user.ID,
@@ -65,9 +70,9 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 		&user.AvatarSrc,
 		&user.HashedPassword,
 		&user.RequiresPasswordChange,
-		&user.PasswordLastChangedAt,
+		&passwordLastChangedAt,
 		&user.TwoFactorSecret,
-		&user.TwoFactorSecretVerifiedAt,
+		&twoFactorSecretVerifiedAt,
 		&rawRoles,
 		&user.AccountStatus,
 		&user.AccountStatusExplanation,
@@ -88,6 +93,14 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 
 	if roles := strings.Split(rawRoles, serviceRolesSeparator); len(roles) > 0 {
 		user.ServiceRoles = roles
+	}
+
+	if passwordLastChangedAt.Valid {
+		user.PasswordLastChangedAt = &passwordLastChangedAt.Time
+	}
+
+	if twoFactorSecretVerifiedAt.Valid {
+		user.TwoFactorSecretVerifiedAt = &twoFactorSecretVerifiedAt.Time
 	}
 
 	return user, filteredCount, totalCount, nil
