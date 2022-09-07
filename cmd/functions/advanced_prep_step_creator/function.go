@@ -59,7 +59,7 @@ func CreateAdvancedPrepSteps(ctx context.Context, m PubSubMessage) error {
 		log.Fatal(err)
 	}
 
-	if mainErr := ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx, tracer, dataChangesPublisher); mainErr != nil {
+	if mainErr := ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx, tracer, dataManager, dataChangesPublisher); mainErr != nil {
 		observability.AcknowledgeError(mainErr, logger, nil, "closing database connection")
 		return mainErr
 	}

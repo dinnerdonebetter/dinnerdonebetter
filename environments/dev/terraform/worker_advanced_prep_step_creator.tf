@@ -54,7 +54,7 @@ resource "google_storage_bucket_object" "advanced_prep_step_creator_archive" {
 }
 
 resource "google_service_account" "advanced_prep_step_creator_user_service_account" {
-  account_id   = "advanced-prep-step-creation-worker"
+  account_id   = "adv-prep-step-create-worker"
   display_name = "Advanced Prep Step Creator"
 }
 
