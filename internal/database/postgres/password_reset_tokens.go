@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
