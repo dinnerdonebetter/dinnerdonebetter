@@ -3,8 +3,8 @@ on:
     branches:
       - dev
   pull_request:
-    paths:
-      - environments/dev/terraform
+    branches:
+      - dev
 name: Deploy
 jobs:
   deploy:
