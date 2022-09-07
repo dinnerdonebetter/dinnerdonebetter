@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,9 +19,9 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 		inOneWeek := time.Now().Add((time.Hour * 24) * 7)
 
 		x := &MealPlanCreationRequestInput{
-			VotingDeadline: uint64(now.Unix()),
-			StartsAt:       uint64(inTenMinutes.Unix()),
-			EndsAt:         uint64(inOneWeek.Unix()),
+			VotingDeadline: now,
+			StartsAt:       inTenMinutes,
+			EndsAt:         inOneWeek,
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -45,10 +44,12 @@ func TestMealPlanUpdateRequestInput_Validate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleTime := time.Now()
+
 		x := &MealPlanUpdateRequestInput{
-			VotingDeadline: uint64Pointer(uint64(time.Now().Unix())),
-			StartsAt:       uint64Pointer(uint64(fake.Uint32())),
-			EndsAt:         uint64Pointer(uint64(fake.Uint32())),
+			VotingDeadline: &exampleTime,
+			StartsAt:       &exampleTime,
+			EndsAt:         &exampleTime,
 		}
 
 		actual := x.ValidateWithContext(context.Background())

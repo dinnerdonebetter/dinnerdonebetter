@@ -20,8 +20,9 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
-	assert.Equal(t, expected.StartsAt, actual.StartsAt, "expected StartsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.StartsAt, actual.StartsAt)
-	assert.Equal(t, expected.EndsAt, actual.EndsAt, "expected EndsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.EndsAt, actual.EndsAt)
+	assert.WithinDuration(t, expected.StartsAt, actual.StartsAt, time.Nanosecond*1000, "expected StartsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.StartsAt, actual.StartsAt)
+	assert.WithinDuration(t, expected.EndsAt, actual.EndsAt, time.Nanosecond*1000, "expected EndsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.EndsAt, actual.EndsAt)
+	assert.WithinDuration(t, expected.VotingDeadline, actual.VotingDeadline, time.Nanosecond*1000, "expected VotingDeadline for meal plan %s to be %v, but it was %v", expected.ID, expected.VotingDeadline, actual.VotingDeadline)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -139,14 +140,15 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			}
 
 			const baseDeadline = 10 * time.Second
+			now := time.Now()
 
 			t.Log("creating meal plan")
 			exampleMealPlan := &types.MealPlan{
 				Notes:          t.Name(),
 				Status:         types.AwaitingVotesMealPlanStatus,
-				StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
-				EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
-				VotingDeadline: uint64(time.Now().Add(baseDeadline).Unix()),
+				StartsAt:       now.Add(24 * time.Hour),
+				EndsAt:         now.Add(72 * time.Hour),
+				VotingDeadline: now.Add(baseDeadline),
 				Options: []*types.MealPlanOption{
 					{
 						Meal:     types.Meal{ID: createdMeals[0].ID},
@@ -328,14 +330,15 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			}
 
 			const baseDeadline = 10 * time.Second
+			now := time.Now()
 
 			t.Log("creating meal plan")
 			exampleMealPlan := &types.MealPlan{
 				Notes:          t.Name(),
 				Status:         types.AwaitingVotesMealPlanStatus,
-				StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
-				EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
-				VotingDeadline: uint64(time.Now().Add(baseDeadline).Unix()),
+				StartsAt:       now.Add(24 * time.Hour),
+				EndsAt:         now.Add(72 * time.Hour),
+				VotingDeadline: now.Add(baseDeadline),
 				Options: []*types.MealPlanOption{
 					{
 						Meal:     types.Meal{ID: createdMeals[0].ID},
@@ -417,7 +420,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.AwaitingVotesMealPlanStatus, createdMealPlan.Status)
 
-			createdMealPlan.VotingDeadline = uint64(time.Now().Add(-10 * time.Hour).Unix())
+			createdMealPlan.VotingDeadline = time.Now().Add(-10 * time.Hour)
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
 			time.Sleep(baseDeadline * 2)

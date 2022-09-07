@@ -83,13 +83,13 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 
 	passwordResetToken, _, _, err := q.scanPasswordResetToken(ctx, row)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning passwordResetToken")
+		return nil, observability.PrepareError(err, logger, span, "scanning password reset token")
 	}
 
 	return passwordResetToken, nil
 }
 
-const passwordResetTokenCreationQuery = "INSERT INTO password_reset_tokens (id,token,expires_at,belongs_to_user) VALUES ($1,$2,extract(epoch from (NOW() + (30 * interval '1 minutes'))),$3)"
+const passwordResetTokenCreationQuery = "INSERT INTO password_reset_tokens (id,token,expires_at,belongs_to_user) VALUES ($1,$2,NOW() + (30 * interval '1 minutes'),$3)"
 
 // CreatePasswordResetToken creates a password reset token in the database.
 func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.PasswordResetTokenDatabaseCreationInput) (*types.PasswordResetToken, error) {

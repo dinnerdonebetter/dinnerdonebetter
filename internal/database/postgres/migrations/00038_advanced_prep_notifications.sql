@@ -69,6 +69,7 @@ ALTER TABLE meal_plans ALTER COLUMN created_at TYPE TIMESTAMP WITH TIME ZONE USI
 ALTER TABLE meal_plans ALTER COLUMN created_at SET DEFAULT NOW();
 ALTER TABLE meal_plans ALTER COLUMN starts_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(starts_at);
 ALTER TABLE meal_plans ALTER COLUMN ends_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(ends_at);
+ALTER TABLE meal_plans ALTER COLUMN voting_deadline TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(voting_deadline);
 ALTER TABLE meal_plans ALTER COLUMN last_updated_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(last_updated_at);
 ALTER TABLE meal_plans ALTER COLUMN archived_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(archived_at);
 
@@ -90,6 +91,7 @@ ALTER TABLE meals ALTER COLUMN archived_at TYPE TIMESTAMP WITH TIME ZONE USING t
 ALTER TABLE password_reset_tokens ALTER COLUMN created_at DROP DEFAULT;
 ALTER TABLE password_reset_tokens ALTER COLUMN created_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(created_at);
 ALTER TABLE password_reset_tokens ALTER COLUMN created_at SET DEFAULT NOW();
+ALTER TABLE password_reset_tokens ALTER COLUMN expires_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(expires_at);
 ALTER TABLE password_reset_tokens ALTER COLUMN last_updated_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(last_updated_at);
 ALTER TABLE password_reset_tokens ALTER COLUMN redeemed_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(redeemed_at);
 
