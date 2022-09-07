@@ -255,12 +255,13 @@ func ProbeMealPlanning(ctx context.Context, m PubSubMessage) error {
 		createdMeals = append(createdMeals, createdMeal)
 	}
 
+	now := time.Now()
 	exampleMealPlan := &types.MealPlan{
 		Notes:          "prober testing",
 		Status:         types.AwaitingVotesMealPlanStatus,
-		StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
-		EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
-		VotingDeadline: uint64(time.Now().Add(votingDeadline).Unix()),
+		StartsAt:       now.Add(24 * time.Hour),
+		EndsAt:         now.Add(72 * time.Hour),
+		VotingDeadline: now.Add(votingDeadline),
 		Options: []*types.MealPlanOption{
 			{
 				Meal:     types.Meal{ID: createdMeals[0].ID},
