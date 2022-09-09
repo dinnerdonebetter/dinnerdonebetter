@@ -16,6 +16,8 @@ import (
 const (
 	// MealPlanOptionIDURIParamKey is a standard string that we'll use to refer to meal plan option IDs with.
 	MealPlanOptionIDURIParamKey = "mealPlanOptionID"
+	// MealPlanEventIDURIParamKey is a standard string that we'll use to refer to meal plan event IDs with.
+	MealPlanEventIDURIParamKey = "mealPlanEventID"
 )
 
 // CreateHandler is our meal plan option creation route.
@@ -59,7 +61,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	input.BelongsToMealPlan = mealPlanID
+	input.BelongsToMealPlanEvent = mealPlanID
 	tracing.AttachMealPlanOptionIDToSpan(span, input.ID)
 
 	mealPlanOption, err := s.mealPlanOptionDataManager.CreateMealPlanOption(ctx, input)
@@ -212,7 +214,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input.BelongsToMealPlan = &mealPlanID
+	input.BelongsToMealPlanEvent = &mealPlanID
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")

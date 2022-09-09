@@ -60,3 +60,9 @@ func (m *MealPlanDataManager) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ct
 	args := m.Called(ctx)
 	return args.Get(0).([]*types.MealPlan), args.Error(1)
 }
+
+// GetFinalizedMealPlanIDsForTheNextWeek is a mock function.
+func (m *MealPlanDataManager) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]string, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]string), args.Error(1)
+}

@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	mealPlanOptionsBasePath = "meal_plan_options"
+	mealPlanEventsBasePath = "meal_plan_events"
 )
 
-// BuildGetMealPlanOptionRequest builds an HTTP request for fetching a meal plan option.
-func (b *Builder) BuildGetMealPlanOptionRequest(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*http.Request, error) {
+// BuildGetMealPlanEventRequest builds an HTTP request for fetching a meal plan option.
+func (b *Builder) BuildGetMealPlanEventRequest(ctx context.Context, mealPlanID, mealPlanEventID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -27,11 +27,11 @@ func (b *Builder) BuildGetMealPlanOptionRequest(ctx context.Context, mealPlanID,
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	if mealPlanOptionID == "" {
+	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -40,8 +40,6 @@ func (b *Builder) BuildGetMealPlanOptionRequest(ctx context.Context, mealPlanID,
 		mealPlanID,
 		mealPlanEventsBasePath,
 		mealPlanEventID,
-		mealPlanOptionsBasePath,
-		mealPlanOptionID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -53,8 +51,8 @@ func (b *Builder) BuildGetMealPlanOptionRequest(ctx context.Context, mealPlanID,
 	return req, nil
 }
 
-// BuildGetMealPlanOptionsRequest builds an HTTP request for fetching a list of meal plan options.
-func (b *Builder) BuildGetMealPlanOptionsRequest(ctx context.Context, mealPlanID, mealPlanEventID string, filter *types.QueryFilter) (*http.Request, error) {
+// BuildGetMealPlanEventsRequest builds an HTTP request for fetching a list of meal plan options.
+func (b *Builder) BuildGetMealPlanEventsRequest(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,8 +70,6 @@ func (b *Builder) BuildGetMealPlanOptionsRequest(ctx context.Context, mealPlanID
 		mealPlansBasePath,
 		mealPlanID,
 		mealPlanEventsBasePath,
-		mealPlanEventID,
-		mealPlanOptionsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -86,8 +82,8 @@ func (b *Builder) BuildGetMealPlanOptionsRequest(ctx context.Context, mealPlanID
 	return req, nil
 }
 
-// BuildCreateMealPlanOptionRequest builds an HTTP request for creating a meal plan option.
-func (b *Builder) BuildCreateMealPlanOptionRequest(ctx context.Context, mealPlanID string, input *types.MealPlanOptionCreationRequestInput) (*http.Request, error) {
+// BuildCreateMealPlanEventRequest builds an HTTP request for creating a meal plan option.
+func (b *Builder) BuildCreateMealPlanEventRequest(ctx context.Context, input *types.MealPlanEventCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -105,10 +101,8 @@ func (b *Builder) BuildCreateMealPlanOptionRequest(ctx context.Context, mealPlan
 		ctx,
 		nil,
 		mealPlansBasePath,
-		mealPlanID,
+		input.BelongsToMealPlan,
 		mealPlanEventsBasePath,
-		input.BelongsToMealPlanEvent,
-		mealPlanOptionsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -120,33 +114,31 @@ func (b *Builder) BuildCreateMealPlanOptionRequest(ctx context.Context, mealPlan
 	return req, nil
 }
 
-// BuildUpdateMealPlanOptionRequest builds an HTTP request for updating a meal plan option.
-func (b *Builder) BuildUpdateMealPlanOptionRequest(ctx context.Context, mealPlanID string, mealPlanOption *types.MealPlanOption) (*http.Request, error) {
+// BuildUpdateMealPlanEventRequest builds an HTTP request for updating a meal plan option.
+func (b *Builder) BuildUpdateMealPlanEventRequest(ctx context.Context, mealPlanEvent *types.MealPlanEvent) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger.Clone()
 
-	if mealPlanOption == nil {
+	if mealPlanEvent == nil {
 		return nil, ErrNilInputProvided
 	}
 
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOption.ID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOption.ID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEvent.ID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEvent.ID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
 		mealPlansBasePath,
-		mealPlanID,
+		mealPlanEvent.BelongsToMealPlan,
 		mealPlanEventsBasePath,
-		mealPlanOption.BelongsToMealPlanEvent,
-		mealPlanOptionsBasePath,
-		mealPlanOption.ID,
+		mealPlanEvent.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := types.MealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption)
+	input := types.MealPlanEventUpdateRequestInputFromMealPlanEvent(mealPlanEvent)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
@@ -156,8 +148,8 @@ func (b *Builder) BuildUpdateMealPlanOptionRequest(ctx context.Context, mealPlan
 	return req, nil
 }
 
-// BuildArchiveMealPlanOptionRequest builds an HTTP request for archiving a meal plan option.
-func (b *Builder) BuildArchiveMealPlanOptionRequest(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*http.Request, error) {
+// BuildArchiveMealPlanEventRequest builds an HTTP request for archiving a meal plan option.
+func (b *Builder) BuildArchiveMealPlanEventRequest(ctx context.Context, mealPlanID, mealPlanEventID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -169,11 +161,11 @@ func (b *Builder) BuildArchiveMealPlanOptionRequest(ctx context.Context, mealPla
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	if mealPlanOptionID == "" {
+	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -182,8 +174,6 @@ func (b *Builder) BuildArchiveMealPlanOptionRequest(ctx context.Context, mealPla
 		mealPlanID,
 		mealPlanEventsBasePath,
 		mealPlanEventID,
-		mealPlanOptionsBasePath,
-		mealPlanOptionID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 

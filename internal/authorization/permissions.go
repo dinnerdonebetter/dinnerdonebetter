@@ -198,6 +198,15 @@ const (
 	// ArchiveMealPlansPermission is a household user permission.
 	ArchiveMealPlansPermission Permission = "archive.meal_plans"
 
+	// CreateMealPlanEventsPermission is a household user permission.
+	CreateMealPlanEventsPermission Permission = "create.meal_plan_events"
+	// ReadMealPlanEventsPermission is a household user permission.
+	ReadMealPlanEventsPermission Permission = "read.meal_plan_events"
+	// UpdateMealPlanEventsPermission is a household user permission.
+	UpdateMealPlanEventsPermission Permission = "update.meal_plan_events"
+	// ArchiveMealPlanEventsPermission is a household user permission.
+	ArchiveMealPlanEventsPermission Permission = "archive.meal_plan_events"
+
 	// CreateMealPlanOptionsPermission is a household user permission.
 	CreateMealPlanOptionsPermission Permission = "create.meal_plan_options"
 	// ReadMealPlanOptionsPermission is a household user permission.

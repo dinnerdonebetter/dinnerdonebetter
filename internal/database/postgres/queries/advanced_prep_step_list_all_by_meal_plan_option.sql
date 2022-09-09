@@ -13,7 +13,7 @@ SELECT
     meal_plan_options.created_at,
     meal_plan_options.last_updated_at,
     meal_plan_options.archived_at,
-    meal_plan_options.belongs_to_meal_plan,
+    meal_plan_options.belongs_to_meal_plan_event,
     recipe_steps.id AS recipe_steps_id,
     recipe_steps.index,
     valid_preparations.id AS valid_preparation_id,

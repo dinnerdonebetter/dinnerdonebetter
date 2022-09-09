@@ -657,11 +657,42 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
+		// MealPlanEvents
+		mealPlanEventPath := "meal_plan_events"
+		mealPlanEventsRoute := path.Join(
+			mealPlanPath,
+			mealPlanIDRouteParam,
+			mealPlanEventPath,
+		)
+		mealPlanEventsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanEventsRoute)
+		mealPlanEventIDRouteParam := buildURLVarChunk(mealplanoptionsservice.MealPlanEventIDURIParamKey, "")
+		v1Router.Route(mealPlanEventsRouteWithPrefix, func(mealPlanEventsRouter routing.Router) {
+			mealPlanEventsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanEventsPermission)).
+				Post(root, s.mealPlanEventsService.CreateHandler)
+			mealPlanEventsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
+				Get(root, s.mealPlanEventsService.ListHandler)
+
+			mealPlanEventsRouter.Route(mealPlanEventIDRouteParam, func(singleMealPlanEventRouter routing.Router) {
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
+					Get(root, s.mealPlanEventsService.ReadHandler)
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanEventsPermission)).
+					Delete(root, s.mealPlanEventsService.ArchiveHandler)
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanEventsPermission)).
+					Put(root, s.mealPlanEventsService.UpdateHandler)
+			})
+		})
+
 		// MealPlanOptions
 		mealPlanOptionPath := "meal_plan_options"
 		mealPlanOptionsRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
+			mealPlanEventIDRouteParam,
 			mealPlanOptionPath,
 		)
 		mealPlanOptionsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionsRoute)

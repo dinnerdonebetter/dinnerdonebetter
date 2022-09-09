@@ -43,7 +43,7 @@ func buildTestHelper(t *testing.T) *mealPlanOptionVotesServiceHTTPRoutesTestHelp
 	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
 	helper.exampleMealPlan.BelongsToHousehold = helper.exampleHousehold.ID
 	helper.exampleMealPlanOption = fakes.BuildFakeMealPlanOption()
-	helper.exampleMealPlanOption.BelongsToMealPlan = helper.exampleMealPlan.ID
+	helper.exampleMealPlanOption.BelongsToMealPlanEvent = helper.exampleMealPlan.ID
 	helper.exampleMealPlanOptionVote = fakes.BuildFakeMealPlanOptionVote()
 	helper.exampleMealPlanOptionVote.BelongsToMealPlanOption = helper.exampleMealPlanOption.ID
 	helper.exampleMealPlanOptionVotes = []*types.MealPlanOptionVote{helper.exampleMealPlanOptionVote}

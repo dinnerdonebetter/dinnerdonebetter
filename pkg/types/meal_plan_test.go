@@ -14,14 +14,8 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		now := time.Now()
-		inTenMinutes := time.Now().Add(time.Minute * 10)
-		inOneWeek := time.Now().Add((time.Hour * 24) * 7)
-
 		x := &MealPlanCreationRequestInput{
-			VotingDeadline: now,
-			StartsAt:       inTenMinutes,
-			EndsAt:         inOneWeek,
+			VotingDeadline: time.Now(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -48,8 +42,6 @@ func TestMealPlanUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanUpdateRequestInput{
 			VotingDeadline: &exampleTime,
-			StartsAt:       &exampleTime,
-			EndsAt:         &exampleTime,
 		}
 
 		actual := x.ValidateWithContext(context.Background())

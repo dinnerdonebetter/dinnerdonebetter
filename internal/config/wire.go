@@ -45,6 +45,7 @@ var (
 			"RecipeStepInstruments",
 			"RecipeStepIngredients",
 			"MealPlans",
+			"MealPlanEvents",
 			"MealPlanOptions",
 			"MealPlanOptionVotes",
 		),

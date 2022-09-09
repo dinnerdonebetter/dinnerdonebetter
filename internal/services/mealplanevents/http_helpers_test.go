@@ -1,4 +1,4 @@
-package mealplanoptions
+package mealplanevents
 
 import (
 	"context"
@@ -15,42 +15,34 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-type mealPlanOptionsServiceHTTPRoutesTestHelper struct {
-	ctx                   context.Context
-	req                   *http.Request
-	res                   *httptest.ResponseRecorder
-	service               *service
-	exampleUser           *types.User
-	exampleHousehold      *types.Household
-	exampleMealPlan       *types.MealPlan
-	exampleMealPlanOption *types.MealPlanOption
-	exampleCreationInput  *types.MealPlanOptionCreationRequestInput
-	exampleUpdateInput    *types.MealPlanOptionUpdateRequestInput
+type mealPlanEventsServiceHTTPRoutesTestHelper struct {
+	ctx                  context.Context
+	req                  *http.Request
+	res                  *httptest.ResponseRecorder
+	service              *service
+	exampleUser          *types.User
+	exampleHousehold     *types.Household
+	exampleMealPlanEvent *types.MealPlanEvent
+	exampleCreationInput *types.MealPlanEventCreationRequestInput
+	exampleUpdateInput   *types.MealPlanEventUpdateRequestInput
 }
 
-func buildTestHelper(t *testing.T) *mealPlanOptionsServiceHTTPRoutesTestHelper {
+func buildTestHelper(t *testing.T) *mealPlanEventsServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &mealPlanOptionsServiceHTTPRoutesTestHelper{}
+	helper := &mealPlanEventsServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
-	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
-	helper.exampleMealPlan.BelongsToHousehold = helper.exampleHousehold.ID
-	helper.exampleMealPlanOption = fakes.BuildFakeMealPlanOption()
-	helper.exampleMealPlanOption.BelongsToMealPlanEvent = helper.exampleMealPlan.ID
-	helper.exampleCreationInput = fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(helper.exampleMealPlanOption)
-	helper.exampleUpdateInput = fakes.BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(helper.exampleMealPlanOption)
+	helper.exampleMealPlanEvent = fakes.BuildFakeMealPlanEvent()
+	helper.exampleCreationInput = fakes.BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(helper.exampleMealPlanEvent)
+	helper.exampleUpdateInput = fakes.BuildFakeMealPlanEventUpdateRequestInputFromMealPlanEvent(helper.exampleMealPlanEvent)
 
-	helper.service.mealPlanIDFetcher = func(*http.Request) string {
-		return helper.exampleMealPlan.ID
-	}
-
-	helper.service.mealPlanOptionIDFetcher = func(*http.Request) string {
-		return helper.exampleMealPlanOption.ID
+	helper.service.mealPlanEventIDFetcher = func(*http.Request) string {
+		return helper.exampleMealPlanEvent.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{

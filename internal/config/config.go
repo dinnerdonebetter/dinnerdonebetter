@@ -17,6 +17,7 @@ import (
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -79,6 +80,7 @@ type (
 		ValidInstruments                validinstrumentsservice.Config                `json:"validInstruments" mapstructure:"valid_instruments" toml:"valid_instruments,omitempty"`
 		ValidIngredients                validingredientsservice.Config                `json:"validIngredients" mapstructure:"valid_ingredients" toml:"valid_ingredients,omitempty"`
 		ValidPreparations               validpreparationsservice.Config               `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
+		MealPlanEvents                  mealplaneventsservice.Config                  `json:"mealPlanEvents" mapstructure:"meal_plan_events" toml:"meal_plan_events,omitempty"`
 		MealPlanOptionVotes             mealplanoptionvotesservice.Config             `json:"mealPlanOptionVotes" mapstructure:"meal_plan_option_votes" toml:"meal_plan_option_votes,omitempty"`
 		ValidIngredientPreparations     validingredientpreparationsservice.Config     `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
 		ValidPreparationInstruments     validpreparationinstrumentsservice.Config     `json:"validPreparationInstruments" mapstructure:"valid_preparation_instruments" toml:"valid_preparation_instruments,omitempty"`
@@ -206,6 +208,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
+		}
+
+		if err := cfg.Services.MealPlanEvents.ValidateWithContext(ctx); err != nil {
 			return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
 		}
 

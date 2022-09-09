@@ -144,7 +144,29 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	return result, nil
 }
 
-const getMealPlanOptionVoteQuery = "SELECT meal_plan_option_votes.id, meal_plan_option_votes.rank, meal_plan_option_votes.abstain, meal_plan_option_votes.notes, meal_plan_option_votes.by_user, meal_plan_option_votes.created_at, meal_plan_option_votes.last_updated_at, meal_plan_option_votes.archived_at, meal_plan_option_votes.belongs_to_meal_plan_option FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_option_votes.archived_at IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_at IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_at IS NULL AND meal_plans.id = $5"
+const getMealPlanOptionVoteQuery = `
+SELECT
+    meal_plan_option_votes.id,
+    meal_plan_option_votes.rank,
+    meal_plan_option_votes.abstain,
+    meal_plan_option_votes.notes,
+    meal_plan_option_votes.by_user,
+    meal_plan_option_votes.created_at,
+    meal_plan_option_votes.last_updated_at,
+    meal_plan_option_votes.archived_at,
+    meal_plan_option_votes.belongs_to_meal_plan_option
+FROM meal_plan_option_votes
+    JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+    JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
+WHERE meal_plan_option_votes.archived_at IS NULL
+  AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
+  AND meal_plan_option_votes.id = $2
+  AND meal_plan_options.archived_at IS NULL
+  AND meal_plan_options.belongs_to_meal_plan = $3
+  AND meal_plan_options.id = $4
+  AND meal_plans.archived_at IS NULL
+  AND meal_plans.id = $5
+`
 
 // GetMealPlanOptionVote fetches a meal plan option vote from the database.
 func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
@@ -187,6 +209,68 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 	}
 
 	return mealPlanOptionVote, nil
+}
+
+const getMealPlanOptionVotesForMealPlanOptionQuery = `
+SELECT
+    meal_plan_option_votes.id,
+    meal_plan_option_votes.rank,
+    meal_plan_option_votes.abstain,
+    meal_plan_option_votes.notes,
+    meal_plan_option_votes.by_user,
+    meal_plan_option_votes.created_at,
+    meal_plan_option_votes.last_updated_at,
+    meal_plan_option_votes.archived_at,
+    meal_plan_option_votes.belongs_to_meal_plan_option
+FROM meal_plan_option_votes
+    JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+    JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
+WHERE meal_plan_option_votes.archived_at IS NULL
+  AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
+  AND meal_plan_options.archived_at IS NULL
+  AND meal_plan_options.belongs_to_meal_plan = $2
+  AND meal_plan_options.id = $1
+  AND meal_plans.archived_at IS NULL
+  AND meal_plans.id = $2
+`
+
+// GetMealPlanOptionVotesForMealPlanOption fetches a list of meal plan option votes from the database that meet a particular filter.
+func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (x []*types.MealPlanOptionVote, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanOptionID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+
+	x = []*types.MealPlanOptionVote{}
+
+	args := []interface{}{
+		mealPlanOptionID,
+		mealPlanID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "meal plan option votes for meal plan option", getMealPlanOptionVotesForMealPlanOptionQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing meal plan option votes for meal plan option list retrieval query")
+	}
+
+	x, _, _, err = q.scanMealPlanOptionVotes(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning meal plan option votes")
+	}
+
+	return x, nil
 }
 
 // GetMealPlanOptionVotes fetches a list of meal plan option votes from the database that meet a particular filter.

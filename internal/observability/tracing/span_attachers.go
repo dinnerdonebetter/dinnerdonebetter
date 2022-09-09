@@ -308,6 +308,11 @@ func AttachMealPlanIDToSpan(span trace.Span, mealPlanID string) {
 	attachStringToSpan(span, keys.MealPlanIDKey, mealPlanID)
 }
 
+// AttachMealPlanEventIDToSpan attaches a meal plan ID to a given span.
+func AttachMealPlanEventIDToSpan(span trace.Span, mealPlanEventID string) {
+	attachStringToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
+}
+
 // AttachMealPlanOptionIDToSpan attaches a meal plan option ID to a given span.
 func AttachMealPlanOptionIDToSpan(span trace.Span, mealPlanOptionID string) {
 	attachStringToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)

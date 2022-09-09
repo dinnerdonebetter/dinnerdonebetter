@@ -37,7 +37,7 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 		&x.MealPlanOption.CreatedAt,
 		&x.MealPlanOption.LastUpdatedAt,
 		&x.MealPlanOption.ArchivedAt,
-		&x.MealPlanOption.BelongsToMealPlan,
+		&x.MealPlanOption.BelongsToMealPlanEvent,
 		&x.RecipeStep.ID,
 		&x.RecipeStep.Index,
 		&x.RecipeStep.Preparation.ID,

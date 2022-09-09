@@ -53,12 +53,8 @@ func (s *mealPlansTestSuite) TestClient_GetMealPlan() {
 		assert.NoError(t, err)
 
 		require.WithinDuration(t, s.exampleMealPlan.VotingDeadline, actual.VotingDeadline, 0)
-		require.WithinDuration(t, s.exampleMealPlan.StartsAt, actual.StartsAt, 0)
-		require.WithinDuration(t, s.exampleMealPlan.EndsAt, actual.EndsAt, 0)
 
 		actual.VotingDeadline = s.exampleMealPlan.VotingDeadline
-		actual.StartsAt = s.exampleMealPlan.StartsAt
-		actual.EndsAt = s.exampleMealPlan.EndsAt
 
 		assert.Equal(t, s.exampleMealPlan, actual)
 	})
@@ -114,12 +110,8 @@ func (s *mealPlansTestSuite) TestClient_GetMealPlans() {
 
 		for i := range actual.MealPlans {
 			require.WithinDuration(t, exampleMealPlanList.MealPlans[i].VotingDeadline, actual.MealPlans[i].VotingDeadline, 0)
-			require.WithinDuration(t, exampleMealPlanList.MealPlans[i].StartsAt, actual.MealPlans[i].StartsAt, 0)
-			require.WithinDuration(t, exampleMealPlanList.MealPlans[i].EndsAt, actual.MealPlans[i].EndsAt, 0)
 
 			actual.MealPlans[i].VotingDeadline = exampleMealPlanList.MealPlans[i].VotingDeadline
-			actual.MealPlans[i].StartsAt = exampleMealPlanList.MealPlans[i].StartsAt
-			actual.MealPlans[i].EndsAt = exampleMealPlanList.MealPlans[i].EndsAt
 		}
 
 		assert.Equal(t, exampleMealPlanList, actual)
@@ -167,12 +159,8 @@ func (s *mealPlansTestSuite) TestClient_CreateMealPlan() {
 		assert.NoError(t, err)
 
 		require.WithinDuration(t, s.exampleMealPlan.VotingDeadline, actual.VotingDeadline, 0)
-		require.WithinDuration(t, s.exampleMealPlan.StartsAt, actual.StartsAt, 0)
-		require.WithinDuration(t, s.exampleMealPlan.EndsAt, actual.EndsAt, 0)
 
 		actual.VotingDeadline = s.exampleMealPlan.VotingDeadline
-		actual.StartsAt = s.exampleMealPlan.StartsAt
-		actual.EndsAt = s.exampleMealPlan.EndsAt
 
 		assert.Equal(t, s.exampleMealPlan, actual)
 	})

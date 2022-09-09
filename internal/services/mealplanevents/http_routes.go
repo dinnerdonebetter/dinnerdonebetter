@@ -1,4 +1,4 @@
-package mealplans
+package mealplanevents
 
 import (
 	"database/sql"
@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	// MealPlanIDURIParamKey is a standard string that we'll use to refer to meal plan IDs with.
-	MealPlanIDURIParamKey = "mealPlanID"
+	// MealPlanEventIDURIParamKey is a standard string that we'll use to refer to meal plan IDs with.
+	MealPlanEventIDURIParamKey = "mealPlanEventID"
 )
 
 // CreateHandler is our meal plan creation route.
@@ -38,7 +38,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// read parsed input struct from request body.
-	providedInput := new(types.MealPlanCreationRequestInput)
+	providedInput := new(types.MealPlanEventCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -51,17 +51,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := types.MealPlanDatabaseCreationInputFromMealPlanCreationInput(providedInput)
+	input := types.MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput(providedInput)
 	input.ID = ksuid.New().String()
+	tracing.AttachMealPlanEventIDToSpan(span, input.ID)
 
-	for i := range input.Events {
-		input.Events[i].ID = ksuid.New().String()
-	}
-
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
-	tracing.AttachMealPlanIDToSpan(span, input.ID)
-
-	mealPlan, err := s.mealPlanDataManager.CreateMealPlan(ctx, input)
+	mealPlanEvent, err := s.mealPlanEventDataManager.CreateMealPlanEvent(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -70,9 +64,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanDataType,
+			DataType:                  types.MealPlanEventDataType,
 			EventType:                 types.MealPlanCreatedCustomerEventType,
-			MealPlan:                  mealPlan,
+			MealPlanEvent:             mealPlanEvent,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
@@ -107,12 +101,12 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// determine meal plan ID.
-	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// fetch meal plan from database.
-	x, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+	x, err := s.mealPlanEventDataManager.GetMealPlanEvent(ctx, mealPlanEventID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -151,10 +145,10 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	mealPlans, err := s.mealPlanDataManager.GetMealPlans(ctx, sessionCtxData.ActiveHouseholdID, filter)
+	mealPlanEvents, err := s.mealPlanEventDataManager.GetMealPlanEvents(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		mealPlans = &types.MealPlanList{MealPlans: []*types.MealPlan{}}
+		mealPlanEvents = &types.MealPlanEventList{MealPlanEvents: []*types.MealPlanEvent{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plans")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -162,7 +156,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlans)
+	s.encoderDecoder.RespondWithData(ctx, res, mealPlanEvents)
 }
 
 // UpdateHandler returns a handler that updates a meal plan.
@@ -185,7 +179,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.MealPlanUpdateRequestInput)
+	input := new(types.MealPlanEventUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -197,15 +191,14 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToHousehold = &sessionCtxData.ActiveHouseholdID
 
 	// determine meal plan ID.
-	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// fetch meal plan from database.
-	mealPlan, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+	mealPlanEvent, err := s.mealPlanEventDataManager.GetMealPlanEvent(ctx, mealPlanEventID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -216,9 +209,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the meal plan.
-	mealPlan.Update(input)
+	mealPlanEvent.Update(input)
 
-	if err = s.mealPlanDataManager.UpdateMealPlan(ctx, mealPlan); err != nil {
+	if err = s.mealPlanEventDataManager.UpdateMealPlanEvent(ctx, mealPlanEvent); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -226,9 +219,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanDataType,
-			EventType:                 types.MealPlanUpdatedCustomerEventType,
-			MealPlan:                  mealPlan,
+			DataType:                  types.MealPlanEventDataType,
+			EventType:                 types.MealPlanEventUpdatedCustomerEventType,
+			MealPlanEvent:             mealPlanEvent,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
@@ -239,7 +232,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlan)
+	s.encoderDecoder.RespondWithData(ctx, res, mealPlanEvent)
 }
 
 // ArchiveHandler returns a handler that archives a meal plan.
@@ -262,11 +255,11 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// determine meal plan ID.
-	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
-	exists, existenceCheckErr := s.mealPlanDataManager.MealPlanExists(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+	exists, existenceCheckErr := s.mealPlanEventDataManager.MealPlanEventExists(ctx, mealPlanEventID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal plan existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -276,7 +269,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.mealPlanDataManager.ArchiveMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID); err != nil {
+	if err = s.mealPlanEventDataManager.ArchiveMealPlanEvent(ctx, mealPlanEventID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -284,9 +277,9 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanDataType,
-			EventType:                 types.MealPlanArchivedCustomerEventType,
-			MealPlanID:                mealPlanID,
+			DataType:                  types.MealPlanEventDataType,
+			EventType:                 types.MealPlanEventArchivedCustomerEventType,
+			MealPlanEventID:           mealPlanEventID,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 		}

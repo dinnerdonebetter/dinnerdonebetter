@@ -109,6 +109,9 @@
 		"validPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"mealPlanEvents": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"mealPlanOptionVotes": {
 			"dataChangesTopicName": "data_changes"
 		},

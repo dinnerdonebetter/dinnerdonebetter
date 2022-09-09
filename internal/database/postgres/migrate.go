@@ -205,6 +205,11 @@ var (
 			Description: "add advanced prep notifications",
 			Script:      fetchMigration("00038_advanced_prep_notifications"),
 		},
+		{
+			Version:     39,
+			Description: "refactor meal plans",
+			Script:      fetchMigration("00039_meal_plans_refactor"),
+		},
 	}
 )
 

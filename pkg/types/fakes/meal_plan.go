@@ -13,27 +13,22 @@ import (
 func BuildFakeMealPlan() *types.MealPlan {
 	mealPlanID := ksuid.New().String()
 
-	var options []*types.MealPlanOption
+	var events []*types.MealPlanEvent
 	for i := 0; i < exampleQuantity; i++ {
-		option := BuildFakeMealPlanOption()
+		option := BuildFakeMealPlanEvent()
 		option.BelongsToMealPlan = mealPlanID
-		options = append(options, option)
+		events = append(events, option)
 	}
 
 	now := time.Now().Add(0)
-	inTenMinutes := now.Add(time.Minute * 10)
-	inOneWeek := now.Add((time.Hour * 24) * 7)
-
 	return &types.MealPlan{
 		ID:                 mealPlanID,
 		Notes:              buildUniqueString(),
 		Status:             types.AwaitingVotesMealPlanStatus,
 		VotingDeadline:     now,
-		StartsAt:           inTenMinutes,
-		EndsAt:             inOneWeek,
 		CreatedAt:          fake.Date(),
 		BelongsToHousehold: fake.UUID(),
-		Options:            options,
+		Events:             events,
 	}
 }
 
@@ -61,8 +56,6 @@ func BuildFakeMealPlanUpdateRequestInput() *types.MealPlanUpdateRequestInput {
 	return &types.MealPlanUpdateRequestInput{
 		Notes:              &mealPlan.Notes,
 		VotingDeadline:     &mealPlan.VotingDeadline,
-		StartsAt:           &mealPlan.StartsAt,
-		EndsAt:             &mealPlan.EndsAt,
 		BelongsToHousehold: &mealPlan.BelongsToHousehold,
 	}
 }
@@ -72,8 +65,6 @@ func BuildFakeMealPlanUpdateRequestInputFromMealPlan(mealPlan *types.MealPlan) *
 	return &types.MealPlanUpdateRequestInput{
 		Notes:              &mealPlan.Notes,
 		VotingDeadline:     &mealPlan.VotingDeadline,
-		StartsAt:           &mealPlan.StartsAt,
-		EndsAt:             &mealPlan.EndsAt,
 		BelongsToHousehold: &mealPlan.BelongsToHousehold,
 	}
 }
@@ -86,37 +77,32 @@ func BuildFakeMealPlanCreationRequestInput() *types.MealPlanCreationRequestInput
 
 // BuildFakeMealPlanCreationRequestInputFromMealPlan builds a faked MealPlanCreationRequestInput from a meal plan.
 func BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanCreationRequestInput {
-	options := []*types.MealPlanOptionCreationRequestInput{}
-	for _, opt := range mealPlan.Options {
-		options = append(options, BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(opt))
+	events := []*types.MealPlanEventCreationRequestInput{}
+	for _, opt := range mealPlan.Events {
+		events = append(events, BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(opt))
 	}
 
 	return &types.MealPlanCreationRequestInput{
 		ID:                 mealPlan.ID,
 		Notes:              mealPlan.Notes,
 		VotingDeadline:     mealPlan.VotingDeadline,
-		StartsAt:           mealPlan.StartsAt,
-		EndsAt:             mealPlan.EndsAt,
-		Options:            options,
+		Events:             events,
 		BelongsToHousehold: mealPlan.BelongsToHousehold,
 	}
 }
 
 // BuildFakeMealPlanDatabaseCreationInputFromMealPlan builds a faked MealPlanDatabaseCreationInput from a meal plan.
 func BuildFakeMealPlanDatabaseCreationInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanDatabaseCreationInput {
-	options := []*types.MealPlanOptionDatabaseCreationInput{}
-	for _, opt := range mealPlan.Options {
-		options = append(options, BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(opt))
+	events := []*types.MealPlanEventDatabaseCreationInput{}
+	for _, opt := range mealPlan.Events {
+		events = append(events, BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent(opt))
 	}
 
 	return &types.MealPlanDatabaseCreationInput{
 		ID:                 mealPlan.ID,
 		Notes:              mealPlan.Notes,
 		VotingDeadline:     mealPlan.VotingDeadline,
-		Status:             mealPlan.Status,
-		StartsAt:           mealPlan.StartsAt,
-		EndsAt:             mealPlan.EndsAt,
-		Options:            options,
+		Events:             events,
 		BelongsToHousehold: mealPlan.BelongsToHousehold,
 	}
 }

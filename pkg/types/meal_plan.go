@@ -43,17 +43,15 @@ type (
 	// MealPlan represents a meal plan.
 	MealPlan struct {
 		_                  struct{}
-		CreatedAt          time.Time         `json:"createdAt"`
-		VotingDeadline     time.Time         `json:"votingDeadline"`
-		StartsAt           time.Time         `json:"startsAt"`
-		EndsAt             time.Time         `json:"endsAt"`
-		ArchivedAt         *time.Time        `json:"archivedAt"`
-		LastUpdatedAt      *time.Time        `json:"lastUpdatedAt"`
-		Notes              string            `json:"notes"`
-		BelongsToHousehold string            `json:"belongsToHousehold"`
-		Status             MealPlanStatus    `json:"status"`
-		ID                 string            `json:"id"`
-		Options            []*MealPlanOption `json:"options"`
+		CreatedAt          time.Time        `json:"createdAt"`
+		VotingDeadline     time.Time        `json:"votingDeadline"`
+		ArchivedAt         *time.Time       `json:"archivedAt"`
+		LastUpdatedAt      *time.Time       `json:"lastUpdatedAt"`
+		Notes              string           `json:"notes"`
+		BelongsToHousehold string           `json:"belongsToHousehold"`
+		Status             MealPlanStatus   `json:"status"`
+		ID                 string           `json:"id"`
+		Events             []*MealPlanEvent `json:"events"`
 	}
 
 	// MealPlanList represents a list of meal plans.
@@ -66,26 +64,21 @@ type (
 	// MealPlanCreationRequestInput represents what a user could set as input for creating meal plans.
 	MealPlanCreationRequestInput struct {
 		_                  struct{}
-		EndsAt             time.Time                             `json:"endsAt"`
-		VotingDeadline     time.Time                             `json:"votingDeadline"`
-		StartsAt           time.Time                             `json:"startsAt"`
-		BelongsToHousehold string                                `json:"-"`
-		Notes              string                                `json:"notes"`
-		ID                 string                                `json:"-"`
-		Options            []*MealPlanOptionCreationRequestInput `json:"options"`
+		VotingDeadline     time.Time                            `json:"votingDeadline"`
+		BelongsToHousehold string                               `json:"-"`
+		Notes              string                               `json:"notes"`
+		ID                 string                               `json:"-"`
+		Events             []*MealPlanEventCreationRequestInput `json:"events"`
 	}
 
 	// MealPlanDatabaseCreationInput represents what a user could set as input for creating meal plans.
 	MealPlanDatabaseCreationInput struct {
 		_                  struct{}
-		StartsAt           time.Time                              `json:"startsAt"`
-		EndsAt             time.Time                              `json:"endsAt"`
-		VotingDeadline     time.Time                              `json:"votingDeadline"`
-		BelongsToHousehold string                                 `json:"belongsToHousehold"`
-		Notes              string                                 `json:"notes"`
-		ID                 string                                 `json:"id"`
-		Status             MealPlanStatus                         `json:"status"`
-		Options            []*MealPlanOptionDatabaseCreationInput `json:"options"`
+		VotingDeadline     time.Time                             `json:"votingDeadline"`
+		BelongsToHousehold string                                `json:"belongsToHousehold"`
+		Notes              string                                `json:"notes"`
+		ID                 string                                `json:"id"`
+		Events             []*MealPlanEventDatabaseCreationInput `json:"events"`
 	}
 
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.
@@ -94,8 +87,6 @@ type (
 		BelongsToHousehold *string    `json:"-"`
 		Notes              *string    `json:"notes"`
 		VotingDeadline     *time.Time `json:"votingDeadline"`
-		StartsAt           *time.Time `json:"startsAt"`
-		EndsAt             *time.Time `json:"endsAt"`
 	}
 
 	// MealPlanDataManager describes a structure capable of storing meal plans permanently.
@@ -107,6 +98,7 @@ type (
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
 		AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error)
+		GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]string, error)
 		GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*MealPlan, error)
 	}
 
@@ -125,50 +117,18 @@ func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
 	}
-
-	if input.StartsAt != nil && *input.StartsAt != x.StartsAt {
-		x.StartsAt = *input.StartsAt
-	}
-
-	if input.EndsAt != nil && *input.EndsAt != x.EndsAt {
-		x.EndsAt = *input.EndsAt
-	}
 }
 
 var errTooFewUniqueMeals = errors.New("too many instances of the same meal")
-var errStartsAfterItEnds = errors.New("invalid start and end dates")
 
 var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)
 
 // ValidateWithContext validates a MealPlanCreationRequestInput.
 func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	if x.StartsAt == x.EndsAt || x.StartsAt.After(x.EndsAt) {
-		return errStartsAfterItEnds
-	}
-
-	if x.StartsAt == x.VotingDeadline || (x.VotingDeadline.After(x.StartsAt)) {
-		return errStartsAfterItEnds
-	}
-
-	mealCounts := map[string]uint{}
-	for _, option := range x.Options {
-		if _, ok := mealCounts[option.MealID]; !ok {
-			mealCounts[option.MealID] = 1
-		} else {
-			mealCounts[option.MealID]++
-			if mealCounts[option.MealID] >= 3 {
-				return errTooFewUniqueMeals
-			}
-		}
-	}
-
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.VotingDeadline, validation.Min(time.Now().Add(-time.Hour))),
-		validation.Field(&x.StartsAt, validation.Required),
-		validation.Field(&x.EndsAt, validation.Required),
-		validation.Field(&x.Options, validation.NilOrNotEmpty),
 	)
 }
 
@@ -180,12 +140,8 @@ func (x *MealPlanDatabaseCreationInput) ValidateWithContext(ctx context.Context)
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Status, validation.Required),
 		validation.Field(&x.VotingDeadline, validation.Required),
-		validation.Field(&x.StartsAt, validation.Required),
-		validation.Field(&x.EndsAt, validation.Required),
 		validation.Field(&x.BelongsToHousehold, validation.Required),
-		validation.Field(&x.Options, validation.NilOrNotEmpty),
 	)
 }
 
@@ -195,8 +151,6 @@ func MealPlanUpdateRequestInputFromMealPlan(input *MealPlan) *MealPlanUpdateRequ
 		BelongsToHousehold: &input.BelongsToHousehold,
 		Notes:              &input.Notes,
 		VotingDeadline:     &input.VotingDeadline,
-		StartsAt:           &input.StartsAt,
-		EndsAt:             &input.EndsAt,
 	}
 
 	return x
@@ -204,18 +158,15 @@ func MealPlanUpdateRequestInputFromMealPlan(input *MealPlan) *MealPlanUpdateRequ
 
 // MealPlanDatabaseCreationInputFromMealPlanCreationInput creates a DatabaseCreationInput from a CreationInput.
 func MealPlanDatabaseCreationInputFromMealPlanCreationInput(input *MealPlanCreationRequestInput) *MealPlanDatabaseCreationInput {
-	options := []*MealPlanOptionDatabaseCreationInput{}
-	for _, option := range input.Options {
-		options = append(options, MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(option))
+	var events []*MealPlanEventDatabaseCreationInput
+	for _, e := range input.Events {
+		events = append(events, MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput(e))
 	}
 
 	x := &MealPlanDatabaseCreationInput{
 		Notes:          input.Notes,
-		Status:         AwaitingVotesMealPlanStatus,
 		VotingDeadline: input.VotingDeadline,
-		StartsAt:       input.StartsAt,
-		EndsAt:         input.EndsAt,
-		Options:        options,
+		Events:         events,
 	}
 
 	return x
@@ -229,7 +180,5 @@ func (x *MealPlanUpdateRequestInput) ValidateWithContext(ctx context.Context) er
 		ctx,
 		x,
 		validation.Field(&x.VotingDeadline, validation.Required),
-		validation.Field(&x.StartsAt, validation.Required),
-		validation.Field(&x.EndsAt, validation.Required),
 	)
 }
