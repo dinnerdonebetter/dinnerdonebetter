@@ -29,11 +29,11 @@ func createMealPlanForTest(ctx context.Context, t *testing.T, adminClient, clien
 
 	t.Log("creating meal plan")
 	exampleMealPlan := fakes.BuildFakeMealPlan()
-	//for i := range exampleMealPlan.Options {
-	//	createdMeal := createMealForTest(ctx, t, adminClient, client, nil)
-	//	exampleMealPlan.Options[i].Meal.ID = createdMeal.ID
-	//	exampleMealPlan.Options[i].AssignedCook = nil
-	//}
+	for i := range exampleMealPlan.Events {
+		createdMeal := createMealForTest(ctx, t, adminClient, client, nil)
+		exampleMealPlan.Options[i].Meal.ID = createdMeal.ID
+		exampleMealPlan.Options[i].AssignedCook = nil
+	}
 
 	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
 	createdMealPlan, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
