@@ -185,6 +185,7 @@ func MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput(inp
 		StartsAt:          input.StartsAt,
 		EndsAt:            input.EndsAt,
 		BelongsToMealPlan: input.BelongsToMealPlan,
+		Options:           options,
 	}
 
 	return x

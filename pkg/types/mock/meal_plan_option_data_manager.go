@@ -16,20 +16,20 @@ type MealPlanOptionDataManager struct {
 }
 
 // MealPlanOptionExists is a mock function.
-func (m *MealPlanOptionDataManager) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (bool, error) {
-	args := m.Called(ctx, mealPlanID, mealPlanOptionID)
+func (m *MealPlanOptionDataManager) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetMealPlanOption is a mock function.
-func (m *MealPlanOptionDataManager) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*types.MealPlanOption, error) {
-	args := m.Called(ctx, mealPlanID, mealPlanOptionID)
+func (m *MealPlanOptionDataManager) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*types.MealPlanOption, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	return args.Get(0).(*types.MealPlanOption), args.Error(1)
 }
 
 // GetMealPlanOptions is a mock function.
-func (m *MealPlanOptionDataManager) GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*types.MealPlanOptionList, error) {
-	args := m.Called(ctx, mealPlanID, filter)
+func (m *MealPlanOptionDataManager) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *types.QueryFilter) (*types.MealPlanOptionList, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanEventID, filter)
 	return args.Get(0).(*types.MealPlanOptionList), args.Error(1)
 }
 
@@ -45,13 +45,13 @@ func (m *MealPlanOptionDataManager) UpdateMealPlanOption(ctx context.Context, up
 }
 
 // ArchiveMealPlanOption is a mock function.
-func (m *MealPlanOptionDataManager) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {
-	return m.Called(ctx, mealPlanID, mealPlanOptionID).Error(0)
+func (m *MealPlanOptionDataManager) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
+	return m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID).Error(0)
 }
 
 // FinalizeMealPlanOption is a mock function.
-func (m *MealPlanOptionDataManager) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (bool, error) {
-	args := m.Called(ctx, mealPlanID, mealPlanOptionID, householdID)
+func (m *MealPlanOptionDataManager) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID)
 
 	return args.Bool(0), args.Error(1)
 }

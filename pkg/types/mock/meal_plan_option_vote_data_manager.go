@@ -48,3 +48,9 @@ func (m *MealPlanOptionVoteDataManager) UpdateMealPlanOptionVote(ctx context.Con
 func (m *MealPlanOptionVoteDataManager) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionID, mealPlanOptionVoteID string) error {
 	return m.Called(ctx, mealPlanOptionID, mealPlanOptionVoteID).Error(0)
 }
+
+// GetMealPlanOptionVotesForMealPlanOption is a mock function.
+func (m *MealPlanOptionVoteDataManager) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) ([]*types.MealPlanOptionVote, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanOptionID)
+	return args.Get(0).([]*types.MealPlanOptionVote), args.Error(1)
+}

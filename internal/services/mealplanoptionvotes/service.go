@@ -5,14 +5,13 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/database"
-
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -36,6 +35,7 @@ type (
 		logger                      logging.Logger
 		dataManager                 dataManager
 		mealPlanIDFetcher           func(*http.Request) string
+		mealPlanEventIDFetcher      func(*http.Request) string
 		mealPlanOptionIDFetcher     func(*http.Request) string
 		mealPlanOptionVoteIDFetcher func(*http.Request) string
 		sessionContextDataFetcher   func(*http.Request) (*types.SessionContextData, error)
@@ -63,6 +63,7 @@ func ProvideService(
 	svc := &service{
 		logger:                      logging.EnsureLogger(logger).WithName(serviceName),
 		mealPlanIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(mealplansservice.MealPlanIDURIParamKey),
+		mealPlanEventIDFetcher:      routeParamManager.BuildRouteParamStringIDFetcher(mealplaneventsservice.MealPlanEventIDURIParamKey),
 		mealPlanOptionIDFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(mealplanoptionsservice.MealPlanOptionIDURIParamKey),
 		mealPlanOptionVoteIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionVoteIDURIParamKey),
 		sessionContextDataFetcher:   authservice.FetchContextFromRequest,

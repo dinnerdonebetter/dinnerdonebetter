@@ -11,20 +11,26 @@ import (
 
 // BuildFakeMealPlanEvent builds a faked meal plan event.
 func BuildFakeMealPlanEvent() *types.MealPlanEvent {
-	mealPlanID := ksuid.New().String()
+	mealPlanEventID := ksuid.New().String()
 
 	now := time.Now().Add(0)
 	inTenMinutes := now.Add(time.Minute * 10)
 	inOneWeek := now.Add((time.Hour * 24) * 7)
 
+	options := []*types.MealPlanOption{}
+	for _, opt := range BuildFakeMealPlanOptionList().MealPlanOptions {
+		opt.BelongsToMealPlanEvent = mealPlanEventID
+		options = append(options, opt)
+	}
+
 	return &types.MealPlanEvent{
-		ID:                mealPlanID,
+		ID:                mealPlanEventID,
 		Notes:             buildUniqueString(),
 		StartsAt:          inTenMinutes,
 		EndsAt:            inOneWeek,
 		CreatedAt:         fake.Date(),
 		BelongsToMealPlan: BuildFakeID(),
-		Options:           BuildFakeMealPlanOptionList().MealPlanOptions,
+		Options:           options,
 	}
 }
 
@@ -74,13 +80,20 @@ func BuildFakeMealPlanEventCreationRequestInput() *types.MealPlanEventCreationRe
 }
 
 // BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent builds a faked MealPlanEventCreationRequestInput from a meal plan.
-func BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(mealPlan *types.MealPlanEvent) *types.MealPlanEventCreationRequestInput {
+func BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(mealPlanEvent *types.MealPlanEvent) *types.MealPlanEventCreationRequestInput {
+	options := []*types.MealPlanOptionCreationRequestInput{}
+	for _, opt := range mealPlanEvent.Options {
+		opt.BelongsToMealPlanEvent = mealPlanEvent.ID
+		options = append(options, BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(opt))
+	}
+
 	return &types.MealPlanEventCreationRequestInput{
-		ID:                mealPlan.ID,
-		Notes:             mealPlan.Notes,
-		StartsAt:          mealPlan.StartsAt,
-		EndsAt:            mealPlan.EndsAt,
-		BelongsToMealPlan: mealPlan.BelongsToMealPlan,
+		ID:                mealPlanEvent.ID,
+		Notes:             mealPlanEvent.Notes,
+		StartsAt:          mealPlanEvent.StartsAt,
+		EndsAt:            mealPlanEvent.EndsAt,
+		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
+		Options:           options,
 	}
 }
 

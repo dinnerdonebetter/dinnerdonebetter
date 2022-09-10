@@ -42,6 +42,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
+	// determine meal plan event ID.
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+
 	// read parsed input struct from request body.
 	providedInput := new(types.MealPlanOptionVoteCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
@@ -90,7 +95,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		lastVote := mealPlanOptionVotes[len(mealPlanOptionVotes)-1]
 
 		// have all votes been received for an option? if so, finalize it
-		mealPlanOptionFinalized, optionFinalizationErr := s.dataManager.FinalizeMealPlanOption(ctx, mealPlanID, lastVote.BelongsToMealPlanOption, sessionCtxData.ActiveHouseholdID)
+		mealPlanOptionFinalized, optionFinalizationErr := s.dataManager.FinalizeMealPlanOption(ctx, mealPlanID, mealPlanEventID, lastVote.BelongsToMealPlanOption, sessionCtxData.ActiveHouseholdID)
 		if optionFinalizationErr != nil {
 			observability.AcknowledgeError(optionFinalizationErr, logger, span, "finalizing meal plan option vote")
 			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

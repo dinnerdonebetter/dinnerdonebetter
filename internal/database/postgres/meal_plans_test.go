@@ -48,110 +48,6 @@ func buildMockRowsFromMealPlans(includeCounts bool, filteredCount uint64, mealPl
 	return exampleRows
 }
 
-func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, mealPlans ...*types.MealPlan) *sqlmock.Rows {
-	columns := []string{
-		"meal_plans.id",
-		"meal_plans.notes",
-		"meal_plans.status",
-		"meal_plans.voting_deadline",
-		"meal_plans.created_at",
-		"meal_plans.last_updated_at",
-		"meal_plans.archived_at",
-		"meal_plans.belongs_to_household",
-		"meal_plan_options.id",
-		"meal_plan_options.day",
-		"meal_plan_options.assigned_cook",
-		"meal_plan_options.assigned_dishwasher",
-		"meal_plan_options.meal_name",
-		"meal_plan_options.chosen",
-		"meal_plan_options.tiebroken",
-		"meal_plan_options.meal_id",
-		"meal_plan_options.notes",
-		"meal_plan_options.created_at",
-		"meal_plan_options.last_updated_at",
-		"meal_plan_options.archived_at",
-		"meal_plan_options.belongs_to_meal_plan",
-		"meal_plan_option_votes.id",
-		"meal_plan_option_votes.rank",
-		"meal_plan_option_votes.abstain",
-		"meal_plan_option_votes.notes",
-		"meal_plan_option_votes.by_user",
-		"meal_plan_option_votes.created_at",
-		"meal_plan_option_votes.last_updated_at",
-		"meal_plan_option_votes.archived_at",
-		"meal_plan_option_votes.belongs_to_meal_plan_option",
-		"meals.id",
-		"meals.name",
-		"meals.description",
-		"meals.created_at",
-		"meals.last_updated_at",
-		"meals.archived_at",
-		"meals.created_by_user",
-		"meal_recipes.recipe_id",
-	}
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	//for _, x := range mealPlans {
-	//	for _, opt := range x.Events {
-	//		for _, vote := range opt.Votes {
-	//			rowValues := []driver.Value{
-	//				x.ID,
-	//				x.Notes,
-	//				x.Status,
-	//				x.VotingDeadline,
-	//				x.CreatedAt,
-	//				x.LastUpdatedAt,
-	//				x.ArchivedAt,
-	//				x.BelongsToHousehold,
-	//				opt.ID,
-	//				opt.Day,
-	//				opt.AssignedCook,
-	//				opt.AssignedDishwasher,
-	//				opt.MealName,
-	//				opt.Chosen,
-	//				opt.TieBroken,
-	//				opt.Meal.ID,
-	//				opt.Notes,
-	//				opt.CreatedAt,
-	//				opt.LastUpdatedAt,
-	//				opt.ArchivedAt,
-	//				opt.BelongsToMealPlanEvent,
-	//				vote.ID,
-	//				vote.Rank,
-	//				vote.Abstain,
-	//				vote.Notes,
-	//				vote.ByUser,
-	//				vote.CreatedAt,
-	//				vote.LastUpdatedAt,
-	//				vote.ArchivedAt,
-	//				vote.BelongsToMealPlanOption,
-	//				opt.Meal.ID,
-	//				opt.Meal.Name,
-	//				opt.Meal.Description,
-	//				opt.Meal.CreatedAt,
-	//				opt.Meal.LastUpdatedAt,
-	//				opt.Meal.ArchivedAt,
-	//				opt.Meal.CreatedByUser,
-	//				opt.Meal.Recipes[0].ID,
-	//			}
-	//
-	//			if includeCounts {
-	//				rowValues = append(rowValues, filteredCount, len(mealPlans))
-	//			}
-	//
-	//			exampleRows.AddRow(rowValues...)
-	//		}
-	//	}
-	//}
-
-	return exampleRows
-}
-
 func TestQuerier_ScanMealPlans(T *testing.T) {
 	T.Parallel()
 
@@ -299,15 +195,17 @@ func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exa
 	}
 
 	exampleRecipes := []*types.Recipe{}
-	//for _, opt := range exampleMealPlan.Events {
-	//	if len(opt.Meal.Recipes) == 0 {
-	//		exampleRecipe := fakes.BuildFakeRecipe()
-	//		opt.Meal.Recipes = []*types.Recipe{exampleRecipe}
-	//		exampleRecipes = append(exampleRecipes, exampleRecipe)
-	//	} else {
-	//		exampleRecipes = append(exampleRecipes, opt.Meal.Recipes[0])
-	//	}
-	//}
+	for _, evt := range exampleMealPlan.Events {
+		for _, opt := range evt.Options {
+			if len(opt.Meal.Recipes) == 0 {
+				exampleRecipe := fakes.BuildFakeRecipe()
+				opt.Meal.Recipes = []*types.Recipe{exampleRecipe}
+				exampleRecipes = append(exampleRecipes, exampleRecipe)
+			} else {
+				exampleRecipes = append(exampleRecipes, opt.Meal.Recipes[0])
+			}
+		}
+	}
 
 	getMealPlanArgs := []interface{}{
 		exampleMealPlan.ID,
@@ -316,7 +214,7 @@ func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exa
 
 	db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
 		WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-		WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+		WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
 
 	for _, exampleRecipe := range exampleRecipes {
 		prepareMockToSuccessfullyGetRecipe(ctx, t, exampleRecipe, "", c, db)
@@ -552,15 +450,17 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		for _, option := range exampleInput.Events {
-			optionArgs := []interface{}{
-				option.ID,
-				option.Notes,
-			}
+		for _, event := range exampleInput.Events {
+			for _, option := range event.Options {
+				optionArgs := []interface{}{
+					option.ID,
+					option.Notes,
+				}
 
-			db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
-				WithArgs(interfaceToDriverValue(optionArgs)...).
-				WillReturnResult(newArbitraryDatabaseResult())
+				db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
+					WithArgs(interfaceToDriverValue(optionArgs)...).
+					WillReturnResult(newArbitraryDatabaseResult())
+			}
 		}
 
 		db.ExpectCommit()
@@ -891,51 +791,51 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 	})
 }
 
-func Test_byDayAndMeal(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := []*types.MealPlanOption{
-			{
-				Day:      time.Wednesday,
-				MealName: types.SecondBreakfastMealName,
-			},
-		}
-		options := []*types.MealPlanOption{
-			{
-				Day:      time.Monday,
-				MealName: types.BreakfastMealName,
-			},
-			{
-				Day:      time.Tuesday,
-				MealName: types.SecondBreakfastMealName,
-			},
-			expected[0],
-			{
-				Day:      time.Thursday,
-				MealName: types.BrunchMealName,
-			},
-			{
-				Day:      time.Friday,
-				MealName: types.LunchMealName,
-			},
-			{
-				Day:      time.Saturday,
-				MealName: types.SupperMealName,
-			},
-			{
-				Day:      time.Sunday,
-				MealName: types.DinnerMealName,
-			},
-		}
-
-		actual := byDayAndMeal(options, time.Wednesday, types.SecondBreakfastMealName)
-
-		assert.Equal(t, expected, actual)
-	})
-}
+//func Test_byDayAndMeal(T *testing.T) {
+//	T.Parallel()
+//
+//	T.Run("standard", func(t *testing.T) {
+//		t.Parallel()
+//
+//		expected := []*types.MealPlanOption{
+//			{
+//				Day:      time.Wednesday,
+//				MealName: types.SecondBreakfastMealName,
+//			},
+//		}
+//		options := []*types.MealPlanOption{
+//			{
+//				Day:      time.Monday,
+//				MealName: types.BreakfastMealName,
+//			},
+//			{
+//				Day:      time.Tuesday,
+//				MealName: types.SecondBreakfastMealName,
+//			},
+//			expected[0],
+//			{
+//				Day:      time.Thursday,
+//				MealName: types.BrunchMealName,
+//			},
+//			{
+//				Day:      time.Friday,
+//				MealName: types.LunchMealName,
+//			},
+//			{
+//				Day:      time.Saturday,
+//				MealName: types.SupperMealName,
+//			},
+//			{
+//				Day:      time.Sunday,
+//				MealName: types.DinnerMealName,
+//			},
+//		}
+//
+//		actual := byDayAndMeal(options, time.Wednesday, types.SecondBreakfastMealName)
+//
+//		assert.Equal(t, expected, actual)
+//	})
+//}
 
 //func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 //	T.Parallel()

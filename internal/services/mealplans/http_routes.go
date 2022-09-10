@@ -56,6 +56,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	for i := range input.Events {
 		input.Events[i].ID = ksuid.New().String()
+		input.Events[i].BelongsToMealPlan = input.ID
+		for j := range input.Events[i].Options {
+			input.Events[i].Options[j].BelongsToMealPlanEvent = input.Events[i].ID
+			input.Events[i].Options[j].ID = ksuid.New().String()
+		}
 	}
 
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID

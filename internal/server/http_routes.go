@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	"path"
 
 	"github.com/heptiolabs/healthcheck"
@@ -651,9 +652,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlansPermission)).
 					Put(root, s.mealPlansService.UpdateHandler)
-				singleMealPlanRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
-					Post("/vote", s.mealPlanOptionVotesService.CreateHandler)
 			})
 		})
 
@@ -665,7 +663,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			mealPlanEventPath,
 		)
 		mealPlanEventsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanEventsRoute)
-		mealPlanEventIDRouteParam := buildURLVarChunk(mealplanoptionsservice.MealPlanEventIDURIParamKey, "")
+		mealPlanEventIDRouteParam := buildURLVarChunk(mealplaneventsservice.MealPlanEventIDURIParamKey, "")
 		v1Router.Route(mealPlanEventsRouteWithPrefix, func(mealPlanEventsRouter routing.Router) {
 			mealPlanEventsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanEventsPermission)).
@@ -684,6 +682,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanEventsPermission)).
 					Put(root, s.mealPlanEventsService.UpdateHandler)
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
+					Post("/vote", s.mealPlanOptionVotesService.CreateHandler)
 			})
 		})
 
@@ -692,6 +693,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		mealPlanOptionsRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
+			mealPlanEventPath,
 			mealPlanEventIDRouteParam,
 			mealPlanOptionPath,
 		)
@@ -723,6 +725,8 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		mealPlanOptionVotesRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
+			mealPlanEventPath,
+			mealPlanEventIDRouteParam,
 			mealPlanOptionPath,
 			mealPlanOptionIDRouteParam,
 			mealPlanOptionVotePath,

@@ -32,7 +32,7 @@ var (
 
 	getMealPlanOptionVotesJoins = []string{
 		mealPlanOptionsOnMealPlanOptionVotesJoinClause,
-		mealPlansOnMealPlanOptionsJoinClause,
+		mealPlanEventsOnMealPlanOptionsJoinClause,
 	}
 )
 

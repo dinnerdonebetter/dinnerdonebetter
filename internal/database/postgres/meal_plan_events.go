@@ -127,7 +127,7 @@ const getMealPlanEventByIDQuery = `SELECT
 	meal_plan_events.belongs_to_meal_plan,
 	meal_plan_events.created_at,
 	meal_plan_events.last_updated_at,
-	meal_plan_events.archived_at,
+	meal_plan_events.archived_at
 FROM meal_plan_events
 WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.id = $1
@@ -171,14 +171,14 @@ const getMealPlanEventForMealPlanQuery = `SELECT
 	meal_plan_events.belongs_to_meal_plan,
 	meal_plan_events.created_at,
 	meal_plan_events.last_updated_at,
-	meal_plan_events.archived_at,
+	meal_plan_events.archived_at
 FROM meal_plan_events
 WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.belongs_to_meal_plan = $1
 `
 
-// GetMealPlanEventsForMealPlan fetches a list of mealPlanEvents from the database that meet a particular filter.
-func (q *Querier) GetMealPlanEventsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanEvent, err error) {
+// getMealPlanEventsForMealPlan fetches a list of mealPlanEvents from the database that meet a particular filter.
+func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanEvent, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -193,18 +193,18 @@ func (q *Querier) GetMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 		return nil, observability.PrepareError(err, logger, span, "executing meal plan events list retrieval query")
 	}
 
-	x, _, _, err = q.scanMealPlanEvents(ctx, rows, true)
+	x, _, _, err = q.scanMealPlanEvents(ctx, rows, false)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning meal plan events")
 	}
 
-	for i, e := range x {
-		mealPlanOptions, mealPlanOptionsErr := q.GetMealPlanOptionsForMealPlanEvent(ctx, mealPlanID, e.ID)
+	for _, e := range x {
+		mealPlanOptions, mealPlanOptionsErr := q.getMealPlanOptionsForMealPlanEvent(ctx, mealPlanID, e.ID)
 		if mealPlanOptionsErr != nil {
 			return nil, observability.PrepareError(mealPlanOptionsErr, logger, span, "fetching options for meal plan events")
 		}
 
-		x[i].Options = mealPlanOptions
+		e.Options = mealPlanOptions
 	}
 
 	return x, nil
@@ -267,7 +267,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 	}
 
 	// create the mealPlanEvent.
-	if err := q.performWriteQuery(ctx, querier, "mealPlanEvent creation", mealPlanEventCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "meal plan event creation", mealPlanEventCreationQuery, args); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, logger, span, "performing mealPlanEvent creation query")
 	}
@@ -281,6 +281,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 		CreatedAt:         q.currentTime(),
 	}
 
+	logger.WithValue("quantity", len(input.Options)).Info("creating options for meal plan event")
 	for _, option := range input.Options {
 		option.BelongsToMealPlanEvent = x.ID
 		opt, createErr := q.createMealPlanOption(ctx, querier, option)
@@ -292,7 +293,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 	}
 
 	tracing.AttachMealPlanEventIDToSpan(span, x.ID)
-	logger.Info("mealPlanEvent created")
+	logger.Info("meal plan event created")
 
 	return x, nil
 }
@@ -353,7 +354,7 @@ func (q *Querier) CreateMealPlanEventRecipe(ctx context.Context, querier databas
 	}
 
 	// create the mealPlanEvent.
-	if err := q.performWriteQuery(ctx, querier, "mealPlanEvent recipe creation", mealPlanEventRecipeCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "meal plan event recipe creation", mealPlanEventRecipeCreationQuery, args); err != nil {
 		return observability.PrepareError(err, logger, span, "performing mealPlanEvent creation query")
 	}
 
@@ -418,11 +419,11 @@ func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanEventID stri
 		mealPlanEventID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "mealPlanEvent archive", archiveMealPlanEventQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, q.db, "meal plan event archive", archiveMealPlanEventQuery, args); err != nil {
 		return observability.PrepareError(err, logger, span, "updating mealPlanEvent")
 	}
 
-	logger.Info("mealPlanEvent archived")
+	logger.Info("meal plan event archived")
 
 	return nil
 }

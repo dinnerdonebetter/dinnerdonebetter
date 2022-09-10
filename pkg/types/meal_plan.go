@@ -158,7 +158,7 @@ func MealPlanUpdateRequestInputFromMealPlan(input *MealPlan) *MealPlanUpdateRequ
 
 // MealPlanDatabaseCreationInputFromMealPlanCreationInput creates a DatabaseCreationInput from a CreationInput.
 func MealPlanDatabaseCreationInputFromMealPlanCreationInput(input *MealPlanCreationRequestInput) *MealPlanDatabaseCreationInput {
-	var events []*MealPlanEventDatabaseCreationInput
+	events := []*MealPlanEventDatabaseCreationInput{}
 	for _, e := range input.Events {
 		events = append(events, MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput(e))
 	}

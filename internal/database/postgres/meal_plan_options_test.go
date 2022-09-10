@@ -104,6 +104,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		ctx := context.Background()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		c, db := buildTestClient(t)
@@ -117,7 +118,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
 
-		actual, err := c.MealPlanOptionExists(ctx, exampleMealPlanID, exampleMealPlanOption.ID)
+		actual, err := c.MealPlanOptionExists(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID)
 		assert.NoError(t, err)
 		assert.True(t, actual)
 
@@ -133,7 +134,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.MealPlanOptionExists(ctx, "", exampleMealPlanOption.ID)
+		actual, err := c.MealPlanOptionExists(ctx, "", "", exampleMealPlanOption.ID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 	})
@@ -144,10 +145,11 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		ctx := context.Background()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.MealPlanOptionExists(ctx, exampleMealPlanID, "")
+		actual, err := c.MealPlanOptionExists(ctx, exampleMealPlanID, exampleMealPlanEventID, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
 	})
@@ -158,6 +160,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		ctx := context.Background()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		c, db := buildTestClient(t)
@@ -171,7 +174,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := c.MealPlanOptionExists(ctx, exampleMealPlanID, exampleMealPlanOption.ID)
+		actual, err := c.MealPlanOptionExists(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID)
 		assert.NoError(t, err)
 		assert.False(t, actual)
 
@@ -184,6 +187,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		ctx := context.Background()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		c, db := buildTestClient(t)
@@ -197,7 +201,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.MealPlanOptionExists(ctx, exampleMealPlanID, exampleMealPlanOption.ID)
+		actual, err := c.MealPlanOptionExists(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 
@@ -212,6 +216,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 		exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
 
@@ -228,7 +233,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, exampleMealPlanOption))
 
-		actual, err := c.GetMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOption.ID)
+		actual, err := c.GetMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanOption, actual)
 
@@ -243,7 +248,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetMealPlanOption(ctx, "", exampleMealPlanOption.ID)
+		actual, err := c.GetMealPlanOption(ctx, "", "", exampleMealPlanOption.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -252,11 +257,12 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetMealPlanOption(ctx, exampleMealPlanID, "")
+		actual, err := c.GetMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -265,6 +271,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		ctx := context.Background()
@@ -280,7 +287,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOption.ID)
+		actual, err := c.GetMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -296,6 +303,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
 		for i := range exampleMealPlanOptionList.MealPlanOptions {
@@ -313,7 +321,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlanOptions(true, exampleMealPlanOptionList.FilteredCount, exampleMealPlanOptionList.MealPlanOptions...))
 
-		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, filter)
+		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanOptionList, actual)
 
@@ -328,7 +336,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetMealPlanOptions(ctx, "", filter)
+		actual, err := c.GetMealPlanOptions(ctx, "", "", filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -338,6 +346,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 		exampleMealPlanOptionList.Page = 0
 		exampleMealPlanOptionList.Limit = 0
@@ -356,7 +365,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlanOptions(true, exampleMealPlanOptionList.FilteredCount, exampleMealPlanOptionList.MealPlanOptions...))
 
-		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, filter)
+		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanOptionList, actual)
 
@@ -368,6 +377,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -379,7 +389,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, filter)
+		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -391,6 +401,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -402,7 +413,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, filter)
+		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -579,6 +590,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		ctx := context.Background()
@@ -593,7 +605,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		assert.NoError(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOption.ID))
+		assert.NoError(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -606,24 +618,26 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveMealPlanOption(ctx, "", exampleMealPlanOption.ID))
+		assert.Error(t, c.ArchiveMealPlanOption(ctx, "", "", exampleMealPlanOption.ID))
 	})
 
 	T.Run("with invalid meal plan option ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, ""))
+		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, ""))
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		ctx := context.Background()
@@ -638,7 +652,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOption.ID))
+		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -1174,7 +1188,7 @@ func Test_decideOptionWinner(T *testing.T) {
 //
 //		c, _ := buildTestClient(t)
 //
-//		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, "", exampleHouseholdID)
+//		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, "", exampleHouseholdID)
 //		assert.False(t, actual)
 //		assert.Error(t, err)
 //	})
@@ -1188,7 +1202,7 @@ func Test_decideOptionWinner(T *testing.T) {
 //
 //		c, _ := buildTestClient(t)
 //
-//		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOptionID, "")
+//		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, "")
 //		assert.False(t, actual)
 //		assert.Error(t, err)
 //	})

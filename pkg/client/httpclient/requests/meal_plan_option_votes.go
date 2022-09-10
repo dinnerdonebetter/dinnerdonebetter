@@ -15,7 +15,7 @@ const (
 )
 
 // BuildGetMealPlanOptionVoteRequest builds an HTTP request for fetching a meal plan option vote.
-func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*http.Request, error) {
+func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -26,6 +26,12 @@ func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPla
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
@@ -44,6 +50,8 @@ func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPla
 		nil,
 		mealPlansBasePath,
 		mealPlanID,
+		mealPlanEventsBasePath,
+		mealPlanEventID,
 		mealPlanOptionsBasePath,
 		mealPlanOptionID,
 		mealPlanOptionVotesBasePath,
@@ -60,7 +68,7 @@ func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPla
 }
 
 // BuildGetMealPlanOptionVotesRequest builds an HTTP request for fetching a list of meal plan option votes.
-func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPlanID, mealPlanOptionID string, filter *types.QueryFilter) (*http.Request, error) {
+func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -71,6 +79,12 @@ func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPl
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
@@ -83,6 +97,8 @@ func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPl
 		filter.ToValues(),
 		mealPlansBasePath,
 		mealPlanID,
+		mealPlanEventsBasePath,
+		mealPlanEventID,
 		mealPlanOptionsBasePath,
 		mealPlanOptionID,
 		mealPlanOptionVotesBasePath,
@@ -99,7 +115,7 @@ func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPl
 }
 
 // BuildCreateMealPlanOptionVoteRequest builds an HTTP request for creating a meal plan option vote.
-func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, mealPlanID string, input *types.MealPlanOptionVoteCreationRequestInput) (*http.Request, error) {
+func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, mealPlanID, mealPlanEventID string, input *types.MealPlanOptionVoteCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -110,6 +126,12 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -124,6 +146,8 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 		nil,
 		mealPlansBasePath,
 		mealPlanID,
+		mealPlanEventsBasePath,
+		mealPlanEventID,
 		"vote",
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -137,7 +161,7 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 }
 
 // BuildUpdateMealPlanOptionVoteRequest builds an HTTP request for updating a meal plan option vote.
-func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, mealPlanID string, mealPlanOptionVote *types.MealPlanOptionVote) (*http.Request, error) {
+func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, mealPlanID, mealPlanEventID string, mealPlanOptionVote *types.MealPlanOptionVote) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -148,6 +172,12 @@ func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, meal
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionVote == nil {
 		return nil, ErrNilInputProvided
@@ -161,6 +191,8 @@ func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, meal
 		nil,
 		mealPlansBasePath,
 		mealPlanID,
+		mealPlanEventsBasePath,
+		mealPlanEventID,
 		mealPlanOptionsBasePath,
 		mealPlanOptionVote.BelongsToMealPlanOption,
 		mealPlanOptionVotesBasePath,
@@ -179,7 +211,7 @@ func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, meal
 }
 
 // BuildArchiveMealPlanOptionVoteRequest builds an HTTP request for archiving a meal plan option vote.
-func (b *Builder) BuildArchiveMealPlanOptionVoteRequest(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*http.Request, error) {
+func (b *Builder) BuildArchiveMealPlanOptionVoteRequest(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -190,6 +222,12 @@ func (b *Builder) BuildArchiveMealPlanOptionVoteRequest(ctx context.Context, mea
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
@@ -208,6 +246,8 @@ func (b *Builder) BuildArchiveMealPlanOptionVoteRequest(ctx context.Context, mea
 		nil,
 		mealPlansBasePath,
 		mealPlanID,
+		mealPlanEventsBasePath,
+		mealPlanEventID,
 		mealPlanOptionsBasePath,
 		mealPlanOptionID,
 		mealPlanOptionVotesBasePath,
