@@ -85,10 +85,13 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			}
 
 			t.Log("cleaning up meal plan option")
-			assert.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID))
+			require.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID))
+
+			//t.Log("cleaning up meal plan event")
+			//require.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
 
 			t.Log("cleaning up meal plan")
-			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
+			require.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
 }

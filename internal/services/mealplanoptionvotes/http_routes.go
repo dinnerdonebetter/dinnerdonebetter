@@ -175,7 +175,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	// determine meal plan option ID.
+	// determine meal plan event ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
@@ -235,12 +235,17 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
+	// determine meal plan event ID.
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	mealPlanOptionVotes, err := s.dataManager.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanOptionID, filter)
+	mealPlanOptionVotes, err := s.dataManager.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		mealPlanOptionVotes = &types.MealPlanOptionVoteList{MealPlanOptionVotes: []*types.MealPlanOptionVote{}}
@@ -397,7 +402,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.dataManager.ArchiveMealPlanOptionVote(ctx, mealPlanOptionID, mealPlanOptionVoteID); err != nil {
+	if err = s.dataManager.ArchiveMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan option vote")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return

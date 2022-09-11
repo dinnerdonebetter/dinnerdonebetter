@@ -103,11 +103,11 @@ type (
 	MealPlanOptionVoteDataManager interface {
 		MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (bool, error)
 		GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*MealPlanOptionVote, error)
-		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanOptionID string, filter *QueryFilter) (*MealPlanOptionVoteList, error)
-		GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (x []*MealPlanOptionVote, err error)
+		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *QueryFilter) (*MealPlanOptionVoteList, error)
+		GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (x []*MealPlanOptionVote, err error)
 		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVoteDatabaseCreationInput) ([]*MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, updated *MealPlanOptionVote) error
-		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionID, mealPlanOptionVoteID string) error
+		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error
 	}
 
 	// MealPlanOptionVoteDataService describes a structure capable of serving traffic related to meal plan option votes.

@@ -136,7 +136,26 @@ func (q *Querier) scanMealPlanOptions(ctx context.Context, rows database.ResultI
 	return mealPlanOptions, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_options.id FROM meal_plan_options JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan_event=meal_plans.id WHERE meal_plan_options.archived_at IS NULL AND meal_plan_options.belongs_to_meal_plan_event = $1 AND meal_plan_options.id = $2 AND meal_plans.archived_at IS NULL AND meal_plans.id = $3 )"
+const mealPlanOptionExistenceQuery = `
+SELECT
+  EXISTS (
+    SELECT
+      meal_plan_options.id
+    FROM
+      meal_plan_options
+      JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+      JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+    WHERE
+      meal_plan_options.archived_at IS NULL
+      AND meal_plan_options.belongs_to_meal_plan_event = $2
+      AND meal_plan_options.id = $3
+	  AND meal_plan_events.archived_at IS NULL
+	  AND meal_plan_events.belongs_to_meal_plan = $1
+	  AND meal_plan_events.id = $2
+      AND meal_plans.archived_at IS NULL
+      AND meal_plans.id = $1
+  )
+`
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
 func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (exists bool, err error) {
@@ -164,9 +183,9 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	args := []interface{}{
+		mealPlanID,
 		mealPlanEventID,
 		mealPlanOptionID,
-		mealPlanID,
 	}
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanOptionExistenceQuery, args)
@@ -479,7 +498,16 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	return nil
 }
 
-const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_event = $1 AND id = $2"
+const archiveMealPlanOptionQuery = `
+UPDATE
+  meal_plan_options
+SET
+  archived_at = NOW()
+WHERE
+  archived_at IS NULL
+  AND belongs_to_meal_plan_event = $1
+  AND id = $2
+`
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
 func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
@@ -494,6 +522,12 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
+	if mealPlanEventID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+
 	if mealPlanOptionID == "" {
 		return ErrInvalidIDProvided
 	}
@@ -501,7 +535,7 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	args := []interface{}{
-		mealPlanID,
+		mealPlanEventID,
 		mealPlanOptionID,
 	}
 
