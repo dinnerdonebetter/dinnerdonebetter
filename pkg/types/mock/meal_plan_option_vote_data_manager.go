@@ -16,13 +16,13 @@ type MealPlanOptionVoteDataManager struct {
 }
 
 // MealPlanOptionVoteExists is a mock function.
-func (m *MealPlanOptionVoteDataManager) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (bool, error) {
+func (m *MealPlanOptionVoteDataManager) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (bool, error) {
 	args := m.Called(ctx, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetMealPlanOptionVote is a mock function.
-func (m *MealPlanOptionVoteDataManager) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
+func (m *MealPlanOptionVoteDataManager) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
 	args := m.Called(ctx, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID)
 	return args.Get(0).(*types.MealPlanOptionVote), args.Error(1)
 }

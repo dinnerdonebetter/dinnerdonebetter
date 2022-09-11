@@ -2,16 +2,15 @@ package mealplanoptions
 
 import (
 	"fmt"
-	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	"net/http"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	"github.com/prixfixeco/api_server/pkg/types"
 )

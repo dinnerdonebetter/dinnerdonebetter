@@ -243,7 +243,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, exampleMealPlanOptionVote))
 
-		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, "", exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanOptionVote, actual)
 
@@ -259,7 +259,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetMealPlanOptionVote(ctx, "", exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := c.GetMealPlanOptionVote(ctx, "", "", exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -273,7 +273,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, "", exampleMealPlanOptionVote.ID)
+		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, "", "", exampleMealPlanOptionVote.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -287,7 +287,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanOptionID, "")
+		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, "", exampleMealPlanOptionID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -314,7 +314,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, "", exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

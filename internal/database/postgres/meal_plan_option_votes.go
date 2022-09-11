@@ -101,10 +101,31 @@ func (q *Querier) scanMealPlanOptionVotes(ctx context.Context, rows database.Res
 	return mealPlanOptionVotes, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionVoteExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_option_votes.id FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_option_votes.archived_at IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_at IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_at IS NULL AND meal_plans.id = $5 )"
+const mealPlanOptionVoteExistenceQuery = `
+SELECT
+  EXISTS (
+    SELECT
+      meal_plan_option_votes.id
+    FROM
+      meal_plan_option_votes
+	JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
+	WHERE meal_plan_option_votes.archived_at IS NULL
+	  AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
+	  AND meal_plan_option_votes.id = $2
+	  AND meal_plan_options.archived_at IS NULL
+	  AND meal_plan_options.belongs_to_meal_plan_event = $3
+	  AND meal_plan_events.archived_at IS NULL
+	  AND meal_plan_events.belongs_to_meal_plan = $4
+	  AND meal_plan_options.id = $1
+	  AND meal_plans.archived_at IS NULL
+	  AND meal_plans.id = $4
+  )
+`
 
 // MealPlanOptionVoteExists fetches whether a meal plan option vote exists from the database.
-func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (exists bool, err error) {
+func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -115,6 +136,12 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return false, ErrInvalidIDProvided
@@ -131,8 +158,7 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	args := []interface{}{
 		mealPlanOptionID,
 		mealPlanOptionVoteID,
-		mealPlanID,
-		mealPlanOptionID,
+		mealPlanEventID,
 		mealPlanID,
 	}
 
@@ -157,19 +183,22 @@ SELECT
     meal_plan_option_votes.belongs_to_meal_plan_option
 FROM meal_plan_option_votes
     JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
-    JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
+    JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+    JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
 WHERE meal_plan_option_votes.archived_at IS NULL
   AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
   AND meal_plan_option_votes.id = $2
   AND meal_plan_options.archived_at IS NULL
-  AND meal_plan_options.belongs_to_meal_plan = $3
-  AND meal_plan_options.id = $4
+  AND meal_plan_options.belongs_to_meal_plan_event = $3
+  AND meal_plan_events.archived_at IS NULL
+  AND meal_plan_events.belongs_to_meal_plan = $4
+  AND meal_plan_options.id = $1
   AND meal_plans.archived_at IS NULL
-  AND meal_plans.id = $5
+  AND meal_plans.id = $4
 `
 
 // GetMealPlanOptionVote fetches a meal plan option vote from the database.
-func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
+func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -196,12 +225,11 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 	args := []interface{}{
 		mealPlanOptionID,
 		mealPlanOptionVoteID,
-		mealPlanID,
-		mealPlanOptionID,
+		mealPlanEventID,
 		mealPlanID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "mealPlanOptionVote", getMealPlanOptionVoteQuery, args)
+	row := q.getOneRow(ctx, q.db, "meal plan option vote", getMealPlanOptionVoteQuery, args)
 
 	mealPlanOptionVote, _, _, err := q.scanMealPlanOptionVote(ctx, row, false)
 	if err != nil {
