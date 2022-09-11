@@ -1,13 +1,14 @@
 package integration
 
 import (
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	"github.com/stretchr/testify/require"
 	"testing"
 
-	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealPlanOptionVote) {
@@ -92,54 +93,57 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 	})
 }
 
-//func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
-//	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
-//		return func() {
-//			t := s.T()
-//
-//			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-//			defer span.End()
-//
-//			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
-//
-//			var createdMealPlanOption *types.MealPlanOption
-//			for _, opt := range createdMealPlan.Options {
-//				createdMealPlanOption = opt
-//				break
-//			}
-//			require.NotNil(t, createdMealPlanOption)
-//
-//			t.Log("creating meal plan option vote")
-//			exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-//			exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
-//			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
-//			createdMealPlanOptionVotes, err := testClients.user.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
-//			require.NoError(t, err)
-//			t.Logf("meal plan option votes created")
-//
-//			for _, createdMealPlanOptionVote := range createdMealPlanOptionVotes {
-//				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
-//
-//				createdMealPlanOptionVote, err = testClients.user.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
-//				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
-//				require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
-//
-//				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
-//
-//				// assert meal plan option vote list equality
-//				actual, err := testClients.user.GetMealPlanOptionVotes(ctx, createdMealPlan.ID, createdMealPlanOption.ID, nil)
-//				requireNotNilAndNoProblems(t, actual, err)
-//				assert.NotEmpty(t, actual.MealPlanOptionVotes)
-//
-//				t.Log("cleaning up")
-//				assert.NoError(t, testClients.user.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))
-//			}
-//
-//			t.Log("cleaning up meal plan option")
-//			assert.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))
-//
-//			t.Log("cleaning up meal plan")
-//			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
-//		}
-//	})
-//}
+func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
+	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
+
+			require.NotEmpty(t, createdMealPlan.Events)
+			require.NotEmpty(t, createdMealPlan.Events[0].Options)
+
+			createdMealPlanEvent := createdMealPlan.Events[0]
+			createdMealPlanOption := createdMealPlanEvent.Options[0]
+			require.NotNil(t, createdMealPlanOption)
+
+			t.Log("creating meal plan option vote")
+			exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
+			exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
+			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
+			createdMealPlanOptionVotes, err := testClients.user.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, exampleMealPlanOptionVoteInput)
+			require.NoError(t, err)
+			t.Logf("meal plan option votes created")
+
+			for _, createdMealPlanOptionVote := range createdMealPlanOptionVotes {
+				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
+
+				createdMealPlanOptionVote, err = testClients.user.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
+				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
+				require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
+
+				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
+
+				// assert meal plan option vote list equality
+				actual, err := testClients.user.GetMealPlanOptionVotes(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID, nil)
+				requireNotNilAndNoProblems(t, actual, err)
+				assert.NotEmpty(t, actual.MealPlanOptionVotes)
+
+				t.Log("cleaning up")
+				assert.NoError(t, testClients.user.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))
+			}
+
+			t.Log("cleaning up meal plan option")
+			assert.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID))
+
+			t.Log("cleaning up meal plan event")
+			require.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
+
+			t.Log("cleaning up meal plan")
+			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
+		}
+	})
+}

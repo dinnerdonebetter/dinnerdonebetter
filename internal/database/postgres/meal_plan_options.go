@@ -15,8 +15,7 @@ import (
 )
 
 const (
-	mealPlanEventsOnMealPlanOptionsJoinClause = "meal_plans ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id"
-	mealsOnMealPlanOptionsJoinClause          = "meals ON meal_plan_options.meal_id=meals.id"
+	mealsOnMealPlanOptionsJoinClause = "meals ON meal_plan_options.meal_id=meals.id"
 )
 
 var (
@@ -50,6 +49,7 @@ var (
 	getMealPlanOptionsJoins = []string{
 		mealPlanEventsOnMealPlanOptionsJoinClause,
 		mealsOnMealPlanOptionsJoinClause,
+		mealPlansOnMealPlanEventsJoinClause,
 	}
 )
 

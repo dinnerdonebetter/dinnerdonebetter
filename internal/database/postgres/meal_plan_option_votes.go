@@ -33,6 +33,7 @@ var (
 	getMealPlanOptionVotesJoins = []string{
 		mealPlanOptionsOnMealPlanOptionVotesJoinClause,
 		mealPlanEventsOnMealPlanOptionsJoinClause,
+		mealPlansOnMealPlanEventsJoinClause,
 	}
 )
 
@@ -252,6 +253,7 @@ SELECT
     meal_plan_option_votes.belongs_to_meal_plan_option
 FROM meal_plan_option_votes
     JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+    JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
     JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
 WHERE meal_plan_option_votes.archived_at IS NULL
   AND meal_plan_option_votes.belongs_to_meal_plan_option = $1

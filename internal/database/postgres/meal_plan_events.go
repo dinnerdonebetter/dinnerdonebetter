@@ -12,6 +12,11 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
+const (
+	mealPlansOnMealPlanEventsJoinClause       = "meal_plans on meal_plan_events.belongs_to_meal_plan = meal_plans.id"
+	mealPlanEventsOnMealPlanOptionsJoinClause = "meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id"
+)
+
 var (
 	_ types.MealPlanEventDataManager = (*Querier)(nil)
 
