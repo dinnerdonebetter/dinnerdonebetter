@@ -39,10 +39,6 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			defer span.End()
 			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
 
-			//j, err := json.MarshalIndent(createdMealPlan, "", "\t")
-			//require.NoError(t, err)
-			//t.Logf(string(j))
-
 			require.NotEmpty(t, createdMealPlan.Events)
 			require.NotEmpty(t, createdMealPlan.Events[0].Options)
 
@@ -87,8 +83,8 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			t.Log("cleaning up meal plan option")
 			require.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID))
 
-			//t.Log("cleaning up meal plan event")
-			//require.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
+			t.Log("cleaning up meal plan event")
+			require.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
 
 			t.Log("cleaning up meal plan")
 			require.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))

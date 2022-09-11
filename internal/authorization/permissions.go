@@ -295,6 +295,10 @@ var (
 		UpdateMealPlansPermission.ID():  UpdateMealPlansPermission,
 		ArchiveMealPlansPermission.ID(): ArchiveMealPlansPermission,
 
+		CreateMealPlanEventsPermission.ID():  CreateMealPlanEventsPermission,
+		UpdateMealPlanEventsPermission.ID():  UpdateMealPlanEventsPermission,
+		ArchiveMealPlanEventsPermission.ID(): ArchiveMealPlanEventsPermission,
+
 		CreateMealPlanOptionsPermission.ID():  CreateMealPlanOptionsPermission,
 		UpdateMealPlanOptionsPermission.ID():  UpdateMealPlanOptionsPermission,
 		ArchiveMealPlanOptionsPermission.ID(): ArchiveMealPlanOptionsPermission,
@@ -366,6 +370,8 @@ var (
 
 		ReadMealPlansPermission.ID():   ReadMealPlansPermission,
 		SearchMealPlansPermission.ID(): SearchMealPlansPermission,
+
+		ReadMealPlanEventsPermission.ID(): ReadMealPlanEventsPermission,
 
 		ReadMealPlanOptionsPermission.ID():   ReadMealPlanOptionsPermission,
 		SearchMealPlanOptionsPermission.ID(): SearchMealPlanOptionsPermission,
