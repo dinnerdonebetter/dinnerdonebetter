@@ -346,6 +346,15 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 		return nil, observability.PrepareError(err, span, "scanning meal plan options for meal plan event")
 	}
 
+	for _, opt := range x {
+		votes, voteFetchErr := q.GetMealPlanOptionVotesForMealPlanOption(ctx, mealPlanID, mealPlanEventID, opt.ID)
+		if voteFetchErr != nil {
+			return nil, observability.PrepareError(voteFetchErr, span, "fetching meal plan option votes for meal plan option")
+		}
+
+		opt.Votes = votes
+	}
+
 	logger.WithValue("count", len(x)).Info("fetched meal plan options for meal plan event")
 
 	return x, nil

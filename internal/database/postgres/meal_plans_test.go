@@ -1031,6 +1031,19 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 				WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
 		}
 
+		for _, event := range exampleMealPlan.Events {
+			for _, opt := range event.Options {
+				votesForOptionArgs := []interface{}{
+					opt.ID,
+					exampleMealPlan.ID,
+				}
+
+				db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVotesForMealPlanOptionQuery)).
+					WithArgs(interfaceToDriverValue(votesForOptionArgs)...).
+					WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, opt.Votes...))
+			}
+		}
+
 		db.ExpectBegin()
 
 		for _, event := range exampleMealPlan.Events {
@@ -1059,9 +1072,6 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		db.ExpectCommit()
-
-		// NOTE: the current problem with this test is that no votes
-		// from the example meal plan are populated.
 
 		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
 		assert.NoError(t, err)
