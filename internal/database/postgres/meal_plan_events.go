@@ -191,13 +191,13 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 		return nil, observability.PrepareError(err, span, "scanning meal plan events")
 	}
 
-	for _, e := range x {
-		mealPlanOptions, mealPlanOptionsErr := q.getMealPlanOptionsForMealPlanEvent(ctx, mealPlanID, e.ID)
+	for _, event := range x {
+		mealPlanOptions, mealPlanOptionsErr := q.getMealPlanOptionsForMealPlanEvent(ctx, mealPlanID, event.ID)
 		if mealPlanOptionsErr != nil {
 			return nil, observability.PrepareError(mealPlanOptionsErr, span, "fetching options for meal plan events")
 		}
 
-		e.Options = mealPlanOptions
+		event.Options = mealPlanOptions
 	}
 
 	return x, nil
@@ -234,6 +234,8 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, filter *types.QueryFilt
 	if x.MealPlanEvents, x.FilteredCount, x.TotalCount, err = q.scanMealPlanEvents(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning meal plan events")
 	}
+
+	logger.WithValue("quantity", len(x.MealPlanEvents)).Info("fetched meal plan events")
 
 	return x, nil
 }

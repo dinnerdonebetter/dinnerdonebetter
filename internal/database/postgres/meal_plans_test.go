@@ -183,7 +183,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 	})
 }
 
-func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exampleMealPlan *types.MealPlan, exampleHouseholdID string, c *Querier, db *sqlmockExpecterWrapper) {
+func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exampleMealPlan *types.MealPlan, exampleHouseholdID string, c *Querier, db *sqlmockExpecterWrapper, restrictToPastVotingDeadline bool) {
 	t.Helper()
 
 	if exampleHouseholdID == "" {
@@ -194,8 +194,39 @@ func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exa
 		exampleMealPlan = fakes.BuildFakeMealPlan()
 	}
 
+	//getMealPlanArgs := []interface{}{
+	//	exampleMealPlan.ID,
+	//	exampleHouseholdID,
+	//}
+	//
+	//query := getMealPlanQuery
+	//if restrictToPastVotingDeadline {
+	//	query = getMealPlanPastVotingDeadlineQuery
+	//}
+	//
+	//db.ExpectQuery(formatQueryForSQLMock(query)).
+	//	WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+	//	WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
+
 	exampleRecipes := []*types.Recipe{}
 	for _, evt := range exampleMealPlan.Events {
+		//getMealPlanEventArgs := []interface{}{
+		//	exampleMealPlan.ID,
+		//}
+		//
+		//db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventForMealPlanQuery)).
+		//	WithArgs(interfaceToDriverValue(getMealPlanEventArgs)...).
+		//	WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, evt))
+		//
+		//getMealPlanOptionsForMealPlanEventsArgs := []interface{}{
+		//	evt.ID,
+		//	exampleMealPlan.ID,
+		//}
+		//
+		//db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventsQuery)).
+		//	WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
+		//	WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
+
 		for _, opt := range evt.Options {
 			if len(opt.Meal.Recipes) == 0 {
 				exampleRecipe := fakes.BuildFakeRecipe()
@@ -206,15 +237,6 @@ func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exa
 			}
 		}
 	}
-
-	getMealPlanArgs := []interface{}{
-		exampleMealPlan.ID,
-		exampleHouseholdID,
-	}
-
-	db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
-		WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-		WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
 
 	for _, exampleRecipe := range exampleRecipes {
 		prepareMockToSuccessfullyGetRecipe(ctx, t, exampleRecipe, "", c, db)
@@ -233,7 +255,7 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHouseholdID, c, db)
+		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHouseholdID, c, db, false)
 
 		actual, err := c.GetMealPlan(ctx, exampleMealPlan.ID, exampleHouseholdID)
 		assert.NoError(t, err)
@@ -880,6 +902,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
 		exampleMealPlan.Events = []*types.MealPlanEvent{
 			{
+				ID: fakes.BuildFakeID(),
 				Options: []*types.MealPlanOption{
 					{
 						ID:       optionA,
@@ -980,26 +1003,49 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
+
+		for _, evt := range exampleMealPlan.Events {
+			getMealPlanEventArgs := []interface{}{
+				exampleMealPlan.ID,
+			}
+
+			db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventForMealPlanQuery)).
+				WithArgs(interfaceToDriverValue(getMealPlanEventArgs)...).
+				WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, evt))
+
+			getMealPlanOptionsForMealPlanEventsArgs := []interface{}{
+				evt.ID,
+				exampleMealPlan.ID,
+			}
+
+			db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventsQuery)).
+				WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
+				WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
+		}
 
 		db.ExpectBegin()
 
-		for _, day := range allDays {
-			for _, mealName := range allMealNames {
-				options := byDayAndMeal(exampleMealPlan.Events, day, mealName)
-				if len(options) > 0 {
-					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
+		for _, event := range exampleMealPlan.Events {
+			if len(event.Options) > 0 {
+				winner, tiebroken, _ := c.decideOptionWinner(ctx, event.Options)
 
-					finalizeMealPlanOptionsArgs := []interface{}{
-						exampleMealPlan.ID,
-						winner,
-						tiebroken,
-					}
-
-					db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
-						WithArgs(interfaceToDriverValue(finalizeMealPlanOptionsArgs)...).
-						WillReturnResult(newArbitraryDatabaseResult())
+				finalizeMealPlanOptionsArgs := []interface{}{
+					exampleMealPlan.ID,
+					winner,
+					tiebroken,
 				}
+
+				db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
+					WithArgs(interfaceToDriverValue(finalizeMealPlanOptionsArgs)...).
+					WillReturnResult(newArbitraryDatabaseResult())
 			}
 		}
 
@@ -1013,6 +1059,9 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		db.ExpectCommit()
+
+		// NOTE: the current problem with this test is that no votes
+		// from the example meal plan are populated.
 
 		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
 		assert.NoError(t, err)

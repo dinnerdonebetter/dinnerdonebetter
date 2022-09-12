@@ -432,59 +432,57 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	}
 
 	allOptionsChosen := true
-	for _, day := range allDays {
-		for _, mealName := range allMealNames {
-			options := byDayAndMeal(mealPlan.Events, day, mealName)
+	for _, event := range mealPlan.Events {
+		if len(event.Options) == 0 {
+			continue
+		}
 
-			if len(options) > 0 {
-				availableVotes := map[string]bool{}
-				for _, member := range household.Members {
-					availableVotes[member.BelongsToUser.ID] = false
-				}
+		availableVotes := map[string]bool{}
+		for _, member := range household.Members {
+			availableVotes[member.BelongsToUser.ID] = false
+		}
 
-				alreadyChosen := false
-				for _, opt := range options {
-					if opt.Chosen {
-						alreadyChosen = true
-					}
-					for _, vote := range opt.Votes {
-						if _, ok := availableVotes[vote.ByUser]; ok {
-							availableVotes[vote.ByUser] = true
-						}
-					}
-				}
-
-				if alreadyChosen {
-					continue
-				}
-
-				for _, vote := range availableVotes {
-					if !vote {
-						allOptionsChosen = false
-						continue
-					}
-				}
-
-				// if we get here, then the tally is ready to be calculated for this set of options
-
-				winner, tiebroken, chosen := q.decideOptionWinner(ctx, options)
-				if chosen {
-					args := []interface{}{
-						mealPlanID,
-						winner,
-						tiebroken,
-					}
-
-					logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
-
-					if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
-						q.rollbackTransaction(ctx, tx)
-						return false, observability.PrepareError(err, span, "finalizing meal plan option")
-					}
-
-					logger.Debug("finalized meal plan option")
+		alreadyChosen := false
+		for _, opt := range event.Options {
+			if opt.Chosen {
+				alreadyChosen = true
+			}
+			for _, vote := range opt.Votes {
+				if _, ok := availableVotes[vote.ByUser]; ok {
+					availableVotes[vote.ByUser] = true
 				}
 			}
+		}
+
+		if alreadyChosen {
+			continue
+		}
+
+		for _, vote := range availableVotes {
+			if !vote {
+				allOptionsChosen = false
+				continue
+			}
+		}
+
+		// if we get here, then the tally is ready to be calculated for this set of options
+
+		winner, tiebroken, chosen := q.decideOptionWinner(ctx, event.Options)
+		if chosen {
+			args := []interface{}{
+				mealPlanID,
+				winner,
+				tiebroken,
+			}
+
+			logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
+
+			if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
+				q.rollbackTransaction(ctx, tx)
+				return false, observability.PrepareError(err, span, "finalizing meal plan option")
+			}
+
+			logger.Debug("finalized meal plan option")
 		}
 	}
 
