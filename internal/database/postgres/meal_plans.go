@@ -470,7 +470,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 		winner, tiebroken, chosen := q.decideOptionWinner(ctx, event.Options)
 		if chosen {
 			args := []interface{}{
-				mealPlanID,
+				event.ID,
 				winner,
 				tiebroken,
 			}
@@ -558,7 +558,8 @@ SELECT
 	meals.id as meal_id,
     meal_recipes.recipe_id as recipe_id
 FROM meal_plan_options
-	FULL OUTER JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
+	FULL OUTER JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+	FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
 	FULL OUTER JOIN meal_recipes ON meal_plan_options.meal_id=meal_recipes.meal_id
 	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
 WHERE meal_plans.archived_at IS NULL 
