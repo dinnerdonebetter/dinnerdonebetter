@@ -413,6 +413,8 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
+	logger.Info("attempting to finalize meal plan")
+
 	household, err := q.GetHouseholdByID(ctx, householdID)
 	if err != nil {
 		return false, observability.PrepareError(err, span, "fetching household")
@@ -501,7 +503,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	}
 
 	if commitErr := tx.Commit(); commitErr != nil {
-		return false, observability.PrepareError(commitErr, span, "committing transaction")
+		return false, observability.PrepareAndLogError(commitErr, logger, span, "committing transaction")
 	}
 
 	return finalized, nil

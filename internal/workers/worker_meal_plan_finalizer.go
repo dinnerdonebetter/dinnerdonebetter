@@ -17,7 +17,7 @@ const (
 	name = "meal_plan_finalizer"
 )
 
-// MealPlanFinalizationWorker performs meal_plan_finalizer.
+// MealPlanFinalizationWorker finalizes meal plans.
 type MealPlanFinalizationWorker struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
@@ -48,7 +48,7 @@ func ProvideMealPlanFinalizationWorker(
 	}
 }
 
-// HandleMessage handles a pending write.
+// HandleMessage handles a message ordering the finalization of expired meal plans.
 func (w *MealPlanFinalizationWorker) HandleMessage(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
@@ -60,12 +60,14 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 	_, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := w.logger
+	logger := w.logger.Clone()
 
 	mealPlans, fetchMealPlansErr := w.dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 	if fetchMealPlansErr != nil {
-		return fetchMealPlansErr
+		return observability.PrepareAndLogError(fetchMealPlansErr, logger, span, "fetching unfinalized and expired meal plan")
 	}
+
+	logger.WithValue("quantity", len(mealPlans)).Info("finalizing expired meal plans")
 
 	for _, mealPlan := range mealPlans {
 		changed, err := w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
