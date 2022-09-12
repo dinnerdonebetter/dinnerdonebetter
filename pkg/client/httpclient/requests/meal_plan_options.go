@@ -27,6 +27,12 @@ func (b *Builder) BuildGetMealPlanOptionRequest(ctx context.Context, mealPlanID,
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}

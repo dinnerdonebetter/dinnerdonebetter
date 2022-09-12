@@ -3,8 +3,6 @@ package postgres
 import (
 	"context"
 
-	"github.com/segmentio/ksuid"
-
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -155,12 +153,8 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanEventID string) 
 		mealPlanEventID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan event", getMealPlanEventByIDQuery, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing meal plan event retrieval query")
-	}
-
-	m, _, _, err := q.scanMealPlanEvent(ctx, rows, false)
+	row := q.getOneRow(ctx, q.db, "meal plan event", getMealPlanEventByIDQuery, args)
+	m, _, _, err := q.scanMealPlanEvent(ctx, row, false)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing meal plan event retrieval query")
 	}
@@ -250,9 +244,14 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, filter *types.QueryFilt
 	return x, nil
 }
 
-const mealPlanEventCreationQuery = `INSERT INTO meal_plan_events (id,notes,starts_at,ends_at,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5)`
+const mealPlanEventCreationQuery = `
+INSERT INTO
+  meal_plan_events (id, notes, starts_at, ends_at, belongs_to_meal_plan)
+VALUES
+  ($1, $2, $3, $4, $5)
+`
 
-// CreateMealPlanEvent creates a mealPlanEvent in the database.
+// createMealPlanEvent creates a mealPlanEvent in the database.
 func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -274,7 +273,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 	// create the mealPlanEvent.
 	if err := q.performWriteQuery(ctx, querier, "meal plan event creation", mealPlanEventCreationQuery, args); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return nil, observability.PrepareError(err, logger, span, "performing mealPlanEvent creation query")
+		return nil, observability.PrepareError(err, logger, span, "performing meal plan event creation query")
 	}
 
 	x := &types.MealPlanEvent{
@@ -321,7 +320,7 @@ func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlan
 
 	x, err := q.createMealPlanEvent(ctx, tx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating mealPlanEvent")
+		return nil, observability.PrepareError(err, logger, span, "creating meal plan event")
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -329,41 +328,6 @@ func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlan
 	}
 
 	return x, nil
-}
-
-const mealPlanEventRecipeCreationQuery = "INSERT INTO mealPlanEvent_recipes (id,mealPlanEvent_id,recipe_id) VALUES ($1,$2,$3)"
-
-// CreateMealPlanEventRecipe creates a mealPlanEvent in the database.
-func (q *Querier) CreateMealPlanEventRecipe(ctx context.Context, querier database.SQLQueryExecutor, mealPlanEventID, recipeID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if mealPlanEventID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
-
-	if recipeID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachUserIDToSpan(span, recipeID)
-
-	args := []interface{}{
-		ksuid.New().String(),
-		mealPlanEventID,
-		recipeID,
-	}
-
-	// create the mealPlanEvent.
-	if err := q.performWriteQuery(ctx, querier, "meal plan event recipe creation", mealPlanEventRecipeCreationQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "performing mealPlanEvent creation query")
-	}
-
-	return nil
 }
 
 const updateMealPlanEventQuery = `

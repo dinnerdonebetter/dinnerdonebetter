@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"math/rand"
 	"time"
 
@@ -224,12 +225,12 @@ FROM meal_plan_options
   JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
   JOIN meals ON meal_plan_options.meal_id = meals.id
 WHERE meal_plan_options.archived_at IS NULL
-	AND meal_plan_options.belongs_to_meal_plan_event = $1
-	AND meal_plan_options.id = $2
-    AND meal_plan_events.id = $1
-    AND meal_plan_events.belongs_to_meal_plan = $3
+	AND meal_plan_options.belongs_to_meal_plan_event = $2
+	AND meal_plan_options.id = $3
+    AND meal_plan_events.id = $2
+    AND meal_plan_events.belongs_to_meal_plan = $1
 	AND meal_plans.archived_at IS NULL
-	AND meal_plans.id = $3
+	AND meal_plans.id = $1
 `
 
 // GetMealPlanOption fetches a meal plan option from the database.
@@ -238,6 +239,10 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if mealPlanID == mealPlanEventID {
+		return nil, errors.New("WTF")
+	}
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -258,9 +263,9 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	args := []interface{}{
+		mealPlanID,
 		mealPlanEventID,
 		mealPlanOptionID,
-		mealPlanID,
 	}
 
 	row := q.getOneRow(ctx, q.db, "meal plan option", getMealPlanOptionQuery, args)

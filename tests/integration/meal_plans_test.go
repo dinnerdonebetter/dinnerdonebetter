@@ -24,20 +24,22 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createMealPlanForTest(ctx context.Context, t *testing.T, adminClient, client *httpclient.Client) *types.MealPlan {
+func createMealPlanForTest(ctx context.Context, t *testing.T, mealPlan *types.MealPlan, adminClient, client *httpclient.Client) *types.MealPlan {
 	t.Helper()
 
 	t.Log("creating meal plan")
-	exampleMealPlan := fakes.BuildFakeMealPlan()
-	for i, evt := range exampleMealPlan.Events {
-		for j := range evt.Options {
-			createdMeal := createMealForTest(ctx, t, adminClient, client, nil)
-			exampleMealPlan.Events[i].Options[j].Meal.ID = createdMeal.ID
-			exampleMealPlan.Events[i].Options[j].AssignedCook = nil
+	if mealPlan == nil {
+		mealPlan = fakes.BuildFakeMealPlan()
+		for i, evt := range mealPlan.Events {
+			for j := range evt.Options {
+				createdMeal := createMealForTest(ctx, t, adminClient, client, nil)
+				mealPlan.Events[i].Options[j].Meal.ID = createdMeal.ID
+				mealPlan.Events[i].Options[j].AssignedCook = nil
+			}
 		}
 	}
 
-	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
+	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan)
 	createdMealPlan, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
 	require.NoError(t, err)
 	require.NotEmpty(t, createdMealPlan.ID)
@@ -46,7 +48,7 @@ func createMealPlanForTest(ctx context.Context, t *testing.T, adminClient, clien
 
 	createdMealPlan, err = client.GetMealPlan(ctx, createdMealPlan.ID)
 	requireNotNilAndNoProblems(t, createdMealPlan, err)
-	checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
+	checkMealPlanEquality(t, mealPlan, createdMealPlan)
 
 	return createdMealPlan
 }
@@ -459,7 +461,7 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			t.Log("creating meal plans")
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
+				createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 				expected = append(expected, createdMealPlan)
 			}
 

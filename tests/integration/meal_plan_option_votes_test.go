@@ -38,7 +38,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
-			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
+			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 
 			require.NotEmpty(t, createdMealPlan.Events)
 			require.NotEmpty(t, createdMealPlan.Events[0].Options)
@@ -101,7 +101,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
+			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 
 			require.NotEmpty(t, createdMealPlan.Events)
 			require.NotEmpty(t, createdMealPlan.Events[0].Options)

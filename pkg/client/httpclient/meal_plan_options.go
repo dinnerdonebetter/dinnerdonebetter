@@ -113,17 +113,17 @@ func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanEventID strin
 }
 
 // UpdateMealPlanOption updates a meal plan option.
-func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanEventID string, mealPlanOption *types.MealPlanOption) error {
+func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanID string, mealPlanOption *types.MealPlanOption) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
-	if mealPlanEventID == "" {
+	if mealPlanID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanOption == nil {
 		return ErrNilInputProvided
@@ -131,7 +131,7 @@ func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanEventID strin
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOption.ID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOption.ID)
 
-	req, err := c.requestBuilder.BuildUpdateMealPlanOptionRequest(ctx, mealPlanEventID, mealPlanOption)
+	req, err := c.requestBuilder.BuildUpdateMealPlanOptionRequest(ctx, mealPlanID, mealPlanOption)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "building update meal plan option request")
 	}

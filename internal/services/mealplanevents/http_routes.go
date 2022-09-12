@@ -37,6 +37,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
 	// read parsed input struct from request body.
 	providedInput := new(types.MealPlanEventCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
@@ -45,15 +50,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	input := types.MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput(providedInput)
 	input.ID = ksuid.New().String()
+	input.BelongsToMealPlan = mealPlanID
 	tracing.AttachMealPlanEventIDToSpan(span, input.ID)
+
+	for i := range input.Options {
+		input.Options[i].ID = ksuid.New().String()
+		input.Options[i].BelongsToMealPlanEvent = input.ID
+	}
 
 	mealPlanEvent, err := s.mealPlanEventDataManager.CreateMealPlanEvent(ctx, input)
 	if err != nil {
@@ -76,9 +81,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanEvent, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal plan.

@@ -1,6 +1,9 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -32,47 +35,51 @@ func convertMealPlanOptionToMealPlanOptionUpdateInput(x *types.MealPlanOption) *
 	}
 }
 
-//func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
-//	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
-//		return func() {
-//			t := s.T()
-//
-//			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-//			defer span.End()
-//
-//			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
-//
-//			var createdMealPlanOption *types.MealPlanOption
-//			for _, opt := range createdMealPlan.Options {
-//				createdMealPlanOption = opt
-//				break
-//			}
-//			require.NotNil(t, createdMealPlanOption)
-//
-//			t.Log("changing meal plan option")
-//			newMealPlanOption := fakes.BuildFakeMealPlanOption()
-//			newMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
-//			newMealPlanOption.BelongsToMealPlanEvent = createdMealPlan.ID
-//			newMealPlanOption.AssignedCook = nil
-//			createdMealPlanOption.Update(convertMealPlanOptionToMealPlanOptionUpdateInput(newMealPlanOption))
-//			assert.NoError(t, testClients.user.UpdateMealPlanOption(ctx, createdMealPlanOption))
-//
-//			t.Log("fetching changed meal plan option")
-//			actual, err := testClients.user.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID)
-//			requireNotNilAndNoProblems(t, actual, err)
-//
-//			// assert meal plan option equality
-//			checkMealPlanOptionEquality(t, newMealPlanOption, actual)
-//			assert.NotNil(t, actual.LastUpdatedAt)
-//
-//			t.Log("cleaning up meal plan option")
-//			assert.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))
-//
-//			t.Log("cleaning up meal plan")
-//			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
-//		}
-//	})
-//}
+func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
+
+			require.NotEmpty(t, createdMealPlan.Events)
+			require.NotEmpty(t, createdMealPlan.Events[0].Options)
+
+			createdMealPlanEvent := createdMealPlan.Events[0]
+			createdMealPlanOption := createdMealPlanEvent.Options[0]
+			require.NotNil(t, createdMealPlanOption)
+
+			t.Log("changing meal plan option")
+			newMealPlanOption := fakes.BuildFakeMealPlanOption()
+			newMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
+			newMealPlanOption.BelongsToMealPlanEvent = createdMealPlanEvent.ID
+			newMealPlanOption.AssignedCook = nil
+
+			createdMealPlanOption.Update(convertMealPlanOptionToMealPlanOptionUpdateInput(newMealPlanOption))
+			require.NoError(t, testClients.user.UpdateMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption))
+
+			t.Log("fetching changed meal plan option")
+			actual, err := testClients.user.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// assert meal plan option equality
+			checkMealPlanOptionEquality(t, newMealPlanOption, actual)
+			assert.NotNil(t, actual.LastUpdatedAt)
+
+			t.Log("cleaning up meal plan option")
+			require.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID))
+
+			t.Log("cleaning up meal plan event")
+			require.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
+
+			t.Log("cleaning up meal plan")
+			require.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
+		}
+	})
+}
 
 //func (s *TestSuite) TestMealPlanOptions_Listing() {
 //	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {

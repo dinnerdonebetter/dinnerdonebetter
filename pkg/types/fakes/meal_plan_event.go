@@ -13,9 +13,9 @@ import (
 func BuildFakeMealPlanEvent() *types.MealPlanEvent {
 	mealPlanEventID := ksuid.New().String()
 
-	now := time.Now().Add(0)
-	inTenMinutes := now.Add(time.Minute * 10)
-	inOneWeek := now.Add((time.Hour * 24) * 7)
+	now := time.Now().Add(0).Truncate(time.Second).UTC()
+	inTenMinutes := now.Add(time.Minute * 10).Add(0).Truncate(time.Second).UTC()
+	inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
 
 	options := []*types.MealPlanOption{}
 	for _, opt := range BuildFakeMealPlanOptionList().MealPlanOptions {

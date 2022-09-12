@@ -115,7 +115,7 @@ func (b *Builder) BuildCreateMealPlanEventRequest(ctx context.Context, mealPlanI
 }
 
 // BuildUpdateMealPlanEventRequest builds an HTTP request for updating a meal plan option.
-func (b *Builder) BuildUpdateMealPlanEventRequest(ctx context.Context, mealPlanID string, mealPlanEvent *types.MealPlanEvent) (*http.Request, error) {
+func (b *Builder) BuildUpdateMealPlanEventRequest(ctx context.Context, mealPlanEvent *types.MealPlanEvent) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -132,7 +132,7 @@ func (b *Builder) BuildUpdateMealPlanEventRequest(ctx context.Context, mealPlanI
 		ctx,
 		nil,
 		mealPlansBasePath,
-		mealPlanID,
+		mealPlanEvent.BelongsToMealPlan,
 		mealPlanEventsBasePath,
 		mealPlanEvent.ID,
 	)

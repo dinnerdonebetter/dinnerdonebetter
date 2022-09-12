@@ -2,6 +2,7 @@ package mealplanevents
 
 import (
 	"fmt"
+	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -24,6 +25,7 @@ type (
 	service struct {
 		logger                    logging.Logger
 		mealPlanEventDataManager  types.MealPlanEventDataManager
+		mealPlanIDFetcher         func(*http.Request) string
 		mealPlanEventIDFetcher    func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
@@ -49,6 +51,7 @@ func ProvideService(
 
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
+		mealPlanIDFetcher:         routeParamManager.BuildRouteParamStringIDFetcher(mealplansservice.MealPlanIDURIParamKey),
 		mealPlanEventIDFetcher:    routeParamManager.BuildRouteParamStringIDFetcher(MealPlanEventIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		mealPlanEventDataManager:  mealPlanDataManager,

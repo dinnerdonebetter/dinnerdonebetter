@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,7 +41,7 @@ func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
+			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 
 			require.NotNil(t, createdMealPlan)
 			require.NotEmpty(t, createdMealPlan.Events)
@@ -49,9 +50,10 @@ func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
 
 			t.Log("changing meal plan event")
 			newMealPlanEvent := fakes.BuildFakeMealPlanEvent()
+			newMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 
 			createdMealPlanEvent.Update(convertMealPlanEventToMealPlanEventUpdateInput(newMealPlanEvent))
-			assert.NoError(t, testClients.user.UpdateMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent))
+			assert.NoError(t, testClients.user.UpdateMealPlanEvent(ctx, createdMealPlanEvent))
 
 			t.Log("fetching changed meal plan event")
 			actual, err := testClients.user.GetMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID)
@@ -78,18 +80,25 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
+			exampleMealPlan := fakes.BuildFakeMealPlan()
+			exampleMealPlan.Events = nil
+			createdMealPlan := createMealPlanForTest(ctx, t, exampleMealPlan, testClients.admin, testClients.user)
 
 			t.Log("creating meal plan events")
 			var expected []*types.MealPlanEvent
 			for i := 0; i < 5; i++ {
 				exampleMealPlanEvent := fakes.BuildFakeMealPlanEvent()
+				exampleMealPlanEvent.Options = nil
 				exampleMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 
 				exampleMealPlanEventInput := fakes.BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(exampleMealPlanEvent)
 				createdMealPlanEvent, err := testClients.user.CreateMealPlanEvent(ctx, createdMealPlan.ID, exampleMealPlanEventInput)
 				require.NoError(t, err)
 				t.Logf("meal plan event %q created", createdMealPlanEvent.ID)
+
+				rawBytes, err := json.MarshalIndent(createdMealPlanEvent, "", "\t")
+				require.NoError(t, err)
+				t.Log(string(rawBytes))
 
 				checkMealPlanEventEquality(t, exampleMealPlanEvent, createdMealPlanEvent)
 

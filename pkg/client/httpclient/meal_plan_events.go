@@ -107,17 +107,11 @@ func (c *Client) CreateMealPlanEvent(ctx context.Context, mealPlanID string, inp
 }
 
 // UpdateMealPlanEvent updates a meal plan event.
-func (c *Client) UpdateMealPlanEvent(ctx context.Context, mealPlanID string, mealPlanEvent *types.MealPlanEvent) error {
+func (c *Client) UpdateMealPlanEvent(ctx context.Context, mealPlanEvent *types.MealPlanEvent) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
-
-	if mealPlanID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEvent == nil {
 		return ErrNilInputProvided
@@ -125,7 +119,7 @@ func (c *Client) UpdateMealPlanEvent(ctx context.Context, mealPlanID string, mea
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEvent.ID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEvent.ID)
 
-	req, err := c.requestBuilder.BuildUpdateMealPlanEventRequest(ctx, mealPlanID, mealPlanEvent)
+	req, err := c.requestBuilder.BuildUpdateMealPlanEventRequest(ctx, mealPlanEvent)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "building update meal plan event request")
 	}
