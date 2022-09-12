@@ -379,8 +379,8 @@ var allMealNames = []string{
 func byDayAndMeal(l []*types.MealPlanEvent, day time.Weekday, meal string) []*types.MealPlanOption {
 	out := []*types.MealPlanOption{}
 
-	for _, e := range l {
-		for _, o := range e.Options {
+	for _, event := range l {
+		for _, o := range event.Options {
 			if o.Day == day && o.MealName == meal {
 				out = append(out, o)
 			}
