@@ -53,21 +53,21 @@ func (b *Builder) BuildAPIClientAuthTokenRequest(ctx context.Context, input *typ
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	var buffer bytes.Buffer
 	if err = b.encoder.Encode(ctx, &buffer, input); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "encoding body")
+		return nil, observability.PrepareError(err, span, "encoding body")
 	}
 
 	if err = setSignatureForRequest(req, buffer.Bytes(), secretKey); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "signing request")
+		return nil, observability.PrepareError(err, span, "signing request")
 	}
 
 	logger.Debug("PASETO request built")

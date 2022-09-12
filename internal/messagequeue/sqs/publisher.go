@@ -43,7 +43,7 @@ func (r *sqsPublisher) Publish(ctx context.Context, data interface{}) error {
 
 	var b bytes.Buffer
 	if err := r.encoder.Encode(ctx, &b, data); err != nil {
-		return observability.PrepareError(err, r.logger, span, "encoding topic message")
+		return observability.PrepareError(err, span, "encoding topic message")
 	}
 
 	input := &sqs.SendMessageInput{
@@ -54,7 +54,7 @@ func (r *sqsPublisher) Publish(ctx context.Context, data interface{}) error {
 
 	_, err := r.publisher.SendMessageWithContext(ctx, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "publishing message")
+		return observability.PrepareError(err, span, "publishing message")
 	}
 
 	return nil

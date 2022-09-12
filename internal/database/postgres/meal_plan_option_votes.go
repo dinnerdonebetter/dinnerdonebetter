@@ -42,8 +42,6 @@ func (q *Querier) scanMealPlanOptionVote(ctx context.Context, scan database.Scan
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.MealPlanOptionVote{}
 
 	targetVars := []interface{}{
@@ -63,7 +61,7 @@ func (q *Querier) scanMealPlanOptionVote(ctx context.Context, scan database.Scan
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -73,8 +71,6 @@ func (q *Querier) scanMealPlanOptionVote(ctx context.Context, scan database.Scan
 func (q *Querier) scanMealPlanOptionVotes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlanOptionVotes []*types.MealPlanOptionVote, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanMealPlanOptionVote(ctx, rows, includeCounts)
@@ -96,7 +92,7 @@ func (q *Querier) scanMealPlanOptionVotes(ctx context.Context, rows database.Res
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return mealPlanOptionVotes, filteredCount, totalCount, nil
@@ -165,7 +161,7 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanOptionVoteExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing meal plan option vote existence check")
+		return false, observability.PrepareError(err, span, "performing meal plan option vote existence check")
 	}
 
 	return result, nil
@@ -234,7 +230,7 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 
 	mealPlanOptionVote, _, _, err := q.scanMealPlanOptionVote(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning mealPlanOptionVote")
+		return nil, observability.PrepareError(err, span, "scanning mealPlanOptionVote")
 	}
 
 	return mealPlanOptionVote, nil
@@ -298,12 +294,12 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 
 	rows, err := q.performReadQuery(ctx, q.db, "meal plan option votes for meal plan option", getMealPlanOptionVotesForMealPlanOptionQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing meal plan option votes for meal plan option list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing meal plan option votes for meal plan option list retrieval query")
 	}
 
 	x, _, _, err = q.scanMealPlanOptionVotes(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meal plan option votes")
+		return nil, observability.PrepareError(err, span, "scanning meal plan option votes")
 	}
 
 	return x, nil
@@ -352,11 +348,11 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 
 	rows, err := q.performReadQuery(ctx, q.db, "meal plan option votes", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing meal plan option votes list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing meal plan option votes list retrieval query")
 	}
 
 	if x.MealPlanOptionVotes, x.FilteredCount, x.TotalCount, err = q.scanMealPlanOptionVotes(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meal plan option votes")
+		return nil, observability.PrepareError(err, span, "scanning meal plan option votes")
 	}
 
 	return x, nil
@@ -378,7 +374,7 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 	// begin transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
 
 	votes := []*types.MealPlanOptionVote{}
@@ -395,7 +391,7 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 		// create the meal plan option vote.
 		if err = q.performWriteQuery(ctx, tx, "meal plan option vote creation", mealPlanOptionVoteCreationQuery, args); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(err, logger.WithValue("vote", vote), span, "creating meal plan option vote")
+			return nil, observability.PrepareError(err, span, "creating meal plan option vote")
 		}
 
 		x := &types.MealPlanOptionVote{
@@ -415,7 +411,7 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 	}
 
 	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "committing transaction")
+		return nil, observability.PrepareError(err, span, "committing transaction")
 	}
 
 	return votes, nil
@@ -445,7 +441,7 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan option vote update", updateMealPlanOptionVoteQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating meal plan option vote")
+		return observability.PrepareError(err, span, "updating meal plan option vote")
 	}
 
 	logger.Info("meal plan option vote updated")
@@ -492,7 +488,7 @@ func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mea
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan option vote archive", archiveMealPlanOptionVoteQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating meal plan option vote")
+		return observability.PrepareError(err, span, "updating meal plan option vote")
 	}
 
 	logger.Info("meal plan option vote archived")

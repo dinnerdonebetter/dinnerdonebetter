@@ -250,7 +250,7 @@ func (c *Client) fetchResponseToRequest(ctx context.Context, client *http.Client
 	// this should be the only use of .Do in this package
 	res, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing request")
+		return nil, observability.PrepareError(err, span, "executing request")
 	}
 
 	return res, nil
@@ -266,16 +266,16 @@ func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, htt
 
 	res, err := c.fetchResponseToRequest(ctx, httpClient, req)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "executing request")
+		return observability.PrepareError(err, span, "executing request")
 	}
 
 	if err = errorFromResponse(res); err != nil {
-		return observability.PrepareError(err, logger, span, "executing request")
+		return observability.PrepareError(err, span, "executing request")
 	}
 
 	if out != nil {
 		if err = c.unmarshalBody(ctx, res, out); err != nil {
-			return observability.PrepareError(err, logger, span, "loading %s %d response from server", res.Request.Method, res.StatusCode)
+			return observability.PrepareError(err, span, "loading %s %d response from server", res.Request.Method, res.StatusCode)
 		}
 	}
 
@@ -297,11 +297,9 @@ func (c *Client) responseIsOK(ctx context.Context, req *http.Request) (bool, err
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.WithRequest(req)
-
 	res, err := c.fetchResponseToRequest(ctx, c.authedClient, req)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "executing existence request")
+		return false, observability.PrepareError(err, span, "executing existence request")
 	}
 
 	c.closeResponseBody(ctx, res)

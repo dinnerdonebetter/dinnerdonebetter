@@ -52,7 +52,6 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
 	user = &types.User{
 		ServiceRoles: []string{},
 	}
@@ -88,7 +87,7 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "scanning user")
+		return nil, 0, 0, observability.PrepareError(err, span, "scanning user")
 	}
 
 	if roles := strings.Split(rawRoles, serviceRolesSeparator); len(roles) > 0 {
@@ -111,12 +110,10 @@ func (q *Querier) scanUsers(ctx context.Context, rows database.ResultIterator, i
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	for rows.Next() {
 		user, fc, tc, scanErr := q.scanUser(ctx, rows, includeCounts)
 		if scanErr != nil {
-			return nil, 0, 0, observability.PrepareError(scanErr, logger, span, "scanning user result")
+			return nil, 0, 0, observability.PrepareError(scanErr, span, "scanning user result")
 		}
 
 		if includeCounts && filteredCount == 0 {
@@ -131,7 +128,7 @@ func (q *Querier) scanUsers(ctx context.Context, rows database.ResultIterator, i
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return users, filteredCount, totalCount, nil
@@ -174,7 +171,6 @@ func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSe
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
 	var query string
@@ -190,7 +186,7 @@ func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSe
 
 	u, _, _, err := q.scanUser(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning user")
+		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
 	return u, nil
@@ -213,7 +209,6 @@ func (q *Querier) UserHasStatus(ctx context.Context, userID string, statuses ...
 		return true, nil
 	}
 
-	logger := q.logger.WithValue(keys.UserIDKey, userID).WithValue("statuses", statuses)
 	tracing.AttachUserIDToSpan(span, userID)
 
 	args := []interface{}{userID}
@@ -223,7 +218,7 @@ func (q *Querier) UserHasStatus(ctx context.Context, userID string, statuses ...
 
 	result, err := q.performBooleanQuery(ctx, q.db, userHasStatusQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing user status check")
+		return false, observability.PrepareError(err, span, "performing user status check")
 	}
 
 	return result, nil
@@ -291,7 +286,6 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 	}
 
 	tracing.AttachUsernameToSpan(span, username)
-	logger := q.logger.WithValue(keys.UsernameKey, username)
 
 	args := []interface{}{username}
 
@@ -303,7 +297,7 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 			return nil, err
 		}
 
-		return nil, observability.PrepareError(err, logger, span, "scanning user")
+		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
 	return u, nil
@@ -345,7 +339,6 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 	}
 
 	tracing.AttachUsernameToSpan(span, username)
-	logger := q.logger.WithValue(keys.UsernameKey, username)
 
 	args := []interface{}{username}
 
@@ -357,7 +350,7 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 			return nil, err
 		}
 
-		return nil, observability.PrepareError(err, logger, span, "scanning user")
+		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
 	return u, nil
@@ -397,7 +390,6 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 	}
 
 	tracing.AttachEmailAddressToSpan(span, email)
-	logger := q.logger.WithValue(keys.UserEmailAddressKey, email)
 
 	args := []interface{}{email}
 	row := q.getOneRow(ctx, q.db, "user", getUserIDByEmailQuery, args)
@@ -408,7 +400,7 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 			return nil, err
 		}
 
-		return nil, observability.PrepareError(err, logger, span, "scanning user")
+		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
 	return u, nil
@@ -448,7 +440,6 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 	}
 
 	tracing.AttachSearchQueryToSpan(span, usernameQuery)
-	logger := q.logger.WithValue(keys.SearchQueryKey, usernameQuery)
 
 	args := []interface{}{
 		wrapQueryForILIKE(usernameQuery),
@@ -460,12 +451,12 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 			return nil, err
 		}
 
-		return nil, observability.PrepareError(err, logger, span, "querying database for users")
+		return nil, observability.PrepareError(err, span, "querying database for users")
 	}
 
 	u, _, _, err := q.scanUsers(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning user")
+		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
 	return u, nil
@@ -479,7 +470,6 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	x = &types.UserList{}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	logger := filter.AttachToLogger(q.logger)
 
 	if filter != nil {
 		if filter.Page != nil {
@@ -495,11 +485,11 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 
 	rows, err := q.performReadQuery(ctx, q.db, "users", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning user")
+		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
 	if x.Users, x.FilteredCount, x.TotalCount, err = q.scanUsers(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "loading response from database")
+		return nil, observability.PrepareError(err, span, "loading response from database")
 	}
 
 	return x, nil
@@ -561,7 +551,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	// begin user creation transaction
 	tx, beginTransactionErr := q.db.BeginTx(ctx, nil)
 	if beginTransactionErr != nil {
-		return nil, observability.PrepareError(beginTransactionErr, logger, span, "beginning transaction")
+		return nil, observability.PrepareError(beginTransactionErr, span, "beginning transaction")
 	}
 
 	if writeErr := q.performWriteQuery(ctx, tx, "user creation", userCreationQuery, userCreationArgs); writeErr != nil {
@@ -574,20 +564,20 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 			}
 		}
 
-		return nil, observability.PrepareError(writeErr, logger, span, "creating user")
+		return nil, observability.PrepareError(writeErr, span, "creating user")
 	}
 
 	hasValidInvite := input.InvitationToken != "" && input.DestinationHouseholdID != ""
 
 	if err := q.createHouseholdForUser(ctx, tx, hasValidInvite, user.ID); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating household for new user")
+		return nil, observability.PrepareError(err, span, "creating household for new user")
 	}
 
 	logger.Debug("household created")
 
 	if hasValidInvite {
 		if err := q.acceptInvitationForUser(ctx, tx, input); err != nil {
-			return nil, observability.PrepareError(err, logger, span, "accepting household invitation")
+			return nil, observability.PrepareError(err, span, "accepting household invitation")
 		}
 		logger.Debug("accepted invitation and joined household for user")
 	}
@@ -595,11 +585,11 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	if err := q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		logger = logger.WithValue("email_address", user.EmailAddress).WithValue("user_id", user.ID)
-		return nil, observability.PrepareError(err, logger, span, "attaching existing invitations to new user")
+		return nil, observability.PrepareError(err, span, "attaching existing invitations to new user")
 	}
 
 	if err := tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "committing transaction")
+		return nil, observability.PrepareError(err, span, "committing transaction")
 	}
 
 	logger.Debug("user and household created")
@@ -613,11 +603,6 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 
 	// standard registration: we need to create the household
 	householdID := ksuid.New().String()
-	logger := q.logger.WithValues(map[string]interface{}{
-		keys.HouseholdIDKey: householdID,
-		"has_valid_invite":  hasValidInvite,
-		keys.UserIDKey:      userID,
-	})
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -639,7 +624,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 
 	if writeErr := q.performWriteQuery(ctx, querier, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(writeErr, logger, span, "create household")
+		return observability.PrepareError(writeErr, span, "create household")
 	}
 
 	createHouseholdMembershipForNewUserArgs := []interface{}{
@@ -652,7 +637,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 
 	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(err, logger, span, "writing household user membership")
+		return observability.PrepareError(err, span, "writing household user membership")
 	}
 
 	return nil
@@ -696,7 +681,7 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user update", updateUserQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating user")
+		return observability.PrepareError(err, span, "updating user")
 	}
 
 	logger.Info("user updated")
@@ -737,7 +722,7 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user passwords update", updateUserPasswordQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating user password")
+		return observability.PrepareError(err, span, "updating user password")
 	}
 
 	logger.Info("user password updated")
@@ -776,7 +761,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user 2FA secret update", updateUserTwoFactorSecretQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating user 2FA secret")
+		return observability.PrepareError(err, span, "updating user 2FA secret")
 	}
 	logger.Info("user two factor secret updated")
 
@@ -809,7 +794,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user two factor secret verification", markUserTwoFactorSecretAsVerified, args); err != nil {
-		return observability.PrepareError(err, logger, span, "writing verified two factor status to database")
+		return observability.PrepareError(err, span, "writing verified two factor status to database")
 	}
 
 	logger.Info("user two factor secret verified")
@@ -844,25 +829,25 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	// begin archive user transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "beginning transaction")
+		return observability.PrepareError(err, span, "beginning transaction")
 	}
 
 	archiveUserArgs := []interface{}{userID}
 
 	if err = q.performWriteQuery(ctx, tx, "user archive", archiveUserQuery, archiveUserArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "archiving user")
+		return observability.PrepareError(err, span, "archiving user")
 	}
 
 	archiveMembershipsArgs := []interface{}{userID}
 
 	if err = q.performWriteQuery(ctx, tx, "user memberships archive", archiveMembershipsQuery, archiveMembershipsArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "archiving user household memberships")
+		return observability.PrepareError(err, span, "archiving user household memberships")
 	}
 
 	if err = tx.Commit(); err != nil {
-		return observability.PrepareError(err, logger, span, "committing transaction")
+		return observability.PrepareError(err, span, "committing transaction")
 	}
 
 	logger.Info("user archived")

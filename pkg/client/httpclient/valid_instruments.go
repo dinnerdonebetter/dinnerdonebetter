@@ -24,12 +24,12 @@ func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID strin
 
 	req, err := c.requestBuilder.BuildGetValidInstrumentRequest(ctx, validInstrumentID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get valid instrument request")
+		return nil, observability.PrepareError(err, span, "building get valid instrument request")
 	}
 
 	var validInstrument *types.ValidInstrument
 	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid instrument")
+		return nil, observability.PrepareError(err, span, "retrieving valid instrument")
 	}
 
 	return validInstrument, nil
@@ -40,16 +40,14 @@ func (c *Client) GetRandomValidInstrument(ctx context.Context) (*types.ValidInst
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	req, err := c.requestBuilder.BuildGetRandomValidInstrumentRequest(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get valid instrument request")
+		return nil, observability.PrepareError(err, span, "building get valid instrument request")
 	}
 
 	var validInstrument *types.ValidInstrument
 	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid instrument")
+		return nil, observability.PrepareError(err, span, "retrieving valid instrument")
 	}
 
 	return validInstrument, nil
@@ -74,12 +72,12 @@ func (c *Client) SearchValidInstruments(ctx context.Context, query string, limit
 
 	req, err := c.requestBuilder.BuildSearchValidInstrumentsRequest(ctx, query, limit)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building search for valid instruments request")
+		return nil, observability.PrepareError(err, span, "building search for valid instruments request")
 	}
 
 	var validInstruments []*types.ValidInstrument
 	if err = c.fetchAndUnmarshal(ctx, req, &validInstruments); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid instruments")
+		return nil, observability.PrepareError(err, span, "retrieving valid instruments")
 	}
 
 	return validInstruments, nil
@@ -90,17 +88,16 @@ func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFil
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetValidInstrumentsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid instruments list request")
+		return nil, observability.PrepareError(err, span, "building valid instruments list request")
 	}
 
 	var validInstruments *types.ValidInstrumentList
 	if err = c.fetchAndUnmarshal(ctx, req, &validInstruments); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid instruments")
+		return nil, observability.PrepareError(err, span, "retrieving valid instruments")
 	}
 
 	return validInstruments, nil
@@ -111,24 +108,22 @@ func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidIn
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidInstrumentRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create valid instrument request")
+		return nil, observability.PrepareError(err, span, "building create valid instrument request")
 	}
 
 	var validInstrument *types.ValidInstrument
 	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid instrument")
+		return nil, observability.PrepareError(err, span, "creating valid instrument")
 	}
 
 	return validInstrument, nil
@@ -149,11 +144,11 @@ func (c *Client) UpdateValidInstrument(ctx context.Context, validInstrument *typ
 
 	req, err := c.requestBuilder.BuildUpdateValidInstrumentRequest(ctx, validInstrument)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update valid instrument request")
+		return observability.PrepareError(err, span, "building update valid instrument request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid instrument %s", validInstrument.ID)
+		return observability.PrepareError(err, span, "updating valid instrument %s", validInstrument.ID)
 	}
 
 	return nil
@@ -174,11 +169,11 @@ func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID s
 
 	req, err := c.requestBuilder.BuildArchiveValidInstrumentRequest(ctx, validInstrumentID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive valid instrument request")
+		return observability.PrepareError(err, span, "building archive valid instrument request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving valid instrument %s", validInstrumentID)
+		return observability.PrepareError(err, span, "archiving valid instrument %s", validInstrumentID)
 	}
 
 	return nil

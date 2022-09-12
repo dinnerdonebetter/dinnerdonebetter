@@ -153,8 +153,6 @@ func (sm *indexManager) ensureIndices(ctx context.Context) error {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := sm.logger.WithValue("index", sm.indexName)
-
 	res, err := esapi.IndicesExistsRequest{
 		Index:             []string{sm.indexName},
 		IgnoreUnavailable: esapi.BoolPtr(false),
@@ -162,12 +160,12 @@ func (sm *indexManager) ensureIndices(ctx context.Context) error {
 		FilterPath:        nil,
 	}.Do(ctx, sm.esclient)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "checking index existence successfully")
+		return observability.PrepareError(err, span, "checking index existence successfully")
 	}
 
 	if res.StatusCode == http.StatusNotFound {
 		if _, err = (esapi.IndicesCreateRequest{Index: strings.ToLower(sm.indexName)}).Do(ctx, sm.esclient); err != nil {
-			return observability.PrepareError(err, logger, span, "checking index existence")
+			return observability.PrepareError(err, span, "checking index existence")
 		}
 	}
 

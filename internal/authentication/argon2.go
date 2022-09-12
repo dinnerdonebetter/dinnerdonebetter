@@ -64,7 +64,7 @@ func (a *Argon2Authenticator) ValidateLogin(ctx context.Context, hash, password,
 
 	passwordMatches, err := argon2id.ComparePasswordAndHash(password, hash)
 	if err != nil {
-		return false, observability.PrepareError(err, a.logger, span, "comparing argon2 hashed password")
+		return false, observability.PrepareError(err, span, "comparing argon2 hashed password")
 	} else if !passwordMatches {
 		return false, ErrPasswordDoesNotMatch
 	}

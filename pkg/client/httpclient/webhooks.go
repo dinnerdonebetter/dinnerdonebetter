@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -18,16 +17,14 @@ func (c *Client) GetWebhook(ctx context.Context, webhookID string) (*types.Webho
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.WebhookIDKey, webhookID)
-
 	req, err := c.requestBuilder.BuildGetWebhookRequest(ctx, webhookID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get webhook request")
+		return nil, observability.PrepareError(err, span, "building get webhook request")
 	}
 
 	var webhook *types.Webhook
 	if err = c.fetchAndUnmarshal(ctx, req, &webhook); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving webhook")
+		return nil, observability.PrepareError(err, span, "retrieving webhook")
 	}
 
 	return webhook, nil
@@ -38,18 +35,16 @@ func (c *Client) GetWebhooks(ctx context.Context, filter *types.QueryFilter) (*t
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
-
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetWebhooksRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building webhooks list request")
+		return nil, observability.PrepareError(err, span, "building webhooks list request")
 	}
 
 	var webhooks *types.WebhookList
 	if err = c.fetchAndUnmarshal(ctx, req, &webhooks); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving webhooks")
+		return nil, observability.PrepareError(err, span, "retrieving webhooks")
 	}
 
 	return webhooks, nil
@@ -64,20 +59,18 @@ func (c *Client) CreateWebhook(ctx context.Context, input *types.WebhookCreation
 		return nil, ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.NameKey, input.Name)
-
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateWebhookRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create webhook request")
+		return nil, observability.PrepareError(err, span, "building create webhook request")
 	}
 
 	var webhook *types.Webhook
 	if err = c.fetchAndUnmarshal(ctx, req, &webhook); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating webhook")
+		return nil, observability.PrepareError(err, span, "creating webhook")
 	}
 
 	return webhook, nil
@@ -92,15 +85,13 @@ func (c *Client) ArchiveWebhook(ctx context.Context, webhookID string) error {
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.WebhookIDKey, webhookID)
-
 	req, err := c.requestBuilder.BuildArchiveWebhookRequest(ctx, webhookID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive webhook request")
+		return observability.PrepareError(err, span, "building archive webhook request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving webhook")
+		return observability.PrepareError(err, span, "archiving webhook")
 	}
 
 	return nil

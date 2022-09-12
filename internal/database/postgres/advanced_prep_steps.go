@@ -18,8 +18,6 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.AdvancedPrepStep{}
 
 	targetVars := []interface{}{
@@ -73,7 +71,7 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -83,8 +81,6 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validInstruments []*types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanAdvancedPrepStep(ctx, rows, includeCounts)
@@ -106,7 +102,7 @@ func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.Resul
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return validInstruments, filteredCount, totalCount, nil
@@ -136,11 +132,11 @@ func (q *Querier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context, m
 
 	rows, err := q.performReadQuery(ctx, q.db, "advanced prep steps list", listAdvancedPrepStepsQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing advanced prep steps list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing advanced prep steps list retrieval query")
 	}
 
 	if x.AdvancedPrepSteps, x.FilteredCount, x.TotalCount, err = q.scanAdvancedPrepSteps(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning advanced prep steps")
+		return nil, observability.PrepareError(err, span, "scanning advanced prep steps")
 	}
 
 	logger.Info("advanced steps retrieved")
@@ -167,7 +163,7 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "create advanced prep step", createAdvancedPrepStepQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "create advanced prep step")
+		return observability.PrepareError(err, span, "create advanced prep step")
 	}
 
 	logger.Info("advanced step created")

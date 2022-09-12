@@ -59,11 +59,11 @@ func main() {
 
 	msg, emailGenerationErr := email.BuildInviteMemberEmail(householdInvitation)
 	if emailGenerationErr != nil {
-		panic(observability.PrepareError(emailGenerationErr, logger, nil, "building email message"))
+		panic(observability.PrepareError(emailGenerationErr, nil, "building email message"))
 	}
 
 	if err = emailer.SendEmail(ctx, msg); err != nil {
-		panic(observability.PrepareError(err, logger, nil, "sending email notice"))
+		panic(observability.PrepareError(err, nil, "sending email notice"))
 	}
 
 	println("yay")

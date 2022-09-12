@@ -37,7 +37,7 @@ func (b *Builder) BuildGetValidPreparationInstrumentRequest(ctx context.Context,
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -47,8 +47,6 @@ func (b *Builder) BuildGetValidPreparationInstrumentRequest(ctx context.Context,
 func (b *Builder) BuildGetValidPreparationInstrumentsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := filter.AttachToLogger(b.logger)
 
 	uri := b.BuildURL(
 		ctx,
@@ -60,7 +58,7 @@ func (b *Builder) BuildGetValidPreparationInstrumentsRequest(ctx context.Context
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -91,7 +89,8 @@ func (b *Builder) BuildGetValidPreparationInstrumentsForPreparationRequest(ctx c
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		logger.Error(err, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -122,7 +121,8 @@ func (b *Builder) BuildGetValidPreparationInstrumentsForInstrumentRequest(ctx co
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		logger.Error(err, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -140,7 +140,7 @@ func (b *Builder) BuildCreateValidPreparationInstrumentRequest(ctx context.Conte
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(
@@ -152,7 +152,8 @@ func (b *Builder) BuildCreateValidPreparationInstrumentRequest(ctx context.Conte
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		logger.Error(err, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -184,7 +185,8 @@ func (b *Builder) BuildUpdateValidPreparationInstrumentRequest(ctx context.Conte
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		logger.Error(err, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -213,7 +215,7 @@ func (b *Builder) BuildArchiveValidPreparationInstrumentRequest(ctx context.Cont
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

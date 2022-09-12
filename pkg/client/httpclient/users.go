@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -20,16 +19,14 @@ func (c *Client) GetUser(ctx context.Context, userID string) (*types.User, error
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.UserIDKey, userID)
-
 	req, err := c.requestBuilder.BuildGetUserRequest(ctx, userID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get user request")
+		return nil, observability.PrepareError(err, span, "building get user request")
 	}
 
 	var user *types.User
 	if err = c.fetchAndUnmarshal(ctx, req, &user); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching user")
+		return nil, observability.PrepareError(err, span, "fetching user")
 	}
 
 	return user, nil
@@ -40,18 +37,16 @@ func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*type
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
-
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetUsersRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building users list request")
+		return nil, observability.PrepareError(err, span, "building users list request")
 	}
 
 	var users *types.UserList
 	if err = c.fetchAndUnmarshal(ctx, req, &users); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving users")
+		return nil, observability.PrepareError(err, span, "retrieving users")
 	}
 
 	return users, nil
@@ -66,16 +61,14 @@ func (c *Client) SearchForUsersByUsername(ctx context.Context, username string) 
 		return nil, ErrEmptyUsernameProvided
 	}
 
-	logger := c.logger.WithValue(keys.UsernameKey, username)
-
 	req, err := c.requestBuilder.BuildSearchForUsersByUsernameRequest(ctx, username)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building username search request")
+		return nil, observability.PrepareError(err, span, "building username search request")
 	}
 
 	var users []*types.User
 	if err = c.fetchAndUnmarshal(ctx, req, &users); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "searching for users")
+		return nil, observability.PrepareError(err, span, "searching for users")
 	}
 
 	return users, nil
@@ -93,16 +86,14 @@ func (c *Client) CreateUser(ctx context.Context, input *types.UserRegistrationIn
 	// deliberately not validating here
 	// maybe I should make a client-side validate method vs a server-side?
 
-	logger := c.logger.WithValue(keys.UsernameKey, input.Username)
-
 	req, err := c.requestBuilder.BuildCreateUserRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create user request")
+		return nil, observability.PrepareError(err, span, "building create user request")
 	}
 
 	var user *types.UserCreationResponse
 	if err = c.fetchAndUnmarshalWithoutAuthentication(ctx, req, &user); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating user")
+		return nil, observability.PrepareError(err, span, "creating user")
 	}
 
 	return user, nil
@@ -117,15 +108,13 @@ func (c *Client) ArchiveUser(ctx context.Context, userID string) error {
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.UserIDKey, userID)
-
 	req, err := c.requestBuilder.BuildArchiveUserRequest(ctx, userID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive user request")
+		return observability.PrepareError(err, span, "building archive user request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving user")
+		return observability.PrepareError(err, span, "archiving user")
 	}
 
 	return nil
@@ -146,21 +135,19 @@ func (c *Client) UploadNewAvatar(ctx context.Context, avatar []byte, extension s
 		return fmt.Errorf("%w: %d", ErrInvalidAvatarSize, len(avatar))
 	}
 
-	logger := c.logger.Clone()
-
 	ex := strings.ToLower(strings.TrimSpace(extension))
 	if ex != jpeg && ex != png && ex != gif {
 		err := fmt.Errorf("%s: %w", extension, ErrInvalidImageExtension)
-		return observability.PrepareError(err, logger, span, "uploading avatar")
+		return observability.PrepareError(err, span, "uploading avatar")
 	}
 
 	req, err := c.requestBuilder.BuildAvatarUploadRequest(ctx, avatar, extension)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building avatar upload request")
+		return observability.PrepareError(err, span, "building avatar upload request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "uploading avatar")
+		return observability.PrepareError(err, span, "uploading avatar")
 	}
 
 	return nil
@@ -171,20 +158,18 @@ func (c *Client) CheckUserPermissions(ctx context.Context, permissions ...string
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if permissions == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	req, err := c.requestBuilder.BuildCheckUserPermissionsRequests(ctx, permissions...)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building permission check request")
+		return nil, observability.PrepareError(err, span, "building permission check request")
 	}
 
 	var res *types.UserPermissionsResponse
 	if err = c.fetchAndUnmarshal(ctx, req, &res); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "checking permission")
+		return nil, observability.PrepareError(err, span, "checking permission")
 	}
 
 	return res, nil

@@ -34,8 +34,6 @@ func (q *Querier) scanMeal(ctx context.Context, scan database.Scanner, includeCo
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.Meal{}
 
 	targetVars := []interface{}{
@@ -53,7 +51,7 @@ func (q *Querier) scanMeal(ctx context.Context, scan database.Scanner, includeCo
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -63,8 +61,6 @@ func (q *Querier) scanMeal(ctx context.Context, scan database.Scanner, includeCo
 func (q *Querier) scanMeals(ctx context.Context, rows database.ResultIterator, includeCounts bool) (meals []*types.Meal, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanMeal(ctx, rows, includeCounts)
@@ -86,7 +82,7 @@ func (q *Querier) scanMeals(ctx context.Context, rows database.ResultIterator, i
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return meals, filteredCount, totalCount, nil
@@ -96,8 +92,6 @@ func (q *Querier) scanMeals(ctx context.Context, rows database.ResultIterator, i
 func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.Meal, recipeIDs []string, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.Clone()
 
 	x = &types.Meal{}
 
@@ -115,7 +109,7 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
-			return nil, nil, observability.PrepareError(err, logger, span, "scanning complete meal")
+			return nil, nil, observability.PrepareError(err, span, "scanning complete meal")
 		}
 		recipeIDs = append(recipeIDs, recipeID)
 	}
@@ -144,7 +138,7 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing meal existence check")
+		return false, observability.PrepareError(err, span, "performing meal existence check")
 	}
 
 	return result, nil
@@ -185,12 +179,12 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 
 	rows, err := q.performReadQuery(ctx, q.db, "meal", getMealByIDQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing meal retrieval query")
+		return nil, observability.PrepareError(err, span, "executing meal retrieval query")
 	}
 
 	m, recipeIDs, err := q.scanMealWithRecipes(ctx, rows)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meal retrieval query")
+		return nil, observability.PrepareError(err, span, "scanning meal retrieval query")
 	}
 
 	if m == nil {
@@ -200,7 +194,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 	for _, id := range recipeIDs {
 		r, getRecipeErr := q.GetRecipe(ctx, id)
 		if getRecipeErr != nil {
-			return nil, observability.PrepareError(getRecipeErr, logger, span, "fetching recipe for meal")
+			return nil, observability.PrepareError(getRecipeErr, span, "fetching recipe for meal")
 		}
 
 		m.Recipes = append(m.Recipes, r)
@@ -234,11 +228,11 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 
 	rows, err := q.performReadQuery(ctx, q.db, "meals", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing meals list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing meals list retrieval query")
 	}
 
 	if x.Meals, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meals")
+		return nil, observability.PrepareError(err, span, "scanning meals")
 	}
 
 	return x, nil
@@ -270,11 +264,11 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 
 	rows, err := q.performReadQuery(ctx, q.db, "meals", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing meals search query")
+		return nil, observability.PrepareError(err, span, "executing meals search query")
 	}
 
 	if x.Meals, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meals")
+		return nil, observability.PrepareError(err, span, "scanning meals")
 	}
 
 	return x, nil
@@ -303,7 +297,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 	// create the meal.
 	if err := q.performWriteQuery(ctx, querier, "meal creation", mealCreationQuery, args); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return nil, observability.PrepareError(err, logger, span, "performing meal creation query")
+		return nil, observability.PrepareError(err, span, "performing meal creation query")
 	}
 
 	x := &types.Meal{
@@ -317,7 +311,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 	for _, recipeID := range input.Recipes {
 		if err := q.CreateMealRecipe(ctx, querier, x.ID, recipeID); err != nil {
 			q.rollbackTransaction(ctx, querier)
-			return nil, observability.PrepareError(err, logger, span, "creating meal recipe")
+			return nil, observability.PrepareError(err, span, "creating meal recipe")
 		}
 	}
 
@@ -336,20 +330,18 @@ func (q *Querier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreat
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
-
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
 
 	x, err := q.createMeal(ctx, tx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating meal")
+		return nil, observability.PrepareError(err, span, "creating meal")
 	}
 
 	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "committing transaction")
+		return nil, observability.PrepareError(err, span, "committing transaction")
 	}
 
 	return x, nil
@@ -384,7 +376,7 @@ func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQuer
 
 	// create the meal.
 	if err := q.performWriteQuery(ctx, querier, "meal recipe creation", mealRecipeCreationQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "performing meal creation query")
+		return observability.PrepareError(err, span, "performing meal creation query")
 	}
 
 	return nil
@@ -417,7 +409,7 @@ func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal archive", archiveMealQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating meal")
+		return observability.PrepareError(err, span, "updating meal")
 	}
 
 	logger.Info("meal archived")

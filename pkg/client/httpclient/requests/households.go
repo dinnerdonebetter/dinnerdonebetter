@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -40,7 +39,6 @@ func (b *Builder) BuildGetCurrentHouseholdRequest(ctx context.Context) (*http.Re
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -51,7 +49,7 @@ func (b *Builder) BuildGetCurrentHouseholdRequest(ctx context.Context) (*http.Re
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -66,7 +64,6 @@ func (b *Builder) BuildGetHouseholdRequest(ctx context.Context, householdID stri
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	uri := b.BuildURL(
@@ -79,7 +76,7 @@ func (b *Builder) BuildGetHouseholdRequest(ctx context.Context, householdID stri
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -90,7 +87,6 @@ func (b *Builder) BuildGetHouseholdsRequest(ctx context.Context, filter *types.Q
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
 	uri := b.BuildURL(ctx, filter.ToValues(), householdsBasePath)
 
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -98,7 +94,7 @@ func (b *Builder) BuildGetHouseholdsRequest(ctx context.Context, filter *types.Q
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -113,10 +109,8 @@ func (b *Builder) BuildCreateHouseholdRequest(ctx context.Context, input *types.
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.NameKey, input.Name)
-
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath)
@@ -156,8 +150,6 @@ func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID 
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -168,7 +160,7 @@ func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -200,14 +192,12 @@ func (b *Builder) BuildMarkAsDefaultRequest(ctx context.Context, householdID str
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
-
 	uri := b.BuildURL(ctx, nil, householdsBasePath, householdID, "default")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -222,10 +212,6 @@ func (b *Builder) BuildRemoveUserRequest(ctx context.Context, householdID, userI
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID).
-		WithValue(keys.UserIDKey, userID).
-		WithValue(keys.ReasonKey, reason)
-
 	u := b.buildAPIV1URL(ctx, nil, householdsBasePath, householdID, "members", userID)
 
 	if reason != "" {
@@ -238,7 +224,7 @@ func (b *Builder) BuildRemoveUserRequest(ctx context.Context, householdID, userI
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -257,10 +243,8 @@ func (b *Builder) BuildModifyMemberPermissionsRequest(ctx context.Context, house
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.UserIDKey, userID).WithValue(keys.HouseholdIDKey, householdID)
-
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath, householdID, "members", userID, "permissions")
@@ -282,10 +266,8 @@ func (b *Builder) BuildTransferHouseholdOwnershipRequest(ctx context.Context, ho
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
-
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath, householdID, "transfer")

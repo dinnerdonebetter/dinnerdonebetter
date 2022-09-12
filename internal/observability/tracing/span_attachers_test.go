@@ -21,7 +21,7 @@ func Test_attachUint8ToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		attachUint8ToSpan(span, t.Name(), 1)
+		AttachUint8ToSpan(span, t.Name(), 1)
 	})
 }
 
@@ -33,7 +33,7 @@ func Test_attachUint64ToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		attachUint64ToSpan(span, t.Name(), 123)
+		AttachUint64ToSpan(span, t.Name(), 123)
 	})
 }
 
@@ -45,7 +45,7 @@ func Test_attachStringToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		attachStringToSpan(span, t.Name(), "blah")
+		AttachStringToSpan(span, t.Name(), "blah")
 	})
 }
 
@@ -57,7 +57,7 @@ func Test_attachBooleanToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		attachBooleanToSpan(span, t.Name(), false)
+		AttachBooleanToSpan(span, t.Name(), false)
 	})
 }
 
@@ -69,7 +69,7 @@ func Test_attachSliceToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		attachSliceToSpan(span, t.Name(), []string{t.Name()})
+		AttachSliceOfStringsToSpan(span, t.Name(), []string{t.Name()})
 	})
 }
 

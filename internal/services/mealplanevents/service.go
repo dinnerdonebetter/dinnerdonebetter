@@ -2,7 +2,6 @@ package mealplanevents
 
 import (
 	"fmt"
-	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -11,6 +10,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 

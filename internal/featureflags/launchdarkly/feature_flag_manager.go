@@ -10,7 +10,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/featureflags"
 	"github.com/prixfixeco/api_server/internal/featureflags/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
@@ -54,18 +53,13 @@ func (f *FeatureFlagManager) CanUseFeature(ctx context.Context, username, featur
 	_, span := f.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := f.logger.WithValues(map[string]interface{}{
-		keys.UsernameKey: username,
-		"feature":        feature,
-	})
-
 	user := lduser.NewUserBuilder(username).
 		Name(username).
 		Build()
 
 	showFeature, err := f.client.BoolVariation(feature, user, false)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "fetching variation")
+		return false, observability.PrepareError(err, span, "fetching variation")
 	}
 
 	return showFeature, nil

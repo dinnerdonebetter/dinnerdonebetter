@@ -70,7 +70,7 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 	for _, mealPlan := range mealPlans {
 		changed, err := w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
 		if err != nil {
-			return observability.PrepareError(err, logger, span, "finalizing meal plan")
+			return observability.PrepareError(err, span, "finalizing meal plan")
 		}
 
 		if !changed {

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -18,17 +17,16 @@ func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID string) 
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if c.authMethod == cookieAuthMethod {
 		req, err := c.requestBuilder.BuildSwitchActiveHouseholdRequest(ctx, householdID)
 		if err != nil {
-			return observability.PrepareError(err, logger, span, "building household switch request")
+			return observability.PrepareError(err, span, "building household switch request")
 		}
 
 		if err = c.executeAndUnmarshal(ctx, req, c.authedClient, nil); err != nil {
-			return observability.PrepareError(err, logger, span, "executing household switch request")
+			return observability.PrepareError(err, span, "executing household switch request")
 		}
 	}
 
@@ -42,16 +40,14 @@ func (c *Client) GetCurrentHousehold(ctx context.Context) (*types.Household, err
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
-
 	req, err := c.requestBuilder.BuildGetCurrentHouseholdRequest(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building household retrieval request")
+		return nil, observability.PrepareError(err, span, "building household retrieval request")
 	}
 
 	var household *types.Household
 	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving household")
+		return nil, observability.PrepareError(err, span, "retrieving household")
 	}
 
 	return household, nil
@@ -66,17 +62,16 @@ func (c *Client) GetHousehold(ctx context.Context, householdID string) (*types.H
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	req, err := c.requestBuilder.BuildGetHouseholdRequest(ctx, householdID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building household retrieval request")
+		return nil, observability.PrepareError(err, span, "building household retrieval request")
 	}
 
 	var household *types.Household
 	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving household")
+		return nil, observability.PrepareError(err, span, "retrieving household")
 	}
 
 	return household, nil
@@ -87,18 +82,16 @@ func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
-
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetHouseholdsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building household list request")
+		return nil, observability.PrepareError(err, span, "building household list request")
 	}
 
 	var households *types.HouseholdList
 	if err = c.fetchAndUnmarshal(ctx, req, &households); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving households")
+		return nil, observability.PrepareError(err, span, "retrieving households")
 	}
 
 	return households, nil
@@ -113,20 +106,18 @@ func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCrea
 		return nil, ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue("household_name", input.Name)
-
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateHouseholdRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building household creation request")
+		return nil, observability.PrepareError(err, span, "building household creation request")
 	}
 
 	var household *types.Household
 	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating household")
+		return nil, observability.PrepareError(err, span, "creating household")
 	}
 
 	return household, nil
@@ -141,16 +132,15 @@ func (c *Client) UpdateHousehold(ctx context.Context, household *types.Household
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, household.ID)
 	tracing.AttachHouseholdIDToSpan(span, household.ID)
 
 	req, err := c.requestBuilder.BuildUpdateHouseholdRequest(ctx, household)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building household update request")
+		return observability.PrepareError(err, span, "building household update request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
-		return observability.PrepareError(err, logger, span, "updating household")
+		return observability.PrepareError(err, span, "updating household")
 	}
 
 	return nil
@@ -165,16 +155,15 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	req, err := c.requestBuilder.BuildArchiveHouseholdRequest(ctx, householdID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building household archive request")
+		return observability.PrepareError(err, span, "building household archive request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving household")
+		return observability.PrepareError(err, span, "archiving household")
 	}
 
 	return nil
@@ -189,19 +178,18 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.Househo
 		return nil, ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, input.DestinationHouseholdID)
 	tracing.AttachHouseholdIDToSpan(span, input.DestinationHouseholdID)
 
 	// we don't validate here because it needs to have the user ID
 
 	req, err := c.requestBuilder.BuildInviteUserToHouseholdRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building add user to household request")
+		return nil, observability.PrepareError(err, span, "building add user to household request")
 	}
 
 	var householdInvitation *types.HouseholdInvitation
 	if err = c.fetchAndUnmarshal(ctx, req, &householdInvitation); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "adding user to household")
+		return nil, observability.PrepareError(err, span, "adding user to household")
 	}
 
 	return householdInvitation, nil
@@ -216,16 +204,15 @@ func (c *Client) MarkAsDefault(ctx context.Context, householdID string) error {
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	req, err := c.requestBuilder.BuildMarkAsDefaultRequest(ctx, householdID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building mark household as default request")
+		return observability.PrepareError(err, span, "building mark household as default request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "marking household as default")
+		return observability.PrepareError(err, span, "marking household as default")
 	}
 
 	return nil
@@ -244,17 +231,16 @@ func (c *Client) RemoveUserFromHousehold(ctx context.Context, householdID, userI
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID).WithValue(keys.UserIDKey, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachUserIDToSpan(span, userID)
 
 	req, err := c.requestBuilder.BuildRemoveUserRequest(ctx, householdID, userID, "")
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building remove user from household request")
+		return observability.PrepareError(err, span, "building remove user from household request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "removing user from household")
+		return observability.PrepareError(err, span, "removing user from household")
 	}
 
 	return nil
@@ -277,21 +263,20 @@ func (c *Client) ModifyMemberPermissions(ctx context.Context, householdID, userI
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID).WithValue(keys.UserIDKey, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachUserIDToSpan(span, userID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareError(err, logger, span, "validating input")
+		return observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildModifyMemberPermissionsRequest(ctx, householdID, userID, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building modify household member permissions request")
+		return observability.PrepareError(err, span, "building modify household member permissions request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "modifying user household permissions")
+		return observability.PrepareError(err, span, "modifying user household permissions")
 	}
 
 	return nil
@@ -310,24 +295,20 @@ func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID str
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID).
-		WithValue("old_owner", input.CurrentOwner).
-		WithValue("new_owner", input.NewOwner)
-
 	tracing.AttachToSpan(span, "old_owner", input.CurrentOwner)
 	tracing.AttachToSpan(span, "new_owner", input.NewOwner)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareError(err, logger, span, "validating input")
+		return observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildTransferHouseholdOwnershipRequest(ctx, householdID, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building transfer household ownership request")
+		return observability.PrepareError(err, span, "building transfer household ownership request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "transferring household to user")
+		return observability.PrepareError(err, span, "transferring household to user")
 	}
 
 	return nil

@@ -30,12 +30,12 @@ func (c *Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID strin
 
 	req, err := c.requestBuilder.BuildGetRecipeStepRequest(ctx, recipeID, recipeStepID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get recipe step request")
+		return nil, observability.PrepareError(err, span, "building get recipe step request")
 	}
 
 	var recipeStep *types.RecipeStep
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStep); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipe step")
+		return nil, observability.PrepareError(err, span, "retrieving recipe step")
 	}
 
 	return recipeStep, nil
@@ -57,12 +57,12 @@ func (c *Client) GetRecipeSteps(ctx context.Context, recipeID string, filter *ty
 
 	req, err := c.requestBuilder.BuildGetRecipeStepsRequest(ctx, recipeID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building recipe steps list request")
+		return nil, observability.PrepareError(err, span, "building recipe steps list request")
 	}
 
 	var recipeSteps *types.RecipeStepList
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeSteps); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipe steps")
+		return nil, observability.PrepareError(err, span, "retrieving recipe steps")
 	}
 
 	return recipeSteps, nil
@@ -73,24 +73,22 @@ func (c *Client) CreateRecipeStep(ctx context.Context, input *types.RecipeStepCr
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeStepRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe step request")
+		return nil, observability.PrepareError(err, span, "building create recipe step request")
 	}
 
 	var recipeStep *types.RecipeStep
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStep); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step")
+		return nil, observability.PrepareError(err, span, "creating recipe step")
 	}
 
 	return recipeStep, nil
@@ -111,11 +109,11 @@ func (c *Client) UpdateRecipeStep(ctx context.Context, recipeStep *types.RecipeS
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepRequest(ctx, recipeStep)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update recipe step request")
+		return observability.PrepareError(err, span, "building update recipe step request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStep); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe step %s", recipeStep.ID)
+		return observability.PrepareError(err, span, "updating recipe step %s", recipeStep.ID)
 	}
 
 	return nil
@@ -142,11 +140,11 @@ func (c *Client) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID s
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepRequest(ctx, recipeID, recipeStepID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive recipe step request")
+		return observability.PrepareError(err, span, "building archive recipe step request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving recipe step %s", recipeStepID)
+		return observability.PrepareError(err, span, "archiving recipe step %s", recipeStepID)
 	}
 
 	return nil

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -23,14 +22,13 @@ func (b *Builder) BuildGetWebhookRequest(ctx context.Context, webhookID string) 
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.WebhookIDKey, webhookID)
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 
 	uri := b.BuildURL(ctx, nil, webhooksBasePath, webhookID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -41,13 +39,12 @@ func (b *Builder) BuildGetWebhooksRequest(ctx context.Context, filter *types.Que
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	uri := b.BuildURL(ctx, filter.ToValues(), webhooksBasePath)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -62,10 +59,8 @@ func (b *Builder) BuildCreateWebhookRequest(ctx context.Context, input *types.We
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.NameKey, input.Name)
-
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(ctx, nil, webhooksBasePath)
@@ -82,14 +77,13 @@ func (b *Builder) BuildArchiveWebhookRequest(ctx context.Context, webhookID stri
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.WebhookIDKey, webhookID)
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 
 	uri := b.BuildURL(ctx, nil, webhooksBasePath, webhookID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

@@ -61,7 +61,7 @@ func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPla
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -108,7 +108,7 @@ func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPl
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -138,7 +138,7 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(
@@ -154,7 +154,7 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -204,7 +204,7 @@ func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, meal
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -257,7 +257,7 @@ func (b *Builder) BuildArchiveMealPlanOptionVoteRequest(ctx context.Context, mea
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

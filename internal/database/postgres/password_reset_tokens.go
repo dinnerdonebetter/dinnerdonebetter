@@ -43,7 +43,7 @@ func (q *Querier) scanPasswordResetToken(ctx context.Context, scan database.Scan
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, q.logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -68,8 +68,6 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if token == "" {
 		return nil, ErrEmptyInputProvided
 	}
@@ -83,7 +81,7 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 
 	passwordResetToken, _, _, err := q.scanPasswordResetToken(ctx, row)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning password reset token")
+		return nil, observability.PrepareError(err, span, "scanning password reset token")
 	}
 
 	return passwordResetToken, nil
@@ -110,7 +108,7 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 
 	// create the password reset token.
 	if err := q.performWriteQuery(ctx, q.db, "password reset token creation", passwordResetTokenCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing password reset token creation query")
+		return nil, observability.PrepareError(err, span, "performing password reset token creation query")
 	}
 
 	x := &types.PasswordResetToken{
@@ -147,7 +145,7 @@ func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTok
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "password reset token archive", redeemPasswordResetTokenQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating password reset token")
+		return observability.PrepareError(err, span, "updating password reset token")
 	}
 
 	logger.Info("password reset token archived")

@@ -24,12 +24,12 @@ func (c *Client) GetValidPreparationInstrument(ctx context.Context, validPrepara
 
 	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentRequest(ctx, validPreparationInstrumentID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get valid ingredient preparation request")
+		return nil, observability.PrepareError(err, span, "building get valid ingredient preparation request")
 	}
 
 	var validPreparationInstrument *types.ValidPreparationInstrument
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstrument); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient preparation")
+		return nil, observability.PrepareError(err, span, "retrieving valid ingredient preparation")
 	}
 
 	return validPreparationInstrument, nil
@@ -40,17 +40,16 @@ func (c *Client) GetValidPreparationInstruments(ctx context.Context, filter *typ
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid preparation instruments list request")
+		return nil, observability.PrepareError(err, span, "building valid preparation instruments list request")
 	}
 
 	var validPreparationInstruments *types.ValidPreparationInstrumentList
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation instruments")
+		return nil, observability.PrepareError(err, span, "retrieving valid preparation instruments")
 	}
 
 	return validPreparationInstruments, nil
@@ -72,12 +71,12 @@ func (c *Client) GetValidPreparationInstrumentsForPreparation(ctx context.Contex
 
 	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentsForPreparationRequest(ctx, validPreparationID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid preparation instruments list request")
+		return nil, observability.PrepareError(err, span, "building valid preparation instruments list request")
 	}
 
 	var validPreparationInstruments *types.ValidPreparationInstrumentList
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation instruments")
+		return nil, observability.PrepareError(err, span, "retrieving valid preparation instruments")
 	}
 
 	return validPreparationInstruments, nil
@@ -99,12 +98,12 @@ func (c *Client) GetValidPreparationInstrumentsForInstrument(ctx context.Context
 
 	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentsForInstrumentRequest(ctx, validInstrumentID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid preparation instruments list request")
+		return nil, observability.PrepareError(err, span, "building valid preparation instruments list request")
 	}
 
 	var validPreparationInstruments *types.ValidPreparationInstrumentList
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation instruments")
+		return nil, observability.PrepareError(err, span, "retrieving valid preparation instruments")
 	}
 
 	return validPreparationInstruments, nil
@@ -115,24 +114,22 @@ func (c *Client) CreateValidPreparationInstrument(ctx context.Context, input *ty
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidPreparationInstrumentRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create valid ingredient preparation request")
+		return nil, observability.PrepareError(err, span, "building create valid ingredient preparation request")
 	}
 
 	var validPreparationInstrument *types.ValidPreparationInstrument
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstrument); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
+		return nil, observability.PrepareError(err, span, "creating valid ingredient preparation")
 	}
 
 	return validPreparationInstrument, nil
@@ -153,11 +150,11 @@ func (c *Client) UpdateValidPreparationInstrument(ctx context.Context, validPrep
 
 	req, err := c.requestBuilder.BuildUpdateValidPreparationInstrumentRequest(ctx, validPreparationInstrument)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update valid ingredient preparation request")
+		return observability.PrepareError(err, span, "building update valid ingredient preparation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstrument); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid ingredient preparation %s", validPreparationInstrument.ID)
+		return observability.PrepareError(err, span, "updating valid ingredient preparation %s", validPreparationInstrument.ID)
 	}
 
 	return nil
@@ -178,11 +175,11 @@ func (c *Client) ArchiveValidPreparationInstrument(ctx context.Context, validPre
 
 	req, err := c.requestBuilder.BuildArchiveValidPreparationInstrumentRequest(ctx, validPreparationInstrumentID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive valid ingredient preparation request")
+		return observability.PrepareError(err, span, "building archive valid ingredient preparation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving valid ingredient preparation %s", validPreparationInstrumentID)
+		return observability.PrepareError(err, span, "archiving valid ingredient preparation %s", validPreparationInstrumentID)
 	}
 
 	return nil

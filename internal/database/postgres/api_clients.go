@@ -32,8 +32,6 @@ func (q *Querier) scanAPIClient(ctx context.Context, scan database.Scanner, incl
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	client = &types.APIClient{}
 
 	targetVars := []interface{}{
@@ -52,7 +50,7 @@ func (q *Querier) scanAPIClient(ctx context.Context, scan database.Scanner, incl
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "scanning API client database result")
+		return nil, 0, 0, observability.PrepareError(err, span, "scanning API client database result")
 	}
 
 	return client, filteredCount, totalCount, nil
@@ -63,12 +61,10 @@ func (q *Querier) scanAPIClients(ctx context.Context, rows database.ResultIterat
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	for rows.Next() {
 		client, fc, tc, scanErr := q.scanAPIClient(ctx, rows, includeCounts)
 		if scanErr != nil {
-			return nil, 0, 0, observability.PrepareError(scanErr, logger, span, "scanning API client")
+			return nil, 0, 0, observability.PrepareError(scanErr, span, "scanning API client")
 		}
 
 		if includeCounts {
@@ -85,7 +81,7 @@ func (q *Querier) scanAPIClients(ctx context.Context, rows database.ResultIterat
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return clients, filteredCount, totalCount, nil
@@ -116,7 +112,6 @@ func (q *Querier) GetAPIClientByClientID(ctx context.Context, clientID string) (
 	}
 
 	tracing.AttachAPIClientClientIDToSpan(span, clientID)
-	logger := q.logger.WithValue(keys.APIClientClientIDKey, clientID)
 
 	args := []interface{}{clientID}
 
@@ -128,7 +123,7 @@ func (q *Querier) GetAPIClientByClientID(ctx context.Context, clientID string) (
 			return nil, err
 		}
 
-		return nil, observability.PrepareError(err, logger, span, "querying for API client")
+		return nil, observability.PrepareError(err, span, "querying for API client")
 	}
 
 	return client, nil
@@ -162,11 +157,6 @@ func (q *Querier) GetAPIClientByDatabaseID(ctx context.Context, clientID, userID
 	tracing.AttachAPIClientDatabaseIDToSpan(span, clientID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	logger := q.logger.WithValues(map[string]interface{}{
-		keys.APIClientDatabaseIDKey: clientID,
-		keys.UserIDKey:              userID,
-	})
-
 	args := []interface{}{userID, clientID}
 
 	row := q.getOneRow(ctx, q.db, "API client", getAPIClientByDatabaseIDQuery, args)
@@ -177,7 +167,7 @@ func (q *Querier) GetAPIClientByDatabaseID(ctx context.Context, clientID, userID
 			return nil, err
 		}
 
-		return nil, observability.PrepareError(err, logger, span, "querying for API client")
+		return nil, observability.PrepareError(err, span, "querying for API client")
 	}
 
 	return client, nil
@@ -192,7 +182,6 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := filter.AttachToLogger(q.logger).WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -215,11 +204,11 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 			return nil, err
 		}
 
-		return nil, observability.PrepareError(err, logger, span, "querying for API clients")
+		return nil, observability.PrepareError(err, span, "querying for API clients")
 	}
 
 	if x.Clients, x.FilteredCount, x.TotalCount, err = q.scanAPIClients(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning response from database")
+		return nil, observability.PrepareError(err, span, "scanning response from database")
 	}
 
 	return x, nil
@@ -252,7 +241,7 @@ func (q *Querier) CreateAPIClient(ctx context.Context, input *types.APIClientCre
 	}
 
 	if writeErr := q.performWriteQuery(ctx, q.db, "API client creation", createAPIClientQuery, args); writeErr != nil {
-		return nil, observability.PrepareError(writeErr, logger, span, "creating API client")
+		return nil, observability.PrepareError(writeErr, span, "creating API client")
 	}
 
 	tracing.AttachAPIClientDatabaseIDToSpan(span, input.ID)
@@ -299,7 +288,7 @@ func (q *Querier) ArchiveAPIClient(ctx context.Context, clientID, userID string)
 	args := []interface{}{userID, clientID}
 
 	if err := q.performWriteQuery(ctx, q.db, "API client archive", archiveAPIClientQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving API client")
+		return observability.PrepareError(err, span, "archiving API client")
 	}
 
 	logger.Info("API client archived")

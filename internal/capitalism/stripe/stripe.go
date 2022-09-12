@@ -99,8 +99,6 @@ func (s *stripePaymentManager) CreateCheckoutSession(ctx context.Context, subscr
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.HouseholdSubscriptionPlanIDKey, subscriptionPlanID)
-
 	params := &stripe.CheckoutSessionParams{
 		SuccessURL:         stripe.String(s.successURL),
 		CancelURL:          stripe.String(s.cancelURL),
@@ -118,7 +116,7 @@ func (s *stripePaymentManager) CreateCheckoutSession(ctx context.Context, subscr
 
 	sess, err := s.client.CheckoutSessions.New(params)
 	if err != nil {
-		return "", observability.PrepareError(err, logger, span, "creating checkout session")
+		return "", observability.PrepareError(err, span, "creating checkout session")
 	}
 
 	return sess.ID, nil
@@ -128,16 +126,14 @@ func (s *stripePaymentManager) HandleSubscriptionEventWebhook(req *http.Request)
 	_, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	logger := s.logger.WithRequest(req)
-
 	b, err := io.ReadAll(req.Body)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "parsing received webhook content")
+		return observability.PrepareError(err, span, "parsing received webhook content")
 	}
 
 	event, err := webhook.ConstructEvent(b, req.Header.Get(webhookHeaderName), s.webhookSecret)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "constructing webhook event")
+		return observability.PrepareError(err, span, "constructing webhook event")
 	}
 
 	switch event.Type {
@@ -163,13 +159,11 @@ func (s *stripePaymentManager) CreateCustomerID(ctx context.Context, household *
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.HouseholdIDKey, household.ID)
-
 	params := buildGetCustomerParams(household)
 
 	c, err := s.client.Customers.New(params)
 	if err != nil {
-		return "", observability.PrepareError(err, logger, span, "creating customer")
+		return "", observability.PrepareError(err, span, "creating customer")
 	}
 
 	return c.ID, nil
@@ -181,11 +175,9 @@ func (s *stripePaymentManager) findSubscriptionID(ctx context.Context, customerI
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.HouseholdSubscriptionPlanIDKey, planID)
-
 	cus, err := s.client.Customers.Get(customerID, nil)
 	if err != nil {
-		return "", observability.PrepareError(err, logger, span, "fetching customer")
+		return "", observability.PrepareError(err, span, "fetching customer")
 	}
 
 	for _, sub := range cus.Subscriptions.Data {
@@ -201,12 +193,10 @@ func (s *stripePaymentManager) SubscribeToPlan(ctx context.Context, customerID, 
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.HouseholdSubscriptionPlanIDKey, planID)
-
 	// check first if the plan is already implemented.
 	subscriptionID, err := s.findSubscriptionID(ctx, customerID, planID)
 	if err != nil && !errors.Is(err, errSubscriptionNotFound) {
-		return "", observability.PrepareError(err, logger, span, "checking subscription status")
+		return "", observability.PrepareError(err, span, "checking subscription status")
 	} else if subscriptionID != "" {
 		return subscriptionID, nil
 	}
@@ -219,7 +209,7 @@ func (s *stripePaymentManager) SubscribeToPlan(ctx context.Context, customerID, 
 
 	subscription, err := s.client.Subscriptions.New(params)
 	if err != nil {
-		return "", observability.PrepareError(err, logger, span, "subscribing to plan")
+		return "", observability.PrepareError(err, span, "subscribing to plan")
 	}
 
 	return subscription.ID, nil
@@ -236,12 +226,12 @@ func (s *stripePaymentManager) UnsubscribeFromPlan(ctx context.Context, subscrip
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue("subscription_id", subscriptionID)
+	tracing.AttachStringToSpan(span, "subscription.id", subscriptionID)
 
 	params := buildCancellationParams()
 
 	if _, err := s.client.Subscriptions.Cancel(subscriptionID, params); err != nil {
-		return observability.PrepareError(err, logger, span, "unsubscribing from plan")
+		return observability.PrepareError(err, span, "unsubscribing from plan")
 	}
 
 	return nil

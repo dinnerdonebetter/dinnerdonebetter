@@ -56,8 +56,6 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.RecipeStepInstrument{}
 	instrument := types.NullableValidInstrument{}
 
@@ -91,7 +89,7 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	if instrument.ID != nil {
@@ -105,8 +103,6 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 func (q *Querier) scanRecipeStepInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepInstruments []*types.RecipeStepInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanRecipeStepInstrument(ctx, rows, includeCounts)
@@ -128,7 +124,7 @@ func (q *Querier) scanRecipeStepInstruments(ctx context.Context, rows database.R
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return recipeStepInstruments, filteredCount, totalCount, nil
@@ -171,7 +167,7 @@ func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, reci
 
 	result, err := q.performBooleanQuery(ctx, q.db, recipeStepInstrumentExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing recipe step instrument existence check")
+		return false, observability.PrepareError(err, span, "performing recipe step instrument existence check")
 	}
 
 	return result, nil
@@ -250,7 +246,7 @@ func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeS
 
 	recipeStepInstrument, _, _, err := q.scanRecipeStepInstrument(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipeStepInstrument")
+		return nil, observability.PrepareError(err, span, "scanning recipeStepInstrument")
 	}
 
 	return recipeStepInstrument, nil
@@ -293,11 +289,11 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipeStepInstruments", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing recipe step instruments list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing recipe step instruments list retrieval query")
 	}
 
 	if x.RecipeStepInstruments, x.FilteredCount, x.TotalCount, err = q.scanRecipeStepInstruments(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipe step instruments")
+		return nil, observability.PrepareError(err, span, "scanning recipe step instruments")
 	}
 
 	return x, nil
@@ -357,12 +353,12 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipe step instruments", getRecipeStepInstrumentsForRecipeQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing recipe step instruments list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing recipe step instruments list retrieval query")
 	}
 
 	recipeStepInstruments, _, _, err := q.scanRecipeStepInstruments(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipe step instruments")
+		return nil, observability.PrepareError(err, span, "scanning recipe step instruments")
 	}
 
 	return recipeStepInstruments, nil
@@ -399,7 +395,7 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 
 	// create the recipe step instrument.
 	if err := q.performWriteQuery(ctx, querier, "recipe step instrument creation", recipeStepInstrumentCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing recipe step instrument creation query")
+		return nil, observability.PrepareError(err, span, "performing recipe step instrument creation query")
 	}
 
 	x := &types.RecipeStepInstrument{
@@ -480,7 +476,7 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step instrument update", updateRecipeStepInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe step instrument")
+		return observability.PrepareError(err, span, "updating recipe step instrument")
 	}
 
 	logger.Info("recipe step instrument updated")
@@ -515,7 +511,7 @@ func (q *Querier) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step instrument archive", archiveRecipeStepInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe step instrument")
+		return observability.PrepareError(err, span, "updating recipe step instrument")
 	}
 
 	logger.Info("recipe step instrument archived")

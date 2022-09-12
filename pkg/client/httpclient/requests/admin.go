@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -22,10 +21,8 @@ func (b *Builder) BuildUserAccountStatusUpdateInputRequest(ctx context.Context, 
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.UserIDKey, input.TargetUserID)
-
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(ctx, nil, adminBasePath, usersBasePath, "status")

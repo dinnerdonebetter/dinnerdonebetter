@@ -27,12 +27,12 @@ func (c *Client) GetHouseholdInvitation(ctx context.Context, householdID, househ
 
 	req, err := c.requestBuilder.BuildGetHouseholdInvitationRequest(ctx, householdID, householdInvitationID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get invitation request")
+		return nil, observability.PrepareError(err, span, "building get invitation request")
 	}
 
 	var invitation *types.HouseholdInvitation
 	if err = c.fetchAndUnmarshal(ctx, req, &invitation); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving invitation")
+		return nil, observability.PrepareError(err, span, "retrieving invitation")
 	}
 
 	return invitation, nil
@@ -48,12 +48,12 @@ func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, fil
 
 	req, err := c.requestBuilder.BuildGetPendingHouseholdInvitationsFromUserRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building reject invitation request")
+		return nil, observability.PrepareError(err, span, "building reject invitation request")
 	}
 
 	var invitationList *types.HouseholdInvitationList
 	if err = c.fetchAndUnmarshal(ctx, req, &invitationList); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "rejecting invitation")
+		return nil, observability.PrepareError(err, span, "rejecting invitation")
 	}
 
 	return invitationList, nil
@@ -69,12 +69,12 @@ func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filt
 
 	req, err := c.requestBuilder.BuildGetPendingHouseholdInvitationsForUserRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building reject invitation request")
+		return nil, observability.PrepareError(err, span, "building reject invitation request")
 	}
 
 	var invitationList *types.HouseholdInvitationList
 	if err = c.fetchAndUnmarshal(ctx, req, &invitationList); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "rejecting invitation")
+		return nil, observability.PrepareError(err, span, "rejecting invitation")
 	}
 
 	return invitationList, nil
@@ -98,11 +98,11 @@ func (c *Client) AcceptHouseholdInvitation(ctx context.Context, householdInvitat
 
 	req, err := c.requestBuilder.BuildAcceptHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building reject invitation request")
+		return observability.PrepareError(err, span, "building reject invitation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "rejecting invitation")
+		return observability.PrepareError(err, span, "rejecting invitation")
 	}
 
 	return nil
@@ -126,11 +126,11 @@ func (c *Client) CancelHouseholdInvitation(ctx context.Context, householdInvitat
 
 	req, err := c.requestBuilder.BuildCancelHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building reject invitation request")
+		return observability.PrepareError(err, span, "building reject invitation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "rejecting invitation")
+		return observability.PrepareError(err, span, "rejecting invitation")
 	}
 
 	return nil
@@ -154,11 +154,11 @@ func (c *Client) RejectHouseholdInvitation(ctx context.Context, householdInvitat
 
 	req, err := c.requestBuilder.BuildRejectHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building reject invitation request")
+		return observability.PrepareError(err, span, "building reject invitation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "rejecting invitation")
+		return observability.PrepareError(err, span, "rejecting invitation")
 	}
 
 	return nil

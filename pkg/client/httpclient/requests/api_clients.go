@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -23,8 +22,6 @@ func (b *Builder) BuildGetAPIClientRequest(ctx context.Context, clientID string)
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.APIClientDatabaseIDKey, clientID)
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -34,7 +31,7 @@ func (b *Builder) BuildGetAPIClientRequest(ctx context.Context, clientID string)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -45,14 +42,13 @@ func (b *Builder) BuildGetAPIClientsRequest(ctx context.Context, filter *types.Q
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	uri := b.BuildURL(ctx, filter.ToValues(), apiClientsBasePath)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -92,8 +88,6 @@ func (b *Builder) BuildArchiveAPIClientRequest(ctx context.Context, clientID str
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.APIClientDatabaseIDKey, clientID)
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -103,7 +97,7 @@ func (b *Builder) BuildArchiveAPIClientRequest(ctx context.Context, clientID str
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

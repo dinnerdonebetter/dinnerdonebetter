@@ -38,7 +38,7 @@ func (s *service) fetchSessionContextDataFromPASETO(ctx context.Context, req *ht
 		var token paseto.JSONToken
 
 		if err := paseto.NewV2().Decrypt(rawToken, s.config.PASETO.LocalModeKey, &token, nil); err != nil {
-			return nil, observability.PrepareError(err, logger, span, "decrypting PASETO")
+			return nil, observability.PrepareError(err, span, "decrypting PASETO")
 		}
 
 		if time.Now().UTC().After(token.Expiration) {
@@ -49,13 +49,13 @@ func (s *service) fetchSessionContextDataFromPASETO(ctx context.Context, req *ht
 
 		gobEncoded, err := base64.RawURLEncoding.DecodeString(base64Encoded)
 		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "decoding base64 encoded GOB payload")
+			return nil, observability.PrepareError(err, span, "decoding base64 encoded GOB payload")
 		}
 
 		var reqContext *types.SessionContextData
 
 		if err = gob.NewDecoder(bytes.NewReader(gobEncoded)).Decode(&reqContext); err != nil {
-			return nil, observability.PrepareError(err, logger, span, "decoding GOB encoded session info payload")
+			return nil, observability.PrepareError(err, span, "decoding GOB encoded session info payload")
 		}
 
 		logger.WithValue("active_household_id", reqContext.ActiveHouseholdID).Debug("returning session context data")

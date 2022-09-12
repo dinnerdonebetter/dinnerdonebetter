@@ -39,7 +39,7 @@ func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstr
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -49,8 +49,6 @@ func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstr
 func (b *Builder) BuildGetRandomValidInstrumentRequest(ctx context.Context) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := b.logger.Clone()
 
 	uri := b.BuildURL(
 		ctx,
@@ -62,7 +60,7 @@ func (b *Builder) BuildGetRandomValidInstrumentRequest(ctx context.Context) (*ht
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -72,8 +70,6 @@ func (b *Builder) BuildGetRandomValidInstrumentRequest(ctx context.Context) (*ht
 func (b *Builder) BuildSearchValidInstrumentsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := b.logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
 
 	params := url.Values{}
 	params.Set(types.SearchQueryKey, query)
@@ -89,7 +85,7 @@ func (b *Builder) BuildSearchValidInstrumentsRequest(ctx context.Context, query 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -99,8 +95,6 @@ func (b *Builder) BuildSearchValidInstrumentsRequest(ctx context.Context, query 
 func (b *Builder) BuildGetValidInstrumentsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := filter.AttachToLogger(b.logger)
 
 	uri := b.BuildURL(
 		ctx,
@@ -112,7 +106,7 @@ func (b *Builder) BuildGetValidInstrumentsRequest(ctx context.Context, filter *t
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -123,14 +117,12 @@ func (b *Builder) BuildCreateValidInstrumentRequest(ctx context.Context, input *
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(
@@ -142,7 +134,7 @@ func (b *Builder) BuildCreateValidInstrumentRequest(ctx context.Context, input *
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -174,7 +166,7 @@ func (b *Builder) BuildUpdateValidInstrumentRequest(ctx context.Context, validIn
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -203,7 +195,7 @@ func (b *Builder) BuildArchiveValidInstrumentRequest(ctx context.Context, validI
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

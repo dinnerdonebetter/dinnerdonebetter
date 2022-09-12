@@ -54,7 +54,7 @@ func (t *pasetoRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 
 	token, err := t.client.fetchAuthTokenForAPIClient(ctx, pasetoRoundTripperClient, t.clientID, t.secretKey)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching prerequisite PASETO")
+		return nil, observability.PrepareError(err, span, "fetching prerequisite PASETO")
 	}
 
 	// req.Body is assumed to be closed by the base RoundTripper.
@@ -64,7 +64,7 @@ func (t *pasetoRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 
 	res, err := t.base.RoundTrip(req)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing PASETO-authorized request")
+		return nil, observability.PrepareError(err, span, "executing PASETO-authorized request")
 	}
 
 	return res, nil
@@ -77,7 +77,7 @@ func (t *pasetoRoundTripper) BuildRequestHeaders(ctx context.Context) (http.Head
 
 	token, err := t.client.fetchAuthTokenForAPIClient(ctx, pasetoRoundTripperClient, t.clientID, t.secretKey)
 	if err != nil {
-		return nil, observability.PrepareError(err, t.logger, span, "fetching prerequisite PASETO")
+		return nil, observability.PrepareError(err, span, "fetching prerequisite PASETO")
 	}
 
 	h := http.Header{}

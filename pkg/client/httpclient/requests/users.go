@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -29,14 +28,13 @@ func (b *Builder) BuildGetUserRequest(ctx context.Context, userID string) (*http
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
 	uri := b.BuildURL(ctx, nil, usersBasePath, userID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -47,13 +45,12 @@ func (b *Builder) BuildGetUsersRequest(ctx context.Context, filter *types.QueryF
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	uri := b.BuildURL(ctx, filter.ToValues(), usersBasePath)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -68,18 +65,18 @@ func (b *Builder) BuildSearchForUsersByUsernameRequest(ctx context.Context, user
 		return nil, ErrEmptyUsernameProvided
 	}
 
-	logger := b.logger.WithValue(keys.UsernameKey, username)
 	tracing.AttachUsernameToSpan(span, username)
 
 	u := b.buildAPIV1URL(ctx, nil, usersBasePath, "search")
 	q := u.Query()
+
 	q.Set(types.SearchQueryKey, username)
 	u.RawQuery = q.Encode()
 	uri := u.String()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -119,7 +116,6 @@ func (b *Builder) BuildArchiveUserRequest(ctx context.Context, userID string) (*
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
 	// deliberately not validating here, maybe there should make a client-side validate method vs a server-side?
@@ -128,7 +124,7 @@ func (b *Builder) BuildArchiveUserRequest(ctx context.Context, userID string) (*
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -156,29 +152,27 @@ func (b *Builder) BuildAvatarUploadRequest(ctx context.Context, avatar []byte, e
 		return nil, fmt.Errorf("%s: %w", extension, ErrInvalidPhotoEncodingForUpload)
 	}
 
-	logger := b.logger.Clone()
-
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
 	part, err := writer.CreateFormFile("avatar", fmt.Sprintf("avatar.%s", extension))
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating form file")
+		return nil, observability.PrepareError(err, span, "creating form file")
 	}
 
 	if _, err = io.Copy(part, bytes.NewReader(avatar)); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "copying file contents to request")
+		return nil, observability.PrepareError(err, span, "copying file contents to request")
 	}
 
 	if err = writer.Close(); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "closing avatar writer")
+		return nil, observability.PrepareError(err, span, "closing avatar writer")
 	}
 
 	uri := b.BuildURL(ctx, nil, usersBasePath, "avatar", "upload")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building avatar upload request")
+		return nil, observability.PrepareError(err, span, "building avatar upload request")
 	}
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
@@ -196,13 +190,12 @@ func (b *Builder) BuildCheckUserPermissionsRequests(ctx context.Context, permiss
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue("permissions", permissions)
 	uri := b.BuildURL(ctx, nil, usersBasePath, "permissions", "check")
 	body := &types.UserPermissionsRequestInput{Permissions: permissions}
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

@@ -36,12 +36,12 @@ func (c *Client) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEvent
 
 	req, err := c.requestBuilder.BuildGetMealPlanEventRequest(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get meal plan event request")
+		return nil, observability.PrepareError(err, span, "building get meal plan event request")
 	}
 
 	var mealPlanEvent *types.MealPlanEvent
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanEvent); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving meal plan event")
+		return nil, observability.PrepareError(err, span, "retrieving meal plan event")
 	}
 
 	return mealPlanEvent, nil
@@ -63,12 +63,12 @@ func (c *Client) GetMealPlanEvents(ctx context.Context, mealPlanID string, filte
 
 	req, err := c.requestBuilder.BuildGetMealPlanEventsRequest(ctx, mealPlanID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building meal plan events list request")
+		return nil, observability.PrepareError(err, span, "building meal plan events list request")
 	}
 
 	var mealPlanEvents *types.MealPlanEventList
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanEvents); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving meal plan events")
+		return nil, observability.PrepareError(err, span, "retrieving meal plan events")
 	}
 
 	return mealPlanEvents, nil
@@ -82,7 +82,6 @@ func (c *Client) CreateMealPlanEvent(ctx context.Context, mealPlanID string, inp
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger := c.logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if input == nil {
@@ -90,17 +89,17 @@ func (c *Client) CreateMealPlanEvent(ctx context.Context, mealPlanID string, inp
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateMealPlanEventRequest(ctx, mealPlanID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create meal plan event request")
+		return nil, observability.PrepareError(err, span, "building create meal plan event request")
 	}
 
 	var mealPlanEvent *types.MealPlanEvent
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanEvent); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating meal plan event")
+		return nil, observability.PrepareError(err, span, "creating meal plan event")
 	}
 
 	return mealPlanEvent, nil
@@ -121,11 +120,11 @@ func (c *Client) UpdateMealPlanEvent(ctx context.Context, mealPlanEvent *types.M
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanEventRequest(ctx, mealPlanEvent)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update meal plan event request")
+		return observability.PrepareError(err, span, "building update meal plan event request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanEvent); err != nil {
-		return observability.PrepareError(err, logger, span, "updating meal plan event %s", mealPlanEvent.ID)
+		return observability.PrepareError(err, span, "updating meal plan event %s", mealPlanEvent.ID)
 	}
 
 	return nil
@@ -158,11 +157,11 @@ func (c *Client) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanE
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanEventRequest(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive meal plan event request")
+		return observability.PrepareError(err, span, "building archive meal plan event request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving meal plan event %s", mealPlanEventID)
+		return observability.PrepareError(err, span, "archiving meal plan event %s", mealPlanEventID)
 	}
 
 	return nil

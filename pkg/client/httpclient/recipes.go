@@ -24,12 +24,12 @@ func (c *Client) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe,
 
 	req, err := c.requestBuilder.BuildGetRecipeRequest(ctx, recipeID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get recipe request")
+		return nil, observability.PrepareError(err, span, "building get recipe request")
 	}
 
 	var recipe *types.Recipe
 	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipe")
+		return nil, observability.PrepareError(err, span, "retrieving recipe")
 	}
 
 	return recipe, nil
@@ -40,17 +40,16 @@ func (c *Client) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*ty
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetRecipesRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building recipes list request")
+		return nil, observability.PrepareError(err, span, "building recipes list request")
 	}
 
 	var recipes *types.RecipeList
 	if err = c.fetchAndUnmarshal(ctx, req, &recipes); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipes")
+		return nil, observability.PrepareError(err, span, "retrieving recipes")
 	}
 
 	return recipes, nil
@@ -62,18 +61,16 @@ func (c *Client) SearchForRecipes(ctx context.Context, query string, filter *typ
 	defer span.End()
 
 	tracing.AttachSearchQueryToSpan(span, query)
-
-	logger := c.loggerWithFilter(filter).WithValue(keys.SearchQueryKey, query)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildSearchForRecipesRequest(ctx, query, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building recipes list request")
+		return nil, observability.PrepareError(err, span, "building recipes list request")
 	}
 
 	var recipes *types.RecipeList
 	if err = c.fetchAndUnmarshal(ctx, req, &recipes); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipes")
+		return nil, observability.PrepareError(err, span, "retrieving recipes")
 	}
 
 	return recipes, nil
@@ -84,24 +81,22 @@ func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRe
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe request")
+		return nil, observability.PrepareError(err, span, "building create recipe request")
 	}
 
 	var recipe *types.Recipe
 	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe")
+		return nil, observability.PrepareError(err, span, "creating recipe")
 	}
 
 	return recipe, nil
@@ -122,11 +117,11 @@ func (c *Client) UpdateRecipe(ctx context.Context, recipe *types.Recipe) error {
 
 	req, err := c.requestBuilder.BuildUpdateRecipeRequest(ctx, recipe)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update recipe request")
+		return observability.PrepareError(err, span, "building update recipe request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe %s", recipe.ID)
+		return observability.PrepareError(err, span, "updating recipe %s", recipe.ID)
 	}
 
 	return nil
@@ -147,11 +142,11 @@ func (c *Client) ArchiveRecipe(ctx context.Context, recipeID string) error {
 
 	req, err := c.requestBuilder.BuildArchiveRecipeRequest(ctx, recipeID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive recipe request")
+		return observability.PrepareError(err, span, "building archive recipe request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving recipe %s", recipeID)
+		return observability.PrepareError(err, span, "archiving recipe %s", recipeID)
 	}
 
 	return nil

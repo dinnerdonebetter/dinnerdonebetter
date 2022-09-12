@@ -3,10 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
-	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
+	"net/http"
 	"path"
-
-	"github.com/heptiolabs/healthcheck"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
@@ -14,6 +12,7 @@ import (
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -54,9 +53,10 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 	logger := s.logger.WithSpan(span)
 
 	router.Route("/_meta_", func(metaRouter routing.Router) {
-		health := healthcheck.NewHandler()
 		// Expose a readiness check on /ready
-		metaRouter.Get("/ready", health.ReadyEndpoint)
+		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
+			res.WriteHeader(http.StatusOK)
+		})
 	})
 
 	if metricsHandler != nil {

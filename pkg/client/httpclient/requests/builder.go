@@ -9,7 +9,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/panicking"
@@ -175,7 +174,7 @@ func (b *Builder) BuildHealthCheckRequest(ctx context.Context) (*http.Request, e
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, b.logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -186,16 +185,14 @@ func (b *Builder) buildDataRequest(ctx context.Context, method, uri string, in i
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.WithValue(keys.RequestMethodKey, method).WithValue(keys.URLKey, uri)
-
 	body, err := b.encoder.EncodeReader(ctx, in)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "encoding request")
+		return nil, observability.PrepareError(err, span, "encoding request")
 	}
 
 	req, err := http.NewRequestWithContext(ctx, method, uri, body)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	req.Header.Set("RawHTML-type", b.encoder.ContentType())
