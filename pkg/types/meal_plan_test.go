@@ -15,7 +15,7 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanCreationRequestInput{
-			VotingDeadline: time.Now(),
+			VotingDeadline: time.Now().Add(24 * time.Hour),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

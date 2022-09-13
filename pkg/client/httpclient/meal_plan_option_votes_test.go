@@ -48,7 +48,7 @@ type mealPlanOptionVotesTestSuite struct {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVote() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -115,7 +115,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVote() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes"
+	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -124,7 +124,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 
 		exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVoteList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanOptionID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanOptionVoteList)
 		actual, err := c.GetMealPlanOptionVotes(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, filter)
 
@@ -174,7 +174,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanOptionID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetMealPlanOptionVotes(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, filter)
 
@@ -184,14 +184,14 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
-	const expectedPath = "/api/v1/meal_plans/%s/vote"
+	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/vote"
 
 	s.Run("standard", func() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, []*types.MealPlanOptionVote{s.exampleMealPlanOptionVote})
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, exampleInput)
@@ -257,7 +257,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_UpdateMealPlanOptionVote() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -307,7 +307,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_UpdateMealPlanOptionVote() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_ArchiveMealPlanOptionVote() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
 
 	s.Run("standard", func() {
 		t := s.T()

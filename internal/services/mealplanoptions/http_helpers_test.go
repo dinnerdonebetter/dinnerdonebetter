@@ -23,6 +23,7 @@ type mealPlanOptionsServiceHTTPRoutesTestHelper struct {
 	exampleUser           *types.User
 	exampleHousehold      *types.Household
 	exampleMealPlan       *types.MealPlan
+	exampleMealPlanEvent  *types.MealPlanEvent
 	exampleMealPlanOption *types.MealPlanOption
 	exampleCreationInput  *types.MealPlanOptionCreationRequestInput
 	exampleUpdateInput    *types.MealPlanOptionUpdateRequestInput
@@ -40,13 +41,19 @@ func buildTestHelper(t *testing.T) *mealPlanOptionsServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
 	helper.exampleMealPlan.BelongsToHousehold = helper.exampleHousehold.ID
+	helper.exampleMealPlanEvent = fakes.BuildFakeMealPlanEvent()
+	helper.exampleMealPlanEvent.BelongsToMealPlan = helper.exampleMealPlan.ID
 	helper.exampleMealPlanOption = fakes.BuildFakeMealPlanOption()
-	helper.exampleMealPlanOption.BelongsToMealPlanEvent = helper.exampleMealPlan.ID
+	helper.exampleMealPlanOption.BelongsToMealPlanEvent = helper.exampleMealPlanEvent.ID
 	helper.exampleCreationInput = fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(helper.exampleMealPlanOption)
 	helper.exampleUpdateInput = fakes.BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(helper.exampleMealPlanOption)
 
 	helper.service.mealPlanIDFetcher = func(*http.Request) string {
 		return helper.exampleMealPlan.ID
+	}
+
+	helper.service.mealPlanEventIDFetcher = func(*http.Request) string {
+		return helper.exampleMealPlanEvent.ID
 	}
 
 	helper.service.mealPlanOptionIDFetcher = func(*http.Request) string {

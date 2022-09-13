@@ -2,6 +2,7 @@ package mealplanevents
 
 import (
 	"errors"
+	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	"net/http"
 	"testing"
 
@@ -33,6 +34,10 @@ func TestProvideMealPlansService(T *testing.T) {
 		t.Parallel()
 
 		rpm := mockrouting.NewRouteParamManager()
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			mealplansservice.MealPlanIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			MealPlanEventIDURIParamKey,

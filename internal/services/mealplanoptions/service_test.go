@@ -2,6 +2,7 @@ package mealplanoptions
 
 import (
 	"errors"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	"net/http"
 	"testing"
 
@@ -37,6 +38,10 @@ func TestProvideMealPlanOptionsService(T *testing.T) {
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			mealplansservice.MealPlanIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			mealplaneventsservice.MealPlanEventIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",

@@ -44,7 +44,7 @@ type mealPlanOptionsTestSuite struct {
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOption() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -101,7 +101,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOption() {
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_options"
+	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -110,7 +110,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanOptionList)
 		actual, err := c.GetMealPlanOptions(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, filter)
 
@@ -148,7 +148,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetMealPlanOptions(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, filter)
 
@@ -158,7 +158,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_options"
+	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -166,10 +166,10 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		exampleInput := fakes.BuildFakeMealPlanOptionCreationRequestInput()
 		exampleInput.BelongsToMealPlanEvent = s.exampleMealPlanID
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, exampleInput.BelongsToMealPlanEvent)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOption)
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanEventID, exampleInput)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, exampleInput)
 		assert.NoError(t, err)
 		assert.Equal(t, s.exampleMealPlanOption, actual)
 	})
@@ -179,7 +179,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanEventID, nil)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -190,7 +190,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		c, _ := buildSimpleTestClient(t)
 		exampleInput := &types.MealPlanOptionCreationRequestInput{}
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanEventID, exampleInput)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -202,7 +202,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanEventID, exampleInput)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -213,22 +213,22 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		exampleInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(s.exampleMealPlanOption)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanEventID, exampleInput)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_UpdateMealPlanOption() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOption.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanOption.BelongsToMealPlanEvent, s.exampleMealPlanOption.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOption)
 
-		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanEventID, s.exampleMealPlanOption)
+		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanOption)
 		assert.NoError(t, err)
 	})
 
@@ -237,7 +237,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_UpdateMealPlanOption() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanEventID, nil)
+		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanID, nil)
 		assert.Error(t, err)
 	})
 
@@ -246,7 +246,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_UpdateMealPlanOption() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanEventID, s.exampleMealPlanOption)
+		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanOption)
 		assert.Error(t, err)
 	})
 
@@ -255,13 +255,13 @@ func (s *mealPlanOptionsTestSuite) TestClient_UpdateMealPlanOption() {
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanEventID, s.exampleMealPlanOption)
+		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanOption)
 		assert.Error(t, err)
 	})
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_ArchiveMealPlanOption() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
 
 	s.Run("standard", func() {
 		t := s.T()

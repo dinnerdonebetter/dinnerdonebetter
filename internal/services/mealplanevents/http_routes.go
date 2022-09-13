@@ -50,6 +50,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.Error(err, "provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	input := types.MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput(providedInput)
 	input.ID = ksuid.New().String()
 	input.BelongsToMealPlan = mealPlanID

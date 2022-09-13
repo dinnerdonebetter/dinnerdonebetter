@@ -99,8 +99,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 		args := []interface{}{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
-			exampleMealPlanID,
-			exampleMealPlanOptionID,
+			exampleMealPlanEventID,
 			exampleMealPlanID,
 		}
 
@@ -177,8 +176,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 		args := []interface{}{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
-			exampleMealPlanID,
-			exampleMealPlanOptionID,
+			exampleMealPlanEventID,
 			exampleMealPlanID,
 		}
 
@@ -207,8 +205,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 		args := []interface{}{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
-			exampleMealPlanID,
-			exampleMealPlanOptionID,
+			exampleMealPlanEventID,
 			exampleMealPlanID,
 		}
 
@@ -241,8 +238,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		args := []interface{}{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
-			exampleMealPlanID,
-			exampleMealPlanOptionID,
+			exampleMealPlanEventID,
 			exampleMealPlanID,
 		}
 
@@ -316,8 +312,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		args := []interface{}{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
-			exampleMealPlanID,
-			exampleMealPlanOptionID,
+			exampleMealPlanEventID,
 			exampleMealPlanID,
 		}
 

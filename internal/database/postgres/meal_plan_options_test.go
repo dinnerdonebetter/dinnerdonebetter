@@ -110,8 +110,8 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		c, db := buildTestClient(t)
 		args := []interface{}{
 			exampleMealPlanID,
+			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
-			exampleMealPlanID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(mealPlanOptionExistenceQuery)).
@@ -166,8 +166,8 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		c, db := buildTestClient(t)
 		args := []interface{}{
 			exampleMealPlanID,
+			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
-			exampleMealPlanID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(mealPlanOptionExistenceQuery)).
@@ -193,8 +193,8 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		c, db := buildTestClient(t)
 		args := []interface{}{
 			exampleMealPlanID,
+			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
-			exampleMealPlanID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(mealPlanOptionExistenceQuery)).
@@ -225,8 +225,8 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 
 		args := []interface{}{
 			exampleMealPlanID,
+			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
-			exampleMealPlanID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionQuery)).
@@ -279,8 +279,8 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 
 		args := []interface{}{
 			exampleMealPlanID,
+			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
-			exampleMealPlanID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionQuery)).

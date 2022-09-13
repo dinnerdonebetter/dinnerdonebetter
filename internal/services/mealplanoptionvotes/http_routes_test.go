@@ -60,6 +60,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
@@ -190,6 +191,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
@@ -254,6 +256,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, errors.New("blah"))
@@ -302,6 +305,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
@@ -366,6 +370,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
@@ -425,6 +430,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
@@ -469,6 +475,7 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
@@ -524,6 +531,7 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return((*types.MealPlanOptionVote)(nil), sql.ErrNoRows)
@@ -554,6 +562,7 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return((*types.MealPlanOptionVote)(nil), errors.New("blah"))
@@ -590,6 +599,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleMealPlanOptionVoteList, nil)
@@ -645,6 +655,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.MealPlanOptionVoteList)(nil), sql.ErrNoRows)
@@ -676,6 +687,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.MealPlanOptionVoteList)(nil), errors.New("blah"))
@@ -719,6 +731,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
@@ -810,6 +823,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return((*types.MealPlanOptionVote)(nil), sql.ErrNoRows)
@@ -841,6 +855,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
@@ -878,6 +893,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return((*types.MealPlanOptionVote)(nil), errors.New("blah"))
@@ -909,6 +925,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
@@ -949,6 +966,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(true, nil)
@@ -956,6 +974,8 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(nil)
@@ -1010,6 +1030,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(false, nil)
@@ -1040,6 +1061,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(false, errors.New("blah"))
@@ -1062,6 +1084,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(true, nil)
@@ -1069,6 +1092,8 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(errors.New("blah"))
@@ -1091,6 +1116,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(true, nil)
@@ -1098,6 +1124,8 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(nil)
