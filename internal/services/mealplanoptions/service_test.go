@@ -2,7 +2,6 @@ package mealplanoptions
 
 import (
 	"errors"
-	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	"net/http"
 	"testing"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
