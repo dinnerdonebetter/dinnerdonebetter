@@ -66,6 +66,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 	tracing.AttachMealPlanIDToSpan(span, input.ID)
 
+	logger = logger.WithValue("input", input)
+
 	mealPlan, err := s.mealPlanDataManager.CreateMealPlan(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal plan")

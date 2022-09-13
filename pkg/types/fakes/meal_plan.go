@@ -15,9 +15,9 @@ func BuildFakeMealPlan() *types.MealPlan {
 
 	var events []*types.MealPlanEvent
 	for i := 0; i < exampleQuantity; i++ {
-		option := BuildFakeMealPlanEvent()
-		option.BelongsToMealPlan = mealPlanID
-		events = append(events, option)
+		event := BuildFakeMealPlanEvent()
+		event.BelongsToMealPlan = mealPlanID
+		events = append(events, event)
 	}
 
 	now := time.Now().Add(30 * time.Minute)

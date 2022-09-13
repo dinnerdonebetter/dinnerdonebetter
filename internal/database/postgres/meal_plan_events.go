@@ -24,6 +24,7 @@ var (
 		"meal_plan_events.notes",
 		"meal_plan_events.starts_at",
 		"meal_plan_events.ends_at",
+		"meal_plan_events.meal_name",
 		"meal_plan_events.belongs_to_meal_plan",
 		"meal_plan_events.created_at",
 		"meal_plan_events.last_updated_at",
@@ -43,6 +44,7 @@ func (q *Querier) scanMealPlanEvent(ctx context.Context, scan database.Scanner, 
 		&x.Notes,
 		&x.StartsAt,
 		&x.EndsAt,
+		&x.MealName,
 		&x.BelongsToMealPlan,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -123,6 +125,7 @@ const getMealPlanEventByIDQuery = `SELECT
 	meal_plan_events.notes,
 	meal_plan_events.starts_at,
 	meal_plan_events.ends_at,
+	meal_plan_events.meal_name,
 	meal_plan_events.belongs_to_meal_plan,
 	meal_plan_events.created_at,
 	meal_plan_events.last_updated_at,
@@ -163,6 +166,7 @@ const getMealPlanEventForMealPlanQuery = `SELECT
 	meal_plan_events.notes,
 	meal_plan_events.starts_at,
 	meal_plan_events.ends_at,
+	meal_plan_events.meal_name,
 	meal_plan_events.belongs_to_meal_plan,
 	meal_plan_events.created_at,
 	meal_plan_events.last_updated_at,
@@ -242,9 +246,9 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, filter *types.QueryFilt
 
 const mealPlanEventCreationQuery = `
 INSERT INTO
-  meal_plan_events (id, notes, starts_at, ends_at, belongs_to_meal_plan)
+  meal_plan_events (id, notes, starts_at, ends_at, meal_name, belongs_to_meal_plan)
 VALUES
-  ($1, $2, $3, $4, $5)
+  ($1, $2, $3, $4, $5, $6)
 `
 
 // createMealPlanEvent creates a mealPlanEvent in the database.
@@ -263,6 +267,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 		input.Notes,
 		input.StartsAt,
 		input.EndsAt,
+		input.MealName,
 		input.BelongsToMealPlan,
 	}
 
@@ -277,6 +282,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 		Notes:             input.Notes,
 		StartsAt:          input.StartsAt,
 		EndsAt:            input.EndsAt,
+		MealName:          input.MealName,
 		BelongsToMealPlan: input.BelongsToMealPlan,
 		CreatedAt:         q.currentTime(),
 	}
@@ -329,10 +335,11 @@ UPDATE meal_plan_events
 SET notes = $1,
     starts_at = $2,
     ends_at = $3,
-    belongs_to_meal_plan = $4,
+    meal_name = $4,
+    belongs_to_meal_plan = $5,
     last_updated_at = NOW()
 WHERE archived_at IS NULL 
-  AND id = $5`
+  AND id = $6`
 
 // UpdateMealPlanEvent updates a particular meal plan event.
 func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPlanEvent) error {
@@ -350,6 +357,7 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 		updated.Notes,
 		updated.StartsAt,
 		updated.EndsAt,
+		updated.MealName,
 		updated.BelongsToMealPlan,
 		updated.ID,
 	}

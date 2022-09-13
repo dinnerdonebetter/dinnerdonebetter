@@ -53,39 +53,6 @@ func createMealPlanForTest(ctx context.Context, t *testing.T, mealPlan *types.Me
 	return createdMealPlan
 }
 
-var allDays = []time.Weekday{
-	time.Monday,
-	time.Tuesday,
-	time.Wednesday,
-	time.Thursday,
-	time.Friday,
-	time.Saturday,
-	time.Sunday,
-}
-
-var allMealNames = []string{
-	types.BreakfastMealName,
-	types.SecondBreakfastMealName,
-	types.BrunchMealName,
-	types.LunchMealName,
-	types.SupperMealName,
-	types.DinnerMealName,
-}
-
-func byDayAndMeal(l []*types.MealPlanEvent, day time.Weekday, meal string) []*types.MealPlanOption {
-	out := []*types.MealPlanOption{}
-
-	for _, e := range l {
-		for _, o := range e.Options {
-			if o.Day == day && o.MealName == meal {
-				out = append(out, o)
-			}
-		}
-	}
-
-	return out
-}
-
 func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 	s.runForEachClient("should resolve the meal plan status upon receiving all votes", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -155,6 +122,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 					{
 						StartsAt: now.Add(24 * time.Hour),
 						EndsAt:   now.Add(72 * time.Hour),
+						MealName: types.BreakfastMealName,
 						Options: []*types.MealPlanOption{
 							{
 								Meal:     types.Meal{ID: createdMeals[0].ID},
@@ -350,6 +318,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 					{
 						StartsAt: now.Add(24 * time.Hour),
 						EndsAt:   now.Add(72 * time.Hour),
+						MealName: types.BreakfastMealName,
 						Options: []*types.MealPlanOption{
 							{
 								Meal:     types.Meal{ID: createdMeals[0].ID},

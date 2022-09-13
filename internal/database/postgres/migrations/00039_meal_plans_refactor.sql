@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS meal_plan_events (
     "notes" TEXT NOT NULL DEFAULT '',
     "starts_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "ends_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    "meal_name" meal_name NOT NULL,
     "belongs_to_meal_plan" CHAR(27) NOT NULL REFERENCES meal_plans("id") ON DELETE CASCADE,
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,

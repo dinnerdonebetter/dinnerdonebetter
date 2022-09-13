@@ -38,6 +38,7 @@ type (
 		EndsAt            time.Time         `json:"endsAt"`
 		ArchivedAt        *time.Time        `json:"archivedAt"`
 		LastUpdatedAt     *time.Time        `json:"lastUpdatedAt"`
+		MealName          string            `json:"mealName"`
 		Notes             string            `json:"notes"`
 		BelongsToMealPlan string            `json:"belongsToMealPlan"`
 		ID                string            `json:"id"`
@@ -58,6 +59,7 @@ type (
 		StartsAt          time.Time                             `json:"startsAt"`
 		BelongsToMealPlan string                                `json:"-"`
 		Notes             string                                `json:"notes"`
+		MealName          string                                `json:"mealName"`
 		ID                string                                `json:"-"`
 		Options           []*MealPlanOptionCreationRequestInput `json:"options"`
 	}
@@ -69,6 +71,7 @@ type (
 		EndsAt            time.Time                              `json:"endsAt"`
 		BelongsToMealPlan string                                 `json:"belongsToMealPlan"`
 		Notes             string                                 `json:"notes"`
+		MealName          string                                 `json:"mealName"`
 		ID                string                                 `json:"id"`
 		Options           []*MealPlanOptionDatabaseCreationInput `json:"options"`
 	}
@@ -78,6 +81,7 @@ type (
 		_                 struct{}
 		Notes             *string    `json:"notes"`
 		StartsAt          *time.Time `json:"startsAt"`
+		MealName          *string    `json:"mealName"`
 		EndsAt            *time.Time `json:"endsAt"`
 		BelongsToMealPlan string     `json:"-"`
 	}
@@ -115,6 +119,10 @@ func (x *MealPlanEvent) Update(input *MealPlanEventUpdateRequestInput) {
 	if input.EndsAt != nil && *input.EndsAt != x.EndsAt {
 		x.EndsAt = *input.EndsAt
 	}
+
+	if input.MealName != nil && *input.MealName != x.MealName {
+		x.MealName = *input.MealName
+	}
 }
 
 var _ validation.ValidatableWithContext = (*MealPlanEventCreationRequestInput)(nil)
@@ -144,6 +152,7 @@ func (x *MealPlanEventCreationRequestInput) ValidateWithContext(ctx context.Cont
 		x,
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),
+		validation.Field(&x.MealName, validation.Required),
 	)
 }
 
@@ -157,6 +166,7 @@ func (x *MealPlanEventDatabaseCreationInput) ValidateWithContext(ctx context.Con
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),
+		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 	)
 }
@@ -168,6 +178,7 @@ func MealPlanEventUpdateRequestInputFromMealPlanEvent(input *MealPlanEvent) *Mea
 		Notes:             &input.Notes,
 		StartsAt:          &input.StartsAt,
 		EndsAt:            &input.EndsAt,
+		MealName:          &input.MealName,
 	}
 
 	return x
@@ -184,6 +195,7 @@ func MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput(inp
 		Notes:             input.Notes,
 		StartsAt:          input.StartsAt,
 		EndsAt:            input.EndsAt,
+		MealName:          input.MealName,
 		BelongsToMealPlan: input.BelongsToMealPlan,
 		Options:           options,
 	}
@@ -200,5 +212,6 @@ func (x *MealPlanEventUpdateRequestInput) ValidateWithContext(ctx context.Contex
 		x,
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),
+		validation.Field(&x.MealName, validation.Required),
 	)
 }

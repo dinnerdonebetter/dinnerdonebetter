@@ -24,10 +24,18 @@ func BuildFakeMealPlanEvent() *types.MealPlanEvent {
 	}
 
 	return &types.MealPlanEvent{
-		ID:                mealPlanEventID,
-		Notes:             buildUniqueString(),
-		StartsAt:          inTenMinutes,
-		EndsAt:            inOneWeek,
+		ID:       mealPlanEventID,
+		Notes:    buildUniqueString(),
+		StartsAt: inTenMinutes,
+		EndsAt:   inOneWeek,
+		MealName: fake.RandomString([]string{
+			types.BreakfastMealName,
+			types.SecondBreakfastMealName,
+			types.BrunchMealName,
+			types.LunchMealName,
+			types.SupperMealName,
+			types.DinnerMealName,
+		}),
 		CreatedAt:         fake.Date(),
 		BelongsToMealPlan: BuildFakeID(),
 		Options:           options,
@@ -54,22 +62,24 @@ func BuildFakeMealPlanEventList() *types.MealPlanEventList {
 
 // BuildFakeMealPlanEventUpdateRequestInput builds a faked MealPlanEventUpdateRequestInput from a meal plan.
 func BuildFakeMealPlanEventUpdateRequestInput() *types.MealPlanEventUpdateRequestInput {
-	mealPlan := BuildFakeMealPlanEvent()
+	mealPlanEvent := BuildFakeMealPlanEvent()
 	return &types.MealPlanEventUpdateRequestInput{
-		Notes:             &mealPlan.Notes,
-		StartsAt:          &mealPlan.StartsAt,
-		EndsAt:            &mealPlan.EndsAt,
-		BelongsToMealPlan: mealPlan.BelongsToMealPlan,
+		Notes:             &mealPlanEvent.Notes,
+		StartsAt:          &mealPlanEvent.StartsAt,
+		EndsAt:            &mealPlanEvent.EndsAt,
+		MealName:          &mealPlanEvent.MealName,
+		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
 	}
 }
 
 // BuildFakeMealPlanEventUpdateRequestInputFromMealPlanEvent builds a faked MealPlanEventUpdateRequestInput from a meal plan.
-func BuildFakeMealPlanEventUpdateRequestInputFromMealPlanEvent(mealPlan *types.MealPlanEvent) *types.MealPlanEventUpdateRequestInput {
+func BuildFakeMealPlanEventUpdateRequestInputFromMealPlanEvent(mealPlanEvent *types.MealPlanEvent) *types.MealPlanEventUpdateRequestInput {
 	return &types.MealPlanEventUpdateRequestInput{
-		Notes:             &mealPlan.Notes,
-		StartsAt:          &mealPlan.StartsAt,
-		EndsAt:            &mealPlan.EndsAt,
-		BelongsToMealPlan: mealPlan.BelongsToMealPlan,
+		Notes:             &mealPlanEvent.Notes,
+		StartsAt:          &mealPlanEvent.StartsAt,
+		EndsAt:            &mealPlanEvent.EndsAt,
+		MealName:          &mealPlanEvent.MealName,
+		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
 	}
 }
 
@@ -92,18 +102,20 @@ func BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(mealPlanEvent *
 		Notes:             mealPlanEvent.Notes,
 		StartsAt:          mealPlanEvent.StartsAt,
 		EndsAt:            mealPlanEvent.EndsAt,
+		MealName:          mealPlanEvent.MealName,
 		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
 		Options:           options,
 	}
 }
 
 // BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent builds a faked MealPlanEventDatabaseCreationInput from a meal plan.
-func BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent(mealPlan *types.MealPlanEvent) *types.MealPlanEventDatabaseCreationInput {
+func BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent(mealPlanEvent *types.MealPlanEvent) *types.MealPlanEventDatabaseCreationInput {
 	return &types.MealPlanEventDatabaseCreationInput{
-		ID:                mealPlan.ID,
-		Notes:             mealPlan.Notes,
-		StartsAt:          mealPlan.StartsAt,
-		EndsAt:            mealPlan.EndsAt,
-		BelongsToMealPlan: mealPlan.BelongsToMealPlan,
+		ID:                mealPlanEvent.ID,
+		Notes:             mealPlanEvent.Notes,
+		StartsAt:          mealPlanEvent.StartsAt,
+		EndsAt:            mealPlanEvent.EndsAt,
+		MealName:          mealPlanEvent.MealName,
+		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
 	}
 }
