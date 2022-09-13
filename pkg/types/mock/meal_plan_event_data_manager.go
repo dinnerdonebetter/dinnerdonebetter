@@ -16,20 +16,20 @@ type MealPlanEventDataManager struct {
 }
 
 // MealPlanEventExists is a mock function.
-func (m *MealPlanEventDataManager) MealPlanEventExists(ctx context.Context, mealPlanEventID string) (bool, error) {
-	args := m.Called(ctx, mealPlanEventID)
+func (m *MealPlanEventDataManager) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanEventID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetMealPlanEvent is a mock function.
-func (m *MealPlanEventDataManager) GetMealPlanEvent(ctx context.Context, mealPlanEventID string) (*types.MealPlanEvent, error) {
-	args := m.Called(ctx, mealPlanEventID)
+func (m *MealPlanEventDataManager) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanEventID)
 	return args.Get(0).(*types.MealPlanEvent), args.Error(1)
 }
 
 // GetMealPlanEvents is a mock function.
-func (m *MealPlanEventDataManager) GetMealPlanEvents(ctx context.Context, filter *types.QueryFilter) (*types.MealPlanEventList, error) {
-	args := m.Called(ctx, filter)
+func (m *MealPlanEventDataManager) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*types.MealPlanEventList, error) {
+	args := m.Called(ctx, mealPlanID, filter)
 	return args.Get(0).(*types.MealPlanEventList), args.Error(1)
 }
 
@@ -45,8 +45,8 @@ func (m *MealPlanEventDataManager) UpdateMealPlanEvent(ctx context.Context, upda
 }
 
 // ArchiveMealPlanEvent is a mock function.
-func (m *MealPlanEventDataManager) ArchiveMealPlanEvent(ctx context.Context, mealPlanEventID string) error {
-	return m.Called(ctx, mealPlanEventID).Error(0)
+func (m *MealPlanEventDataManager) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
+	return m.Called(ctx, mealPlanID, mealPlanEventID).Error(0)
 }
 
 // AttemptToFinalizeMealPlanEvent is a mock function.

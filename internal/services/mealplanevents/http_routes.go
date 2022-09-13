@@ -110,12 +110,17 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine meal plan ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// fetch meal plan from database.
-	x, err := s.mealPlanEventDataManager.GetMealPlanEvent(ctx, mealPlanEventID)
+	x, err := s.mealPlanEventDataManager.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -154,7 +159,12 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	mealPlanEvents, err := s.mealPlanEventDataManager.GetMealPlanEvents(ctx, filter)
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	mealPlanEvents, err := s.mealPlanEventDataManager.GetMealPlanEvents(ctx, mealPlanID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		mealPlanEvents = &types.MealPlanEventList{MealPlanEvents: []*types.MealPlanEvent{}}
@@ -202,12 +212,17 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine meal plan ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// fetch meal plan from database.
-	mealPlanEvent, err := s.mealPlanEventDataManager.GetMealPlanEvent(ctx, mealPlanEventID)
+	mealPlanEvent, err := s.mealPlanEventDataManager.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -264,11 +279,16 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine meal plan ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
-	exists, existenceCheckErr := s.mealPlanEventDataManager.MealPlanEventExists(ctx, mealPlanEventID)
+	exists, existenceCheckErr := s.mealPlanEventDataManager.MealPlanEventExists(ctx, mealPlanID, mealPlanEventID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal plan existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -278,7 +298,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.mealPlanEventDataManager.ArchiveMealPlanEvent(ctx, mealPlanEventID); err != nil {
+	if err = s.mealPlanEventDataManager.ArchiveMealPlanEvent(ctx, mealPlanID, mealPlanEventID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return

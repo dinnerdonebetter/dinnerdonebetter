@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	_ "embed"
-	"time"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -345,20 +344,6 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 	return nil
 }
 
-func byDayAndMeal(l []*types.MealPlanEvent, day time.Weekday, meal string) []*types.MealPlanOption {
-	out := []*types.MealPlanOption{}
-
-	for _, event := range l {
-		for _, o := range event.Options {
-			if o.Day == day && o.MealName == meal {
-				out = append(out, o)
-			}
-		}
-	}
-
-	return out
-}
-
 //go:embed queries/meal_plans_finalize.sql
 var finalizeMealPlanQuery string
 
@@ -414,6 +399,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 		for _, opt := range event.Options {
 			if opt.Chosen {
 				alreadyChosen = true
+				break
 			}
 			for _, vote := range opt.Votes {
 				if _, ok := availableVotes[vote.ByUser]; ok {

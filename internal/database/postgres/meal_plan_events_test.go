@@ -9,7 +9,7 @@ import (
 )
 
 func buildMockRowsFromMealPlanEvents(includeCounts bool, filteredCount uint64, mealPlans ...*types.MealPlanEvent) *sqlmock.Rows {
-	columns := mealPlansTableColumns
+	columns := mealPlanEventsTableColumns
 
 	if includeCounts {
 		columns = append(columns, "filtered_count", "total_count")
@@ -23,6 +23,7 @@ func buildMockRowsFromMealPlanEvents(includeCounts bool, filteredCount uint64, m
 			x.Notes,
 			x.StartsAt,
 			x.EndsAt,
+			x.MealName,
 			x.BelongsToMealPlan,
 			x.CreatedAt,
 			x.LastUpdatedAt,

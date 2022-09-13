@@ -32,7 +32,7 @@ services:
         ports:
             - '9090:9090'
         volumes:
-            - source: "../../environments/local/config_files/prometheus/config.yaml"
+            - source: "../../../environments/local/config_files/prometheus/config.yaml"
               target: "/etc/prometheus/config.yaml"
               type: 'bind'
     grafana:
@@ -44,16 +44,16 @@ services:
       links:
         - prometheus
       volumes:
-        - source: '../../environments/local/config_files/grafana/grafana.ini'
+        - source: '../../../environments/local/config_files/grafana/grafana.ini'
           target: '/etc/grafana/grafana.ini'
           type: 'bind'
-        - source: '../../environments/local/config_files/grafana/datasources.yaml'
+        - source: '../../../environments/local/config_files/grafana/datasources.yaml'
           target: '/etc/grafana/provisioning/datasources/datasources.yml'
           type: 'bind'
-        - source: '../../environments/local/config_files/grafana/dashboards.yaml'
+        - source: '../../../environments/local/config_files/grafana/dashboards.yaml'
           target: '/etc/grafana/provisioning/dashboards/dashboards.yml'
           type: 'bind'
-        - source: '../../environments/local/config_files/grafana/dashboards'
+        - source: '../../../environments/local/config_files/grafana/dashboards'
           target: '/etc/grafana/provisioning/dashboards/dashboards'
           type: 'bind'
     queue_loader:
@@ -62,14 +62,14 @@ services:
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../..'
+        - source: '../../..'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
         - source: '../../environments/local/config_files/queue-loader-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
-        context: '../../'
+        context: '../../..'
         dockerfile: 'environments/local/queue_loader.Dockerfile'
     meal_plan_finalizer:
       environment:
@@ -77,14 +77,14 @@ services:
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../..'
+        - source: '../../..'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
         - source: '../../environments/local/config_files/meal-plan-finalizer-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
-        context: '../../'
+        context: '../../..'
         dockerfile: 'environments/local/meal_plan_finalizer.Dockerfile'
     advanced_prep_step_creator:
       environment:
@@ -92,14 +92,14 @@ services:
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../..'
+        - source: '../../..'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
         - source: '../../environments/local/config_files/advanced-prep-step-creator-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
-        context: '../../'
+        context: '../../..'
         dockerfile: 'environments/local/advanced_prep_step_creator.Dockerfile'
     prixfixe-server:
       container_name: "api_server"
@@ -112,12 +112,12 @@ services:
       ports:
         - '8000:8000'
       volumes:
-        - source: '../../environments/local/config_files/service-config.json'
+        - source: '../../../environments/local/config_files/service-config.json'
           target: '/etc/config'
           type: 'bind'
-        - source: '../../'
+        - source: '../../..'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
       build:
-        context: '../../'
+        context: '../../..'
         dockerfile: 'environments/local/server.Dockerfile'

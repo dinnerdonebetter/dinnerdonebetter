@@ -198,6 +198,7 @@ func TestMealPlanEventsService_ReadHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"GetMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(helper.exampleMealPlanEvent, nil)
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -251,6 +252,7 @@ func TestMealPlanEventsService_ReadHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"GetMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return((*types.MealPlanEvent)(nil), sql.ErrNoRows)
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -279,6 +281,7 @@ func TestMealPlanEventsService_ReadHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"GetMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return((*types.MealPlanEvent)(nil), errors.New("blah"))
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -313,6 +316,7 @@ func TestMealPlanEventsService_ListHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"GetMealPlanEvents",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleMealPlanEventList, nil)
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -366,6 +370,7 @@ func TestMealPlanEventsService_ListHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"GetMealPlanEvents",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.MealPlanEventList)(nil), sql.ErrNoRows)
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -395,6 +400,7 @@ func TestMealPlanEventsService_ListHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"GetMealPlanEvents",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.MealPlanEventList)(nil), errors.New("blah"))
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -436,6 +442,7 @@ func TestMealPlanEventsService_UpdateHandler(T *testing.T) {
 		dbManager.MealPlanEventDataManager.On(
 			"GetMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(helper.exampleMealPlanEvent, nil)
 
@@ -525,6 +532,7 @@ func TestMealPlanEventsService_UpdateHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"GetMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return((*types.MealPlanEvent)(nil), sql.ErrNoRows)
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -554,6 +562,7 @@ func TestMealPlanEventsService_UpdateHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"GetMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return((*types.MealPlanEvent)(nil), errors.New("blah"))
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -583,6 +592,7 @@ func TestMealPlanEventsService_UpdateHandler(T *testing.T) {
 		dbManager.MealPlanEventDataManager.On(
 			"GetMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(helper.exampleMealPlanEvent, nil)
 
@@ -618,6 +628,7 @@ func TestMealPlanEventsService_UpdateHandler(T *testing.T) {
 		dbManager.MealPlanEventDataManager.On(
 			"GetMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(helper.exampleMealPlanEvent, nil)
 
@@ -656,12 +667,14 @@ func TestMealPlanEventsService_ArchiveHandler(T *testing.T) {
 		dbManager.MealPlanEventDataManager.On(
 			"MealPlanEventExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
 		dbManager.MealPlanEventDataManager.On(
 			"ArchiveMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(nil)
 		helper.service.mealPlanEventDataManager = dbManager
@@ -714,6 +727,7 @@ func TestMealPlanEventsService_ArchiveHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"MealPlanEventExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(false, nil)
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -742,6 +756,7 @@ func TestMealPlanEventsService_ArchiveHandler(T *testing.T) {
 		mealPlanEventDataManager.On(
 			"MealPlanEventExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.mealPlanEventDataManager = mealPlanEventDataManager
@@ -762,12 +777,14 @@ func TestMealPlanEventsService_ArchiveHandler(T *testing.T) {
 		dbManager.MealPlanEventDataManager.On(
 			"MealPlanEventExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
 		dbManager.MealPlanEventDataManager.On(
 			"ArchiveMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(errors.New("blah"))
 		helper.service.mealPlanEventDataManager = dbManager
@@ -788,12 +805,14 @@ func TestMealPlanEventsService_ArchiveHandler(T *testing.T) {
 		dbManager.MealPlanEventDataManager.On(
 			"MealPlanEventExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
 		dbManager.MealPlanEventDataManager.On(
 			"ArchiveMealPlanEvent",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(nil)
 		helper.service.mealPlanEventDataManager = dbManager

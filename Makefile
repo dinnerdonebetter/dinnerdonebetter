@@ -227,7 +227,7 @@ integration-tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	docker-compose \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(OBSERVE)),integration-tests-with-observability.yaml,integration-tests.yaml) \
 	up \
 	--build \
 	--force-recreate \
@@ -241,7 +241,7 @@ integration_tests_postgres:
 .PHONY: dev
 dev: $(ARTIFACTS_DIR)
 	docker-compose \
-	--file $(ENVIRONMENTS_DIR)/local/docker-compose.yaml up \
+	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
 	--quiet-pull \
 	--no-recreate \
 	--always-recreate-deps

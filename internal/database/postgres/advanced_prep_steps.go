@@ -23,10 +23,8 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 	targetVars := []interface{}{
 		&x.ID,
 		&x.MealPlanOption.ID,
-		&x.MealPlanOption.Day,
 		&x.MealPlanOption.AssignedCook,
 		&x.MealPlanOption.AssignedDishwasher,
-		&x.MealPlanOption.MealName,
 		&x.MealPlanOption.Chosen,
 		&x.MealPlanOption.TieBroken,
 		&x.MealPlanOption.Meal.ID,

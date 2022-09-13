@@ -22,7 +22,7 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			ProductOfRecipeStep: fake.Bool(),
 			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               fake.LoremIpsumSentence(exampleQuantity),
-			PreferenceRank:      uint8(fake.Number(0, math.MaxUint8)),
+			PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
 			Optional:            fake.Bool(),
 			MinimumQuantity:     fake.Uint32(),
 			MaximumQuantity:     fake.Uint32(),

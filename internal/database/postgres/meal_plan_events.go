@@ -96,11 +96,17 @@ func (q *Querier) scanMealPlanEvents(ctx context.Context, rows database.ResultIt
 const mealPlanEventExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_events.id FROM meal_plan_events WHERE meal_plan_events.archived_at IS NULL AND meal_plan_events.id = $1 )"
 
 // MealPlanEventExists fetches whether a mealPlanEvent exists from the database.
-func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanEventID string) (exists bool, err error) {
+func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return false, ErrInvalidIDProvided
@@ -133,14 +139,21 @@ const getMealPlanEventByIDQuery = `SELECT
 FROM meal_plan_events
 WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.id = $1
+	AND meal_plan_events.belongs_to_meal_plan = $2
 `
 
 // GetMealPlanEvent fetches a mealPlanEvent from the database.
-func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanEventID string) (*types.MealPlanEvent, error) {
+func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
@@ -150,6 +163,7 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanEventID string) 
 
 	args := []interface{}{
 		mealPlanEventID,
+		mealPlanID,
 	}
 
 	row := q.getOneRow(ctx, q.db, "meal plan event", getMealPlanEventByIDQuery, args)
@@ -208,7 +222,7 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 }
 
 // GetMealPlanEvents fetches a list of mealPlanEvents from the database that meet a particular filter.
-func (q *Querier) GetMealPlanEvents(ctx context.Context, filter *types.QueryFilter) (x *types.MealPlanEventList, err error) {
+func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.MealPlanEventList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -374,11 +388,17 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 const archiveMealPlanEventQuery = "UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
 
 // ArchiveMealPlanEvent archives a mealPlanEvent from the database by its ID.
-func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanEventID string) error {
+func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return ErrInvalidIDProvided

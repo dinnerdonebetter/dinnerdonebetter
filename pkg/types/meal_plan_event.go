@@ -88,12 +88,12 @@ type (
 
 	// MealPlanEventDataManager describes a structure capable of storing meal plans permanently.
 	MealPlanEventDataManager interface {
-		MealPlanEventExists(ctx context.Context, mealPlanEventID string) (bool, error)
-		GetMealPlanEvent(ctx context.Context, mealPlanEventID string) (*MealPlanEvent, error)
-		GetMealPlanEvents(ctx context.Context, filter *QueryFilter) (*MealPlanEventList, error)
+		MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error)
+		GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*MealPlanEvent, error)
+		GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *QueryFilter) (*MealPlanEventList, error)
 		CreateMealPlanEvent(ctx context.Context, input *MealPlanEventDatabaseCreationInput) (*MealPlanEvent, error)
 		UpdateMealPlanEvent(ctx context.Context, updated *MealPlanEvent) error
-		ArchiveMealPlanEvent(ctx context.Context, mealPlanEventID string) error
+		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error
 	}
 
 	// MealPlanEventDataService describes a structure capable of serving traffic related to meal plans.
@@ -166,7 +166,14 @@ func (x *MealPlanEventDatabaseCreationInput) ValidateWithContext(ctx context.Con
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),
-		validation.Field(&x.MealName, validation.Required),
+		validation.Field(&x.MealName, validation.In(
+			BreakfastMealName,
+			SecondBreakfastMealName,
+			BrunchMealName,
+			LunchMealName,
+			SupperMealName,
+			DinnerMealName,
+		)),
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 	)
 }
@@ -212,6 +219,13 @@ func (x *MealPlanEventUpdateRequestInput) ValidateWithContext(ctx context.Contex
 		x,
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),
-		validation.Field(&x.MealName, validation.Required),
+		validation.Field(&x.MealName, validation.In(
+			BreakfastMealName,
+			SecondBreakfastMealName,
+			BrunchMealName,
+			LunchMealName,
+			SupperMealName,
+			DinnerMealName,
+		)),
 	)
 }

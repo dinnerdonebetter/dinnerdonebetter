@@ -1,8 +1,6 @@
 package fakes
 
 import (
-	"time"
-
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
 
@@ -20,18 +18,9 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 	meal.Recipes = nil
 
 	return &types.MealPlanOption{
-		ID:           ksuid.New().String(),
-		Day:          time.Monday,
-		AssignedCook: func(s string) *string { return &s }(BuildFakeID()),
-		Meal:         *meal,
-		MealName: fake.RandomString([]string{
-			types.BreakfastMealName,
-			types.SecondBreakfastMealName,
-			types.BrunchMealName,
-			types.LunchMealName,
-			types.SupperMealName,
-			types.DinnerMealName,
-		}),
+		ID:                     ksuid.New().String(),
+		AssignedCook:           func(s string) *string { return &s }(BuildFakeID()),
+		Meal:                   *meal,
 		Votes:                  examples,
 		Chosen:                 false,
 		Notes:                  buildUniqueString(),
@@ -63,10 +52,8 @@ func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
 func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequestInput {
 	mealPlanOption := BuildFakeMealPlanOption()
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:                    &mealPlanOption.Day,
 		MealID:                 &mealPlanOption.Meal.ID,
 		Notes:                  &mealPlanOption.Notes,
-		MealName:               &mealPlanOption.MealName,
 		AssignedCook:           mealPlanOption.AssignedCook,
 		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
 		BelongsToMealPlanEvent: &mealPlanOption.BelongsToMealPlanEvent,
@@ -77,10 +64,8 @@ func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequ
 // BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption builds a faked MealPlanOptionUpdateRequestInput from a meal plan option.
 func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:                    &mealPlanOption.Day,
 		MealID:                 &mealPlanOption.Meal.ID,
 		Notes:                  &mealPlanOption.Notes,
-		MealName:               &mealPlanOption.MealName,
 		AssignedCook:           mealPlanOption.AssignedCook,
 		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
 		BelongsToMealPlanEvent: &mealPlanOption.BelongsToMealPlanEvent,
@@ -98,10 +83,8 @@ func BuildFakeMealPlanOptionCreationRequestInput() *types.MealPlanOptionCreation
 func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionCreationRequestInput {
 	return &types.MealPlanOptionCreationRequestInput{
 		ID:                     mealPlanOption.ID,
-		Day:                    mealPlanOption.Day,
 		MealID:                 mealPlanOption.Meal.ID,
 		Notes:                  mealPlanOption.Notes,
-		MealName:               mealPlanOption.MealName,
 		AssignedCook:           mealPlanOption.AssignedCook,
 		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
 		BelongsToMealPlanEvent: mealPlanOption.BelongsToMealPlanEvent,
@@ -113,9 +96,7 @@ func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOptio
 func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionDatabaseCreationInput {
 	return &types.MealPlanOptionDatabaseCreationInput{
 		ID:                     mealPlanOption.ID,
-		Day:                    mealPlanOption.Day,
 		MealID:                 mealPlanOption.Meal.ID,
-		MealName:               mealPlanOption.MealName,
 		Notes:                  mealPlanOption.Notes,
 		AssignedCook:           mealPlanOption.AssignedCook,
 		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,

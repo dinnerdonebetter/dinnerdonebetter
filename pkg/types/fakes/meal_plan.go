@@ -94,8 +94,8 @@ func BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan *types.MealPlan)
 // BuildFakeMealPlanDatabaseCreationInputFromMealPlan builds a faked MealPlanDatabaseCreationInput from a meal plan.
 func BuildFakeMealPlanDatabaseCreationInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanDatabaseCreationInput {
 	events := []*types.MealPlanEventDatabaseCreationInput{}
-	for _, opt := range mealPlan.Events {
-		events = append(events, BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent(opt))
+	for _, event := range mealPlan.Events {
+		events = append(events, BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent(event))
 	}
 
 	return &types.MealPlanDatabaseCreationInput{

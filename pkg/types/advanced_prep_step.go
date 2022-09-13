@@ -35,8 +35,8 @@ type (
 		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
 		CompletedAt          *uint64        `json:"completedAt"`
 		ID                   string         `json:"id"`
-		RecipeStep           RecipeStep     `json:"recipeStep"`
 		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
+		RecipeStep           RecipeStep     `json:"recipeStep"`
 	}
 
 	// AdvancedPrepStepList represents a list of valid preparations.
