@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,24 +18,19 @@ func (b *Builder) BuildGetRecipeStepInstrumentRequest(ctx context.Context, recip
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	if recipeStepInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
 
 	uri := b.BuildURL(
@@ -64,18 +58,14 @@ func (b *Builder) BuildGetRecipeStepInstrumentsRequest(ctx context.Context, reci
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	uri := b.BuildURL(
@@ -103,12 +93,9 @@ func (b *Builder) BuildCreateRecipeStepInstrumentRequest(ctx context.Context, re
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if input == nil {
@@ -143,19 +130,14 @@ func (b *Builder) BuildUpdateRecipeStepInstrumentRequest(ctx context.Context, re
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepInstrument == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrument.ID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrument.ID)
 
 	uri := b.BuildURL(
@@ -185,24 +167,19 @@ func (b *Builder) BuildArchiveRecipeStepInstrumentRequest(ctx context.Context, r
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	if recipeStepInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
 
 	uri := b.BuildURL(

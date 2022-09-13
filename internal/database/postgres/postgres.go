@@ -97,7 +97,7 @@ func ProvideDatabaseClient(
 		c.logger.Debug("migrating querier")
 
 		if err = c.Migrate(ctx, cfg.MaxPingAttempts); err != nil {
-			return nil, observability.PrepareError(err, span, "migrating database")
+			return nil, observability.PrepareAndLogError(err, logger, span, "migrating database")
 		}
 
 		c.logger.Debug("querier migrated!")
@@ -165,12 +165,12 @@ func (q *Querier) checkRowsForErrorAndClose(ctx context.Context, rows database.R
 
 	if err := rows.Err(); err != nil {
 		q.logger.Error(err, "row error")
-		return observability.PrepareError(err, span, "row error")
+		return observability.PrepareAndLogError(err, q.logger, span, "row error")
 	}
 
 	if err := rows.Close(); err != nil {
 		q.logger.Error(err, "closing database rows")
-		return observability.PrepareError(err, span, "closing database rows")
+		return observability.PrepareAndLogError(err, q.logger, span, "closing database rows")
 	}
 
 	return nil
@@ -226,7 +226,7 @@ func (q *Querier) performReadQuery(ctx context.Context, querier database.SQLQuer
 
 	rows, err := querier.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing query")
 	}
 
 	if rowsErr := rows.Err(); rowsErr != nil {
@@ -255,7 +255,7 @@ func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQ
 		return false, nil
 	}
 	if err != nil {
-		return false, observability.PrepareError(err, span, "executing boolean query")
+		return false, observability.PrepareAndLogError(err, logger, span, "executing boolean query")
 	}
 
 	if q.logQueries {
@@ -280,7 +280,7 @@ func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQue
 
 	res, err := querier.ExecContext(ctx, query, args...)
 	if err != nil {
-		return observability.PrepareError(err, span, "executing %s query", queryDescription)
+		return observability.PrepareAndLogError(err, logger, span, "executing %s query", queryDescription)
 	}
 
 	var affectedRowCount int64

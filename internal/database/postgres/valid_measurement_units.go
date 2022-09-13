@@ -120,7 +120,7 @@ func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasureme
 
 	result, err := q.performBooleanQuery(ctx, q.db, validMeasurementUnitExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing valid measurement unit existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing valid measurement unit existence check")
 	}
 
 	return result, nil
@@ -166,7 +166,7 @@ func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementU
 
 	validMeasurementUnit, _, _, err := q.scanValidMeasurementUnit(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid measurement unit")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement unit")
 	}
 
 	return validMeasurementUnit, nil
@@ -228,12 +228,12 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units", validMeasurementUnitSearchQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid measurement units list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
 
 	x, _, _, err := q.scanValidMeasurementUnits(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid measurement units")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement units")
 	}
 
 	return x, nil
@@ -264,11 +264,11 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 
 	rows, err := q.performReadQuery(ctx, q.db, "validMeasurementUnits", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid measurement units list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
 
 	if x.ValidMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidMeasurementUnits(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid measurement units")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement units")
 	}
 
 	return x, nil
@@ -304,7 +304,7 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 
 	// create the valid measurement unit.
 	if err := q.performWriteQuery(ctx, q.db, "valid measurement unit creation", validMeasurementUnitCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "performing valid measurement unit creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid measurement unit creation query")
 	}
 
 	x := &types.ValidMeasurementUnit{
@@ -365,7 +365,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid measurement unit update", updateValidMeasurementUnitQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid measurement unit")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit")
 	}
 
 	logger.Info("valid measurement unit updated")
@@ -393,7 +393,7 @@ func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurem
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid measurement unit archive", archiveValidMeasurementUnitQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid measurement unit")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit")
 	}
 
 	logger.Info("valid measurement unit archived")

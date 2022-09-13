@@ -156,7 +156,7 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 
 	result, err := q.performBooleanQuery(ctx, q.db, recipeStepExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing recipe step existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe step existence check")
 	}
 
 	return result, nil
@@ -226,7 +226,7 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 
 	recipeStep, _, _, err := q.scanRecipeStep(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipeStep")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStep")
 	}
 
 	return recipeStep, nil
@@ -263,11 +263,11 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipeSteps", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipe steps list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe steps list retrieval query")
 	}
 
 	if x.RecipeSteps, x.FilteredCount, x.TotalCount, err = q.scanRecipeSteps(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipe steps")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe steps")
 	}
 
 	return x, nil
@@ -404,7 +404,7 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step update", updateRecipeStepQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating recipe step")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
 
 	logger.Info("recipe step updated")
@@ -439,7 +439,7 @@ func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step archive", archiveRecipeStepQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating recipe step")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
 
 	logger.Info("recipe step archived")

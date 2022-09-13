@@ -36,12 +36,12 @@ func (c *Client) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEven
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get meal plan option request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan option request")
 	}
 
 	var mealPlanOption *types.MealPlanOption
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOption); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving meal plan option")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan option")
 	}
 
 	return mealPlanOption, nil
@@ -69,43 +69,46 @@ func (c *Client) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEve
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionsRequest(ctx, mealPlanID, mealPlanEventID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building meal plan options list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building meal plan options list request")
 	}
 
 	var mealPlanOptions *types.MealPlanOptionList
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptions); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving meal plan options")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan options")
 	}
 
 	return mealPlanOptions, nil
 }
 
 // CreateMealPlanOption creates a meal plan option.
-func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanEventID string, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error) {
+func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanID string, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if mealPlanEventID == "" {
+	logger := c.logger.Clone()
+
+	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, span, "validating input")
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateMealPlanOptionRequest(ctx, mealPlanEventID, input)
+	req, err := c.requestBuilder.BuildCreateMealPlanOptionRequest(ctx, mealPlanID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building create meal plan option request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan option request")
 	}
 
 	var mealPlanOption *types.MealPlanOption
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOption); err != nil {
-		return nil, observability.PrepareError(err, span, "creating meal plan option")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option")
 	}
 
 	return mealPlanOption, nil
@@ -132,11 +135,11 @@ func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanID string, me
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanOptionRequest(ctx, mealPlanID, mealPlanOption)
 	if err != nil {
-		return observability.PrepareError(err, span, "building update meal plan option request")
+		return observability.PrepareAndLogError(err, logger, span, "building update meal plan option request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOption); err != nil {
-		return observability.PrepareError(err, span, "updating meal plan option %s", mealPlanOption.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option %s", mealPlanOption.ID)
 	}
 
 	return nil
@@ -169,11 +172,11 @@ func (c *Client) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanOptionRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive meal plan option request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive meal plan option request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, span, "archiving meal plan option %s", mealPlanOptionID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option %s", mealPlanOptionID)
 	}
 
 	return nil

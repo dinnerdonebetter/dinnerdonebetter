@@ -191,7 +191,7 @@ func (q *Querier) ValidIngredientMeasurementUnitExists(ctx context.Context, vali
 
 	result, err := q.performBooleanQuery(ctx, q.db, validIngredientMeasurementUnitExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing valid ingredient measurement unit existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient measurement unit existence check")
 	}
 
 	return result, nil
@@ -273,7 +273,7 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 
 	validIngredientMeasurementUnit, _, _, err := q.scanValidIngredientMeasurementUnit(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning validIngredientMeasurementUnit")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validIngredientMeasurementUnit")
 	}
 
 	return validIngredientMeasurementUnit, nil
@@ -339,11 +339,11 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for ingredient", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient measurement units list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
 	if x.ValidIngredientMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, false); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient measurement units")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient measurement units")
 	}
 
 	return x, nil
@@ -389,11 +389,11 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for measurement unit", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient measurement units list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
 	if x.ValidIngredientMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, false); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient measurement units")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient measurement units")
 	}
 
 	return x, nil
@@ -435,11 +435,11 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 
 	rows, err := q.performReadQuery(ctx, q.db, "validIngredientMeasurementUnits", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient measurement units list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
 	if x.ValidIngredientMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient measurement units")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient measurement units")
 	}
 
 	return x, nil
@@ -471,7 +471,7 @@ func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, inpu
 
 	// create the valid ingredient measurement unit.
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient measurement unit creation", validIngredientMeasurementUnitCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "performing valid ingredient measurement unit creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient measurement unit creation query")
 	}
 
 	x := &types.ValidIngredientMeasurementUnit{
@@ -524,7 +524,7 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient measurement unit update", updateValidIngredientMeasurementUnitQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid ingredient measurement unit")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient measurement unit")
 	}
 
 	logger.Info("valid ingredient measurement unit updated")
@@ -552,7 +552,7 @@ func (q *Querier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, val
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient measurement unit archive", archiveValidIngredientMeasurementUnitQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid ingredient measurement unit")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient measurement unit")
 	}
 
 	logger.Info("valid ingredient measurement unit archived")

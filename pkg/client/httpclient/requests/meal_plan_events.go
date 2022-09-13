@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,18 +18,14 @@ func (b *Builder) BuildGetMealPlanEventRequest(ctx context.Context, mealPlanID, 
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	uri := b.BuildURL(
@@ -56,12 +51,9 @@ func (b *Builder) BuildGetMealPlanEventsRequest(ctx context.Context, mealPlanID 
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	uri := b.BuildURL(
@@ -117,13 +109,9 @@ func (b *Builder) BuildUpdateMealPlanEventRequest(ctx context.Context, mealPlanE
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanEvent == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEvent.ID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEvent.ID)
 
 	uri := b.BuildURL(
@@ -151,18 +139,14 @@ func (b *Builder) BuildArchiveMealPlanEventRequest(ctx context.Context, mealPlan
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	uri := b.BuildURL(

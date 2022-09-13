@@ -138,7 +138,7 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing meal existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing meal existence check")
 	}
 
 	return result, nil
@@ -179,12 +179,12 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 
 	rows, err := q.performReadQuery(ctx, q.db, "meal", getMealByIDQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing meal retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal retrieval query")
 	}
 
 	m, recipeIDs, err := q.scanMealWithRecipes(ctx, rows)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning meal retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal retrieval query")
 	}
 
 	if m == nil {
@@ -228,11 +228,11 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 
 	rows, err := q.performReadQuery(ctx, q.db, "meals", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing meals list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
 	}
 
 	if x.Meals, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning meals")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meals")
 	}
 
 	return x, nil
@@ -264,11 +264,11 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 
 	rows, err := q.performReadQuery(ctx, q.db, "meals", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing meals search query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals search query")
 	}
 
 	if x.Meals, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning meals")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meals")
 	}
 
 	return x, nil
@@ -297,7 +297,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 	// create the meal.
 	if err := q.performWriteQuery(ctx, querier, "meal creation", mealCreationQuery, args); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return nil, observability.PrepareError(err, span, "performing meal creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal creation query")
 	}
 
 	x := &types.Meal{
@@ -311,7 +311,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 	for _, recipeID := range input.Recipes {
 		if err := q.CreateMealRecipe(ctx, querier, x.ID, recipeID); err != nil {
 			q.rollbackTransaction(ctx, querier)
-			return nil, observability.PrepareError(err, span, "creating meal recipe")
+			return nil, observability.PrepareAndLogError(err, logger, span, "creating meal recipe")
 		}
 	}
 
@@ -376,7 +376,7 @@ func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQuer
 
 	// create the meal.
 	if err := q.performWriteQuery(ctx, querier, "meal recipe creation", mealRecipeCreationQuery, args); err != nil {
-		return observability.PrepareError(err, span, "performing meal creation query")
+		return observability.PrepareAndLogError(err, logger, span, "performing meal creation query")
 	}
 
 	return nil
@@ -409,7 +409,7 @@ func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal archive", archiveMealQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating meal")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal")
 	}
 
 	logger.Info("meal archived")

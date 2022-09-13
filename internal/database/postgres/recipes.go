@@ -436,7 +436,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "beginning transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	args := []interface{}{
@@ -453,7 +453,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 	// create the recipe.
 	if err = q.performWriteQuery(ctx, q.db, "recipe creation", recipeCreationQuery, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, span, "performing recipe creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe creation query")
 	}
 
 	x := &types.Recipe{
@@ -503,7 +503,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 	}
 
 	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, span, "committing transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachRecipeIDToSpan(span, x.ID)
@@ -613,7 +613,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe update", updateRecipeQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating recipe")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 
 	logger.Info("recipe updated")
@@ -646,7 +646,7 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe archive", archiveRecipeQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating recipe")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 
 	logger.Info("recipe archived")

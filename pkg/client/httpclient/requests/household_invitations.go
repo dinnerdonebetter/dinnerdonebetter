@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -82,8 +81,6 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, inv
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -91,7 +88,6 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, inv
 		invitationID,
 		"accept",
 	)
-	logger = logger.WithValue(keys.URLKey, uri)
 
 	input := &types.HouseholdInvitationUpdateRequestInput{
 		Token: token,
@@ -110,8 +106,6 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, inv
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -119,7 +113,6 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, inv
 		invitationID,
 		"cancel",
 	)
-	logger = logger.WithValue(keys.URLKey, uri)
 
 	input := &types.HouseholdInvitationUpdateRequestInput{
 		Token: token,
@@ -138,8 +131,6 @@ func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, inv
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -147,7 +138,6 @@ func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, inv
 		invitationID,
 		"reject",
 	)
-	logger = logger.WithValue(keys.URLKey, uri)
 
 	input := &types.HouseholdInvitationUpdateRequestInput{
 		Token: token,

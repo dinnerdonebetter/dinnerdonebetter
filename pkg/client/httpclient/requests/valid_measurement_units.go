@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -21,12 +20,9 @@ func (b *Builder) BuildGetValidMeasurementUnitRequest(ctx context.Context, valid
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
 	uri := b.BuildURL(
@@ -124,13 +120,9 @@ func (b *Builder) BuildUpdateValidMeasurementUnitRequest(ctx context.Context, va
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validMeasurementUnit == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnit.ID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnit.ID)
 
 	uri := b.BuildURL(
@@ -156,12 +148,9 @@ func (b *Builder) BuildArchiveValidMeasurementUnitRequest(ctx context.Context, v
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
 	uri := b.BuildURL(

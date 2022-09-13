@@ -42,12 +42,12 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlan
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get meal plan option vote request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan option vote request")
 	}
 
 	var mealPlanOptionVote *types.MealPlanOptionVote
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptionVote); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving meal plan option vote")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan option vote")
 	}
 
 	return mealPlanOptionVote, nil
@@ -81,12 +81,12 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionVotesRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building meal plan option votes list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building meal plan option votes list request")
 	}
 
 	var mealPlanOptionVotes *types.MealPlanOptionVoteList
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptionVotes); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving meal plan option votes")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan option votes")
 	}
 
 	return mealPlanOptionVotes, nil
@@ -116,17 +116,17 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, span, "validating input")
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building create meal plan option vote request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan option vote request")
 	}
 
 	var mealPlanOptionVote []*types.MealPlanOptionVote
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptionVote); err != nil {
-		return nil, observability.PrepareError(err, span, "creating meal plan option vote")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option vote")
 	}
 
 	return mealPlanOptionVote, nil
@@ -159,11 +159,11 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionVote)
 	if err != nil {
-		return observability.PrepareError(err, span, "building update meal plan option vote request")
+		return observability.PrepareAndLogError(err, logger, span, "building update meal plan option vote request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptionVote); err != nil {
-		return observability.PrepareError(err, span, "updating meal plan option vote %s", mealPlanOptionVote.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote %s", mealPlanOptionVote.ID)
 	}
 
 	return nil
@@ -202,11 +202,11 @@ func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive meal plan option vote request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive meal plan option vote request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, span, "archiving meal plan option vote %s", mealPlanOptionVoteID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option vote %s", mealPlanOptionVoteID)
 	}
 
 	return nil

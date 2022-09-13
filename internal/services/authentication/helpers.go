@@ -40,7 +40,6 @@ func (s *service) getUserIDFromCookie(ctx context.Context, req *http.Request) (c
 		)
 
 		if err = s.cookieManager.Decode(s.config.Cookies.Name, cookie.Value, &token); err != nil {
-			logger = logger.WithValue("cookie", cookie.Value)
 			return nil, "", observability.PrepareError(err, span, "retrieving session context data")
 		}
 
@@ -54,7 +53,7 @@ func (s *service) getUserIDFromCookie(ctx context.Context, req *http.Request) (c
 			return ctx, userID, nil
 		}
 
-		return nil, "", observability.PrepareError(errNoUserIDFoundInSession, span, "determining user ID from cookie")
+		return nil, "", observability.PrepareAndLogError(errNoUserIDFoundInSession, logger, span, "determining user ID from cookie")
 	}
 
 	return nil, "", http.ErrNoCookie
@@ -164,7 +163,7 @@ func (s *service) buildLogoutCookie(ctx context.Context, req *http.Request) (*ht
 
 	newCookie, cookieBuildingErr := s.buildCookie(ctx, requestedCookieDomain, "deleted", time.Time{})
 	if cookieBuildingErr != nil || newCookie == nil {
-		return nil, observability.PrepareError(cookieBuildingErr, span, "building cookie")
+		return nil, observability.PrepareAndLogError(cookieBuildingErr, logger, span, "building cookie")
 	}
 
 	newCookie.MaxAge = -1

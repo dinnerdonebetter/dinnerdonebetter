@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetValidPreparationInstrumentRequest(ctx context.Context,
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validPreparationInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
 	uri := b.BuildURL(
@@ -74,7 +70,6 @@ func (b *Builder) BuildGetValidPreparationInstrumentsForPreparationRequest(ctx c
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidIngredientIDToSpan(span, validPreparationID)
 
 	uri := b.BuildURL(
@@ -106,7 +101,6 @@ func (b *Builder) BuildGetValidPreparationInstrumentsForInstrumentRequest(ctx co
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validInstrumentID)
 	tracing.AttachValidIngredientIDToSpan(span, validInstrumentID)
 
 	uri := b.BuildURL(
@@ -133,8 +127,6 @@ func (b *Builder) BuildCreateValidPreparationInstrumentRequest(ctx context.Conte
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -152,7 +144,6 @@ func (b *Builder) BuildCreateValidPreparationInstrumentRequest(ctx context.Conte
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		logger.Error(err, "building request")
 		return nil, observability.PrepareError(err, span, "building request")
 	}
 
@@ -164,13 +155,9 @@ func (b *Builder) BuildUpdateValidPreparationInstrumentRequest(ctx context.Conte
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validPreparationInstrument == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrument.ID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrument.ID)
 
 	uri := b.BuildURL(
@@ -185,7 +172,6 @@ func (b *Builder) BuildUpdateValidPreparationInstrumentRequest(ctx context.Conte
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		logger.Error(err, "building request")
 		return nil, observability.PrepareError(err, span, "building request")
 	}
 
@@ -197,12 +183,9 @@ func (b *Builder) BuildArchiveValidPreparationInstrumentRequest(ctx context.Cont
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validPreparationInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
 	uri := b.BuildURL(

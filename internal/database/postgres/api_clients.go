@@ -288,7 +288,7 @@ func (q *Querier) ArchiveAPIClient(ctx context.Context, clientID, userID string)
 	args := []interface{}{userID, clientID}
 
 	if err := q.performWriteQuery(ctx, q.db, "API client archive", archiveAPIClientQuery, args); err != nil {
-		return observability.PrepareError(err, span, "archiving API client")
+		return observability.PrepareAndLogError(err, logger, span, "archiving API client")
 	}
 
 	logger.Info("API client archived")

@@ -167,7 +167,7 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 
 	result, err := q.performBooleanQuery(ctx, q.db, webhookExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing webhook existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing webhook existence check")
 	}
 
 	return result, nil
@@ -181,9 +181,17 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if webhookID == "" || householdID == "" {
+	logger := q.logger.Clone()
+
+	if webhookID == "" {
 		return nil, ErrInvalidIDProvided
 	}
+	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
+
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachWebhookIDToSpan(span, webhookID)
@@ -197,7 +205,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 
 	webhook, _, _, err := q.scanWebhook(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning webhook")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning webhook")
 	}
 
 	return webhook, nil
@@ -208,9 +216,12 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -230,11 +241,11 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 
 	rows, err := q.performReadQuery(ctx, q.db, "webhooks", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching webhook from database")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
 	}
 
 	if x.Webhooks, x.FilteredCount, x.TotalCount, err = q.scanWebhooks(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning database response")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning database response")
 	}
 
 	return x, nil
@@ -270,7 +281,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "webhook creation", createWebhookQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "performing webhook creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook creation query")
 	}
 
 	x := &types.Webhook{
@@ -314,7 +325,7 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 	args := []interface{}{householdID, webhookID}
 
 	if err := q.performWriteQuery(ctx, q.db, "webhook archive", archiveWebhookQuery, args); err != nil {
-		return observability.PrepareError(err, span, "archiving webhook")
+		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}
 
 	logger.Info("webhook archived")

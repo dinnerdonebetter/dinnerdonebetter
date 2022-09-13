@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -14,24 +13,19 @@ func (c *Client) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEvent
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanEventRequest(ctx, mealPlanID, mealPlanEventID)
@@ -52,13 +46,11 @@ func (c *Client) GetMealPlanEvents(ctx context.Context, mealPlanID string, filte
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanEventsRequest(ctx, mealPlanID, filter)
@@ -110,12 +102,9 @@ func (c *Client) UpdateMealPlanEvent(ctx context.Context, mealPlanEvent *types.M
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if mealPlanEvent == nil {
 		return ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEvent.ID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEvent.ID)
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanEventRequest(ctx, mealPlanEvent)
@@ -135,24 +124,19 @@ func (c *Client) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanE
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if mealPlanID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
 
 	if mealPlanEventID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanEventRequest(ctx, mealPlanID, mealPlanEventID)

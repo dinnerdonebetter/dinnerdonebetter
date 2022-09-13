@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetValidIngredientPreparationRequest(ctx context.Context,
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
 
 	uri := b.BuildURL(
@@ -69,12 +65,9 @@ func (b *Builder) BuildGetValidIngredientPreparationsForIngredientRequest(ctx co
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if ingredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidIngredientIDToSpan(span, ingredientID)
 
 	uri := b.BuildURL(
@@ -100,12 +93,9 @@ func (b *Builder) BuildGetValidIngredientPreparationsForPreparationRequest(ctx c
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if preparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
 	tracing.AttachValidIngredientIDToSpan(span, preparationID)
 
 	uri := b.BuildURL(
@@ -159,13 +149,9 @@ func (b *Builder) BuildUpdateValidIngredientPreparationRequest(ctx context.Conte
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientPreparation == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparation.ID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparation.ID)
 
 	uri := b.BuildURL(
@@ -191,12 +177,9 @@ func (b *Builder) BuildArchiveValidIngredientPreparationRequest(ctx context.Cont
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
 
 	uri := b.BuildURL(

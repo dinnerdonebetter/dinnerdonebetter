@@ -570,14 +570,14 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	hasValidInvite := input.InvitationToken != "" && input.DestinationHouseholdID != ""
 
 	if err := q.createHouseholdForUser(ctx, tx, hasValidInvite, user.ID); err != nil {
-		return nil, observability.PrepareError(err, span, "creating household for new user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 	}
 
 	logger.Debug("household created")
 
 	if hasValidInvite {
 		if err := q.acceptInvitationForUser(ctx, tx, input); err != nil {
-			return nil, observability.PrepareError(err, span, "accepting household invitation")
+			return nil, observability.PrepareAndLogError(err, logger, span, "accepting household invitation")
 		}
 		logger.Debug("accepted invitation and joined household for user")
 	}
@@ -585,11 +585,11 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	if err := q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		logger = logger.WithValue("email_address", user.EmailAddress).WithValue("user_id", user.ID)
-		return nil, observability.PrepareError(err, span, "attaching existing invitations to new user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "attaching existing invitations to new user")
 	}
 
 	if err := tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, span, "committing transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Debug("user and household created")
@@ -681,7 +681,7 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user update", updateUserQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating user")
+		return observability.PrepareAndLogError(err, logger, span, "updating user")
 	}
 
 	logger.Info("user updated")
@@ -722,7 +722,7 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user passwords update", updateUserPasswordQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating user password")
+		return observability.PrepareAndLogError(err, logger, span, "updating user password")
 	}
 
 	logger.Info("user password updated")
@@ -761,7 +761,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user 2FA secret update", updateUserTwoFactorSecretQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating user 2FA secret")
+		return observability.PrepareAndLogError(err, logger, span, "updating user 2FA secret")
 	}
 	logger.Info("user two factor secret updated")
 
@@ -794,7 +794,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user two factor secret verification", markUserTwoFactorSecretAsVerified, args); err != nil {
-		return observability.PrepareError(err, span, "writing verified two factor status to database")
+		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
 	}
 
 	logger.Info("user two factor secret verified")
@@ -829,25 +829,25 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	// begin archive user transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return observability.PrepareError(err, span, "beginning transaction")
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	archiveUserArgs := []interface{}{userID}
 
 	if err = q.performWriteQuery(ctx, tx, "user archive", archiveUserQuery, archiveUserArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, span, "archiving user")
+		return observability.PrepareAndLogError(err, logger, span, "archiving user")
 	}
 
 	archiveMembershipsArgs := []interface{}{userID}
 
 	if err = q.performWriteQuery(ctx, tx, "user memberships archive", archiveMembershipsQuery, archiveMembershipsArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, span, "archiving user household memberships")
+		return observability.PrepareAndLogError(err, logger, span, "archiving user household memberships")
 	}
 
 	if err = tx.Commit(); err != nil {
-		return observability.PrepareError(err, span, "committing transaction")
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user archived")

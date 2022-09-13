@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -21,12 +20,9 @@ func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstr
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
 
 	uri := b.BuildURL(
@@ -145,13 +141,9 @@ func (b *Builder) BuildUpdateValidInstrumentRequest(ctx context.Context, validIn
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validInstrument == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrument.ID)
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrument.ID)
 
 	uri := b.BuildURL(
@@ -177,12 +169,9 @@ func (b *Builder) BuildArchiveValidInstrumentRequest(ctx context.Context, validI
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
 
 	uri := b.BuildURL(

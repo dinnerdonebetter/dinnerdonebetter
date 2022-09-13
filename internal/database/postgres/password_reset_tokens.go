@@ -108,7 +108,7 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 
 	// create the password reset token.
 	if err := q.performWriteQuery(ctx, q.db, "password reset token creation", passwordResetTokenCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "performing password reset token creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing password reset token creation query")
 	}
 
 	x := &types.PasswordResetToken{
@@ -145,7 +145,7 @@ func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTok
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "password reset token archive", redeemPasswordResetTokenQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating password reset token")
+		return observability.PrepareAndLogError(err, logger, span, "updating password reset token")
 	}
 
 	logger.Info("password reset token archived")

@@ -109,7 +109,7 @@ func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID s
 
 	result, err := q.performBooleanQuery(ctx, q.db, validInstrumentExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing valid instrument existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing valid instrument existence check")
 	}
 
 	return result, nil
@@ -152,7 +152,7 @@ func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID stri
 
 	validInstrument, _, _, err := q.scanValidInstrument(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning validInstrument")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validInstrument")
 	}
 
 	return validInstrument, nil
@@ -211,12 +211,12 @@ func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) (
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
 
 	validInstruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning validInstrument")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validInstrument")
 	}
 
 	return validInstruments, nil
@@ -243,12 +243,12 @@ func (q *Querier) SearchForValidInstrumentsForPreparation(ctx context.Context, p
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
 
 	validInstruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning validInstrument")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validInstrument")
 	}
 
 	return validInstruments, nil
@@ -281,11 +281,11 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 
 	rows, err := q.performReadQuery(ctx, q.db, "validInstruments", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid instruments list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}
 
 	if x.ValidInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidInstruments(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid instruments")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid instruments")
 	}
 
 	return x, nil
@@ -315,7 +315,7 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 
 	// create the valid instrument.
 	if err := q.performWriteQuery(ctx, q.db, "valid instrument creation", validInstrumentCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "performing valid instrument creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid instrument creation query")
 	}
 
 	x := &types.ValidInstrument{
@@ -358,7 +358,7 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid instrument update", updateValidInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid instrument")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
 	}
 
 	logger.Info("valid instrument updated")
@@ -386,7 +386,7 @@ func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid instrument archive", archiveValidInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid instrument")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
 	}
 
 	logger.Info("valid instrument archived")

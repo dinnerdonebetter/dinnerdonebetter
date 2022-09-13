@@ -188,7 +188,7 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanOptionExistenceQuery, args)
 	if err != nil {
 		logger.Error(err, "performing meal plan option existence check")
-		return false, observability.PrepareError(err, span, "performing meal plan option existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan option existence check")
 	}
 
 	return result, nil
@@ -269,7 +269,7 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 
 	mealPlanOption, _, _, err := q.scanMealPlanOption(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning mealPlanOption")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning mealPlanOption")
 	}
 
 	return mealPlanOption, nil
@@ -338,12 +338,12 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 
 	rows, err := q.performReadQuery(ctx, q.db, "meal plan options for meal plan event", getMealPlanOptionsForMealPlanEventsQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing meal plan options for meal plan event list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options for meal plan event list retrieval query")
 	}
 
 	x, _, _, err = q.scanMealPlanOptions(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning meal plan options for meal plan event")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan options for meal plan event")
 	}
 
 	for _, opt := range x {
@@ -398,11 +398,11 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 
 	rows, err := q.performReadQuery(ctx, q.db, "mealPlanOptions", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing meal plan options list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options list retrieval query")
 	}
 
 	if x.MealPlanOptions, x.FilteredCount, x.TotalCount, err = q.scanMealPlanOptions(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning meal plan options")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan options")
 	}
 
 	return x, nil
@@ -435,7 +435,7 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 
 	// create the meal plan option.
 	if err := q.performWriteQuery(ctx, db, "meal plan option creation", mealPlanOptionCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "creating meal plan option")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option")
 	}
 
 	x := &types.MealPlanOption{
@@ -501,7 +501,7 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan option update", updateMealPlanOptionQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating meal plan option")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 
 	logger.Info("meal plan option updated")
@@ -551,7 +551,7 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan option archive", archiveMealPlanOptionQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating meal plan option")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 
 	logger.Info("meal plan option archived")
@@ -661,19 +661,19 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 
 	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "fetching meal plan")
+		return false, observability.PrepareAndLogError(err, logger, span, "fetching meal plan")
 	}
 
 	// fetch meal plan option
 	mealPlanOption, err := q.GetMealPlanOption(ctx, mealPlan.ID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "fetching meal plan option")
+		return false, observability.PrepareAndLogError(err, logger, span, "fetching meal plan option")
 	}
 
 	// fetch household data
 	household, err := q.GetHouseholdByID(ctx, mealPlan.BelongsToHousehold)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "fetching household")
+		return false, observability.PrepareAndLogError(err, logger, span, "fetching household")
 	}
 
 	relevantOptions := byDayAndMeal(mealPlan.Events, mealPlanOption.Day, mealPlanOption.MealName)
@@ -704,7 +704,7 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 		}
 
 		if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
-			return false, observability.PrepareError(err, span, "finalizing meal plan option")
+			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 		}
 
 		logger.Debug("finalized meal plan option")

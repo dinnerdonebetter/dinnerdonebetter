@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetRecipeRequest(ctx context.Context, recipeID string) (*
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	uri := b.BuildURL(
@@ -124,13 +120,9 @@ func (b *Builder) BuildUpdateRecipeRequest(ctx context.Context, recipe *types.Re
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipe == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.RecipeIDKey, recipe.ID)
 	tracing.AttachRecipeIDToSpan(span, recipe.ID)
 
 	uri := b.BuildURL(
@@ -156,12 +148,9 @@ func (b *Builder) BuildArchiveRecipeRequest(ctx context.Context, recipeID string
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	uri := b.BuildURL(

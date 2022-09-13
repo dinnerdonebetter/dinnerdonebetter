@@ -145,7 +145,7 @@ func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID s
 
 	result, err := q.performBooleanQuery(ctx, q.db, validIngredientExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing valid ingredient existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient existence check")
 	}
 
 	return result, nil
@@ -206,7 +206,7 @@ func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID stri
 
 	validIngredient, _, _, err := q.scanValidIngredient(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient")
 	}
 
 	return validIngredient, nil
@@ -283,12 +283,12 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string) (
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validIngredientSearchQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
 
 	x, _, _, err := q.scanValidIngredients(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredients")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
 	}
 
 	return x, nil
@@ -315,12 +315,12 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validIngredientSearchQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
 
 	x, _, _, err := q.scanValidIngredients(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredients")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
 	}
 
 	return x, nil
@@ -351,11 +351,11 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 
 	rows, err := q.performReadQuery(ctx, q.db, "validIngredients", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
 
 	if x.ValidIngredients, x.FilteredCount, x.TotalCount, err = q.scanValidIngredients(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredients")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
 	}
 
 	return x, nil
@@ -429,7 +429,7 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 
 	// create the valid ingredient.
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient creation", validIngredientCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "performing valid ingredient creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient creation query")
 	}
 
 	x := &types.ValidIngredient{
@@ -535,7 +535,7 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient update", updateValidIngredientQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid ingredient")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient")
 	}
 
 	logger.Info("valid ingredient updated")
@@ -563,7 +563,7 @@ func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient archive", archiveValidIngredientQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid ingredient")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient")
 	}
 
 	logger.Info("valid ingredient archived")

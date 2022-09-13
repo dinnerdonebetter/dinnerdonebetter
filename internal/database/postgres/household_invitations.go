@@ -194,7 +194,7 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 
 	result, err := q.performBooleanQuery(ctx, q.db, householdInvitationExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing household invitation existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing household invitation existence check")
 	}
 
 	return result, nil
@@ -277,7 +277,7 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 
 	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning household invitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning household invitation")
 	}
 
 	return householdInvitation, nil
@@ -361,7 +361,7 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 
 	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning household invitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning household invitation")
 	}
 
 	return householdInvitation, nil
@@ -445,7 +445,7 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 
 	invitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning invitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning invitation")
 	}
 
 	return invitation, nil
@@ -477,7 +477,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "household invitation creation", createHouseholdInvitationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "performing household invitation creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation creation query")
 	}
 
 	x := &types.HouseholdInvitation{
@@ -549,12 +549,12 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 
 	rows, err := q.performReadQuery(ctx, q.db, "household invitations from user", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "reading household invitations from user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}
 
 	householdInvitations, fc, tc, err := q.scanHouseholdInvitations(ctx, rows, true)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "reading household invitations from user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}
 
 	returnList := &types.HouseholdInvitationList{
@@ -626,12 +626,12 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 
 	rows, err := q.performReadQuery(ctx, q.db, "household invitations from user", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "reading household invitations from user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}
 
 	householdInvitations, fc, tc, err := q.scanHouseholdInvitations(ctx, rows, true)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "reading household invitations from user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}
 
 	returnList := &types.HouseholdInvitationList{
@@ -684,7 +684,7 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 	}
 
 	if err := q.performWriteQuery(ctx, querier, "household invitation status change", setInvitationStatusQuery, args); err != nil {
-		return observability.PrepareError(err, span, "changing household invitation status")
+		return observability.PrepareAndLogError(err, logger, span, "changing household invitation status")
 	}
 
 	logger.Debug("household invitation updated")
@@ -712,18 +712,18 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return observability.PrepareError(err, span, "beginning transaction")
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	if err = q.setInvitationStatus(ctx, tx, householdInvitationID, note, types.AcceptedHouseholdInvitationStatus); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, span, "accepting household invitation")
+		return observability.PrepareAndLogError(err, logger, span, "accepting household invitation")
 	}
 
 	invitation, err := q.GetHouseholdInvitationByTokenAndID(ctx, token, householdInvitationID)
 	if err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, span, "fetching household invitation")
+		return observability.PrepareAndLogError(err, logger, span, "fetching household invitation")
 	}
 
 	addUserInput := &types.HouseholdUserMembershipDatabaseCreationInput{
@@ -738,11 +738,11 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 
 	if err = q.addUserToHousehold(ctx, tx, addUserInput); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, span, "adding user to household")
+		return observability.PrepareAndLogError(err, logger, span, "adding user to household")
 	}
 
 	if err = tx.Commit(); err != nil {
-		return observability.PrepareError(err, span, "committing transaction")
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return nil
@@ -782,7 +782,7 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	args := []interface{}{userID, userEmail}
 
 	if err := q.performWriteQuery(ctx, querier, "invitation attachment", attachInvitationsToUserIDQuery, args); err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return observability.PrepareError(err, span, "attaching invitations to user")
+		return observability.PrepareAndLogError(err, logger, span, "attaching invitations to user")
 	}
 
 	logger.Info("invitations associated with user")
@@ -814,14 +814,14 @@ func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.
 
 	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(err, span, "writing destination household membership")
+		return observability.PrepareAndLogError(err, logger, span, "writing destination household membership")
 	}
 
 	logger.Debug("created membership via invitation")
 
 	if err := q.setInvitationStatus(ctx, querier, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(err, span, "accepting household invitation")
+		return observability.PrepareAndLogError(err, logger, span, "accepting household invitation")
 	}
 
 	logger.Debug("marked invitation as accepted")

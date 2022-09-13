@@ -38,4 +38,3 @@ func buildMockRowsFromMealPlanEvents(includeCounts bool, filteredCount uint64, m
 
 	return exampleRows
 }
-

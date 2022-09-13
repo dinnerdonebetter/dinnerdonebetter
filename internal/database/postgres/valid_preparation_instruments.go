@@ -388,7 +388,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 
 	// create the valid ingredient preparation.
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation creation", validPreparationInstrumentCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, span, "performing valid ingredient preparation creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient preparation creation query")
 	}
 
 	x := &types.ValidPreparationInstrument{
@@ -427,7 +427,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation update", updateValidPreparationInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid ingredient preparation")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
 	}
 
 	logger.Info("valid ingredient preparation updated")
@@ -453,7 +453,7 @@ func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPr
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation archive", archiveValidPreparationInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating valid ingredient preparation")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
 	}
 
 	logger.Info("valid ingredient preparation archived")

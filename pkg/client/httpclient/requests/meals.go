@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetMealRequest(ctx context.Context, mealID string) (*http
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
 	uri := b.BuildURL(
@@ -124,12 +120,9 @@ func (b *Builder) BuildArchiveMealRequest(ctx context.Context, mealID string) (*
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
 	uri := b.BuildURL(

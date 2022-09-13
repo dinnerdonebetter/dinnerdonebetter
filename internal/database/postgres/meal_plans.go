@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 	"time"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -87,7 +88,8 @@ func (q *Querier) scanMealPlans(ctx context.Context, rows database.ResultIterato
 	return mealPlans, filteredCount, totalCount, nil
 }
 
-const mealPlanExistenceQuery = "SELECT EXISTS ( SELECT meal_plans.id FROM meal_plans WHERE meal_plans.archived_at IS NULL AND meal_plans.id = $1 )"
+//go:embed queries/meal_plans_exists.sql
+var mealPlanExistenceQuery string
 
 // MealPlanExists fetches whether a meal plan exists from the database.
 func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID string) (exists bool, err error) {
@@ -114,31 +116,17 @@ func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID st
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing meal plan existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan existence check")
 	}
 
 	return result, nil
 }
 
-const getMealPlanQuery = `SELECT
-	meal_plans.id,
-	meal_plans.notes,
-	meal_plans.status,
-	meal_plans.voting_deadline,
-	meal_plans.created_at,
-	meal_plans.last_updated_at,
-	meal_plans.archived_at,
-	meal_plans.belongs_to_household
-FROM meal_plans
-WHERE meal_plans.archived_at IS NULL 
-	AND meal_plans.id = $1
-	AND meal_plans.belongs_to_household = $2
-`
+//go:embed queries/meal_plans_get_one.sql
+var getMealPlanQuery string
 
-const getMealPlanPastVotingDeadlineQuery = getMealPlanQuery + `
-AND meal_plans.status = 'awaiting_votes'
-AND NOW() > meal_plans.voting_deadline
-`
+//go:embed queries/meal_plans_get_one_past_voting_deadline.sql
+var getMealPlanPastVotingDeadlineQuery string
 
 // GetMealPlan fetches a meal plan from the database.
 func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID string, restrictToPastVotingDeadline bool) (*types.MealPlan, error) {
@@ -171,17 +159,17 @@ func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID strin
 
 	row := q.getOneRow(ctx, q.db, "meal plan", query, args)
 	if err := row.Err(); err != nil {
-		return nil, observability.PrepareError(err, span, "executing meal plan with options retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan with options retrieval query")
 	}
 
 	mealPlan, _, _, err := q.scanMealPlan(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning meal plan")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan")
 	}
 
 	events, err := q.getMealPlanEventsForMealPlan(ctx, mealPlanID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "populating meal plan events")
+		return nil, observability.PrepareAndLogError(err, logger, span, "populating meal plan events")
 	}
 	mealPlan.Events = events
 
@@ -198,10 +186,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	x = &types.MealPlanList{}
-	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -228,7 +213,8 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 	return x, nil
 }
 
-const mealPlanCreationQuery = "INSERT INTO meal_plans (id,notes,status,voting_deadline,belongs_to_household) VALUES ($1,$2,$3,$4,$5)"
+//go:embed queries/meal_plans_create.sql
+var mealPlanCreationQuery string
 
 // CreateMealPlan creates a meal plan in the database.
 func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
@@ -251,13 +237,13 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "beginning transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	// create the meal plan.
 	if err = q.performWriteQuery(ctx, tx, "meal plan creation", mealPlanCreationQuery, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, span, "creating meal plan")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan")
 	}
 
 	x := &types.MealPlan{
@@ -281,7 +267,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 	}
 
 	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, span, "committing transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachMealPlanIDToSpan(span, x.ID)
@@ -290,7 +276,8 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 	return x, nil
 }
 
-const updateMealPlanQuery = "UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $4 AND id = $5"
+//go:embed queries/meal_plans_update.sql
+var updateMealPlanQuery string
 
 // UpdateMealPlan updates a particular meal plan.
 func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
@@ -314,7 +301,7 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan update", updateMealPlanQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating meal plan")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 
 	logger.Info("meal plan updated")
@@ -322,7 +309,8 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 	return nil
 }
 
-const archiveMealPlanQuery = "UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $1 AND id = $2"
+//go:embed queries/meal_plans_archive.sql
+var archiveMealPlanQuery string
 
 // ArchiveMealPlan archives a meal plan from the database by its ID.
 func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {
@@ -349,31 +337,12 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan archive", archiveMealPlanQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating meal plan")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 
 	logger.Info("meal plan archived")
 
 	return nil
-}
-
-var allDays = []time.Weekday{
-	time.Monday,
-	time.Tuesday,
-	time.Wednesday,
-	time.Thursday,
-	time.Friday,
-	time.Saturday,
-	time.Sunday,
-}
-
-var allMealNames = []string{
-	types.BreakfastMealName,
-	types.SecondBreakfastMealName,
-	types.BrunchMealName,
-	types.LunchMealName,
-	types.SupperMealName,
-	types.DinnerMealName,
 }
 
 func byDayAndMeal(l []*types.MealPlanEvent, day time.Weekday, meal string) []*types.MealPlanOption {
@@ -390,9 +359,8 @@ func byDayAndMeal(l []*types.MealPlanEvent, day time.Weekday, meal string) []*ty
 	return out
 }
 
-const finalizeMealPlanQuery = `
-	UPDATE meal_plans SET status = $1 WHERE archived_at IS NULL AND id = $2
-`
+//go:embed queries/meal_plans_finalize.sql
+var finalizeMealPlanQuery string
 
 // AttemptToFinalizeMealPlan finalizes a meal plan if all of its options have a selection.
 func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (finalized bool, err error) {
@@ -417,18 +385,18 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 
 	household, err := q.GetHouseholdByID(ctx, householdID)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "fetching household")
+		return false, observability.PrepareAndLogError(err, logger, span, "fetching household")
 	}
 
 	// fetch meal plan
 	mealPlan, err := q.getMealPlan(ctx, mealPlanID, householdID, false)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "fetching meal plan")
+		return false, observability.PrepareAndLogError(err, logger, span, "fetching meal plan")
 	}
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "beginning transaction")
+		return false, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	allOptionsChosen := true
@@ -479,7 +447,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 
 			if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
 				q.rollbackTransaction(ctx, tx)
-				return false, observability.PrepareError(err, span, "finalizing meal plan option")
+				return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 			}
 
 			logger.Debug("finalized meal plan option")
@@ -494,7 +462,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 
 		if err = q.performWriteQuery(ctx, tx, "meal plan finalization", finalizeMealPlanQuery, args); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return false, observability.PrepareError(err, span, "finalizing meal plan")
+			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan")
 		}
 
 		finalized = true

@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -21,12 +20,9 @@ func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngre
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
 
 	uri := b.BuildURL(
@@ -145,13 +141,9 @@ func (b *Builder) BuildUpdateValidIngredientRequest(ctx context.Context, validIn
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredient == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredient.ID)
 	tracing.AttachValidIngredientIDToSpan(span, validIngredient.ID)
 
 	uri := b.BuildURL(
@@ -177,12 +169,9 @@ func (b *Builder) BuildArchiveValidIngredientRequest(ctx context.Context, validI
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
 
 	uri := b.BuildURL(

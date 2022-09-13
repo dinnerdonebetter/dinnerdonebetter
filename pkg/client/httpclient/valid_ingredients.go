@@ -24,12 +24,12 @@ func (c *Client) GetValidIngredient(ctx context.Context, validIngredientID strin
 
 	req, err := c.requestBuilder.BuildGetValidIngredientRequest(ctx, validIngredientID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get valid ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient request")
 	}
 
 	var validIngredient *types.ValidIngredient
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving valid ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient")
 	}
 
 	return validIngredient, nil
@@ -40,14 +40,16 @@ func (c *Client) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngr
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := c.logger.Clone()
+
 	req, err := c.requestBuilder.BuildGetRandomValidIngredientRequest(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get valid ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient request")
 	}
 
 	var validIngredient *types.ValidIngredient
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving valid ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient")
 	}
 
 	return validIngredient, nil
@@ -72,12 +74,12 @@ func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit
 
 	req, err := c.requestBuilder.BuildSearchValidIngredientsRequest(ctx, query, limit)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building search for valid ingredients request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid ingredients request")
 	}
 
 	var validIngredients []*types.ValidIngredient
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredients); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving valid ingredients")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredients")
 	}
 
 	return validIngredients, nil
@@ -88,16 +90,18 @@ func (c *Client) GetValidIngredients(ctx context.Context, filter *types.QueryFil
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := c.logger.Clone()
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building valid ingredients list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredients list request")
 	}
 
 	var validIngredients *types.ValidIngredientList
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredients); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving valid ingredients")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredients")
 	}
 
 	return validIngredients, nil
@@ -108,22 +112,24 @@ func (c *Client) CreateValidIngredient(ctx context.Context, input *types.ValidIn
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := c.logger.Clone()
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, span, "validating input")
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidIngredientRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building create valid ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient request")
 	}
 
 	var validIngredient *types.ValidIngredient
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
-		return nil, observability.PrepareError(err, span, "creating valid ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient")
 	}
 
 	return validIngredient, nil
@@ -144,11 +150,11 @@ func (c *Client) UpdateValidIngredient(ctx context.Context, validIngredient *typ
 
 	req, err := c.requestBuilder.BuildUpdateValidIngredientRequest(ctx, validIngredient)
 	if err != nil {
-		return observability.PrepareError(err, span, "building update valid ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
-		return observability.PrepareError(err, span, "updating valid ingredient %s", validIngredient.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient %s", validIngredient.ID)
 	}
 
 	return nil
@@ -169,11 +175,11 @@ func (c *Client) ArchiveValidIngredient(ctx context.Context, validIngredientID s
 
 	req, err := c.requestBuilder.BuildArchiveValidIngredientRequest(ctx, validIngredientID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive valid ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, span, "archiving valid ingredient %s", validIngredientID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient %s", validIngredientID)
 	}
 
 	return nil

@@ -24,12 +24,12 @@ func (c *Client) GetMeal(ctx context.Context, mealID string) (*types.Meal, error
 
 	req, err := c.requestBuilder.BuildGetMealRequest(ctx, mealID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building get meal request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal request")
 	}
 
 	var meal *types.Meal
 	if err = c.fetchAndUnmarshal(ctx, req, &meal); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving meal")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal")
 	}
 
 	return meal, nil
@@ -40,16 +40,18 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := c.logger.Clone()
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetMealsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building meals list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building meals list request")
 	}
 
 	var meals *types.MealList
 	if err = c.fetchAndUnmarshal(ctx, req, &meals); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving meals")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meals")
 	}
 
 	return meals, nil
@@ -60,17 +62,19 @@ func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := filter.AttachToLogger(c.logger.Clone())
+
 	tracing.AttachSearchQueryToSpan(span, query)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildSearchForMealsRequest(ctx, query, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building meals list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building meals list request")
 	}
 
 	var meals *types.MealList
 	if err = c.fetchAndUnmarshal(ctx, req, &meals); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving meals")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meals")
 	}
 
 	return meals, nil
@@ -81,22 +85,24 @@ func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationReques
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := c.logger.Clone()
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, span, "validating input")
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateMealRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building create meal request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal request")
 	}
 
 	var meal *types.Meal
 	if err = c.fetchAndUnmarshal(ctx, req, &meal); err != nil {
-		return nil, observability.PrepareError(err, span, "creating meal")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal")
 	}
 
 	return meal, nil
@@ -117,11 +123,11 @@ func (c *Client) ArchiveMeal(ctx context.Context, mealID string) error {
 
 	req, err := c.requestBuilder.BuildArchiveMealRequest(ctx, mealID)
 	if err != nil {
-		return observability.PrepareError(err, span, "building archive meal request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive meal request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, span, "archiving meal %s", mealID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal %s", mealID)
 	}
 
 	return nil

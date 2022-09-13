@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,18 +18,14 @@ func (b *Builder) BuildGetRecipeStepRequest(ctx context.Context, recipeID, recip
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	uri := b.BuildURL(
@@ -56,12 +51,9 @@ func (b *Builder) BuildGetRecipeStepsRequest(ctx context.Context, recipeID strin
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	uri := b.BuildURL(
@@ -117,13 +109,9 @@ func (b *Builder) BuildUpdateRecipeStepRequest(ctx context.Context, recipeStep *
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeStep == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStep.ID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStep.ID)
 
 	uri := b.BuildURL(
@@ -151,18 +139,14 @@ func (b *Builder) BuildArchiveRecipeStepRequest(ctx context.Context, recipeID, r
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	uri := b.BuildURL(

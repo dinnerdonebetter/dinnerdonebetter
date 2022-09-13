@@ -120,16 +120,17 @@ func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
 }
 
 var errTooFewUniqueMeals = errors.New("too many instances of the same meal")
+var errInvalidVotingDeadline = errors.New("invalid voting deadline")
 
 var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)
 
 // ValidateWithContext validates a MealPlanCreationRequestInput.
 func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
-		ctx,
-		x,
-		validation.Field(&x.VotingDeadline, validation.Min(time.Now().Add(-time.Hour))),
-	)
+	if time.Now().After(x.VotingDeadline) {
+		return errInvalidVotingDeadline
+	}
+
+	return nil
 }
 
 var _ validation.ValidatableWithContext = (*MealPlanDatabaseCreationInput)(nil)

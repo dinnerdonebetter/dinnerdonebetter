@@ -461,7 +461,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 	// begin household creation transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "beginning transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	householdCreationArgs := []interface{}{
@@ -507,11 +507,11 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 
 	if err = q.performWriteQuery(ctx, tx, "household user membership creation", addUserToHouseholdDuringCreationQuery, addUserToHouseholdArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, span, "performing household membership creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing household membership creation query")
 	}
 
 	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, span, "committing transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachHouseholdIDToSpan(span, household.ID)
@@ -556,7 +556,7 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	logger.WithValue("query", updateHouseholdQuery).WithValue("args", args).Info("making query for households")
 
 	if err := q.performWriteQuery(ctx, q.db, "household update", updateHouseholdQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating household")
+		return observability.PrepareAndLogError(err, logger, span, "updating household")
 	}
 
 	logger.Info("household updated")
@@ -589,7 +589,7 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "household archive", archiveHouseholdQuery, args); err != nil {
-		return observability.PrepareError(err, span, "archiving household")
+		return observability.PrepareAndLogError(err, logger, span, "archiving household")
 	}
 
 	logger.Info("household archived")

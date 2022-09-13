@@ -43,28 +43,28 @@ func (c *Client) fetchAuthTokenForAPIClient(ctx context.Context, httpClient *htt
 	logger.Debug("fetching auth token")
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return "", observability.PrepareError(err, span, "validating input")
+		return "", observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildAPIClientAuthTokenRequest(ctx, input, secretKey)
 	if err != nil {
-		return "", observability.PrepareError(err, span, "building request")
+		return "", observability.PrepareAndLogError(err, logger, span, "building request")
 	}
 
 	// use the default client here because we want a transport that doesn't worry about cookies or tokens.
 	res, err := c.fetchResponseToRequest(ctx, httpClient, req)
 	if err != nil {
-		return "", observability.PrepareError(err, span, "executing request")
+		return "", observability.PrepareAndLogError(err, logger, span, "executing request")
 	}
 
 	if err = errorFromResponse(res); err != nil {
-		return "", observability.PrepareError(err, span, "erroneous response")
+		return "", observability.PrepareAndLogError(err, logger, span, "erroneous response")
 	}
 
 	var tokenRes types.PASETOResponse
 
 	if err = c.unmarshalBody(ctx, res, &tokenRes); err != nil {
-		return "", observability.PrepareError(err, span, "unmarshalling body")
+		return "", observability.PrepareAndLogError(err, logger, span, "unmarshalling body")
 	}
 
 	logger.Debug("auth token received")

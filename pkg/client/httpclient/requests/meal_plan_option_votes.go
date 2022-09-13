@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,30 +18,24 @@ func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPla
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
 	uri := b.BuildURL(
@@ -72,24 +65,19 @@ func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPl
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	uri := b.BuildURL(
@@ -119,18 +107,14 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if input == nil {
@@ -165,25 +149,19 @@ func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, meal
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionVote == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVote.ID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVote.ID)
 
 	uri := b.BuildURL(
@@ -215,30 +193,24 @@ func (b *Builder) BuildArchiveMealPlanOptionVoteRequest(ctx context.Context, mea
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
 	uri := b.BuildURL(

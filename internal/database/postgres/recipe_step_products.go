@@ -171,7 +171,7 @@ func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeS
 
 	result, err := q.performBooleanQuery(ctx, q.db, recipeStepProductExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing recipe step product existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe step product existence check")
 	}
 
 	return result, nil
@@ -256,7 +256,7 @@ func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStep
 
 	recipeStepProduct, _, _, err := q.scanRecipeStepProduct(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipeStepProduct")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStepProduct")
 	}
 
 	return recipeStepProduct, nil
@@ -321,12 +321,12 @@ func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID s
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", getRecipeStepProductsForRecipeQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipe step products list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step products list retrieval query")
 	}
 
 	recipeStepProducts, _, _, err := q.scanRecipeStepProducts(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipe step products")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step products")
 	}
 
 	return recipeStepProducts, nil
@@ -369,11 +369,11 @@ func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeSte
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipe step products list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step products list retrieval query")
 	}
 
 	if x.RecipeStepProducts, x.FilteredCount, x.TotalCount, err = q.scanRecipeStepProducts(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipe step products")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step products")
 	}
 
 	return x, nil
@@ -489,7 +489,7 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step product update", updateRecipeStepProductQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating recipe step product")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product")
 	}
 
 	logger.Info("recipe step product updated")
@@ -524,7 +524,7 @@ func (q *Querier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, re
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step product archive", archiveRecipeStepProductQuery, args); err != nil {
-		return observability.PrepareError(err, span, "updating recipe step product")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product")
 	}
 
 	logger.Info("recipe step product archived")

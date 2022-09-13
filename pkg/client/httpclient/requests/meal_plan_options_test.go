@@ -13,7 +13,7 @@ import (
 func TestBuilder_BuildGetMealPlanOptionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -77,7 +77,7 @@ func TestBuilder_BuildGetMealPlanOptionRequest(T *testing.T) {
 func TestBuilder_BuildGetMealPlanOptionsRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -88,7 +88,7 @@ func TestBuilder_BuildGetMealPlanOptionsRequest(T *testing.T) {
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealPlanID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealPlanID, exampleMealPlanEventID)
 
 		actual, err := helper.builder.BuildGetMealPlanOptionsRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
 		assert.NoError(t, err)
@@ -129,19 +129,19 @@ func TestBuilder_BuildGetMealPlanOptionsRequest(T *testing.T) {
 func TestBuilder_BuildCreateMealPlanOptionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_options"
+	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		exampleMealPlanEventID := fakes.BuildFakeID()
+		exampleMealPlanID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanOptionCreationRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleInput.BelongsToMealPlanEvent)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleMealPlanID, exampleInput.BelongsToMealPlanEvent)
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanEventID, exampleInput)
+		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -189,19 +189,19 @@ func TestBuilder_BuildCreateMealPlanOptionRequest(T *testing.T) {
 func TestBuilder_BuildUpdateMealPlanOptionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		exampleMealPlanEventID := fakes.BuildFakeID()
+		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleMealPlanOption.BelongsToMealPlanEvent, exampleMealPlanOption.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleMealPlanID, exampleMealPlanOption.BelongsToMealPlanEvent, exampleMealPlanOption.ID)
 
-		actual, err := helper.builder.BuildUpdateMealPlanOptionRequest(helper.ctx, exampleMealPlanEventID, exampleMealPlanOption)
+		actual, err := helper.builder.BuildUpdateMealPlanOptionRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOption)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -237,7 +237,7 @@ func TestBuilder_BuildUpdateMealPlanOptionRequest(T *testing.T) {
 func TestBuilder_BuildArchiveMealPlanOptionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

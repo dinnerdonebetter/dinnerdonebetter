@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitRequest(ctx context.Cont
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
 	uri := b.BuildURL(
@@ -69,12 +65,9 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ct
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if ingredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidIngredientIDToSpan(span, ingredientID)
 
 	uri := b.BuildURL(
@@ -100,12 +93,9 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForMeasurementUnitReque
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if validMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
 	uri := b.BuildURL(
@@ -159,13 +149,9 @@ func (b *Builder) BuildUpdateValidIngredientMeasurementUnitRequest(ctx context.C
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientMeasurementUnit == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnit.ID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnit.ID)
 
 	uri := b.BuildURL(
@@ -191,12 +177,9 @@ func (b *Builder) BuildArchiveValidIngredientMeasurementUnitRequest(ctx context.
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
 	uri := b.BuildURL(

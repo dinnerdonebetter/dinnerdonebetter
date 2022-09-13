@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetMealPlanRequest(ctx context.Context, mealPlanID string
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	uri := b.BuildURL(
@@ -97,13 +93,9 @@ func (b *Builder) BuildUpdateMealPlanRequest(ctx context.Context, mealPlan *type
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlan == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlan.ID)
 
 	uri := b.BuildURL(
@@ -129,12 +121,9 @@ func (b *Builder) BuildArchiveMealPlanRequest(ctx context.Context, mealPlanID st
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	uri := b.BuildURL(
