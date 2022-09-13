@@ -838,6 +838,49 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 	userID3 := fakes.BuildFakeID()
 	userID4 := fakes.BuildFakeID()
 
+	//prepareMealPlanForTest := func() {
+	//	getMealPlanArgs := []interface{}{
+	//		exampleMealPlan.ID,
+	//		exampleHousehold.ID,
+	//	}
+	//
+	//	db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+	//		WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+	//		WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
+	//
+	//	for _, evt := range exampleMealPlan.Events {
+	//		getMealPlanEventArgs := []interface{}{
+	//			exampleMealPlan.ID,
+	//		}
+	//
+	//		db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventForMealPlanQuery)).
+	//			WithArgs(interfaceToDriverValue(getMealPlanEventArgs)...).
+	//			WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, evt))
+	//
+	//		getMealPlanOptionsForMealPlanEventsArgs := []interface{}{
+	//			evt.ID,
+	//			exampleMealPlan.ID,
+	//		}
+	//
+	//		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventsQuery)).
+	//			WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
+	//			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
+	//	}
+	//
+	//	for _, event := range exampleMealPlan.Events {
+	//		for _, opt := range event.Options {
+	//			votesForOptionArgs := []interface{}{
+	//				opt.ID,
+	//				exampleMealPlan.ID,
+	//			}
+	//
+	//			db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVotesForMealPlanOptionQuery)).
+	//				WithArgs(interfaceToDriverValue(votesForOptionArgs)...).
+	//				WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, opt.Votes...))
+	//		}
+	//	}
+	//}
+
 	T.Run("with all votes in", func(t *testing.T) {
 		t.Parallel()
 
@@ -1002,8 +1045,9 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		for _, event := range exampleMealPlan.Events {
 			for _, opt := range event.Options {
 				votesForOptionArgs := []interface{}{
-					opt.ID,
 					exampleMealPlan.ID,
+					event.ID,
+					opt.ID,
 				}
 
 				db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVotesForMealPlanOptionQuery)).
@@ -1048,1164 +1092,1205 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	//	T.Run("with only some votes in", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		ctx := context.Background()
-	//		exampleHousehold := fakes.BuildFakeHousehold()
-	//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID1},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID2},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID3},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID4},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//		}
-	//
-	//		exampleMealPlan := fakes.BuildFakeMealPlan()
-	//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
-	//		exampleMealPlan.Events = []*types.MealPlanOption{
-	//			{
-	//				ID:       optionA,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    2,
-	//						ByUser:                  userID4,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionB,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID4,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    2,
-	//						ByUser:                  userID1,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionC,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    0,
-	//						ByUser:                  userID4,
-	//					},
-	//
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    1,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID2,
-	//					},
-	//				},
-	//			},
-	//		}
-	//
-	//		c, db := buildTestClient(t)
-	//
-	//		getHouseholdByIDArgs := []interface{}{
-	//			exampleHousehold.ID,
-	//		}
-	//
-	//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
-	//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
-	//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
-	//
-	//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
-	//
-	//		db.ExpectBegin()
-	//
-	//		for _, day := range allDays {
-	//			for _, mealName := range allMealNames {
-	//				options := byDayAndMeal(exampleMealPlan.Events, day, mealName)
-	//				if len(options) > 0 {
-	//					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
-	//
-	//					finalizeMealPlanOptionsArgs := []interface{}{
-	//						exampleMealPlan.ID,
-	//						winner,
-	//						tiebroken,
-	//					}
-	//
-	//					db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
-	//						WithArgs(interfaceToDriverValue(finalizeMealPlanOptionsArgs)...).
-	//						WillReturnResult(newArbitraryDatabaseResult())
-	//				}
-	//			}
-	//		}
-	//
-	//		db.ExpectCommit()
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
-	//		assert.False(t, actual)
-	//		assert.NoError(t, err)
-	//
-	//		mock.AssertExpectationsForObjects(t, db)
-	//	})
-	//
-	//	T.Run("with invalid meal plan ID", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		exampleHousehold := fakes.BuildFakeHousehold()
-	//		ctx := context.Background()
-	//
-	//		c, _ := buildTestClient(t)
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, "", exampleHousehold.ID)
-	//		assert.False(t, actual)
-	//		assert.Error(t, err)
-	//	})
-	//
-	//	T.Run("with invalid household ID", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		exampleMealPlan := fakes.BuildFakeMealPlan()
-	//		ctx := context.Background()
-	//
-	//		c, _ := buildTestClient(t)
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, "")
-	//		assert.False(t, actual)
-	//		assert.Error(t, err)
-	//	})
-	//
-	//	T.Run("with error fetching household", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		ctx := context.Background()
-	//		exampleHousehold := fakes.BuildFakeHousehold()
-	//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID1},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID2},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID3},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID4},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//		}
-	//
-	//		exampleMealPlan := fakes.BuildFakeMealPlan()
-	//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
-	//		exampleMealPlan.Events = []*types.MealPlanOption{
-	//			{
-	//				ID:       optionA,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    1,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    2,
-	//						ByUser:                  userID4,
-	//					},
-	//				},
-	//				Chosen: true,
-	//			},
-	//			{
-	//				ID:       optionB,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    0,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID4,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    2,
-	//						ByUser:                  userID1,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionC,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    0,
-	//						ByUser:                  userID4,
-	//					},
-	//
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    1,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID3,
-	//					},
-	//				},
-	//			},
-	//		}
-	//
-	//		c, db := buildTestClient(t)
-	//
-	//		getHouseholdByIDArgs := []interface{}{
-	//			exampleHousehold.ID,
-	//		}
-	//
-	//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
-	//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
-	//			WillReturnError(errors.New("blah"))
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
-	//		assert.False(t, actual)
-	//		assert.Error(t, err)
-	//
-	//		mock.AssertExpectationsForObjects(t, db)
-	//	})
-	//
-	//	T.Run("with error beginning transaction", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		ctx := context.Background()
-	//		exampleHousehold := fakes.BuildFakeHousehold()
-	//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID1},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID2},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID3},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID4},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//		}
-	//
-	//		exampleMealPlan := fakes.BuildFakeMealPlan()
-	//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
-	//		exampleMealPlan.Events = []*types.MealPlanOption{
-	//			{
-	//				ID:       optionA,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    1,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    2,
-	//						ByUser:                  userID4,
-	//					},
-	//				},
-	//				Chosen: true,
-	//			},
-	//			{
-	//				ID:       optionB,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    0,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID4,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    2,
-	//						ByUser:                  userID1,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionC,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    0,
-	//						ByUser:                  userID4,
-	//					},
-	//
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    1,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID3,
-	//					},
-	//				},
-	//			},
-	//		}
-	//
-	//		c, db := buildTestClient(t)
-	//
-	//		getHouseholdByIDArgs := []interface{}{
-	//			exampleHousehold.ID,
-	//		}
-	//
-	//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
-	//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
-	//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
-	//
-	//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
-	//
-	//		db.ExpectBegin().WillReturnError(errors.New("blah"))
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
-	//		assert.False(t, actual)
-	//		assert.Error(t, err)
-	//
-	//		mock.AssertExpectationsForObjects(t, db)
-	//	})
-	//
-	//	T.Run("with error fetching meal plan", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		ctx := context.Background()
-	//		exampleHousehold := fakes.BuildFakeHousehold()
-	//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID1},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID2},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID3},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID4},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//		}
-	//
-	//		exampleMealPlan := fakes.BuildFakeMealPlan()
-	//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
-	//		exampleMealPlan.Events = []*types.MealPlanOption{
-	//			{
-	//				ID:       optionA,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    1,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    2,
-	//						ByUser:                  userID4,
-	//					},
-	//				},
-	//				Chosen: true,
-	//			},
-	//			{
-	//				ID:       optionB,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    0,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID4,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    2,
-	//						ByUser:                  userID1,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionC,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    0,
-	//						ByUser:                  userID4,
-	//					},
-	//
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    1,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID3,
-	//					},
-	//				},
-	//			},
-	//		}
-	//
-	//		c, db := buildTestClient(t)
-	//
-	//		getMealPlanArgs := []interface{}{
-	//			exampleMealPlan.ID,
-	//			exampleHousehold.ID,
-	//		}
-	//
-	//		getHouseholdByIDArgs := []interface{}{
-	//			exampleHousehold.ID,
-	//		}
-	//
-	//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
-	//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
-	//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
-	//
-	//		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
-	//			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-	//			WillReturnError(errors.New("blah"))
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
-	//		assert.False(t, actual)
-	//		assert.Error(t, err)
-	//
-	//		mock.AssertExpectationsForObjects(t, db)
-	//	})
-	//
-	//	T.Run("with error marking meal plan option as finalized", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		ctx := context.Background()
-	//		exampleHousehold := fakes.BuildFakeHousehold()
-	//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID1},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID2},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID3},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID4},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//		}
-	//
-	//		exampleMealPlan := fakes.BuildFakeMealPlan()
-	//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
-	//		exampleMealPlan.Events = []*types.MealPlanOption{
-	//			{
-	//				ID:       optionA,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    1,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    2,
-	//						ByUser:                  userID4,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionB,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    0,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID4,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    2,
-	//						ByUser:                  userID1,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionC,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    0,
-	//						ByUser:                  userID4,
-	//					},
-	//
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    1,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID3,
-	//					},
-	//				},
-	//			},
-	//		}
-	//
-	//		c, db := buildTestClient(t)
-	//
-	//		getHouseholdByIDArgs := []interface{}{
-	//			exampleHousehold.ID,
-	//		}
-	//
-	//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
-	//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
-	//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
-	//
-	//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
-	//
-	//		db.ExpectBegin()
-	//
-	//		for _, day := range allDays {
-	//			for _, mealName := range allMealNames {
-	//				options := byDayAndMeal(exampleMealPlan.Events, day, mealName)
-	//				if len(options) > 0 {
-	//					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
-	//
-	//					finalizeMealPlanOptionsArgs := []interface{}{
-	//						exampleMealPlan.ID,
-	//						winner,
-	//						tiebroken,
-	//					}
-	//
-	//					db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
-	//						WithArgs(interfaceToDriverValue(finalizeMealPlanOptionsArgs)...).
-	//						WillReturnError(errors.New("blah"))
-	//				}
-	//			}
-	//		}
-	//
-	//		db.ExpectRollback()
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
-	//		assert.False(t, actual)
-	//		assert.Error(t, err)
-	//
-	//		mock.AssertExpectationsForObjects(t, db)
-	//	})
-	//
-	//	T.Run("with error marking meal plan as finalized", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		ctx := context.Background()
-	//		exampleHousehold := fakes.BuildFakeHousehold()
-	//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID1},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID2},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID3},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID4},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//		}
-	//
-	//		exampleMealPlan := fakes.BuildFakeMealPlan()
-	//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
-	//		exampleMealPlan.Events = []*types.MealPlanOption{
-	//			{
-	//				ID:       optionA,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    1,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    2,
-	//						ByUser:                  userID4,
-	//					},
-	//				},
-	//				Chosen: true,
-	//			},
-	//			{
-	//				ID:       optionB,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    0,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID4,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    2,
-	//						ByUser:                  userID1,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionC,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    0,
-	//						ByUser:                  userID4,
-	//					},
-	//
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    1,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID3,
-	//					},
-	//				},
-	//			},
-	//		}
-	//
-	//		c, db := buildTestClient(t)
-	//
-	//		getHouseholdByIDArgs := []interface{}{
-	//			exampleHousehold.ID,
-	//		}
-	//
-	//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
-	//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
-	//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
-	//
-	//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
-	//
-	//		db.ExpectBegin()
-	//
-	//		finalizeOptionsArgs := []interface{}{
-	//			types.FinalizedMealPlanStatus,
-	//			exampleMealPlan.ID,
-	//		}
-	//
-	//		db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanQuery)).
-	//			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
-	//			WillReturnError(errors.New("blah"))
-	//
-	//		db.ExpectRollback()
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
-	//		assert.False(t, actual)
-	//		assert.Error(t, err)
-	//
-	//		mock.AssertExpectationsForObjects(t, db)
-	//	})
-	//
-	//	T.Run("with error committing transaction", func(t *testing.T) {
-	//		t.Parallel()
-	//
-	//		ctx := context.Background()
-	//		exampleHousehold := fakes.BuildFakeHousehold()
-	//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID1},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID2},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID3},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//			{
-	//				ID:                 fakes.BuildFakeID(),
-	//				BelongsToUser:      &types.User{ID: userID4},
-	//				BelongsToHousehold: exampleHousehold.ID,
-	//			},
-	//		}
-	//
-	//		exampleMealPlan := fakes.BuildFakeMealPlan()
-	//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
-	//		exampleMealPlan.Events = []*types.MealPlanOption{
-	//			{
-	//				ID:       optionA,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    0,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    1,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionA,
-	//						Rank:                    2,
-	//						ByUser:                  userID4,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionB,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    0,
-	//						ByUser:                  userID3,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    1,
-	//						ByUser:                  userID4,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionB,
-	//						Rank:                    2,
-	//						ByUser:                  userID1,
-	//					},
-	//				},
-	//			},
-	//			{
-	//				ID:       optionC,
-	//				Day:      time.Monday,
-	//				MealName: types.BreakfastMealName,
-	//				Meal:     *fakes.BuildFakeMeal(),
-	//				Votes: []*types.MealPlanOptionVote{
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    0,
-	//						ByUser:                  userID4,
-	//					},
-	//
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    1,
-	//						ByUser:                  userID1,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID2,
-	//					},
-	//					{
-	//						BelongsToMealPlanOption: optionC,
-	//						Rank:                    2,
-	//						ByUser:                  userID3,
-	//					},
-	//				},
-	//			},
-	//		}
-	//
-	//		c, db := buildTestClient(t)
-	//
-	//		getHouseholdByIDArgs := []interface{}{
-	//			exampleHousehold.ID,
-	//		}
-	//
-	//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
-	//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
-	//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
-	//
-	//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
-	//
-	//		db.ExpectBegin()
-	//
-	//		for _, day := range allDays {
-	//			for _, mealName := range allMealNames {
-	//				options := byDayAndMeal(exampleMealPlan.Events, day, mealName)
-	//				if len(options) > 0 {
-	//					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
-	//
-	//					finalizeMealPlanOptionsArgs := []interface{}{
-	//						exampleMealPlan.ID,
-	//						winner,
-	//						tiebroken,
-	//					}
-	//
-	//					db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
-	//						WithArgs(interfaceToDriverValue(finalizeMealPlanOptionsArgs)...).
-	//						WillReturnResult(newArbitraryDatabaseResult())
-	//				}
-	//			}
-	//		}
-	//
-	//		finalizeOptionsArgs := []interface{}{
-	//			types.FinalizedMealPlanStatus,
-	//			exampleMealPlan.ID,
-	//		}
-	//
-	//		db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanQuery)).
-	//			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
-	//			WillReturnResult(newArbitraryDatabaseResult())
-	//
-	//		db.ExpectCommit().WillReturnError(errors.New("blah"))
-	//
-	//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
-	//		assert.False(t, actual)
-	//		assert.Error(t, err)
-	//
-	//		mock.AssertExpectationsForObjects(t, db)
-	//	})
+	T.Run("with only some votes in", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      &types.User{ID: userID1},
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      &types.User{ID: userID2},
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      &types.User{ID: userID3},
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      &types.User{ID: userID4},
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+		}
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		exampleMealPlan.Events = []*types.MealPlanEvent{
+			{
+				Options: []*types.MealPlanOption{
+					{
+						ID:       optionA,
+						Day:      time.Monday,
+						MealName: types.BreakfastMealName,
+						Meal:     *fakes.BuildFakeMeal(),
+						Votes: []*types.MealPlanOptionVote{
+							{
+								BelongsToMealPlanOption: optionA,
+								Rank:                    0,
+								ByUser:                  userID1,
+							},
+							{
+								BelongsToMealPlanOption: optionA,
+								Rank:                    0,
+								ByUser:                  userID2,
+							},
+							{
+								BelongsToMealPlanOption: optionA,
+								Rank:                    2,
+								ByUser:                  userID4,
+							},
+						},
+					},
+					{
+						ID:       optionB,
+						Day:      time.Monday,
+						MealName: types.BreakfastMealName,
+						Meal:     *fakes.BuildFakeMeal(),
+						Votes: []*types.MealPlanOptionVote{
+							{
+								BelongsToMealPlanOption: optionB,
+								Rank:                    1,
+								ByUser:                  userID2,
+							},
+							{
+								BelongsToMealPlanOption: optionB,
+								Rank:                    1,
+								ByUser:                  userID4,
+							},
+							{
+								BelongsToMealPlanOption: optionB,
+								Rank:                    2,
+								ByUser:                  userID1,
+							},
+						},
+					},
+					{
+						ID:       optionC,
+						Day:      time.Monday,
+						MealName: types.BreakfastMealName,
+						Meal:     *fakes.BuildFakeMeal(),
+						Votes: []*types.MealPlanOptionVote{
+							{
+								BelongsToMealPlanOption: optionC,
+								Rank:                    0,
+								ByUser:                  userID4,
+							},
+
+							{
+								BelongsToMealPlanOption: optionC,
+								Rank:                    1,
+								ByUser:                  userID1,
+							},
+							{
+								BelongsToMealPlanOption: optionC,
+								Rank:                    2,
+								ByUser:                  userID2,
+							},
+						},
+					},
+				},
+			},
+		}
+
+		c, db := buildTestClient(t)
+
+		getHouseholdByIDArgs := []interface{}{
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
+
+		for _, evt := range exampleMealPlan.Events {
+			getMealPlanEventArgs := []interface{}{
+				exampleMealPlan.ID,
+			}
+
+			db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventForMealPlanQuery)).
+				WithArgs(interfaceToDriverValue(getMealPlanEventArgs)...).
+				WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, evt))
+
+			getMealPlanOptionsForMealPlanEventsArgs := []interface{}{
+				evt.ID,
+				exampleMealPlan.ID,
+			}
+
+			db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventsQuery)).
+				WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
+				WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
+		}
+
+		for _, event := range exampleMealPlan.Events {
+			for _, opt := range event.Options {
+				votesForOptionArgs := []interface{}{
+					opt.ID,
+					exampleMealPlan.ID,
+				}
+
+				db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVotesForMealPlanOptionQuery)).
+					WithArgs(interfaceToDriverValue(votesForOptionArgs)...).
+					WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, opt.Votes...))
+			}
+		}
+
+		db.ExpectBegin()
+
+		for _, event := range exampleMealPlan.Events {
+			if len(event.Options) > 0 {
+				winner, tiebroken, chosen := c.decideOptionWinner(ctx, event.Options)
+				if chosen {
+					finalizeMealPlanOptionsArgs := []interface{}{
+						exampleMealPlan.ID,
+						winner,
+						tiebroken,
+					}
+
+					db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
+						WithArgs(interfaceToDriverValue(finalizeMealPlanOptionsArgs)...).
+						WillReturnResult(newArbitraryDatabaseResult())
+				}
+			}
+		}
+
+		db.ExpectCommit()
+
+		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		assert.False(t, actual)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid meal plan ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		ctx := context.Background()
+
+		c, _ := buildTestClient(t)
+
+		actual, err := c.AttemptToFinalizeMealPlan(ctx, "", exampleHousehold.ID)
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid household ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		ctx := context.Background()
+
+		c, _ := buildTestClient(t)
+
+		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, "")
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with error fetching household", func(t *testing.T) {
+		t.Parallel()
+
+		//		ctx := context.Background()
+		//		exampleHousehold := fakes.BuildFakeHousehold()
+		//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID1},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID2},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID3},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID4},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//		}
+		//
+		//		exampleMealPlan := fakes.BuildFakeMealPlan()
+		//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		//		exampleMealPlan.Events = []*types.MealPlanOption{
+		//			{
+		//				ID:       optionA,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    1,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    2,
+		//						ByUser:                  userID4,
+		//					},
+		//				},
+		//				Chosen: true,
+		//			},
+		//			{
+		//				ID:       optionB,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    0,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID4,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    2,
+		//						ByUser:                  userID1,
+		//					},
+		//				},
+		//			},
+		//			{
+		//				ID:       optionC,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    0,
+		//						ByUser:                  userID4,
+		//					},
+		//
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    1,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID3,
+		//					},
+		//				},
+		//			},
+		//		}
+		//
+		//		c, db := buildTestClient(t)
+		//
+		//		getHouseholdByIDArgs := []interface{}{
+		//			exampleHousehold.ID,
+		//		}
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
+		//			WillReturnError(errors.New("blah"))
+		//
+		//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		//		assert.False(t, actual)
+		//		assert.Error(t, err)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error beginning transaction", func(t *testing.T) {
+		t.Parallel()
+
+		//		ctx := context.Background()
+		//		exampleHousehold := fakes.BuildFakeHousehold()
+		//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID1},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID2},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID3},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID4},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//		}
+		//
+		//		exampleMealPlan := fakes.BuildFakeMealPlan()
+		//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		//		exampleMealPlan.Events = []*types.MealPlanOption{
+		//			{
+		//				ID:       optionA,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    1,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    2,
+		//						ByUser:                  userID4,
+		//					},
+		//				},
+		//				Chosen: true,
+		//			},
+		//			{
+		//				ID:       optionB,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    0,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID4,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    2,
+		//						ByUser:                  userID1,
+		//					},
+		//				},
+		//			},
+		//			{
+		//				ID:       optionC,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    0,
+		//						ByUser:                  userID4,
+		//					},
+		//
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    1,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID3,
+		//					},
+		//				},
+		//			},
+		//		}
+		//
+		//		c, db := buildTestClient(t)
+		//
+		//		getHouseholdByIDArgs := []interface{}{
+		//			exampleHousehold.ID,
+		//		}
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
+		//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+		//
+		//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
+		//
+		//		db.ExpectBegin().WillReturnError(errors.New("blah"))
+		//
+		//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		//		assert.False(t, actual)
+		//		assert.Error(t, err)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error fetching meal plan", func(t *testing.T) {
+		t.Parallel()
+
+		//		ctx := context.Background()
+		//		exampleHousehold := fakes.BuildFakeHousehold()
+		//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID1},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID2},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID3},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID4},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//		}
+		//
+		//		exampleMealPlan := fakes.BuildFakeMealPlan()
+		//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		//		exampleMealPlan.Events = []*types.MealPlanOption{
+		//			{
+		//				ID:       optionA,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    1,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    2,
+		//						ByUser:                  userID4,
+		//					},
+		//				},
+		//				Chosen: true,
+		//			},
+		//			{
+		//				ID:       optionB,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    0,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID4,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    2,
+		//						ByUser:                  userID1,
+		//					},
+		//				},
+		//			},
+		//			{
+		//				ID:       optionC,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    0,
+		//						ByUser:                  userID4,
+		//					},
+		//
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    1,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID3,
+		//					},
+		//				},
+		//			},
+		//		}
+		//
+		//		c, db := buildTestClient(t)
+		//
+		//		getMealPlanArgs := []interface{}{
+		//			exampleMealPlan.ID,
+		//			exampleHousehold.ID,
+		//		}
+		//
+		//		getHouseholdByIDArgs := []interface{}{
+		//			exampleHousehold.ID,
+		//		}
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
+		//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+		//			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+		//			WillReturnError(errors.New("blah"))
+		//
+		//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		//		assert.False(t, actual)
+		//		assert.Error(t, err)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error marking meal plan option as finalized", func(t *testing.T) {
+		t.Parallel()
+
+		//		ctx := context.Background()
+		//		exampleHousehold := fakes.BuildFakeHousehold()
+		//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID1},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID2},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID3},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID4},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//		}
+		//
+		//		exampleMealPlan := fakes.BuildFakeMealPlan()
+		//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		//		exampleMealPlan.Events = []*types.MealPlanOption{
+		//			{
+		//				ID:       optionA,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    1,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    2,
+		//						ByUser:                  userID4,
+		//					},
+		//				},
+		//			},
+		//			{
+		//				ID:       optionB,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    0,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID4,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    2,
+		//						ByUser:                  userID1,
+		//					},
+		//				},
+		//			},
+		//			{
+		//				ID:       optionC,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    0,
+		//						ByUser:                  userID4,
+		//					},
+		//
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    1,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID3,
+		//					},
+		//				},
+		//			},
+		//		}
+		//
+		//		c, db := buildTestClient(t)
+		//
+		//		getHouseholdByIDArgs := []interface{}{
+		//			exampleHousehold.ID,
+		//		}
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
+		//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+		//
+		//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
+		//
+		//		db.ExpectBegin()
+		//
+		//		for _, day := range allDays {
+		//			for _, mealName := range allMealNames {
+		//				options := byDayAndMeal(exampleMealPlan.Events, day, mealName)
+		//				if len(options) > 0 {
+		//					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
+		//
+		//					finalizeMealPlanOptionsArgs := []interface{}{
+		//						exampleMealPlan.ID,
+		//						winner,
+		//						tiebroken,
+		//					}
+		//
+		//					db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
+		//						WithArgs(interfaceToDriverValue(finalizeMealPlanOptionsArgs)...).
+		//						WillReturnError(errors.New("blah"))
+		//				}
+		//			}
+		//		}
+		//
+		//		db.ExpectRollback()
+		//
+		//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		//		assert.False(t, actual)
+		//		assert.Error(t, err)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error marking meal plan as finalized", func(t *testing.T) {
+		t.Parallel()
+		//
+		//		ctx := context.Background()
+		//		exampleHousehold := fakes.BuildFakeHousehold()
+		//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID1},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID2},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID3},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID4},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//		}
+		//
+		//		exampleMealPlan := fakes.BuildFakeMealPlan()
+		//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		//		exampleMealPlan.Events = []*types.MealPlanOption{
+		//			{
+		//				ID:       optionA,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    1,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    2,
+		//						ByUser:                  userID4,
+		//					},
+		//				},
+		//				Chosen: true,
+		//			},
+		//			{
+		//				ID:       optionB,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    0,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID4,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    2,
+		//						ByUser:                  userID1,
+		//					},
+		//				},
+		//			},
+		//			{
+		//				ID:       optionC,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    0,
+		//						ByUser:                  userID4,
+		//					},
+		//
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    1,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID3,
+		//					},
+		//				},
+		//			},
+		//		}
+		//
+		//		c, db := buildTestClient(t)
+		//
+		//		getHouseholdByIDArgs := []interface{}{
+		//			exampleHousehold.ID,
+		//		}
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
+		//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+		//
+		//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
+		//
+		//		db.ExpectBegin()
+		//
+		//		finalizeOptionsArgs := []interface{}{
+		//			types.FinalizedMealPlanStatus,
+		//			exampleMealPlan.ID,
+		//		}
+		//
+		//		db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanQuery)).
+		//			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
+		//			WillReturnError(errors.New("blah"))
+		//
+		//		db.ExpectRollback()
+		//
+		//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		//		assert.False(t, actual)
+		//		assert.Error(t, err)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error committing transaction", func(t *testing.T) {
+		t.Parallel()
+		//
+		//		ctx := context.Background()
+		//		exampleHousehold := fakes.BuildFakeHousehold()
+		//		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID1},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID2},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID3},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//			{
+		//				ID:                 fakes.BuildFakeID(),
+		//				BelongsToUser:      &types.User{ID: userID4},
+		//				BelongsToHousehold: exampleHousehold.ID,
+		//			},
+		//		}
+		//
+		//		exampleMealPlan := fakes.BuildFakeMealPlan()
+		//		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		//		exampleMealPlan.Events = []*types.MealPlanOption{
+		//			{
+		//				ID:       optionA,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    0,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    1,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionA,
+		//						Rank:                    2,
+		//						ByUser:                  userID4,
+		//					},
+		//				},
+		//			},
+		//			{
+		//				ID:       optionB,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    0,
+		//						ByUser:                  userID3,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    1,
+		//						ByUser:                  userID4,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionB,
+		//						Rank:                    2,
+		//						ByUser:                  userID1,
+		//					},
+		//				},
+		//			},
+		//			{
+		//				ID:       optionC,
+		//				Day:      time.Monday,
+		//				MealName: types.BreakfastMealName,
+		//				Meal:     *fakes.BuildFakeMeal(),
+		//				Votes: []*types.MealPlanOptionVote{
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    0,
+		//						ByUser:                  userID4,
+		//					},
+		//
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    1,
+		//						ByUser:                  userID1,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID2,
+		//					},
+		//					{
+		//						BelongsToMealPlanOption: optionC,
+		//						Rank:                    2,
+		//						ByUser:                  userID3,
+		//					},
+		//				},
+		//			},
+		//		}
+		//
+		//		c, db := buildTestClient(t)
+		//
+		//		getHouseholdByIDArgs := []interface{}{
+		//			exampleHousehold.ID,
+		//		}
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		//			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
+		//			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+		//
+		//		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, c, db)
+		//
+		//		db.ExpectBegin()
+		//
+		//		for _, day := range allDays {
+		//			for _, mealName := range allMealNames {
+		//				options := byDayAndMeal(exampleMealPlan.Events, day, mealName)
+		//				if len(options) > 0 {
+		//					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
+		//
+		//					finalizeMealPlanOptionsArgs := []interface{}{
+		//						exampleMealPlan.ID,
+		//						winner,
+		//						tiebroken,
+		//					}
+		//
+		//					db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
+		//						WithArgs(interfaceToDriverValue(finalizeMealPlanOptionsArgs)...).
+		//						WillReturnResult(newArbitraryDatabaseResult())
+		//				}
+		//			}
+		//		}
+		//
+		//		finalizeOptionsArgs := []interface{}{
+		//			types.FinalizedMealPlanStatus,
+		//			exampleMealPlan.ID,
+		//		}
+		//
+		//		db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanQuery)).
+		//			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
+		//			WillReturnResult(newArbitraryDatabaseResult())
+		//
+		//		db.ExpectCommit().WillReturnError(errors.New("blah"))
+		//
+		//		actual, err := c.AttemptToFinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		//		assert.False(t, actual)
+		//		assert.Error(t, err)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
 }
 
-//func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
-//	T.Parallel()
-//
-//	T.Run("standard", func(t *testing.T) {
-//		t.Parallel()
-//
-//		expected := []*types.MealPlan{}
-//		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-//		for _, mp := range exampleMealPlanList.MealPlans {
-//			mp.Events = nil
-//			expected = append(expected, mp)
-//		}
-//
-//		ctx := context.Background()
-//		c, db := buildTestClient(t)
-//
-//		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
-//			WithArgs().
-//			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
-//
-//		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-//		assert.NoError(t, err)
-//		assert.Equal(t, expected, actual)
-//
-//		mock.AssertExpectationsForObjects(t, db)
-//	})
-//
-//	T.Run("with error performing query", func(t *testing.T) {
-//		t.Parallel()
-//
-//		ctx := context.Background()
-//		c, db := buildTestClient(t)
-//
-//		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
-//			WithArgs().
-//			WillReturnError(errors.New("blah"))
-//
-//		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-//		assert.Error(t, err)
-//		assert.Nil(t, actual)
-//
-//		mock.AssertExpectationsForObjects(t, db)
-//	})
-//
-//	T.Run("with error scanning response", func(t *testing.T) {
-//		t.Parallel()
-//
-//		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-//		for _, mp := range exampleMealPlanList.MealPlans {
-//			mp.Events = nil
-//		}
-//
-//		ctx := context.Background()
-//		c, db := buildTestClient(t)
-//
-//		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
-//			WithArgs().
-//			WillReturnRows(buildInvalidMockRowsFromListOfIDs([]string{"things", "and", "stuff"}))
-//
-//		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-//		assert.Error(t, err)
-//		assert.Nil(t, actual)
-//
-//		mock.AssertExpectationsForObjects(t, db)
-//	})
-//
-//	T.Run("with error closing rows", func(t *testing.T) {
-//		t.Parallel()
-//
-//		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-//		for _, mp := range exampleMealPlanList.MealPlans {
-//			mp.Events = nil
-//		}
-//
-//		ctx := context.Background()
-//		c, db := buildTestClient(t)
-//
-//		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
-//			WithArgs().
-//			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...).RowError(0, errors.New("blah")))
-//
-//		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-//		assert.Error(t, err)
-//		assert.Nil(t, actual)
-//
-//		mock.AssertExpectationsForObjects(t, db)
-//	})
-//}
+func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		//		expected := []*types.MealPlan{}
+		//		exampleMealPlanList := fakes.BuildFakeMealPlanList()
+		//		for _, mp := range exampleMealPlanList.MealPlans {
+		//			mp.Events = nil
+		//			expected = append(expected, mp)
+		//		}
+		//
+		//		ctx := context.Background()
+		//		c, db := buildTestClient(t)
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
+		//			WithArgs().
+		//			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
+		//
+		//		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+		//		assert.NoError(t, err)
+		//		assert.Equal(t, expected, actual)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error performing query", func(t *testing.T) {
+		t.Parallel()
+
+		//		ctx := context.Background()
+		//		c, db := buildTestClient(t)
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
+		//			WithArgs().
+		//			WillReturnError(errors.New("blah"))
+		//
+		//		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+		//		assert.Error(t, err)
+		//		assert.Nil(t, actual)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error scanning response", func(t *testing.T) {
+		t.Parallel()
+
+		//		exampleMealPlanList := fakes.BuildFakeMealPlanList()
+		//		for _, mp := range exampleMealPlanList.MealPlans {
+		//			mp.Events = nil
+		//		}
+		//
+		//		ctx := context.Background()
+		//		c, db := buildTestClient(t)
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
+		//			WithArgs().
+		//			WillReturnRows(buildInvalidMockRowsFromListOfIDs([]string{"things", "and", "stuff"}))
+		//
+		//		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+		//		assert.Error(t, err)
+		//		assert.Nil(t, actual)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error closing rows", func(t *testing.T) {
+		t.Parallel()
+
+		//		exampleMealPlanList := fakes.BuildFakeMealPlanList()
+		//		for _, mp := range exampleMealPlanList.MealPlans {
+		//			mp.Events = nil
+		//		}
+		//
+		//		ctx := context.Background()
+		//		c, db := buildTestClient(t)
+		//
+		//		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
+		//			WithArgs().
+		//			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...).RowError(0, errors.New("blah")))
+		//
+		//		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+		//		assert.Error(t, err)
+		//		assert.Nil(t, actual)
+		//
+		//		mock.AssertExpectationsForObjects(t, db)
+	})
+}

@@ -226,7 +226,7 @@ func (q *Querier) performReadQuery(ctx context.Context, querier database.SQLQuer
 
 	rows, err := querier.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing read query")
 	}
 
 	if rowsErr := rows.Err(); rowsErr != nil {

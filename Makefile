@@ -132,17 +132,21 @@ docker_lint:
 	@docker pull openpolicyagent/conftest:v0.28.3
 	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) openpolicyagent/conftest:v0.21.0 test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
+.PHONY: queries_lint
 queries_lint:
 	$(SQL_GENERATOR) compile
 
-.PHONY: lint
-lint: docker_lint queries_lint # check_terraform
+.PHONY: golang_lint
+golang_lint:
 	@docker pull golangci/golangci-lint:v1.46.2
 	docker run \
 		--rm \
 		--volume $(PWD):$(PWD) \
 		--workdir=$(PWD) \
 		golangci/golangci-lint:v1.46.2 golangci-lint run --config=.golangci.yml ./...
+
+.PHONY: lint
+lint: docker_lint queries_lint golang_lint # check_terraform
 
 .PHONY: clean_coverage
 clean_coverage:
