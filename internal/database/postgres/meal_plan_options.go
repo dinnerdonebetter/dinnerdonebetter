@@ -400,7 +400,7 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 	return x, nil
 }
 
-const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day,assigned_cook,assigned_dishwasher,meal_id,notes,belongs_to_meal_plan_event) VALUES ($1,$2,$3,$4,$5,$6,$7)"
+const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,assigned_cook,assigned_dishwasher,meal_id,notes,belongs_to_meal_plan_event) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // createMealPlanOption creates a meal plan option in the database.
 func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
@@ -451,16 +451,15 @@ func (q *Querier) CreateMealPlanOption(ctx context.Context, input *types.MealPla
 
 const updateMealPlanOptionQuery = `UPDATE meal_plan_options
 SET 
-	day = $1,
-	assigned_cook = $2,
-	assigned_dishwasher = $3,
-	meal_id = $4,
-	notes = $5,
-	prep_steps_created = $6,
+	assigned_cook = $1,
+	assigned_dishwasher = $2,
+	meal_id = $3,
+	notes = $4,
+	prep_steps_created = $5,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND belongs_to_meal_plan_event = $7 
-  AND id = $8
+  AND belongs_to_meal_plan_event = $6 
+  AND id = $7
 `
 
 // UpdateMealPlanOption updates a particular meal plan option.

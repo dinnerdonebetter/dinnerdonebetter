@@ -87,35 +87,40 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			exampleMealPlan := fakes.BuildFakeMealPlan()
+			exampleMealPlan.Events = []*types.MealPlanEvent{exampleMealPlan.Events[0]}
 			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 
 			require.NotEmpty(t, createdMealPlan.Events)
 			require.NotEmpty(t, createdMealPlan.Events[0].Options)
 
 			createdMealPlanEvent := createdMealPlan.Events[0]
+			createdMealPlanOption := createdMealPlanEvent.Options[0]
+			require.NotNil(t, createdMealPlanOption)
 
 			t.Log("creating meal plan options")
 			var expected []*types.MealPlanOption
 			for i := 0; i < 5; i++ {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
-				exampleMealPlanOption.BelongsToMealPlanEvent = createdMealPlan.ID
+				exampleMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
+				exampleMealPlanOption.BelongsToMealPlanEvent = createdMealPlanEvent.ID
 				exampleMealPlanOption.AssignedCook = nil
 
 				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 				exampleMealPlanOption.Meal.ID = createdMeal.ID
 
 				exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)
-				createdMealPlanOption, err := testClients.user.CreateMealPlanOption(ctx, createdMealPlan.ID, exampleMealPlanOptionInput)
+				newlyCreatedMealPlanOption, err := testClients.user.CreateMealPlanOption(ctx, createdMealPlan.ID, exampleMealPlanOptionInput)
 				require.NoError(t, err)
 				t.Logf("meal plan option %q created", createdMealPlanOption.ID)
 
-				checkMealPlanOptionEquality(t, exampleMealPlanOption, createdMealPlanOption)
+				checkMealPlanOptionEquality(t, exampleMealPlanOption, newlyCreatedMealPlanOption)
 
-				createdMealPlanOption, err = testClients.user.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID)
-				requireNotNilAndNoProblems(t, createdMealPlanOption, err)
-				require.Equal(t, createdMealPlan.ID, createdMealPlanOption.BelongsToMealPlanEvent)
+				newlyCreatedMealPlanOption, err = testClients.user.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID)
+				requireNotNilAndNoProblems(t, newlyCreatedMealPlanOption, err)
+				require.Equal(t, createdMealPlanEvent.ID, newlyCreatedMealPlanOption.BelongsToMealPlanEvent)
 
-				expected = append(expected, createdMealPlanOption)
+				expected = append(expected, newlyCreatedMealPlanOption)
 			}
 
 			// assert meal plan option list equality
@@ -128,11 +133,6 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				len(expected),
 				len(actual.MealPlanOptions),
 			)
-
-			t.Log("cleaning up")
-			for _, createdMealPlanOption := range expected {
-				assert.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID))
-			}
 
 			t.Log("cleaning up meal plan")
 			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))

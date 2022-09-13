@@ -55,14 +55,19 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := types.MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(providedInput)
 	input.ID = ksuid.New().String()
+	tracing.AttachMealPlanOptionIDToSpan(span, input.ID)
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	input.BelongsToMealPlanEvent = mealPlanID
-	tracing.AttachMealPlanOptionIDToSpan(span, input.ID)
+	// determine meal plan ID.
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+
+	input.BelongsToMealPlanEvent = mealPlanEventID
 
 	mealPlanOption, err := s.mealPlanOptionDataManager.CreateMealPlanOption(ctx, input)
 	if err != nil {

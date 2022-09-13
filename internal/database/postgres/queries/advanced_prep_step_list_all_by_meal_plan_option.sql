@@ -1,10 +1,8 @@
 SELECT
     advanced_prep_steps.id AS advanced_prep_steps_id,
     meal_plan_options.id AS meal_plan_options_id,
-    meal_plan_options.day,
     meal_plan_options.assigned_cook,
     meal_plan_options.assigned_dishwasher,
-    meal_plan_options.meal_name,
     meal_plan_options.chosen,
     meal_plan_options.tiebroken,
     meal_plan_options.meal_id,

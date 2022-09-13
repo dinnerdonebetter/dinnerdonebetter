@@ -55,7 +55,7 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			ProductOfRecipeStep: boolPointer(fake.Bool()),
 			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PreferenceRank:      uint8Pointer(fake.Uint8()),
+			PreferenceRank:      uint8Pointer(uint8(fake.Number(1, math.MaxUint8))),
 			Optional:            boolPointer(fake.Bool()),
 			MinimumQuantity:     uint32Pointer(fake.Uint32()),
 			MaximumQuantity:     uint32Pointer(fake.Uint32()),

@@ -14,5 +14,7 @@ DELETE FROM meal_plans WHERE id IS NOT NULL;
 
 ALTER TABLE meal_plans DROP COLUMN "starts_at";
 ALTER TABLE meal_plans DROP COLUMN "ends_at";
+ALTER TABLE meal_plan_options DROP COLUMN "day";
+ALTER TABLE meal_plan_options DROP COLUMN "meal_name";
 ALTER TABLE meal_plan_options DROP COLUMN "belongs_to_meal_plan";
 ALTER TABLE meal_plan_options ADD COLUMN "belongs_to_meal_plan_event" CHAR(27) REFERENCES meal_plan_events("id") ON DELETE CASCADE;
