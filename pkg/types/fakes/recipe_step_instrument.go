@@ -3,7 +3,6 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
-	"math"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -17,7 +16,7 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		ProductOfRecipeStep: fake.Bool(),
 		RecipeStepProductID: nil,
 		Notes:               buildUniqueString(),
-		PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
+		PreferenceRank:      fake.Uint8(),
 		CreatedAt:           fake.Date(),
 		BelongsToRecipeStep: fake.UUID(),
 		Optional:            fake.Bool(),
