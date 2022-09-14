@@ -20,6 +20,19 @@ const (
 	MealPlanEventUpdatedCustomerEventType CustomerEventType = "meal_plan_event_updated"
 	// MealPlanEventArchivedCustomerEventType indicates a meal plan was archived.
 	MealPlanEventArchivedCustomerEventType CustomerEventType = "meal_plan_event_archived"
+
+	// BreakfastMealName represents breakfast.
+	BreakfastMealName = "breakfast"
+	// SecondBreakfastMealName represents second breakfast.
+	SecondBreakfastMealName = "second_breakfast"
+	// BrunchMealName represents brunch.
+	BrunchMealName = "brunch"
+	// LunchMealName represents lunch.
+	LunchMealName = "lunch"
+	// SupperMealName represents supper.
+	SupperMealName = "supper"
+	// DinnerMealName represents dinner.
+	DinnerMealName = "dinner"
 )
 
 func init() {

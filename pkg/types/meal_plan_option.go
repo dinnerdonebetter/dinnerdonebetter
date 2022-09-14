@@ -21,19 +21,6 @@ const (
 	MealPlanOptionArchivedCustomerEventType CustomerEventType = "meal_plan_option_archived"
 	// MealPlanOptionFinalizedCreatedCustomerEventType indicates a meal plan option was created.
 	MealPlanOptionFinalizedCreatedCustomerEventType CustomerEventType = "meal_plan_option_finalized"
-
-	// BreakfastMealName represents breakfast.
-	BreakfastMealName = "breakfast"
-	// SecondBreakfastMealName represents second breakfast.
-	SecondBreakfastMealName = "second_breakfast"
-	// BrunchMealName represents brunch.
-	BrunchMealName = "brunch"
-	// LunchMealName represents lunch.
-	LunchMealName = "lunch"
-	// SupperMealName represents supper.
-	SupperMealName = "supper"
-	// DinnerMealName represents dinner.
-	DinnerMealName = "dinner"
 )
 
 func init() {
