@@ -13,7 +13,7 @@ import (
 func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -95,7 +95,7 @@ func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -166,7 +166,7 @@ func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/vote"
+	const expectedPath = "/api/v1/meal_plans/%s/events/%s/vote"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -243,7 +243,7 @@ func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 func TestBuilder_BuildUpdateMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -306,7 +306,7 @@ func TestBuilder_BuildUpdateMealPlanOptionVoteRequest(T *testing.T) {
 func TestBuilder_BuildArchiveMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

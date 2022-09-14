@@ -44,7 +44,7 @@ type mealPlanOptionsTestSuite struct {
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOption() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -101,7 +101,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOption() {
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options"
+	const expectedPath = "/api/v1/meal_plans/%s/events/%s/options"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -158,7 +158,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options"
+	const expectedPath = "/api/v1/meal_plans/%s/events/%s/options"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -220,7 +220,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_UpdateMealPlanOption() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -261,7 +261,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_UpdateMealPlanOption() {
 }
 
 func (s *mealPlanOptionsTestSuite) TestClient_ArchiveMealPlanOption() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s"
 
 	s.Run("standard", func() {
 		t := s.T()

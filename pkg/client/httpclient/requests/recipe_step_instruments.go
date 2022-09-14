@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	recipeStepInstrumentsBasePath = "recipe_step_instruments"
+	recipeStepInstrumentsBasePath = "instruments"
 )
 
 // BuildGetRecipeStepInstrumentRequest builds an HTTP request for fetching a recipe step instrument.

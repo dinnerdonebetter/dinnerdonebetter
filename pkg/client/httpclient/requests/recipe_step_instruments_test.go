@@ -13,7 +13,7 @@ import (
 func TestBuilder_BuildGetRecipeStepInstrumentRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_instruments/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/instruments/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -90,7 +90,7 @@ func TestBuilder_BuildGetRecipeStepInstrumentRequest(T *testing.T) {
 func TestBuilder_BuildGetRecipeStepInstrumentsRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_instruments"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/instruments"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -157,7 +157,7 @@ func TestBuilder_BuildGetRecipeStepInstrumentsRequest(T *testing.T) {
 func TestBuilder_BuildCreateRecipeStepInstrumentRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_instruments"
+	const expectedPath = "/api/v1/recipes/%s/steps/%s/instruments"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -229,7 +229,7 @@ func TestBuilder_BuildCreateRecipeStepInstrumentRequest(T *testing.T) {
 func TestBuilder_BuildUpdateRecipeStepInstrumentRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_instruments/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/instruments/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -289,7 +289,7 @@ func TestBuilder_BuildUpdateRecipeStepInstrumentRequest(T *testing.T) {
 func TestBuilder_BuildArchiveRecipeStepInstrumentRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_instruments/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/instruments/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

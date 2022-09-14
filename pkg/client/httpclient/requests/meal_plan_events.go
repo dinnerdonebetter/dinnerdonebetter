@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	mealPlanEventsBasePath = "meal_plan_events"
+	mealPlanEventsBasePath = "events"
 )
 
 // BuildGetMealPlanEventRequest builds an HTTP request for fetching a meal plan option.

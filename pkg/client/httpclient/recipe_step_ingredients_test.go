@@ -44,7 +44,7 @@ type recipeStepIngredientsTestSuite struct {
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredient() {
-	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -111,7 +111,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredient() {
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredients() {
-	const expectedPath = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients"
+	const expectedPath = "/api/v1/recipes/%s/steps/%s/ingredients"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -180,7 +180,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredients() {
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient() {
-	const expectedPath = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients"
+	const expectedPath = "/api/v1/recipes/%s/steps/%s/ingredients"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -255,7 +255,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient()
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_UpdateRecipeStepIngredient() {
-	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -305,7 +305,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_UpdateRecipeStepIngredient()
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_ArchiveRecipeStepIngredient() {
-	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()

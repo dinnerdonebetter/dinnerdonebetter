@@ -48,7 +48,7 @@ type mealPlanOptionVotesTestSuite struct {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVote() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -115,7 +115,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVote() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes"
+	const expectedPath = "/api/v1/meal_plans/%s/events/%s/options/%s/votes"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -184,7 +184,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/vote"
+	const expectedPath = "/api/v1/meal_plans/%s/events/%s/vote"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -257,7 +257,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_UpdateMealPlanOptionVote() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -307,7 +307,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_UpdateMealPlanOptionVote() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_ArchiveMealPlanOptionVote() {
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	s.Run("standard", func() {
 		t := s.T()

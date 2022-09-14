@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	mealPlanOptionVotesBasePath = "meal_plan_option_votes"
+	mealPlanOptionVotesBasePath = "votes"
 )
 
 // BuildGetMealPlanOptionVoteRequest builds an HTTP request for fetching a meal plan option vote.

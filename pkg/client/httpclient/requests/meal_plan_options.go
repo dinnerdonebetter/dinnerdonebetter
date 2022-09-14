@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	mealPlanOptionsBasePath = "meal_plan_options"
+	mealPlanOptionsBasePath = "options"
 )
 
 // BuildGetMealPlanOptionRequest builds an HTTP request for fetching a meal plan option.

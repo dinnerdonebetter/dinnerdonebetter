@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	recipeStepIngredientsBasePath = "recipe_step_ingredients"
+	recipeStepIngredientsBasePath = "ingredients"
 )
 
 // BuildGetRecipeStepIngredientRequest builds an HTTP request for fetching a recipe step ingredient.

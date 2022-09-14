@@ -13,7 +13,7 @@ import (
 func TestBuilder_BuildGetMealPlanOptionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -77,7 +77,7 @@ func TestBuilder_BuildGetMealPlanOptionRequest(T *testing.T) {
 func TestBuilder_BuildGetMealPlanOptionsRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -129,7 +129,7 @@ func TestBuilder_BuildGetMealPlanOptionsRequest(T *testing.T) {
 func TestBuilder_BuildCreateMealPlanOptionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options"
+	const expectedPath = "/api/v1/meal_plans/%s/events/%s/options"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -189,7 +189,7 @@ func TestBuilder_BuildCreateMealPlanOptionRequest(T *testing.T) {
 func TestBuilder_BuildUpdateMealPlanOptionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -237,7 +237,7 @@ func TestBuilder_BuildUpdateMealPlanOptionRequest(T *testing.T) {
 func TestBuilder_BuildArchiveMealPlanOptionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_events/%s/meal_plan_options/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

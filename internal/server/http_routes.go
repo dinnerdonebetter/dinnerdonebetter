@@ -505,7 +505,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// RecipeSteps
-		recipeStepPath := "recipe_steps"
+		recipeStepPath := "steps"
 		recipeStepsRoute := path.Join(
 			recipePath,
 			recipeIDRouteParam,
@@ -535,7 +535,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// RecipeStepInstruments
-		recipeStepInstrumentPath := "recipe_step_instruments"
+		recipeStepInstrumentPath := "instruments"
 		recipeStepInstrumentsRoute := path.Join(
 			recipePath,
 			recipeIDRouteParam,
@@ -567,7 +567,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// RecipeStepIngredients
-		recipeStepIngredientPath := "recipe_step_ingredients"
+		recipeStepIngredientPath := "ingredients"
 		recipeStepIngredientsRoute := path.Join(
 			recipePath,
 			recipeIDRouteParam,
@@ -599,7 +599,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// RecipeStepProducts
-		recipeStepProductPath := "recipe_step_products"
+		recipeStepProductPath := "products"
 		recipeStepProductsRoute := path.Join(
 			recipePath,
 			recipeIDRouteParam,
@@ -656,7 +656,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// MealPlanEvents
-		mealPlanEventPath := "meal_plan_events"
+		mealPlanEventPath := "events"
 		mealPlanEventsRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
@@ -689,7 +689,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// MealPlanOptions
-		mealPlanOptionPath := "meal_plan_options"
+		mealPlanOptionPath := "options"
 		mealPlanOptionsRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
@@ -721,7 +721,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// MealPlanOptionVotes
-		mealPlanOptionVotePath := "meal_plan_option_votes"
+		mealPlanOptionVotePath := "votes"
 		mealPlanOptionVotesRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
