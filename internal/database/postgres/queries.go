@@ -7,6 +7,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -383,4 +384,25 @@ func (q *Querier) buildListQueryWithILike(
 	query, selectArgs := q.buildQuery(span, builder)
 
 	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), selectArgs...)
+}
+
+// scanIDs takes some database rows and turns them into a slice of recipes.
+func (q *Querier) scanIDs(ctx context.Context, rows database.ResultIterator) (ids []string, err error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	for rows.Next() {
+		var x string
+		if err = rows.Scan(&x); err != nil {
+			return nil, observability.PrepareError(err, span, "scanning ID")
+		}
+
+		ids = append(ids, x)
+	}
+
+	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
+		return nil, observability.PrepareError(err, span, "handling rows")
+	}
+
+	return ids, nil
 }

@@ -197,7 +197,7 @@ func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecut
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
-		logger = logger.WithValue("query", query).WithValue("args", args)
+		logger = logger.WithValue("args", args)
 	}
 
 	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s single row fetch query", queryDescription), query, args)
@@ -219,7 +219,7 @@ func (q *Querier) performReadQuery(ctx context.Context, querier database.SQLQuer
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
-		logger = logger.WithValue("query", query).WithValue("args", args)
+		logger = logger.WithValue("args", args)
 	}
 
 	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s fetch query", queryDescription), query, args)
@@ -273,7 +273,7 @@ func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQue
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
-		logger = logger.WithValue("query", query).WithValue("args", args)
+		logger = logger.WithValue("args", args)
 	}
 
 	tracing.AttachDatabaseQueryToSpan(span, queryDescription, query, args)

@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
@@ -382,6 +383,35 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	}
 
 	if x.Recipes, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
+		return nil, observability.PrepareError(err, span, "scanning recipes")
+	}
+
+	return x, nil
+}
+
+//go:embed queries/recipes_ids_for_meal.sql
+var getRecipesForMealQuery string
+
+// getRecipeIDsForMeal fetches a list of recipe IDs from the database that are associated with a given meal.
+func (q *Querier) getRecipeIDsForMeal(ctx context.Context, mealID string) (x []string, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealIDToSpan(span, mealID)
+
+	args := []interface{}{
+		mealID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "recipes", getRecipesForMealQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
+	}
+
+	if x, err = q.scanIDs(ctx, rows); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning recipes")
 	}
 
