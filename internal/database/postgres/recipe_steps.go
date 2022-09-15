@@ -56,8 +56,6 @@ func (q *Querier) scanRecipeStep(ctx context.Context, scan database.Scanner, inc
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.RecipeStep{}
 
 	targetVars := []interface{}{
@@ -92,7 +90,7 @@ func (q *Querier) scanRecipeStep(ctx context.Context, scan database.Scanner, inc
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -102,8 +100,6 @@ func (q *Querier) scanRecipeStep(ctx context.Context, scan database.Scanner, inc
 func (q *Querier) scanRecipeSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeSteps []*types.RecipeStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanRecipeStep(ctx, rows, includeCounts)
@@ -125,7 +121,7 @@ func (q *Querier) scanRecipeSteps(ctx context.Context, rows database.ResultItera
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return recipeSteps, filteredCount, totalCount, nil
@@ -160,7 +156,7 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 
 	result, err := q.performBooleanQuery(ctx, q.db, recipeStepExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing recipe step existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe step existence check")
 	}
 
 	return result, nil
@@ -230,7 +226,7 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 
 	recipeStep, _, _, err := q.scanRecipeStep(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipeStep")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStep")
 	}
 
 	return recipeStep, nil
@@ -267,11 +263,11 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipeSteps", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing recipe steps list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe steps list retrieval query")
 	}
 
 	if x.RecipeSteps, x.FilteredCount, x.TotalCount, err = q.scanRecipeSteps(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipe steps")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe steps")
 	}
 
 	return x, nil
@@ -291,8 +287,6 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.ID)
-
 	args := []interface{}{
 		input.ID,
 		input.Index,
@@ -309,7 +303,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 
 	// create the recipe step.
 	if err := q.performWriteQuery(ctx, db, "recipe step creation", recipeStepCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing recipe step creation")
+		return nil, observability.PrepareError(err, span, "performing recipe step creation")
 	}
 
 	x := &types.RecipeStep{
@@ -331,7 +325,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		ingredientInput.BelongsToRecipeStep = x.ID
 		ingredient, createErr := q.createRecipeStepIngredient(ctx, db, ingredientInput)
 		if createErr != nil {
-			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step ingredient #%d", i+1)
+			return nil, observability.PrepareError(createErr, span, "creating recipe step ingredient #%d", i+1)
 		}
 
 		x.Ingredients = append(x.Ingredients, ingredient)
@@ -341,7 +335,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		productInput.BelongsToRecipeStep = x.ID
 		product, createErr := q.createRecipeStepProduct(ctx, db, productInput)
 		if createErr != nil {
-			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step product #%d", i+1)
+			return nil, observability.PrepareError(createErr, span, "creating recipe step product #%d", i+1)
 		}
 
 		x.Products = append(x.Products, product)
@@ -351,7 +345,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		instrumentInput.BelongsToRecipeStep = x.ID
 		instrument, createErr := q.createRecipeStepInstrument(ctx, db, instrumentInput)
 		if createErr != nil {
-			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step instrument #%d", i+1)
+			return nil, observability.PrepareError(createErr, span, "creating recipe step instrument #%d", i+1)
 		}
 
 		x.Instruments = append(x.Instruments, instrument)
@@ -410,7 +404,7 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step update", updateRecipeStepQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe step")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
 
 	logger.Info("recipe step updated")
@@ -445,7 +439,7 @@ func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step archive", archiveRecipeStepQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe step")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
 
 	logger.Info("recipe step archived")

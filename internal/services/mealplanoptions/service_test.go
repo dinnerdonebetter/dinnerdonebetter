@@ -13,6 +13,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
@@ -37,6 +38,10 @@ func TestProvideMealPlanOptionsService(T *testing.T) {
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			mealplansservice.MealPlanIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			mealplaneventsservice.MealPlanEventIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",

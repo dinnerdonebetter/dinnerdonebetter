@@ -53,7 +53,7 @@ func (sm *indexManager) Index(ctx context.Context, id string, value interface{})
 		Header:              nil,
 	}.Do(ctx, sm.esclient)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "indexing value")
+		return observability.PrepareError(err, span, "indexing value")
 	}
 
 	if res.StatusCode != http.StatusOK {
@@ -146,7 +146,7 @@ func (sm *indexManager) search(ctx context.Context, byField, query, householdID 
 
 	queryBody, err := json.Marshal(q)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "encodign search query")
+		return nil, observability.PrepareError(err, span, "encodign search query")
 	}
 
 	res, err := sm.esclient.Search(
@@ -162,28 +162,28 @@ func (sm *indexManager) search(ctx context.Context, byField, query, householdID 
 	}()
 
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "querying elasticsearch successfully")
+		return nil, observability.PrepareError(err, span, "querying elasticsearch successfully")
 	}
 
 	if res.IsError() {
 		var e map[string]interface{}
 		if err = json.NewDecoder(res.Body).Decode(&e); err != nil {
-			return nil, observability.PrepareError(err, logger, span, "invalid response from elasticsearch")
+			return nil, observability.PrepareError(err, span, "invalid response from elasticsearch")
 		}
 
 		err = errors.New(strings.Join(res.Warnings(), ", "))
-		return nil, observability.PrepareError(err, logger, span, "querying elasticsearch")
+		return nil, observability.PrepareError(err, span, "querying elasticsearch")
 	}
 
 	var r esResponse
 	if err = json.NewDecoder(res.Body).Decode(&r); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "decoding response")
+		return nil, observability.PrepareError(err, span, "decoding response")
 	}
 
 	for _, hit := range r.Hits.Hits {
 		var c *idContainer
 		if err = json.Unmarshal(hit.Source, &c); err != nil {
-			return nil, observability.PrepareError(err, logger, span, "decoding response")
+			return nil, observability.PrepareError(err, span, "decoding response")
 		}
 		resultIDs = append(resultIDs, c.ID)
 	}
@@ -208,7 +208,7 @@ func (sm *indexManager) Delete(ctx context.Context, id string) error {
 		DocumentID: id,
 	}.Do(ctx, sm.esclient)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "deleting from elasticsearch")
+		return observability.PrepareError(err, span, "deleting from elasticsearch")
 	}
 
 	logger.Debug("removed from index")

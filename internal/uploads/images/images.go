@@ -119,24 +119,22 @@ func (p *uploadProcessor) Process(ctx context.Context, req *http.Request, filena
 	_, span := p.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := p.logger.WithRequest(req)
-
 	file, info, err := req.FormFile(filename)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "parsing file from request")
+		return nil, observability.PrepareError(err, span, "parsing file from request")
 	}
 
 	if contentTypeErr := validateContentType(info.Filename); contentTypeErr != nil {
-		return nil, observability.PrepareError(contentTypeErr, logger, span, "validating the content type")
+		return nil, observability.PrepareError(contentTypeErr, span, "validating the content type")
 	}
 
 	bs, err := io.ReadAll(file)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "reading file from request")
+		return nil, observability.PrepareError(err, span, "reading file from request")
 	}
 
 	if _, _, err = image.Decode(bytes.NewReader(bs)); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "decoding the image data")
+		return nil, observability.PrepareError(err, span, "decoding the image data")
 	}
 
 	i := &Image{

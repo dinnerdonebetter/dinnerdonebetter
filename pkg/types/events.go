@@ -34,6 +34,8 @@ type (
 		RecipeStepIngredient             *RecipeStepIngredient           `json:"recipeStepIngredient,omitempty"`
 		MealPlan                         *MealPlan                       `json:"mealPlan,omitempty"`
 		MealPlanID                       string                          `json:"mealPlanID,omitempty"`
+		MealPlanEvent                    *MealPlanEvent                  `json:"mealPlanEvent,omitempty"`
+		MealPlanEventID                  string                          `json:"mealPlanEventID,omitempty"`
 		MealPlanOption                   *MealPlanOption                 `json:"mealPlanOption,omitempty"`
 		MealPlanOptionID                 string                          `json:"mealPlanOptionID,omitempty"`
 		MealPlanOptionVote               *MealPlanOptionVote             `json:"mealPlanOptionVote,omitempty"`

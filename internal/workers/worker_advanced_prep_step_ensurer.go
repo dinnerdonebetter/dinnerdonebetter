@@ -57,6 +57,13 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) ensureAdvancedPrepStepsAreCreate
 
 	logger := w.logger.Clone()
 
+	// get all the options that have been chosen for finalized meal plans
+	// that are coming up in the week and haven't had advanced prep steps
+	// created for them yet
+	// w.dataManager.GetFinalizedMealPlanIDsForTheNextWeek(ctx)
+
+	// iterate through the recipes
+
 	logger.Info("ensureAdvancedPrepStepsAreCreated invoked")
 
 	return nil

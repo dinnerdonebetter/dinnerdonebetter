@@ -78,9 +78,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, meal, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal.

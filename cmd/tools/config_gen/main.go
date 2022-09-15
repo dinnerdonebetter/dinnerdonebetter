@@ -30,6 +30,7 @@ import (
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -408,6 +409,9 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			MealPlans: mealplansservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			MealPlanEvents: mealplaneventsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			MealPlanOptions: mealplanoptionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -561,6 +565,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlans: mealplansservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			MealPlanEvents: mealplaneventsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlanOptions: mealplanoptionsservice.Config{

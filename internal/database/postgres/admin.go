@@ -30,7 +30,7 @@ func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, in
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user status update query", setUserAccountStatusQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "user status update")
+		return observability.PrepareAndLogError(err, logger, span, "user status update")
 	}
 
 	logger.Info("user account status updated")

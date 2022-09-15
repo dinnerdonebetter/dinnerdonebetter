@@ -36,12 +36,12 @@ func (c *Client) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeSt
 
 	req, err := c.requestBuilder.BuildGetRecipeStepIngredientRequest(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get recipe step ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step ingredient request")
 	}
 
 	var recipeStepIngredient *types.RecipeStepIngredient
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipe step ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step ingredient")
 	}
 
 	return recipeStepIngredient, nil
@@ -69,12 +69,12 @@ func (c *Client) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeS
 
 	req, err := c.requestBuilder.BuildGetRecipeStepIngredientsRequest(ctx, recipeID, recipeStepID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building recipe step ingredients list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step ingredients list request")
 	}
 
 	var recipeStepIngredients *types.RecipeStepIngredientList
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredients); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipe step ingredients")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step ingredients")
 	}
 
 	return recipeStepIngredients, nil
@@ -98,17 +98,17 @@ func (c *Client) CreateRecipeStepIngredient(ctx context.Context, recipeID string
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeStepIngredientRequest(ctx, recipeID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe step ingredient request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step ingredient request")
 	}
 
 	var recipeStepIngredient *types.RecipeStepIngredient
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step ingredient")
 	}
 
 	return recipeStepIngredient, nil
@@ -135,11 +135,11 @@ func (c *Client) UpdateRecipeStepIngredient(ctx context.Context, recipeID string
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepIngredientRequest(ctx, recipeID, recipeStepIngredient)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update recipe step ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "building update recipe step ingredient request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe step ingredient %s", recipeStepIngredient.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step ingredient %s", recipeStepIngredient.ID)
 	}
 
 	return nil
@@ -172,11 +172,11 @@ func (c *Client) ArchiveRecipeStepIngredient(ctx context.Context, recipeID, reci
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepIngredientRequest(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive recipe step ingredient request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step ingredient request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving recipe step ingredient %s", recipeStepIngredientID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step ingredient %s", recipeStepIngredientID)
 	}
 
 	return nil

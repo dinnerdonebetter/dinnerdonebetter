@@ -64,8 +64,6 @@ func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, incl
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	household = &types.Household{Members: []*types.HouseholdUserMembershipWithUser{}}
 	membership = &types.HouseholdUserMembershipWithUser{BelongsToUser: &types.User{}}
 
@@ -117,7 +115,7 @@ func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, incl
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, nil, 0, 0, observability.PrepareError(err, logger, span, "fetching memberships from database")
+		return nil, nil, 0, 0, observability.PrepareError(err, span, "fetching memberships from database")
 	}
 
 	membership.HouseholdRoles = strings.Split(rawHouseholdRoles, householdMemberRolesSeparator)
@@ -130,8 +128,6 @@ func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, incl
 func (q *Querier) scanHouseholds(ctx context.Context, rows database.ResultIterator, includeCounts bool) (households []*types.Household, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	households = []*types.Household{}
 
@@ -169,7 +165,7 @@ func (q *Querier) scanHouseholds(ctx context.Context, rows database.ResultIterat
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return households, filteredCount, totalCount, nil
@@ -232,23 +228,18 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID, userID string) 
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	logger := q.logger.WithValues(map[string]interface{}{
-		keys.HouseholdIDKey: householdID,
-		keys.UserIDKey:      userID,
-	})
-
 	args := []interface{}{
 		householdID,
 	}
 
 	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing households list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}
 
 	households, _, _, err := q.scanHouseholds(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
 
 	var household *types.Household
@@ -317,20 +308,18 @@ func (q *Querier) GetHouseholdByID(ctx context.Context, householdID string) (*ty
 	}
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	logger := q.logger.WithValue(keys.HouseholdIDKey, householdID)
-
 	args := []interface{}{
 		householdID,
 	}
 
 	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdByIDQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing households list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}
 
 	households, _, _, err := q.scanHouseholds(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
 
 	var household *types.Household
@@ -411,7 +400,6 @@ func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryEx
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := filter.AttachToLogger(q.logger).WithValue(keys.UserIDKey, userID).WithValue("filter_is_nil", filter == nil)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	tracing.AttachUserIDToSpan(span, userID)
 
@@ -430,11 +418,11 @@ func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryEx
 
 	rows, err := q.performReadQuery(ctx, querier, "households", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing households list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}
 
 	if x.Households, x.FilteredCount, x.TotalCount, err = q.scanHouseholds(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning households from database")
+		return nil, observability.PrepareError(err, span, "scanning households from database")
 	}
 
 	return x, nil
@@ -473,7 +461,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 	// begin household creation transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	householdCreationArgs := []interface{}{
@@ -489,7 +477,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 	// create the household.
 	if writeErr := q.performWriteQuery(ctx, tx, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(writeErr, logger, span, "creating household")
+		return nil, observability.PrepareError(writeErr, span, "creating household")
 	}
 
 	household := &types.Household{
@@ -519,11 +507,11 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 
 	if err = q.performWriteQuery(ctx, tx, "household user membership creation", addUserToHouseholdDuringCreationQuery, addUserToHouseholdArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "performing household membership creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing household membership creation query")
 	}
 
 	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "committing transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachHouseholdIDToSpan(span, household.ID)
@@ -568,7 +556,7 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	logger.WithValue("query", updateHouseholdQuery).WithValue("args", args).Info("making query for households")
 
 	if err := q.performWriteQuery(ctx, q.db, "household update", updateHouseholdQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating household")
+		return observability.PrepareAndLogError(err, logger, span, "updating household")
 	}
 
 	logger.Info("household updated")
@@ -601,7 +589,7 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "household archive", archiveHouseholdQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving household")
+		return observability.PrepareAndLogError(err, logger, span, "archiving household")
 	}
 
 	logger.Info("household archived")

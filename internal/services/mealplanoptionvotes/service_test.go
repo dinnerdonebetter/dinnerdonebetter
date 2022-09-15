@@ -5,16 +5,16 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
+	"github.com/prixfixeco/api_server/internal/database"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 )
@@ -39,6 +39,10 @@ func TestProvideMealPlanOptionVotesService(T *testing.T) {
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			mealplansservice.MealPlanIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			mealplaneventsservice.MealPlanEventIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",

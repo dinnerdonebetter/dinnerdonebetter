@@ -24,12 +24,12 @@ func (c *Client) GetValidPreparation(ctx context.Context, validPreparationID str
 
 	req, err := c.requestBuilder.BuildGetValidPreparationRequest(ctx, validPreparationID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get valid preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid preparation request")
 	}
 
 	var validPreparation *types.ValidPreparation
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparation); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation")
 	}
 
 	return validPreparation, nil
@@ -44,12 +44,12 @@ func (c *Client) GetRandomValidPreparation(ctx context.Context) (*types.ValidPre
 
 	req, err := c.requestBuilder.BuildGetRandomValidPreparationRequest(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get valid preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid preparation request")
 	}
 
 	var validPreparation *types.ValidPreparation
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparation); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation")
 	}
 
 	return validPreparation, nil
@@ -74,12 +74,12 @@ func (c *Client) SearchValidPreparations(ctx context.Context, query string, limi
 
 	req, err := c.requestBuilder.BuildSearchValidPreparationsRequest(ctx, query, limit)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building search for valid preparations request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid preparations request")
 	}
 
 	var validPreparations []*types.ValidPreparation
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparations); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparations")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparations")
 	}
 
 	return validPreparations, nil
@@ -90,17 +90,18 @@ func (c *Client) GetValidPreparations(ctx context.Context, filter *types.QueryFi
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
+	logger := c.logger.Clone()
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid preparations list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparations list request")
 	}
 
 	var validPreparations *types.ValidPreparationList
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparations); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparations")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparations")
 	}
 
 	return validPreparations, nil
@@ -116,19 +117,20 @@ func (c *Client) CreateValidPreparation(ctx context.Context, input *types.ValidP
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, input.ID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidPreparationRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create valid preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid preparation request")
 	}
 
 	var validPreparation *types.ValidPreparation
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparation); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid preparation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation")
 	}
 
 	return validPreparation, nil
@@ -149,11 +151,11 @@ func (c *Client) UpdateValidPreparation(ctx context.Context, validPreparation *t
 
 	req, err := c.requestBuilder.BuildUpdateValidPreparationRequest(ctx, validPreparation)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update valid preparation request")
+		return observability.PrepareAndLogError(err, logger, span, "building update valid preparation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparation); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid preparation %s", validPreparation.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation %s", validPreparation.ID)
 	}
 
 	return nil
@@ -174,11 +176,11 @@ func (c *Client) ArchiveValidPreparation(ctx context.Context, validPreparationID
 
 	req, err := c.requestBuilder.BuildArchiveValidPreparationRequest(ctx, validPreparationID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive valid preparation request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive valid preparation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving valid preparation %s", validPreparationID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation %s", validPreparationID)
 	}
 
 	return nil

@@ -41,13 +41,6 @@ type (
 		Message string `json:"message"`
 		Code    int    `json:"code"`
 	}
-
-	// PreWriteResponse is what we respond with when the data requested to be written has not yet been written.
-	PreWriteResponse struct {
-		_ struct{}
-
-		ID string `json:"id"`
-	}
 )
 
 var _ error = (*ErrorResponse)(nil)

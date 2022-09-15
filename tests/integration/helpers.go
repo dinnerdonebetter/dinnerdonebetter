@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
@@ -24,6 +25,15 @@ import (
 
 func stringPointer(s string) *string {
 	return &s
+}
+
+func logJSON(t *testing.T, x interface{}) {
+	t.Helper()
+
+	rawBytes, err := json.MarshalIndent(x, "", "\t")
+	require.NoError(t, err)
+
+	t.Log(string(rawBytes))
 }
 
 func requireNotNilAndNoProblems(t *testing.T, i interface{}, err error) {

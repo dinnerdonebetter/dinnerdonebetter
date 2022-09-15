@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitRequest(ctx context.Cont
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
 	uri := b.BuildURL(
@@ -37,7 +33,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitRequest(ctx context.Cont
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -47,8 +43,6 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitRequest(ctx context.Cont
 func (b *Builder) BuildGetValidIngredientMeasurementUnitsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := filter.AttachToLogger(b.logger)
 
 	uri := b.BuildURL(
 		ctx,
@@ -60,7 +54,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsRequest(ctx context.Con
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -71,12 +65,9 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ct
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if ingredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidIngredientIDToSpan(span, ingredientID)
 
 	uri := b.BuildURL(
@@ -91,7 +82,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ct
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -102,12 +93,9 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForMeasurementUnitReque
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger)
-
 	if validMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
 	uri := b.BuildURL(
@@ -122,7 +110,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForMeasurementUnitReque
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -133,14 +121,12 @@ func (b *Builder) BuildCreateValidIngredientMeasurementUnitRequest(ctx context.C
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(
@@ -152,7 +138,7 @@ func (b *Builder) BuildCreateValidIngredientMeasurementUnitRequest(ctx context.C
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -163,13 +149,9 @@ func (b *Builder) BuildUpdateValidIngredientMeasurementUnitRequest(ctx context.C
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientMeasurementUnit == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnit.ID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnit.ID)
 
 	uri := b.BuildURL(
@@ -184,7 +166,7 @@ func (b *Builder) BuildUpdateValidIngredientMeasurementUnitRequest(ctx context.C
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -195,12 +177,9 @@ func (b *Builder) BuildArchiveValidIngredientMeasurementUnitRequest(ctx context.
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validIngredientMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
 	uri := b.BuildURL(
@@ -213,7 +192,7 @@ func (b *Builder) BuildArchiveValidIngredientMeasurementUnitRequest(ctx context.
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

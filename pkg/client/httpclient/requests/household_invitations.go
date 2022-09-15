@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -28,7 +27,6 @@ func (b *Builder) BuildGetHouseholdInvitationRequest(ctx context.Context, househ
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.HouseholdInvitationIDKey, invitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, invitationID)
 
 	uri := b.BuildURL(
@@ -42,7 +40,7 @@ func (b *Builder) BuildGetHouseholdInvitationRequest(ctx context.Context, househ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -53,13 +51,11 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsFromUserRequest(ctx context
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	uri := b.BuildURL(ctx, filter.ToValues(), householdInvitationsBasePath, "sent")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -70,13 +66,11 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsForUserRequest(ctx context.
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	uri := b.BuildURL(ctx, filter.ToValues(), householdInvitationsBasePath, "received")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -87,8 +81,6 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, inv
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -96,7 +88,6 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, inv
 		invitationID,
 		"accept",
 	)
-	logger = logger.WithValue(keys.URLKey, uri)
 
 	input := &types.HouseholdInvitationUpdateRequestInput{
 		Token: token,
@@ -104,7 +95,7 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, inv
 	}
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -115,8 +106,6 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, inv
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -124,7 +113,6 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, inv
 		invitationID,
 		"cancel",
 	)
-	logger = logger.WithValue(keys.URLKey, uri)
 
 	input := &types.HouseholdInvitationUpdateRequestInput{
 		Token: token,
@@ -132,7 +120,7 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, inv
 	}
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -143,8 +131,6 @@ func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, inv
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	uri := b.BuildURL(
 		ctx,
 		nil,
@@ -152,7 +138,6 @@ func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, inv
 		invitationID,
 		"reject",
 	)
-	logger = logger.WithValue(keys.URLKey, uri)
 
 	input := &types.HouseholdInvitationUpdateRequestInput{
 		Token: token,
@@ -160,7 +145,7 @@ func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, inv
 	}
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

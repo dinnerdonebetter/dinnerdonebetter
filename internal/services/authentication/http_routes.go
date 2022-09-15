@@ -513,7 +513,7 @@ func (s *service) buildPASETOResponse(ctx context.Context, sessionCtxData *types
 	// Encrypt data
 	token, err := paseto.NewV2().Encrypt(s.config.PASETO.LocalModeKey, jsonToken, "")
 	if err != nil {
-		return nil, observability.PrepareError(err, s.logger, span, "encrypting PASETO")
+		return nil, observability.PrepareError(err, span, "encrypting PASETO")
 	}
 
 	tokenRes := &types.PASETOResponse{

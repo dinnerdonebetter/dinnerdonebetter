@@ -20,10 +20,10 @@ func TestPrepareError(T *testing.T) {
 		ctx := context.Background()
 		descriptionFmt, descriptionArgs := "things and %s", "stuff"
 		err := errors.New("blah")
-		logger := logging.NewNoopLogger()
+
 		_, span := tracing.StartSpan(ctx)
 
-		assert.Error(t, PrepareError(err, logger, span, descriptionFmt, descriptionArgs))
+		assert.Error(t, PrepareError(err, span, descriptionFmt, descriptionArgs))
 	})
 }
 

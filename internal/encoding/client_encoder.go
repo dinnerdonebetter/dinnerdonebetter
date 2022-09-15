@@ -44,8 +44,10 @@ func (e *clientEncoder) Unmarshal(ctx context.Context, data []byte, v interface{
 	}
 
 	if err := unmarshalFunc(data, v); err != nil {
-		return observability.PrepareError(err, logger, span, "unmarshalling JSON content")
+		return observability.PrepareError(err, span, "unmarshalling JSON content")
 	}
+
+	logger.Debug("unmarshalled")
 
 	return nil
 }
@@ -54,7 +56,6 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data interfa
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := e.logger.Clone()
 	var err error
 
 	switch e.contentType {
@@ -65,7 +66,7 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data interfa
 	}
 
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "encoding JSON content")
+		return observability.PrepareError(err, span, "encoding JSON content")
 	}
 
 	return nil
@@ -86,7 +87,7 @@ func (e *clientEncoder) EncodeReader(ctx context.Context, data interface{}) (io.
 
 	out, err := marshalFunc(data)
 	if err != nil {
-		return nil, observability.PrepareError(err, e.logger, span, "marshaling to XML")
+		return nil, observability.PrepareError(err, span, "marshaling to XML")
 	}
 
 	return bytes.NewReader(out), nil

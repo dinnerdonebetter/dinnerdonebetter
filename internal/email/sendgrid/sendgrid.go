@@ -81,7 +81,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := e.logger.WithValue("to_email", details.ToAddress)
+	tracing.AttachStringToSpan(span, "to_email", details.ToAddress)
 
 	to := mail.NewEmail(details.ToName, details.ToAddress)
 	from := mail.NewEmail(details.FromName, details.FromAddress)
@@ -89,11 +89,11 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 
 	res, err := e.client.SendWithContext(ctx, message)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "sending email")
+		return observability.PrepareError(err, span, "sending email")
 	}
 
 	if res.StatusCode != http.StatusAccepted {
-		return observability.PrepareError(ErrSendgridAPIIssue, logger, span, "sending email yielded a %d response", res.StatusCode)
+		return observability.PrepareError(ErrSendgridAPIIssue, span, "sending email yielded a %d response", res.StatusCode)
 	}
 
 	return nil
@@ -115,7 +115,7 @@ func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.E
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := e.logger.WithValue("to_email", to.Address)
+	tracing.AttachStringToSpan(span, "to_email", to.Address)
 
 	m := mail.NewV3Mail()
 	m.SetFrom(from).SetTemplateID(templateID).AddPersonalizations(e.preparePersonalization(to, data))
@@ -124,11 +124,11 @@ func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.E
 
 	res, err := sendgrid.MakeRequestWithContext(ctx, request)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "sending dynamic email")
+		return observability.PrepareError(err, span, "sending dynamic email")
 	}
 
 	if res.StatusCode != http.StatusAccepted {
-		return observability.PrepareError(ErrSendgridAPIIssue, logger, span, "sending dynamic email yielded a %d response", res.StatusCode)
+		return observability.PrepareError(ErrSendgridAPIIssue, span, "sending dynamic email yielded a %d response", res.StatusCode)
 	}
 
 	return nil

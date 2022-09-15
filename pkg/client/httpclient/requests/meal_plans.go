@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetMealPlanRequest(ctx context.Context, mealPlanID string
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	uri := b.BuildURL(
@@ -37,7 +33,7 @@ func (b *Builder) BuildGetMealPlanRequest(ctx context.Context, mealPlanID string
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -47,8 +43,6 @@ func (b *Builder) BuildGetMealPlanRequest(ctx context.Context, mealPlanID string
 func (b *Builder) BuildGetMealPlansRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := filter.AttachToLogger(b.logger)
 
 	uri := b.BuildURL(
 		ctx,
@@ -60,7 +54,7 @@ func (b *Builder) BuildGetMealPlansRequest(ctx context.Context, filter *types.Qu
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -71,14 +65,12 @@ func (b *Builder) BuildCreateMealPlanRequest(ctx context.Context, input *types.M
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(
@@ -90,7 +82,7 @@ func (b *Builder) BuildCreateMealPlanRequest(ctx context.Context, input *types.M
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -101,13 +93,9 @@ func (b *Builder) BuildUpdateMealPlanRequest(ctx context.Context, mealPlan *type
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlan == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlan.ID)
 
 	uri := b.BuildURL(
@@ -122,7 +110,7 @@ func (b *Builder) BuildUpdateMealPlanRequest(ctx context.Context, mealPlan *type
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -133,12 +121,9 @@ func (b *Builder) BuildArchiveMealPlanRequest(ctx context.Context, mealPlanID st
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	uri := b.BuildURL(
@@ -151,7 +136,7 @@ func (b *Builder) BuildArchiveMealPlanRequest(ctx context.Context, mealPlanID st
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

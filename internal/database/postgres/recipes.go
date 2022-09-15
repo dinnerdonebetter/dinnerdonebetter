@@ -38,8 +38,6 @@ func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, include
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.Recipe{}
 
 	targetVars := []interface{}{
@@ -61,7 +59,7 @@ func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, include
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -71,8 +69,6 @@ func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, include
 func (q *Querier) scanRecipes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipes []*types.Recipe, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanRecipe(ctx, rows, includeCounts)
@@ -94,7 +90,7 @@ func (q *Querier) scanRecipes(ctx context.Context, rows database.ResultIterator,
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return recipes, filteredCount, totalCount, nil
@@ -107,12 +103,9 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if recipeID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	args := []interface{}{
@@ -121,7 +114,7 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 
 	result, err := q.performBooleanQuery(ctx, q.db, recipeExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing recipe existence check")
+		return false, observability.PrepareError(err, span, "performing recipe existence check")
 	}
 
 	return result, nil
@@ -263,7 +256,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, nil, 0, 0, observability.PrepareError(err, q.logger, span, "")
+		return nil, nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, y, filteredCount, totalCount, nil
@@ -274,12 +267,9 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	args := []interface{}{
@@ -294,14 +284,14 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 
 	rows, err := q.performReadQuery(ctx, q.db, "get recipe", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipe")
+		return nil, observability.PrepareError(err, span, "scanning recipe")
 	}
 
 	var x *types.Recipe
 	for rows.Next() {
 		recipe, recipeStep, _, _, recipeScanErr := q.scanRecipeAndStep(ctx, rows)
 		if recipeScanErr != nil {
-			return nil, observability.PrepareError(recipeScanErr, logger, span, "scanning recipe")
+			return nil, observability.PrepareError(recipeScanErr, span, "scanning recipe")
 		}
 
 		if x == nil {
@@ -318,19 +308,19 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 	// need to grab ingredients here and add them to steps
 	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching recipe step ingredients for recipe")
+		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
 	}
 
 	// need to grab products here and add them to steps
 	products, err := q.getRecipeStepProductsForRecipe(ctx, recipeID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching recipe step products for recipe")
+		return nil, observability.PrepareError(err, span, "fetching recipe step products for recipe")
 	}
 
 	// need to grab instruments here and add them to steps
 	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching recipe step instruments for recipe")
+		return nil, observability.PrepareError(err, span, "fetching recipe step instruments for recipe")
 	}
 
 	for i, step := range x.Steps {
@@ -371,10 +361,7 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	x = &types.RecipeList{}
-	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -391,11 +378,11 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipes", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing recipes list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
 	}
 
 	if x.Recipes, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipes")
+		return nil, observability.PrepareError(err, span, "scanning recipes")
 	}
 
 	return x, nil
@@ -406,10 +393,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	x = &types.RecipeList{}
-	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -427,11 +411,11 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipes", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing recipes search query")
+		return nil, observability.PrepareError(err, span, "executing recipes search query")
 	}
 
 	if x.Recipes, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipes")
+		return nil, observability.PrepareError(err, span, "scanning recipes")
 	}
 
 	return x, nil
@@ -452,7 +436,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	args := []interface{}{
@@ -469,7 +453,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 	// create the recipe.
 	if err = q.performWriteQuery(ctx, q.db, "recipe creation", recipeCreationQuery, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "performing recipe creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe creation query")
 	}
 
 	x := &types.Recipe{
@@ -497,7 +481,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		s, createErr := q.createRecipeStep(ctx, tx, stepInput)
 		if createErr != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step #%d", i+1)
+			return nil, observability.PrepareError(createErr, span, "creating recipe step #%d", i+1)
 		}
 
 		x.Steps = append(x.Steps, s)
@@ -514,12 +498,12 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 
 		if mealCreateErr != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(mealCreateErr, logger, span, "creating meal from recipe")
+			return nil, observability.PrepareError(mealCreateErr, span, "creating meal from recipe")
 		}
 	}
 
 	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "committing transaction")
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachRecipeIDToSpan(span, x.ID)
@@ -629,7 +613,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe update", updateRecipeQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 
 	logger.Info("recipe updated")
@@ -644,12 +628,10 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if recipeID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	logger := q.logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if userID == "" {
@@ -664,7 +646,7 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe archive", archiveRecipeQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe")
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 
 	logger.Info("recipe archived")

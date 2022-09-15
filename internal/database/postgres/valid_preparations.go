@@ -38,8 +38,6 @@ func (q *Querier) scanValidPreparation(ctx context.Context, scan database.Scanne
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.ValidPreparation{}
 
 	targetVars := []interface{}{
@@ -61,7 +59,7 @@ func (q *Querier) scanValidPreparation(ctx context.Context, scan database.Scanne
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -71,8 +69,6 @@ func (q *Querier) scanValidPreparation(ctx context.Context, scan database.Scanne
 func (q *Querier) scanValidPreparations(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validPreparations []*types.ValidPreparation, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanValidPreparation(ctx, rows, includeCounts)
@@ -94,7 +90,7 @@ func (q *Querier) scanValidPreparations(ctx context.Context, rows database.Resul
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return validPreparations, filteredCount, totalCount, nil
@@ -121,7 +117,7 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 
 	result, err := q.performBooleanQuery(ctx, q.db, validPreparationExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing valid preparation existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing valid preparation existence check")
 	}
 
 	return result, nil
@@ -166,7 +162,7 @@ func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID st
 
 	validPreparation, _, _, err := q.scanValidPreparation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning validPreparation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validPreparation")
 	}
 
 	return validPreparation, nil
@@ -179,14 +175,13 @@ func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPr
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
 	args := []interface{}{}
 
 	row := q.getOneRow(ctx, q.db, "validPreparation", getRandomValidPreparationQuery, args)
 
 	validPreparation, _, _, err := q.scanValidPreparation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning validPreparation")
+		return nil, observability.PrepareError(err, span, "scanning validPreparation")
 	}
 
 	return validPreparation, nil
@@ -228,12 +223,12 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparations", validPreparationSearchQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid preparations list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}
 
 	x, _, _, err := q.scanValidPreparations(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid preparations")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid preparations")
 	}
 
 	return x, nil
@@ -264,11 +259,11 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 
 	rows, err := q.performReadQuery(ctx, q.db, "validPreparations", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid preparations list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}
 
 	if x.ValidPreparations, x.FilteredCount, x.TotalCount, err = q.scanValidPreparations(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid preparations")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid preparations")
 	}
 
 	return x, nil
@@ -300,7 +295,7 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.Valid
 
 	// create the valid preparation.
 	if err := q.performWriteQuery(ctx, q.db, "valid preparation creation", validPreparationCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing valid preparation creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparation creation query")
 	}
 
 	x := &types.ValidPreparation{
@@ -359,7 +354,7 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid preparation update", updateValidPreparationQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid preparation")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 
 	logger.Info("valid preparation updated")
@@ -387,7 +382,7 @@ func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationI
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid preparation archive", archiveValidPreparationQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid preparation")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 
 	logger.Info("valid preparation archived")

@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -21,12 +20,9 @@ func (b *Builder) BuildGetValidMeasurementUnitRequest(ctx context.Context, valid
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
 	uri := b.BuildURL(
@@ -39,7 +35,7 @@ func (b *Builder) BuildGetValidMeasurementUnitRequest(ctx context.Context, valid
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -49,8 +45,6 @@ func (b *Builder) BuildGetValidMeasurementUnitRequest(ctx context.Context, valid
 func (b *Builder) BuildSearchValidMeasurementUnitsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := b.logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
 
 	params := url.Values{}
 	params.Set(types.SearchQueryKey, query)
@@ -66,7 +60,7 @@ func (b *Builder) BuildSearchValidMeasurementUnitsRequest(ctx context.Context, q
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -76,8 +70,6 @@ func (b *Builder) BuildSearchValidMeasurementUnitsRequest(ctx context.Context, q
 func (b *Builder) BuildGetValidMeasurementUnitsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := filter.AttachToLogger(b.logger)
 
 	uri := b.BuildURL(
 		ctx,
@@ -89,7 +81,7 @@ func (b *Builder) BuildGetValidMeasurementUnitsRequest(ctx context.Context, filt
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -100,14 +92,12 @@ func (b *Builder) BuildCreateValidMeasurementUnitRequest(ctx context.Context, in
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(
@@ -119,7 +109,7 @@ func (b *Builder) BuildCreateValidMeasurementUnitRequest(ctx context.Context, in
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -130,13 +120,9 @@ func (b *Builder) BuildUpdateValidMeasurementUnitRequest(ctx context.Context, va
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validMeasurementUnit == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnit.ID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnit.ID)
 
 	uri := b.BuildURL(
@@ -151,7 +137,7 @@ func (b *Builder) BuildUpdateValidMeasurementUnitRequest(ctx context.Context, va
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -162,12 +148,9 @@ func (b *Builder) BuildArchiveValidMeasurementUnitRequest(ctx context.Context, v
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
 	uri := b.BuildURL(
@@ -180,7 +163,7 @@ func (b *Builder) BuildArchiveValidMeasurementUnitRequest(ctx context.Context, v
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

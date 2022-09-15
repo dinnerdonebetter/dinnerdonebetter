@@ -1,5 +1,5 @@
 -- name: ValidInstrumentExists :one
-SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.id = $1 );
+SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = $1 );
 
 -- name: GetValidInstrument :one
 SELECT
@@ -8,11 +8,11 @@ SELECT
     valid_instruments.plural_name,
     valid_instruments.description,
     valid_instruments.icon_path,
-    valid_instruments.created_on,
-    valid_instruments.last_updated_on,
-    valid_instruments.archived_on
+    valid_instruments.created_at,
+    valid_instruments.last_updated_at,
+    valid_instruments.archived_at
 FROM valid_instruments
-WHERE valid_instruments.archived_on IS NULL
+WHERE valid_instruments.archived_at IS NULL
   AND valid_instruments.id = $1;
 
 -- name: GetRandomValidInstrument :one
@@ -22,11 +22,11 @@ SELECT
     valid_instruments.plural_name,
     valid_instruments.description,
     valid_instruments.icon_path,
-    valid_instruments.created_on,
-    valid_instruments.last_updated_on,
-    valid_instruments.archived_on
+    valid_instruments.created_at,
+    valid_instruments.last_updated_at,
+    valid_instruments.archived_at
 FROM valid_instruments
-WHERE valid_instruments.archived_on IS NULL
+WHERE valid_instruments.archived_at IS NULL
 ORDER BY random() LIMIT 1;
 
 -- name: SearchForValidInstruments :many
@@ -36,11 +36,11 @@ SELECT
     valid_instruments.plural_name,
     valid_instruments.description,
     valid_instruments.icon_path,
-    valid_instruments.created_on,
-    valid_instruments.last_updated_on,
-    valid_instruments.archived_on
+    valid_instruments.created_at,
+    valid_instruments.last_updated_at,
+    valid_instruments.archived_at
 FROM valid_instruments
-WHERE valid_instruments.archived_on IS NULL
+WHERE valid_instruments.archived_at IS NULL
   AND valid_instruments.name ILIKE $1
   LIMIT 50;
 
@@ -51,20 +51,20 @@ SELECT
     valid_instruments.plural_name,
     valid_instruments.description,
     valid_instruments.icon_path,
-    valid_instruments.created_on,
-    valid_instruments.last_updated_on,
-    valid_instruments.archived_on,
+    valid_instruments.created_at,
+    valid_instruments.last_updated_at,
+    valid_instruments.archived_at,
     (
         SELECT
             COUNT(valid_instruments.id)
         FROM
             valid_instruments
         WHERE
-            valid_instruments.archived_on IS NULL
-          AND valid_instruments.created_on > COALESCE(sqlc.narg('created_after'), 0)
-          AND valid_instruments.created_on < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
-          AND (valid_instruments.last_updated_on IS NULL OR valid_instruments.last_updated_on > COALESCE(sqlc.narg('updated_after'), 0))
-          AND (valid_instruments.last_updated_on IS NULL OR valid_instruments.last_updated_on < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
+            valid_instruments.archived_at IS NULL
+          AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
+          AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
+          AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
+          AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
     ) as filtered_count,
     (
         SELECT
@@ -72,16 +72,16 @@ SELECT
         FROM
             valid_instruments
         WHERE
-            valid_instruments.archived_on IS NULL
+            valid_instruments.archived_at IS NULL
     ) as total_count
 FROM
     valid_instruments
 WHERE
-    valid_instruments.archived_on IS NULL
-  AND valid_instruments.created_on > COALESCE(sqlc.narg('created_after'), 0)
-  AND valid_instruments.created_on < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
-  AND (valid_instruments.last_updated_on IS NULL OR valid_instruments.last_updated_on > COALESCE(sqlc.narg('updated_after'), 0))
-  AND (valid_instruments.last_updated_on IS NULL OR valid_instruments.last_updated_on < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
+    valid_instruments.archived_at IS NULL
+  AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
+  AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
+  AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
+  AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
 GROUP BY
     valid_instruments.id
 ORDER BY
@@ -92,7 +92,7 @@ ORDER BY
 INSERT INTO valid_instruments (id,name,plural_name,description,icon_path) VALUES ($1,$2,$3,$4,$5);
 
 -- name: UpdateValidInstrument :exec
-UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, last_updated_on = NOW() WHERE archived_on IS NULL AND id = $5;
+UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $5;
 
 -- name: ArchiveValidInstrument :exec
-UPDATE valid_instruments SET archived_on = NOW() WHERE archived_on IS NULL AND id = $1;
+UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;

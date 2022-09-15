@@ -36,12 +36,12 @@ func (c *Client) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepI
 
 	req, err := c.requestBuilder.BuildGetRecipeStepProductRequest(ctx, recipeID, recipeStepID, recipeStepProductID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get recipe step product request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step product request")
 	}
 
 	var recipeStepProduct *types.RecipeStepProduct
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepProduct); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipe step product")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step product")
 	}
 
 	return recipeStepProduct, nil
@@ -69,12 +69,12 @@ func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStep
 
 	req, err := c.requestBuilder.BuildGetRecipeStepProductsRequest(ctx, recipeID, recipeStepID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building recipe step products list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step products list request")
 	}
 
 	var recipeStepProducts *types.RecipeStepProductList
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepProducts); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving recipe step products")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step products")
 	}
 
 	return recipeStepProducts, nil
@@ -98,17 +98,17 @@ func (c *Client) CreateRecipeStepProduct(ctx context.Context, recipeID string, i
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeStepProductRequest(ctx, recipeID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe step product request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step product request")
 	}
 
 	var recipeStepProduct *types.RecipeStepProduct
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepProduct); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step product")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step product")
 	}
 
 	return recipeStepProduct, nil
@@ -135,11 +135,11 @@ func (c *Client) UpdateRecipeStepProduct(ctx context.Context, recipeID string, r
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepProductRequest(ctx, recipeID, recipeStepProduct)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update recipe step product request")
+		return observability.PrepareAndLogError(err, logger, span, "building update recipe step product request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepProduct); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe step product %s", recipeStepProduct.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product %s", recipeStepProduct.ID)
 	}
 
 	return nil
@@ -172,11 +172,11 @@ func (c *Client) ArchiveRecipeStepProduct(ctx context.Context, recipeID, recipeS
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepProductRequest(ctx, recipeID, recipeStepID, recipeStepProductID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive recipe step product request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step product request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving recipe step product %s", recipeStepProductID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step product %s", recipeStepProductID)
 	}
 
 	return nil

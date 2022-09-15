@@ -54,12 +54,19 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.MealPlanDatabaseCreationInputFromMealPlanCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
-	for i := range input.Options {
-		input.Options[i].ID = ksuid.New().String()
+	for i := range input.Events {
+		input.Events[i].ID = ksuid.New().String()
+		input.Events[i].BelongsToMealPlan = input.ID
+		for j := range input.Events[i].Options {
+			input.Events[i].Options[j].BelongsToMealPlanEvent = input.Events[i].ID
+			input.Events[i].Options[j].ID = ksuid.New().String()
+		}
 	}
 
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 	tracing.AttachMealPlanIDToSpan(span, input.ID)
+
+	logger = logger.WithValue("input", input)
 
 	mealPlan, err := s.mealPlanDataManager.CreateMealPlan(ctx, input)
 	if err != nil {
@@ -82,9 +89,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlan, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal plan.

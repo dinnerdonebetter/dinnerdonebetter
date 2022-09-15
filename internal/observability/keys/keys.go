@@ -127,6 +127,9 @@ const (
 	// MealPlanIDKey is the standard key for referring to a meal plan's ID.
 	MealPlanIDKey = "meal_plan.id"
 
+	// MealPlanEventIDKey is the standard key for referring to a meal plan event's ID.
+	MealPlanEventIDKey = "meal_plan_event.id"
+
 	// MealPlanOptionIDKey is the standard key for referring to a meal plan option's ID.
 	MealPlanOptionIDKey = "meal_plan_option.id"
 

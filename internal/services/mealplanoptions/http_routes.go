@@ -16,6 +16,8 @@ import (
 const (
 	// MealPlanOptionIDURIParamKey is a standard string that we'll use to refer to meal plan option IDs with.
 	MealPlanOptionIDURIParamKey = "mealPlanOptionID"
+	// MealPlanEventIDURIParamKey is a standard string that we'll use to refer to meal plan event IDs with.
+	MealPlanEventIDURIParamKey = "mealPlanEventID"
 )
 
 // CreateHandler is our meal plan option creation route.
@@ -53,14 +55,19 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := types.MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(providedInput)
 	input.ID = ksuid.New().String()
+	tracing.AttachMealPlanOptionIDToSpan(span, input.ID)
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	input.BelongsToMealPlan = mealPlanID
-	tracing.AttachMealPlanOptionIDToSpan(span, input.ID)
+	// determine meal plan ID.
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+
+	input.BelongsToMealPlanEvent = mealPlanEventID
 
 	mealPlanOption, err := s.mealPlanOptionDataManager.CreateMealPlanOption(ctx, input)
 	if err != nil {
@@ -111,13 +118,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
+	// determine meal plan event ID.
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	// fetch meal plan option from database.
-	x, err := s.mealPlanOptionDataManager.GetMealPlanOption(ctx, mealPlanID, mealPlanOptionID)
+	x, err := s.mealPlanOptionDataManager.GetMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -161,7 +173,12 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	mealPlanOptions, err := s.mealPlanOptionDataManager.GetMealPlanOptions(ctx, mealPlanID, filter)
+	// determine meal plan event ID.
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+
+	mealPlanOptions, err := s.mealPlanOptionDataManager.GetMealPlanOptions(ctx, mealPlanID, mealPlanEventID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		mealPlanOptions = &types.MealPlanOptionList{MealPlanOptions: []*types.MealPlanOption{}}
@@ -199,6 +216,11 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
+	// determine meal plan event ID.
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
@@ -212,7 +234,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input.BelongsToMealPlan = &mealPlanID
+	input.BelongsToMealPlanEvent = &mealPlanID
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")
@@ -221,7 +243,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// fetch meal plan option from database.
-	mealPlanOption, err := s.mealPlanOptionDataManager.GetMealPlanOption(ctx, mealPlanID, mealPlanOptionID)
+	mealPlanOption, err := s.mealPlanOptionDataManager.GetMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -283,12 +305,17 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
+	// determine meal plan event ID.
+	mealPlanEventID := s.mealPlanEventIDFetcher(req)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	exists, existenceCheckErr := s.mealPlanOptionDataManager.MealPlanOptionExists(ctx, mealPlanID, mealPlanOptionID)
+	exists, existenceCheckErr := s.mealPlanOptionDataManager.MealPlanOptionExists(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal plan option existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -298,7 +325,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.mealPlanOptionDataManager.ArchiveMealPlanOption(ctx, mealPlanID, mealPlanOptionID); err != nil {
+	if err = s.mealPlanOptionDataManager.ArchiveMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal plan option")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return

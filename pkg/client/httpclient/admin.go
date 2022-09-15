@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -18,27 +17,26 @@ func (c *Client) UpdateUserAccountStatus(ctx context.Context, input *types.UserA
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, input.TargetUserID)
 	tracing.AttachUserIDToSpan(span, input.TargetUserID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareError(err, logger, span, "validating input")
+		return observability.PrepareError(err, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildUserAccountStatusUpdateInputRequest(ctx, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building user account status update request")
+		return observability.PrepareError(err, span, "building user account status update request")
 	}
 
 	res, err := c.fetchResponseToRequest(ctx, c.authedClient, req)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "updating user account status")
+		return observability.PrepareError(err, span, "updating user account status")
 	}
 
 	c.closeResponseBody(ctx, res)
 
 	if err = errorFromResponse(res); err != nil {
-		return observability.PrepareError(err, logger, span, "invalid response status")
+		return observability.PrepareError(err, span, "invalid response status")
 	}
 
 	return nil

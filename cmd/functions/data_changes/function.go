@@ -61,7 +61,7 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 	switch changeMessage.EventType {
 	case types.UserSignedUpCustomerEventType:
 		if err = customerDataCollector.AddUser(ctx, changeMessage.AttributableToUserID, eventContext); err != nil {
-			return observability.PrepareError(err, logger, nil, "notifying customer data platform")
+			return observability.PrepareError(err, nil, "notifying customer data platform")
 		}
 		return nil
 	case types.UserLoggedInCustomerEventType:

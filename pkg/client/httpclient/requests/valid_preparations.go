@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -21,12 +20,9 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
 	uri := b.BuildURL(
@@ -39,7 +35,7 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -49,8 +45,6 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 func (b *Builder) BuildGetRandomValidPreparationRequest(ctx context.Context) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := b.logger.Clone()
 
 	uri := b.BuildURL(
 		ctx,
@@ -62,7 +56,7 @@ func (b *Builder) BuildGetRandomValidPreparationRequest(ctx context.Context) (*h
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building  request")
 	}
 
 	return req, nil
@@ -89,7 +83,8 @@ func (b *Builder) BuildSearchValidPreparationsRequest(ctx context.Context, query
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		logger.Error(err, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -112,7 +107,8 @@ func (b *Builder) BuildGetValidPreparationsRequest(ctx context.Context, filter *
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		logger.Error(err, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -123,14 +119,12 @@ func (b *Builder) BuildCreateValidPreparationRequest(ctx context.Context, input 
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(
@@ -142,7 +136,7 @@ func (b *Builder) BuildCreateValidPreparationRequest(ctx context.Context, input 
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -153,13 +147,9 @@ func (b *Builder) BuildUpdateValidPreparationRequest(ctx context.Context, validP
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validPreparation == nil {
 		return nil, ErrNilInputProvided
 	}
-
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparation.ID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparation.ID)
 
 	uri := b.BuildURL(
@@ -174,7 +164,7 @@ func (b *Builder) BuildUpdateValidPreparationRequest(ctx context.Context, validP
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -185,12 +175,9 @@ func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, valid
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
 	uri := b.BuildURL(
@@ -203,7 +190,7 @@ func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, valid
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

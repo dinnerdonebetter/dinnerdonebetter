@@ -84,6 +84,7 @@ type (
 		types.RecipeStepInstrumentDataManager
 		types.RecipeStepIngredientDataManager
 		types.MealPlanDataManager
+		types.MealPlanEventDataManager
 		types.MealPlanOptionDataManager
 		types.MealPlanOptionVoteDataManager
 		types.ValidMeasurementUnitDataManager

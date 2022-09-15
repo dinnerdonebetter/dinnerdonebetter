@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -19,12 +18,9 @@ func (b *Builder) BuildGetMealRequest(ctx context.Context, mealID string) (*http
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
 	uri := b.BuildURL(
@@ -37,7 +33,7 @@ func (b *Builder) BuildGetMealRequest(ctx context.Context, mealID string) (*http
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -47,8 +43,6 @@ func (b *Builder) BuildGetMealRequest(ctx context.Context, mealID string) (*http
 func (b *Builder) BuildGetMealsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := filter.AttachToLogger(b.logger)
 
 	uri := b.BuildURL(
 		ctx,
@@ -60,7 +54,7 @@ func (b *Builder) BuildGetMealsRequest(ctx context.Context, filter *types.QueryF
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -71,7 +65,6 @@ func (b *Builder) BuildSearchForMealsRequest(ctx context.Context, query string, 
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := filter.AttachToLogger(b.logger).WithValue(keys.SearchQueryKey, query)
 	tracing.AttachSearchQueryToSpan(span, query)
 
 	queryParams := filter.ToValues()
@@ -88,7 +81,7 @@ func (b *Builder) BuildSearchForMealsRequest(ctx context.Context, query string, 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -99,14 +92,12 @@ func (b *Builder) BuildCreateMealRequest(ctx context.Context, input *types.MealC
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.BuildURL(
@@ -118,7 +109,7 @@ func (b *Builder) BuildCreateMealRequest(ctx context.Context, input *types.MealC
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -129,12 +120,9 @@ func (b *Builder) BuildArchiveMealRequest(ctx context.Context, mealID string) (*
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
-
 	if mealID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
 	uri := b.BuildURL(
@@ -147,7 +135,7 @@ func (b *Builder) BuildArchiveMealRequest(ctx context.Context, mealID string) (*
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

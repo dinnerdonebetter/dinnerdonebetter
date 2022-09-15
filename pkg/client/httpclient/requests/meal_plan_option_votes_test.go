@@ -13,7 +13,7 @@ import (
 func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -21,12 +21,13 @@ func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleMealPlanID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -37,10 +38,11 @@ func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, "", exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, "", exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -51,9 +53,10 @@ func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, "", exampleMealPlanOptionVote.ID)
+		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, "", exampleMealPlanOptionVote.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -64,9 +67,10 @@ func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, "")
+		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -78,10 +82,11 @@ func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := helper.builder.BuildGetMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -90,7 +95,7 @@ func TestBuilder_BuildGetMealPlanOptionVoteRequest(T *testing.T) {
 func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -98,12 +103,13 @@ func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealPlanID, exampleMealPlanOptionID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID)
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, filter)
+		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, filter)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -114,11 +120,12 @@ func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, "", exampleMealPlanOptionID, filter)
+		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, "", exampleMealPlanEventID, exampleMealPlanOptionID, filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -129,10 +136,11 @@ func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, exampleMealPlanID, "", filter)
+		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, "", filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -144,11 +152,12 @@ func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, filter)
+		actual, err := helper.builder.BuildGetMealPlanOptionVotesRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -157,7 +166,7 @@ func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/meal_plans/%s/vote"
+	const expectedPath = "/api/v1/meal_plans/%s/events/%s/vote"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -165,11 +174,12 @@ func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleMealPlanID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleMealPlanID, exampleMealPlanEventID)
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleInput)
+		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -180,9 +190,10 @@ func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, "", exampleInput)
+		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, "", exampleMealPlanEventID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -193,8 +204,9 @@ func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, nil)
+		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -205,8 +217,9 @@ func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, &types.MealPlanOptionVoteCreationRequestInput{})
+		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, &types.MealPlanOptionVoteCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -218,9 +231,10 @@ func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleInput)
+		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -229,7 +243,7 @@ func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 func TestBuilder_BuildUpdateMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -237,11 +251,12 @@ func TestBuilder_BuildUpdateMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleMealPlanID, exampleMealPlanOptionVote.BelongsToMealPlanOption, exampleMealPlanOptionVote.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionVote.BelongsToMealPlanOption, exampleMealPlanOptionVote.ID)
 
-		actual, err := helper.builder.BuildUpdateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionVote)
+		actual, err := helper.builder.BuildUpdateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionVote)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -254,7 +269,7 @@ func TestBuilder_BuildUpdateMealPlanOptionVoteRequest(T *testing.T) {
 
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		actual, err := helper.builder.BuildUpdateMealPlanOptionVoteRequest(helper.ctx, "", exampleMealPlanOptionVote)
+		actual, err := helper.builder.BuildUpdateMealPlanOptionVoteRequest(helper.ctx, "", "", exampleMealPlanOptionVote)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -265,8 +280,9 @@ func TestBuilder_BuildUpdateMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildUpdateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, nil)
+		actual, err := helper.builder.BuildUpdateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -278,9 +294,10 @@ func TestBuilder_BuildUpdateMealPlanOptionVoteRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		actual, err := helper.builder.BuildUpdateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionVote)
+		actual, err := helper.builder.BuildUpdateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionVote)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -289,7 +306,7 @@ func TestBuilder_BuildUpdateMealPlanOptionVoteRequest(T *testing.T) {
 func TestBuilder_BuildArchiveMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes/%s"
+	const expectedPathFormat = "/api/v1/meal_plans/%s/events/%s/options/%s/votes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -297,12 +314,13 @@ func TestBuilder_BuildArchiveMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleMealPlanID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 
-		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -313,10 +331,11 @@ func TestBuilder_BuildArchiveMealPlanOptionVoteRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, "", exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, "", exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -327,9 +346,10 @@ func TestBuilder_BuildArchiveMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, "", exampleMealPlanOptionVote.ID)
+		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, "", exampleMealPlanOptionVote.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -340,9 +360,10 @@ func TestBuilder_BuildArchiveMealPlanOptionVoteRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, "")
+		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -354,10 +375,11 @@ func TestBuilder_BuildArchiveMealPlanOptionVoteRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
+		actual, err := helper.builder.BuildArchiveMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

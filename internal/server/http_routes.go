@@ -3,9 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"path"
-
-	"github.com/heptiolabs/healthcheck"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
@@ -13,6 +12,7 @@ import (
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
+	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -53,9 +53,10 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 	logger := s.logger.WithSpan(span)
 
 	router.Route("/_meta_", func(metaRouter routing.Router) {
-		health := healthcheck.NewHandler()
 		// Expose a readiness check on /ready
-		metaRouter.Get("/ready", health.ReadyEndpoint)
+		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
+			res.WriteHeader(http.StatusOK)
+		})
 	})
 
 	if metricsHandler != nil {
@@ -504,7 +505,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// RecipeSteps
-		recipeStepPath := "recipe_steps"
+		recipeStepPath := "steps"
 		recipeStepsRoute := path.Join(
 			recipePath,
 			recipeIDRouteParam,
@@ -534,7 +535,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// RecipeStepInstruments
-		recipeStepInstrumentPath := "recipe_step_instruments"
+		recipeStepInstrumentPath := "instruments"
 		recipeStepInstrumentsRoute := path.Join(
 			recipePath,
 			recipeIDRouteParam,
@@ -566,7 +567,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// RecipeStepIngredients
-		recipeStepIngredientPath := "recipe_step_ingredients"
+		recipeStepIngredientPath := "ingredients"
 		recipeStepIngredientsRoute := path.Join(
 			recipePath,
 			recipeIDRouteParam,
@@ -598,7 +599,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// RecipeStepProducts
-		recipeStepProductPath := "recipe_step_products"
+		recipeStepProductPath := "products"
 		recipeStepProductsRoute := path.Join(
 			recipePath,
 			recipeIDRouteParam,
@@ -651,17 +652,49 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlansPermission)).
 					Put(root, s.mealPlansService.UpdateHandler)
-				singleMealPlanRouter.
+			})
+		})
+
+		// MealPlanEvents
+		mealPlanEventPath := "events"
+		mealPlanEventsRoute := path.Join(
+			mealPlanPath,
+			mealPlanIDRouteParam,
+			mealPlanEventPath,
+		)
+		mealPlanEventsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanEventsRoute)
+		mealPlanEventIDRouteParam := buildURLVarChunk(mealplaneventsservice.MealPlanEventIDURIParamKey, "")
+		v1Router.Route(mealPlanEventsRouteWithPrefix, func(mealPlanEventsRouter routing.Router) {
+			mealPlanEventsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanEventsPermission)).
+				Post(root, s.mealPlanEventsService.CreateHandler)
+			mealPlanEventsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
+				Get(root, s.mealPlanEventsService.ListHandler)
+
+			mealPlanEventsRouter.Route(mealPlanEventIDRouteParam, func(singleMealPlanEventRouter routing.Router) {
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
+					Get(root, s.mealPlanEventsService.ReadHandler)
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanEventsPermission)).
+					Delete(root, s.mealPlanEventsService.ArchiveHandler)
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanEventsPermission)).
+					Put(root, s.mealPlanEventsService.UpdateHandler)
+				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
 					Post("/vote", s.mealPlanOptionVotesService.CreateHandler)
 			})
 		})
 
 		// MealPlanOptions
-		mealPlanOptionPath := "meal_plan_options"
+		mealPlanOptionPath := "options"
 		mealPlanOptionsRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
+			mealPlanEventPath,
+			mealPlanEventIDRouteParam,
 			mealPlanOptionPath,
 		)
 		mealPlanOptionsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionsRoute)
@@ -688,10 +721,12 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// MealPlanOptionVotes
-		mealPlanOptionVotePath := "meal_plan_option_votes"
+		mealPlanOptionVotePath := "votes"
 		mealPlanOptionVotesRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
+			mealPlanEventPath,
+			mealPlanEventIDRouteParam,
 			mealPlanOptionPath,
 			mealPlanOptionIDRouteParam,
 			mealPlanOptionVotePath,

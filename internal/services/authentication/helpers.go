@@ -40,13 +40,12 @@ func (s *service) getUserIDFromCookie(ctx context.Context, req *http.Request) (c
 		)
 
 		if err = s.cookieManager.Decode(s.config.Cookies.Name, cookie.Value, &token); err != nil {
-			logger = logger.WithValue("cookie", cookie.Value)
-			return nil, "", observability.PrepareError(err, logger, span, "retrieving session context data")
+			return nil, "", observability.PrepareError(err, span, "retrieving session context data")
 		}
 
 		ctx, err = s.sessionManager.Load(ctx, token)
 		if err != nil {
-			return nil, "", observability.PrepareError(err, logger, span, "loading session")
+			return nil, "", observability.PrepareError(err, span, "loading session")
 		}
 
 		if userID, ok := s.sessionManager.Get(ctx, userIDContextKey).(string); ok {
@@ -54,7 +53,7 @@ func (s *service) getUserIDFromCookie(ctx context.Context, req *http.Request) (c
 			return ctx, userID, nil
 		}
 
-		return nil, "", observability.PrepareError(errNoUserIDFoundInSession, logger, span, "determining user ID from cookie")
+		return nil, "", observability.PrepareAndLogError(errNoUserIDFoundInSession, logger, span, "determining user ID from cookie")
 	}
 
 	return nil, "", http.ErrNoCookie
@@ -69,12 +68,12 @@ func (s *service) determineUserFromRequestCookie(ctx context.Context, req *http.
 
 	ctx, userID, err := s.getUserIDFromCookie(ctx, req)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching cookie data from request")
+		return nil, observability.PrepareError(err, span, "fetching cookie data from request")
 	}
 
 	user, err := s.userDataManager.GetUser(ctx, userID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching user from database")
+		return nil, observability.PrepareError(err, span, "fetching user from database")
 	}
 
 	tracing.AttachUserIDToSpan(span, userID)
@@ -106,7 +105,7 @@ func (s *service) validateLogin(ctx context.Context, user *types.User, loginInpu
 	}
 
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "validating login")
+		return false, observability.PrepareError(err, span, "validating login")
 	}
 
 	logger.Debug("login validated")
@@ -164,7 +163,7 @@ func (s *service) buildLogoutCookie(ctx context.Context, req *http.Request) (*ht
 
 	newCookie, cookieBuildingErr := s.buildCookie(ctx, requestedCookieDomain, "deleted", time.Time{})
 	if cookieBuildingErr != nil || newCookie == nil {
-		return nil, observability.PrepareError(cookieBuildingErr, logger, span, "building cookie")
+		return nil, observability.PrepareAndLogError(cookieBuildingErr, logger, span, "building cookie")
 	}
 
 	newCookie.MaxAge = -1

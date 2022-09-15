@@ -21,19 +21,6 @@ const (
 	MealPlanOptionArchivedCustomerEventType CustomerEventType = "meal_plan_option_archived"
 	// MealPlanOptionFinalizedCreatedCustomerEventType indicates a meal plan option was created.
 	MealPlanOptionFinalizedCreatedCustomerEventType CustomerEventType = "meal_plan_option_finalized"
-
-	// BreakfastMealName represents breakfast.
-	BreakfastMealName = "breakfast"
-	// SecondBreakfastMealName represents second breakfast.
-	SecondBreakfastMealName = "second_breakfast"
-	// BrunchMealName represents brunch.
-	BrunchMealName = "brunch"
-	// LunchMealName represents lunch.
-	LunchMealName = "lunch"
-	// SupperMealName represents supper.
-	SupperMealName = "supper"
-	// DinnerMealName represents dinner.
-	DinnerMealName = "dinner"
 )
 
 func init() {
@@ -46,22 +33,20 @@ func init() {
 type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
-		_                  struct{}
-		Meal               Meal                  `json:"meal"`
-		CreatedAt          time.Time             `json:"createdAt"`
-		AssignedCook       *string               `json:"assignedCook"`
-		ArchivedAt         *time.Time            `json:"archivedAt"`
-		LastUpdatedAt      *time.Time            `json:"lastUpdatedAt"`
-		AssignedDishwasher *string               `json:"assignedDishwasher"`
-		MealName           string                `json:"mealName"`
-		Notes              string                `json:"notes"`
-		BelongsToMealPlan  string                `json:"belongsToMealPlan"`
-		ID                 string                `json:"id"`
-		Votes              []*MealPlanOptionVote `json:"votes"`
-		Day                time.Weekday          `json:"day"`
-		Chosen             bool                  `json:"chosen"`
-		TieBroken          bool                  `json:"tieBroken"`
-		PrepStepsCreated   bool                  `json:"prepStepsCreated"`
+		_                      struct{}
+		Meal                   Meal                  `json:"meal"`
+		CreatedAt              time.Time             `json:"createdAt"`
+		AssignedCook           *string               `json:"assignedCook"`
+		ArchivedAt             *time.Time            `json:"archivedAt"`
+		LastUpdatedAt          *time.Time            `json:"lastUpdatedAt"`
+		AssignedDishwasher     *string               `json:"assignedDishwasher"`
+		Notes                  string                `json:"notes"`
+		BelongsToMealPlanEvent string                `json:"belongsToMealPlanEvent"`
+		ID                     string                `json:"id"`
+		Votes                  []*MealPlanOptionVote `json:"votes"`
+		Chosen                 bool                  `json:"chosen"`
+		TieBroken              bool                  `json:"tieBroken"`
+		PrepStepsCreated       bool                  `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionList represents a list of meal plan options.
@@ -73,54 +58,48 @@ type (
 
 	// MealPlanOptionCreationRequestInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionCreationRequestInput struct {
-		_                  struct{}
-		ID                 string       `json:"-"`
-		MealID             string       `json:"mealID"`
-		Notes              string       `json:"notes"`
-		AssignedCook       *string      `json:"assignedCook"`
-		AssignedDishwasher *string      `json:"assignedDishwasher"`
-		MealName           string       `json:"mealName"`
-		BelongsToMealPlan  string       `json:"-"`
-		Day                time.Weekday `json:"day"`
-		PrepStepsCreated   bool         `json:"prepStepsCreated"`
+		_                      struct{}
+		ID                     string  `json:"-"`
+		MealID                 string  `json:"mealID"`
+		Notes                  string  `json:"notes"`
+		AssignedCook           *string `json:"assignedCook"`
+		AssignedDishwasher     *string `json:"assignedDishwasher"`
+		BelongsToMealPlanEvent string  `json:"-"`
+		PrepStepsCreated       bool    `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionDatabaseCreationInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionDatabaseCreationInput struct {
-		_                  struct{}
-		ID                 string       `json:"id"`
-		MealID             string       `json:"mealID"`
-		Notes              string       `json:"notes"`
-		AssignedCook       *string      `json:"assignedCook"`
-		AssignedDishwasher *string      `json:"assignedDishwasher"`
-		MealName           string       `json:"mealName"`
-		BelongsToMealPlan  string       `json:"belongsToMealPlan"`
-		Day                time.Weekday `json:"day"`
-		PrepStepsCreated   bool         `json:"prepStepsCreated"`
+		_                      struct{}
+		ID                     string  `json:"id"`
+		MealID                 string  `json:"mealID"`
+		Notes                  string  `json:"notes"`
+		AssignedCook           *string `json:"assignedCook"`
+		AssignedDishwasher     *string `json:"assignedDishwasher"`
+		BelongsToMealPlanEvent string  `json:"belongsToMealPlanEvent"`
+		PrepStepsCreated       bool    `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
 	MealPlanOptionUpdateRequestInput struct {
-		_                  struct{}
-		MealID             *string       `json:"mealID"`
-		Notes              *string       `json:"notes"`
-		AssignedCook       *string       `json:"assignedCook"`
-		AssignedDishwasher *string       `json:"assignedDishwasher"`
-		MealName           *string       `json:"mealName"`
-		BelongsToMealPlan  *string       `json:"-"`
-		Day                *time.Weekday `json:"day"`
-		PrepStepsCreated   *bool         `json:"prepStepsCreated"`
+		_                      struct{}
+		MealID                 *string `json:"mealID"`
+		Notes                  *string `json:"notes"`
+		AssignedCook           *string `json:"assignedCook"`
+		AssignedDishwasher     *string `json:"assignedDishwasher"`
+		BelongsToMealPlanEvent *string `json:"-"`
+		PrepStepsCreated       *bool   `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.
 	MealPlanOptionDataManager interface {
-		MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (bool, error)
-		GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*MealPlanOption, error)
-		GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *QueryFilter) (*MealPlanOptionList, error)
+		MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (bool, error)
+		GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*MealPlanOption, error)
+		GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *QueryFilter) (*MealPlanOptionList, error)
 		CreateMealPlanOption(ctx context.Context, input *MealPlanOptionDatabaseCreationInput) (*MealPlanOption, error)
 		UpdateMealPlanOption(ctx context.Context, updated *MealPlanOption) error
-		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error
-		FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error)
+		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error
+		FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID string) (changed bool, err error)
 	}
 
 	// MealPlanOptionDataService describes a structure capable of serving traffic related to meal plan options.
@@ -135,18 +114,9 @@ type (
 
 // Update merges an MealPlanOptionUpdateRequestInput with a meal plan option.
 func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
-	if input.Day != nil && *input.Day != x.Day {
-		x.Day = *input.Day
-	}
-
 	if input.MealID != nil && *input.MealID != x.Meal.ID {
 		// we should do something better here
 		x.Meal = Meal{ID: *input.MealID}
-	}
-
-	if input.MealName != nil && *input.MealName != x.MealName {
-		// we should do something better here
-		x.MealName = *input.MealName
 	}
 
 	if input.Notes != nil && *input.Notes != x.Notes {
@@ -174,23 +144,6 @@ func (x *MealPlanOptionCreationRequestInput) ValidateWithContext(ctx context.Con
 		ctx,
 		x,
 		validation.Field(&x.MealID, validation.Required),
-		validation.Field(&x.MealName, validation.In(
-			BreakfastMealName,
-			SecondBreakfastMealName,
-			BrunchMealName,
-			LunchMealName,
-			SupperMealName,
-			DinnerMealName,
-		)),
-		validation.Field(&x.Day, validation.In(
-			time.Monday,
-			time.Tuesday,
-			time.Wednesday,
-			time.Thursday,
-			time.Friday,
-			time.Saturday,
-			time.Sunday,
-		)),
 	)
 }
 
@@ -202,30 +155,18 @@ func (x *MealPlanOptionDatabaseCreationInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.BelongsToMealPlan, validation.Required),
-		validation.Field(&x.MealName, validation.Required),
+		validation.Field(&x.BelongsToMealPlanEvent, validation.Required),
 		validation.Field(&x.MealID, validation.Required),
-		validation.Field(&x.Day, validation.In(
-			time.Monday,
-			time.Tuesday,
-			time.Wednesday,
-			time.Thursday,
-			time.Friday,
-			time.Saturday,
-			time.Sunday,
-		)),
 	)
 }
 
 // MealPlanOptionUpdateRequestInputFromMealPlanOption creates a DatabaseCreationInput from a CreationInput.
 func MealPlanOptionUpdateRequestInputFromMealPlanOption(input *MealPlanOption) *MealPlanOptionUpdateRequestInput {
 	x := &MealPlanOptionUpdateRequestInput{
-		MealID:            &input.Meal.ID,
-		Notes:             &input.Notes,
-		MealName:          &input.MealName,
-		BelongsToMealPlan: &input.BelongsToMealPlan,
-		Day:               &input.Day,
-		PrepStepsCreated:  &input.PrepStepsCreated,
+		MealID:                 &input.Meal.ID,
+		Notes:                  &input.Notes,
+		BelongsToMealPlanEvent: &input.BelongsToMealPlanEvent,
+		PrepStepsCreated:       &input.PrepStepsCreated,
 	}
 
 	return x
@@ -234,12 +175,10 @@ func MealPlanOptionUpdateRequestInputFromMealPlanOption(input *MealPlanOption) *
 // MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput creates a DatabaseCreationInput from a CreationInput.
 func MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(input *MealPlanOptionCreationRequestInput) *MealPlanOptionDatabaseCreationInput {
 	x := &MealPlanOptionDatabaseCreationInput{
-		BelongsToMealPlan: input.BelongsToMealPlan,
-		Day:               input.Day,
-		MealName:          input.MealName,
-		MealID:            input.MealID,
-		Notes:             input.Notes,
-		PrepStepsCreated:  input.PrepStepsCreated,
+		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
+		MealID:                 input.MealID,
+		Notes:                  input.Notes,
+		PrepStepsCreated:       input.PrepStepsCreated,
 	}
 
 	return x
@@ -253,18 +192,8 @@ func (x *MealPlanOptionUpdateRequestInput) ValidateWithContext(ctx context.Conte
 		ctx,
 		x,
 		validation.Field(&x.MealID, validation.Required),
-		validation.Field(&x.BelongsToMealPlan, validation.Required),
-		validation.Field(&x.MealName, validation.Required),
+		validation.Field(&x.BelongsToMealPlanEvent, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
-		validation.Field(&x.BelongsToMealPlan, validation.Required),
-		validation.Field(&x.Day, validation.In(
-			time.Monday,
-			time.Tuesday,
-			time.Wednesday,
-			time.Thursday,
-			time.Friday,
-			time.Saturday,
-			time.Sunday,
-		)),
+		validation.Field(&x.BelongsToMealPlanEvent, validation.Required),
 	)
 }

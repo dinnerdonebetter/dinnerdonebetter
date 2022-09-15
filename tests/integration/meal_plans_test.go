@@ -20,24 +20,26 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
-	assert.WithinDuration(t, expected.StartsAt, actual.StartsAt, time.Nanosecond*1000, "expected StartsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.StartsAt, actual.StartsAt)
-	assert.WithinDuration(t, expected.EndsAt, actual.EndsAt, time.Nanosecond*1000, "expected EndsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.EndsAt, actual.EndsAt)
 	assert.WithinDuration(t, expected.VotingDeadline, actual.VotingDeadline, time.Nanosecond*1000, "expected VotingDeadline for meal plan %s to be %v, but it was %v", expected.ID, expected.VotingDeadline, actual.VotingDeadline)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createMealPlanForTest(ctx context.Context, t *testing.T, adminClient, client *httpclient.Client) *types.MealPlan {
+func createMealPlanForTest(ctx context.Context, t *testing.T, mealPlan *types.MealPlan, adminClient, client *httpclient.Client) *types.MealPlan {
 	t.Helper()
 
 	t.Log("creating meal plan")
-	exampleMealPlan := fakes.BuildFakeMealPlan()
-	for i := range exampleMealPlan.Options {
-		createdMeal := createMealForTest(ctx, t, adminClient, client, nil)
-		exampleMealPlan.Options[i].Meal.ID = createdMeal.ID
-		exampleMealPlan.Options[i].AssignedCook = nil
+	if mealPlan == nil {
+		mealPlan = fakes.BuildFakeMealPlan()
+		for i, evt := range mealPlan.Events {
+			for j := range evt.Options {
+				createdMeal := createMealForTest(ctx, t, adminClient, client, nil)
+				mealPlan.Events[i].Options[j].Meal.ID = createdMeal.ID
+				mealPlan.Events[i].Options[j].AssignedCook = nil
+			}
+		}
 	}
 
-	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
+	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan)
 	createdMealPlan, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
 	require.NoError(t, err)
 	require.NotEmpty(t, createdMealPlan.ID)
@@ -46,40 +48,9 @@ func createMealPlanForTest(ctx context.Context, t *testing.T, adminClient, clien
 
 	createdMealPlan, err = client.GetMealPlan(ctx, createdMealPlan.ID)
 	requireNotNilAndNoProblems(t, createdMealPlan, err)
-	checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
+	checkMealPlanEquality(t, mealPlan, createdMealPlan)
 
 	return createdMealPlan
-}
-
-var allDays = []time.Weekday{
-	time.Monday,
-	time.Tuesday,
-	time.Wednesday,
-	time.Thursday,
-	time.Friday,
-	time.Saturday,
-	time.Sunday,
-}
-
-var allMealNames = []string{
-	types.BreakfastMealName,
-	types.SecondBreakfastMealName,
-	types.BrunchMealName,
-	types.LunchMealName,
-	types.SupperMealName,
-	types.DinnerMealName,
-}
-
-func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal string) []*types.MealPlanOption {
-	out := []*types.MealPlanOption{}
-
-	for _, o := range l {
-		if o.Day == day && o.MealName == meal {
-			out = append(out, o)
-		}
-	}
-
-	return out
 }
 
 func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
@@ -146,27 +117,26 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			exampleMealPlan := &types.MealPlan{
 				Notes:          t.Name(),
 				Status:         types.AwaitingVotesMealPlanStatus,
-				StartsAt:       now.Add(24 * time.Hour),
-				EndsAt:         now.Add(72 * time.Hour),
 				VotingDeadline: now.Add(baseDeadline),
-				Options: []*types.MealPlanOption{
+				Events: []*types.MealPlanEvent{
 					{
-						Meal:     types.Meal{ID: createdMeals[0].ID},
-						Notes:    "option A",
+						StartsAt: now.Add(24 * time.Hour),
+						EndsAt:   now.Add(72 * time.Hour),
 						MealName: types.BreakfastMealName,
-						Day:      time.Monday,
-					},
-					{
-						Meal:     types.Meal{ID: createdMeals[1].ID},
-						Notes:    "option B",
-						MealName: types.BreakfastMealName,
-						Day:      time.Monday,
-					},
-					{
-						Meal:     types.Meal{ID: createdMeals[2].ID},
-						Notes:    "option C",
-						MealName: types.BreakfastMealName,
-						Day:      time.Monday,
+						Options: []*types.MealPlanOption{
+							{
+								Meal:  types.Meal{ID: createdMeals[0].ID},
+								Notes: "option A",
+							},
+							{
+								Meal:  types.Meal{ID: createdMeals[1].ID},
+								Notes: "option B",
+							},
+							{
+								Meal:  types.Meal{ID: createdMeals[2].ID},
+								Notes: "option C",
+							},
+						},
 					},
 				},
 			}
@@ -181,18 +151,24 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
+			require.NotEmpty(t, createdMealPlan.Events)
+			require.NotEmpty(t, createdMealPlan.Events[0].Options)
+
+			createdMealPlanEvent := createdMealPlan.Events[0]
+			require.NotNil(t, createdMealPlanEvent)
+
 			userAVotes := &types.MealPlanOptionVoteCreationRequestInput{
 				Votes: []*types.MealPlanOptionVoteCreationInput{
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
 						Rank:                    0,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
 						Rank:                    2,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
 						Rank:                    1,
 					},
 				},
@@ -201,15 +177,15 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			userBVotes := &types.MealPlanOptionVoteCreationRequestInput{
 				Votes: []*types.MealPlanOptionVoteCreationInput{
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
 						Rank:                    0,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
 						Rank:                    1,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
 						Rank:                    2,
 					},
 				},
@@ -218,31 +194,31 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			userCVotes := &types.MealPlanOptionVoteCreationRequestInput{
 				Votes: []*types.MealPlanOptionVoteCreationInput{
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
 						Rank:                    1,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
 						Rank:                    0,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
 						Rank:                    2,
 					},
 				},
 			}
 
-			createdMealPlanOptionVotesA, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userAVotes)
+			createdMealPlanOptionVotesA, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userAVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesA)
 			t.Logf("meal plan option votes created for user A")
 
-			createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userBVotes)
+			createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userBVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesB)
 			t.Logf("meal plan option votes created for user B")
 
-			createdMealPlanOptionVotesC, err := testClients.user.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userCVotes)
+			createdMealPlanOptionVotesC, err := testClients.user.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userCVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesC)
 			t.Logf("meal plan option votes created for user C")
@@ -253,20 +229,15 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.FinalizedMealPlanStatus, createdMealPlan.Status)
 
-			for _, day := range allDays {
-				for _, mealName := range allMealNames {
-					options := byDayAndMeal(createdMealPlan.Options, day, mealName)
-					if len(options) > 0 {
-						selectionMade := false
-						for _, opt := range options {
-							if opt.Chosen {
-								selectionMade = true
-								break
-							}
-						}
-						require.True(t, selectionMade)
+			for _, event := range createdMealPlan.Events {
+				selectionMade := false
+				for _, opt := range event.Options {
+					if opt.Chosen {
+						selectionMade = true
+						break
 					}
 				}
+				require.True(t, selectionMade)
 			}
 		}
 	})
@@ -336,27 +307,26 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			exampleMealPlan := &types.MealPlan{
 				Notes:          t.Name(),
 				Status:         types.AwaitingVotesMealPlanStatus,
-				StartsAt:       now.Add(24 * time.Hour),
-				EndsAt:         now.Add(72 * time.Hour),
 				VotingDeadline: now.Add(baseDeadline),
-				Options: []*types.MealPlanOption{
+				Events: []*types.MealPlanEvent{
 					{
-						Meal:     types.Meal{ID: createdMeals[0].ID},
-						Notes:    "option A",
+						StartsAt: now.Add(24 * time.Hour),
+						EndsAt:   now.Add(72 * time.Hour),
 						MealName: types.BreakfastMealName,
-						Day:      time.Monday,
-					},
-					{
-						Meal:     types.Meal{ID: createdMeals[1].ID},
-						Notes:    "option B",
-						MealName: types.BreakfastMealName,
-						Day:      time.Monday,
-					},
-					{
-						Meal:     types.Meal{ID: createdMeals[2].ID},
-						Notes:    "option C",
-						MealName: types.BreakfastMealName,
-						Day:      time.Monday,
+						Options: []*types.MealPlanOption{
+							{
+								Meal:  types.Meal{ID: createdMeals[0].ID},
+								Notes: "option A",
+							},
+							{
+								Meal:  types.Meal{ID: createdMeals[1].ID},
+								Notes: "option B",
+							},
+							{
+								Meal:  types.Meal{ID: createdMeals[2].ID},
+								Notes: "option C",
+							},
+						},
 					},
 				},
 			}
@@ -372,18 +342,20 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
+			createdMealPlanEvent := createdMealPlan.Events[0]
+
 			userAVotes := &types.MealPlanOptionVoteCreationRequestInput{
 				Votes: []*types.MealPlanOptionVoteCreationInput{
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
 						Rank:                    0,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
 						Rank:                    2,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
 						Rank:                    1,
 					},
 				},
@@ -392,26 +364,26 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			userBVotes := &types.MealPlanOptionVoteCreationRequestInput{
 				Votes: []*types.MealPlanOptionVoteCreationInput{
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
 						Rank:                    0,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
 						Rank:                    1,
 					},
 					{
-						BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+						BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
 						Rank:                    2,
 					},
 				},
 			}
 
-			createdMealPlanOptionVotesA, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userAVotes)
+			createdMealPlanOptionVotesA, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userAVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesA)
 			t.Logf("meal plan option votes created for user A")
 
-			createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userBVotes)
+			createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userBVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesB)
 			t.Logf("meal plan option votes created for user B")
@@ -429,20 +401,15 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.FinalizedMealPlanStatus, createdMealPlan.Status)
 
-			for _, day := range allDays {
-				for _, mealName := range allMealNames {
-					options := byDayAndMeal(createdMealPlan.Options, day, mealName)
-					if len(options) > 0 {
-						selectionMade := false
-						for _, opt := range options {
-							if opt.Chosen {
-								selectionMade = true
-								break
-							}
-						}
-						require.True(t, selectionMade)
+			for _, event := range createdMealPlan.Events {
+				selectionMade := false
+				for _, opt := range event.Options {
+					if opt.Chosen {
+						selectionMade = true
+						break
 					}
 				}
+				require.True(t, selectionMade)
 			}
 		}
 	})
@@ -459,7 +426,7 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			t.Log("creating meal plans")
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.user)
+				createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 				expected = append(expected, createdMealPlan)
 			}
 

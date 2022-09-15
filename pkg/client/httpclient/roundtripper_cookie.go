@@ -35,8 +35,6 @@ func (t *cookieRoundtripper) RoundTrip(req *http.Request) (*http.Response, error
 	defer span.End()
 
 	reqBodyClosed := false
-	logger := t.logger.WithRequest(req)
-
 	if req.Body != nil {
 		defer func() {
 			if !reqBodyClosed {
@@ -56,7 +54,7 @@ func (t *cookieRoundtripper) RoundTrip(req *http.Request) (*http.Response, error
 
 	res, err := t.base.RoundTrip(req)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing RoundTrip")
+		return nil, observability.PrepareError(err, span, "executing RoundTrip")
 	}
 
 	if responseCookies := res.Cookies(); len(responseCookies) >= 1 {

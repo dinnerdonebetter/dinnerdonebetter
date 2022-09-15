@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -20,12 +19,11 @@ func (b *Builder) BuildUserStatusRequest(ctx context.Context) (*http.Request, er
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger.Clone()
 	uri := b.buildUnversionedURL(ctx, nil, authBasePath, "status")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building rqeuest")
 	}
 
 	return req, nil
@@ -58,7 +56,7 @@ func (b *Builder) BuildLogoutRequest(ctx context.Context) (*http.Request, error)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, b.logger, span, "building user status request")
+		return nil, observability.PrepareError(err, span, "building rqeuest")
 	}
 
 	return req, nil
@@ -100,10 +98,8 @@ func (b *Builder) BuildCycleTwoFactorSecretRequest(ctx context.Context, cookie *
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.Clone()
-
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "totp_secret", "new")
@@ -127,10 +123,8 @@ func (b *Builder) BuildVerifyTOTPSecretRequest(ctx context.Context, userID, toke
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.UserIDKey, userID)
-
 	if _, err := strconv.ParseUint(token, 10, 64); token == "" || err != nil {
-		return nil, observability.PrepareError(err, logger, span, "invalid token provided")
+		return nil, observability.PrepareError(err, span, "invalid token provided")
 	}
 
 	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "totp_secret", "verify")

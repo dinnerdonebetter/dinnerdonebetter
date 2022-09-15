@@ -37,7 +37,7 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 
 	var b bytes.Buffer
 	if err := r.encoder.Encode(ctx, &b, data); err != nil {
-		return observability.PrepareError(err, r.logger, span, "encoding topic message")
+		return observability.PrepareError(err, span, "encoding topic message")
 	}
 
 	msg := &pubsub.Message{Data: b.Bytes()}

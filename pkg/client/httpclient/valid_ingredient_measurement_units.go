@@ -24,12 +24,12 @@ func (c *Client) GetValidIngredientMeasurementUnit(ctx context.Context, validIng
 
 	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitRequest(ctx, validIngredientMeasurementUnitID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get valid ingredient preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient preparation request")
 	}
 
 	var validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnit); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient preparation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparation")
 	}
 
 	return validIngredientMeasurementUnit, nil
@@ -40,17 +40,18 @@ func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter 
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.loggerWithFilter(filter)
+	logger := c.logger.Clone()
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid ingredient preparations list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
 	var validIngredientMeasurementUnits *types.ValidIngredientMeasurementUnitList
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnits); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient preparations")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
 
 	return validIngredientMeasurementUnits, nil
@@ -72,12 +73,12 @@ func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Con
 
 	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ctx, validIngredientID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid ingredient preparations list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
 	var validPreparationInstruments *types.ValidIngredientMeasurementUnitList
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient preparations")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
 
 	return validPreparationInstruments, nil
@@ -99,12 +100,12 @@ func (c *Client) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx contex
 
 	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(ctx, validMeasurementUnitID, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building valid ingredient preparations list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
 	var validPreparationInstruments *types.ValidIngredientMeasurementUnitList
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient preparations")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
 
 	return validPreparationInstruments, nil
@@ -122,17 +123,17 @@ func (c *Client) CreateValidIngredientMeasurementUnit(ctx context.Context, input
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidIngredientMeasurementUnitRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create valid ingredient preparation request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient preparation request")
 	}
 
 	var validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnit); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient preparation")
 	}
 
 	return validIngredientMeasurementUnit, nil
@@ -153,11 +154,11 @@ func (c *Client) UpdateValidIngredientMeasurementUnit(ctx context.Context, valid
 
 	req, err := c.requestBuilder.BuildUpdateValidIngredientMeasurementUnitRequest(ctx, validIngredientMeasurementUnit)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building update valid ingredient preparation request")
+		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient preparation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnit); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid ingredient preparation %s", validIngredientMeasurementUnit.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation %s", validIngredientMeasurementUnit.ID)
 	}
 
 	return nil
@@ -178,11 +179,11 @@ func (c *Client) ArchiveValidIngredientMeasurementUnit(ctx context.Context, vali
 
 	req, err := c.requestBuilder.BuildArchiveValidIngredientMeasurementUnitRequest(ctx, validIngredientMeasurementUnitID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building archive valid ingredient preparation request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient preparation request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving valid ingredient preparation %s", validIngredientMeasurementUnitID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation %s", validIngredientMeasurementUnitID)
 	}
 
 	return nil

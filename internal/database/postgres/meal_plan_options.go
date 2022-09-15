@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"math/rand"
 	"time"
 
@@ -15,8 +16,7 @@ import (
 )
 
 const (
-	mealPlansOnMealPlanOptionsJoinClause = "meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id"
-	mealsOnMealPlanOptionsJoinClause     = "meals ON meal_plan_options.meal_id=meals.id"
+	mealsOnMealPlanOptionsJoinClause = "meals ON meal_plan_options.meal_id=meals.id"
 )
 
 var (
@@ -25,10 +25,8 @@ var (
 	// mealPlanOptionsTableColumns are the columns for the meal_plan_options table.
 	mealPlanOptionsTableColumns = []string{
 		"meal_plan_options.id",
-		"meal_plan_options.day",
 		"meal_plan_options.assigned_cook",
 		"meal_plan_options.assigned_dishwasher",
-		"meal_plan_options.meal_name",
 		"meal_plan_options.chosen",
 		"meal_plan_options.tiebroken",
 		"meal_plan_options.meal_id",
@@ -37,7 +35,7 @@ var (
 		"meal_plan_options.created_at",
 		"meal_plan_options.last_updated_at",
 		"meal_plan_options.archived_at",
-		"meal_plan_options.belongs_to_meal_plan",
+		"meal_plan_options.belongs_to_meal_plan_event",
 		"meals.id",
 		"meals.name",
 		"meals.description",
@@ -48,8 +46,9 @@ var (
 	}
 
 	getMealPlanOptionsJoins = []string{
-		mealPlansOnMealPlanOptionsJoinClause,
+		mealPlanEventsOnMealPlanOptionsJoinClause,
 		mealsOnMealPlanOptionsJoinClause,
+		mealPlansOnMealPlanEventsJoinClause,
 	}
 )
 
@@ -62,18 +61,14 @@ func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner,
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.MealPlanOption{
 		Votes: []*types.MealPlanOptionVote{},
 	}
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.Day,
 		&x.AssignedCook,
 		&x.AssignedDishwasher,
-		&x.MealName,
 		&x.Chosen,
 		&x.TieBroken,
 		&x.Meal.ID,
@@ -82,7 +77,7 @@ func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
-		&x.BelongsToMealPlan,
+		&x.BelongsToMealPlanEvent,
 		&x.Meal.ID,
 		&x.Meal.Name,
 		&x.Meal.Description,
@@ -97,7 +92,7 @@ func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner,
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -107,8 +102,6 @@ func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner,
 func (q *Querier) scanMealPlanOptions(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlanOptions []*types.MealPlanOption, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanMealPlanOption(ctx, rows, includeCounts)
@@ -130,16 +123,35 @@ func (q *Querier) scanMealPlanOptions(ctx context.Context, rows database.ResultI
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return mealPlanOptions, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_options.id FROM meal_plan_options JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_options.archived_at IS NULL AND meal_plan_options.belongs_to_meal_plan = $1 AND meal_plan_options.id = $2 AND meal_plans.archived_at IS NULL AND meal_plans.id = $3 )"
+const mealPlanOptionExistenceQuery = `
+SELECT
+  EXISTS (
+    SELECT
+      meal_plan_options.id
+    FROM
+      meal_plan_options
+      JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+      JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+    WHERE
+      meal_plan_options.archived_at IS NULL
+      AND meal_plan_options.belongs_to_meal_plan_event = $2
+      AND meal_plan_options.id = $3
+	  AND meal_plan_events.archived_at IS NULL
+	  AND meal_plan_events.belongs_to_meal_plan = $1
+	  AND meal_plan_events.id = $2
+      AND meal_plans.archived_at IS NULL
+      AND meal_plans.id = $1
+  )
+`
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
-func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (exists bool, err error) {
+func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -151,6 +163,12 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
+	if mealPlanEventID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+
 	if mealPlanOptionID == "" {
 		return false, ErrInvalidIDProvided
 	}
@@ -159,24 +177,24 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 
 	args := []interface{}{
 		mealPlanID,
+		mealPlanEventID,
 		mealPlanOptionID,
-		mealPlanID,
 	}
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanOptionExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing meal plan option existence check")
+		logger.Error(err, "performing meal plan option existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan option existence check")
 	}
 
 	return result, nil
 }
 
-const getMealPlanOptionQuery = `SELECT
+const getMealPlanOptionQuery = `
+SELECT
 	meal_plan_options.id,
-	meal_plan_options.day,
 	meal_plan_options.assigned_cook,
 	meal_plan_options.assigned_dishwasher,
-	meal_plan_options.meal_name,
 	meal_plan_options.chosen,
 	meal_plan_options.tiebroken,
 	meal_plan_options.meal_id,
@@ -185,7 +203,7 @@ const getMealPlanOptionQuery = `SELECT
 	meal_plan_options.created_at,
 	meal_plan_options.last_updated_at,
 	meal_plan_options.archived_at,
-	meal_plan_options.belongs_to_meal_plan,
+	meal_plan_options.belongs_to_meal_plan_event,
 	meals.id,
 	meals.name,
 	meals.description,
@@ -194,27 +212,40 @@ const getMealPlanOptionQuery = `SELECT
 	meals.archived_at,
 	meals.created_by_user
 FROM meal_plan_options
-JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
-JOIN meals ON meal_plan_options.meal_id=meals.id
+  JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+  JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+  JOIN meals ON meal_plan_options.meal_id = meals.id
 WHERE meal_plan_options.archived_at IS NULL
-AND meal_plan_options.belongs_to_meal_plan = $1
-AND meal_plan_options.id = $2
-AND meal_plans.archived_at IS NULL
-AND meal_plans.id = $3
+	AND meal_plan_options.belongs_to_meal_plan_event = $2
+	AND meal_plan_options.id = $3
+    AND meal_plan_events.id = $2
+    AND meal_plan_events.belongs_to_meal_plan = $1
+	AND meal_plans.archived_at IS NULL
+	AND meal_plans.id = $1
 `
 
 // GetMealPlanOption fetches a meal plan option from the database.
-func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*types.MealPlanOption, error) {
+func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if mealPlanID == mealPlanEventID {
+		return nil, errors.New("WTF")
+	}
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
@@ -224,22 +255,57 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOpt
 
 	args := []interface{}{
 		mealPlanID,
+		mealPlanEventID,
 		mealPlanOptionID,
-		mealPlanID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "mealPlanOption", getMealPlanOptionQuery, args)
+	row := q.getOneRow(ctx, q.db, "meal plan option", getMealPlanOptionQuery, args)
 
 	mealPlanOption, _, _, err := q.scanMealPlanOption(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning mealPlanOption")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan option")
 	}
 
 	return mealPlanOption, nil
 }
 
-// GetMealPlanOptions fetches a list of meal plan options from the database that meet a particular filter.
-func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.MealPlanOptionList, err error) {
+const getMealPlanOptionsForMealPlanEventsQuery = `
+SELECT
+  meal_plan_options.id,
+  meal_plan_options.assigned_cook,
+  meal_plan_options.assigned_dishwasher,
+  meal_plan_options.chosen,
+  meal_plan_options.tiebroken,
+  meal_plan_options.meal_id,
+  meal_plan_options.notes,
+  meal_plan_options.prep_steps_created,
+  meal_plan_options.created_at,
+  meal_plan_options.last_updated_at,
+  meal_plan_options.archived_at,
+  meal_plan_options.belongs_to_meal_plan_event,
+  meals.id,
+  meals.name,
+  meals.description,
+  meals.created_at,
+  meals.last_updated_at,
+  meals.archived_at,
+  meals.created_by_user
+FROM
+  meal_plan_options
+  JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+  JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+  JOIN meals ON meal_plan_options.meal_id = meals.id
+WHERE
+  meal_plan_options.archived_at IS NULL
+  AND meal_plan_options.belongs_to_meal_plan_event = $1
+  AND meal_plan_events.id = $1
+  AND meal_plan_events.belongs_to_meal_plan = $2
+  AND meal_plans.archived_at IS NULL
+  AND meal_plans.id = $2
+`
+
+// getMealPlanOptionsForMealPlanEvent fetches a list of meal plan options from the database that meet a particular filter.
+func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (x []*types.MealPlanOption, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -250,6 +316,62 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID string, fil
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
+
+	args := []interface{}{
+		mealPlanEventID,
+		mealPlanID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "meal plan options for meal plan event", getMealPlanOptionsForMealPlanEventsQuery, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options for meal plan event list retrieval query")
+	}
+
+	x, _, _, err = q.scanMealPlanOptions(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan options for meal plan event")
+	}
+
+	for _, opt := range x {
+		votes, voteFetchErr := q.GetMealPlanOptionVotesForMealPlanOption(ctx, mealPlanID, mealPlanEventID, opt.ID)
+		if voteFetchErr != nil {
+			return nil, observability.PrepareError(voteFetchErr, span, "fetching meal plan option votes for meal plan option")
+		}
+
+		// TODO: fetch recipes for the meal
+
+		opt.Votes = votes
+	}
+
+	logger.WithValue("quantity", len(x)).Info("fetched meal plan options for meal plan event")
+
+	return x, nil
+}
+
+// GetMealPlanOptions fetches a list of meal plan options from the database that meet a particular filter.
+func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *types.QueryFilter) (x *types.MealPlanOptionList, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	x = &types.MealPlanOptionList{}
 	logger = filter.AttachToLogger(logger)
@@ -270,17 +392,17 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID string, fil
 
 	rows, err := q.performReadQuery(ctx, q.db, "mealPlanOptions", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing meal plan options list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options list retrieval query")
 	}
 
 	if x.MealPlanOptions, x.FilteredCount, x.TotalCount, err = q.scanMealPlanOptions(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning meal plan options")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan options")
 	}
 
 	return x, nil
 }
 
-const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day,assigned_cook,assigned_dishwasher,meal_name,meal_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
+const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,assigned_cook,assigned_dishwasher,meal_id,notes,belongs_to_meal_plan_event) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // createMealPlanOption creates a meal plan option in the database.
 func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
@@ -296,30 +418,26 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 	// we're leaving PrepStepsCreated out on purpose since it would be false by default.
 	args := []interface{}{
 		input.ID,
-		input.Day,
 		input.AssignedCook,
 		input.AssignedDishwasher,
-		input.MealName,
 		input.MealID,
 		input.Notes,
-		input.BelongsToMealPlan,
+		input.BelongsToMealPlanEvent,
 	}
 
 	// create the meal plan option.
 	if err := q.performWriteQuery(ctx, db, "meal plan option creation", mealPlanOptionCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating meal plan option")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option")
 	}
 
 	x := &types.MealPlanOption{
-		ID:                input.ID,
-		Day:               input.Day,
-		AssignedCook:      input.AssignedCook,
-		Meal:              types.Meal{ID: input.MealID},
-		MealName:          input.MealName,
-		Notes:             input.Notes,
-		BelongsToMealPlan: input.BelongsToMealPlan,
-		CreatedAt:         q.currentTime(),
-		Votes:             []*types.MealPlanOptionVote{},
+		ID:                     input.ID,
+		AssignedCook:           input.AssignedCook,
+		Meal:                   types.Meal{ID: input.MealID},
+		Notes:                  input.Notes,
+		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
+		CreatedAt:              q.currentTime(),
+		Votes:                  []*types.MealPlanOptionVote{},
 	}
 
 	tracing.AttachMealPlanOptionIDToSpan(span, x.ID)
@@ -335,17 +453,15 @@ func (q *Querier) CreateMealPlanOption(ctx context.Context, input *types.MealPla
 
 const updateMealPlanOptionQuery = `UPDATE meal_plan_options
 SET 
-	day = $1,
-	assigned_cook = $2,
-	assigned_dishwasher = $3,
-	meal_id = $4,
-	meal_name = $5,
-	notes = $6,
-	prep_steps_created = $7,
+	assigned_cook = $1,
+	assigned_dishwasher = $2,
+	meal_id = $3,
+	notes = $4,
+	prep_steps_created = $5,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND belongs_to_meal_plan = $8 
-  AND id = $9
+  AND belongs_to_meal_plan_event = $6 
+  AND id = $7
 `
 
 // UpdateMealPlanOption updates a particular meal plan option.
@@ -361,19 +477,17 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	tracing.AttachMealPlanOptionIDToSpan(span, updated.ID)
 
 	args := []interface{}{
-		updated.Day,
 		updated.AssignedCook,
 		updated.AssignedDishwasher,
 		updated.Meal.ID,
-		updated.MealName,
 		updated.Notes,
 		updated.PrepStepsCreated,
-		updated.BelongsToMealPlan,
+		updated.BelongsToMealPlanEvent,
 		updated.ID,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan option update", updateMealPlanOptionQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating meal plan option")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 
 	logger.Info("meal plan option updated")
@@ -381,10 +495,19 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	return nil
 }
 
-const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2"
+const archiveMealPlanOptionQuery = `
+UPDATE
+  meal_plan_options
+SET
+  archived_at = NOW()
+WHERE
+  archived_at IS NULL
+  AND belongs_to_meal_plan_event = $1
+  AND id = $2
+`
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
-func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {
+func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -396,6 +519,12 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
+	if mealPlanEventID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+
 	if mealPlanOptionID == "" {
 		return ErrInvalidIDProvided
 	}
@@ -403,12 +532,12 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	args := []interface{}{
-		mealPlanID,
+		mealPlanEventID,
 		mealPlanOptionID,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan option archive", archiveMealPlanOptionQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating meal plan option")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 
 	logger.Info("meal plan option archived")
@@ -483,11 +612,11 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 	return "", false, false
 }
 
-const finalizeMealPlanOptionQuery = `UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan = $1 AND id = $2`
+const finalizeMealPlanOptionQuery = `UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan_event = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan_event = $1 AND id = $2`
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
-func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID string) (changed bool, err error) {
+	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
@@ -497,6 +626,12 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return false, ErrInvalidIDProvided
@@ -510,53 +645,58 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	// fetch meal plan
 	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
+		return false, observability.PrepareAndLogError(err, logger, span, "fetching meal plan")
 	}
 
-	// fetch meal plan option
-	mealPlanOption, err := q.GetMealPlanOption(ctx, mealPlan.ID, mealPlanOptionID)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "fetching meal plan option")
+	var (
+		mealPlanEvent  *types.MealPlanEvent
+		mealPlanOption *types.MealPlanOption
+	)
+	for _, event := range mealPlan.Events {
+		if event.ID == mealPlanEventID {
+			mealPlanEvent = event
+			for _, option := range event.Options {
+				if option.ID == mealPlanOptionID {
+					mealPlanOption = option
+					break
+				}
+			}
+		}
 	}
 
 	// fetch household data
 	household, err := q.GetHouseholdByID(ctx, mealPlan.BelongsToHousehold)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "fetching household")
+		return false, observability.PrepareAndLogError(err, logger, span, "fetching household")
 	}
-
-	relevantOptions := byDayAndMeal(mealPlan.Options, mealPlanOption.Day, mealPlanOption.MealName)
 
 	// go through all the votes for this meal plan option and determine if they're all there
 	for _, member := range household.Members {
-		for _, option := range relevantOptions {
-			memberVoteFound := false
-			for _, vote := range option.Votes {
-				if vote.ByUser == member.BelongsToUser.ID {
-					memberVoteFound = true
-					break
-				}
+		memberVoteFound := false
+		for _, vote := range mealPlanOption.Votes {
+			if vote.ByUser == member.BelongsToUser.ID {
+				memberVoteFound = true
+				break
 			}
+		}
 
-			if !memberVoteFound {
-				return false, nil
-			}
+		if !memberVoteFound {
+			return false, nil
 		}
 	}
 
-	winner, tiebroken, chosen := q.decideOptionWinner(ctx, relevantOptions)
+	winner, tiebroken, chosen := q.decideOptionWinner(ctx, mealPlanEvent.Options)
 	if chosen {
 		args := []interface{}{
-			mealPlanID,
+			mealPlanEventID,
 			winner,
 			tiebroken,
 		}
 
 		if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
-			return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
+			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 		}
 
 		logger.Debug("finalized meal plan option")

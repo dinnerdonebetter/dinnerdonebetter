@@ -15,24 +15,25 @@ var (
 		ProvideValidInstrumentDataManager,
 		ProvideValidIngredientDataManager,
 		ProvideValidPreparationDataManager,
+		ProvideValidMeasurementUnitDataManager,
 		ProvideValidIngredientPreparationDataManager,
+		ProvideValidPreparationInstrumentDataManager,
+		ProvideValidIngredientMeasurementUnitDataManager,
 		ProvideRecipeDataManager,
 		ProvideRecipeStepDataManager,
-		ProvideRecipeStepProductDataManager,
 		ProvideRecipeStepInstrumentDataManager,
+		ProvideRecipeStepProductDataManager,
 		ProvideRecipeStepIngredientDataManager,
 		ProvideMealDataManager,
 		ProvideMealPlanDataManager,
+		ProvideMealPlanEventDataManager,
 		ProvideMealPlanOptionDataManager,
 		ProvideMealPlanOptionVoteDataManager,
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
 		ProvideAPIClientDataManager,
-		ProvideValidMeasurementUnitDataManager,
 		ProvidePasswordResetTokenDataManager,
 		ProvideWebhookDataManager,
-		ProvideValidPreparationInstrumentDataManager,
-		ProvideValidIngredientMeasurementUnitDataManager,
 	)
 )
 
@@ -118,6 +119,11 @@ func ProvideMealDataManager(db DataManager) types.MealDataManager {
 
 // ProvideMealPlanDataManager is an arbitrary function for dependency injection's sake.
 func ProvideMealPlanDataManager(db DataManager) types.MealPlanDataManager {
+	return db
+}
+
+// ProvideMealPlanEventDataManager is an arbitrary function for dependency injection's sake.
+func ProvideMealPlanEventDataManager(db DataManager) types.MealPlanEventDataManager {
 	return db
 }
 

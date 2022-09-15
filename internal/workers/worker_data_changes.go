@@ -47,7 +47,7 @@ func (w *DataChangesWorker) HandleMessage(ctx context.Context, message []byte) e
 	var msg *types.DataChangeMessage
 
 	if err := w.encoder.Unmarshal(ctx, message, &msg); err != nil {
-		return observability.PrepareError(err, w.logger, span, "unmarshalling message")
+		return observability.PrepareError(err, span, "unmarshalling message")
 	}
 
 	tracing.AttachUserIDToSpan(span, msg.AttributableToUserID)

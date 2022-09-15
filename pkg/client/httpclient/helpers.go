@@ -72,12 +72,12 @@ func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest int
 	logger := c.logger.WithResponse(res)
 
 	if err := argIsNotPointerOrNil(dest); err != nil {
-		return observability.PrepareError(err, logger, span, "nil marshal target")
+		return observability.PrepareAndLogError(err, logger, span, "nil marshal target")
 	}
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "unmarshalling error response")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshalling error response")
 	}
 
 	if res.StatusCode >= http.StatusBadRequest {
@@ -93,7 +93,7 @@ func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest int
 	}
 
 	if err = c.encoder.Unmarshal(ctx, bodyBytes, &dest); err != nil {
-		return observability.PrepareError(err, logger, span, "unmarshalling response body")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshalling response body")
 	}
 
 	return nil

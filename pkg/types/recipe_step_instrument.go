@@ -169,7 +169,6 @@ func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx conte
 		ctx,
 		x,
 		validation.Field(&x.InstrumentID, validation.Required),
-		validation.Field(&x.PreferenceRank, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }
@@ -184,7 +183,6 @@ func (x *RecipeStepInstrumentDatabaseCreationInput) ValidateWithContext(ctx cont
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.InstrumentID, validation.Required),
 		validation.Field(&x.BelongsToRecipeStep, validation.Required),
-		validation.Field(&x.PreferenceRank, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }
@@ -232,7 +230,6 @@ func (x *RecipeStepInstrumentUpdateRequestInput) ValidateWithContext(ctx context
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.PreferenceRank, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
+		validation.Field(&x.BelongsToRecipeStep, validation.Required),
 	)
 }

@@ -56,8 +56,6 @@ func (q *Querier) scanValidPreparationInstrument(ctx context.Context, scan datab
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	x = &types.ValidPreparationInstrument{}
 
 	targetVars := []interface{}{
@@ -93,7 +91,7 @@ func (q *Querier) scanValidPreparationInstrument(ctx context.Context, scan datab
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -103,8 +101,6 @@ func (q *Querier) scanValidPreparationInstrument(ctx context.Context, scan datab
 func (q *Querier) scanValidPreparationInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validPreparationInstruments []*types.ValidPreparationInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
 		x, fc, tc, scanErr := q.scanValidPreparationInstrument(ctx, rows, includeCounts)
@@ -126,7 +122,7 @@ func (q *Querier) scanValidPreparationInstruments(ctx context.Context, rows data
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
+		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
 	return validPreparationInstruments, filteredCount, totalCount, nil
@@ -139,12 +135,9 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if validPreparationInstrumentID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
 	args := []interface{}{
@@ -153,7 +146,7 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 
 	result, err := q.performBooleanQuery(ctx, q.db, validPreparationInstrumentExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing valid ingredient preparation existence check")
+		return false, observability.PrepareError(err, span, "performing valid ingredient preparation existence check")
 	}
 
 	return result, nil
@@ -199,12 +192,9 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if validPreparationInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
 	args := []interface{}{
@@ -215,7 +205,7 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 
 	validPreparationInstrument, _, _, err := q.scanValidPreparationInstrument(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning validPreparationInstrument")
+		return nil, observability.PrepareError(err, span, "scanning validPreparationInstrument")
 	}
 
 	return validPreparationInstrument, nil
@@ -226,10 +216,7 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	x = &types.ValidPreparationInstrumentList{}
-	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -257,11 +244,11 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
 	}
 
 	if x.ValidPreparationInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
 	}
 
 	return x, nil
@@ -296,12 +283,9 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if preparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, preparationID)
 
 	x = &types.ValidPreparationInstrumentList{
@@ -309,7 +293,6 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 			Limit: 20,
 		},
 	}
-	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -327,11 +310,11 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
 	}
 
 	if x.ValidPreparationInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
 	}
 
 	return x, nil
@@ -346,12 +329,9 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if instrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, instrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, instrumentID)
 
 	x = &types.ValidPreparationInstrumentList{
@@ -359,7 +339,6 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 			Limit: 20,
 		},
 	}
-	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -377,11 +356,11 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for instrument", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
 	}
 
 	if x.ValidPreparationInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
 	}
 
 	return x, nil
@@ -409,7 +388,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 
 	// create the valid ingredient preparation.
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation creation", validPreparationInstrumentCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing valid ingredient preparation creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient preparation creation query")
 	}
 
 	x := &types.ValidPreparationInstrument{
@@ -448,7 +427,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation update", updateValidPreparationInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid ingredient preparation")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
 	}
 
 	logger.Info("valid ingredient preparation updated")
@@ -463,12 +442,10 @@ func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPr
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	if validPreparationInstrumentID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
 	args := []interface{}{
@@ -476,7 +453,7 @@ func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPr
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation archive", archiveValidPreparationInstrumentQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid ingredient preparation")
+		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
 	}
 
 	logger.Info("valid ingredient preparation archived")
