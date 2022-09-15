@@ -175,7 +175,7 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEven
 	return m, nil
 }
 
-const getMealPlanEventForMealPlanQuery = `SELECT 
+const getMealPlanEventsForMealPlanQuery = `SELECT 
 	meal_plan_events.id,
 	meal_plan_events.notes,
 	meal_plan_events.starts_at,
@@ -199,7 +199,7 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 		mealPlanID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan events", getMealPlanEventForMealPlanQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "meal plan events", getMealPlanEventsForMealPlanQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing meal plan events list retrieval query")
 	}

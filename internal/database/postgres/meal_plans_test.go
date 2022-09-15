@@ -183,7 +183,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 	})
 }
 
-func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exampleMealPlan *types.MealPlan, householdID string, db *sqlmockExpecterWrapper, restrictToPastVotingDeadline bool) {
+func prepareMockToSuccessfullyGetMealPlan(t *testing.T, exampleMealPlan *types.MealPlan, householdID string, db *sqlmockExpecterWrapper, restrictToPastVotingDeadline bool) {
 	t.Helper()
 
 	if exampleMealPlan == nil {
@@ -204,15 +204,15 @@ func prepareMockToSuccessfullyGetMealPlan(ctx context.Context, t *testing.T, exa
 		WithArgs(interfaceToDriverValue(args)...).
 		WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
 
+	getMealPlanEventForMealPlanArgs := []interface{}{
+		exampleMealPlan.ID,
+	}
+
+	db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventsForMealPlanQuery)).
+		WithArgs(interfaceToDriverValue(getMealPlanEventForMealPlanArgs)...).
+		WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, exampleMealPlan.Events...))
+
 	for _, evt := range exampleMealPlan.Events {
-		getMealPlanEventForMealPlanArgs := []interface{}{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventForMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanEventForMealPlanArgs)...).
-			WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, evt))
-
 		getMealPlanOptionsForMealPlanEventsArgs := []interface{}{
 			evt.ID,
 			exampleMealPlan.ID,
@@ -249,7 +249,7 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHouseholdID, db, false)
+		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHouseholdID, db, false)
 
 		actual, err := c.GetMealPlan(ctx, exampleMealPlan.ID, exampleHouseholdID)
 		assert.NoError(t, err)
@@ -355,6 +355,10 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
 
+		for _, mp := range exampleMealPlanList.MealPlans {
+			prepareMockToSuccessfullyGetMealPlan(t, mp, exampleHouseholdID, db, false)
+		}
+
 		actual, err := c.GetMealPlans(ctx, exampleHouseholdID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanList, actual)
@@ -382,6 +386,10 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
+
+		for _, mp := range exampleMealPlanList.MealPlans {
+			prepareMockToSuccessfullyGetMealPlan(t, mp, exampleHouseholdID, db, false)
+		}
 
 		actual, err := c.GetMealPlans(ctx, exampleHouseholdID, filter)
 		assert.NoError(t, err)
@@ -949,7 +957,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, db, false)
+		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)
 
 		db.ExpectBegin()
 
@@ -1112,7 +1120,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 				exampleMealPlan.ID,
 			}
 
-			db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventForMealPlanQuery)).
+			db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventsForMealPlanQuery)).
 				WithArgs(interfaceToDriverValue(getMealPlanEventArgs)...).
 				WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, evt))
 

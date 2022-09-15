@@ -209,6 +209,16 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 		return nil, observability.PrepareError(err, span, "scanning meal plans")
 	}
 
+	fullMealPlans := []*types.MealPlan{}
+	for _, mp := range x.MealPlans {
+		fmp, mealPlanFetchErr := q.getMealPlan(ctx, mp.ID, householdID, false)
+		if mealPlanFetchErr != nil {
+			return nil, observability.PrepareError(mealPlanFetchErr, span, "scanning meal plans")
+		}
+		fullMealPlans = append(fullMealPlans, fmp)
+	}
+	x.MealPlans = fullMealPlans
+
 	return x, nil
 }
 

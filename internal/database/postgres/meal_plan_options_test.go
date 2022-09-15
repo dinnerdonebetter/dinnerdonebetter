@@ -993,7 +993,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, db, false)
+		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)
 
 		getHouseholdArgs := []interface{}{
 			exampleHousehold.ID,
@@ -1106,7 +1106,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		prepareMockToSuccessfullyGetMealPlan(ctx, t, exampleMealPlan, exampleHousehold.ID, db, false)
+		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)
 
 		getHouseholdArgs := []interface{}{
 			exampleHousehold.ID,
