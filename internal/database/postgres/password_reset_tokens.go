@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -49,19 +50,8 @@ func (q *Querier) scanPasswordResetToken(ctx context.Context, scan database.Scan
 	return x, filteredCount, totalCount, nil
 }
 
-const getPasswordResetTokenQuery = `SELECT
-	password_reset_tokens.id,
-	password_reset_tokens.token,
-	password_reset_tokens.expires_at,
-	password_reset_tokens.created_at,
-	password_reset_tokens.last_updated_at,
-	password_reset_tokens.redeemed_at,
-	password_reset_tokens.belongs_to_user
-FROM password_reset_tokens
-WHERE password_reset_tokens.redeemed_at IS NULL
-AND NOW() < password_reset_tokens.expires_at
-AND password_reset_tokens.token = $1
-`
+//go:embed queries/password_reset_tokens_get_one.sql
+var getPasswordResetTokenQuery string
 
 // GetPasswordResetTokenByToken fetches a password reset token from the database by its token.
 func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string) (*types.PasswordResetToken, error) {
@@ -87,7 +77,8 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	return passwordResetToken, nil
 }
 
-const passwordResetTokenCreationQuery = "INSERT INTO password_reset_tokens (id,token,expires_at,belongs_to_user) VALUES ($1,$2,NOW() + (30 * interval '1 minutes'),$3)"
+//go:embed queries/password_reset_tokens_create.sql
+var passwordResetTokenCreationQuery string
 
 // CreatePasswordResetToken creates a password reset token in the database.
 func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.PasswordResetTokenDatabaseCreationInput) (*types.PasswordResetToken, error) {
@@ -125,7 +116,8 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 	return x, nil
 }
 
-const redeemPasswordResetTokenQuery = "UPDATE password_reset_tokens SET redeemed_at = NOW() WHERE redeemed_at IS NULL AND id = $1"
+//go:embed queries/password_reset_tokens_redeem.sql
+var redeemPasswordResetTokenQuery string
 
 // RedeemPasswordResetToken redeems a password reset token from the database by its ID.
 func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {

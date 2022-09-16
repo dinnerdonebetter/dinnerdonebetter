@@ -549,7 +549,7 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 }
 
 // CancelHouseholdInvitation cancels a household invitation by its ID with a note.
-func (q *Querier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+func (q *Querier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error {
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.CancelledHouseholdInvitationStatus)
 }
 
@@ -605,7 +605,7 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 }
 
 // RejectHouseholdInvitation rejects a household invitation by its ID with a note.
-func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error {
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
 }
 

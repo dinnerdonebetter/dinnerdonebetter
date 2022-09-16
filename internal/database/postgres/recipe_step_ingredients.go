@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -132,7 +133,8 @@ func (q *Querier) scanRecipeStepIngredients(ctx context.Context, rows database.R
 	return recipeStepIngredients, filteredCount, totalCount, nil
 }
 
-const recipeStepIngredientExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_ingredients.id FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_at IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )"
+//go:embed queries/recipe_step_ingredients_exists.sql
+var recipeStepIngredientExistenceQuery string
 
 // RecipeStepIngredientExists fetches whether a recipe step ingredient exists from the database.
 func (q *Querier) RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (exists bool, err error) {
@@ -175,47 +177,8 @@ func (q *Querier) RecipeStepIngredientExists(ctx context.Context, recipeID, reci
 	return result, nil
 }
 
-const getRecipeStepIngredientQuery = `SELECT
-	recipe_step_ingredients.id,
-	recipe_step_ingredients.name,
-	recipe_step_ingredients.optional,
-	recipe_step_ingredients.ingredient_id,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-	recipe_step_ingredients.minimum_quantity_value,
-	recipe_step_ingredients.maximum_quantity_value,
-	recipe_step_ingredients.quantity_notes,
-	recipe_step_ingredients.product_of_recipe_step,
-	recipe_step_ingredients.recipe_step_product_id,
-	recipe_step_ingredients.ingredient_notes,
-	recipe_step_ingredients.created_at,
-	recipe_step_ingredients.last_updated_at,
-	recipe_step_ingredients.archived_at,
-	recipe_step_ingredients.belongs_to_recipe_step
-FROM recipe_step_ingredients
-JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
-JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id
-WHERE recipe_step_ingredients.archived_at IS NULL
-AND recipe_step_ingredients.belongs_to_recipe_step = $1
-AND recipe_step_ingredients.id = $2
-AND recipe_steps.archived_at IS NULL
-AND recipe_steps.belongs_to_recipe = $3
-AND recipe_steps.id = $4
-AND recipes.archived_at IS NULL
-AND recipes.id = $5
-`
+//go:embed queries/recipe_step_ingredients_get_one.sql
+var getRecipeStepIngredientQuery string
 
 // GetRecipeStepIngredient fetches a recipe step ingredient from the database.
 func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*types.RecipeStepIngredient, error) {
@@ -333,21 +296,8 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 	return x, nil
 }
 
-const recipeStepIngredientCreationQuery = `INSERT INTO recipe_step_ingredients (
-	id,
-	name,
-	optional,
-	ingredient_id,
-	measurement_unit,
-	minimum_quantity_value,
-	maximum_quantity_value,
-	quantity_notes,
-	product_of_recipe_step,
-	recipe_step_product_id,
-	ingredient_notes,
-	belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-`
+//go:embed queries/recipe_step_ingredients_create.sql
+var recipeStepIngredientCreationQuery string
 
 // createRecipeStepIngredient creates a recipe step ingredient in the database.
 func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
@@ -404,22 +354,8 @@ func (q *Querier) CreateRecipeStepIngredient(ctx context.Context, input *types.R
 	return q.createRecipeStepIngredient(ctx, q.db, input)
 }
 
-const updateRecipeStepIngredientQuery = `
-UPDATE recipe_step_ingredients SET
-	ingredient_id = $1,
-	name = $2,
-	optional = $3,
-	measurement_unit = $4,
-	minimum_quantity_value = $5,
-	maximum_quantity_value = $6,
-	quantity_notes = $7,
-	product_of_recipe_step = $8,
-	recipe_step_product_id = $9,
-	ingredient_notes = $10,
-	last_updated_at = NOW() 
-WHERE archived_at IS NULL AND belongs_to_recipe_step = $11
-AND id = $12
-`
+//go:embed queries/recipe_step_ingredients_update.sql
+var updateRecipeStepIngredientQuery string
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
 func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types.RecipeStepIngredient) error {
@@ -457,7 +393,8 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 	return nil
 }
 
-const archiveRecipeStepIngredientQuery = "UPDATE recipe_step_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
+//go:embed queries/recipe_step_ingredients_archive.sql
+var archiveRecipeStepIngredientQuery string
 
 // ArchiveRecipeStepIngredient archives a recipe step ingredient from the database by its ID.
 func (q *Querier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID string) error {

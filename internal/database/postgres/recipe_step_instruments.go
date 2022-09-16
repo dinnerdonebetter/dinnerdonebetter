@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -130,7 +131,8 @@ func (q *Querier) scanRecipeStepInstruments(ctx context.Context, rows database.R
 	return recipeStepInstruments, filteredCount, totalCount, nil
 }
 
-const recipeStepInstrumentExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_instruments.id FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_at IS NULL AND recipe_step_instruments.belongs_to_recipe_step = $1 AND recipe_step_instruments.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )"
+//go:embed queries/recipe_step_instruments_exists.sql
+var recipeStepInstrumentExistenceQuery string
 
 // RecipeStepInstrumentExists fetches whether a recipe step instrument exists from the database.
 func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (exists bool, err error) {
@@ -173,41 +175,8 @@ func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, reci
 	return result, nil
 }
 
-const getRecipeStepInstrumentQuery = `SELECT
-	recipe_step_instruments.id,
-	valid_instruments.id,
-	valid_instruments.name,
-    valid_instruments.plural_name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.usable_for_storage,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
-	valid_instruments.archived_at,
-	recipe_step_instruments.recipe_step_product_id,
-	recipe_step_instruments.name,
-	recipe_step_instruments.product_of_recipe_step,
-	recipe_step_instruments.notes,
-	recipe_step_instruments.preference_rank,
-	recipe_step_instruments.optional,
-	recipe_step_instruments.minimum_quantity,
-	recipe_step_instruments.maximum_quantity,
-	recipe_step_instruments.created_at,
-	recipe_step_instruments.last_updated_at,
-	recipe_step_instruments.archived_at,
-	recipe_step_instruments.belongs_to_recipe_step
-FROM recipe_step_instruments
-LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
-JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-WHERE recipe_step_instruments.archived_at IS NULL
-  AND recipe_step_instruments.belongs_to_recipe_step = $1
-  AND recipe_step_instruments.id = $2
-  AND recipe_steps.archived_at IS NULL
-  AND recipe_steps.belongs_to_recipe = $3
-  AND recipe_steps.id = $4
-  AND recipes.archived_at IS NULL
-  AND recipes.id = $5`
+//go:embed queries/recipe_step_instruments_get_one.sql
+var getRecipeStepInstrumentQuery string
 
 // GetRecipeStepInstrument fetches a recipe step instrument from the database.
 func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*types.RecipeStepInstrument, error) {
@@ -299,39 +268,8 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 	return x, nil
 }
 
-const getRecipeStepInstrumentsForRecipeQuery = `SELECT
-	recipe_step_instruments.id,
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.plural_name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.usable_for_storage,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
-	valid_instruments.archived_at,
-	recipe_step_instruments.recipe_step_product_id,
-	recipe_step_instruments.name,
-	recipe_step_instruments.product_of_recipe_step,
-	recipe_step_instruments.notes,
-	recipe_step_instruments.preference_rank,
-	recipe_step_instruments.optional,
-	recipe_step_instruments.minimum_quantity,
-	recipe_step_instruments.maximum_quantity,
-	recipe_step_instruments.created_at,
-	recipe_step_instruments.last_updated_at,
-	recipe_step_instruments.archived_at,
-	recipe_step_instruments.belongs_to_recipe_step
-FROM recipe_step_instruments
-LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
-JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-WHERE recipe_step_instruments.archived_at IS NULL
-AND recipe_steps.archived_at IS NULL
-AND recipe_steps.belongs_to_recipe = $1
-AND recipes.archived_at IS NULL 
-AND recipes.id = $2
-`
+//go:embed queries/recipe_step_instruments_get_for_recipe.sql
+var getRecipeStepInstrumentsForRecipeQuery string
 
 // getRecipeStepInstrumentsForRecipe fetches a list of recipe step instruments from the database that meet a particular filter.
 func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepInstrument, error) {
@@ -364,9 +302,8 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 	return recipeStepInstruments, nil
 }
 
-const recipeStepInstrumentCreationQuery = `INSERT INTO recipe_step_instruments
-    (id,instrument_id,recipe_step_product_id,name,product_of_recipe_step,notes,preference_rank,optional,minimum_quantity,maximum_quantity,belongs_to_recipe_step) 
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`
+//go:embed queries/recipe_step_instruments_create.sql
+var recipeStepInstrumentCreationQuery string
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
 func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
@@ -428,21 +365,8 @@ func (q *Querier) CreateRecipeStepInstrument(ctx context.Context, input *types.R
 	return q.createRecipeStepInstrument(ctx, q.db, input)
 }
 
-const updateRecipeStepInstrumentQuery = `UPDATE recipe_step_instruments SET
-   instrument_id = $1,
-   recipe_step_product_id = $2,
-   name = $3,
-   product_of_recipe_step = $4,
-   notes = $5,
-   preference_rank = $6,
-   optional = $7,
-   minimum_quantity = $8,
-   maximum_quantity = $9,
-   last_updated_at = NOW()
-WHERE archived_at IS NULL
-  AND belongs_to_recipe_step = $10
-  AND id = $11
-`
+//go:embed queries/recipe_step_instruments_update.sql
+var updateRecipeStepInstrumentQuery string
 
 // UpdateRecipeStepInstrument updates a particular recipe step instrument.
 func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types.RecipeStepInstrument) error {
@@ -484,7 +408,8 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 	return nil
 }
 
-const archiveRecipeStepInstrumentQuery = "UPDATE recipe_step_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
+//go:embed queries/recipe_step_instruments_archive.sql
+var archiveRecipeStepInstrumentQuery string
 
 // ArchiveRecipeStepInstrument archives a recipe step instrument from the database by its ID.
 func (q *Querier) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error {

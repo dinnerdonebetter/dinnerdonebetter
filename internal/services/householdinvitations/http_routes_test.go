@@ -919,7 +919,6 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 			"CancelHouseholdInvitation",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(nil)
 		helper.service.householdInvitationDataManager = dataManager
@@ -1067,7 +1066,6 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 			"CancelHouseholdInvitation",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(errors.New("blah"))
 		helper.service.householdInvitationDataManager = dataManager
@@ -1104,7 +1102,6 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 			"CancelHouseholdInvitation",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(nil)
 		helper.service.householdInvitationDataManager = dataManager
@@ -1153,7 +1150,6 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 			"RejectHouseholdInvitation",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(nil)
 		helper.service.householdInvitationDataManager = dataManager
@@ -1302,7 +1298,6 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 			"RejectHouseholdInvitation",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(errors.New("blah"))
 		helper.service.householdInvitationDataManager = dataManager
@@ -1339,7 +1334,6 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 			"RejectHouseholdInvitation",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(nil)
 		helper.service.householdInvitationDataManager = dataManager

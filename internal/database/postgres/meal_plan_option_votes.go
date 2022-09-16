@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -98,28 +99,8 @@ func (q *Querier) scanMealPlanOptionVotes(ctx context.Context, rows database.Res
 	return mealPlanOptionVotes, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionVoteExistenceQuery = `
-SELECT
-  EXISTS (
-    SELECT
-      meal_plan_option_votes.id
-    FROM
-      meal_plan_option_votes
-	JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
-	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
-	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
-	WHERE meal_plan_option_votes.archived_at IS NULL
-	  AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
-	  AND meal_plan_option_votes.id = $2
-	  AND meal_plan_options.archived_at IS NULL
-	  AND meal_plan_options.belongs_to_meal_plan_event = $3
-	  AND meal_plan_events.archived_at IS NULL
-	  AND meal_plan_events.belongs_to_meal_plan = $4
-	  AND meal_plan_options.id = $1
-	  AND meal_plans.archived_at IS NULL
-	  AND meal_plans.id = $4
-  )
-`
+//go:embed queries/meal_plan_option_votes_exists.sql
+var mealPlanOptionVoteExistenceQuery string
 
 // MealPlanOptionVoteExists fetches whether a meal plan option vote exists from the database.
 func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (exists bool, err error) {
@@ -167,32 +148,8 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	return result, nil
 }
 
-const getMealPlanOptionVoteQuery = `
-SELECT
-    meal_plan_option_votes.id,
-    meal_plan_option_votes.rank,
-    meal_plan_option_votes.abstain,
-    meal_plan_option_votes.notes,
-    meal_plan_option_votes.by_user,
-    meal_plan_option_votes.created_at,
-    meal_plan_option_votes.last_updated_at,
-    meal_plan_option_votes.archived_at,
-    meal_plan_option_votes.belongs_to_meal_plan_option
-FROM meal_plan_option_votes
-    JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
-    JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
-    JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
-WHERE meal_plan_option_votes.archived_at IS NULL
-  AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
-  AND meal_plan_option_votes.id = $2
-  AND meal_plan_options.archived_at IS NULL
-  AND meal_plan_options.belongs_to_meal_plan_event = $3
-  AND meal_plan_events.archived_at IS NULL
-  AND meal_plan_events.belongs_to_meal_plan = $4
-  AND meal_plan_options.id = $1
-  AND meal_plans.archived_at IS NULL
-  AND meal_plans.id = $4
-`
+//go:embed queries/meal_plan_option_votes_get_one.sql
+var getMealPlanOptionVoteQuery string
 
 // GetMealPlanOptionVote fetches a meal plan option vote from the database.
 func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
@@ -236,32 +193,8 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 	return mealPlanOptionVote, nil
 }
 
-const getMealPlanOptionVotesForMealPlanOptionQuery = `
-SELECT
-    meal_plan_option_votes.id,
-    meal_plan_option_votes.rank,
-    meal_plan_option_votes.abstain,
-    meal_plan_option_votes.notes,
-    meal_plan_option_votes.by_user,
-    meal_plan_option_votes.created_at,
-    meal_plan_option_votes.last_updated_at,
-    meal_plan_option_votes.archived_at,
-    meal_plan_option_votes.belongs_to_meal_plan_option
-FROM meal_plan_option_votes
-    JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
-    JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
-    JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
-WHERE meal_plan_option_votes.archived_at IS NULL
-  AND meal_plan_option_votes.belongs_to_meal_plan_option = $3
-  AND meal_plan_options.archived_at IS NULL
-  AND meal_plan_options.belongs_to_meal_plan_event = $2
-  AND meal_plan_options.id = $3
-  AND meal_plan_events.archived_at IS NULL
-  AND meal_plan_events.belongs_to_meal_plan = $1
-  AND meal_plan_events.id = $2
-  AND meal_plans.archived_at IS NULL
-  AND meal_plans.id = $1
-`
+//go:embed queries/meal_plan_option_votes_get_for_meal_plan_option.sql
+var getMealPlanOptionVotesForMealPlanOptionQuery string
 
 // GetMealPlanOptionVotesForMealPlanOption fetches a list of meal plan option votes from the database that meet a particular filter.
 func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (x []*types.MealPlanOptionVote, err error) {
@@ -362,7 +295,8 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 	return x, nil
 }
 
-const mealPlanOptionVoteCreationQuery = "INSERT INTO meal_plan_option_votes (id,rank,abstain,notes,by_user,belongs_to_meal_plan_option) VALUES ($1,$2,$3,$4,$5,$6)"
+//go:embed queries/meal_plan_option_votes_create.sql
+var mealPlanOptionVoteCreationQuery string
 
 // CreateMealPlanOptionVote creates a meal plan option vote in the database.
 func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVoteDatabaseCreationInput) ([]*types.MealPlanOptionVote, error) {
@@ -421,7 +355,8 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 	return votes, nil
 }
 
-const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6"
+//go:embed queries/meal_plan_option_votes_update.sql
+var updateMealPlanOptionVoteQuery string
 
 // UpdateMealPlanOptionVote updates a particular meal plan option vote.
 func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.MealPlanOptionVote) error {
@@ -453,7 +388,8 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 	return nil
 }
 
-const archiveMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2"
+//go:embed queries/meal_plan_option_votes_archive.sql
+var archiveMealPlanOptionVoteQuery string
 
 // ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its ID.
 func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error {

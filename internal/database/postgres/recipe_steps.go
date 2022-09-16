@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -127,7 +128,8 @@ func (q *Querier) scanRecipeSteps(ctx context.Context, rows database.ResultItera
 	return recipeSteps, filteredCount, totalCount, nil
 }
 
-const recipeStepExistenceQuery = "SELECT EXISTS ( SELECT recipe_steps.id FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id = $2 AND recipes.archived_at IS NULL AND recipes.id = $3 )"
+//go:embed queries/recipe_steps_exists.sql
+var recipeStepExistenceQuery string
 
 // RecipeStepExists fetches whether a recipe step exists from the database.
 func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (exists bool, err error) {
@@ -162,40 +164,8 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 	return result, nil
 }
 
-const getRecipeStepQuery = `SELECT 
-	recipe_steps.id,
-	recipe_steps.index,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.zero_ingredients_allowable,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
-	recipe_steps.minimum_estimated_time_in_seconds,
-	recipe_steps.maximum_estimated_time_in_seconds,
-	recipe_steps.minimum_temperature_in_celsius,
-	recipe_steps.maximum_temperature_in_celsius,
-	recipe_steps.notes,
-	recipe_steps.explicit_instructions,
-	recipe_steps.optional,
-	recipe_steps.created_at,
-	recipe_steps.last_updated_at,
-	recipe_steps.archived_at,
-	recipe_steps.belongs_to_recipe 
-FROM recipe_steps
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
-WHERE recipe_steps.archived_at IS NULL
-AND recipe_steps.belongs_to_recipe = $1
-AND recipe_steps.id = $2
-AND recipes.archived_at IS NULL 
-AND recipes.id = $3
-`
+//go:embed queries/recipe_steps_get_one.sql
+var getRecipeStepQuery string
 
 // GetRecipeStep fetches a recipe step from the database.
 func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
@@ -273,10 +243,8 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 	return x, nil
 }
 
-const recipeStepCreationQuery = `INSERT INTO recipe_steps
-    (id,index,preparation_id,minimum_estimated_time_in_seconds,maximum_estimated_time_in_seconds,minimum_temperature_in_celsius,maximum_temperature_in_celsius,notes,explicit_instructions,optional,belongs_to_recipe) 
-	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
-`
+//go:embed queries/recipe_steps_create.sql
+var recipeStepCreationQuery string
 
 // CreateRecipeStep creates a recipe step in the database.
 func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
@@ -361,21 +329,8 @@ func (q *Querier) CreateRecipeStep(ctx context.Context, input *types.RecipeStepD
 	return q.createRecipeStep(ctx, q.db, input)
 }
 
-const updateRecipeStepQuery = `UPDATE recipe_steps SET 
-	index = $1,
-	preparation_id = $2,
-	minimum_estimated_time_in_seconds = $3,
-	maximum_estimated_time_in_seconds = $4,
-	minimum_temperature_in_celsius = $5,
-	maximum_temperature_in_celsius = $6,
-	notes = $7,
-	explicit_instructions = $8, 
-	optional = $9,
-	last_updated_at = NOW()
-WHERE archived_at IS NULL 
-  AND belongs_to_recipe = $10 
-  AND id = $11
-`
+//go:embed queries/recipe_steps_update.sql
+var updateRecipeStepQuery string
 
 // UpdateRecipeStep updates a particular recipe step.
 func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeStep) error {
@@ -412,7 +367,8 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 	return nil
 }
 
-const archiveRecipeStepQuery = "UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe = $1 AND id = $2"
+//go:embed queries/recipe_steps_archive.sql
+var archiveRecipeStepQuery string
 
 // ArchiveRecipeStep archives a recipe step from the database by its ID.
 func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {

@@ -357,7 +357,7 @@ func TestQuerier_GetUserByEmail(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{exampleUser.EmailAddress}
-		db.ExpectQuery(formatQueryForSQLMock(getUserIDByEmailQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
@@ -390,7 +390,7 @@ func TestQuerier_GetUserByEmail(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{exampleUser.EmailAddress}
-		db.ExpectQuery(formatQueryForSQLMock(getUserIDByEmailQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 

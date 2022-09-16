@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -88,7 +89,8 @@ func (q *Querier) scanValidInstruments(ctx context.Context, rows database.Result
 	return validInstruments, filteredCount, totalCount, nil
 }
 
-const validInstrumentExistenceQuery = "SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = $1 )"
+//go:embed queries/valid_instruments_exists.sql
+var validInstrumentExistenceQuery string
 
 // ValidInstrumentExists fetches whether a valid instrument exists from the database.
 func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
@@ -115,21 +117,8 @@ func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID s
 	return result, nil
 }
 
-const getValidInstrumentBaseQuery = `SELECT
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.plural_name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.usable_for_storage,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
-	valid_instruments.archived_at
-FROM valid_instruments
-WHERE valid_instruments.archived_at IS NULL
-`
-
-const getValidInstrumentQuery = getValidInstrumentBaseQuery + `AND valid_instruments.id = $1`
+//go:embed queries/valid_instruments_get_one.sql
+var getValidInstrumentQuery string
 
 // GetValidInstrument fetches a valid instrument from the database.
 func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
@@ -158,7 +147,8 @@ func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID stri
 	return validInstrument, nil
 }
 
-const getRandomValidInstrumentQuery = getValidInstrumentBaseQuery + `ORDER BY random() LIMIT 1`
+//go:embed queries/valid_instruments_get_random.sql
+var getRandomValidInstrumentQuery string
 
 // GetRandomValidInstrument fetches a valid instrument from the database.
 func (q *Querier) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
@@ -177,20 +167,8 @@ func (q *Querier) GetRandomValidInstrument(ctx context.Context) (*types.ValidIns
 	return validInstrument, nil
 }
 
-const validInstrumentSearchQuery = `SELECT 
-    valid_instruments.id,
-    valid_instruments.name,
-    valid_instruments.plural_name,
-    valid_instruments.description,
-    valid_instruments.icon_path,
-    valid_instruments.usable_for_storage,
-    valid_instruments.created_at,
-    valid_instruments.last_updated_at,
-    valid_instruments.archived_at
-FROM valid_instruments
-WHERE valid_instruments.archived_at IS NULL
-  AND valid_instruments.name ILIKE $1 LIMIT 50
-`
+//go:embed queries/valid_instruments_search.sql
+var validInstrumentSearchQuery string
 
 // SearchForValidInstruments fetches a valid instrument from the database.
 func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
@@ -291,7 +269,8 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 	return x, nil
 }
 
-const validInstrumentCreationQuery = "INSERT INTO valid_instruments (id,name,plural_name,description,icon_path,usable_for_storage) VALUES ($1,$2,$3,$4,$5,$6)"
+//go:embed queries/valid_instruments_create.sql
+var validInstrumentCreationQuery string
 
 // CreateValidInstrument creates a valid instrument in the database.
 func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
@@ -334,7 +313,8 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 	return x, nil
 }
 
-const updateValidInstrumentQuery = "UPDATE valid_instruments SET name = $1, plural_name = $2, description = $3, icon_path = $4, usable_for_storage = $5, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $6"
+//go:embed queries/valid_instruments_update.sql
+var updateValidInstrumentQuery string
 
 // UpdateValidInstrument updates a particular valid instrument.
 func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
@@ -366,7 +346,8 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 	return nil
 }
 
-const archiveValidInstrumentQuery = "UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
+//go:embed queries/valid_instruments_archive.sql
+var archiveValidInstrumentQuery string
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
 func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {

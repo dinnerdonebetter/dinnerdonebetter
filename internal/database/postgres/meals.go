@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
@@ -117,7 +118,8 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 	return x, recipeIDs, nil
 }
 
-const mealExistenceQuery = "SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = $1 )"
+//go:embed queries/meals_exists.sql
+var mealExistenceQuery string
 
 // MealExists fetches whether a meal exists from the database.
 func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
@@ -144,21 +146,8 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 	return result, nil
 }
 
-const getMealByIDQuery = `SELECT 
-	meals.id,
-	meals.name,
-	meals.description,
-	meals.created_at,
-	meals.last_updated_at,
-	meals.archived_at,
-	meals.created_by_user,
-	meal_recipes.recipe_id
-FROM meals
-	FULL OUTER JOIN meal_recipes ON meal_recipes.meal_id=meals.id
-WHERE meals.archived_at IS NULL
-	AND meal_recipes.archived_at IS NULL
-	AND meals.id = $1
-`
+//go:embed queries/meals_get_one.sql
+var getMealByIDQuery string
 
 // GetMeal fetches a meal from the database.
 func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, error) {
@@ -274,7 +263,8 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 	return x, nil
 }
 
-const mealCreationQuery = "INSERT INTO meals (id,name,description,created_by_user) VALUES ($1,$2,$3,$4)"
+//go:embed queries/meals_create.sql
+var mealCreationQuery string
 
 // CreateMeal creates a meal in the database.
 func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
@@ -347,7 +337,8 @@ func (q *Querier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreat
 	return x, nil
 }
 
-const mealRecipeCreationQuery = "INSERT INTO meal_recipes (id,meal_id,recipe_id) VALUES ($1,$2,$3)"
+//go:embed queries/meals_create_meal_recipe.sql
+var mealRecipeCreationQuery string
 
 // CreateMealRecipe creates a meal in the database.
 func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQueryExecutor, mealID, recipeID string) error {
@@ -382,7 +373,8 @@ func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQuer
 	return nil
 }
 
-const archiveMealQuery = "UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
+//go:embed queries/meals_archive.sql
+var archiveMealQuery string
 
 // ArchiveMeal archives a meal from the database by its ID.
 func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error {

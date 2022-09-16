@@ -471,23 +471,8 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	return finalized, nil
 }
 
-const getExpiredAndUnresolvedMealPlansQuery = `
-SELECT
-	meal_plans.id,
-	meal_plans.notes,
-	meal_plans.status,
-	meal_plans.voting_deadline,
-	meal_plans.created_at,
-	meal_plans.last_updated_at,
-	meal_plans.archived_at,
-	meal_plans.belongs_to_household
-FROM meal_plans
-WHERE meal_plans.archived_at IS NULL 
-	AND meal_plans.status = 'awaiting_votes'
-	AND voting_deadline < now()
-GROUP BY meal_plans.id
-ORDER BY meal_plans.id
-`
+//go:embed queries/meal_plans_get_expired_and_unresolved.sql
+var getExpiredAndUnresolvedMealPlansQuery string
 
 // GetUnfinalizedMealPlansWithExpiredVotingPeriods gets unfinalized meal plans with expired voting deadlines.
 func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
@@ -515,25 +500,8 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 	return mealPlans, nil
 }
 
-const getFinalizedMealPlansQuery = `
-SELECT
-	meal_plans.id as meal_plan_id,
-    meal_plan_options.id as meal_plan_option_id,
-	meals.id as meal_id,
-    meal_recipes.recipe_id as recipe_id
-FROM meal_plan_options
-	FULL OUTER JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
-	FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
-	FULL OUTER JOIN meal_recipes ON meal_plan_options.meal_id=meal_recipes.meal_id
-	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
-WHERE meal_plans.archived_at IS NULL 
-	AND meal_plans.status = 'finalized'
-    AND meal_plan_options.chosen IS TRUE
-    AND meal_plan_options.prep_steps_created IS FALSE
-    -- AND starts_at < NOW() + (1 * interval '1 week')
-GROUP BY meal_plans.id, meal_plan_options.id, meals.id, meal_recipes.recipe_id
-ORDER BY meal_plans.id
-`
+//go:embed queries/meal_plans_get_finalized_for_planning.sql
+var getFinalizedMealPlansQuery string
 
 // GetFinalizedMealPlanIDsForTheNextWeek gets finalized meal plans for a given duration.
 func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]string, error) {
