@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 	"errors"
 	"fmt"
 	"strings"
@@ -134,33 +135,11 @@ func (q *Querier) scanUsers(ctx context.Context, rows database.ResultIterator, i
 	return users, filteredCount, totalCount, nil
 }
 
-const getUserByIDQuery = `
-	SELECT
-		users.id,
-		users.username,
-		users.email_address,
-		users.avatar_src,
-		users.hashed_password,
-		users.requires_password_change,
-		users.password_last_changed_at,
-		users.two_factor_secret,
-		users.two_factor_secret_verified_at,
-		users.service_roles,
-		users.user_account_status,
-		users.user_account_status_explanation,
-		users.birth_day,
-		users.birth_month,
-		users.created_at,
-		users.last_updated_at,
-		users.archived_at
-	FROM users
-	WHERE users.archived_at IS NULL
-	AND users.id = $1
-`
+//go:embed queries/users_get_by_id.sql
+var getUserByIDQuery string
 
-const getUserWithVerified2FAQuery = getUserByIDQuery + `
-	AND users.two_factor_secret_verified_at IS NOT NULL
-`
+//go:embed queries/users_get_with_verified_two_factor.sql
+var getUserWithVerified2FAQuery string
 
 // getUser fetches a user.
 func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSecret bool) (*types.User, error) {
@@ -192,11 +171,10 @@ func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSe
 	return u, nil
 }
 
-const userHasStatusQuery = `
-	SELECT EXISTS ( SELECT users.id FROM users WHERE users.archived_at IS NULL AND users.id = $1 AND (users.user_account_status = $2 OR users.user_account_status = $3) )
-`
+//go:embed queries/users_exists_with_status.sql
+var userHasStatusQuery string
 
-// UserHasStatus fetches whether an user has a particular status.
+// UserHasStatus fetches whether a user has a particular status.
 func (q *Querier) UserHasStatus(ctx context.Context, userID string, statuses ...string) (banned bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -252,29 +230,8 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 	return q.getUser(ctx, userID, false)
 }
 
-const getUserByUsernameQuery = `
-	SELECT
-		users.id,
-		users.username,
-		users.email_address,
-		users.avatar_src,
-		users.hashed_password,
-		users.requires_password_change,
-		users.password_last_changed_at,
-		users.two_factor_secret,
-		users.two_factor_secret_verified_at,
-		users.service_roles,
-		users.user_account_status,
-		users.user_account_status_explanation,
-		users.birth_day,
-		users.birth_month,
-		users.created_at,
-		users.last_updated_at,
-		users.archived_at
-	FROM users
-	WHERE users.archived_at IS NULL
-	AND users.username = $1
-`
+//go:embed queries/users_get_by_username.sql
+var getUserByUsernameQuery string
 
 // GetUserByUsername fetches a user by their username.
 func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*types.User, error) {
@@ -303,31 +260,8 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 	return u, nil
 }
 
-const getAdminUserByUsernameQuery = `
-	SELECT
-		users.id,
-		users.username,
-		users.email_address,
-		users.avatar_src,
-		users.hashed_password,
-		users.requires_password_change,
-		users.password_last_changed_at,
-		users.two_factor_secret,
-		users.two_factor_secret_verified_at,
-		users.service_roles,
-		users.user_account_status,
-		users.user_account_status_explanation,
-		users.birth_day,
-		users.birth_month,
-		users.created_at,
-		users.last_updated_at,
-		users.archived_at
-	FROM users
-	WHERE users.archived_at IS NULL
-	AND users.service_roles ILIKE '%service_admin%'
-	AND users.username = $1
-	AND users.two_factor_secret_verified_at IS NOT NULL
-`
+//go:embed queries/users_get_admin_by_username.sql
+var getAdminUserByUsernameQuery string
 
 // GetAdminUserByUsername fetches a user by their username.
 func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (*types.User, error) {
@@ -356,29 +290,8 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 	return u, nil
 }
 
-const getUserIDByEmailQuery = `
-	SELECT
-		users.id,
-		users.username,
-		users.email_address,
-		users.avatar_src,
-		users.hashed_password,
-		users.requires_password_change,
-		users.password_last_changed_at,
-		users.two_factor_secret,
-		users.two_factor_secret_verified_at,
-		users.service_roles,
-		users.user_account_status,
-		users.user_account_status_explanation,
-		users.birth_day,
-		users.birth_month,
-		users.created_at,
-		users.last_updated_at,
-		users.archived_at 
-	FROM users
-	WHERE users.archived_at IS NULL
-	AND users.email_address = $1
-`
+//go:embed queries/users_get_by_email.sql
+var getUserByEmailQuery string
 
 // GetUserByEmail fetches a user by their email.
 func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User, error) {
@@ -392,7 +305,7 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 	tracing.AttachEmailAddressToSpan(span, email)
 
 	args := []interface{}{email}
-	row := q.getOneRow(ctx, q.db, "user", getUserIDByEmailQuery, args)
+	row := q.getOneRow(ctx, q.db, "user", getUserByEmailQuery, args)
 
 	u, _, _, err := q.scanUser(ctx, row, false)
 	if err != nil {
@@ -406,29 +319,8 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 	return u, nil
 }
 
-const searchForUserByUsernameQuery = `SELECT 
-	users.id,
-	users.username,
-	users.email_address,
-	users.avatar_src,
-	users.hashed_password,
-	users.requires_password_change,
-	users.password_last_changed_at,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_roles,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birth_day,
-	users.birth_month,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at 
-FROM users
-WHERE users.username ILIKE $1
-AND users.archived_at IS NULL
-AND users.two_factor_secret_verified_at IS NOT NULL
-`
+//go:embed queries/users_search_by_username.sql
+var searchForUserByUsernameQuery string
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
 func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*types.User, error) {
@@ -495,14 +387,11 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	return x, nil
 }
 
-const userCreationQuery = `
-	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,avatar_src,user_account_status,birth_day,birth_month,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-`
+//go:embed queries/users_create.sql
+var userCreationQuery string
 
-const createHouseholdMembershipForNewUserQuery = `
-	INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,default_household,household_roles)
-	VALUES ($1,$2,$3,$4,$5)
-`
+//go:embed queries/users_create_household_memberships_for_new_user.sql
+var createHouseholdMembershipForNewUserQuery string
 
 // CreateUser creates a user.
 func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
@@ -643,18 +532,8 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	return nil
 }
 
-const updateUserQuery = `UPDATE users SET 
-	username = $1,
-	hashed_password = $2,
-	avatar_src = $3,
-	two_factor_secret = $4,
-	two_factor_secret_verified_at = $5,
-	birth_day = $6,
-	birth_month = $7,
-	last_updated_at = NOW() 
-WHERE archived_at IS NULL 
-AND id = $8
-`
+//go:embed queries/users_update.sql
+var updateUserQuery string
 
 // UpdateUser receives a complete Requester struct and updates its record in the database.
 // NOTE: this function uses the ID provided in the input to make its query.
@@ -690,14 +569,8 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 }
 
 /* #nosec G101 */
-const updateUserPasswordQuery = `UPDATE users SET
-	hashed_password = $1,
-	requires_password_change = $2,
-	password_last_changed_at = NOW(),
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-AND id = $3
-`
+//go:embed queries/users_update_password.sql
+var updateUserPasswordQuery string
 
 // UpdateUserPassword updates a user's passwords hash in the database.
 func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string) error {
@@ -731,12 +604,8 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 }
 
 /* #nosec G101 */
-const updateUserTwoFactorSecretQuery = `UPDATE users SET 
-	two_factor_secret_verified_at = $1,
-	two_factor_secret = $2
-WHERE archived_at IS NULL
-AND id = $3
-`
+//go:embed queries/users_update_two_factor_secret.sql
+var updateUserTwoFactorSecretQuery string
 
 // UpdateUserTwoFactorSecret marks a user's two factor secret as validated.
 func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecret string) error {
@@ -769,12 +638,8 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 }
 
 /* #nosec G101 */
-const markUserTwoFactorSecretAsVerified = `UPDATE users SET
-	two_factor_secret_verified_at = NOW(),
-	user_account_status = $1
-WHERE archived_at IS NULL
-AND id = $2
-`
+//go:embed queries/users_mark_two_factor_secret_as_verified.sql
+var markUserTwoFactorSecretAsVerified string
 
 // MarkUserTwoFactorSecretAsVerified marks a user's two factor secret as validated.
 func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error {
@@ -802,17 +667,11 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	return nil
 }
 
-const archiveUserQuery = `UPDATE users SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-AND id = $1
-`
+//go:embed queries/users_archive.sql
+var archiveUserQuery string
 
-const archiveMembershipsQuery = `UPDATE household_user_memberships SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-AND belongs_to_user = $1
-`
+//go:embed queries/users_archive_memberships.sql
+var archiveMembershipsQuery string
 
 // ArchiveUser archives a user.
 func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {

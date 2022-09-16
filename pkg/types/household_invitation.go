@@ -99,9 +99,9 @@ type (
 		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
 		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
 		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationDatabaseCreationInput) (*HouseholdInvitation, error)
-		CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error
+		CancelHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error
 		AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error
-		RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error
+		RejectHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error
 	}
 
 	// HouseholdInvitationDataService describes a structure capable of serving traffic related to household invitations.

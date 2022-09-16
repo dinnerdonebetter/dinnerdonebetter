@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -134,7 +135,8 @@ func (q *Querier) scanRecipeStepProducts(ctx context.Context, rows database.Resu
 	return recipeStepProducts, filteredCount, totalCount, nil
 }
 
-const recipeStepProductExistenceQuery = "SELECT EXISTS ( SELECT recipe_step_products.id FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_at IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )"
+//go:embed queries/recipe_step_products_exists.sql
+var recipeStepProductExistenceQuery string
 
 // RecipeStepProductExists fetches whether a recipe step product exists from the database.
 func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (exists bool, err error) {
@@ -177,47 +179,8 @@ func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeS
 	return result, nil
 }
 
-const getRecipeStepProductQuery = `SELECT
-	recipe_step_products.id,
-	recipe_step_products.name,
-	recipe_step_products.type,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-	recipe_step_products.minimum_quantity_value,
-	recipe_step_products.maximum_quantity_value,
-	recipe_step_products.quantity_notes,
-	recipe_step_products.compostable,
-	recipe_step_products.maximum_storage_duration_in_seconds,
-	recipe_step_products.minimum_storage_temperature_in_celsius,
-	recipe_step_products.maximum_storage_temperature_in_celsius,
-	recipe_step_products.storage_instructions,
-	recipe_step_products.created_at,
-	recipe_step_products.last_updated_at,
-	recipe_step_products.archived_at,
-	recipe_step_products.belongs_to_recipe_step
-FROM recipe_step_products
-JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
-WHERE recipe_step_products.archived_at IS NULL
-AND recipe_step_products.belongs_to_recipe_step = $1 
-AND recipe_step_products.id = $2
-AND recipe_steps.archived_at IS NULL
-AND recipe_steps.belongs_to_recipe = $3
-AND recipe_steps.id = $4
-AND recipes.archived_at IS NULL 
-AND recipes.id = $5
-`
+//go:embed queries/recipe_step_products_get_one.sql
+var getRecipeStepProductQuery string
 
 // GetRecipeStepProduct fetches a recipe step product from the database.
 func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*types.RecipeStepProduct, error) {
@@ -262,44 +225,8 @@ func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStep
 	return recipeStepProduct, nil
 }
 
-const getRecipeStepProductsForRecipeQuery = `SELECT
-	recipe_step_products.id,
-	recipe_step_products.name,
-	recipe_step_products.type,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-	recipe_step_products.minimum_quantity_value,
-	recipe_step_products.maximum_quantity_value,
-	recipe_step_products.quantity_notes,
-	recipe_step_products.compostable,
-	recipe_step_products.maximum_storage_duration_in_seconds,
-	recipe_step_products.minimum_storage_temperature_in_celsius,
-	recipe_step_products.maximum_storage_temperature_in_celsius,
-	recipe_step_products.storage_instructions,
-	recipe_step_products.created_at,
-	recipe_step_products.last_updated_at,
-	recipe_step_products.archived_at,
-	recipe_step_products.belongs_to_recipe_step
-FROM recipe_step_products
-JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-LEFT OUTER JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
-WHERE recipe_step_products.archived_at IS NULL
-AND recipe_steps.archived_at IS NULL
-AND recipe_steps.belongs_to_recipe = $1
-AND recipes.archived_at IS NULL 
-AND recipes.id = $2
-`
+//go:embed queries/recipe_step_products_get_for_recipe.sql
+var getRecipeStepProductsForRecipeQuery string
 
 // getRecipeStepProductsForRecipe fetches a list of recipe step products from the database that meet a particular filter.
 func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepProduct, error) {
@@ -379,9 +306,8 @@ func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeSte
 	return x, nil
 }
 
-const recipeStepProductCreationQuery = `INSERT INTO recipe_step_products
-    (id,name,type,measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,maximum_storage_duration_in_seconds,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,storage_instructions,belongs_to_recipe_step) 
-	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`
+//go:embed queries/recipe_step_products_create.sql
+var recipeStepProductCreationQuery string
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
@@ -440,25 +366,8 @@ func (q *Querier) CreateRecipeStepProduct(ctx context.Context, input *types.Reci
 	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
-const updateRecipeStepProductQuery = `
-UPDATE recipe_step_products
-SET 
-    name = $1,
-    type = $2,
-    measurement_unit = $3,
-    minimum_quantity_value = $4,
-    maximum_quantity_value = $5,
-    quantity_notes = $6,
-    compostable = $7,
-	maximum_storage_duration_in_seconds = $8,
-	minimum_storage_temperature_in_celsius = $9,
-	maximum_storage_temperature_in_celsius = $10,
-	storage_instructions = $11,
-    last_updated_at = NOW()
-WHERE archived_at IS NULL
-  AND belongs_to_recipe_step = $12
-  AND id = $13
-`
+//go:embed queries/recipe_step_products_update.sql
+var updateRecipeStepProductQuery string
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
 func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.RecipeStepProduct) error {
@@ -497,7 +406,8 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 	return nil
 }
 
-const archiveRecipeStepProductQuery = "UPDATE recipe_step_products SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2"
+//go:embed queries/recipe_step_products_archive.sql
+var archiveRecipeStepProductQuery string
 
 // ArchiveRecipeStepProduct archives a recipe step product from the database by its ID.
 func (q *Querier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error {

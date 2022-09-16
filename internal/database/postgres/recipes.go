@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
@@ -96,7 +97,8 @@ func (q *Querier) scanRecipes(ctx context.Context, rows database.ResultIterator,
 	return recipes, filteredCount, totalCount, nil
 }
 
-const recipeExistenceQuery = "SELECT EXISTS ( SELECT recipes.id FROM recipes WHERE recipes.archived_at IS NULL AND recipes.id = $1 )"
+//go:embed queries/recipes_exists.sql
+var recipeExistenceQuery string
 
 // RecipeExists fetches whether a recipe exists from the database.
 func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists bool, err error) {
@@ -120,94 +122,11 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	return result, nil
 }
 
-const getRecipeByIDQuery = `SELECT 
-	recipes.id,
-	recipes.name,
-	recipes.source,
-	recipes.description,
-	recipes.inspired_by_recipe_id,
-	recipes.yields_portions,
-	recipes.seal_of_approval,
-	recipes.created_at,
-	recipes.last_updated_at,
-	recipes.archived_at,
-	recipes.created_by_user,
-	recipe_steps.id,
-	recipe_steps.index,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.zero_ingredients_allowable,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
-	recipe_steps.minimum_estimated_time_in_seconds,
-	recipe_steps.maximum_estimated_time_in_seconds,
-	recipe_steps.minimum_temperature_in_celsius,
-	recipe_steps.maximum_temperature_in_celsius,
-	recipe_steps.notes,
-	recipe_steps.explicit_instructions,
-	recipe_steps.optional,
-	recipe_steps.created_at,
-	recipe_steps.last_updated_at,
-	recipe_steps.archived_at,
-	recipe_steps.belongs_to_recipe
-FROM recipes
-	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
-	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
-WHERE recipes.archived_at IS NULL
-	AND recipes.id = $1
-ORDER BY recipe_steps.index
-`
+//go:embed queries/recipes_get_by_id.sql
+var getRecipeByIDQuery string
 
-const getRecipeByIDAndAuthorIDQuery = `SELECT 
-	recipes.id,
-	recipes.name,
-	recipes.source,
-	recipes.description,
-	recipes.inspired_by_recipe_id,
-	recipes.yields_portions,
-	recipes.seal_of_approval,
-	recipes.created_at,
-	recipes.last_updated_at,
-	recipes.archived_at,
-	recipes.created_by_user,
-	recipe_steps.id,
-	recipe_steps.index,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.zero_ingredients_allowable,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
-	recipe_steps.minimum_estimated_time_in_seconds,
-	recipe_steps.maximum_estimated_time_in_seconds,
-	recipe_steps.minimum_temperature_in_celsius,
-	recipe_steps.maximum_temperature_in_celsius,
-	recipe_steps.notes,
-	recipe_steps.explicit_instructions,
-	recipe_steps.optional,
-	recipe_steps.created_at,
-	recipe_steps.last_updated_at,
-	recipe_steps.archived_at,
-	recipe_steps.belongs_to_recipe
-FROM recipes
-	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
-	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
-WHERE recipes.archived_at IS NULL
-	AND recipes.id = $1
-	AND recipes.created_by_user = $2
-ORDER BY recipe_steps.index
-`
+//go:embed queries/recipes_get_by_id_and_author_id.sql
+var getRecipeByIDAndAuthorIDQuery string
 
 // scanRecipeAndStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
 func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) (x *types.Recipe, y *types.RecipeStep, filteredCount, totalCount uint64, err error) {
@@ -388,6 +307,35 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	return x, nil
 }
 
+//go:embed queries/recipes_ids_for_meal.sql
+var getRecipesForMealQuery string
+
+// getRecipeIDsForMeal fetches a list of recipe IDs from the database that are associated with a given meal.
+func (q *Querier) getRecipeIDsForMeal(ctx context.Context, mealID string) (x []string, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealIDToSpan(span, mealID)
+
+	args := []interface{}{
+		mealID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "recipes", getRecipesForMealQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
+	}
+
+	if x, err = q.scanIDs(ctx, rows); err != nil {
+		return nil, observability.PrepareError(err, span, "scanning recipes")
+	}
+
+	return x, nil
+}
+
 // SearchForRecipes fetches a list of recipes from the database that match a query.
 func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *types.QueryFilter) (x *types.RecipeList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -421,7 +369,8 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	return x, nil
 }
 
-const recipeCreationQuery = "INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,yields_portions,seal_of_approval,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
+//go:embed queries/recipes_create.sql
+var recipeCreationQuery string
 
 // CreateRecipe creates a recipe in the database.
 func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
@@ -586,7 +535,8 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 	}
 }
 
-const updateRecipeQuery = `UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, yields_portions = $5, seal_of_approval = $6, last_updated_at = NOW() WHERE archived_at IS NULL AND created_by_user = $7 AND id = $8`
+//go:embed queries/recipes_update.sql
+var updateRecipeQuery string
 
 // UpdateRecipe updates a particular recipe.
 func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
@@ -621,7 +571,8 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	return nil
 }
 
-const archiveRecipeQuery = "UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2"
+//go:embed queries/recipes_archive.sql
+var archiveRecipeQuery string
 
 // ArchiveRecipe archives a recipe from the database by its ID.
 func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {

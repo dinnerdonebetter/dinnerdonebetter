@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 	"errors"
 	"fmt"
 	"strings"
@@ -173,7 +174,8 @@ func (q *Querier) scanHouseholdInvitations(ctx context.Context, rows database.Re
 	return householdInvitations, filteredCount, totalCount, nil
 }
 
-const householdInvitationExistenceQuery = "SELECT EXISTS ( SELECT household_invitations.id FROM household_invitations WHERE household_invitations.archived_at IS NULL AND household_invitations.id = $1 )"
+//go:embed queries/household_invitations_exists.sql
+var householdInvitationExistenceQuery string
 
 // HouseholdInvitationExists fetches whether a household invitation exists from the database.
 func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
@@ -200,54 +202,8 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 	return result, nil
 }
 
-const getHouseholdInvitationByHouseholdAndIDQuery = `
-SELECT
-	household_invitations.id,
-	households.id,
-	households.name,
-	households.billing_status,
-	households.contact_email,
-	households.contact_phone,
-	households.payment_processor_customer_id,
-	households.subscription_plan_id,
-	households.time_zone,
-	households.created_at,
-	households.last_updated_at,
-	households.archived_at,
-	households.belongs_to_user,
-	household_invitations.to_email,
-	household_invitations.to_user,
-	users.id,
-	users.username,
-	users.email_address,
-	users.avatar_src,
-	users.hashed_password,
-	users.requires_password_change,
-	users.password_last_changed_at,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_roles,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birth_day,
-	users.birth_month,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at,
-	household_invitations.status,
-	household_invitations.note,
-	household_invitations.status_note,
-	household_invitations.token,
-	household_invitations.created_at,
-	household_invitations.last_updated_at,
-	household_invitations.archived_at
-FROM household_invitations
-JOIN households ON household_invitations.destination_household = households.id
-JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_at IS NULL
-AND household_invitations.destination_household = $1
-AND household_invitations.id = $2
-`
+//go:embed queries/household_invitations_by_household_and_id.sql
+var getHouseholdInvitationByHouseholdAndIDQuery string
 
 // GetHouseholdInvitationByHouseholdAndID fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
@@ -284,54 +240,8 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 }
 
 /* #nosec G101 */
-const getHouseholdInvitationByTokenAndIDQuery = `
-SELECT
-	household_invitations.id,
-	households.id,
-	households.name,
-	households.billing_status,
-	households.contact_email,
-	households.contact_phone,
-	households.payment_processor_customer_id,
-	households.subscription_plan_id,
-	households.time_zone,
-	households.created_at,
-	households.last_updated_at,
-	households.archived_at,
-	households.belongs_to_user,
-	household_invitations.to_email,
-	household_invitations.to_user,
-	users.id,
-	users.username,
-	users.email_address,
-	users.avatar_src,
-	users.hashed_password,
-	users.requires_password_change,
-	users.password_last_changed_at,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_roles,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birth_day,
-	users.birth_month,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at,
-	household_invitations.status,
-	household_invitations.note,
-	household_invitations.status_note,
-	household_invitations.token,
-	household_invitations.created_at,
-	household_invitations.last_updated_at,
-	household_invitations.archived_at
-FROM household_invitations
-JOIN households ON household_invitations.destination_household = households.id
-JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_at IS NULL
-AND household_invitations.token = $1
-AND household_invitations.id = $2
-`
+//go:embed queries/household_invitations_by_token_and_id.sql
+var getHouseholdInvitationByTokenAndIDQuery string
 
 // GetHouseholdInvitationByTokenAndID fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*types.HouseholdInvitation, error) {
@@ -368,54 +278,8 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 }
 
 /* #nosec G101 */
-const getHouseholdInvitationByEmailAndTokenQuery = `
-SELECT
-	household_invitations.id,
-	households.id,
-	households.name,
-	households.billing_status,
-	households.contact_email,
-	households.contact_phone,
-	households.payment_processor_customer_id,
-	households.subscription_plan_id,
-	households.time_zone,
-	households.created_at,
-	households.last_updated_at,
-	households.archived_at,
-	households.belongs_to_user,
-	household_invitations.to_email,
-	household_invitations.to_user,
-	users.id,
-	users.username,
-	users.email_address,
-	users.avatar_src,
-	users.hashed_password,
-	users.requires_password_change,
-	users.password_last_changed_at,
-	users.two_factor_secret,
-	users.two_factor_secret_verified_at,
-	users.service_roles,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birth_day,
-	users.birth_month,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at,
-	household_invitations.status,
-	household_invitations.note,
-	household_invitations.status_note,
-	household_invitations.token,
-	household_invitations.created_at,
-	household_invitations.last_updated_at,
-	household_invitations.archived_at
-FROM household_invitations
-JOIN households ON household_invitations.destination_household = households.id
-JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_at IS NULL
-AND household_invitations.to_email = LOWER($1)
-AND household_invitations.token = $2
-`
+//go:embed queries/household_invitations_by_email_and_token.sql
+var getHouseholdInvitationByEmailAndTokenQuery string
 
 // GetHouseholdInvitationByEmailAndToken fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.HouseholdInvitation, error) {
@@ -451,9 +315,8 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 	return invitation, nil
 }
 
-const createHouseholdInvitationQuery = `
-	INSERT INTO household_invitations (id,from_user,to_user,note,to_email,token,destination_household) VALUES ($1,$2,$3,$4,$5,$6,$7)
-`
+//go:embed queries/household_invitations_create.sql
+var createHouseholdInvitationQuery string
 
 // CreateHouseholdInvitation creates an invitation in a database.
 func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.HouseholdInvitationDatabaseCreationInput) (*types.HouseholdInvitation, error) {
@@ -655,15 +518,8 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 	return returnList, nil
 }
 
-const setInvitationStatusQuery = `
-UPDATE household_invitations SET
-	status = $1,
-	status_note = $2,
-	last_updated_at = NOW(),
-	archived_at = NOW()
-WHERE archived_at IS NULL
-AND id = $3
-`
+//go:embed queries/household_invitations_set_status.sql
+var setInvitationStatusQuery string
 
 func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note string, status types.HouseholdInvitationStatus) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -693,7 +549,7 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 }
 
 // CancelHouseholdInvitation cancels a household invitation by its ID with a note.
-func (q *Querier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+func (q *Querier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error {
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.CancelledHouseholdInvitationStatus)
 }
 
@@ -749,17 +605,12 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 }
 
 // RejectHouseholdInvitation rejects a household invitation by its ID with a note.
-func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error {
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
 }
 
-const attachInvitationsToUserIDQuery = `
-UPDATE household_invitations SET
-	to_user = $1,
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-AND to_email = LOWER($2)
-`
+//go:embed queries/household_invitations_attach_invitations_to_user_id.sql
+var attachInvitationsToUserIDQuery string
 
 func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -128,7 +129,8 @@ func (q *Querier) scanValidPreparationInstruments(ctx context.Context, rows data
 	return validPreparationInstruments, filteredCount, totalCount, nil
 }
 
-const validPreparationInstrumentExistenceQuery = "SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = $1 )"
+//go:embed queries/valid_preparation_instruments_exists.sql
+var validPreparationInstrumentExistenceQuery string
 
 // ValidPreparationInstrumentExists fetches whether a valid ingredient preparation exists from the database.
 func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
@@ -152,40 +154,8 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 	return result, nil
 }
 
-const getValidPreparationInstrumentQuery = `SELECT
-	valid_preparation_instruments.id,
-	valid_preparation_instruments.notes,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.zero_ingredients_allowable,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
-	valid_instruments.id,
-	valid_instruments.name,
-    valid_instruments.plural_name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.usable_for_storage,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
-	valid_instruments.archived_at,
-	valid_preparation_instruments.created_at,
-	valid_preparation_instruments.last_updated_at,
-	valid_preparation_instruments.archived_at
-FROM
-  valid_preparation_instruments
-JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-WHERE
-  valid_preparation_instruments.archived_at IS NULL
-  AND valid_preparation_instruments.id = $1
-`
+//go:embed queries/valid_preparation_instruments_get_one.sql
+var getValidPreparationInstrumentQuery string
 
 // GetValidPreparationInstrument fetches a valid ingredient preparation from the database.
 func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*types.ValidPreparationInstrument, error) {
@@ -366,7 +336,8 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	return x, nil
 }
 
-const validPreparationInstrumentCreationQuery = "INSERT INTO valid_preparation_instruments (id,notes,valid_preparation_id,valid_instrument_id) VALUES ($1,$2,$3,$4)"
+//go:embed queries/valid_preparation_instruments_create.sql
+var validPreparationInstrumentCreationQuery string
 
 // CreateValidPreparationInstrument creates a valid ingredient preparation in the database.
 func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *types.ValidPreparationInstrumentDatabaseCreationInput) (*types.ValidPreparationInstrument, error) {
@@ -405,7 +376,8 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 	return x, nil
 }
 
-const updateValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4"
+//go:embed queries/valid_preparation_instruments_update.sql
+var updateValidPreparationInstrumentQuery string
 
 // UpdateValidPreparationInstrument updates a particular valid ingredient preparation.
 func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated *types.ValidPreparationInstrument) error {
@@ -435,7 +407,8 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	return nil
 }
 
-const archiveValidPreparationInstrumentQuery = "UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
+//go:embed queries/valid_preparation_instruments_archive.sql
+var archiveValidPreparationInstrumentQuery string
 
 // ArchiveValidPreparationInstrument archives a valid ingredient preparation from the database by its ID.
 func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {

@@ -694,7 +694,7 @@ func TestSQLQuerier_CancelHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		err := c.CancelHouseholdInvitation(ctx, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Token, exampleHouseholdInvitation.Note)
+		err := c.CancelHouseholdInvitation(ctx, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
@@ -975,7 +975,7 @@ func TestSQLQuerier_RejectHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		err := c.RejectHouseholdInvitation(ctx, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Token, exampleHouseholdInvitation.Note)
+		err := c.RejectHouseholdInvitation(ctx, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 
@@ -12,6 +13,16 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
+
+func buildMockRowsFromIDs(ids ...string) *sqlmock.Rows {
+	exampleRows := sqlmock.NewRows([]string{"id"})
+
+	for _, x := range ids {
+		exampleRows.AddRow(x)
+	}
+
+	return exampleRows
+}
 
 func TestSQLQuerier_logQueryBuildingError(T *testing.T) {
 	T.Parallel()

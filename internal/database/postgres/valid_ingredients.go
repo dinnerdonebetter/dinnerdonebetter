@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -124,7 +125,8 @@ func (q *Querier) scanValidIngredients(ctx context.Context, rows database.Result
 	return validIngredients, filteredCount, totalCount, nil
 }
 
-const validIngredientExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredients.id FROM valid_ingredients WHERE valid_ingredients.archived_at IS NULL AND valid_ingredients.id = $1 )"
+//go:embed queries/valid_ingredients_exists.sql
+var validIngredientExistenceQuery string
 
 // ValidIngredientExists fetches whether a valid ingredient exists from the database.
 func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID string) (exists bool, err error) {
@@ -151,39 +153,8 @@ func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID s
 	return result, nil
 }
 
-const getValidIngredientBaseQuery = `SELECT 
-	valid_ingredients.id,
-	valid_ingredients.name,
-	valid_ingredients.description,
-	valid_ingredients.warning,
-	valid_ingredients.contains_egg,
-	valid_ingredients.contains_dairy,
-	valid_ingredients.contains_peanut,
-	valid_ingredients.contains_tree_nut,
-	valid_ingredients.contains_soy,
-	valid_ingredients.contains_wheat,
-	valid_ingredients.contains_shellfish,
-	valid_ingredients.contains_sesame,
-	valid_ingredients.contains_fish,
-	valid_ingredients.contains_gluten,
-	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
-	valid_ingredients.is_liquid,
-	valid_ingredients.icon_path,
-	valid_ingredients.animal_derived,
-	valid_ingredients.plural_name,
-	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.storage_instructions,
-	valid_ingredients.created_at, 
-	valid_ingredients.last_updated_at, 
-	valid_ingredients.archived_at 
-FROM valid_ingredients 
-WHERE valid_ingredients.archived_at IS NULL
-`
-
-const getValidIngredientQuery = getValidIngredientBaseQuery + `AND valid_ingredients.id = $1`
+//go:embed queries/valid_ingredients_get_one.sql
+var getValidIngredientQuery string
 
 // GetValidIngredient fetches a valid ingredient from the database.
 func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
@@ -212,7 +183,8 @@ func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID stri
 	return validIngredient, nil
 }
 
-const getRandomValidIngredientQuery = getValidIngredientBaseQuery + `ORDER BY random() LIMIT 1`
+//go:embed queries/valid_ingredients_get_random.sql
+var getRandomValidIngredientQuery string
 
 // GetRandomValidIngredient fetches a valid ingredient from the database.
 func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
@@ -231,38 +203,8 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 	return validIngredient, nil
 }
 
-const validIngredientSearchQuery = `SELECT 
-    valid_ingredients.id,
-    valid_ingredients.name,
-    valid_ingredients.description,
-    valid_ingredients.warning,
-    valid_ingredients.contains_egg,
-    valid_ingredients.contains_dairy,
-    valid_ingredients.contains_peanut,
-    valid_ingredients.contains_tree_nut,
-    valid_ingredients.contains_soy,
-    valid_ingredients.contains_wheat,
-    valid_ingredients.contains_shellfish,
-    valid_ingredients.contains_sesame,
-    valid_ingredients.contains_fish,
-    valid_ingredients.contains_gluten,
-    valid_ingredients.animal_flesh,
-    valid_ingredients.volumetric,
-    valid_ingredients.is_liquid,
-    valid_ingredients.icon_path,
-	valid_ingredients.animal_derived,
-	valid_ingredients.plural_name,
-	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.storage_instructions,
-    valid_ingredients.created_at,
-    valid_ingredients.last_updated_at,
-    valid_ingredients.archived_at 
-FROM valid_ingredients
-WHERE valid_ingredients.name ILIKE $1 
-    AND valid_ingredients.archived_at IS NULL
-LIMIT 50`
+//go:embed queries/valid_ingredients_search.sql
+var validIngredientSearchQuery string
 
 // SearchForValidIngredients fetches a valid ingredient from the database.
 func (q *Querier) SearchForValidIngredients(ctx context.Context, query string) ([]*types.ValidIngredient, error) {
@@ -361,33 +303,8 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 	return x, nil
 }
 
-const validIngredientCreationQuery = `INSERT INTO valid_ingredients
-(
-	id,
-	name,
-	description,
-	warning,
-	contains_egg,
-	contains_dairy,
-	contains_peanut,
-	contains_tree_nut,
-	contains_soy,
-	contains_wheat,
-	contains_shellfish,
-	contains_sesame,
-	contains_fish,
-	contains_gluten,
-	animal_flesh,
-	volumetric,
-	is_liquid,
-	icon_path,
-	animal_derived,
-	plural_name,
-	restrict_to_preparations,
-	minimum_ideal_storage_temperature_in_celsius,
-	maximum_ideal_storage_temperature_in_celsius,
- 	storage_instructions
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)`
+//go:embed queries/valid_ingredients_create.sql
+var validIngredientCreationQuery string
 
 // CreateValidIngredient creates a valid ingredient in the database.
 func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
@@ -466,34 +383,8 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 	return x, nil
 }
 
-const updateValidIngredientQuery = `
-UPDATE valid_ingredients SET 
-	name = $1,
-	description = $2,
-	warning = $3,
-	contains_egg = $4,
-	contains_dairy = $5,
-	contains_peanut = $6,
-	contains_tree_nut = $7,
-	contains_soy = $8,
-	contains_wheat = $9,
-	contains_shellfish = $10,
-	contains_sesame = $11,
-	contains_fish = $12,
-	contains_gluten = $13,
-	animal_flesh = $14,
-	volumetric = $15,
-	is_liquid = $16,
-	icon_path = $17,
-	animal_derived = $18,
-	plural_name = $19,
-	restrict_to_preparations = $20,
-	minimum_ideal_storage_temperature_in_celsius = $21,
-	maximum_ideal_storage_temperature_in_celsius = $22,
-	storage_instructions = $23,
-	last_updated_at = NOW() 
-WHERE archived_at IS NULL AND id = $24
-`
+//go:embed queries/valid_ingredients_update.sql
+var updateValidIngredientQuery string
 
 // UpdateValidIngredient updates a particular valid ingredient.
 func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.ValidIngredient) error {
@@ -543,7 +434,8 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 	return nil
 }
 
-const archiveValidIngredientQuery = `UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1`
+//go:embed queries/valid_ingredients_archive.sql
+var archiveValidIngredientQuery string
 
 // ArchiveValidIngredient archives a valid ingredient from the database by its ID.
 func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {

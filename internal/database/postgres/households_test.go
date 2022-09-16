@@ -129,7 +129,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
@@ -187,7 +187,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -213,7 +213,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
@@ -241,7 +241,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows(columns))
 
@@ -268,7 +268,7 @@ func TestQuerier_GetHouseholdByID(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
@@ -303,7 +303,7 @@ func TestQuerier_GetHouseholdByID(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -326,7 +326,7 @@ func TestQuerier_GetHouseholdByID(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
@@ -351,7 +351,7 @@ func TestQuerier_GetHouseholdByID(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows(columns))
 

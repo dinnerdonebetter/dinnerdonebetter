@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -99,7 +100,8 @@ func (q *Querier) scanValidMeasurementUnits(ctx context.Context, rows database.R
 	return validMeasurementUnits, filteredCount, totalCount, nil
 }
 
-const validMeasurementUnitExistenceQuery = "SELECT EXISTS ( SELECT valid_measurement_units.id FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL AND valid_measurement_units.id = $1 )"
+//go:embed queries/valid_measurement_units_exists.sql
+var validMeasurementUnitExistenceQuery string
 
 // ValidMeasurementUnitExists fetches whether a valid measurement unit exists from the database.
 func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (exists bool, err error) {
@@ -126,24 +128,8 @@ func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasureme
 	return result, nil
 }
 
-const getValidMeasurementUnitBaseQuery = `SELECT 
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at, 
-	valid_measurement_units.last_updated_at, 
-	valid_measurement_units.archived_at 
-FROM valid_measurement_units 
-WHERE valid_measurement_units.archived_at IS NULL
-`
-
-const getValidMeasurementUnitQuery = getValidMeasurementUnitBaseQuery + `AND valid_measurement_units.id = $1`
+//go:embed queries/valid_measurement_units_get_one.sql
+var getValidMeasurementUnitQuery string
 
 // GetValidMeasurementUnit fetches a valid measurement unit from the database.
 func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
@@ -172,7 +158,8 @@ func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementU
 	return validMeasurementUnit, nil
 }
 
-const getRandomValidMeasurementUnitQuery = getValidMeasurementUnitBaseQuery + `ORDER BY random() LIMIT 1`
+//go:embed queries/valid_measurement_units_get_random.sql
+var getRandomValidMeasurementUnitQuery string
 
 // GetRandomValidMeasurementUnit fetches a valid measurement unit from the database.
 func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.ValidMeasurementUnit, error) {
@@ -191,23 +178,8 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 	return validMeasurementUnit, nil
 }
 
-const validMeasurementUnitSearchQuery = `SELECT 
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at
-FROM valid_measurement_units
-WHERE valid_measurement_units.name ILIKE $1
-AND valid_measurement_units.archived_at IS NULL
-LIMIT 50`
+//go:embed queries/valid_measurement_units_search.sql
+var validMeasurementUnitSearchQuery string
 
 // SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
 func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
@@ -274,10 +246,8 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 	return x, nil
 }
 
-const validMeasurementUnitCreationQuery = `INSERT INTO valid_measurement_units
-    (id,name,description,volumetric,icon_path,universal,metric,imperial,plural_name) 
-	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-`
+//go:embed queries/valid_measurement_units_create.sql
+var validMeasurementUnitCreationQuery string
 
 // CreateValidMeasurementUnit creates a valid measurement unit in the database.
 func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
@@ -326,19 +296,8 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 	return x, nil
 }
 
-const updateValidMeasurementUnitQuery = `
-UPDATE valid_measurement_units SET 
-	name = $1,
-	description = $2,
-	volumetric = $3,
-	icon_path = $4,
-	universal = $5,
-	metric = $6,
-	imperial = $7,
-	plural_name = $8,
-	last_updated_at = NOW() 
-WHERE archived_at IS NULL AND id = $9
-`
+//go:embed queries/valid_measurement_units_update.sql
+var updateValidMeasurementUnitQuery string
 
 // UpdateValidMeasurementUnit updates a particular valid measurement unit.
 func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types.ValidMeasurementUnit) error {
@@ -373,7 +332,8 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 	return nil
 }
 
-const archiveValidMeasurementUnitQuery = "UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
+//go:embed queries/valid_measurement_units_archive.sql
+var archiveValidMeasurementUnitQuery string
 
 // ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.
 func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {

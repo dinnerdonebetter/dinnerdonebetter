@@ -364,7 +364,7 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = s.householdInvitationDataManager.CancelHouseholdInvitation(ctx, invitation.ID, providedInput.Token, providedInput.Note); err != nil {
+	if err = s.householdInvitationDataManager.CancelHouseholdInvitation(ctx, invitation.ID, providedInput.Note); err != nil {
 		observability.AcknowledgeError(err, logger, span, "cancelling invitation")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "error cancelling invitation", http.StatusInternalServerError)
 		return
@@ -436,7 +436,7 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = s.householdInvitationDataManager.RejectHouseholdInvitation(ctx, invitation.ID, providedInput.Token, providedInput.Note); err != nil {
+	if err = s.householdInvitationDataManager.RejectHouseholdInvitation(ctx, invitation.ID, providedInput.Note); err != nil {
 		observability.AcknowledgeError(err, logger, span, "rejecting invitation")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "error rejecting invitation", http.StatusInternalServerError)
 		return

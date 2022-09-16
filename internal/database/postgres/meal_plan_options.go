@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 	"errors"
 	"math/rand"
 	"time"
@@ -129,26 +130,8 @@ func (q *Querier) scanMealPlanOptions(ctx context.Context, rows database.ResultI
 	return mealPlanOptions, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionExistenceQuery = `
-SELECT
-  EXISTS (
-    SELECT
-      meal_plan_options.id
-    FROM
-      meal_plan_options
-      JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
-      JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
-    WHERE
-      meal_plan_options.archived_at IS NULL
-      AND meal_plan_options.belongs_to_meal_plan_event = $2
-      AND meal_plan_options.id = $3
-	  AND meal_plan_events.archived_at IS NULL
-	  AND meal_plan_events.belongs_to_meal_plan = $1
-	  AND meal_plan_events.id = $2
-      AND meal_plans.archived_at IS NULL
-      AND meal_plans.id = $1
-  )
-`
+//go:embed queries/meal_plan_options_exists.sql
+var mealPlanOptionExistenceQuery string
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
 func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (exists bool, err error) {
@@ -190,39 +173,8 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	return result, nil
 }
 
-const getMealPlanOptionQuery = `
-SELECT
-	meal_plan_options.id,
-	meal_plan_options.assigned_cook,
-	meal_plan_options.assigned_dishwasher,
-	meal_plan_options.chosen,
-	meal_plan_options.tiebroken,
-	meal_plan_options.meal_id,
-	meal_plan_options.notes,
-	meal_plan_options.prep_steps_created,
-	meal_plan_options.created_at,
-	meal_plan_options.last_updated_at,
-	meal_plan_options.archived_at,
-	meal_plan_options.belongs_to_meal_plan_event,
-	meals.id,
-	meals.name,
-	meals.description,
-	meals.created_at,
-	meals.last_updated_at,
-	meals.archived_at,
-	meals.created_by_user
-FROM meal_plan_options
-  JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
-  JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
-  JOIN meals ON meal_plan_options.meal_id = meals.id
-WHERE meal_plan_options.archived_at IS NULL
-	AND meal_plan_options.belongs_to_meal_plan_event = $2
-	AND meal_plan_options.id = $3
-    AND meal_plan_events.id = $2
-    AND meal_plan_events.belongs_to_meal_plan = $1
-	AND meal_plans.archived_at IS NULL
-	AND meal_plans.id = $1
-`
+//go:embed queries/meal_plan_options_get_one.sql
+var getMealPlanOptionQuery string
 
 // GetMealPlanOption fetches a meal plan option from the database.
 func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*types.MealPlanOption, error) {
@@ -269,40 +221,8 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 	return mealPlanOption, nil
 }
 
-const getMealPlanOptionsForMealPlanEventsQuery = `
-SELECT
-  meal_plan_options.id,
-  meal_plan_options.assigned_cook,
-  meal_plan_options.assigned_dishwasher,
-  meal_plan_options.chosen,
-  meal_plan_options.tiebroken,
-  meal_plan_options.meal_id,
-  meal_plan_options.notes,
-  meal_plan_options.prep_steps_created,
-  meal_plan_options.created_at,
-  meal_plan_options.last_updated_at,
-  meal_plan_options.archived_at,
-  meal_plan_options.belongs_to_meal_plan_event,
-  meals.id,
-  meals.name,
-  meals.description,
-  meals.created_at,
-  meals.last_updated_at,
-  meals.archived_at,
-  meals.created_by_user
-FROM
-  meal_plan_options
-  JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
-  JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
-  JOIN meals ON meal_plan_options.meal_id = meals.id
-WHERE
-  meal_plan_options.archived_at IS NULL
-  AND meal_plan_options.belongs_to_meal_plan_event = $1
-  AND meal_plan_events.id = $1
-  AND meal_plan_events.belongs_to_meal_plan = $2
-  AND meal_plans.archived_at IS NULL
-  AND meal_plans.id = $2
-`
+//go:embed queries/meal_plan_options_get_for_meal_plan_event.sql
+var getMealPlanOptionsForMealPlanEventQuery string
 
 // getMealPlanOptionsForMealPlanEvent fetches a list of meal plan options from the database that meet a particular filter.
 func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (x []*types.MealPlanOption, err error) {
@@ -328,7 +248,7 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 		mealPlanID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan options for meal plan event", getMealPlanOptionsForMealPlanEventsQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "meal plan options for meal plan event", getMealPlanOptionsForMealPlanEventQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options for meal plan event list retrieval query")
 	}
@@ -338,15 +258,12 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan options for meal plan event")
 	}
 
-	for _, opt := range x {
+	for i, opt := range x {
 		votes, voteFetchErr := q.GetMealPlanOptionVotesForMealPlanOption(ctx, mealPlanID, mealPlanEventID, opt.ID)
 		if voteFetchErr != nil {
 			return nil, observability.PrepareError(voteFetchErr, span, "fetching meal plan option votes for meal plan option")
 		}
-
-		// TODO: fetch recipes for the meal
-
-		opt.Votes = votes
+		x[i].Votes = votes
 	}
 
 	logger.WithValue("quantity", len(x)).Info("fetched meal plan options for meal plan event")
@@ -402,7 +319,8 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 	return x, nil
 }
 
-const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,assigned_cook,assigned_dishwasher,meal_id,notes,belongs_to_meal_plan_event) VALUES ($1,$2,$3,$4,$5,$6)"
+//go:embed queries/meal_plan_options_create.sql
+var mealPlanOptionCreationQuery string
 
 // createMealPlanOption creates a meal plan option in the database.
 func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
@@ -451,18 +369,8 @@ func (q *Querier) CreateMealPlanOption(ctx context.Context, input *types.MealPla
 	return q.createMealPlanOption(ctx, q.db, input)
 }
 
-const updateMealPlanOptionQuery = `UPDATE meal_plan_options
-SET 
-	assigned_cook = $1,
-	assigned_dishwasher = $2,
-	meal_id = $3,
-	notes = $4,
-	prep_steps_created = $5,
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-  AND belongs_to_meal_plan_event = $6 
-  AND id = $7
-`
+//go:embed queries/meal_plan_options_update.sql
+var updateMealPlanOptionQuery string
 
 // UpdateMealPlanOption updates a particular meal plan option.
 func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealPlanOption) error {
@@ -495,16 +403,8 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	return nil
 }
 
-const archiveMealPlanOptionQuery = `
-UPDATE
-  meal_plan_options
-SET
-  archived_at = NOW()
-WHERE
-  archived_at IS NULL
-  AND belongs_to_meal_plan_event = $1
-  AND id = $2
-`
+//go:embed queries/meal_plan_options_archive.sql
+var archiveMealPlanOptionQuery string
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
 func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
@@ -612,7 +512,8 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 	return "", false, false
 }
 
-const finalizeMealPlanOptionQuery = `UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan_event = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan_event = $1 AND id = $2`
+//go:embed queries/meal_plan_options_finalize.sql
+var finalizeMealPlanOptionQuery string
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
 func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID string) (changed bool, err error) {

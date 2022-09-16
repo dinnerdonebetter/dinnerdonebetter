@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -170,7 +171,8 @@ func (q *Querier) scanValidIngredientMeasurementUnits(ctx context.Context, rows 
 	return validIngredientMeasurementUnits, filteredCount, totalCount, nil
 }
 
-const validIngredientMeasurementUnitExistenceQuery = "SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL AND valid_ingredient_measurement_units.id = $1 )"
+//go:embed queries/valid_ingredient_measurement_units_exists.sql
+var validIngredientMeasurementUnitExistenceQuery string
 
 // ValidIngredientMeasurementUnitExists fetches whether a valid ingredient measurement unit exists from the database.
 func (q *Querier) ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (exists bool, err error) {
@@ -197,60 +199,8 @@ func (q *Querier) ValidIngredientMeasurementUnitExists(ctx context.Context, vali
 	return result, nil
 }
 
-const getValidIngredientMeasurementUnitQuery = `
-SELECT 
-	valid_ingredient_measurement_units.id,
-	valid_ingredient_measurement_units.notes,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-	valid_ingredients.id,
-	valid_ingredients.name,
-	valid_ingredients.description,
-	valid_ingredients.warning,
-	valid_ingredients.contains_egg,
-	valid_ingredients.contains_dairy,
-	valid_ingredients.contains_peanut,
-	valid_ingredients.contains_tree_nut,
-	valid_ingredients.contains_soy,
-	valid_ingredients.contains_wheat,
-	valid_ingredients.contains_shellfish,
-	valid_ingredients.contains_sesame,
-	valid_ingredients.contains_fish,
-	valid_ingredients.contains_gluten,
-	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
-	valid_ingredients.is_liquid,
-	valid_ingredients.icon_path,
-	valid_ingredients.animal_derived,
-	valid_ingredients.plural_name,
-	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.storage_instructions,
-	valid_ingredients.created_at,
-	valid_ingredients.last_updated_at,
-	valid_ingredients.archived_at,
-	valid_ingredient_measurement_units.minimum_allowable_quantity,
-	valid_ingredient_measurement_units.maximum_allowable_quantity,
-	valid_ingredient_measurement_units.created_at,
-	valid_ingredient_measurement_units.last_updated_at,
-	valid_ingredient_measurement_units.archived_at
-FROM valid_ingredient_measurement_units 
-JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
-WHERE valid_ingredient_measurement_units.archived_at IS NULL 
-  AND valid_ingredient_measurement_units.id = $1
-`
+//go:embed queries/valid_ingredient_measurement_units_get_one.sql
+var getValidIngredientMeasurementUnitQuery string
 
 // GetValidIngredientMeasurementUnit fetches a valid ingredient measurement unit from the database.
 func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*types.ValidIngredientMeasurementUnit, error) {
@@ -445,9 +395,8 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 	return x, nil
 }
 
-const validIngredientMeasurementUnitCreationQuery = `INSERT INTO valid_ingredient_measurement_units
-    (id,notes,valid_measurement_unit_id,valid_ingredient_id,minimum_allowable_quantity,maximum_allowable_quantity) 
-	VALUES ($1,$2,$3,$4,$5,$6)`
+//go:embed queries/valid_ingredient_measurement_units_create.sql
+var validIngredientMeasurementUnitCreationQuery string
 
 // CreateValidIngredientMeasurementUnit creates a valid ingredient measurement unit in the database.
 func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, input *types.ValidIngredientMeasurementUnitDatabaseCreationInput) (*types.ValidIngredientMeasurementUnit, error) {
@@ -490,17 +439,8 @@ func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, inpu
 	return x, nil
 }
 
-const updateValidIngredientMeasurementUnitQuery = `UPDATE valid_ingredient_measurement_units 
-SET 
-    notes = $1,
-    valid_measurement_unit_id = $2,
-    valid_ingredient_id = $3,
-	minimum_allowable_quantity = $4,
-	maximum_allowable_quantity = $5,
-    last_updated_at = NOW()
-WHERE archived_at IS NULL 
-  AND id = $6
-`
+//go:embed queries/valid_ingredient_measurement_units_update.sql
+var updateValidIngredientMeasurementUnitQuery string
 
 // UpdateValidIngredientMeasurementUnit updates a particular valid ingredient measurement unit.
 func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *types.ValidIngredientMeasurementUnit) error {
@@ -532,7 +472,8 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 	return nil
 }
 
-const archiveValidIngredientMeasurementUnitQuery = "UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
+//go:embed queries/valid_ingredient_measurement_units_archive.sql
+var archiveValidIngredientMeasurementUnitQuery string
 
 // ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its ID.
 func (q *Querier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {

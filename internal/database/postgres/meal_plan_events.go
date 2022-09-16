@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -93,7 +94,8 @@ func (q *Querier) scanMealPlanEvents(ctx context.Context, rows database.ResultIt
 	return mealPlanEvents, filteredCount, totalCount, nil
 }
 
-const mealPlanEventExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_events.id FROM meal_plan_events WHERE meal_plan_events.archived_at IS NULL AND meal_plan_events.id = $1 )"
+//go:embed queries/meal_plan_events_exists.sql
+var mealPlanEventExistenceQuery string
 
 // MealPlanEventExists fetches whether a mealPlanEvent exists from the database.
 func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (exists bool, err error) {
@@ -126,21 +128,8 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 	return result, nil
 }
 
-const getMealPlanEventByIDQuery = `SELECT 
-	meal_plan_events.id,
-	meal_plan_events.notes,
-	meal_plan_events.starts_at,
-	meal_plan_events.ends_at,
-	meal_plan_events.meal_name,
-	meal_plan_events.belongs_to_meal_plan,
-	meal_plan_events.created_at,
-	meal_plan_events.last_updated_at,
-	meal_plan_events.archived_at
-FROM meal_plan_events
-WHERE meal_plan_events.archived_at IS NULL
-	AND meal_plan_events.id = $1
-	AND meal_plan_events.belongs_to_meal_plan = $2
-`
+//go:embed queries/meal_plan_events_get_one.sql
+var getMealPlanEventByIDQuery string
 
 // GetMealPlanEvent fetches a mealPlanEvent from the database.
 func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error) {
@@ -175,20 +164,8 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEven
 	return m, nil
 }
 
-const getMealPlanEventsForMealPlanQuery = `SELECT 
-	meal_plan_events.id,
-	meal_plan_events.notes,
-	meal_plan_events.starts_at,
-	meal_plan_events.ends_at,
-	meal_plan_events.meal_name,
-	meal_plan_events.belongs_to_meal_plan,
-	meal_plan_events.created_at,
-	meal_plan_events.last_updated_at,
-	meal_plan_events.archived_at
-FROM meal_plan_events
-WHERE meal_plan_events.archived_at IS NULL
-	AND meal_plan_events.belongs_to_meal_plan = $1
-`
+//go:embed queries/meal_plan_events_get_for_meal_plan.sql
+var getMealPlanEventsForMealPlanQuery string
 
 // getMealPlanEventsForMealPlan fetches a list of mealPlanEvents from the database that meet a particular filter.
 func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanEvent, err error) {
@@ -258,12 +235,8 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 	return x, nil
 }
 
-const mealPlanEventCreationQuery = `
-INSERT INTO
-  meal_plan_events (id, notes, starts_at, ends_at, meal_name, belongs_to_meal_plan)
-VALUES
-  ($1, $2, $3, $4, $5, $6)
-`
+//go:embed queries/meal_plan_events_create.sql
+var mealPlanEventCreationQuery string
 
 // createMealPlanEvent creates a mealPlanEvent in the database.
 func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
@@ -344,16 +317,8 @@ func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlan
 	return x, nil
 }
 
-const updateMealPlanEventQuery = `
-UPDATE meal_plan_events 
-SET notes = $1,
-    starts_at = $2,
-    ends_at = $3,
-    meal_name = $4,
-    belongs_to_meal_plan = $5,
-    last_updated_at = NOW()
-WHERE archived_at IS NULL 
-  AND id = $6`
+//go:embed queries/meal_plan_events_update.sql
+var updateMealPlanEventQuery string
 
 // UpdateMealPlanEvent updates a particular meal plan event.
 func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPlanEvent) error {
@@ -385,7 +350,8 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 	return nil
 }
 
-const archiveMealPlanEventQuery = "UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
+//go:embed queries/meal_plan_events_archive.sql
+var archiveMealPlanEventQuery string
 
 // ArchiveMealPlanEvent archives a mealPlanEvent from the database by its ID.
 func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
@@ -408,6 +374,7 @@ func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlan
 
 	args := []interface{}{
 		mealPlanEventID,
+		mealPlanID,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "meal plan event archive", archiveMealPlanEventQuery, args); err != nil {

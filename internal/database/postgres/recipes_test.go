@@ -812,6 +812,39 @@ func TestQuerier_GetRecipes(T *testing.T) {
 	})
 }
 
+func TestQuerier_getRecipeIDsForMeal(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleMeal := fakes.BuildFakeMeal()
+		exampleRecipeList := fakes.BuildFakeRecipeList()
+		exampleRecipeIDs := []string{}
+		for i := range exampleRecipeList.Recipes {
+			exampleRecipeList.Recipes[i].Steps = nil
+			exampleRecipeIDs = append(exampleRecipeIDs, exampleRecipeList.Recipes[i].ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleMeal.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRecipesForMealQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleRecipeIDs...))
+
+		actual, err := c.getRecipeIDsForMeal(ctx, exampleMeal.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_SearchForRecipes(T *testing.T) {
 	T.Parallel()
 

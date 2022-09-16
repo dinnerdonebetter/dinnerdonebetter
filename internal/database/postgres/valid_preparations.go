@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -96,7 +97,8 @@ func (q *Querier) scanValidPreparations(ctx context.Context, rows database.Resul
 	return validPreparations, filteredCount, totalCount, nil
 }
 
-const validPreparationExistenceQuery = "SELECT EXISTS ( SELECT valid_preparations.id FROM valid_preparations WHERE valid_preparations.archived_at IS NULL AND valid_preparations.id = $1 )"
+//go:embed queries/valid_preparations_exists.sql
+var validPreparationExistenceQuery string
 
 // ValidPreparationExists fetches whether a valid preparation exists from the database.
 func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID string) (exists bool, err error) {
@@ -123,23 +125,8 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 	return result, nil
 }
 
-const getValidPreparationBaseQuery = `SELECT
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.zero_ingredients_allowable,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at
-FROM valid_preparations
-WHERE valid_preparations.archived_at IS NULL
-`
-
-const getValidPreparationQuery = getValidPreparationBaseQuery + `AND valid_preparations.id = $1`
+//go:embed queries/valid_preparations_get_one.sql
+var getValidPreparationQuery string
 
 // GetValidPreparation fetches a valid preparation from the database.
 func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
@@ -168,7 +155,8 @@ func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID st
 	return validPreparation, nil
 }
 
-const getRandomValidPreparationQuery = getValidPreparationBaseQuery + `ORDER BY random() LIMIT 1`
+//go:embed queries/valid_preparations_get_random.sql
+var getRandomValidPreparationQuery string
 
 // GetRandomValidPreparation fetches a valid preparation from the database.
 func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPreparation, error) {
@@ -187,22 +175,8 @@ func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPr
 	return validPreparation, nil
 }
 
-const validPreparationSearchQuery = `SELECT
-    valid_preparations.id,
-    valid_preparations.name,
-    valid_preparations.description,
-    valid_preparations.icon_path,
-    valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.zero_ingredients_allowable,
-	valid_preparations.past_tense,
-    valid_preparations.created_at,
-    valid_preparations.last_updated_at,
-    valid_preparations.archived_at 
-FROM valid_preparations 
-WHERE valid_preparations.archived_at IS NULL 
-  AND valid_preparations.name ILIKE $1 
-LIMIT 50`
+//go:embed queries/valid_preparations_search.sql
+var validPreparationSearchQuery string
 
 // SearchForValidPreparations fetches a valid preparation from the database.
 func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) ([]*types.ValidPreparation, error) {
@@ -269,7 +243,8 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 	return x, nil
 }
 
-const validPreparationCreationQuery = "INSERT INTO valid_preparations (id,name,description,icon_path,yields_nothing,restrict_to_ingredients,zero_ingredients_allowable,past_tense) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
+//go:embed queries/valid_preparations_create.sql
+var validPreparationCreationQuery string
 
 // CreateValidPreparation creates a valid preparation in the database.
 func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationDatabaseCreationInput) (*types.ValidPreparation, error) {
@@ -316,19 +291,8 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.Valid
 	return x, nil
 }
 
-const updateValidPreparationQuery = `UPDATE valid_preparations 
-SET 
-    name = $1,
-    description = $2,
-    icon_path = $3,
-    yields_nothing = $4,
-	restrict_to_ingredients = $5,
-	zero_ingredients_allowable = $6,
-	past_tense = $7,
-    last_updated_at = NOW()
-WHERE archived_at IS NULL 
-  AND id = $8
-`
+//go:embed queries/valid_preparations_update.sql
+var updateValidPreparationQuery string
 
 // UpdateValidPreparation updates a particular valid preparation.
 func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.ValidPreparation) error {
@@ -362,7 +326,8 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	return nil
 }
 
-const archiveValidPreparationQuery = "UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1"
+//go:embed queries/valid_preparations_archive.sql
+var archiveValidPreparationQuery string
 
 // ArchiveValidPreparation archives a valid preparation from the database by its ID.
 func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {

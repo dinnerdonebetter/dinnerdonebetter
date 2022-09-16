@@ -58,8 +58,8 @@ func (m *HouseholdInvitationDataManager) CreateHouseholdInvitation(ctx context.C
 }
 
 // CancelHouseholdInvitation is a mock function.
-func (m *HouseholdInvitationDataManager) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
-	args := m.Called(ctx, householdInvitationID, token, note)
+func (m *HouseholdInvitationDataManager) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error {
+	args := m.Called(ctx, householdInvitationID, note)
 	return args.Error(0)
 }
 
@@ -70,8 +70,8 @@ func (m *HouseholdInvitationDataManager) AcceptHouseholdInvitation(ctx context.C
 }
 
 // RejectHouseholdInvitation is a mock function.
-func (m *HouseholdInvitationDataManager) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
-	args := m.Called(ctx, householdInvitationID, token, note)
+func (m *HouseholdInvitationDataManager) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error {
+	args := m.Called(ctx, householdInvitationID, note)
 	return args.Error(0)
 }
 

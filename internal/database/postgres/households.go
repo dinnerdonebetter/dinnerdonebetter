@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 	"fmt"
 	"strings"
 
@@ -171,50 +172,8 @@ func (q *Querier) scanHouseholds(ctx context.Context, rows database.ResultIterat
 	return households, filteredCount, totalCount, nil
 }
 
-const getHouseholdQuery = `
-	SELECT
-		households.id,
-		households.name,
-		households.billing_status,
-		households.contact_email,
-		households.contact_phone,
-		households.payment_processor_customer_id,
-		households.subscription_plan_id,
-		households.time_zone,
-		households.created_at,
-		households.last_updated_at,
-		households.archived_at,
-		households.belongs_to_user,
-		users.id,
-		users.username,
-		users.email_address,
-		users.avatar_src,
-		users.requires_password_change,
-		users.password_last_changed_at,
-		users.two_factor_secret_verified_at,
-		users.service_roles,
-		users.user_account_status,
-		users.user_account_status_explanation,
-		users.birth_day,
-		users.birth_month,
-		users.created_at,
-		users.last_updated_at,
-		users.archived_at,
-		household_user_memberships.id,
-		household_user_memberships.belongs_to_user,
-		household_user_memberships.belongs_to_household,
-		household_user_memberships.household_roles,
-		household_user_memberships.default_household,
-		household_user_memberships.created_at,
-		household_user_memberships.last_updated_at,
-		household_user_memberships.archived_at
-	FROM household_user_memberships
-	JOIN households ON household_user_memberships.belongs_to_household = households.id
-	JOIN users ON household_user_memberships.belongs_to_user = users.id
-	WHERE households.archived_at IS NULL
-	AND household_user_memberships.archived_at IS NULL
-	AND households.id = $1
-`
+//go:embed queries/households_get_by_id_with_memberships.sql
+var getHouseholdAndMembershipsByIDQuery string
 
 // GetHousehold fetches a household from the database.
 func (q *Querier) GetHousehold(ctx context.Context, householdID, userID string) (*types.Household, error) {
@@ -232,7 +191,7 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID, userID string) 
 		householdID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdAndMembershipsByIDQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}
@@ -254,50 +213,6 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID, userID string) 
 	return household, nil
 }
 
-const getHouseholdByIDQuery = `
-	SELECT
-		households.id,
-		households.name,
-		households.billing_status,
-		households.contact_email,
-		households.contact_phone,
-		households.payment_processor_customer_id,
-		households.subscription_plan_id,
-		households.time_zone,
-		households.created_at,
-		households.last_updated_at,
-		households.archived_at,
-		households.belongs_to_user,
-        users.id,
-        users.username,
-        users.email_address,
-        users.avatar_src,
-        users.requires_password_change,
-        users.password_last_changed_at,
-        users.two_factor_secret_verified_at,
-        users.service_roles,
-        users.user_account_status,
-        users.user_account_status_explanation,
-        users.birth_day,
-        users.birth_month,
-        users.created_at,
-        users.last_updated_at,
-        users.archived_at,
-		household_user_memberships.id,
-		household_user_memberships.belongs_to_user,
-		household_user_memberships.belongs_to_household,
-		household_user_memberships.household_roles,
-		household_user_memberships.default_household,
-		household_user_memberships.created_at,
-		household_user_memberships.last_updated_at,
-		household_user_memberships.archived_at
-	FROM households
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-	JOIN users ON household_user_memberships.belongs_to_user = users.id
-	WHERE households.archived_at IS NULL
-	AND households.id = $1
-`
-
 // GetHouseholdByID fetches a household from the database by its ID.
 func (q *Querier) GetHouseholdByID(ctx context.Context, householdID string) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -312,7 +227,7 @@ func (q *Querier) GetHouseholdByID(ctx context.Context, householdID string) (*ty
 		householdID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdByIDQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdAndMembershipsByIDQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}
@@ -438,14 +353,11 @@ func (q *Querier) GetHouseholdsForAdmin(ctx context.Context, userID string, filt
 	return q.getHouseholds(ctx, q.db, userID, true, filter)
 }
 
-const householdCreationQuery = `
-	INSERT INTO households (id,name,billing_status,contact_email,contact_phone,time_zone,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6,$7)
-`
+//go:embed queries/households_create.sql
+var householdCreationQuery string
 
-const addUserToHouseholdDuringCreationQuery = `
-	INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,household_roles)
-	VALUES ($1,$2,$3,$4)
-`
+//go:embed queries/households_add_to_household_during_creation.sql
+var addUserToHouseholdDuringCreationQuery string
 
 // CreateHousehold creates a household in the database.
 func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
@@ -520,17 +432,8 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 	return household, nil
 }
 
-const updateHouseholdQuery = `UPDATE households
-SET 
-    name = $1,
-    contact_email = $2,
-    contact_phone = $3,
-    time_zone = $4,
-    last_updated_at = NOW() 
-WHERE archived_at IS NULL 
-  AND belongs_to_user = $5 
-  AND id = $6
-`
+//go:embed queries/households_update.sql
+var updateHouseholdQuery string
 
 // UpdateHousehold updates a particular household. Note that UpdateHousehold expects the provided input to have a valid ID.
 func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household) error {
@@ -564,7 +467,8 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	return nil
 }
 
-const archiveHouseholdQuery = `UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2`
+//go:embed queries/households_archive.sql
+var archiveHouseholdQuery string
 
 // ArchiveHousehold archives a household from the database by its ID.
 func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {

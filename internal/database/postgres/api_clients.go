@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 	"errors"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -87,20 +88,8 @@ func (q *Querier) scanAPIClients(ctx context.Context, rows database.ResultIterat
 	return clients, filteredCount, totalCount, nil
 }
 
-const getAPIClientByClientIDQuery = `
-	SELECT
-		api_clients.id,
-		api_clients.name,
-		api_clients.client_id,
-		api_clients.secret_key,
-		api_clients.created_at,
-		api_clients.last_updated_at,
-		api_clients.archived_at,
-		api_clients.belongs_to_user
-	FROM api_clients
-	WHERE api_clients.archived_at IS NULL
-	AND api_clients.client_id = $1
-`
+//go:embed queries/api_clients_by_client_id.sql
+var getAPIClientByClientIDQuery string
 
 // GetAPIClientByClientID gets an API client from the database.
 func (q *Querier) GetAPIClientByClientID(ctx context.Context, clientID string) (*types.APIClient, error) {
@@ -129,21 +118,8 @@ func (q *Querier) GetAPIClientByClientID(ctx context.Context, clientID string) (
 	return client, nil
 }
 
-const getAPIClientByDatabaseIDQuery = `
-	SELECT
-		api_clients.id,
-		api_clients.name,
-		api_clients.client_id,
-		api_clients.secret_key,
-		api_clients.created_at,
-		api_clients.last_updated_at,
-		api_clients.archived_at,
-		api_clients.belongs_to_user
-	FROM api_clients
-	WHERE api_clients.archived_at IS NULL
-	AND api_clients.belongs_to_user = $1
-	AND api_clients.id = $2
-`
+//go:embed queries/api_clients_by_database_id.sql
+var getAPIClientByDatabaseIDQuery string
 
 // GetAPIClientByDatabaseID gets an API client from the database.
 func (q *Querier) GetAPIClientByDatabaseID(ctx context.Context, clientID, userID string) (*types.APIClient, error) {
@@ -214,9 +190,8 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 	return x, nil
 }
 
-const createAPIClientQuery = `
-	INSERT INTO api_clients (id,name,client_id,secret_key,belongs_to_user) VALUES ($1,$2,$3,$4,$5)
-`
+//go:embed queries/api_clients_create.sql
+var createAPIClientQuery string
 
 // CreateAPIClient creates an API client.
 func (q *Querier) CreateAPIClient(ctx context.Context, input *types.APIClientCreationRequestInput) (*types.APIClient, error) {
@@ -260,13 +235,8 @@ func (q *Querier) CreateAPIClient(ctx context.Context, input *types.APIClientCre
 	return client, nil
 }
 
-const archiveAPIClientQuery = `
-	UPDATE api_clients SET
-		last_updated_at = NOW(),
-		archived_at = NOW()
-	WHERE archived_at IS NULL
-	AND belongs_to_user = $1 AND id = $2
-`
+//go:embed queries/api_clients_archive.sql
+var archiveAPIClientQuery string
 
 // ArchiveAPIClient archives an API client.
 func (q *Querier) ArchiveAPIClient(ctx context.Context, clientID, userID string) error {
