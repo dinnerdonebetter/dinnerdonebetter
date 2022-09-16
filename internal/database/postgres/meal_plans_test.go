@@ -218,7 +218,7 @@ func prepareMockToSuccessfullyGetMealPlan(t *testing.T, exampleMealPlan *types.M
 			exampleMealPlan.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventsQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventQuery)).
 			WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
 			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
 
@@ -1129,7 +1129,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 				exampleMealPlan.ID,
 			}
 
-			db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventsQuery)).
+			db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventQuery)).
 				WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
 				WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
 		}

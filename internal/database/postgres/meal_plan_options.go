@@ -269,7 +269,7 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 	return mealPlanOption, nil
 }
 
-const getMealPlanOptionsForMealPlanEventsQuery = `
+const getMealPlanOptionsForMealPlanEventQuery = `
 SELECT
   meal_plan_options.id,
   meal_plan_options.assigned_cook,
@@ -328,7 +328,7 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 		mealPlanID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan options for meal plan event", getMealPlanOptionsForMealPlanEventsQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "meal plan options for meal plan event", getMealPlanOptionsForMealPlanEventQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options for meal plan event list retrieval query")
 	}
