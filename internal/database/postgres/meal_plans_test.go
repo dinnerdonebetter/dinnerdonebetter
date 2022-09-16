@@ -953,7 +953,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
@@ -1102,7 +1102,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 			exampleHousehold.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
 			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 

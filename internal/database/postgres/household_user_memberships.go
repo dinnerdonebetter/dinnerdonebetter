@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	_ "embed"
 	"errors"
 	"strings"
 
@@ -101,21 +102,8 @@ func (q *Querier) scanHouseholdUserMemberships(ctx context.Context, rows databas
 	return defaultHousehold, householdRolesMap, nil
 }
 
-const getHouseholdMembershipsForUserQuery = `
-	SELECT
-		household_user_memberships.id,
-		household_user_memberships.belongs_to_user,
-		household_user_memberships.belongs_to_household,
-		household_user_memberships.household_roles,
-		household_user_memberships.default_household,
-		household_user_memberships.created_at,
-		household_user_memberships.last_updated_at,
-		household_user_memberships.archived_at
-	FROM household_user_memberships
-	JOIN households ON households.id = household_user_memberships.belongs_to_household
-	WHERE household_user_memberships.archived_at IS NULL
-	AND household_user_memberships.belongs_to_user = $1
-`
+//go:embed queries/household_user_memberships_get_for_user.sql
+var getHouseholdMembershipsForUserQuery string
 
 // BuildSessionContextDataForUser queries the database for the memberships of a user and constructs a SessionContextData struct from the results.
 func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID string) (*types.SessionContextData, error) {
@@ -169,13 +157,8 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 	return sessionCtxData, nil
 }
 
-const getDefaultHouseholdIDForUserQuery = `
-	SELECT households.id
-	FROM households 
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id 
-	WHERE household_user_memberships.belongs_to_user = $1
-	AND household_user_memberships.default_household = $2
-`
+//go:embed queries/household_user_memberships_get_default_household_id_for_user.sql
+var getDefaultHouseholdIDForUserQuery string
 
 // GetDefaultHouseholdIDForUser retrieves the default household ID for a user.
 func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error) {
@@ -196,12 +179,8 @@ func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID strin
 	return id, nil
 }
 
-const markHouseholdAsUserDefaultQuery = `
-	UPDATE household_user_memberships
-	SET default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
-	WHERE archived_at IS NULL
-	AND belongs_to_user = $3
-`
+//go:embed queries/household_user_memberships_mark_as_user_default.sql
+var markHouseholdAsUserDefaultQuery string
 
 // markHouseholdAsUserDefault does a thing.
 func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier database.SQLQueryExecutor, userID, householdID string) error {
@@ -241,15 +220,8 @@ func (q *Querier) MarkHouseholdAsUserDefault(ctx context.Context, userID, househ
 	return q.markHouseholdAsUserDefault(ctx, q.db, userID, householdID)
 }
 
-const userIsMemberOfHouseholdQuery = `
-	SELECT EXISTS ( 
-		SELECT household_user_memberships.id 
-		FROM household_user_memberships 
-		WHERE household_user_memberships.archived_at IS NULL 
-		AND household_user_memberships.belongs_to_household = $1 
-		AND household_user_memberships.belongs_to_user = $2 
-	)
-`
+//go:embed queries/household_user_memberships_user_is_member.sql
+var userIsMemberOfHouseholdQuery string
 
 // UserIsMemberOfHousehold does a thing.
 func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error) {
@@ -276,9 +248,8 @@ func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, household
 	return result, nil
 }
 
-const modifyUserPermissionsQuery = `
-	UPDATE household_user_memberships SET household_roles = $1 WHERE belongs_to_household = $2 AND belongs_to_user = $3
-`
+//go:embed queries/household_user_memberships_modify_user_permissions.sql
+var modifyUserPermissionsQuery string
 
 // ModifyUserPermissions does a thing.
 func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID string, input *types.ModifyUserPermissionsInput) error {
@@ -318,13 +289,11 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 	return nil
 }
 
-const transferHouseholdOwnershipQuery = `
-	UPDATE households SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_user = $2 AND id = $3
-`
+//go:embed queries/household_user_memberships_transfer_ownership.sql
+var transferHouseholdOwnershipQuery string
 
-const transferHouseholdMembershipQuery = `
-	UPDATE household_user_memberships SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_household = $2 AND belongs_to_user = $3
-`
+//go:embed queries/household_user_memberships_transfer_membership.sql
+var transferHouseholdMembershipQuery string
 
 // TransferHouseholdOwnership does a thing.
 func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID string, input *types.HouseholdOwnershipTransferInput) error {
@@ -387,10 +356,8 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 	return nil
 }
 
-const addUserToHouseholdQuery = `
-	INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,household_roles)
-	VALUES ($1,$2,$3,$4)
-`
+//go:embed queries/household_user_memberships_add_user_to_household.sql
+var addUserToHouseholdQuery string
 
 // addUserToHousehold does a thing.
 func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQueryExecutor, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
@@ -426,14 +393,8 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 	return nil
 }
 
-const removeUserFromHouseholdQuery = `
-	UPDATE household_user_memberships
-	SET archived_at = NOW(), 
-		default_household = 'false'
-	WHERE household_user_memberships.archived_at IS NULL
-	AND household_user_memberships.belongs_to_household = $1 
-	AND household_user_memberships.belongs_to_user = $2
-`
+//go:embed queries/household_user_memberships_remove_user_from_household.sql
+var removeUserFromHouseholdQuery string
 
 // RemoveUserFromHousehold removes a user's membership to a household.
 func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error {
