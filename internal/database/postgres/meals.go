@@ -118,7 +118,7 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 	return x, recipeIDs, nil
 }
 
-//go:embed queries/meals_exists.sql
+//go:embed queries/meals/meals_exists.sql
 var mealExistenceQuery string
 
 // MealExists fetches whether a meal exists from the database.
@@ -146,7 +146,7 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 	return result, nil
 }
 
-//go:embed queries/meals_get_one.sql
+//go:embed queries/meals/meals_get_one.sql
 var getMealByIDQuery string
 
 // GetMeal fetches a meal from the database.
@@ -263,7 +263,7 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 	return x, nil
 }
 
-//go:embed queries/meals_create.sql
+//go:embed queries/meals/meals_create.sql
 var mealCreationQuery string
 
 // CreateMeal creates a meal in the database.
@@ -337,7 +337,7 @@ func (q *Querier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreat
 	return x, nil
 }
 
-//go:embed queries/meals_create_meal_recipe.sql
+//go:embed queries/meals/meals_create_meal_recipe.sql
 var mealRecipeCreationQuery string
 
 // CreateMealRecipe creates a meal in the database.
@@ -373,7 +373,7 @@ func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQuer
 	return nil
 }
 
-//go:embed queries/meals_archive.sql
+//go:embed queries/meals/meals_archive.sql
 var archiveMealQuery string
 
 // ArchiveMeal archives a meal from the database by its ID.

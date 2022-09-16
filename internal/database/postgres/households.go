@@ -172,7 +172,7 @@ func (q *Querier) scanHouseholds(ctx context.Context, rows database.ResultIterat
 	return households, filteredCount, totalCount, nil
 }
 
-//go:embed queries/households_get_by_id_with_memberships.sql
+//go:embed queries/households/households_get_by_id_with_memberships.sql
 var getHouseholdAndMembershipsByIDQuery string
 
 // GetHousehold fetches a household from the database.
@@ -353,10 +353,10 @@ func (q *Querier) GetHouseholdsForAdmin(ctx context.Context, userID string, filt
 	return q.getHouseholds(ctx, q.db, userID, true, filter)
 }
 
-//go:embed queries/households_create.sql
+//go:embed queries/households/households_create.sql
 var householdCreationQuery string
 
-//go:embed queries/households_add_to_household_during_creation.sql
+//go:embed queries/households/households_add_to_household_during_creation.sql
 var addUserToHouseholdDuringCreationQuery string
 
 // CreateHousehold creates a household in the database.
@@ -432,7 +432,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 	return household, nil
 }
 
-//go:embed queries/households_update.sql
+//go:embed queries/households/households_update.sql
 var updateHouseholdQuery string
 
 // UpdateHousehold updates a particular household. Note that UpdateHousehold expects the provided input to have a valid ID.
@@ -467,7 +467,7 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	return nil
 }
 
-//go:embed queries/households_archive.sql
+//go:embed queries/households/households_archive.sql
 var archiveHouseholdQuery string
 
 // ArchiveHousehold archives a household from the database by its ID.

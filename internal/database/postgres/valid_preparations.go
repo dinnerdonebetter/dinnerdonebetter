@@ -97,7 +97,7 @@ func (q *Querier) scanValidPreparations(ctx context.Context, rows database.Resul
 	return validPreparations, filteredCount, totalCount, nil
 }
 
-//go:embed queries/valid_preparations_exists.sql
+//go:embed queries/valid_preparations/valid_preparations_exists.sql
 var validPreparationExistenceQuery string
 
 // ValidPreparationExists fetches whether a valid preparation exists from the database.
@@ -125,7 +125,7 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 	return result, nil
 }
 
-//go:embed queries/valid_preparations_get_one.sql
+//go:embed queries/valid_preparations/valid_preparations_get_one.sql
 var getValidPreparationQuery string
 
 // GetValidPreparation fetches a valid preparation from the database.
@@ -155,7 +155,7 @@ func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID st
 	return validPreparation, nil
 }
 
-//go:embed queries/valid_preparations_get_random.sql
+//go:embed queries/valid_preparations/valid_preparations_get_random.sql
 var getRandomValidPreparationQuery string
 
 // GetRandomValidPreparation fetches a valid preparation from the database.
@@ -175,7 +175,7 @@ func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPr
 	return validPreparation, nil
 }
 
-//go:embed queries/valid_preparations_search.sql
+//go:embed queries/valid_preparations/valid_preparations_search.sql
 var validPreparationSearchQuery string
 
 // SearchForValidPreparations fetches a valid preparation from the database.
@@ -243,7 +243,7 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 	return x, nil
 }
 
-//go:embed queries/valid_preparations_create.sql
+//go:embed queries/valid_preparations/valid_preparations_create.sql
 var validPreparationCreationQuery string
 
 // CreateValidPreparation creates a valid preparation in the database.
@@ -291,7 +291,7 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.Valid
 	return x, nil
 }
 
-//go:embed queries/valid_preparations_update.sql
+//go:embed queries/valid_preparations/valid_preparations_update.sql
 var updateValidPreparationQuery string
 
 // UpdateValidPreparation updates a particular valid preparation.
@@ -326,7 +326,7 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	return nil
 }
 
-//go:embed queries/valid_preparations_archive.sql
+//go:embed queries/valid_preparations/valid_preparations_archive.sql
 var archiveValidPreparationQuery string
 
 // ArchiveValidPreparation archives a valid preparation from the database by its ID.

@@ -171,7 +171,7 @@ func (q *Querier) scanValidIngredientMeasurementUnits(ctx context.Context, rows 
 	return validIngredientMeasurementUnits, filteredCount, totalCount, nil
 }
 
-//go:embed queries/valid_ingredient_measurement_units_exists.sql
+//go:embed queries/valid_ingredient_measurement_units/valid_ingredient_measurement_units_exists.sql
 var validIngredientMeasurementUnitExistenceQuery string
 
 // ValidIngredientMeasurementUnitExists fetches whether a valid ingredient measurement unit exists from the database.
@@ -199,7 +199,7 @@ func (q *Querier) ValidIngredientMeasurementUnitExists(ctx context.Context, vali
 	return result, nil
 }
 
-//go:embed queries/valid_ingredient_measurement_units_get_one.sql
+//go:embed queries/valid_ingredient_measurement_units/valid_ingredient_measurement_units_get_one.sql
 var getValidIngredientMeasurementUnitQuery string
 
 // GetValidIngredientMeasurementUnit fetches a valid ingredient measurement unit from the database.
@@ -395,7 +395,7 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 	return x, nil
 }
 
-//go:embed queries/valid_ingredient_measurement_units_create.sql
+//go:embed queries/valid_ingredient_measurement_units/valid_ingredient_measurement_units_create.sql
 var validIngredientMeasurementUnitCreationQuery string
 
 // CreateValidIngredientMeasurementUnit creates a valid ingredient measurement unit in the database.
@@ -439,7 +439,7 @@ func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, inpu
 	return x, nil
 }
 
-//go:embed queries/valid_ingredient_measurement_units_update.sql
+//go:embed queries/valid_ingredient_measurement_units/valid_ingredient_measurement_units_update.sql
 var updateValidIngredientMeasurementUnitQuery string
 
 // UpdateValidIngredientMeasurementUnit updates a particular valid ingredient measurement unit.
@@ -472,7 +472,7 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 	return nil
 }
 
-//go:embed queries/valid_ingredient_measurement_units_archive.sql
+//go:embed queries/valid_ingredient_measurement_units/valid_ingredient_measurement_units_archive.sql
 var archiveValidIngredientMeasurementUnitQuery string
 
 // ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its ID.

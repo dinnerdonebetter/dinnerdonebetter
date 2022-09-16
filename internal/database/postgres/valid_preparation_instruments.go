@@ -129,7 +129,7 @@ func (q *Querier) scanValidPreparationInstruments(ctx context.Context, rows data
 	return validPreparationInstruments, filteredCount, totalCount, nil
 }
 
-//go:embed queries/valid_preparation_instruments_exists.sql
+//go:embed queries/valid_preparation_instruments/valid_preparation_instruments_exists.sql
 var validPreparationInstrumentExistenceQuery string
 
 // ValidPreparationInstrumentExists fetches whether a valid ingredient preparation exists from the database.
@@ -154,7 +154,7 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 	return result, nil
 }
 
-//go:embed queries/valid_preparation_instruments_get_one.sql
+//go:embed queries/valid_preparation_instruments/valid_preparation_instruments_get_one.sql
 var getValidPreparationInstrumentQuery string
 
 // GetValidPreparationInstrument fetches a valid ingredient preparation from the database.
@@ -336,7 +336,7 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	return x, nil
 }
 
-//go:embed queries/valid_preparation_instruments_create.sql
+//go:embed queries/valid_preparation_instruments/valid_preparation_instruments_create.sql
 var validPreparationInstrumentCreationQuery string
 
 // CreateValidPreparationInstrument creates a valid ingredient preparation in the database.
@@ -376,7 +376,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 	return x, nil
 }
 
-//go:embed queries/valid_preparation_instruments_update.sql
+//go:embed queries/valid_preparation_instruments/valid_preparation_instruments_update.sql
 var updateValidPreparationInstrumentQuery string
 
 // UpdateValidPreparationInstrument updates a particular valid ingredient preparation.
@@ -407,7 +407,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	return nil
 }
 
-//go:embed queries/valid_preparation_instruments_archive.sql
+//go:embed queries/valid_preparation_instruments/valid_preparation_instruments_archive.sql
 var archiveValidPreparationInstrumentQuery string
 
 // ArchiveValidPreparationInstrument archives a valid ingredient preparation from the database by its ID.

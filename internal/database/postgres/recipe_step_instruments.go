@@ -131,7 +131,7 @@ func (q *Querier) scanRecipeStepInstruments(ctx context.Context, rows database.R
 	return recipeStepInstruments, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_step_instruments_exists.sql
+//go:embed queries/recipe_step_instruments/recipe_step_instruments_exists.sql
 var recipeStepInstrumentExistenceQuery string
 
 // RecipeStepInstrumentExists fetches whether a recipe step instrument exists from the database.
@@ -175,7 +175,7 @@ func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, reci
 	return result, nil
 }
 
-//go:embed queries/recipe_step_instruments_get_one.sql
+//go:embed queries/recipe_step_instruments/recipe_step_instruments_get_one.sql
 var getRecipeStepInstrumentQuery string
 
 // GetRecipeStepInstrument fetches a recipe step instrument from the database.
@@ -268,7 +268,7 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 	return x, nil
 }
 
-//go:embed queries/recipe_step_instruments_get_for_recipe.sql
+//go:embed queries/recipe_step_instruments/recipe_step_instruments_get_for_recipe.sql
 var getRecipeStepInstrumentsForRecipeQuery string
 
 // getRecipeStepInstrumentsForRecipe fetches a list of recipe step instruments from the database that meet a particular filter.
@@ -302,7 +302,7 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 	return recipeStepInstruments, nil
 }
 
-//go:embed queries/recipe_step_instruments_create.sql
+//go:embed queries/recipe_step_instruments/recipe_step_instruments_create.sql
 var recipeStepInstrumentCreationQuery string
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
@@ -365,7 +365,7 @@ func (q *Querier) CreateRecipeStepInstrument(ctx context.Context, input *types.R
 	return q.createRecipeStepInstrument(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_instruments_update.sql
+//go:embed queries/recipe_step_instruments/recipe_step_instruments_update.sql
 var updateRecipeStepInstrumentQuery string
 
 // UpdateRecipeStepInstrument updates a particular recipe step instrument.
@@ -408,7 +408,7 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 	return nil
 }
 
-//go:embed queries/recipe_step_instruments_archive.sql
+//go:embed queries/recipe_step_instruments/recipe_step_instruments_archive.sql
 var archiveRecipeStepInstrumentQuery string
 
 // ArchiveRecipeStepInstrument archives a recipe step instrument from the database by its ID.

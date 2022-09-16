@@ -106,7 +106,7 @@ func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.Resul
 	return validInstruments, filteredCount, totalCount, nil
 }
 
-//go:embed queries/advanced_prep_step_list_all_by_meal_plan_option.sql
+//go:embed queries/advanced_prep_steps/advanced_prep_step_list_all_by_meal_plan_option.sql
 var listAdvancedPrepStepsQuery string
 
 // GetAdvancedPrepStepsForMealPlanOptionID lists advanced prep steps for a given meal plan option.
@@ -142,7 +142,7 @@ func (q *Querier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context, m
 	return x, nil
 }
 
-//go:embed queries/advanced_prep_step_create.sql
+//go:embed queries/advanced_prep_steps/advanced_prep_step_create.sql
 var createAdvancedPrepStepQuery string
 
 // CreateAdvancedPrepStep creates advanced prep steps.

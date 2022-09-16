@@ -125,7 +125,7 @@ func (q *Querier) scanValidIngredients(ctx context.Context, rows database.Result
 	return validIngredients, filteredCount, totalCount, nil
 }
 
-//go:embed queries/valid_ingredients_exists.sql
+//go:embed queries/valid_ingredients/valid_ingredients_exists.sql
 var validIngredientExistenceQuery string
 
 // ValidIngredientExists fetches whether a valid ingredient exists from the database.
@@ -153,7 +153,7 @@ func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID s
 	return result, nil
 }
 
-//go:embed queries/valid_ingredients_get_one.sql
+//go:embed queries/valid_ingredients/valid_ingredients_get_one.sql
 var getValidIngredientQuery string
 
 // GetValidIngredient fetches a valid ingredient from the database.
@@ -183,7 +183,7 @@ func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID stri
 	return validIngredient, nil
 }
 
-//go:embed queries/valid_ingredients_get_random.sql
+//go:embed queries/valid_ingredients/valid_ingredients_get_random.sql
 var getRandomValidIngredientQuery string
 
 // GetRandomValidIngredient fetches a valid ingredient from the database.
@@ -203,7 +203,7 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 	return validIngredient, nil
 }
 
-//go:embed queries/valid_ingredients_search.sql
+//go:embed queries/valid_ingredients/valid_ingredients_search.sql
 var validIngredientSearchQuery string
 
 // SearchForValidIngredients fetches a valid ingredient from the database.
@@ -303,7 +303,7 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 	return x, nil
 }
 
-//go:embed queries/valid_ingredients_create.sql
+//go:embed queries/valid_ingredients/valid_ingredients_create.sql
 var validIngredientCreationQuery string
 
 // CreateValidIngredient creates a valid ingredient in the database.
@@ -383,7 +383,7 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 	return x, nil
 }
 
-//go:embed queries/valid_ingredients_update.sql
+//go:embed queries/valid_ingredients/valid_ingredients_update.sql
 var updateValidIngredientQuery string
 
 // UpdateValidIngredient updates a particular valid ingredient.
@@ -434,7 +434,7 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 	return nil
 }
 
-//go:embed queries/valid_ingredients_archive.sql
+//go:embed queries/valid_ingredients/valid_ingredients_archive.sql
 var archiveValidIngredientQuery string
 
 // ArchiveValidIngredient archives a valid ingredient from the database by its ID.

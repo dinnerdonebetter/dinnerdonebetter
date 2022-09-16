@@ -128,7 +128,7 @@ func (q *Querier) scanRecipeSteps(ctx context.Context, rows database.ResultItera
 	return recipeSteps, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_steps_exists.sql
+//go:embed queries/recipe_steps/recipe_steps_exists.sql
 var recipeStepExistenceQuery string
 
 // RecipeStepExists fetches whether a recipe step exists from the database.
@@ -164,7 +164,7 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 	return result, nil
 }
 
-//go:embed queries/recipe_steps_get_one.sql
+//go:embed queries/recipe_steps/recipe_steps_get_one.sql
 var getRecipeStepQuery string
 
 // GetRecipeStep fetches a recipe step from the database.
@@ -243,7 +243,7 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 	return x, nil
 }
 
-//go:embed queries/recipe_steps_create.sql
+//go:embed queries/recipe_steps/recipe_steps_create.sql
 var recipeStepCreationQuery string
 
 // CreateRecipeStep creates a recipe step in the database.
@@ -329,7 +329,7 @@ func (q *Querier) CreateRecipeStep(ctx context.Context, input *types.RecipeStepD
 	return q.createRecipeStep(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_steps_update.sql
+//go:embed queries/recipe_steps/recipe_steps_update.sql
 var updateRecipeStepQuery string
 
 // UpdateRecipeStep updates a particular recipe step.
@@ -367,7 +367,7 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 	return nil
 }
 
-//go:embed queries/recipe_steps_archive.sql
+//go:embed queries/recipe_steps/recipe_steps_archive.sql
 var archiveRecipeStepQuery string
 
 // ArchiveRecipeStep archives a recipe step from the database by its ID.

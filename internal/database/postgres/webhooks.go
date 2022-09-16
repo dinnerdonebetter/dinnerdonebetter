@@ -138,7 +138,7 @@ func (q *Querier) scanWebhooks(ctx context.Context, rows database.ResultIterator
 	return webhooks, filteredCount, totalCount, nil
 }
 
-//go:embed queries/webhooks_get_exists.sql
+//go:embed queries/webhooks/webhooks_get_exists.sql
 var webhookExistenceQuery string
 
 // WebhookExists fetches whether a webhook exists from the database.
@@ -173,7 +173,7 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 	return result, nil
 }
 
-//go:embed queries/webhooks_get_one.sql
+//go:embed queries/webhooks/webhooks_get_one.sql
 var getWebhookQuery string
 
 // GetWebhook fetches a webhook from the database.
@@ -251,7 +251,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	return x, nil
 }
 
-//go:embed queries/webhooks_create.sql
+//go:embed queries/webhooks/webhooks_create.sql
 var createWebhookQuery string
 
 // CreateWebhook creates a webhook in a database.
@@ -302,7 +302,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 	return x, nil
 }
 
-//go:embed queries/webhooks_archive.sql
+//go:embed queries/webhooks/webhooks_archive.sql
 var archiveWebhookQuery string
 
 // ArchiveWebhook archives a webhook from the database.

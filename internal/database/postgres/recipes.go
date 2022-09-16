@@ -97,7 +97,7 @@ func (q *Querier) scanRecipes(ctx context.Context, rows database.ResultIterator,
 	return recipes, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipes_exists.sql
+//go:embed queries/recipes/recipes_exists.sql
 var recipeExistenceQuery string
 
 // RecipeExists fetches whether a recipe exists from the database.
@@ -122,10 +122,10 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	return result, nil
 }
 
-//go:embed queries/recipes_get_by_id.sql
+//go:embed queries/recipes/recipes_get_by_id.sql
 var getRecipeByIDQuery string
 
-//go:embed queries/recipes_get_by_id_and_author_id.sql
+//go:embed queries/recipes/recipes_get_by_id_and_author_id.sql
 var getRecipeByIDAndAuthorIDQuery string
 
 // scanRecipeAndStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
@@ -307,7 +307,7 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	return x, nil
 }
 
-//go:embed queries/recipes_ids_for_meal.sql
+//go:embed queries/recipes/recipes_ids_for_meal.sql
 var getRecipesForMealQuery string
 
 // getRecipeIDsForMeal fetches a list of recipe IDs from the database that are associated with a given meal.
@@ -369,7 +369,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	return x, nil
 }
 
-//go:embed queries/recipes_create.sql
+//go:embed queries/recipes/recipes_create.sql
 var recipeCreationQuery string
 
 // CreateRecipe creates a recipe in the database.
@@ -535,7 +535,7 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 	}
 }
 
-//go:embed queries/recipes_update.sql
+//go:embed queries/recipes/recipes_update.sql
 var updateRecipeQuery string
 
 // UpdateRecipe updates a particular recipe.
@@ -571,7 +571,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	return nil
 }
 
-//go:embed queries/recipes_archive.sql
+//go:embed queries/recipes/recipes_archive.sql
 var archiveRecipeQuery string
 
 // ArchiveRecipe archives a recipe from the database by its ID.

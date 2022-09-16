@@ -87,7 +87,7 @@ func (q *Querier) scanMealPlans(ctx context.Context, rows database.ResultIterato
 	return mealPlans, filteredCount, totalCount, nil
 }
 
-//go:embed queries/meal_plans_exists.sql
+//go:embed queries/meal_plans/meal_plans_exists.sql
 var mealPlanExistenceQuery string
 
 // MealPlanExists fetches whether a meal plan exists from the database.
@@ -121,10 +121,10 @@ func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID st
 	return result, nil
 }
 
-//go:embed queries/meal_plans_get_one.sql
+//go:embed queries/meal_plans/meal_plans_get_one.sql
 var getMealPlanQuery string
 
-//go:embed queries/meal_plans_get_one_past_voting_deadline.sql
+//go:embed queries/meal_plans/meal_plans_get_one_past_voting_deadline.sql
 var getMealPlanPastVotingDeadlineQuery string
 
 // GetMealPlan fetches a meal plan from the database.
@@ -222,7 +222,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 	return x, nil
 }
 
-//go:embed queries/meal_plans_create.sql
+//go:embed queries/meal_plans/meal_plans_create.sql
 var mealPlanCreationQuery string
 
 // CreateMealPlan creates a meal plan in the database.
@@ -285,7 +285,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 	return x, nil
 }
 
-//go:embed queries/meal_plans_update.sql
+//go:embed queries/meal_plans/meal_plans_update.sql
 var updateMealPlanQuery string
 
 // UpdateMealPlan updates a particular meal plan.
@@ -318,7 +318,7 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 	return nil
 }
 
-//go:embed queries/meal_plans_archive.sql
+//go:embed queries/meal_plans/meal_plans_archive.sql
 var archiveMealPlanQuery string
 
 // ArchiveMealPlan archives a meal plan from the database by its ID.
@@ -354,7 +354,7 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 	return nil
 }
 
-//go:embed queries/meal_plans_finalize.sql
+//go:embed queries/meal_plans/meal_plans_finalize.sql
 var finalizeMealPlanQuery string
 
 // AttemptToFinalizeMealPlan finalizes a meal plan if all of its options have a selection.
@@ -471,7 +471,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	return finalized, nil
 }
 
-//go:embed queries/meal_plans_get_expired_and_unresolved.sql
+//go:embed queries/meal_plans/meal_plans_get_expired_and_unresolved.sql
 var getExpiredAndUnresolvedMealPlansQuery string
 
 // GetUnfinalizedMealPlansWithExpiredVotingPeriods gets unfinalized meal plans with expired voting deadlines.
@@ -500,7 +500,7 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 	return mealPlans, nil
 }
 
-//go:embed queries/meal_plans_get_finalized_for_planning.sql
+//go:embed queries/meal_plans/meal_plans_get_finalized_for_planning.sql
 var getFinalizedMealPlansQuery string
 
 // GetFinalizedMealPlanIDsForTheNextWeek gets finalized meal plans for a given duration.
