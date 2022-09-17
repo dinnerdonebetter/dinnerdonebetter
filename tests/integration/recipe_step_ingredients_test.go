@@ -80,8 +80,8 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			t.Log("changing recipe step ingredient")
 			newRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 			newRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-			newRecipeStepIngredient.Ingredient = &types.ValidIngredient{ID: createdValidIngredient.ID}
 			newRecipeStepIngredient.ID = createdRecipeStepIngredientID
+			newRecipeStepIngredient.Ingredient = createdValidIngredient
 			newRecipeStepIngredient.MeasurementUnit = createdRecipeStepIngredient.MeasurementUnit
 
 			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(newRecipeStepIngredient))
@@ -147,7 +147,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 
 				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-				exampleRecipeStepIngredient.Ingredient = &types.ValidIngredient{ID: x[0].ID}
+				exampleRecipeStepIngredient.Ingredient = x[0]
 				exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 
 				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)

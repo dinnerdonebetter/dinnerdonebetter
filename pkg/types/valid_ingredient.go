@@ -64,7 +64,7 @@ type (
 	// NullableValidIngredient represents a nullable valid ingredient.
 	NullableValidIngredient struct {
 		_                                       struct{}
-		CreatedAt                               time.Time  `json:"createdAt"`
+		CreatedAt                               *time.Time `json:"createdAt"`
 		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt                              *time.Time `json:"archivedAt"`
 		ID                                      *string    `json:"id"`

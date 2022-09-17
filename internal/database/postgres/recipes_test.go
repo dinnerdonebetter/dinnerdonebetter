@@ -945,6 +945,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 			for j := range step.Ingredients {
 				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
+				exampleRecipe.Steps[i].Ingredients[j].Ingredient = &types.ValidIngredient{ID: exampleRecipe.Steps[i].Ingredients[j].Ingredient.ID}
 				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
 				exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit.ID}
 			}

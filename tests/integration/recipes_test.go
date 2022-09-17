@@ -323,7 +323,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				}
 			}
 
-			assert.NotEqual(t, -1, recipeStepProductIndex)
+			require.NotEqual(t, -1, recipeStepProductIndex)
 			require.NotNil(t, created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
 			assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
 		}
