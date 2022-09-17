@@ -85,11 +85,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dumpBytes, err := os.ReadFile("cmd/tools/db_initializer/dump.sql")
-	if err != nil {
-		log.Fatal(fmt.Errorf("error reading dump file: %w", err))
-	}
-
 	dbConfig := &dbconfig.Config{
 		ConnectionDetails: database.ConnectionDetails(dbString),
 	}
@@ -97,6 +92,11 @@ func main() {
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracing.NewNoopTracerProvider())
 	if err != nil {
 		log.Fatal(fmt.Errorf("initializing database client: %w", err))
+	}
+
+	dumpBytes, err := os.ReadFile("cmd/tools/db_initializer/dump.sql")
+	if err != nil {
+		log.Fatal(fmt.Errorf("error reading dump file: %w", err))
 	}
 
 	if _, err = dataManager.DB().ExecContext(ctx, clearAllQuery); err != nil {

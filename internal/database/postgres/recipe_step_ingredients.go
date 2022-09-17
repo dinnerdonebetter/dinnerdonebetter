@@ -62,11 +62,13 @@ func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Sc
 
 	x = &types.RecipeStepIngredient{}
 
+	ingredient := &types.NullableValidIngredient{}
+
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
 		&x.Optional,
-		&x.IngredientID,
+		&ingredient.ID,
 		&x.MeasurementUnit.ID,
 		&x.MeasurementUnit.Name,
 		&x.MeasurementUnit.Description,
@@ -97,6 +99,10 @@ func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Sc
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, span, "")
+	}
+
+	if ingredient.ID != nil {
+		x.Ingredient = &types.ValidIngredient{ID: *ingredient.ID}
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -332,7 +338,6 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		ID:                  input.ID,
 		Name:                input.Name,
 		Optional:            input.Optional,
-		IngredientID:        input.IngredientID,
 		MeasurementUnit:     types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
 		MinimumQuantity:     input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
@@ -342,6 +347,10 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		RecipeStepProductID: input.RecipeStepProductID,
 		CreatedAt:           q.currentTime(),
+	}
+
+	if input.IngredientID != nil {
+		x.Ingredient = &types.ValidIngredient{ID: *input.IngredientID}
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
@@ -370,7 +379,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 	tracing.AttachRecipeStepIngredientIDToSpan(span, updated.ID)
 
 	args := []interface{}{
-		updated.IngredientID,
+		updated.Ingredient.ID,
 		updated.Name,
 		updated.Optional,
 		updated.MeasurementUnit.ID,

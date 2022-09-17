@@ -1,0 +1,1 @@
+ALTER TABLE advanced_prep_steps ADD CONSTRAINT recipe_step_and_meal_plan_option unique(belongs_to_meal_plan_option, satisfies_recipe_step);

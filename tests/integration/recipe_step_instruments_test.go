@@ -214,7 +214,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								RecipeStepProductID: nil,
-								IngredientID:        &aluminumFoil.ID,
+								Ingredient:          aluminumFoil,
 								Name:                "aluminum foil",
 								MeasurementUnit:     *sheets,
 								MinimumQuantity:     3,
@@ -249,7 +249,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 						Preparation: *roast,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								IngredientID:        &garlic.ID,
+								Ingredient:          garlic,
 								Name:                "garlic",
 								MeasurementUnit:     *head,
 								MinimumQuantity:     1,
@@ -280,7 +280,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 				for _, ingredient := range step.Ingredients {
 					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						IngredientID:        ingredient.IngredientID,
+						IngredientID:        &ingredient.Ingredient.ID,
 						ID:                  ingredient.ID,
 						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
 						Name:                ingredient.Name,

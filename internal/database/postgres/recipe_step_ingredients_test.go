@@ -31,7 +31,7 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			x.ID,
 			x.Name,
 			x.Optional,
-			x.IngredientID,
+			x.Ingredient.ID,
 			x.MeasurementUnit.ID,
 			x.MeasurementUnit.Name,
 			x.MeasurementUnit.Description,
@@ -677,7 +677,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipeStepIngredient.IngredientID,
+			exampleRecipeStepIngredient.Ingredient.ID,
 			exampleRecipeStepIngredient.Name,
 			exampleRecipeStepIngredient.Optional,
 			exampleRecipeStepIngredient.MeasurementUnit.ID,
@@ -719,7 +719,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipeStepIngredient.IngredientID,
+			exampleRecipeStepIngredient.Ingredient.ID,
 			exampleRecipeStepIngredient.Name,
 			exampleRecipeStepIngredient.Optional,
 			exampleRecipeStepIngredient.MeasurementUnit.ID,

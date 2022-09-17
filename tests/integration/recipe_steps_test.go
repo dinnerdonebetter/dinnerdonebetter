@@ -62,7 +62,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			newRecipeStep := fakes.BuildFakeRecipeStep()
 			newRecipeStep.BelongsToRecipe = createdRecipe.ID
 			for j := range newRecipeStep.Ingredients {
-				newRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
+				newRecipeStep.Ingredients[j].Ingredient = createdValidIngredients[j]
 			}
 
 			updateInput := convertRecipeStepToRecipeStepUpdateInput(newRecipeStep)
@@ -123,7 +123,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStep := fakes.BuildFakeRecipeStep()
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
 				for j := range exampleRecipeStep.Ingredients {
-					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
+					exampleRecipeStep.Ingredients[j].Ingredient = createdValidIngredients[j]
 					exampleRecipeStep.Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
 				}
 

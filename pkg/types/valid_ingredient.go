@@ -61,6 +61,38 @@ type (
 		ContainsGluten                          bool       `json:"containsGluten"`
 	}
 
+	// NullableValidIngredient represents a nullable valid ingredient.
+	NullableValidIngredient struct {
+		_                                       struct{}
+		CreatedAt                               time.Time  `json:"createdAt"`
+		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt                              *time.Time `json:"archivedAt"`
+		ID                                      *string    `json:"id"`
+		Warning                                 *string    `json:"warning"`
+		Description                             *string    `json:"description"`
+		IconPath                                *string    `json:"iconPath"`
+		PluralName                              *string    `json:"pluralName"`
+		StorageInstructions                     *string    `json:"storageInstructions"`
+		Name                                    *string    `json:"name"`
+		MaximumIdealStorageTemperatureInCelsius *float32   `json:"maximumIdealStorageTemperatureInCelsius"`
+		MinimumIdealStorageTemperatureInCelsius *float32   `json:"minimumIdealStorageTemperatureInCelsius"`
+		ContainsShellfish                       *bool      `json:"containsShellfish"`
+		ContainsDairy                           *bool      `json:"containsDairy"`
+		AnimalFlesh                             *bool      `json:"animalFlesh"`
+		IsMeasuredVolumetrically                *bool      `json:"isMeasuredVolumetrically"`
+		IsLiquid                                *bool      `json:"isLiquid"`
+		ContainsPeanut                          *bool      `json:"containsPeanut"`
+		ContainsTreeNut                         *bool      `json:"containsTreeNut"`
+		ContainsEgg                             *bool      `json:"containsEgg"`
+		ContainsWheat                           *bool      `json:"containsWheat"`
+		ContainsSoy                             *bool      `json:"containsSoy"`
+		AnimalDerived                           *bool      `json:"animalDerived"`
+		RestrictToPreparations                  *bool      `json:"restrictToPreparations"`
+		ContainsSesame                          *bool      `json:"containsSesame"`
+		ContainsFish                            *bool      `json:"containsFish"`
+		ContainsGluten                          *bool      `json:"containsGluten"`
+	}
+
 	// ValidIngredientList represents a list of valid ingredients.
 	ValidIngredientList struct {
 		_                struct{}

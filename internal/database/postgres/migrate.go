@@ -210,6 +210,11 @@ var (
 			Description: "refactor meal plans",
 			Script:      fetchMigration("00039_meal_plans_refactor"),
 		},
+		{
+			Version:     40,
+			Description: "advanced prep step constraints",
+			Script:      fetchMigration("00040_advanced_prep_step_constraints"),
+		},
 	}
 )
 

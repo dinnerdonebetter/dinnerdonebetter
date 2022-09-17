@@ -36,7 +36,7 @@ type (
 		RecipeStepProductID *string              `json:"recipeStepProductID"`
 		LastUpdatedAt       *time.Time           `json:"lastUpdatedAt"`
 		ArchivedAt          *time.Time           `json:"archivedAt"`
-		IngredientID        *string              `json:"ingredientID"`
+		Ingredient          *ValidIngredient     `json:"ingredient"`
 		QuantityNotes       string               `json:"quantityNotes"`
 		Name                string               `json:"name"`
 		ID                  string               `json:"id"`
@@ -131,8 +131,8 @@ type (
 
 // Update merges an RecipeStepIngredientUpdateRequestInput with a recipe step ingredient.
 func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestInput) {
-	if input.IngredientID != nil && (x.IngredientID == nil || (*input.IngredientID != "" && *input.IngredientID != *x.IngredientID)) {
-		x.IngredientID = input.IngredientID
+	if input.IngredientID != nil && (x.Ingredient == nil || (*input.IngredientID != "" && *input.IngredientID != x.Ingredient.ID)) {
+		x.Ingredient.ID = *input.IngredientID
 	}
 
 	if input.RecipeStepProductID != nil && (x.RecipeStepProductID == nil || (*input.RecipeStepProductID != "" && *input.RecipeStepProductID != *x.RecipeStepProductID)) {
@@ -200,7 +200,7 @@ func (x *RecipeStepIngredientDatabaseCreationInput) ValidateWithContext(ctx cont
 // RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient creates a DatabaseCreationInput from a CreationInput.
 func RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(input *RecipeStepIngredient) *RecipeStepIngredientUpdateRequestInput {
 	x := &RecipeStepIngredientUpdateRequestInput{
-		IngredientID:        input.IngredientID,
+		IngredientID:        &input.Ingredient.ID,
 		RecipeStepProductID: input.RecipeStepProductID,
 		Name:                &input.Name,
 		MeasurementUnitID:   &input.MeasurementUnit.ID,
