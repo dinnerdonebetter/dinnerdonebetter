@@ -136,6 +136,13 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", soak.ID)
 
+			t.Log("creating prerequisite valid preparation")
+			mixBase := fakes.BuildFakeValidPreparation()
+			mixInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(mixBase)
+			mix, err := testClients.admin.CreateValidPreparation(ctx, mixInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", mix.ID)
+
 			t.Log("creating valid measurement units")
 			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
 			exampleGramsInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleGrams)
@@ -226,8 +233,8 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								MinimumQuantity: 1010,
 							},
 						},
-						Notes:       "first step",
-						Preparation: *soak,
+						Notes:       "second step",
+						Preparation: *mix,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								Name:                "soaked pinto beans",

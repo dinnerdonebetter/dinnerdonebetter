@@ -147,7 +147,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 
 				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-				exampleRecipeStepIngredient.Ingredient = x[0]
+				exampleRecipeStepIngredient.Ingredient = &types.ValidIngredient{ID: x[0].ID}
 				exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 
 				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)

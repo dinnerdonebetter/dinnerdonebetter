@@ -311,6 +311,9 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 	return recipeStepIngredient, nil
 }
 
+//go:embed queries/recipe_step_ingredients/get_for_recipe.sql
+var getRecipeStepIngredientsForRecipeQuery string
+
 // getRecipeStepIngredientsForRecipe fetches a list of recipe step ingredients from the database that meet a particular filter.
 func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -324,8 +327,11 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
-	rows, err := q.performReadQuery(ctx, q.db, "recipe step ingredients", query, args)
+	args := []interface{}{
+		recipeID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "recipe step ingredients", getRecipeStepIngredientsForRecipeQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
 	}
@@ -371,7 +377,7 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 	rows, err := q.performReadQuery(ctx, q.db, "recipeStepIngredients", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
