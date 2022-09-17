@@ -655,6 +655,27 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
+		// AdvancedPrepSteps
+		advancedPrepStepPath := "advanced_prep_steps"
+		advancedPrepStepsRoute := path.Join(
+			mealPlanPath,
+			mealPlanIDRouteParam,
+			advancedPrepStepPath,
+		)
+		advancedPrepStepsRouteWithPrefix := fmt.Sprintf("/%s", advancedPrepStepsRoute)
+		advancedPrepStepIDRouteParam := buildURLVarChunk(mealplaneventsservice.MealPlanEventIDURIParamKey, "")
+		v1Router.Route(advancedPrepStepsRouteWithPrefix, func(advancedPrepStepsRouter routing.Router) {
+			advancedPrepStepsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
+				Get(root, s.advancedPrepStepsService.ListHandler)
+
+			advancedPrepStepsRouter.Route(advancedPrepStepIDRouteParam, func(singleMealPlanEventRouter routing.Router) {
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
+					Get(root, s.advancedPrepStepsService.ReadHandler)
+			})
+		})
+
 		// MealPlanEvents
 		mealPlanEventPath := "events"
 		mealPlanEventsRoute := path.Join(

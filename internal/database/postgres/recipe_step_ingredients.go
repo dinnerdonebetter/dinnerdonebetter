@@ -133,7 +133,7 @@ func (q *Querier) scanRecipeStepIngredients(ctx context.Context, rows database.R
 	return recipeStepIngredients, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_step_ingredients/recipe_step_ingredients_exists.sql
+//go:embed queries/recipe_step_ingredients/exists.sql
 var recipeStepIngredientExistenceQuery string
 
 // RecipeStepIngredientExists fetches whether a recipe step ingredient exists from the database.
@@ -177,7 +177,7 @@ func (q *Querier) RecipeStepIngredientExists(ctx context.Context, recipeID, reci
 	return result, nil
 }
 
-//go:embed queries/recipe_step_ingredients/recipe_step_ingredients_get_one.sql
+//go:embed queries/recipe_step_ingredients/get_one.sql
 var getRecipeStepIngredientQuery string
 
 // GetRecipeStepIngredient fetches a recipe step ingredient from the database.
@@ -296,7 +296,7 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 	return x, nil
 }
 
-//go:embed queries/recipe_step_ingredients/recipe_step_ingredients_create.sql
+//go:embed queries/recipe_step_ingredients/create.sql
 var recipeStepIngredientCreationQuery string
 
 // createRecipeStepIngredient creates a recipe step ingredient in the database.
@@ -354,7 +354,7 @@ func (q *Querier) CreateRecipeStepIngredient(ctx context.Context, input *types.R
 	return q.createRecipeStepIngredient(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_ingredients/recipe_step_ingredients_update.sql
+//go:embed queries/recipe_step_ingredients/update.sql
 var updateRecipeStepIngredientQuery string
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
@@ -393,7 +393,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 	return nil
 }
 
-//go:embed queries/recipe_step_ingredients/recipe_step_ingredients_archive.sql
+//go:embed queries/recipe_step_ingredients/archive.sql
 var archiveRecipeStepIngredientQuery string
 
 // ArchiveRecipeStepIngredient archives a recipe step ingredient from the database by its ID.

@@ -100,7 +100,7 @@ func (q *Querier) scanValidMeasurementUnits(ctx context.Context, rows database.R
 	return validMeasurementUnits, filteredCount, totalCount, nil
 }
 
-//go:embed queries/valid_measurement_units/valid_measurement_units_exists.sql
+//go:embed queries/valid_measurement_units/exists.sql
 var validMeasurementUnitExistenceQuery string
 
 // ValidMeasurementUnitExists fetches whether a valid measurement unit exists from the database.
@@ -128,7 +128,7 @@ func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasureme
 	return result, nil
 }
 
-//go:embed queries/valid_measurement_units/valid_measurement_units_get_one.sql
+//go:embed queries/valid_measurement_units/get_one.sql
 var getValidMeasurementUnitQuery string
 
 // GetValidMeasurementUnit fetches a valid measurement unit from the database.
@@ -158,7 +158,7 @@ func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementU
 	return validMeasurementUnit, nil
 }
 
-//go:embed queries/valid_measurement_units/valid_measurement_units_get_random.sql
+//go:embed queries/valid_measurement_units/get_random.sql
 var getRandomValidMeasurementUnitQuery string
 
 // GetRandomValidMeasurementUnit fetches a valid measurement unit from the database.
@@ -178,7 +178,7 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 	return validMeasurementUnit, nil
 }
 
-//go:embed queries/valid_measurement_units/valid_measurement_units_search.sql
+//go:embed queries/valid_measurement_units/search.sql
 var validMeasurementUnitSearchQuery string
 
 // SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
@@ -246,7 +246,7 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 	return x, nil
 }
 
-//go:embed queries/valid_measurement_units/valid_measurement_units_create.sql
+//go:embed queries/valid_measurement_units/create.sql
 var validMeasurementUnitCreationQuery string
 
 // CreateValidMeasurementUnit creates a valid measurement unit in the database.
@@ -296,7 +296,7 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 	return x, nil
 }
 
-//go:embed queries/valid_measurement_units/valid_measurement_units_update.sql
+//go:embed queries/valid_measurement_units/update.sql
 var updateValidMeasurementUnitQuery string
 
 // UpdateValidMeasurementUnit updates a particular valid measurement unit.
@@ -332,7 +332,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 	return nil
 }
 
-//go:embed queries/valid_measurement_units/valid_measurement_units_archive.sql
+//go:embed queries/valid_measurement_units/archive.sql
 var archiveValidMeasurementUnitQuery string
 
 // ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.

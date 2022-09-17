@@ -165,7 +165,7 @@ func (q *Querier) scanValidIngredientPreparations(ctx context.Context, rows data
 	return validIngredientPreparations, filteredCount, totalCount, nil
 }
 
-//go:embed queries/valid_ingredient_preparations/valid_ingredients_preparations_exists.sql
+//go:embed queries/valid_ingredient_preparations/exists.sql
 var validIngredientPreparationExistenceQuery string
 
 // ValidIngredientPreparationExists fetches whether a valid ingredient preparation exists from the database.
@@ -193,7 +193,7 @@ func (q *Querier) ValidIngredientPreparationExists(ctx context.Context, validIng
 	return result, nil
 }
 
-//go:embed queries/valid_ingredient_preparations/valid_ingredients_preparations_get_one.sql
+//go:embed queries/valid_ingredient_preparations/get_one.sql
 var getValidIngredientPreparationQuery string
 
 // GetValidIngredientPreparation fetches a valid ingredient preparation from the database.
@@ -385,7 +385,7 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 	return x, nil
 }
 
-//go:embed queries/valid_ingredient_preparations/valid_ingredients_preparations_create.sql
+//go:embed queries/valid_ingredient_preparations/create.sql
 var validIngredientPreparationCreationQuery string
 
 // CreateValidIngredientPreparation creates a valid ingredient preparation in the database.
@@ -425,7 +425,7 @@ func (q *Querier) CreateValidIngredientPreparation(ctx context.Context, input *t
 	return x, nil
 }
 
-//go:embed queries/valid_ingredient_preparations/valid_ingredients_preparations_update.sql
+//go:embed queries/valid_ingredient_preparations/update.sql
 var updateValidIngredientPreparationQuery string
 
 // UpdateValidIngredientPreparation updates a particular valid ingredient preparation.
@@ -456,7 +456,7 @@ func (q *Querier) UpdateValidIngredientPreparation(ctx context.Context, updated 
 	return nil
 }
 
-//go:embed queries/valid_ingredient_preparations/valid_ingredients_preparations_archive.sql
+//go:embed queries/valid_ingredient_preparations/archive.sql
 var archiveValidIngredientPreparationQuery string
 
 // ArchiveValidIngredientPreparation archives a valid ingredient preparation from the database by its ID.

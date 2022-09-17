@@ -94,7 +94,7 @@ func (q *Querier) scanMealPlanEvents(ctx context.Context, rows database.ResultIt
 	return mealPlanEvents, filteredCount, totalCount, nil
 }
 
-//go:embed queries/meal_plan_events/meal_plan_events_exists.sql
+//go:embed queries/meal_plan_events/exists.sql
 var mealPlanEventExistenceQuery string
 
 // MealPlanEventExists fetches whether a mealPlanEvent exists from the database.
@@ -128,7 +128,7 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 	return result, nil
 }
 
-//go:embed queries/meal_plan_events/meal_plan_events_get_one.sql
+//go:embed queries/meal_plan_events/get_one.sql
 var getMealPlanEventByIDQuery string
 
 // GetMealPlanEvent fetches a mealPlanEvent from the database.
@@ -164,7 +164,7 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEven
 	return m, nil
 }
 
-//go:embed queries/meal_plan_events/meal_plan_events_get_for_meal_plan.sql
+//go:embed queries/meal_plan_events/get_for_meal_plan.sql
 var getMealPlanEventsForMealPlanQuery string
 
 // getMealPlanEventsForMealPlan fetches a list of mealPlanEvents from the database that meet a particular filter.
@@ -235,7 +235,7 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 	return x, nil
 }
 
-//go:embed queries/meal_plan_events/meal_plan_events_create.sql
+//go:embed queries/meal_plan_events/create.sql
 var mealPlanEventCreationQuery string
 
 // createMealPlanEvent creates a mealPlanEvent in the database.
@@ -317,7 +317,7 @@ func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlan
 	return x, nil
 }
 
-//go:embed queries/meal_plan_events/meal_plan_events_update.sql
+//go:embed queries/meal_plan_events/update.sql
 var updateMealPlanEventQuery string
 
 // UpdateMealPlanEvent updates a particular meal plan event.
@@ -350,7 +350,7 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 	return nil
 }
 
-//go:embed queries/meal_plan_events/meal_plan_events_archive.sql
+//go:embed queries/meal_plan_events/archive.sql
 var archiveMealPlanEventQuery string
 
 // ArchiveMealPlanEvent archives a mealPlanEvent from the database by its ID.

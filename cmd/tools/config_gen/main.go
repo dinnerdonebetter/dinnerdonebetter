@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	"log"
 	"os"
@@ -418,6 +419,9 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			AdvancedPrepSteps: advancedprepsteps.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -574,6 +578,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			AdvancedPrepSteps: advancedprepsteps.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

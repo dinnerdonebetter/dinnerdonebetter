@@ -50,7 +50,7 @@ func (q *Querier) scanPasswordResetToken(ctx context.Context, scan database.Scan
 	return x, filteredCount, totalCount, nil
 }
 
-//go:embed queries/password_reset_tokens/password_reset_tokens_get_one.sql
+//go:embed queries/password_reset_tokens/get_one.sql
 var getPasswordResetTokenQuery string
 
 // GetPasswordResetTokenByToken fetches a password reset token from the database by its token.
@@ -77,7 +77,7 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	return passwordResetToken, nil
 }
 
-//go:embed queries/password_reset_tokens/password_reset_tokens_create.sql
+//go:embed queries/password_reset_tokens/create.sql
 var passwordResetTokenCreationQuery string
 
 // CreatePasswordResetToken creates a password reset token in the database.
@@ -116,7 +116,7 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 	return x, nil
 }
 
-//go:embed queries/password_reset_tokens/password_reset_tokens_redeem.sql
+//go:embed queries/password_reset_tokens/redeem.sql
 var redeemPasswordResetTokenQuery string
 
 // RedeemPasswordResetToken redeems a password reset token from the database by its ID.

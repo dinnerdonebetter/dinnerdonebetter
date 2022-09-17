@@ -53,6 +53,7 @@ type (
 		validPreparationInstrumentsService     types.ValidPreparationInstrumentDataService
 		validIngredientMeasurementUnitsService types.ValidIngredientMeasurementUnitDataService
 		mealPlanEventsService                  types.MealPlanEventDataService
+		advancedPrepStepsService               types.AdvancedPrepStepDataService
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
 		router                                 routing.Router
@@ -89,6 +90,7 @@ func ProvideHTTPServer(
 	validPreparationInstrumentsService types.ValidPreparationInstrumentDataService,
 	validIngredientMeasurementUnitsService types.ValidIngredientMeasurementUnitDataService,
 	mealPlanEventsService types.MealPlanEventDataService,
+	advancedPrepStepsService types.AdvancedPrepStepDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
 	logger logging.Logger,
@@ -132,6 +134,7 @@ func ProvideHTTPServer(
 		validPreparationInstrumentsService:     validPreparationInstrumentsService,
 		validIngredientMeasurementUnitsService: validIngredientMeasurementUnitsService,
 		mealPlanEventsService:                  mealPlanEventsService,
+		advancedPrepStepsService:               advancedPrepStepsService,
 	}
 
 	srv.setupRouter(ctx, router, metricsHandler)

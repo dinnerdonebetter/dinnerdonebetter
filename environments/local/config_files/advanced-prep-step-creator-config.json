@@ -165,6 +165,9 @@
 		"users": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"advancedPrepSteps": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"auth": {
 			"dataChanges": "data_changes",
 			"cookies": {

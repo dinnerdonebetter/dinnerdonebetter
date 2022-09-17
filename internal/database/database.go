@@ -65,6 +65,7 @@ type (
 		IsReady(ctx context.Context, maxAttempts uint8) (ready bool)
 		ProvideSessionStore() scs.Store
 
+		types.AdvancedPrepStepDataManager
 		types.AdminUserDataManager
 		types.HouseholdDataManager
 		types.HouseholdInvitationDataManager

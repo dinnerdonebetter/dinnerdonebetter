@@ -67,7 +67,6 @@ func buildTestHelper(t *testing.T) *mealsServiceHTTPRoutesTestHelper {
 	req := testutils.BuildTestRequest(t)
 
 	helper.req = req.WithContext(context.WithValue(req.Context(), types.SessionContextDataKey, sessionCtxData))
-
 	helper.res = httptest.NewRecorder()
 
 	return helper

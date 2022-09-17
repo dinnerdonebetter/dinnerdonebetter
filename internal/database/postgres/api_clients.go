@@ -88,7 +88,7 @@ func (q *Querier) scanAPIClients(ctx context.Context, rows database.ResultIterat
 	return clients, filteredCount, totalCount, nil
 }
 
-//go:embed queries/api_clients/api_clients_by_client_id.sql
+//go:embed queries/api_clients/get_by_client_id.sql
 var getAPIClientByClientIDQuery string
 
 // GetAPIClientByClientID gets an API client from the database.
@@ -118,7 +118,7 @@ func (q *Querier) GetAPIClientByClientID(ctx context.Context, clientID string) (
 	return client, nil
 }
 
-//go:embed queries/api_clients/api_clients_by_database_id.sql
+//go:embed queries/api_clients/get_by_database_id.sql
 var getAPIClientByDatabaseIDQuery string
 
 // GetAPIClientByDatabaseID gets an API client from the database.
@@ -190,7 +190,7 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 	return x, nil
 }
 
-//go:embed queries/api_clients/api_clients_create.sql
+//go:embed queries/api_clients/create.sql
 var createAPIClientQuery string
 
 // CreateAPIClient creates an API client.
@@ -235,7 +235,7 @@ func (q *Querier) CreateAPIClient(ctx context.Context, input *types.APIClientCre
 	return client, nil
 }
 
-//go:embed queries/api_clients/api_clients_archive.sql
+//go:embed queries/api_clients/archive.sql
 var archiveAPIClientQuery string
 
 // ArchiveAPIClient archives an API client.

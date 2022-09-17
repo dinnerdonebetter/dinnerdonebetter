@@ -349,3 +349,8 @@ func AttachPasswordResetTokenToSpan(span trace.Span, passwordResetToken string) 
 func AttachValidMeasurementUnitIDToSpan(span trace.Span, validMeasurementUnitID string) {
 	AttachStringToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 }
+
+// AttachAdvancedPrepStepIDToSpan attaches an advanced prep step ID to a given span.
+func AttachAdvancedPrepStepIDToSpan(span trace.Span, advancedPrepStepID string) {
+	AttachStringToSpan(span, keys.AdvancedPrepStepIDKey, advancedPrepStepID)
+}

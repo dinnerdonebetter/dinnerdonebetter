@@ -130,7 +130,7 @@ func (q *Querier) scanMealPlanOptions(ctx context.Context, rows database.ResultI
 	return mealPlanOptions, filteredCount, totalCount, nil
 }
 
-//go:embed queries/meal_plan_options/meal_plan_options_exists.sql
+//go:embed queries/meal_plan_options/exists.sql
 var mealPlanOptionExistenceQuery string
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
@@ -173,7 +173,7 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	return result, nil
 }
 
-//go:embed queries/meal_plan_options/meal_plan_options_get_one.sql
+//go:embed queries/meal_plan_options/get_one.sql
 var getMealPlanOptionQuery string
 
 // GetMealPlanOption fetches a meal plan option from the database.
@@ -221,7 +221,7 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 	return mealPlanOption, nil
 }
 
-//go:embed queries/meal_plan_options/meal_plan_options_get_for_meal_plan_event.sql
+//go:embed queries/meal_plan_options/get_for_meal_plan_event.sql
 var getMealPlanOptionsForMealPlanEventQuery string
 
 // getMealPlanOptionsForMealPlanEvent fetches a list of meal plan options from the database that meet a particular filter.
@@ -319,7 +319,7 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 	return x, nil
 }
 
-//go:embed queries/meal_plan_options/meal_plan_options_create.sql
+//go:embed queries/meal_plan_options/create.sql
 var mealPlanOptionCreationQuery string
 
 // createMealPlanOption creates a meal plan option in the database.
@@ -369,7 +369,7 @@ func (q *Querier) CreateMealPlanOption(ctx context.Context, input *types.MealPla
 	return q.createMealPlanOption(ctx, q.db, input)
 }
 
-//go:embed queries/meal_plan_options/meal_plan_options_update.sql
+//go:embed queries/meal_plan_options/update.sql
 var updateMealPlanOptionQuery string
 
 // UpdateMealPlanOption updates a particular meal plan option.
@@ -403,7 +403,7 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	return nil
 }
 
-//go:embed queries/meal_plan_options/meal_plan_options_archive.sql
+//go:embed queries/meal_plan_options/archive.sql
 var archiveMealPlanOptionQuery string
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
@@ -512,7 +512,7 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 	return "", false, false
 }
 
-//go:embed queries/meal_plan_options/meal_plan_options_finalize.sql
+//go:embed queries/meal_plan_options/finalize.sql
 var finalizeMealPlanOptionQuery string
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.

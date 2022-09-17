@@ -1,9 +1,10 @@
 version: "2"
 sql:
   - schema: "internal/database/postgres/migrations"
-    queries: "internal/database/postgres/queries"
+    queries:
+      - "internal/database/postgres/queries/password_reset_tokens"
     engine: "postgresql"
-    strict_function_checks: false
+    strict_function_checks: true
     gen:
       go:
         package: "generated"
