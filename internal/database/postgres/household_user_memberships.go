@@ -102,7 +102,7 @@ func (q *Querier) scanHouseholdUserMemberships(ctx context.Context, rows databas
 	return defaultHousehold, householdRolesMap, nil
 }
 
-//go:embed queries/household_user_memberships_get_for_user.sql
+//go:embed queries/household_user_memberships/get_for_user.sql
 var getHouseholdMembershipsForUserQuery string
 
 // BuildSessionContextDataForUser queries the database for the memberships of a user and constructs a SessionContextData struct from the results.
@@ -157,7 +157,7 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 	return sessionCtxData, nil
 }
 
-//go:embed queries/household_user_memberships_get_default_household_id_for_user.sql
+//go:embed queries/household_user_memberships/get_default_household_id_for_user.sql
 var getDefaultHouseholdIDForUserQuery string
 
 // GetDefaultHouseholdIDForUser retrieves the default household ID for a user.
@@ -179,7 +179,7 @@ func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID strin
 	return id, nil
 }
 
-//go:embed queries/household_user_memberships_mark_as_user_default.sql
+//go:embed queries/household_user_memberships/mark_as_user_default.sql
 var markHouseholdAsUserDefaultQuery string
 
 // markHouseholdAsUserDefault does a thing.
@@ -220,7 +220,7 @@ func (q *Querier) MarkHouseholdAsUserDefault(ctx context.Context, userID, househ
 	return q.markHouseholdAsUserDefault(ctx, q.db, userID, householdID)
 }
 
-//go:embed queries/household_user_memberships_user_is_member.sql
+//go:embed queries/household_user_memberships/user_is_member.sql
 var userIsMemberOfHouseholdQuery string
 
 // UserIsMemberOfHousehold does a thing.
@@ -248,7 +248,7 @@ func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, household
 	return result, nil
 }
 
-//go:embed queries/household_user_memberships_modify_user_permissions.sql
+//go:embed queries/household_user_memberships/modify_user_permissions.sql
 var modifyUserPermissionsQuery string
 
 // ModifyUserPermissions does a thing.
@@ -289,10 +289,10 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 	return nil
 }
 
-//go:embed queries/household_user_memberships_transfer_ownership.sql
+//go:embed queries/household_user_memberships/transfer_ownership.sql
 var transferHouseholdOwnershipQuery string
 
-//go:embed queries/household_user_memberships_transfer_membership.sql
+//go:embed queries/household_user_memberships/transfer_membership.sql
 var transferHouseholdMembershipQuery string
 
 // TransferHouseholdOwnership does a thing.
@@ -356,7 +356,7 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 	return nil
 }
 
-//go:embed queries/household_user_memberships_add_user_to_household.sql
+//go:embed queries/household_user_memberships/add_user_to_household.sql
 var addUserToHouseholdQuery string
 
 // addUserToHousehold does a thing.
@@ -393,7 +393,7 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 	return nil
 }
 
-//go:embed queries/household_user_memberships_remove_user_from_household.sql
+//go:embed queries/household_user_memberships/remove_user_from_household.sql
 var removeUserFromHouseholdQuery string
 
 // RemoveUserFromHousehold removes a user's membership to a household.

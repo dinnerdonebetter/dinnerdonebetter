@@ -14,6 +14,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/server"
+	"github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
@@ -98,6 +99,7 @@ type (
 		Websockets                      websocketsservice.Config                      `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
 		Webhooks                        webhooksservice.Config                        `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
 		Users                           usersservice.Config                           `json:"users" mapstructure:"users" toml:"users,omitempty"`
+		AdvancedPrepSteps               advancedprepsteps.Config                      `json:"advancedPrepSteps" mapstructure:"advanced_prep_steps" toml:"advanced_prep_steps,omitempty"`
 		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )

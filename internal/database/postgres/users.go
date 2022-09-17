@@ -135,10 +135,10 @@ func (q *Querier) scanUsers(ctx context.Context, rows database.ResultIterator, i
 	return users, filteredCount, totalCount, nil
 }
 
-//go:embed queries/users_get_by_id.sql
+//go:embed queries/users/get_by_id.sql
 var getUserByIDQuery string
 
-//go:embed queries/users_get_with_verified_two_factor.sql
+//go:embed queries/users/get_with_verified_two_factor.sql
 var getUserWithVerified2FAQuery string
 
 // getUser fetches a user.
@@ -171,7 +171,7 @@ func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSe
 	return u, nil
 }
 
-//go:embed queries/users_exists_with_status.sql
+//go:embed queries/users/exists_with_status.sql
 var userHasStatusQuery string
 
 // UserHasStatus fetches whether a user has a particular status.
@@ -230,7 +230,7 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 	return q.getUser(ctx, userID, false)
 }
 
-//go:embed queries/users_get_by_username.sql
+//go:embed queries/users/get_by_username.sql
 var getUserByUsernameQuery string
 
 // GetUserByUsername fetches a user by their username.
@@ -260,7 +260,7 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 	return u, nil
 }
 
-//go:embed queries/users_get_admin_by_username.sql
+//go:embed queries/users/get_admin_by_username.sql
 var getAdminUserByUsernameQuery string
 
 // GetAdminUserByUsername fetches a user by their username.
@@ -290,7 +290,7 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 	return u, nil
 }
 
-//go:embed queries/users_get_by_email.sql
+//go:embed queries/users/get_by_email.sql
 var getUserByEmailQuery string
 
 // GetUserByEmail fetches a user by their email.
@@ -319,7 +319,7 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 	return u, nil
 }
 
-//go:embed queries/users_search_by_username.sql
+//go:embed queries/users/search_by_username.sql
 var searchForUserByUsernameQuery string
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
@@ -387,10 +387,10 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	return x, nil
 }
 
-//go:embed queries/users_create.sql
+//go:embed queries/users/create.sql
 var userCreationQuery string
 
-//go:embed queries/users_create_household_memberships_for_new_user.sql
+//go:embed queries/users/create_household_memberships_for_new_user.sql
 var createHouseholdMembershipForNewUserQuery string
 
 // CreateUser creates a user.
@@ -532,7 +532,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	return nil
 }
 
-//go:embed queries/users_update.sql
+//go:embed queries/users/update.sql
 var updateUserQuery string
 
 // UpdateUser receives a complete Requester struct and updates its record in the database.
@@ -569,7 +569,7 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 }
 
 /* #nosec G101 */
-//go:embed queries/users_update_password.sql
+//go:embed queries/users/update_password.sql
 var updateUserPasswordQuery string
 
 // UpdateUserPassword updates a user's passwords hash in the database.
@@ -604,7 +604,7 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 }
 
 /* #nosec G101 */
-//go:embed queries/users_update_two_factor_secret.sql
+//go:embed queries/users/update_two_factor_secret.sql
 var updateUserTwoFactorSecretQuery string
 
 // UpdateUserTwoFactorSecret marks a user's two factor secret as validated.
@@ -638,7 +638,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 }
 
 /* #nosec G101 */
-//go:embed queries/users_mark_two_factor_secret_as_verified.sql
+//go:embed queries/users/mark_two_factor_secret_as_verified.sql
 var markUserTwoFactorSecretAsVerified string
 
 // MarkUserTwoFactorSecretAsVerified marks a user's two factor secret as validated.
@@ -667,10 +667,10 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	return nil
 }
 
-//go:embed queries/users_archive.sql
+//go:embed queries/users/archive.sql
 var archiveUserQuery string
 
-//go:embed queries/users_archive_memberships.sql
+//go:embed queries/users/archive_memberships.sql
 var archiveMembershipsQuery string
 
 // ArchiveUser archives a user.

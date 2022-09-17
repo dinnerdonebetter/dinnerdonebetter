@@ -135,7 +135,7 @@ func (q *Querier) scanRecipeStepProducts(ctx context.Context, rows database.Resu
 	return recipeStepProducts, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_step_products_exists.sql
+//go:embed queries/recipe_step_products/exists.sql
 var recipeStepProductExistenceQuery string
 
 // RecipeStepProductExists fetches whether a recipe step product exists from the database.
@@ -179,7 +179,7 @@ func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeS
 	return result, nil
 }
 
-//go:embed queries/recipe_step_products_get_one.sql
+//go:embed queries/recipe_step_products/get_one.sql
 var getRecipeStepProductQuery string
 
 // GetRecipeStepProduct fetches a recipe step product from the database.
@@ -225,7 +225,7 @@ func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStep
 	return recipeStepProduct, nil
 }
 
-//go:embed queries/recipe_step_products_get_for_recipe.sql
+//go:embed queries/recipe_step_products/get_for_recipe.sql
 var getRecipeStepProductsForRecipeQuery string
 
 // getRecipeStepProductsForRecipe fetches a list of recipe step products from the database that meet a particular filter.
@@ -306,7 +306,7 @@ func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeSte
 	return x, nil
 }
 
-//go:embed queries/recipe_step_products_create.sql
+//go:embed queries/recipe_step_products/create.sql
 var recipeStepProductCreationQuery string
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
@@ -366,7 +366,7 @@ func (q *Querier) CreateRecipeStepProduct(ctx context.Context, input *types.Reci
 	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_products_update.sql
+//go:embed queries/recipe_step_products/update.sql
 var updateRecipeStepProductQuery string
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
@@ -406,7 +406,7 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 	return nil
 }
 
-//go:embed queries/recipe_step_products_archive.sql
+//go:embed queries/recipe_step_products/archive.sql
 var archiveRecipeStepProductQuery string
 
 // ArchiveRecipeStepProduct archives a recipe step product from the database by its ID.

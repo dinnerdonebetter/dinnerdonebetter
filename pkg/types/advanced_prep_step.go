@@ -30,9 +30,9 @@ type (
 	// AdvancedPrepStep represents a valid preparation.
 	AdvancedPrepStep struct {
 		_                    struct{}
-		CreatedAt            time.Time      `json:"createdAt"`
 		CannotCompleteBefore time.Time      `json:"cannotCompleteBefore"`
 		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
+		CreatedAt            time.Time      `json:"createdAt"`
 		CompletedAt          *uint64        `json:"completedAt"`
 		ID                   string         `json:"id"`
 		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
@@ -60,7 +60,6 @@ type (
 
 	// AdvancedPrepStepDataManager describes a structure capable of storing valid preparations permanently.
 	AdvancedPrepStepDataManager interface {
-		AdvancedPrepStepExists(ctx context.Context, advancedPrepStepID string) (bool, error)
 		GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID string) (*AdvancedPrepStep, error)
 		GetAdvancedPrepSteps(ctx context.Context, filter *QueryFilter) (*AdvancedPrepStepList, error)
 		CreateAdvancedPrepStep(ctx context.Context, input *AdvancedPrepStepDatabaseCreationInput) (*AdvancedPrepStep, error)

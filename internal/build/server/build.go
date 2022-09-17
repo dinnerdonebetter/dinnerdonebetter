@@ -22,6 +22,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	"github.com/prixfixeco/api_server/internal/server"
 	adminservice "github.com/prixfixeco/api_server/internal/services/admin"
+	advancedprepstepsservice "github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationssservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -98,6 +99,7 @@ func Build(
 		validmeasurementunits.Providers,
 		validpreparationinstrumentsservice.Providers,
 		validingredientmeasurementunitsservice.Providers,
+		advancedprepstepsservice.Providers,
 	)
 
 	return nil, nil

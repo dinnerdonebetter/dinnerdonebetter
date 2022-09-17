@@ -12,7 +12,7 @@ import (
 
 var _ types.AdminUserDataManager = (*Querier)(nil)
 
-//go:embed queries/admin_set_user_account_status.sql
+//go:embed queries/admin/set_user_account_status.sql
 var setUserAccountStatusQuery string
 
 // UpdateUserAccountStatus updates a user's household status.

@@ -11,7 +11,20 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-var _ types.AdminUserDataManager = (*Querier)(nil)
+var (
+	_ types.AdvancedPrepStepDataManager = (*Querier)(nil)
+
+	// advancedPrepStepsTableColumns are the columns for the valid_instruments table.
+	advancedPrepStepsTableColumns = []string{
+		"advanced_prep_steps.id",
+		"advanced_prep_steps.belongs_to_meal_plan_option",
+		"advanced_prep_steps.satisfies_recipe_step",
+		"advanced_prep_steps.cannot_complete_before",
+		"advanced_prep_steps.cannot_complete_after",
+		"advanced_prep_steps.created_at",
+		"advanced_prep_steps.completed_at",
+	}
+)
 
 // scanAdvancedPrepStep takes a database Scanner (i.e. *sql.Row) and scans the result into a valid instrument struct.
 func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
@@ -106,7 +119,80 @@ func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.Resul
 	return validInstruments, filteredCount, totalCount, nil
 }
 
-//go:embed queries/advanced_prep_step_list_all_by_meal_plan_option.sql
+//go:embed queries/advanced_prep_steps/get_one.sql
+var getAdvancedPrepStepsQuery string
+
+// GetAdvancedPrepStep fetches an advanced prep step.
+func (q *Querier) GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID string) (x *types.AdvancedPrepStep, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	x = &types.AdvancedPrepStep{}
+
+	if advancedPrepStepID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.AdvancedPrepStepIDKey, advancedPrepStepID)
+	tracing.AttachAdvancedPrepStepIDToSpan(span, advancedPrepStepID)
+
+	args := []interface{}{
+		advancedPrepStepID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "advanced prep step", getAdvancedPrepStepsQuery, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing advanced prep step retrieval query")
+	}
+
+	if x, _, _, err = q.scanAdvancedPrepStep(ctx, rows, true); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep step")
+	}
+
+	logger.Info("advanced steps retrieved")
+
+	return x, nil
+}
+
+// GetAdvancedPrepSteps fetches a list of advanced prep steps.
+func (q *Querier) GetAdvancedPrepSteps(ctx context.Context, filter *types.QueryFilter) (x *types.AdvancedPrepStepList, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	x = &types.AdvancedPrepStepList{}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if filter != nil {
+		if filter.Page != nil {
+			x.Page = *filter.Page
+		}
+
+		if filter.Limit != nil {
+			x.Limit = *filter.Limit
+		}
+	} else {
+		filter = types.DefaultQueryFilter()
+	}
+
+	query, args := q.buildListQuery(ctx, "advanced_prep_steps", nil, nil, nil, "", advancedPrepStepsTableColumns, "", false, filter, true)
+
+	rows, err := q.performReadQuery(ctx, q.db, "advanced prep steps", query, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing advanced prep steps list retrieval query")
+	}
+
+	if x.AdvancedPrepSteps, x.FilteredCount, x.TotalCount, err = q.scanAdvancedPrepSteps(ctx, rows, true); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep steps")
+	}
+
+	return x, nil
+}
+
+//go:embed queries/advanced_prep_steps/list_all_by_meal_plan_option.sql
 var listAdvancedPrepStepsQuery string
 
 // GetAdvancedPrepStepsForMealPlanOptionID lists advanced prep steps for a given meal plan option.
@@ -142,11 +228,11 @@ func (q *Querier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context, m
 	return x, nil
 }
 
-//go:embed queries/advanced_prep_step_create.sql
+//go:embed queries/advanced_prep_steps/create.sql
 var createAdvancedPrepStepQuery string
 
 // CreateAdvancedPrepStep creates advanced prep steps.
-func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.AdvancedPrepStepDatabaseCreationInput) error {
+func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.AdvancedPrepStepDatabaseCreationInput) (*types.AdvancedPrepStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -161,10 +247,49 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "create advanced prep step", createAdvancedPrepStepQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "create advanced prep step")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create advanced prep step")
+	}
+
+	x := &types.AdvancedPrepStep{
+		ID:                   input.ID,
+		CannotCompleteBefore: input.CannotCompleteBefore,
+		CannotCompleteAfter:  input.CannotCompleteAfter,
+		MealPlanOption:       types.MealPlanOption{ID: input.MealPlanOptionID},
+		RecipeStep:           types.RecipeStep{ID: input.RecipeStepID},
+		CreatedAt:            input.CreatedAt,
+		CompletedAt:          input.CompletedAt,
 	}
 
 	logger.Info("advanced step created")
+
+	return x, nil
+}
+
+//go:embed queries/advanced_prep_steps/complete.sql
+var completeAdvancedPrepStepQuery string
+
+// MarkAdvancedPrepStepAsComplete marks an advanced prep step as complete.
+func (q *Querier) MarkAdvancedPrepStepAsComplete(ctx context.Context, advancedPrepStepID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if advancedPrepStepID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachAdvancedPrepStepIDToSpan(span, advancedPrepStepID)
+	logger = logger.WithValue(keys.AdvancedPrepStepIDKey, advancedPrepStepID)
+
+	args := []interface{}{
+		advancedPrepStepID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "prep step complete", completeAdvancedPrepStepQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking prep step as complete")
+	}
+
+	logger.Info("prep step marked as complete")
 
 	return nil
 }

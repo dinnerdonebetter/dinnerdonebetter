@@ -174,7 +174,7 @@ func (q *Querier) scanHouseholdInvitations(ctx context.Context, rows database.Re
 	return householdInvitations, filteredCount, totalCount, nil
 }
 
-//go:embed queries/household_invitations_exists.sql
+//go:embed queries/household_invitations/exists.sql
 var householdInvitationExistenceQuery string
 
 // HouseholdInvitationExists fetches whether a household invitation exists from the database.
@@ -202,7 +202,7 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 	return result, nil
 }
 
-//go:embed queries/household_invitations_by_household_and_id.sql
+//go:embed queries/household_invitations/get_by_household_and_id.sql
 var getHouseholdInvitationByHouseholdAndIDQuery string
 
 // GetHouseholdInvitationByHouseholdAndID fetches an invitation from the database.
@@ -240,7 +240,7 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 }
 
 /* #nosec G101 */
-//go:embed queries/household_invitations_by_token_and_id.sql
+//go:embed queries/household_invitations/get_by_token_and_id.sql
 var getHouseholdInvitationByTokenAndIDQuery string
 
 // GetHouseholdInvitationByTokenAndID fetches an invitation from the database.
@@ -278,7 +278,7 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 }
 
 /* #nosec G101 */
-//go:embed queries/household_invitations_by_email_and_token.sql
+//go:embed queries/household_invitations/get_by_email_and_token.sql
 var getHouseholdInvitationByEmailAndTokenQuery string
 
 // GetHouseholdInvitationByEmailAndToken fetches an invitation from the database.
@@ -315,7 +315,7 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 	return invitation, nil
 }
 
-//go:embed queries/household_invitations_create.sql
+//go:embed queries/household_invitations/create.sql
 var createHouseholdInvitationQuery string
 
 // CreateHouseholdInvitation creates an invitation in a database.
@@ -518,7 +518,7 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 	return returnList, nil
 }
 
-//go:embed queries/household_invitations_set_status.sql
+//go:embed queries/household_invitations/set_status.sql
 var setInvitationStatusQuery string
 
 func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note string, status types.HouseholdInvitationStatus) error {
@@ -609,7 +609,7 @@ func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvita
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
 }
 
-//go:embed queries/household_invitations_attach_invitations_to_user_id.sql
+//go:embed queries/household_invitations/attach_invitations_to_user_id.sql
 var attachInvitationsToUserIDQuery string
 
 func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
