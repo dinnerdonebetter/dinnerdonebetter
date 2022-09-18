@@ -21,7 +21,7 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 	assert.Equal(t, expected.MaximumEstimatedTimeInSeconds, actual.MaximumEstimatedTimeInSeconds, "expected MaximumEstimatedTimeInSeconds for recipe step %s to be %v, but it was %v", expected.ID, expected.MaximumEstimatedTimeInSeconds, actual.MaximumEstimatedTimeInSeconds)
 	assert.Equal(t, expected.MinimumTemperatureInCelsius, actual.MinimumTemperatureInCelsius, "expected MinimumTemperatureInCelsius for recipe step %s to be %v, but it was %v", expected.ID, expected.MinimumTemperatureInCelsius, actual.MinimumTemperatureInCelsius)
 	assert.Equal(t, expected.MaximumTemperatureInCelsius, actual.MaximumTemperatureInCelsius, "expected MaximumTemperatureInCelsius for recipe step %s to be %v, but it was %v", expected.ID, expected.MaximumTemperatureInCelsius, actual.MaximumTemperatureInCelsius)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for recipe step %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected ExplicitInstructions for recipe step %s to be %v, but it was %v", expected.ID, expected.ExplicitInstructions, actual.ExplicitInstructions)
 	assert.NotZero(t, actual.CreatedAt)
 }
@@ -62,7 +62,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			newRecipeStep := fakes.BuildFakeRecipeStep()
 			newRecipeStep.BelongsToRecipe = createdRecipe.ID
 			for j := range newRecipeStep.Ingredients {
-				newRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
+				newRecipeStep.Ingredients[j].Ingredient = createdValidIngredients[j]
 			}
 
 			updateInput := convertRecipeStepToRecipeStepUpdateInput(newRecipeStep)
@@ -123,7 +123,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStep := fakes.BuildFakeRecipeStep()
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
 				for j := range exampleRecipeStep.Ingredients {
-					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
+					exampleRecipeStep.Ingredients[j].Ingredient = createdValidIngredients[j]
 					exampleRecipeStep.Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
 				}
 

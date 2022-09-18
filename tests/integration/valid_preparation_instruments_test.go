@@ -15,7 +15,7 @@ func checkValidPreparationInstrumentEquality(t *testing.T, expected, actual *typ
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.Preparation.ID, actual.Preparation.ID, "expected Preparation for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Preparation.ID, actual.Preparation.ID)
 	assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Instrument for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
 	assert.NotZero(t, actual.CreatedAt)

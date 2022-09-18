@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	recipeStepsOnRecipeStepIngredientsJoinClause = "recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id"
+	recipeStepsOnRecipeStepIngredientsJoinClause      = "recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id"
+	validIngredientsOnRecipeStepIngredientsJoinClause = "valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id"
 )
 
 var (
@@ -23,7 +24,33 @@ var (
 		"recipe_step_ingredients.id",
 		"recipe_step_ingredients.name",
 		"recipe_step_ingredients.optional",
-		"recipe_step_ingredients.ingredient_id",
+		"valid_ingredients.id",
+		"valid_ingredients.name",
+		"valid_ingredients.description",
+		"valid_ingredients.warning",
+		"valid_ingredients.contains_egg",
+		"valid_ingredients.contains_dairy",
+		"valid_ingredients.contains_peanut",
+		"valid_ingredients.contains_tree_nut",
+		"valid_ingredients.contains_soy",
+		"valid_ingredients.contains_wheat",
+		"valid_ingredients.contains_shellfish",
+		"valid_ingredients.contains_sesame",
+		"valid_ingredients.contains_fish",
+		"valid_ingredients.contains_gluten",
+		"valid_ingredients.animal_flesh",
+		"valid_ingredients.volumetric",
+		"valid_ingredients.is_liquid",
+		"valid_ingredients.icon_path",
+		"valid_ingredients.animal_derived",
+		"valid_ingredients.plural_name",
+		"valid_ingredients.restrict_to_preparations",
+		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
+		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
+		"valid_ingredients.storage_instructions",
+		"valid_ingredients.created_at",
+		"valid_ingredients.last_updated_at",
+		"valid_ingredients.archived_at",
 		"valid_measurement_units.id",
 		"valid_measurement_units.name",
 		"valid_measurement_units.description",
@@ -51,6 +78,7 @@ var (
 	getRecipeStepIngredientsJoins = []string{
 		recipeStepsOnRecipeStepIngredientsJoinClause,
 		recipesOnRecipeStepsJoinClause,
+		validIngredientsOnRecipeStepIngredientsJoinClause,
 		validMeasurementUnitsOnRecipeStepIngredientsJoinClause,
 	}
 )
@@ -62,11 +90,39 @@ func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Sc
 
 	x = &types.RecipeStepIngredient{}
 
+	ingredient := &types.NullableValidIngredient{}
+
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
 		&x.Optional,
-		&x.IngredientID,
+		&ingredient.ID,
+		&ingredient.Name,
+		&ingredient.Description,
+		&ingredient.Warning,
+		&ingredient.ContainsEgg,
+		&ingredient.ContainsDairy,
+		&ingredient.ContainsPeanut,
+		&ingredient.ContainsTreeNut,
+		&ingredient.ContainsSoy,
+		&ingredient.ContainsWheat,
+		&ingredient.ContainsShellfish,
+		&ingredient.ContainsSesame,
+		&ingredient.ContainsFish,
+		&ingredient.ContainsGluten,
+		&ingredient.AnimalFlesh,
+		&ingredient.IsMeasuredVolumetrically,
+		&ingredient.IsLiquid,
+		&ingredient.IconPath,
+		&ingredient.AnimalDerived,
+		&ingredient.PluralName,
+		&ingredient.RestrictToPreparations,
+		&ingredient.MinimumIdealStorageTemperatureInCelsius,
+		&ingredient.MaximumIdealStorageTemperatureInCelsius,
+		&ingredient.StorageInstructions,
+		&ingredient.CreatedAt,
+		&ingredient.LastUpdatedAt,
+		&ingredient.ArchivedAt,
 		&x.MeasurementUnit.ID,
 		&x.MeasurementUnit.Name,
 		&x.MeasurementUnit.Description,
@@ -97,6 +153,38 @@ func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Sc
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, span, "")
+	}
+
+	if ingredient.ID != nil {
+		x.Ingredient = &types.ValidIngredient{
+			CreatedAt:                               *ingredient.CreatedAt,
+			LastUpdatedAt:                           ingredient.LastUpdatedAt,
+			ArchivedAt:                              ingredient.ArchivedAt,
+			ID:                                      *ingredient.ID,
+			Warning:                                 *ingredient.Warning,
+			Description:                             *ingredient.Description,
+			IconPath:                                *ingredient.IconPath,
+			PluralName:                              *ingredient.PluralName,
+			StorageInstructions:                     *ingredient.StorageInstructions,
+			Name:                                    *ingredient.Name,
+			MaximumIdealStorageTemperatureInCelsius: ingredient.MaximumIdealStorageTemperatureInCelsius,
+			MinimumIdealStorageTemperatureInCelsius: ingredient.MinimumIdealStorageTemperatureInCelsius,
+			ContainsShellfish:                       *ingredient.ContainsShellfish,
+			ContainsDairy:                           *ingredient.ContainsDairy,
+			AnimalFlesh:                             *ingredient.AnimalFlesh,
+			IsMeasuredVolumetrically:                *ingredient.IsMeasuredVolumetrically,
+			IsLiquid:                                *ingredient.IsLiquid,
+			ContainsPeanut:                          *ingredient.ContainsPeanut,
+			ContainsTreeNut:                         *ingredient.ContainsTreeNut,
+			ContainsEgg:                             *ingredient.ContainsEgg,
+			ContainsWheat:                           *ingredient.ContainsWheat,
+			ContainsSoy:                             *ingredient.ContainsSoy,
+			AnimalDerived:                           *ingredient.AnimalDerived,
+			RestrictToPreparations:                  *ingredient.RestrictToPreparations,
+			ContainsSesame:                          *ingredient.ContainsSesame,
+			ContainsFish:                            *ingredient.ContainsFish,
+			ContainsGluten:                          *ingredient.ContainsGluten,
+		}
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -223,6 +311,9 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 	return recipeStepIngredient, nil
 }
 
+//go:embed queries/recipe_step_ingredients/get_for_recipe.sql
+var getRecipeStepIngredientsForRecipeQuery string
+
 // getRecipeStepIngredientsForRecipe fetches a list of recipe step ingredients from the database that meet a particular filter.
 func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -236,8 +327,11 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
-	rows, err := q.performReadQuery(ctx, q.db, "recipe step ingredients", query, args)
+	args := []interface{}{
+		recipeID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "recipe step ingredients", getRecipeStepIngredientsForRecipeQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
 	}
@@ -283,7 +377,7 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 	rows, err := q.performReadQuery(ctx, q.db, "recipeStepIngredients", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
@@ -332,7 +426,6 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		ID:                  input.ID,
 		Name:                input.Name,
 		Optional:            input.Optional,
-		IngredientID:        input.IngredientID,
 		MeasurementUnit:     types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
 		MinimumQuantity:     input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
@@ -342,6 +435,10 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		RecipeStepProductID: input.RecipeStepProductID,
 		CreatedAt:           q.currentTime(),
+	}
+
+	if input.IngredientID != nil {
+		x.Ingredient = &types.ValidIngredient{ID: *input.IngredientID}
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
@@ -370,7 +467,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 	tracing.AttachRecipeStepIngredientIDToSpan(span, updated.ID)
 
 	args := []interface{}{
-		updated.IngredientID,
+		updated.Ingredient.ID,
 		updated.Name,
 		updated.Optional,
 		updated.MeasurementUnit.ID,

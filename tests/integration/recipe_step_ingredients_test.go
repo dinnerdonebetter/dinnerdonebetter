@@ -15,7 +15,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, *expected.IngredientID, *actual.IngredientID, "expected IngredientID for recipe step ingredient %s to be %v, but it was %v", expected.ID, *expected.IngredientID, *actual.IngredientID)
+	assert.Equal(t, expected.Ingredient, actual.Ingredient, "expected Ingredient for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Ingredient, actual.Ingredient)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.MeasurementUnit, actual.MeasurementUnit, "expected MeasurementUnitID for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit, actual.MeasurementUnit)
 	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
@@ -30,7 +30,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 // convertRecipeStepIngredientToRecipeStepIngredientUpdateInput creates an RecipeStepIngredientUpdateRequestInput struct from a recipe step ingredient.
 func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
 	return &types.RecipeStepIngredientUpdateRequestInput{
-		IngredientID:        x.IngredientID,
+		IngredientID:        &x.Ingredient.ID,
 		Name:                &x.Name,
 		Optional:            &x.Optional,
 		MeasurementUnitID:   &x.MeasurementUnit.ID,
@@ -80,8 +80,8 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			t.Log("changing recipe step ingredient")
 			newRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 			newRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-			newRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
 			newRecipeStepIngredient.ID = createdRecipeStepIngredientID
+			newRecipeStepIngredient.Ingredient = createdValidIngredient
 			newRecipeStepIngredient.MeasurementUnit = createdRecipeStepIngredient.MeasurementUnit
 
 			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(newRecipeStepIngredient))
@@ -147,7 +147,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 
 				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-				exampleRecipeStepIngredient.IngredientID = &x[0].ID
+				exampleRecipeStepIngredient.Ingredient = &types.ValidIngredient{ID: x[0].ID}
 				exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 
 				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)

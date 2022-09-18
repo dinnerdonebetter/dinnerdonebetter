@@ -226,27 +226,27 @@ func ProbeMealPlanning(ctx context.Context, m PubSubMessage) error {
 
 		now := time.Now()
 		exampleMealPlan := &types.MealPlan{
-			Notes:          "prober testing",
-			Status:         types.AwaitingVotesMealPlanStatus,
+			StatusExplanation:          "prober testing",
+			CreationExplanation:         types.AwaitingVotesMealPlanStatus,
 			StartsAt:       now.Add(24 * time.Hour),
 			EndsAt:         now.Add(72 * time.Hour),
 			VotingDeadline: now.Add(votingDeadline),
 			Options: []*types.MealPlanOption{
 				{
 					Meal:     types.Meal{ID: createdMeals[0].ID},
-					Notes:    "option A",
+					StatusExplanation:    "option A",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,
 				},
 				{
 					Meal:     types.Meal{ID: createdMeals[1].ID},
-					Notes:    "option B",
+					StatusExplanation:    "option B",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,
 				},
 				{
 					Meal:     types.Meal{ID: createdMeals[2].ID},
-					Notes:    "option C",
+					StatusExplanation:    "option C",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,
 				},
@@ -320,8 +320,8 @@ func ProbeMealPlanning(ctx context.Context, m PubSubMessage) error {
 			return fmt.Errorf("fetching voted upon meal plan: %w", err)
 		}
 
-		if types.AwaitingVotesMealPlanStatus != createdMealPlan.Status {
-			return fmt.Errorf("unexpected meal plan status: %s", createdMealPlan.Status)
+		if types.AwaitingVotesMealPlanStatus != createdMealPlan.CreationExplanation {
+			return fmt.Errorf("unexpected meal plan status: %s", createdMealPlan.CreationExplanation)
 		}
 
 		logger.Debug("waiting for worker to finalize meal plan")
@@ -333,8 +333,8 @@ func ProbeMealPlanning(ctx context.Context, m PubSubMessage) error {
 			return fmt.Errorf("fetching maybe finalized meal plan: %w", err)
 		}
 
-		if types.FinalizedMealPlanStatus != createdMealPlan.Status {
-			return fmt.Errorf("unexpected final meal status: %s", createdMealPlan.Status)
+		if types.FinalizedMealPlanStatus != createdMealPlan.CreationExplanation {
+			return fmt.Errorf("unexpected final meal status: %s", createdMealPlan.CreationExplanation)
 		}
 
 		for _, day := range allDays {

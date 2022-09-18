@@ -88,7 +88,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
-			exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+			exampleRecipe.Steps[i].Ingredients[j].Ingredient = createdValidIngredient
 			exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
 			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
 		}
@@ -135,6 +135,13 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			soak, err := testClients.admin.CreateValidPreparation(ctx, soakInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", soak.ID)
+
+			t.Log("creating prerequisite valid preparation")
+			mixBase := fakes.BuildFakeValidPreparation()
+			mixInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(mixBase)
+			mix, err := testClients.admin.CreateValidPreparation(ctx, mixInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", mix.ID)
 
 			t.Log("creating valid measurement units")
 			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
@@ -198,7 +205,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								RecipeStepProductID: nil,
-								IngredientID:        &pintoBeans.ID,
+								Ingredient:          pintoBeans,
 								Name:                "pinto beans",
 								MeasurementUnit:     *grams,
 								MinimumQuantity:     500,
@@ -206,7 +213,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							},
 							{
 								RecipeStepProductID: nil,
-								IngredientID:        &water.ID,
+								Ingredient:          water,
 								Name:                "water",
 								MeasurementUnit:     *cups,
 								MinimumQuantity:     5,
@@ -226,8 +233,8 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								MinimumQuantity: 1010,
 							},
 						},
-						Notes:       "first step",
-						Preparation: *soak,
+						Notes:       "second step",
+						Preparation: *mix,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								Name:                "soaked pinto beans",
@@ -236,7 +243,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								ProductOfRecipeStep: true,
 							},
 							{
-								IngredientID:        &garlicPaste.ID,
+								Ingredient:          garlicPaste,
 								Name:                "garlic paste",
 								MeasurementUnit:     *grams,
 								MinimumQuantity:     10,
@@ -267,7 +274,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 				for _, ingredient := range step.Ingredients {
 					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						IngredientID:        ingredient.IngredientID,
 						ID:                  ingredient.ID,
 						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
 						Name:                ingredient.Name,
@@ -277,6 +283,11 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						MinimumQuantity:     ingredient.MinimumQuantity,
 						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
 					}
+
+					if ingredient.Ingredient != nil {
+						newIngredient.IngredientID = &ingredient.Ingredient.ID
+					}
+
 					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 				}
 
@@ -319,7 +330,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				}
 			}
 
-			assert.NotEqual(t, -1, recipeStepProductIndex)
+			require.NotEqual(t, -1, recipeStepProductIndex)
 			require.NotNil(t, created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
 			assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
 		}
@@ -400,7 +411,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 
 					createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
-					exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+					exampleRecipe.Steps[i].Ingredients[j].Ingredient = createdValidIngredient
 					exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
 					exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
 				}

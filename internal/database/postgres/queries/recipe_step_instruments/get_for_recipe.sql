@@ -29,4 +29,4 @@ WHERE recipe_step_instruments.archived_at IS NULL
   AND recipe_steps.archived_at IS NULL
   AND recipe_steps.belongs_to_recipe = $1
   AND recipes.archived_at IS NULL
-  AND recipes.id = $2;
+  AND recipes.id = $1;

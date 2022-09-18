@@ -354,7 +354,6 @@ func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeID,
-			exampleRecipeID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -390,7 +389,6 @@ func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeID,
-			exampleRecipeID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -412,7 +410,6 @@ func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipeID,
 			exampleRecipeID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).

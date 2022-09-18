@@ -89,6 +89,14 @@ type (
 		VotingDeadline     *time.Time `json:"votingDeadline"`
 	}
 
+	// FinalizedMealPlanDatabaseResult represents what is returned by the above query.
+	FinalizedMealPlanDatabaseResult struct {
+		MealPlanID       string
+		MealPlanOptionID string
+		MealID           string
+		RecipeIDs        []string
+	}
+
 	// MealPlanDataManager describes a structure capable of storing meal plans permanently.
 	MealPlanDataManager interface {
 		MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error)
@@ -98,7 +106,7 @@ type (
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
 		AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error)
-		GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]string, error)
+		GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*FinalizedMealPlanDatabaseResult, error)
 		GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*MealPlan, error)
 	}
 

@@ -11,14 +11,23 @@ import (
 
 const (
 	// AdvancedPrepStepDataType indicates an event is related to a valid preparation.
-	AdvancedPrepStepDataType dataType = "valid_preparation"
+	AdvancedPrepStepDataType dataType = "advanced_prep_step"
 
-	// AdvancedPrepStepCreatedCustomerEventType indicates a valid preparation was created.
-	AdvancedPrepStepCreatedCustomerEventType CustomerEventType = "valid_preparation_created"
-	// AdvancedPrepStepUpdatedCustomerEventType indicates a valid preparation was updated.
-	AdvancedPrepStepUpdatedCustomerEventType CustomerEventType = "valid_preparation_updated"
-	// AdvancedPrepStepArchivedCustomerEventType indicates a valid preparation was archived.
-	AdvancedPrepStepArchivedCustomerEventType CustomerEventType = "valid_preparation_archived"
+	// AdvancedPrepStepCreatedCustomerEventType indicates an advanced prep step was created.
+	AdvancedPrepStepCreatedCustomerEventType CustomerEventType = "advanced_prep_step_created"
+	// AdvancedPrepStepUpdatedCustomerEventType indicates an advanced prep step was updated.
+	AdvancedPrepStepUpdatedCustomerEventType CustomerEventType = "advanced_prep_step_updated"
+	// AdvancedPrepStepArchivedCustomerEventType indicates an advanced prep step was archived.
+	AdvancedPrepStepArchivedCustomerEventType CustomerEventType = "advanced_prep_steparchived"
+
+	// AdvancedPrepStepStatusUnfinished represents the unfinished enum member for advanced prep step status in the DB.
+	AdvancedPrepStepStatusUnfinished = "unfinished"
+	// AdvancedPrepStepStatusPostponed represents the postponed enum member for advanced prep step status in the DB.
+	AdvancedPrepStepStatusPostponed = "postponed"
+	// AdvancedPrepStepStatusCanceled represents the canceled enum member for advanced prep step status in the DB.
+	AdvancedPrepStepStatusCanceled = "canceled"
+	// AdvancedPrepStepStatusFinished represents the finished enum member for advanced prep step status in the DB.
+	AdvancedPrepStepStatusFinished = "finished"
 )
 
 func init() {
@@ -33,8 +42,11 @@ type (
 		CannotCompleteBefore time.Time      `json:"cannotCompleteBefore"`
 		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
 		CreatedAt            time.Time      `json:"createdAt"`
-		CompletedAt          *uint64        `json:"completedAt"`
+		SettledAt            *uint64        `json:"completedAt"`
 		ID                   string         `json:"id"`
+		Status               string         `json:"status"`
+		CreationExplanation  string         `json:"creationExplanation"`
+		StatusExplanation    string         `json:"statusExplanation"`
 		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
 		RecipeStep           RecipeStep     `json:"recipeStep"`
 	}
@@ -53,6 +65,9 @@ type (
 		CannotCompleteBefore time.Time `json:"cannotCompleteBefore"`
 		CannotCompleteAfter  time.Time `json:"cannotCompleteAfter"`
 		CompletedAt          *uint64   `json:"completedAt"`
+		Status               string    `json:"status"`
+		CreationExplanation  string    `json:"creationExplanation"`
+		StatusExplanation    string    `json:"statusExplanation"`
 		MealPlanOptionID     string    `json:"mealPlanOptionID"`
 		RecipeStepID         string    `json:"recipeStepID"`
 		ID                   string    `json:"id"`
@@ -85,6 +100,12 @@ func (x *AdvancedPrepStepDatabaseCreationInput) ValidateWithContext(ctx context.
 		validation.Field(&x.MealPlanOptionID, validation.Required),
 		validation.Field(&x.RecipeStepID, validation.Required),
 		validation.Field(&x.CannotCompleteBefore, validation.Required),
+		validation.Field(&x.Status, validation.In(
+			AdvancedPrepStepStatusUnfinished,
+			AdvancedPrepStepStatusPostponed,
+			AdvancedPrepStepStatusCanceled,
+			AdvancedPrepStepStatusFinished,
+		)),
 		validation.Field(&x.CannotCompleteAfter, validation.Required),
 	)
 }

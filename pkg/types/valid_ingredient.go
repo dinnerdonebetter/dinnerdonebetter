@@ -35,17 +35,17 @@ type (
 		CreatedAt                               time.Time  `json:"createdAt"`
 		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt                              *time.Time `json:"archivedAt"`
-		ID                                      string     `json:"id"`
+		MaximumIdealStorageTemperatureInCelsius *float32   `json:"maximumIdealStorageTemperatureInCelsius"`
+		MinimumIdealStorageTemperatureInCelsius *float32   `json:"minimumIdealStorageTemperatureInCelsius"`
 		Warning                                 string     `json:"warning"`
-		Description                             string     `json:"description"`
 		IconPath                                string     `json:"iconPath"`
 		PluralName                              string     `json:"pluralName"`
 		StorageInstructions                     string     `json:"storageInstructions"`
 		Name                                    string     `json:"name"`
-		MaximumIdealStorageTemperatureInCelsius float32    `json:"maximumIdealStorageTemperatureInCelsius"`
-		MinimumIdealStorageTemperatureInCelsius float32    `json:"minimumIdealStorageTemperatureInCelsius"`
-		ContainsShellfish                       bool       `json:"containsShellfish"`
+		ID                                      string     `json:"id"`
+		Description                             string     `json:"description"`
 		ContainsDairy                           bool       `json:"containsDairy"`
+		ContainsShellfish                       bool       `json:"containsShellfish"`
 		AnimalFlesh                             bool       `json:"animalFlesh"`
 		IsMeasuredVolumetrically                bool       `json:"isMeasuredVolumetrically"`
 		IsLiquid                                bool       `json:"isLiquid"`
@@ -59,6 +59,38 @@ type (
 		ContainsSesame                          bool       `json:"containsSesame"`
 		ContainsFish                            bool       `json:"containsFish"`
 		ContainsGluten                          bool       `json:"containsGluten"`
+	}
+
+	// NullableValidIngredient represents a nullable valid ingredient.
+	NullableValidIngredient struct {
+		_                                       struct{}
+		CreatedAt                               *time.Time `json:"createdAt"`
+		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt                              *time.Time `json:"archivedAt"`
+		ID                                      *string    `json:"id"`
+		Warning                                 *string    `json:"warning"`
+		Description                             *string    `json:"description"`
+		IconPath                                *string    `json:"iconPath"`
+		PluralName                              *string    `json:"pluralName"`
+		StorageInstructions                     *string    `json:"storageInstructions"`
+		Name                                    *string    `json:"name"`
+		MaximumIdealStorageTemperatureInCelsius *float32   `json:"maximumIdealStorageTemperatureInCelsius"`
+		MinimumIdealStorageTemperatureInCelsius *float32   `json:"minimumIdealStorageTemperatureInCelsius"`
+		ContainsShellfish                       *bool      `json:"containsShellfish"`
+		ContainsDairy                           *bool      `json:"containsDairy"`
+		AnimalFlesh                             *bool      `json:"animalFlesh"`
+		IsMeasuredVolumetrically                *bool      `json:"isMeasuredVolumetrically"`
+		IsLiquid                                *bool      `json:"isLiquid"`
+		ContainsPeanut                          *bool      `json:"containsPeanut"`
+		ContainsTreeNut                         *bool      `json:"containsTreeNut"`
+		ContainsEgg                             *bool      `json:"containsEgg"`
+		ContainsWheat                           *bool      `json:"containsWheat"`
+		ContainsSoy                             *bool      `json:"containsSoy"`
+		AnimalDerived                           *bool      `json:"animalDerived"`
+		RestrictToPreparations                  *bool      `json:"restrictToPreparations"`
+		ContainsSesame                          *bool      `json:"containsSesame"`
+		ContainsFish                            *bool      `json:"containsFish"`
+		ContainsGluten                          *bool      `json:"containsGluten"`
 	}
 
 	// ValidIngredientList represents a list of valid ingredients.
@@ -100,30 +132,30 @@ type (
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
 	ValidIngredientDatabaseCreationInput struct {
 		_                                       struct{}
-		ID                                      string  `json:"id"`
-		Name                                    string  `json:"name"`
-		Description                             string  `json:"description"`
-		Warning                                 string  `json:"warning"`
-		IconPath                                string  `json:"iconPath"`
-		PluralName                              string  `json:"pluralName"`
-		StorageInstructions                     string  `json:"storageInstructions"`
-		MinimumIdealStorageTemperatureInCelsius float32 `json:"minimumIdealStorageTemperatureInCelsius"`
-		MaximumIdealStorageTemperatureInCelsius float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		IsMeasuredVolumetrically                bool    `json:"isMeasuredVolumetrically"`
-		ContainsShellfish                       bool    `json:"containsShellfish"`
-		ContainsWheat                           bool    `json:"containsWheat"`
-		ContainsFish                            bool    `json:"containsFish"`
-		ContainsGluten                          bool    `json:"containsGluten"`
-		AnimalFlesh                             bool    `json:"animalFlesh"`
-		ContainsEgg                             bool    `json:"containsEgg"`
-		IsLiquid                                bool    `json:"isLiquid"`
-		ContainsSoy                             bool    `json:"containsSoy"`
-		ContainsPeanut                          bool    `json:"containsPeanut"`
-		AnimalDerived                           bool    `json:"animalDerived"`
-		RestrictToPreparations                  bool    `json:"restrictToPreparations"`
-		ContainsDairy                           bool    `json:"containsDairy"`
-		ContainsSesame                          bool    `json:"containsSesame"`
-		ContainsTreeNut                         bool    `json:"containsTreeNut"`
+		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius"`
+		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius"`
+		ID                                      string   `json:"id"`
+		Warning                                 string   `json:"warning"`
+		IconPath                                string   `json:"iconPath"`
+		PluralName                              string   `json:"pluralName"`
+		StorageInstructions                     string   `json:"storageInstructions"`
+		Name                                    string   `json:"name"`
+		Description                             string   `json:"description"`
+		ContainsWheat                           bool     `json:"containsWheat"`
+		ContainsShellfish                       bool     `json:"containsShellfish"`
+		IsMeasuredVolumetrically                bool     `json:"isMeasuredVolumetrically"`
+		ContainsFish                            bool     `json:"containsFish"`
+		ContainsGluten                          bool     `json:"containsGluten"`
+		AnimalFlesh                             bool     `json:"animalFlesh"`
+		ContainsEgg                             bool     `json:"containsEgg"`
+		IsLiquid                                bool     `json:"isLiquid"`
+		ContainsSoy                             bool     `json:"containsSoy"`
+		ContainsPeanut                          bool     `json:"containsPeanut"`
+		AnimalDerived                           bool     `json:"animalDerived"`
+		RestrictToPreparations                  bool     `json:"restrictToPreparations"`
+		ContainsDairy                           bool     `json:"containsDairy"`
+		ContainsSesame                          bool     `json:"containsSesame"`
+		ContainsTreeNut                         bool     `json:"containsTreeNut"`
 	}
 
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.
@@ -261,12 +293,12 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 		x.RestrictToPreparations = *input.RestrictToPreparations
 	}
 
-	if input.MinimumIdealStorageTemperatureInCelsius != nil && *input.MinimumIdealStorageTemperatureInCelsius != x.MinimumIdealStorageTemperatureInCelsius {
-		x.MinimumIdealStorageTemperatureInCelsius = *input.MinimumIdealStorageTemperatureInCelsius
+	if input.MinimumIdealStorageTemperatureInCelsius != nil && input.MinimumIdealStorageTemperatureInCelsius != x.MinimumIdealStorageTemperatureInCelsius {
+		x.MinimumIdealStorageTemperatureInCelsius = input.MinimumIdealStorageTemperatureInCelsius
 	}
 
-	if input.MaximumIdealStorageTemperatureInCelsius != nil && *input.MaximumIdealStorageTemperatureInCelsius != x.MaximumIdealStorageTemperatureInCelsius {
-		x.MaximumIdealStorageTemperatureInCelsius = *input.MaximumIdealStorageTemperatureInCelsius
+	if input.MaximumIdealStorageTemperatureInCelsius != nil && input.MaximumIdealStorageTemperatureInCelsius != x.MaximumIdealStorageTemperatureInCelsius {
+		x.MaximumIdealStorageTemperatureInCelsius = input.MaximumIdealStorageTemperatureInCelsius
 	}
 
 	if input.StorageInstructions != nil && *input.StorageInstructions != x.StorageInstructions {
@@ -320,8 +352,8 @@ func ValidIngredientUpdateRequestInputFromValidIngredient(input *ValidIngredient
 		PluralName:                              &input.PluralName,
 		AnimalDerived:                           &input.AnimalDerived,
 		RestrictToPreparations:                  &input.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: &input.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: &input.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
+		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     &input.StorageInstructions,
 	}
 
@@ -351,8 +383,8 @@ func ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput(input 
 		PluralName:                              input.PluralName,
 		AnimalDerived:                           input.AnimalDerived,
 		RestrictToPreparations:                  input.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: &input.MinimumIdealStorageTemperatureInCelsius,
+		MaximumIdealStorageTemperatureInCelsius: &input.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     input.StorageInstructions,
 	}
 

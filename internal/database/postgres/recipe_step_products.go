@@ -243,7 +243,6 @@ func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID s
 
 	args := []interface{}{
 		recipeID,
-		recipeID,
 	}
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", getRecipeStepProductsForRecipeQuery, args)

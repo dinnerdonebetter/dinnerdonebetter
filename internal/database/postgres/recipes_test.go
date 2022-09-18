@@ -298,13 +298,14 @@ func prepareMockToSuccessfullyGetRecipe(ctx context.Context, t *testing.T, recip
 		WithArgs(interfaceToDriverValue(args)...).
 		WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-	getRecipeStepIngredientsQuery, getRecipeStepIngredientsArgs := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
-	db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsQuery)).
-		WithArgs(interfaceToDriverValue(getRecipeStepIngredientsArgs)...).
+	getRecipeStepIngredientsForRecipeArgs := []interface{}{
+		exampleRecipe.ID,
+	}
+	db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
+		WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
 		WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
 
 	productsArgs := []interface{}{
-		exampleRecipe.ID,
 		exampleRecipe.ID,
 	}
 	db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
@@ -312,7 +313,6 @@ func prepareMockToSuccessfullyGetRecipe(ctx context.Context, t *testing.T, recip
 		WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
 
 	instrumentsArgs := []interface{}{
-		exampleRecipe.ID,
 		exampleRecipe.ID,
 	}
 	db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
@@ -369,9 +369,11 @@ func TestQuerier_getRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
+		getRecipeStepIngredientsForRecipeArgs := []interface{}{
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
 			WillReturnError(errors.New("blah"))
 
 		actual, err := c.getRecipe(ctx, exampleRecipe.ID, exampleUserID)
@@ -409,13 +411,14 @@ func TestQuerier_getRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
+		getRecipeStepIngredientsForRecipeArgs := []interface{}{
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
 
 		productsArgs := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
@@ -464,13 +467,14 @@ func TestQuerier_GetRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
+		getRecipeStepIngredientsForRecipeArgs := []interface{}{
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
 
 		productsArgs := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
@@ -478,7 +482,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
 
 		instrumentsArgs := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
@@ -599,13 +602,14 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
+		getRecipeStepIngredientsForRecipeArgs := []interface{}{
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
 
 		productsArgs := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
@@ -613,7 +617,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
 
 		instrumentsArgs := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
@@ -945,6 +948,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 			for j := range step.Ingredients {
 				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
+				exampleRecipe.Steps[i].Ingredients[j].Ingredient = &types.ValidIngredient{ID: exampleRecipe.Steps[i].Ingredients[j].Ingredient.ID}
 				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
 				exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit.ID}
 			}
@@ -1578,7 +1582,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Ingredients: []*types.RecipeStepIngredient{
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &pintoBeans.ID,
+							Ingredient:          pintoBeans,
 							Name:                "pinto beans",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     500,
@@ -1586,7 +1590,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						},
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &water.ID,
+							Ingredient:          water,
 							Name:                "water",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     500,
@@ -1609,7 +1613,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:        nil,
+							Ingredient:          nil,
 							RecipeStepProductID: nil,
 							Name:                productName,
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
@@ -1618,7 +1622,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						},
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &garlicPaste.ID,
+							Ingredient:          garlicPaste,
 							Name:                "garlic paste",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     10,
@@ -1652,7 +1656,6 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 
 			for _, ingredient := range step.Ingredients {
 				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
-					IngredientID:        ingredient.IngredientID,
 					ID:                  ingredient.ID,
 					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
 					Name:                ingredient.Name,
@@ -1663,6 +1666,9 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					IngredientNotes:     ingredient.IngredientNotes,
 					MinimumQuantity:     ingredient.MinimumQuantity,
 					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+				}
+				if ingredient.Ingredient != nil {
+					newIngredient.IngredientID = &ingredient.Ingredient.ID
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 			}
@@ -1724,7 +1730,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Ingredients: []*types.RecipeStepIngredient{
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &pintoBeans.ID,
+							Ingredient:          pintoBeans,
 							Name:                "pinto beans",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     500,
@@ -1732,7 +1738,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						},
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &water.ID,
+							Ingredient:          water,
 							Name:                "water",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     5,
@@ -1755,7 +1761,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:        nil,
+							Ingredient:          nil,
 							RecipeStepProductID: nil,
 							Name:                productName,
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
@@ -1764,7 +1770,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						},
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &garlicPaste.ID,
+							Ingredient:          garlicPaste,
 							Name:                "garlic paste",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     10,
@@ -1789,7 +1795,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Ingredients: []*types.RecipeStepIngredient{
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &pintoBeans.ID,
+							Ingredient:          pintoBeans,
 							Name:                "pinto beans",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     500,
@@ -1797,7 +1803,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						},
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &water.ID,
+							Ingredient:          water,
 							Name:                "water",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     5,
@@ -1820,7 +1826,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:        nil,
+							Ingredient:          nil,
 							RecipeStepProductID: nil,
 							Name:                productName,
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
@@ -1829,7 +1835,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						},
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        nil,
+							Ingredient:          nil,
 							Name:                "pressure cooked beans",
 							MeasurementUnit:     *fakes.BuildFakeValidMeasurementUnit(),
 							MinimumQuantity:     10,
@@ -1863,7 +1869,6 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 
 			for _, ingredient := range step.Ingredients {
 				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
-					IngredientID:        ingredient.IngredientID,
 					ID:                  ingredient.ID,
 					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
 					Name:                ingredient.Name,
@@ -1873,6 +1878,9 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					IngredientNotes:     ingredient.IngredientNotes,
 					MinimumQuantity:     ingredient.MinimumQuantity,
 					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+				}
+				if ingredient.Ingredient != nil {
+					newIngredient.IngredientID = &ingredient.Ingredient.ID
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 			}
@@ -1953,7 +1961,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					Ingredients: []*types.RecipeStepIngredient{
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &aluminumFoil.ID,
+							Ingredient:          aluminumFoil,
 							Name:                "aluminum foil",
 							MeasurementUnit:     *sheet,
 							MinimumQuantity:     1,
@@ -1985,7 +1993,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 					Ingredients: []*types.RecipeStepIngredient{
 						{
 							RecipeStepProductID: nil,
-							IngredientID:        &asparagus.ID,
+							Ingredient:          asparagus,
 							Name:                "asparagus",
 							MeasurementUnit:     *grams,
 							MinimumQuantity:     1000,
@@ -2019,7 +2027,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 
 			for _, ingredient := range step.Ingredients {
 				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
-					IngredientID:        ingredient.IngredientID,
+					IngredientID:        &ingredient.Ingredient.ID,
 					ID:                  ingredient.ID,
 					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
 					Name:                ingredient.Name,

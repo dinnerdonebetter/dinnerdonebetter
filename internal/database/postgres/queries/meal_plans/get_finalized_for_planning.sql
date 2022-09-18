@@ -12,6 +12,6 @@ WHERE meal_plans.archived_at IS NULL
   AND meal_plans.status = 'finalized'
   AND meal_plan_options.chosen IS TRUE
   AND meal_plan_options.prep_steps_created IS FALSE
-  -- AND starts_at < NOW() + (1 * interval '1 week')
+  AND starts_at < NOW() + (1 * interval '1 week')
 GROUP BY meal_plans.id, meal_plan_options.id, meals.id, meal_recipes.recipe_id
 ORDER BY meal_plans.id;

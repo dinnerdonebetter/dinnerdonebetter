@@ -504,7 +504,7 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 var getFinalizedMealPlansQuery string
 
 // GetFinalizedMealPlanIDsForTheNextWeek gets finalized meal plans for a given duration.
-func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]string, error) {
+func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*types.FinalizedMealPlanDatabaseResult, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -513,7 +513,30 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 		return nil, observability.PrepareError(err, span, "executing finalized meal plan IDs for the week retrieval query")
 	}
 
-	_ = rows
+	results := []*types.FinalizedMealPlanDatabaseResult{}
 
-	return nil, nil
+	var result *types.FinalizedMealPlanDatabaseResult
+	for rows.Next() {
+		r := &types.FinalizedMealPlanDatabaseResult{}
+		var recipeID string
+		scanErr := rows.Scan(&r.MealPlanID, &r.MealPlanOptionID, &r.MealID, &recipeID)
+		if scanErr != nil {
+			return nil, observability.PrepareError(scanErr, span, "scanning finalized meal plan IDs for the week")
+		}
+
+		if result == nil {
+			result = r
+		}
+
+		if r.MealID != result.MealID && r.MealPlanOptionID != result.MealPlanOptionID && r.MealPlanID != result.MealPlanID {
+			results = append(results, result)
+			result = r
+		}
+
+		result.RecipeIDs = append(result.RecipeIDs, recipeID)
+	}
+
+	results = append(results, result)
+
+	return results, nil
 }

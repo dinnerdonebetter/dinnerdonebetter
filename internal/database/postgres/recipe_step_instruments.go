@@ -286,7 +286,6 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 
 	args := []interface{}{
 		recipeID,
-		recipeID,
 	}
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipe step instruments", getRecipeStepInstrumentsForRecipeQuery, args)
