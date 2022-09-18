@@ -3,17 +3,16 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
-	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/pkg/types"
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"go.opentelemetry.io/otel"
 
 	"github.com/prixfixeco/api_server/internal/config"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
@@ -70,18 +69,6 @@ func CreateAdvancedPrepSteps(ctx context.Context, m PubSubMessage) error {
 	}
 
 	return nil
-}
-
-func stepIsPure(x *types.RecipeStep) bool {
-	productFound := false
-
-	for _, ingredient := range x.Ingredients {
-		if ingredient.IngredientID == nil {
-			productFound = true
-		}
-	}
-
-	return productFound
 }
 
 func ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx context.Context, tracer tracing.Tracer, dbmanager database.DataManager, publisher messagequeue.Publisher) error {

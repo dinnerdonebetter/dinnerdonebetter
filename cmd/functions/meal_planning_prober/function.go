@@ -6,14 +6,14 @@ import (
 	"net/url"
 	"time"
 
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
-
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 )
 
 const (
@@ -95,7 +95,7 @@ func createRecipeForTest(ctx context.Context, client *httpclient.Client) ([]*typ
 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
-			exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+			exampleRecipe.Steps[i].Ingredients[j].Ingredient.ID = createdValidIngredient.ID
 		}
 
 		for j := range recipeStep.Instruments {
