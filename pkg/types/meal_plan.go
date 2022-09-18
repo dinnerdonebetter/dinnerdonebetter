@@ -92,6 +92,7 @@ type (
 	// FinalizedMealPlanDatabaseResult represents what is returned by the above query.
 	FinalizedMealPlanDatabaseResult struct {
 		MealPlanID       string
+		MealPlanEventID  string
 		MealPlanOptionID string
 		MealID           string
 		RecipeIDs        []string

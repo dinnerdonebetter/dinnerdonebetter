@@ -22,8 +22,8 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 			QuantityNotes:                      fake.LoremIpsumSentence(exampleQuantity),
 			Compostable:                        fake.Bool(),
 			MaximumStorageDurationInSeconds:    fake.Uint32(),
-			MinimumStorageTemperatureInCelsius: fake.Float32(),
-			MaximumStorageTemperatureInCelsius: fake.Float32(),
+			MinimumStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
+			MaximumStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

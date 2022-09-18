@@ -519,7 +519,7 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 	for rows.Next() {
 		r := &types.FinalizedMealPlanDatabaseResult{}
 		var recipeID string
-		scanErr := rows.Scan(&r.MealPlanID, &r.MealPlanOptionID, &r.MealID, &recipeID)
+		scanErr := rows.Scan(&r.MealPlanID, &r.MealPlanOptionID, &r.MealID, &r.MealPlanEventID, &recipeID)
 		if scanErr != nil {
 			return nil, observability.PrepareError(scanErr, span, "scanning finalized meal plan IDs for the week")
 		}
@@ -528,7 +528,10 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 			result = r
 		}
 
-		if r.MealID != result.MealID && r.MealPlanOptionID != result.MealPlanOptionID && r.MealPlanID != result.MealPlanID {
+		if r.MealID != result.MealID &&
+			r.MealPlanOptionID != result.MealPlanOptionID &&
+			r.MealPlanEventID != result.MealPlanEventID &&
+			r.MealPlanID != result.MealPlanID {
 			results = append(results, result)
 			result = r
 		}
