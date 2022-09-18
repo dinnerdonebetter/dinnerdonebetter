@@ -215,6 +215,11 @@ var (
 			Description: "advanced prep step constraints",
 			Script:      fetchMigration("00040_advanced_prep_step_constraints"),
 		},
+		{
+			Version:     41,
+			Description: "nullable storage temps for products",
+			Script:      fetchMigration("00041_nullable_storage_temps_for_products"),
+		},
 	}
 )
 
