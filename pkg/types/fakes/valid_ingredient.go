@@ -32,8 +32,8 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		PluralName:                              buildUniqueString(),
 		AnimalDerived:                           fake.Bool(),
 		RestrictToPreparations:                  fake.Bool(),
-		MinimumIdealStorageTemperatureInCelsius: fake.Float32(),
-		MaximumIdealStorageTemperatureInCelsius: fake.Float32(),
+		MinimumIdealStorageTemperatureInCelsius: func(f float32) *float32 { return &f }(fake.Float32()),
+		MaximumIdealStorageTemperatureInCelsius: func(f float32) *float32 { return &f }(fake.Float32()),
 		StorageInstructions:                     buildUniqueString(),
 	}
 }
@@ -80,8 +80,8 @@ func BuildFakeValidIngredientUpdateRequestInput() *types.ValidIngredientUpdateRe
 		PluralName:                              &validIngredient.PluralName,
 		AnimalDerived:                           &validIngredient.AnimalDerived,
 		RestrictToPreparations:                  &validIngredient.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: &validIngredient.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: &validIngredient.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: validIngredient.MinimumIdealStorageTemperatureInCelsius,
+		MaximumIdealStorageTemperatureInCelsius: validIngredient.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     &validIngredient.StorageInstructions,
 	}
 }
@@ -109,8 +109,8 @@ func BuildFakeValidIngredientUpdateRequestInputFromValidIngredient(validIngredie
 		PluralName:                              &validIngredient.PluralName,
 		AnimalDerived:                           &validIngredient.AnimalDerived,
 		RestrictToPreparations:                  &validIngredient.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: &validIngredient.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: &validIngredient.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: validIngredient.MinimumIdealStorageTemperatureInCelsius,
+		MaximumIdealStorageTemperatureInCelsius: validIngredient.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     &validIngredient.StorageInstructions,
 	}
 }
@@ -145,8 +145,8 @@ func BuildFakeValidIngredientCreationRequestInputFromValidIngredient(validIngred
 		PluralName:                              validIngredient.PluralName,
 		AnimalDerived:                           validIngredient.AnimalDerived,
 		RestrictToPreparations:                  validIngredient.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: validIngredient.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: validIngredient.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: *validIngredient.MinimumIdealStorageTemperatureInCelsius,
+		MaximumIdealStorageTemperatureInCelsius: *validIngredient.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     validIngredient.StorageInstructions,
 	}
 }

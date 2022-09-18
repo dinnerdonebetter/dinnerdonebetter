@@ -65,8 +65,8 @@ func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient
 		PluralName:                              &x.PluralName,
 		AnimalDerived:                           &x.AnimalDerived,
 		RestrictToPreparations:                  &x.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: &x.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: &x.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: x.MinimumIdealStorageTemperatureInCelsius,
+		MaximumIdealStorageTemperatureInCelsius: x.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     &x.StorageInstructions,
 	}
 }
