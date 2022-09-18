@@ -1,1 +1,1 @@
-UPDATE advanced_prep_steps SET completed_at = NOW() WHERE id = $1;
+UPDATE advanced_prep_steps SET settled_at = NOW() WHERE id = $1;

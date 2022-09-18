@@ -20,7 +20,10 @@ func BuildFakeAdvancedPrepStep() *types.AdvancedPrepStep {
 		MealPlanOption:       *BuildFakeMealPlanOption(),
 		RecipeStep:           *BuildFakeRecipeStep(),
 		CreatedAt:            fake.Date(),
-		CompletedAt:          nil,
+		Status:               "unfinished",
+		StatusExplanation:    buildUniqueString(),
+		CreationExplanation:  buildUniqueString(),
+		SettledAt:            nil,
 	}
 }
 

@@ -18,8 +18,8 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for meal plan %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Status, actual.Status, "expected CreationExplanation for meal plan %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
 	assert.WithinDuration(t, expected.VotingDeadline, actual.VotingDeadline, time.Nanosecond*1000, "expected VotingDeadline for meal plan %s to be %v, but it was %v", expected.ID, expected.VotingDeadline, actual.VotingDeadline)
 	assert.NotZero(t, actual.CreatedAt)
 }

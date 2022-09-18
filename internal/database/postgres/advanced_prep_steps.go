@@ -19,10 +19,13 @@ var (
 		"advanced_prep_steps.id",
 		"advanced_prep_steps.belongs_to_meal_plan_option",
 		"advanced_prep_steps.satisfies_recipe_step",
+		"advanced_prep_steps.status",
+		"advanced_prep_steps.status_explanation",
+		"advanced_prep_steps.creation_explanation",
 		"advanced_prep_steps.cannot_complete_before",
 		"advanced_prep_steps.cannot_complete_after",
 		"advanced_prep_steps.created_at",
-		"advanced_prep_steps.completed_at",
+		"advanced_prep_steps.settled_at",
 	}
 )
 
@@ -71,10 +74,13 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 		&x.RecipeStep.LastUpdatedAt,
 		&x.RecipeStep.ArchivedAt,
 		&x.RecipeStep.BelongsToRecipe,
+		&x.Status,
+		&x.StatusExplanation,
+		&x.CreationExplanation,
 		&x.CannotCompleteBefore,
 		&x.CannotCompleteAfter,
 		&x.CreatedAt,
-		&x.CompletedAt,
+		&x.SettledAt,
 	}
 
 	if includeCounts {
@@ -242,6 +248,9 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 		input.ID,
 		input.MealPlanOptionID,
 		input.RecipeStepID,
+		input.Status,
+		input.StatusExplanation,
+		input.CreationExplanation,
 		input.CannotCompleteBefore,
 		input.CannotCompleteAfter,
 	}
@@ -257,7 +266,10 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 		MealPlanOption:       types.MealPlanOption{ID: input.MealPlanOptionID},
 		RecipeStep:           types.RecipeStep{ID: input.RecipeStepID},
 		CreatedAt:            input.CreatedAt,
-		CompletedAt:          input.CompletedAt,
+		Status:               input.Status,
+		StatusExplanation:    input.StatusExplanation,
+		CreationExplanation:  input.CreationExplanation,
+		SettledAt:            input.CompletedAt,
 	}
 
 	logger.Info("advanced step created")

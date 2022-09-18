@@ -36,10 +36,13 @@ SELECT
     recipe_steps.last_updated_at,
     recipe_steps.archived_at,
     recipe_steps.belongs_to_recipe,
+    advanced_prep_steps.status,
+    advanced_prep_steps.status_explanation,
+    advanced_prep_steps.creation_explanation,
     advanced_prep_steps.cannot_complete_before,
     advanced_prep_steps.cannot_complete_after,
     advanced_prep_steps.created_at,
-    advanced_prep_steps.completed_at
+    advanced_prep_steps.settled_at
 FROM advanced_prep_steps
          FULL OUTER JOIN meal_plan_options ON advanced_prep_steps.belongs_to_meal_plan_option=meal_plan_options.id
          FULL OUTER JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id

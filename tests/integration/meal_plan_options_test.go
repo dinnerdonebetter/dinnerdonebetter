@@ -15,7 +15,7 @@ func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanO
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Meal.ID, actual.Meal.ID, "expected MealID for meal plan option %s to be %v, but it was %v", expected.ID, expected.Meal.ID, actual.Meal.ID)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan option %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for meal plan option %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.AssignedCook, actual.AssignedCook, "expected AssignedCook for meal plan option %s to be %v, but it was %v", expected.ID, expected.AssignedCook, actual.AssignedCook)
 	assert.Equal(t, expected.AssignedDishwasher, actual.AssignedDishwasher, "expected AssignedDishwasher for meal plan option %s to be %v, but it was %v", expected.ID, expected.AssignedDishwasher, actual.AssignedDishwasher)
 	assert.Equal(t, expected.PrepStepsCreated, actual.PrepStepsCreated, "expected PrepStepsCreated for meal plan option %s to be %v, but it was %v", expected.ID, expected.PrepStepsCreated, actual.PrepStepsCreated)
