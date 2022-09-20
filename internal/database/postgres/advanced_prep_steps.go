@@ -265,7 +265,7 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 		CannotCompleteAfter:  input.CannotCompleteAfter,
 		MealPlanOption:       types.MealPlanOption{ID: input.MealPlanOptionID},
 		RecipeStep:           types.RecipeStep{ID: input.RecipeStepID},
-		CreatedAt:            input.CreatedAt,
+		CreatedAt:            q.currentTime(),
 		Status:               input.Status,
 		StatusExplanation:    input.StatusExplanation,
 		CreationExplanation:  input.CreationExplanation,

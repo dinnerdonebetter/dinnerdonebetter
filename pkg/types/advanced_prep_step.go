@@ -61,7 +61,6 @@ type (
 	// AdvancedPrepStepDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	AdvancedPrepStepDatabaseCreationInput struct {
 		_                    struct{}
-		CreatedAt            time.Time `json:"createdAt"`
 		CannotCompleteBefore time.Time `json:"cannotCompleteBefore"`
 		CannotCompleteAfter  time.Time `json:"cannotCompleteAfter"`
 		CompletedAt          *uint64   `json:"completedAt"`
