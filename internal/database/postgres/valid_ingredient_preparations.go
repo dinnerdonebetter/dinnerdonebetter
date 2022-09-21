@@ -255,7 +255,7 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 		"valid_ingredient_preparations.id",
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validIngredientPreparations", query, args)
 	if err != nil {

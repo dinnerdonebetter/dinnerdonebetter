@@ -43,12 +43,12 @@ type (
 		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
 		CreatedAt            time.Time      `json:"createdAt"`
 		SettledAt            *uint64        `json:"completedAt"`
+		RecipeStep           RecipeStep     `json:"recipeStep"`
 		ID                   string         `json:"id"`
 		Status               string         `json:"status"`
 		CreationExplanation  string         `json:"creationExplanation"`
 		StatusExplanation    string         `json:"statusExplanation"`
 		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
-		RecipeStep           RecipeStep     `json:"recipeStep"`
 	}
 
 	// AdvancedPrepStepList represents a list of valid preparations.
@@ -61,7 +61,6 @@ type (
 	// AdvancedPrepStepDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	AdvancedPrepStepDatabaseCreationInput struct {
 		_                    struct{}
-		CreatedAt            time.Time `json:"createdAt"`
 		CannotCompleteBefore time.Time `json:"cannotCompleteBefore"`
 		CannotCompleteAfter  time.Time `json:"cannotCompleteAfter"`
 		CompletedAt          *uint64   `json:"completedAt"`

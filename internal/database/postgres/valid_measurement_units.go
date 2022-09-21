@@ -232,7 +232,7 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_measurement_units", nil, nil, nil, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "valid_measurement_units", nil, nil, nil, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validMeasurementUnits", query, args)
 	if err != nil {

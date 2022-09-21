@@ -289,7 +289,7 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_ingredients", nil, nil, nil, householdOwnershipColumn, validIngredientsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "valid_ingredients", nil, nil, nil, householdOwnershipColumn, validIngredientsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validIngredients", query, args)
 	if err != nil {

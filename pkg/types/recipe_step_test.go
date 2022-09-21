@@ -12,8 +12,8 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 	return &RecipeStepCreationRequestInput{
 		Index:                         fake.Uint32(),
 		PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
-		MinimumEstimatedTimeInSeconds: fake.Uint32(),
-		MaximumEstimatedTimeInSeconds: fake.Uint32(),
+		MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
+		MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
 		MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
 		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 		ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
@@ -67,8 +67,8 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepCreationRequestInput{
 			Index:                         fake.Uint32(),
 			PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
-			MinimumEstimatedTimeInSeconds: fake.Uint32(),
-			MaximumEstimatedTimeInSeconds: fake.Uint32(),
+			MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
+			MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
 			MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
 			Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 			ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),

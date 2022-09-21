@@ -210,7 +210,7 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 		"valid_preparation_instruments.id",
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_preparation_instruments", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationInstrumentsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "valid_preparation_instruments", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationInstrumentsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments", query, args)
 	if err != nil {

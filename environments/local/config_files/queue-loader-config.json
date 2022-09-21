@@ -48,7 +48,7 @@
 		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
 		"debug": true,
 		"logQueries": false,
-		"runMigrations": true,
+		"runMigrations": false,
 		"maxPingAttempts": 50
 	},
 	"meta": {

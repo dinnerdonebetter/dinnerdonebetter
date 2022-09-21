@@ -36,21 +36,21 @@ type (
 	RecipeStep struct {
 		_                             struct{}
 		CreatedAt                     time.Time               `json:"createdAt"`
+		MaximumEstimatedTimeInSeconds *uint32                 `json:"maximumEstimatedTimeInSeconds"`
 		LastUpdatedAt                 *time.Time              `json:"lastUpdatedAt"`
-		MaximumTemperatureInCelsius   *uint16                 `json:"maximumTemperatureInCelsius"`
 		ArchivedAt                    *time.Time              `json:"archivedAt"`
 		MinimumTemperatureInCelsius   *uint16                 `json:"minimumTemperatureInCelsius"`
-		Preparation                   ValidPreparation        `json:"preparation"`
+		MinimumEstimatedTimeInSeconds *uint32                 `json:"minimumEstimatedTimeInSeconds"`
+		MaximumTemperatureInCelsius   *uint16                 `json:"maximumTemperatureInCelsius"`
 		Notes                         string                  `json:"notes"`
 		BelongsToRecipe               string                  `json:"belongsToRecipe"`
-		ID                            string                  `json:"id"`
 		ExplicitInstructions          string                  `json:"explicitInstructions"`
-		Products                      []*RecipeStepProduct    `json:"products"`
+		ID                            string                  `json:"id"`
+		Preparation                   ValidPreparation        `json:"preparation"`
 		Instruments                   []*RecipeStepInstrument `json:"instruments"`
 		Ingredients                   []*RecipeStepIngredient `json:"ingredients"`
+		Products                      []*RecipeStepProduct    `json:"products"`
 		Index                         uint32                  `json:"index"`
-		MaximumEstimatedTimeInSeconds uint32                  `json:"maximumEstimatedTimeInSeconds"`
-		MinimumEstimatedTimeInSeconds uint32                  `json:"minimumEstimatedTimeInSeconds"`
 		Optional                      bool                    `json:"optional"`
 	}
 
@@ -64,38 +64,38 @@ type (
 	// RecipeStepCreationRequestInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationRequestInput struct {
 		_                             struct{}
-		MinimumTemperatureInCelsius   *uint16                                     `json:"minimumTemperatureInCelsius"`
+		MinimumEstimatedTimeInSeconds *uint32                                     `json:"minimumEstimatedTimeInSeconds"`
 		MaximumTemperatureInCelsius   *uint16                                     `json:"maximumTemperatureInCelsius"`
+		MinimumTemperatureInCelsius   *uint16                                     `json:"minimumTemperatureInCelsius"`
+		MaximumEstimatedTimeInSeconds *uint32                                     `json:"maximumEstimatedTimeInSeconds"`
 		BelongsToRecipe               string                                      `json:"-"`
 		Notes                         string                                      `json:"notes"`
 		PreparationID                 string                                      `json:"preparationID"`
 		ID                            string                                      `json:"-"`
 		ExplicitInstructions          string                                      `json:"explicitInstructions"`
-		Products                      []*RecipeStepProductCreationRequestInput    `json:"products"`
-		Instruments                   []*RecipeStepInstrumentCreationRequestInput `json:"instruments"`
 		Ingredients                   []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
+		Instruments                   []*RecipeStepInstrumentCreationRequestInput `json:"instruments"`
+		Products                      []*RecipeStepProductCreationRequestInput    `json:"products"`
 		Index                         uint32                                      `json:"index"`
-		MinimumEstimatedTimeInSeconds uint32                                      `json:"minimumEstimatedTimeInSeconds"`
-		MaximumEstimatedTimeInSeconds uint32                                      `json:"maximumEstimatedTimeInSeconds"`
 		Optional                      bool                                        `json:"optional"`
 	}
 
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
 		_                             struct{}
-		MinimumTemperatureInCelsius   *uint16                                      `json:"minimumTemperatureInCelsius"`
+		MinimumEstimatedTimeInSeconds *uint32                                      `json:"minimumEstimatedTimeInSeconds"`
 		MaximumTemperatureInCelsius   *uint16                                      `json:"maximumTemperatureInCelsius"`
+		MinimumTemperatureInCelsius   *uint16                                      `json:"minimumTemperatureInCelsius"`
+		MaximumEstimatedTimeInSeconds *uint32                                      `json:"maximumEstimatedTimeInSeconds"`
 		PreparationID                 string                                       `json:"preparationID"`
 		ID                            string                                       `json:"id"`
 		Notes                         string                                       `json:"notes"`
 		BelongsToRecipe               string                                       `json:"belongsToRecipe"`
 		ExplicitInstructions          string                                       `json:"explicitInstructions"`
-		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput `json:"instruments"`
-		Ingredients                   []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
 		Products                      []*RecipeStepProductDatabaseCreationInput    `json:"products"`
+		Ingredients                   []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
+		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput `json:"instruments"`
 		Index                         uint32                                       `json:"index"`
-		MinimumEstimatedTimeInSeconds uint32                                       `json:"minimumEstimatedTimeInSeconds"`
-		MaximumEstimatedTimeInSeconds uint32                                       `json:"maximumEstimatedTimeInSeconds"`
 		Optional                      bool                                         `json:"optional"`
 	}
 
@@ -152,12 +152,12 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Preparation.IconPath = input.Preparation.IconPath
 	}
 
-	if input.MinimumEstimatedTimeInSeconds != nil && *input.MinimumEstimatedTimeInSeconds != x.MinimumEstimatedTimeInSeconds {
-		x.MinimumEstimatedTimeInSeconds = *input.MinimumEstimatedTimeInSeconds
+	if input.MinimumEstimatedTimeInSeconds != nil && input.MinimumEstimatedTimeInSeconds != x.MinimumEstimatedTimeInSeconds {
+		x.MinimumEstimatedTimeInSeconds = input.MinimumEstimatedTimeInSeconds
 	}
 
-	if input.MaximumEstimatedTimeInSeconds != nil && *input.MaximumEstimatedTimeInSeconds != x.MaximumEstimatedTimeInSeconds {
-		x.MaximumEstimatedTimeInSeconds = *input.MaximumEstimatedTimeInSeconds
+	if input.MaximumEstimatedTimeInSeconds != nil && input.MaximumEstimatedTimeInSeconds != x.MaximumEstimatedTimeInSeconds {
+		x.MaximumEstimatedTimeInSeconds = input.MaximumEstimatedTimeInSeconds
 	}
 
 	if input.MinimumTemperatureInCelsius != nil && (x.MinimumTemperatureInCelsius == nil || (*input.MinimumTemperatureInCelsius != 0 && *input.MinimumTemperatureInCelsius != *x.MinimumTemperatureInCelsius)) {
@@ -222,8 +222,8 @@ func RecipeStepUpdateRequestInputFromRecipeStep(input *RecipeStep) *RecipeStepUp
 		BelongsToRecipe:               input.BelongsToRecipe,
 		Preparation:                   &input.Preparation,
 		Index:                         &input.Index,
-		MinimumEstimatedTimeInSeconds: &input.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: &input.MaximumEstimatedTimeInSeconds,
+		MinimumEstimatedTimeInSeconds: input.MinimumEstimatedTimeInSeconds,
+		MaximumEstimatedTimeInSeconds: input.MaximumEstimatedTimeInSeconds,
 		Optional:                      &input.Optional,
 		ExplicitInstructions:          &input.ExplicitInstructions,
 	}

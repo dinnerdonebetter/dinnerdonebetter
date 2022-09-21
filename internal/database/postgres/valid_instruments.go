@@ -255,7 +255,7 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 		filter = types.DefaultQueryFilter()
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validInstruments", query, args)
 	if err != nil {

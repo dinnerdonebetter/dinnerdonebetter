@@ -7,5 +7,8 @@ replace github.com/prixfixeco/api_server => ../../../
 
 require (
 	github.com/GoogleCloudPlatform/functions-framework-go v1.5.2
+	github.com/goccy/go-graphviz v0.0.9
 	github.com/prixfixeco/api_server v0.0.0-00010101000000-000000000000
+	go.opentelemetry.io/otel v1.3.0
+	gonum.org/v1/gonum v0.12.0
 )

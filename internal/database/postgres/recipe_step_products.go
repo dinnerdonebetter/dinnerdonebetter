@@ -291,7 +291,7 @@ func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeSte
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", query, args)
 	if err != nil {

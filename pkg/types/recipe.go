@@ -118,6 +118,7 @@ type (
 		SearchHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
+		DAGHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

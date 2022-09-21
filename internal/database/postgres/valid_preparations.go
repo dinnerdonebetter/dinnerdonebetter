@@ -229,7 +229,7 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validPreparations", query, args)
 	if err != nil {

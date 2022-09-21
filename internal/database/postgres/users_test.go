@@ -677,7 +677,7 @@ func TestQuerier_GetUsers(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -700,7 +700,7 @@ func TestQuerier_GetUsers(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -721,7 +721,7 @@ func TestQuerier_GetUsers(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -742,7 +742,7 @@ func TestQuerier_GetUsers(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).

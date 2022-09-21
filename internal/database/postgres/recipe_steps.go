@@ -229,7 +229,7 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipeSteps", query, args)
 	if err != nil {

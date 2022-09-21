@@ -496,6 +496,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 					Get(root, s.recipesService.ReadHandler)
 				singleRecipeRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
+					Get("/dag", s.recipesService.DAGHandler)
+				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipesPermission)).
 					Delete(root, s.recipesService.ArchiveHandler)
 				singleRecipeRouter.

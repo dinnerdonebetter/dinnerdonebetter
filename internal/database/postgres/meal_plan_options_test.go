@@ -313,7 +313,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		groupBys := []string{"meal_plan_options.id", "meals.id"}
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -357,7 +357,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		groupBys := []string{"meal_plan_options.id", "meals.id"}
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -381,7 +381,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		groupBys := []string{"meal_plan_options.id", "meals.id"}
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -405,7 +405,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		groupBys := []string{"meal_plan_options.id", "meals.id"}
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).

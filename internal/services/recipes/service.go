@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/graphing"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -24,6 +25,7 @@ type (
 	service struct {
 		logger                    logging.Logger
 		recipeDataManager         types.RecipeDataManager
+		recipeGrapher             graphing.RecipeDAGDiagramGenerator
 		recipeIDFetcher           func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
@@ -37,6 +39,7 @@ func ProvideService(
 	logger logging.Logger,
 	cfg *Config,
 	recipeDataManager types.RecipeDataManager,
+	recipeGrapher graphing.RecipeDAGDiagramGenerator,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
@@ -54,6 +57,7 @@ func ProvideService(
 		recipeDataManager:         recipeDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
+		recipeGrapher:             recipeGrapher,
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 

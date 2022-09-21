@@ -250,7 +250,6 @@ func (q *Querier) buildListQuery(
 	ownerID string,
 	forAdmin bool,
 	filter *types.QueryFilter,
-	includeCountQueries bool,
 ) (query string, args []interface{}) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -269,13 +268,11 @@ func (q *Querier) buildListQuery(
 	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, tableName, joins, where, ownershipColumn, ownerID, forAdmin, includeArchived, filter)
 	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, tableName, joins, where, ownershipColumn, ownerID, forAdmin, includeArchived)
 
-	if includeCountQueries {
-		columns = append(
-			columns,
-			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
-			fmt.Sprintf("(%s) as total_count", totalCountQuery),
-		)
-	}
+	columns = append(
+		columns,
+		fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+		fmt.Sprintf("(%s) as total_count", totalCountQuery),
+	)
 
 	builder := q.sqlBuilder.Select(columns...).From(tableName)
 	for _, join := range joins {
@@ -308,9 +305,7 @@ func (q *Querier) buildListQuery(
 	}
 
 	query, args = q.buildQuery(span, builder)
-	if includeCountQueries {
-		args = append(append(filteredCountQueryArgs, totalCountQueryArgs...), args...)
-	}
+	args = append(append(filteredCountQueryArgs, totalCountQueryArgs...), args...)
 
 	return query, args
 }

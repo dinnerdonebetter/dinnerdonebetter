@@ -373,7 +373,7 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "users", query, args)
 	if err != nil {

@@ -220,6 +220,11 @@ var (
 			Description: "nullable storage temps for products",
 			Script:      fetchMigration("00041_nullable_storage_temps_for_products"),
 		},
+		{
+			Version:     42,
+			Description: "nullable storage temps for products",
+			Script:      fetchMigration("00042_nullable_min_and_max_quantities_for_recipe_steps"),
+		},
 	}
 )
 

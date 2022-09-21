@@ -14,6 +14,7 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	graphing "github.com/prixfixeco/api_server/internal/graphing"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
@@ -100,6 +101,7 @@ func Build(
 		validpreparationinstrumentsservice.Providers,
 		validingredientmeasurementunitsservice.Providers,
 		advancedprepstepsservice.Providers,
+		graphing.Providers,
 	)
 
 	return nil, nil

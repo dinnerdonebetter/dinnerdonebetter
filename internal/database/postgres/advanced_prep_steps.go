@@ -135,8 +135,6 @@ func (q *Querier) GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID st
 
 	logger := q.logger.Clone()
 
-	x = &types.AdvancedPrepStep{}
-
 	if advancedPrepStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
@@ -184,7 +182,7 @@ func (q *Querier) GetAdvancedPrepSteps(ctx context.Context, filter *types.QueryF
 		filter = types.DefaultQueryFilter()
 	}
 
-	query, args := q.buildListQuery(ctx, "advanced_prep_steps", nil, nil, nil, "", advancedPrepStepsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "advanced_prep_steps", nil, nil, nil, "", advancedPrepStepsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "advanced prep steps", query, args)
 	if err != nil {
@@ -265,7 +263,7 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 		CannotCompleteAfter:  input.CannotCompleteAfter,
 		MealPlanOption:       types.MealPlanOption{ID: input.MealPlanOptionID},
 		RecipeStep:           types.RecipeStep{ID: input.RecipeStepID},
-		CreatedAt:            input.CreatedAt,
+		CreatedAt:            q.currentTime(),
 		Status:               input.Status,
 		StatusExplanation:    input.StatusExplanation,
 		CreationExplanation:  input.CreationExplanation,
