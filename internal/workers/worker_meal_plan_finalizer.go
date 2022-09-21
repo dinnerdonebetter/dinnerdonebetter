@@ -14,10 +14,6 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-const (
-	name = "meal_plan_finalizer"
-)
-
 // MealPlanFinalizationWorker finalizes meal plans.
 type MealPlanFinalizationWorker struct {
 	logger                logging.Logger
@@ -38,9 +34,11 @@ func ProvideMealPlanFinalizationWorker(
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
 ) *MealPlanFinalizationWorker {
+	n := "meal_plan_finalizer"
+
 	return &MealPlanFinalizationWorker{
-		logger:                logging.EnsureLogger(logger).WithName(name),
-		tracer:                tracing.NewTracer(tracerProvider.Tracer(name)),
+		logger:                logging.EnsureLogger(logger).WithName(n),
+		tracer:                tracing.NewTracer(tracerProvider.Tracer(n)),
 		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataManager:           dataManager,
 		postUpdatesPublisher:  postUpdatesPublisher,
