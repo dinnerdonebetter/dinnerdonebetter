@@ -54,7 +54,7 @@ func TestProvideChoresWorker(T *testing.T) {
 	})
 }
 
-func TestChoresWorker_HandleMessage(T *testing.T) {
+func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -77,6 +77,8 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 			testutils.ContextMatcher,
 		).Return(exampleMealPlans, nil)
 
+		mqm := &mockpublishers.Publisher{}
+
 		for _, mealPlan := range exampleMealPlans {
 			dbm.MealPlanDataManager.On(
 				"AttemptToFinalizeMealPlan",
@@ -84,13 +86,20 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 				mealPlan.ID,
 				mealPlan.BelongsToHousehold,
 			).Return(true, nil)
+
+			mqm.On(
+				"Publish",
+				testutils.ContextMatcher,
+				mock.AnythingOfType("*types.DataChangeMessage"),
+			).Return(nil)
 		}
 
 		worker := newTestChoresWorker(t)
 		worker.dataManager = dbm
+		worker.postUpdatesPublisher = mqm
 
-		assert.NoError(t, worker.HandleMessage(ctx, body))
+		assert.NoError(t, worker.FinalizeExpiredMealPlansWithoutReturningCount(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbm)
+		mock.AssertExpectationsForObjects(t, dbm, mqm)
 	})
 }

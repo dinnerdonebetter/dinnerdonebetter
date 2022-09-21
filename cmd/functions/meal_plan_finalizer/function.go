@@ -3,11 +3,16 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
+	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
+	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/workers"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 	"log"
+	"net/http"
+	"time"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"go.opentelemetry.io/otel"
-
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
@@ -73,7 +78,7 @@ type PubSubMessage struct {
 }
 
 // FinalizeMealPlans is our cloud function entrypoint.
-func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
+func FinalizeMealPlans(ctx context.Context, _ PubSubMessage) error {
 	logger := zerolog.NewZerologLogger()
 	logger.SetLevel(logging.DebugLevel)
 
@@ -82,14 +87,35 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 		return fmt.Errorf("error getting config: %w", err)
 	}
 
-	tracerProvider := tracing.NewNoopTracerProvider()
-	otel.SetTracerProvider(tracerProvider)
-	tracer := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer"))
+	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
+	if initializeTracerErr != nil {
+		logger.Error(initializeTracerErr, "initializing tracer")
+	}
+
+	cfg.Database.RunMigrations = false
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
-		return fmt.Errorf("error setting up database client: %w", err)
+		log.Fatal(err)
 	}
+
+	urlToUse := testutils.DetermineServiceURL().String()
+	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
+	testutils.EnsureServerIsUp(ctx, urlToUse)
+	dataManager.IsReady(ctx, 50)
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
@@ -101,7 +127,16 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 		log.Fatal(err)
 	}
 
-	changedCount, mealPlanFinalizationErr := finalizeMealPlans(ctx, logger, tracer, dataManager, dataChangesPublisher)
+	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
+		logger,
+		dataManager,
+		dataChangesPublisher,
+		emailer,
+		cdp,
+		tracerProvider,
+	)
+
+	changedCount, mealPlanFinalizationErr := mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx, nil)
 	if mealPlanFinalizationErr != nil {
 		return fmt.Errorf("finalizing meal plans: %w", mealPlanFinalizationErr)
 	}

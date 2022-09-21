@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (
@@ -48,15 +49,8 @@ func ProvideMealPlanFinalizationWorker(
 	}
 }
 
-// HandleMessage handles a message ordering the finalization of expired meal plans.
-func (w *MealPlanFinalizationWorker) HandleMessage(ctx context.Context, _ []byte) error {
-	ctx, span := w.tracer.StartSpan(ctx)
-	defer span.End()
-
-	return w.finalizeExpiredMealPlans(ctx)
-}
-
-func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Context) error {
+// finalizeExpiredMealPlans handles a message ordering the finalization of expired meal plans.
+func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Context) (int, error) {
 	_, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -64,21 +58,44 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 
 	mealPlans, fetchMealPlansErr := w.dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 	if fetchMealPlansErr != nil {
-		return observability.PrepareAndLogError(fetchMealPlansErr, logger, span, "fetching unfinalized and expired meal plan")
+		return -1, observability.PrepareAndLogError(fetchMealPlansErr, logger, span, "fetching unfinalized and expired meal plan")
 	}
 
 	logger.WithValue("quantity", len(mealPlans)).Info("finalizing expired meal plans")
 
+	var changedCount int
 	for _, mealPlan := range mealPlans {
 		changed, err := w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
 		if err != nil {
-			return observability.PrepareError(err, span, "finalizing meal plan")
+			return -1, observability.PrepareError(err, span, "finalizing meal plan")
 		}
 
-		if !changed {
-			logger.Debug("meal plan was not changed")
+		if changed {
+			changedCount++
+
+			if dataChangePublishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
+				DataType:                  types.MealPlanDataType,
+				EventType:                 types.MealPlanFinalizedCustomerEventType,
+				MealPlan:                  mealPlan,
+				MealPlanID:                mealPlan.ID,
+				Context:                   map[string]string{},
+				AttributableToHouseholdID: mealPlan.BelongsToHousehold,
+			}); dataChangePublishErr != nil {
+				observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message")
+			}
 		}
 	}
 
-	return nil
+	return changedCount, nil
+}
+
+// FinalizeExpiredMealPlans handles a message ordering the finalization of expired meal plans.
+func (w *MealPlanFinalizationWorker) FinalizeExpiredMealPlans(ctx context.Context, _ []byte) (int, error) {
+	return w.finalizeExpiredMealPlans(ctx)
+}
+
+// FinalizeExpiredMealPlansWithoutReturningCount handles a message ordering the finalization of expired meal plans.
+func (w *MealPlanFinalizationWorker) FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context, _ []byte) error {
+	_, err := w.finalizeExpiredMealPlans(ctx)
+	return err
 }
