@@ -109,7 +109,7 @@ func main() {
 		tracerProvider,
 	)
 
-	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, mealPlanFinalizationWorker.HandleMessage)
+	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, mealPlanFinalizationWorker.FinalizeExpiredMealPlansWithoutReturningCount)
 	if err != nil {
 		log.Fatal(err)
 	}
