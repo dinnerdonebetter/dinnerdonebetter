@@ -64,14 +64,6 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 			return observability.PrepareError(err, nil, "notifying customer data platform")
 		}
 		return nil
-	case types.UserLoggedInCustomerEventType:
-		break
-	case types.UserChangedActiveHouseholdCustomerEventType:
-		break
-	case types.UserLoggedOutCustomerEventType:
-		break
-	case types.TwoFactorSecretVerifiedCustomerEventType:
-		break
 	case types.APIClientCreatedCustomerEventType:
 		eventContext[keys.APIClientDatabaseIDKey] = changeMessage.APIClientID
 	case types.APIClientArchivedCustomerEventType:
@@ -80,8 +72,6 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
 	case types.HouseholdUpdatedCustomerEventType:
 		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
-	case types.HouseholdArchivedCustomerEventType:
-		break
 	case types.HouseholdMembershipPermissionsUpdatedCustomerEventType:
 		eventContext[keys.HouseholdIDKey] = changeMessage.HouseholdID
 	case types.HouseholdInvitationCreatedCustomerEventType:

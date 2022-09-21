@@ -3,13 +3,15 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
+	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/workers"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/prixfixeco/api_server/internal/config"
-	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
-	"github.com/prixfixeco/api_server/internal/messagequeue"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -29,7 +31,7 @@ type PubSubMessage struct {
 }
 
 // CreateAdvancedPrepSteps is our cloud function entrypoint.
-func CreateAdvancedPrepSteps(ctx context.Context, m PubSubMessage) error {
+func CreateAdvancedPrepSteps(ctx context.Context, _ PubSubMessage) error {
 	logger := zerolog.NewZerologLogger()
 	logger.SetLevel(logging.DebugLevel)
 
@@ -37,15 +39,25 @@ func CreateAdvancedPrepSteps(ctx context.Context, m PubSubMessage) error {
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
+	cfg.Database.RunMigrations = false
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 	otel.SetTracerProvider(tracerProvider)
-	tracer := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer"))
+
+	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
-		return fmt.Errorf("error setting up database client: %w", err)
+		log.Fatal(err)
 	}
+
+	urlToUse := testutils.DetermineServiceURL().String()
+	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
+	testutils.EnsureServerIsUp(ctx, urlToUse)
+	dataManager.IsReady(ctx, 50)
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
@@ -57,28 +69,23 @@ func CreateAdvancedPrepSteps(ctx context.Context, m PubSubMessage) error {
 		log.Fatal(err)
 	}
 
-	if mainErr := ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx, tracer, dataManager, dataChangesPublisher); mainErr != nil {
-		observability.AcknowledgeError(mainErr, logger, nil, "closing database connection")
-		return mainErr
+	advancedPrepStepCreationEnsurerWorker := workers.ProvideAdvancedPrepStepCreationEnsurerWorker(
+		logger,
+		dataManager,
+		dataChangesPublisher,
+		cdp,
+		tracerProvider,
+	)
+
+	if err = advancedPrepStepCreationEnsurerWorker.HandleMessage(ctx, nil); err != nil {
+		observability.AcknowledgeError(err, logger, nil, "closing database connection")
+		return err
 	}
 
 	if closeErr := dataManager.DB().Close(); closeErr != nil {
 		observability.AcknowledgeError(closeErr, logger, nil, "closing database connection")
 		return closeErr
 	}
-
-	return nil
-}
-
-func ensureAdvancedPrepStepsAreCreatedForUpcomingMealPlans(ctx context.Context, tracer tracing.Tracer, dbmanager database.DataManager, publisher messagequeue.Publisher) error {
-	_, span := tracer.StartSpan(ctx)
-	defer span.End()
-
-	// get all meal plans that are due to start in the coming week
-
-	// iterate through the chosen meal plan options and for the chosen ones, check to see if they have any pure steps
-
-	// for all pure steps, figure out which, if any, need to be created in the database
 
 	return nil
 }
