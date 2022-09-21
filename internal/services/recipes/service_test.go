@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	"github.com/prixfixeco/api_server/internal/graphing"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -49,6 +50,7 @@ func TestProvideRecipesService(T *testing.T) {
 			logging.NewNoopLogger(),
 			cfg,
 			&mocktypes.RecipeDataManager{},
+			&graphing.MockRecipeGrapher{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -75,6 +77,7 @@ func TestProvideRecipesService(T *testing.T) {
 			logging.NewNoopLogger(),
 			cfg,
 			&mocktypes.RecipeDataManager{},
+			&graphing.MockRecipeGrapher{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

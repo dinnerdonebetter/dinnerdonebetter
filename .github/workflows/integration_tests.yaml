@@ -1,7 +1,7 @@
-on: [gollum]
-#  pull_request:
-#    branches:
-#      - dev
+on: # [gollum]
+  pull_request:
+    branches:
+      - dev
 name: Integration Tests
 jobs:
   integration_tests:

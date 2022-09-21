@@ -172,7 +172,7 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "api_clients", nil, nil, nil, userOwnershipColumn, apiClientsTableColumns, userID, false, filter, true)
+	query, args := q.buildListQuery(ctx, "api_clients", nil, nil, nil, userOwnershipColumn, apiClientsTableColumns, userID, false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "API clients", query, args)
 	if err != nil {

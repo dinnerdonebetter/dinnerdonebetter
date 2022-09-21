@@ -30,8 +30,8 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 func convertRecipeStepToRecipeStepUpdateInput(x *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
 	return &types.RecipeStepUpdateRequestInput{
 		Index:                         &x.Index,
-		MinimumEstimatedTimeInSeconds: &x.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: &x.MaximumEstimatedTimeInSeconds,
+		MinimumEstimatedTimeInSeconds: x.MinimumEstimatedTimeInSeconds,
+		MaximumEstimatedTimeInSeconds: x.MaximumEstimatedTimeInSeconds,
 		MinimumTemperatureInCelsius:   x.MinimumTemperatureInCelsius,
 		MaximumTemperatureInCelsius:   x.MaximumTemperatureInCelsius,
 		Preparation:                   &x.Preparation,

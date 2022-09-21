@@ -213,7 +213,7 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "meals", nil, nil, nil, "", mealsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "meals", nil, nil, nil, "", mealsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "meals", query, args)
 	if err != nil {

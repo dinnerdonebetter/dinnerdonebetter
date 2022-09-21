@@ -198,7 +198,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, false, filter, true)
+	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "mealPlans", query, args)
 	if err != nil {
@@ -540,6 +540,10 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 	}
 
 	results = append(results, result)
+
+	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
+		return nil, observability.PrepareError(err, span, "closing rows")
+	}
 
 	return results, nil
 }

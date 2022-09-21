@@ -20,6 +20,8 @@ func TestNewSendGridEmailer(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
 		logger := logging.NewNoopLogger()
 
 		client, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), &http.Client{})

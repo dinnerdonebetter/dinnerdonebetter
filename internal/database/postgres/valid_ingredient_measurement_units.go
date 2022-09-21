@@ -381,7 +381,7 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 		"valid_ingredient_measurement_units.id",
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_ingredient_measurement_units", joins, groupBys, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "valid_ingredient_measurement_units", joins, groupBys, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validIngredientMeasurementUnits", query, args)
 	if err != nil {

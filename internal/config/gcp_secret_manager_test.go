@@ -62,6 +62,8 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
 		baseConfig := &InstanceConfig{
 			Observability: observability.Config{},
 			Email: emailconfig.Config{

@@ -434,7 +434,9 @@ func localDevelopmentServiceConfig(ctx context.Context, filePath string) error {
 
 func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
 	cfg := buildLocalDevConfig()
+
 	cfg.Database.LogQueries = false
+	cfg.Database.RunMigrations = false
 
 	return saveConfig(ctx, filePath, cfg, true, true)
 }

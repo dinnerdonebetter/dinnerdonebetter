@@ -14,6 +14,7 @@ import (
 	config2 "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/graphing"
 	config3 "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
@@ -141,7 +142,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	recipesConfig := &servicesConfigurations.Recipes
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
-	recipeDataService, err := recipes.ProvideService(logger, recipesConfig, recipeDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeGrapher := graphing.NewRecipeGrapher(tracerProvider)
+	recipeDataService, err := recipes.ProvideService(logger, recipesConfig, recipeDataManager, recipeGrapher, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
