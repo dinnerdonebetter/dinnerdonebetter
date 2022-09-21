@@ -3,26 +3,27 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
-	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/internal/workers"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
 	"log"
 	"net/http"
 	"time"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+
 	"github.com/prixfixeco/api_server/internal/config"
+	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
+	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/workers"
 	"github.com/prixfixeco/api_server/pkg/types"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 const (
