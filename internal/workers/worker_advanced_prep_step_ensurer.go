@@ -85,6 +85,10 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 		}
 	}
 
+	if result == nil {
+		return nil
+	}
+
 	return result
 }
 
