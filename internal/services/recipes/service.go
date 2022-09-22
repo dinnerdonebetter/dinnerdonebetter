@@ -25,7 +25,7 @@ type (
 	service struct {
 		logger                    logging.Logger
 		recipeDataManager         types.RecipeDataManager
-		recipeGrapher             graphing.RecipeDAGDiagramGenerator
+		recipeGrapher             graphing.RecipeGrapher
 		recipeIDFetcher           func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
@@ -39,7 +39,7 @@ func ProvideService(
 	logger logging.Logger,
 	cfg *Config,
 	recipeDataManager types.RecipeDataManager,
-	recipeGrapher graphing.RecipeDAGDiagramGenerator,
+	recipeGrapher graphing.RecipeGrapher,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,

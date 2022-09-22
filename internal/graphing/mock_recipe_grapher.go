@@ -9,11 +9,18 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-var _ RecipeDAGDiagramGenerator = (*MockRecipeGrapher)(nil)
+var _ RecipeGrapher = (*MockRecipeGrapher)(nil)
 
-// MockRecipeGrapher is a mock RecipeDAGDiagramGenerator.
+// MockRecipeGrapher is a mock RecipeGrapher.
 type MockRecipeGrapher struct {
 	mock.Mock
+}
+
+// FindStepsEligibleForAdvancedCreation implements our interface.
+func (m *MockRecipeGrapher) FindStepsEligibleForAdvancedCreation(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
+	returnArgs := m.Called(ctx, recipe)
+
+	return returnArgs.Get(0).([]*types.RecipeStep), returnArgs.Error(1)
 }
 
 // GenerateDAGDiagramForRecipe implements our interface.

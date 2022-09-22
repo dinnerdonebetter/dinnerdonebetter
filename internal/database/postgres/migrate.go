@@ -225,6 +225,11 @@ var (
 			Description: "nullable storage temps for products",
 			Script:      fetchMigration("00042_nullable_min_and_max_quantities_for_recipe_steps"),
 		},
+		{
+			Version:     43,
+			Description: "remove constraint on advanced prep steps",
+			Script:      fetchMigration("00043_remove_constraint_on_advanced_prep_steps"),
+		},
 	}
 )
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
+	"github.com/prixfixeco/api_server/internal/graphing"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/workers"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -72,6 +73,7 @@ func CreateAdvancedPrepSteps(ctx context.Context, _ PubSubMessage) error {
 	advancedPrepStepCreationEnsurerWorker := workers.ProvideAdvancedPrepStepCreationEnsurerWorker(
 		logger,
 		dataManager,
+		graphing.NewRecipeGrapher(tracerProvider),
 		dataChangesPublisher,
 		cdp,
 		tracerProvider,

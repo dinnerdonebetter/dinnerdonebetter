@@ -48,27 +48,28 @@ func graphIDForStep(step *types.RecipeStep) int64 {
 	return int64(step.Index + 1)
 }
 
-// RecipeDAGDiagramGenerator generates DAG diagrams from recipes.
-type RecipeDAGDiagramGenerator interface {
+// RecipeGrapher generates DAG diagrams from recipes.
+type RecipeGrapher interface {
 	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
+	FindStepsEligibleForAdvancedCreation(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error)
 }
 
-var _ RecipeDAGDiagramGenerator = (*RecipeGrapher)(nil)
+var _ RecipeGrapher = (*recipeGrapher)(nil)
 
-// RecipeGrapher creates graphs from recipes.
-type RecipeGrapher struct {
+// recipeGrapher creates graphs from recipes.
+type recipeGrapher struct {
 	tracer tracing.Tracer
 }
 
-// NewRecipeGrapher creates a RecipeGrapher.
-func NewRecipeGrapher(tracerProvider tracing.TracerProvider) RecipeDAGDiagramGenerator {
-	return &RecipeGrapher{
+// NewRecipeGrapher creates a recipeGrapher.
+func NewRecipeGrapher(tracerProvider tracing.TracerProvider) RecipeGrapher {
+	return &recipeGrapher{
 		tracer: tracing.NewTracer(tracerProvider.Tracer("recipe_grapher")),
 	}
 }
 
 // GenerateDAGDiagramForRecipe generates DAG diagrams for a given recipe.
-func (g *RecipeGrapher) GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error) {
+func (g *recipeGrapher) GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -82,7 +83,7 @@ func (g *RecipeGrapher) GenerateDAGDiagramForRecipe(ctx context.Context, recipe 
 		return nil, err
 	}
 
-	_, err = g.findStepsEligibleFor(ctx, recipe)
+	_, err = g.FindStepsEligibleForAdvancedCreation(ctx, recipe)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +91,7 @@ func (g *RecipeGrapher) GenerateDAGDiagramForRecipe(ctx context.Context, recipe 
 	return img, nil
 }
 
-func (g *RecipeGrapher) makeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
+func (g *recipeGrapher) makeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -135,7 +136,7 @@ func (g *RecipeGrapher) makeGraphForRecipe(ctx context.Context, recipe *types.Re
 	return recipeGraph, nil
 }
 
-func (g *RecipeGrapher) renderGraph(ctx context.Context, recipeGraph graph.Graph) (image.Image, error) {
+func (g *recipeGrapher) renderGraph(ctx context.Context, recipeGraph graph.Graph) (image.Image, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -158,7 +159,8 @@ func (g *RecipeGrapher) renderGraph(ctx context.Context, recipeGraph graph.Graph
 	return img, nil
 }
 
-func (g *RecipeGrapher) findStepsEligibleFor(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
+// FindStepsEligibleForAdvancedCreation finds steps eligible for advanced creation.
+func (g *recipeGrapher) FindStepsEligibleForAdvancedCreation(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -187,17 +189,11 @@ func (g *RecipeGrapher) findStepsEligibleFor(ctx context.Context, recipe *types.
 			nID := n.ID()
 
 			to := recipeGraph.To(nID)
-			toLen := to.Len()
-			_ = toLen
-
 			for to.Next() {
 				f := to.Node()
 				fID := f.ID()
 
 				toParent := recipeGraph.To(fID)
-				toParentLen := to.Len()
-				_ = toParentLen
-
 				if toParent.Len() > 0 {
 					assholeNodes[node.ID()] = node
 				}
