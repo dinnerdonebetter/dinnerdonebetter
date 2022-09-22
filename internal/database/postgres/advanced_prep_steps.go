@@ -235,6 +235,9 @@ func (q *Querier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context, m
 //go:embed queries/advanced_prep_steps/create.sql
 var createAdvancedPrepStepQuery string
 
+//go:embed queries/meal_plan_options/mark_as_steps_created.sql
+var markMealPlanOptionAsHavingStepsCreatedQuery string
+
 // CreateAdvancedPrepStep creates advanced prep steps.
 func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.AdvancedPrepStepDatabaseCreationInput) (*types.AdvancedPrepStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -242,7 +245,12 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 
 	logger := q.logger.Clone()
 
-	args := []interface{}{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	createAdvancedPrepStepArgs := []interface{}{
 		input.ID,
 		input.MealPlanOptionID,
 		input.RecipeStepID,
@@ -253,8 +261,23 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 		input.CannotCompleteAfter,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "create advanced prep step", createAdvancedPrepStepQuery, args); err != nil {
+	if err = q.performWriteQuery(ctx, tx, "create advanced prep step", createAdvancedPrepStepQuery, createAdvancedPrepStepArgs); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "create advanced prep step")
+	}
+
+	// mark prep steps as created for step
+	markMealPlanOptionAsHavingStepsCreatedArgs := []interface{}{
+		input.MealPlanOptionID,
+	}
+
+	if err = q.performWriteQuery(ctx, tx, "create advanced prep step", markMealPlanOptionAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareAndLogError(err, logger, span, "create advanced prep step")
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		return nil, observability.PrepareAndLogError(commitErr, logger, span, "committing transaction")
 	}
 
 	x := &types.AdvancedPrepStep{

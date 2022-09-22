@@ -53,6 +53,8 @@ type (
 		ValidPreparationInstrument       *ValidPreparationInstrument     `json:"validPreparationInstrument,omitempty"`
 		ValidIngredientMeasurementUnitID string                          `json:"validIngredientMeasurementUnitID,omitempty"`
 		ValidIngredientMeasurementUnit   *ValidIngredientMeasurementUnit `json:"validIngredientMeasurementUnit,omitempty"`
+		AdvancedPrepStep                 *AdvancedPrepStep               `json:"advancedPrepStep,omitempty"`
+		AdvancedPrepStepID               string                          `json:"advancedPrepStepID,omitempty"`
 		Context                          map[string]string               `json:"context,omitempty"`
 		AttributableToUserID             string                          `json:"attributableToUserID,omitempty"`
 		AttributableToHouseholdID        string                          `json:"attributableToHouseholdID,omitempty"`

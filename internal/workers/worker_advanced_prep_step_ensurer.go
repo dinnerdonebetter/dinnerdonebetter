@@ -3,8 +3,10 @@ package workers
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
@@ -58,37 +60,58 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
-	_, err := w.DetermineCreatableSteps(ctx)
-	return err
+	steps, err := w.DetermineCreatableSteps(ctx)
+	if err != nil {
+		return observability.PrepareError(err, nil, "determining creatable steps")
+	}
+
+	var result *multierror.Error
+	for _, step := range steps {
+		createdStep, creationErr := w.dataManager.CreateAdvancedPrepStep(ctx, step)
+		if creationErr != nil {
+			result = multierror.Append(result, creationErr)
+		}
+
+		if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
+			DataType:                  types.AdvancedPrepStepDataType,
+			EventType:                 types.AdvancedPrepStepCreatedCustomerEventType,
+			AdvancedPrepStep:          createdStep,
+			AdvancedPrepStepID:        createdStep.ID,
+			HouseholdID:               "",
+			Context:                   nil,
+			AttributableToHouseholdID: "",
+		}); err != nil {
+			result = multierror.Append(result, publishErr)
+		}
+	}
+
+	return result
 }
 
-// frozenIngredientDefrostStepsFilter iterates through a recipe and returns the list of
-// ingredients within that are indicated as kept frozen.
-func frozenIngredientDefrostStepsFilter(recipe *types.Recipe) []*types.RecipeStep {
-	out := []*types.RecipeStep{}
+// frozenIngredientDefrostStepsFilter iterates through a recipe and returns
+// the list of ingredients within that are indicated as kept frozen.
+func frozenIngredientDefrostStepsFilter(recipe *types.Recipe) map[string][]int {
+	out := map[string][]int{}
 
 	for _, recipeStep := range recipe.Steps {
-		for _, ingredient := range recipeStep.Ingredients {
+		ingredientIndices := []int{}
+		for i, ingredient := range recipeStep.Ingredients {
 			// if it's a valid ingredient
 			if ingredient.Ingredient != nil &&
 				// if the ingredient has storage temperature set
 				ingredient.Ingredient.MinimumIdealStorageTemperatureInCelsius != nil &&
 				// the ingredient's storage temperature is set to something about freezing temperature.
 				*ingredient.Ingredient.MinimumIdealStorageTemperatureInCelsius <= 3 {
-				out = append(out, recipeStep)
+				ingredientIndices = append(ingredientIndices, i)
 			}
+		}
+
+		if len(ingredientIndices) > 0 {
+			out[recipeStep.ID] = ingredientIndices
 		}
 	}
 
 	return out
-}
-
-func earlierTime(t1, t2 time.Time) time.Time {
-	if t1.After(t2) {
-		return t2
-	} else {
-		return t1
-	}
 }
 
 func whicheverIsLater(t1, t2 time.Time) time.Time {
@@ -97,6 +120,26 @@ func whicheverIsLater(t1, t2 time.Time) time.Time {
 	} else {
 		return t1
 	}
+}
+
+func buildThawStepCreationExplanation(ingredientIndices []int) string {
+	if len(ingredientIndices) == 0 {
+		return ""
+	}
+
+	stringIndices := []string{}
+	for _, i := range ingredientIndices {
+		stringIndices = append(stringIndices, fmt.Sprintf("#%d", i+1))
+	}
+
+	var d string
+	if len(ingredientIndices) > 1 {
+		d = "ingredients"
+	} else if len(ingredientIndices) == 1 {
+		d = "ingredient"
+	}
+
+	return fmt.Sprintf("frozen %s (%s) might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "))
 }
 
 // DetermineCreatableSteps determines which advanced prep steps are creatable for a recipe.
@@ -125,15 +168,20 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 			}
 
 			frozenIngredientSteps := frozenIngredientDefrostStepsFilter(recipe)
-			for _, step := range frozenIngredientSteps {
+			for stepID, ingredientIndices := range frozenIngredientSteps {
+				explanation := buildThawStepCreationExplanation(ingredientIndices)
+				if explanation == "" {
+					continue
+				}
+
 				inputs = append(inputs, &types.AdvancedPrepStepDatabaseCreationInput{
 					ID:                   ksuid.New().String(),
 					CannotCompleteBefore: mealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
 					CannotCompleteAfter:  mealPlanEvent.StartsAt.Add(-time.Hour * 24),
 					Status:               types.AdvancedPrepStepStatusUnfinished,
-					CreationExplanation:  "frozen ingredient in need of thawing",
+					CreationExplanation:  explanation,
 					MealPlanOptionID:     result.MealPlanOptionID,
-					RecipeStepID:         step.ID,
+					RecipeStepID:         stepID,
 				})
 			}
 
@@ -161,7 +209,7 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 					CannotCompleteBefore: cannotCompleteBefore,
 					CannotCompleteAfter:  cannotCompleteAfter,
 					Status:               types.AdvancedPrepStepStatusUnfinished,
-					CreationExplanation:  "",
+					CreationExplanation:  "adequate storage instructions for early step",
 					MealPlanOptionID:     result.MealPlanOptionID,
 					RecipeStepID:         step.ID,
 				})

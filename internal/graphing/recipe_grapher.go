@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"image"
+	"strings"
 
 	"github.com/goccy/go-graphviz"
 	"gonum.org/v1/gonum/graph"
@@ -205,7 +206,14 @@ func (g *recipeGrapher) FindStepsEligibleForAdvancedCreation(ctx context.Context
 	for id := range nodesWithOnlyDependencies {
 		if _, ok := assholeNodes[id]; !ok {
 			for _, step := range recipe.Steps {
-				if graphIDForStep(step) == id {
+				allProductsHaveStorageInstructionsAndDurations := true
+				for _, product := range step.Products {
+					if product.MaximumStorageDurationInSeconds == 0 || strings.TrimSpace(product.StorageInstructions) == "" {
+						allProductsHaveStorageInstructionsAndDurations = false
+					}
+				}
+
+				if graphIDForStep(step) == id && allProductsHaveStorageInstructionsAndDurations {
 					stepsWorthNotifyingAbout = append(stepsWorthNotifyingAbout, step)
 				}
 			}
