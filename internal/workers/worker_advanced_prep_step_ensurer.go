@@ -117,9 +117,8 @@ func frozenIngredientDefrostStepsFilter(recipe *types.Recipe) map[string][]int {
 func whicheverIsLater(t1, t2 time.Time) time.Time {
 	if t2.After(t1) {
 		return t2
-	} else {
-		return t1
 	}
+	return t1
 }
 
 func buildThawStepCreationExplanation(ingredientIndices []int) string {
