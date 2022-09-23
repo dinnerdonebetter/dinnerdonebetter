@@ -5,9 +5,7 @@ import (
 	"fmt"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/graphing"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/workers"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
@@ -55,10 +53,9 @@ func CreateAdvancedPrepSteps(ctx context.Context, _ PubSubMessage) error {
 		log.Fatal(err)
 	}
 
-	urlToUse := testutils.DetermineServiceURL().String()
-	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	testutils.EnsureServerIsUp(ctx, urlToUse)
-	dataManager.IsReady(ctx, 50)
+	if !dataManager.IsReady(ctx, 50) {
+		log.Fatal("database is not ready")
+	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {

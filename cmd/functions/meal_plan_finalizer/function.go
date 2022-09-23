@@ -17,13 +17,11 @@ import (
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/workers"
 	"github.com/prixfixeco/api_server/pkg/types"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 const (
@@ -113,10 +111,9 @@ func FinalizeMealPlans(ctx context.Context, _ PubSubMessage) error {
 		log.Fatal(err)
 	}
 
-	urlToUse := testutils.DetermineServiceURL().String()
-	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	testutils.EnsureServerIsUp(ctx, urlToUse)
-	dataManager.IsReady(ctx, 50)
+	if !dataManager.IsReady(ctx, 50) {
+		log.Fatal("database is not ready")
+	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
