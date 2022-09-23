@@ -239,7 +239,7 @@ var createAdvancedPrepStepQuery string
 var markMealPlanOptionAsHavingStepsCreatedQuery string
 
 // CreateAdvancedPrepStep creates advanced prep steps.
-func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.AdvancedPrepStepDatabaseCreationInput) (*types.AdvancedPrepStep, error) {
+func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, mealPlanOptionID string, inputs []*types.AdvancedPrepStepDatabaseCreationInput) ([]*types.AdvancedPrepStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -250,25 +250,41 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	createAdvancedPrepStepArgs := []interface{}{
-		input.ID,
-		input.MealPlanOptionID,
-		input.RecipeStepID,
-		input.Status,
-		input.StatusExplanation,
-		input.CreationExplanation,
-		input.CannotCompleteBefore,
-		input.CannotCompleteAfter,
-	}
+	outputs := []*types.AdvancedPrepStep{}
+	for _, input := range inputs {
+		createAdvancedPrepStepArgs := []interface{}{
+			input.ID,
+			mealPlanOptionID,
+			input.RecipeStepID,
+			input.Status,
+			input.StatusExplanation,
+			input.CreationExplanation,
+			input.CannotCompleteBefore,
+			input.CannotCompleteAfter,
+		}
 
-	if err = q.performWriteQuery(ctx, tx, "create advanced prep step", createAdvancedPrepStepQuery, createAdvancedPrepStepArgs); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareAndLogError(err, logger, span, "create advanced prep step")
+		if err = q.performWriteQuery(ctx, tx, "create advanced prep step", createAdvancedPrepStepQuery, createAdvancedPrepStepArgs); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareAndLogError(err, logger, span, "create advanced prep step")
+		}
+
+		outputs = append(outputs, &types.AdvancedPrepStep{
+			ID:                   input.ID,
+			CannotCompleteBefore: input.CannotCompleteBefore,
+			CannotCompleteAfter:  input.CannotCompleteAfter,
+			MealPlanOption:       types.MealPlanOption{ID: mealPlanOptionID},
+			RecipeStep:           types.RecipeStep{ID: input.RecipeStepID},
+			CreatedAt:            q.currentTime(),
+			Status:               input.Status,
+			StatusExplanation:    input.StatusExplanation,
+			CreationExplanation:  input.CreationExplanation,
+			SettledAt:            input.CompletedAt,
+		})
 	}
 
 	// mark prep steps as created for step
 	markMealPlanOptionAsHavingStepsCreatedArgs := []interface{}{
-		input.MealPlanOptionID,
+		mealPlanOptionID,
 	}
 
 	if err = q.performWriteQuery(ctx, tx, "create advanced prep step", markMealPlanOptionAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
@@ -280,22 +296,9 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, input *types.Advan
 		return nil, observability.PrepareAndLogError(commitErr, logger, span, "committing transaction")
 	}
 
-	x := &types.AdvancedPrepStep{
-		ID:                   input.ID,
-		CannotCompleteBefore: input.CannotCompleteBefore,
-		CannotCompleteAfter:  input.CannotCompleteAfter,
-		MealPlanOption:       types.MealPlanOption{ID: input.MealPlanOptionID},
-		RecipeStep:           types.RecipeStep{ID: input.RecipeStepID},
-		CreatedAt:            q.currentTime(),
-		Status:               input.Status,
-		StatusExplanation:    input.StatusExplanation,
-		CreationExplanation:  input.CreationExplanation,
-		SettledAt:            input.CompletedAt,
-	}
+	logger.Info("advanced steps created")
 
-	logger.Info("advanced step created")
-
-	return x, nil
+	return outputs, nil
 }
 
 //go:embed queries/advanced_prep_steps/complete.sql

@@ -76,7 +76,7 @@ type (
 	AdvancedPrepStepDataManager interface {
 		GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID string) (*AdvancedPrepStep, error)
 		GetAdvancedPrepSteps(ctx context.Context, filter *QueryFilter) (*AdvancedPrepStepList, error)
-		CreateAdvancedPrepStep(ctx context.Context, input *AdvancedPrepStepDatabaseCreationInput) (*AdvancedPrepStep, error)
+		CreateAdvancedPrepStep(ctx context.Context, mealPlanOptionID string, inputs []*AdvancedPrepStepDatabaseCreationInput) ([]*AdvancedPrepStep, error)
 		MarkAdvancedPrepStepAsComplete(ctx context.Context, advancedPrepStepID string) error
 	}
 

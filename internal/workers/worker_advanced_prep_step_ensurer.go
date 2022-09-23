@@ -60,28 +60,30 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
-	steps, err := w.DetermineCreatableSteps(ctx)
+	optionsAndSteps, err := w.DetermineCreatableSteps(ctx)
 	if err != nil {
 		return observability.PrepareError(err, nil, "determining creatable steps")
 	}
 
 	var result *multierror.Error
-	for _, step := range steps {
-		createdStep, creationErr := w.dataManager.CreateAdvancedPrepStep(ctx, step)
+	for mealPlanOptionID, steps := range optionsAndSteps {
+		createdSteps, creationErr := w.dataManager.CreateAdvancedPrepStep(ctx, mealPlanOptionID, steps)
 		if creationErr != nil {
 			result = multierror.Append(result, creationErr)
 		}
 
-		if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-			DataType:                  types.AdvancedPrepStepDataType,
-			EventType:                 types.AdvancedPrepStepCreatedCustomerEventType,
-			AdvancedPrepStep:          createdStep,
-			AdvancedPrepStepID:        createdStep.ID,
-			HouseholdID:               "",
-			Context:                   nil,
-			AttributableToHouseholdID: "",
-		}); err != nil {
-			result = multierror.Append(result, publishErr)
+		for _, createdStep := range createdSteps {
+			if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
+				DataType:                  types.AdvancedPrepStepDataType,
+				EventType:                 types.AdvancedPrepStepCreatedCustomerEventType,
+				AdvancedPrepStep:          createdStep,
+				AdvancedPrepStepID:        createdStep.ID,
+				HouseholdID:               "",
+				Context:                   nil,
+				AttributableToHouseholdID: "",
+			}); err != nil {
+				result = multierror.Append(result, publishErr)
+			}
 		}
 	}
 
@@ -145,7 +147,7 @@ func buildThawStepCreationExplanation(ingredientIndices []int) string {
 	return fmt.Sprintf("frozen %s (%s) might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "))
 }
 
-func determineCreationMinAndMaxTimesForStep(step *types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (time.Time, time.Time) {
+func determineCreationMinAndMaxTimesForRecipeStep(step *types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (cannotCompleteBefore, cannotCompleteAfter time.Time) {
 	var (
 		shortestDuration,
 		longestDuration uint32
@@ -161,8 +163,8 @@ func determineCreationMinAndMaxTimesForStep(step *types.RecipeStep, mealPlanEven
 		}
 	}
 
-	cannotCompleteBefore := whicheverIsLater(time.Now(), mealPlanEvent.StartsAt.Add(time.Duration(shortestDuration)*-time.Second))
-	cannotCompleteAfter := whicheverIsLater(mealPlanEvent.StartsAt, mealPlanEvent.StartsAt.Add(time.Duration(longestDuration)*-time.Second))
+	cannotCompleteBefore = whicheverIsLater(time.Now(), mealPlanEvent.StartsAt.Add(time.Duration(shortestDuration)*-time.Second))
+	cannotCompleteAfter = whicheverIsLater(mealPlanEvent.StartsAt, mealPlanEvent.StartsAt.Add(time.Duration(longestDuration)*-time.Second))
 
 	return cannotCompleteBefore, cannotCompleteAfter
 }
@@ -170,17 +172,21 @@ func determineCreationMinAndMaxTimesForStep(step *types.RecipeStep, mealPlanEven
 const advancedStepCreationExplanation = "adequate storage instructions for early step"
 
 // DetermineCreatableSteps determines which advanced prep steps are creatable for a recipe.
-func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx context.Context) ([]*types.AdvancedPrepStepDatabaseCreationInput, error) {
+func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx context.Context) (map[string][]*types.AdvancedPrepStepDatabaseCreationInput, error) {
 	results, err := w.dataManager.GetFinalizedMealPlanIDsForTheNextWeek(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting finalized meal plan data for the next week")
 	}
 
-	inputs := []*types.AdvancedPrepStepDatabaseCreationInput{}
+	inputs := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{}
 	for _, result := range results {
 		mealPlanEvent, getMealPlanEventErr := w.dataManager.GetMealPlanEvent(ctx, result.MealPlanID, result.MealPlanEventID)
 		if getMealPlanEventErr != nil {
 			return nil, observability.PrepareError(getMealPlanEventErr, nil, "fetching meal plan event")
+		}
+
+		if _, ok := inputs[result.MealPlanOptionID]; !ok {
+			inputs[result.MealPlanOptionID] = []*types.AdvancedPrepStepDatabaseCreationInput{}
 		}
 
 		for _, recipeID := range result.RecipeIDs {
@@ -196,7 +202,7 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 					continue
 				}
 
-				inputs = append(inputs, &types.AdvancedPrepStepDatabaseCreationInput{
+				inputs[result.MealPlanOptionID] = append(inputs[result.MealPlanOptionID], &types.AdvancedPrepStepDatabaseCreationInput{
 					ID:                   ksuid.New().String(),
 					CannotCompleteBefore: mealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
 					CannotCompleteAfter:  mealPlanEvent.StartsAt.Add(-time.Hour * 24),
@@ -213,9 +219,9 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 			}
 
 			for _, step := range steps {
-				cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForStep(step, mealPlanEvent)
+				cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(step, mealPlanEvent)
 
-				inputs = append(inputs, &types.AdvancedPrepStepDatabaseCreationInput{
+				inputs[result.MealPlanOptionID] = append(inputs[result.MealPlanOptionID], &types.AdvancedPrepStepDatabaseCreationInput{
 					ID:                   ksuid.New().String(),
 					CannotCompleteBefore: cannotCompleteBefore,
 					CannotCompleteAfter:  cannotCompleteAfter,

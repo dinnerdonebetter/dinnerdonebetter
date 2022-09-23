@@ -2,6 +2,12 @@ package workers
 
 import (
 	"context"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/graphing"
@@ -12,10 +18,6 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	"github.com/prixfixeco/api_server/pkg/utils/pointers"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"testing"
-	"time"
 )
 
 func TestProvideAdvancedPrepStepCreationEnsurerWorker(T *testing.T) {
@@ -80,7 +82,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		assert.NotNil(t, w)
 
 		ctx := context.Background()
-		expected := []*types.AdvancedPrepStepDatabaseCreationInput{}
+		expected := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{}
 
 		mdm := database.NewMockDatabase()
 		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
@@ -212,15 +214,17 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		w.grapher = mockGrapher
 		w.dataManager = mdm
 
-		expected := []*types.AdvancedPrepStepDatabaseCreationInput{
-			{
-				CannotCompleteBefore: exampleMealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
-				CannotCompleteAfter:  exampleMealPlanEvent.StartsAt.Add(-time.Hour * 24),
-				CompletedAt:          nil,
-				Status:               types.AdvancedPrepStepStatusUnfinished,
-				CreationExplanation:  buildThawStepCreationExplanation([]int{0}),
-				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-				RecipeStepID:         recipeStepID,
+		expected := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{
+			exampleFinalizedMealPlanResult.MealPlanOptionID: {
+				{
+					CannotCompleteBefore: exampleMealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
+					CannotCompleteAfter:  exampleMealPlanEvent.StartsAt.Add(-time.Hour * 24),
+					CompletedAt:          nil,
+					Status:               types.AdvancedPrepStepStatusUnfinished,
+					CreationExplanation:  buildThawStepCreationExplanation([]int{0}),
+					MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
+					RecipeStepID:         recipeStepID,
+				},
 			},
 		}
 
@@ -228,8 +232,10 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		assert.NoError(t, err)
 
 		// because we can't guarantee what this will be without too much effort
-		for i, _ := range actual {
-			actual[i].ID = ""
+		for k, v := range actual {
+			for j := range v {
+				actual[k][j].ID = ""
+			}
 		}
 		assert.Equal(t, expected, actual)
 
@@ -396,16 +402,18 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		}
 		w.dataManager = mdm
 
-		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForStep(exampleRecipe.Steps[0], exampleMealPlanEvent)
-		expected := []*types.AdvancedPrepStepDatabaseCreationInput{
-			{
-				CannotCompleteBefore: cannotCompleteBefore,
-				CannotCompleteAfter:  cannotCompleteAfter,
-				CompletedAt:          nil,
-				Status:               types.AdvancedPrepStepStatusUnfinished,
-				CreationExplanation:  advancedStepCreationExplanation,
-				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-				RecipeStepID:         recipeStep1ID,
+		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(exampleRecipe.Steps[0], exampleMealPlanEvent)
+		expected := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{
+			exampleFinalizedMealPlanResult.MealPlanOptionID: {
+				{
+					CannotCompleteBefore: cannotCompleteBefore,
+					CannotCompleteAfter:  cannotCompleteAfter,
+					CompletedAt:          nil,
+					Status:               types.AdvancedPrepStepStatusUnfinished,
+					CreationExplanation:  advancedStepCreationExplanation,
+					MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
+					RecipeStepID:         recipeStep1ID,
+				},
 			},
 		}
 
@@ -413,10 +421,12 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		assert.NoError(t, err)
 
 		// because we can't guarantee what this will be without too much effort
-		for i, _ := range actual {
-			actual[i].ID = ""
-			assert.WithinDuration(t, expected[i].CannotCompleteBefore, actual[i].CannotCompleteBefore, time.Second*30)
-			actual[i].CannotCompleteBefore = expected[i].CannotCompleteBefore
+		for k, v := range actual {
+			for j := range v {
+				actual[k][j].ID = ""
+				assert.WithinDuration(t, expected[k][j].CannotCompleteBefore, actual[k][j].CannotCompleteBefore, time.Second*30)
+				actual[k][j].CannotCompleteBefore = expected[k][j].CannotCompleteBefore
+			}
 		}
 		assert.Equal(t, expected, actual)
 
