@@ -54,4 +54,4 @@ WHERE meal_plan_options.archived_at IS NULL
   AND meals.archived_at IS NULL
   AND recipe_steps.archived_at IS NULL
   AND valid_preparations.archived_at IS NULL
-  AND advanced_prep_steps.belongs_to_meal_plan_option = $1;
+  AND meal_plans.id = $1;

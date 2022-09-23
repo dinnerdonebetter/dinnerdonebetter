@@ -75,14 +75,14 @@ type (
 	// AdvancedPrepStepDataManager describes a structure capable of storing valid preparations permanently.
 	AdvancedPrepStepDataManager interface {
 		GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID string) (*AdvancedPrepStep, error)
-		GetAdvancedPrepSteps(ctx context.Context, filter *QueryFilter) (*AdvancedPrepStepList, error)
+		GetAdvancedPrepStepsForMealPlan(ctx context.Context, mealPlanID string) ([]*AdvancedPrepStep, error)
 		CreateAdvancedPrepStepsForMealPlanOption(ctx context.Context, mealPlanOptionID string, inputs []*AdvancedPrepStepDatabaseCreationInput) ([]*AdvancedPrepStep, error)
 		MarkAdvancedPrepStepAsComplete(ctx context.Context, advancedPrepStepID string) error
 	}
 
 	// AdvancedPrepStepDataService describes a structure capable of serving traffic related to valid preparations.
 	AdvancedPrepStepDataService interface {
-		ListHandler(res http.ResponseWriter, req *http.Request)
+		ListByMealPlanHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		CompletionHandler(res http.ResponseWriter, req *http.Request)
 	}

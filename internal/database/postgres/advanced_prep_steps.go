@@ -16,20 +16,6 @@ import (
 
 var (
 	_ types.AdvancedPrepStepDataManager = (*Querier)(nil)
-
-	// advancedPrepStepsTableColumns are the columns for the valid_instruments table.
-	advancedPrepStepsTableColumns = []string{
-		"advanced_prep_steps.id",
-		"advanced_prep_steps.belongs_to_meal_plan_option",
-		"advanced_prep_steps.satisfies_recipe_step",
-		"advanced_prep_steps.status",
-		"advanced_prep_steps.status_explanation",
-		"advanced_prep_steps.creation_explanation",
-		"advanced_prep_steps.cannot_complete_before",
-		"advanced_prep_steps.cannot_complete_after",
-		"advanced_prep_steps.created_at",
-		"advanced_prep_steps.settled_at",
-	}
 )
 
 // scanAdvancedPrepStep takes a database Scanner (i.e. *sql.Row) and scans the result into a valid instrument struct.
@@ -162,71 +148,33 @@ func (q *Querier) GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID st
 	return x, nil
 }
 
-// GetAdvancedPrepSteps fetches a list of advanced prep steps.
-func (q *Querier) GetAdvancedPrepSteps(ctx context.Context, filter *types.QueryFilter) (x *types.AdvancedPrepStepList, err error) {
+//go:embed queries/advanced_prep_steps/list_all_by_meal_plan.sql
+var listAdvancedPrepStepsForMealPlanQuery string
+
+// GetAdvancedPrepStepsForMealPlan fetches a list of advanced prep steps.
+func (q *Querier) GetAdvancedPrepStepsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.AdvancedPrepStep, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.AdvancedPrepStepList{}
-	logger = filter.AttachToLogger(logger)
-	tracing.AttachQueryFilterToSpan(span, filter)
-
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
-	} else {
-		filter = types.DefaultQueryFilter()
-	}
-
-	query, args := q.buildListQuery(ctx, "advanced_prep_steps", nil, nil, nil, "", advancedPrepStepsTableColumns, "", false, filter)
-
-	rows, err := q.performReadQuery(ctx, q.db, "advanced prep steps", query, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing advanced prep steps list retrieval query")
-	}
-
-	if x.AdvancedPrepSteps, x.FilteredCount, x.TotalCount, err = q.scanAdvancedPrepSteps(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep steps")
-	}
-
-	return x, nil
-}
-
-//go:embed queries/advanced_prep_steps/list_all_by_meal_plan_option.sql
-var listAdvancedPrepStepsQuery string
-
-// GetAdvancedPrepStepsForMealPlanOptionID lists advanced prep steps for a given meal plan option.
-func (q *Querier) GetAdvancedPrepStepsForMealPlanOptionID(ctx context.Context, mealPlanOptionID string, filter *types.QueryFilter) (x *types.AdvancedPrepStepList, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.AdvancedPrepStepList{}
-	logger := filter.AttachToLogger(q.logger.Clone())
-	tracing.AttachQueryFilterToSpan(span, filter)
-
-	if mealPlanOptionID == "" {
+	x = []*types.AdvancedPrepStep{}
+	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	args := []interface{}{
-		mealPlanOptionID,
+		mealPlanID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "advanced prep steps list", listAdvancedPrepStepsQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "advanced prep steps list", listAdvancedPrepStepsForMealPlanQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing advanced prep steps list retrieval query")
 	}
 
-	if x.AdvancedPrepSteps, x.FilteredCount, x.TotalCount, err = q.scanAdvancedPrepSteps(ctx, rows, true); err != nil {
+	if x, _, _, err = q.scanAdvancedPrepSteps(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep steps")
 	}
 

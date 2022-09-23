@@ -139,13 +139,13 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleAdvancedPrepStepList := fakes.BuildFakeAdvancedPrepStepList()
+		exampleAdvancedPrepStepList := fakes.BuildFakeAdvancedPrepStepList().AdvancedPrepSteps
 
 		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
 		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepSteps",
+			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			helper.exampleMealPlan.ID,
 		).Return(exampleAdvancedPrepStepList, nil)
 		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
 
@@ -154,11 +154,11 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.AdvancedPrepStepList{}),
+			mock.IsType([]*types.AdvancedPrepStep{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -182,7 +182,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
@@ -196,10 +196,10 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
 		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepSteps",
+			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.AdvancedPrepStepList)(nil), sql.ErrNoRows)
+			helper.exampleMealPlan.ID,
+		).Return([]*types.AdvancedPrepStep(nil), sql.ErrNoRows)
 		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -207,11 +207,11 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.AdvancedPrepStepList{}),
+			mock.IsType([]*types.AdvancedPrepStep{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -225,10 +225,10 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
 		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepSteps",
+			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.AdvancedPrepStepList)(nil), errors.New("blah"))
+			helper.exampleMealPlan.ID,
+		).Return([]*types.AdvancedPrepStep(nil), errors.New("blah"))
 		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -239,7 +239,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 

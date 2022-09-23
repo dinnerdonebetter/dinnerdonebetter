@@ -539,7 +539,9 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 		result.RecipeIDs = append(result.RecipeIDs, recipeID)
 	}
 
-	results = append(results, result)
+	if result != nil {
+		results = append(results, result)
+	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
 		return nil, observability.PrepareError(err, span, "closing rows")

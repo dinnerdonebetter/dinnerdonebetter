@@ -670,7 +670,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		v1Router.Route(advancedPrepStepsRouteWithPrefix, func(advancedPrepStepsRouter routing.Router) {
 			advancedPrepStepsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
-				Get(root, s.advancedPrepStepsService.ListHandler)
+				Get(root, s.advancedPrepStepsService.ListByMealPlanHandler)
 
 			advancedPrepStepsRouter.Route(advancedPrepStepIDRouteParam, func(singleMealPlanEventRouter routing.Router) {
 				singleMealPlanEventRouter.
