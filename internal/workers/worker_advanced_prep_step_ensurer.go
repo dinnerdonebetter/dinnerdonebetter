@@ -145,6 +145,30 @@ func buildThawStepCreationExplanation(ingredientIndices []int) string {
 	return fmt.Sprintf("frozen %s (%s) might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "))
 }
 
+func determineCreationMinAndMaxTimesForStep(step *types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (time.Time, time.Time) {
+	var (
+		shortestDuration,
+		longestDuration uint32
+	)
+
+	for _, product := range step.Products {
+		if product.MaximumStorageDurationInSeconds < shortestDuration || shortestDuration == 0 {
+			shortestDuration = product.MaximumStorageDurationInSeconds
+		}
+
+		if product.MaximumStorageDurationInSeconds > longestDuration || longestDuration == 0 {
+			longestDuration = product.MaximumStorageDurationInSeconds
+		}
+	}
+
+	cannotCompleteBefore := whicheverIsLater(time.Now(), mealPlanEvent.StartsAt.Add(time.Duration(shortestDuration)*-time.Second))
+	cannotCompleteAfter := whicheverIsLater(mealPlanEvent.StartsAt, mealPlanEvent.StartsAt.Add(time.Duration(longestDuration)*-time.Second))
+
+	return cannotCompleteBefore, cannotCompleteAfter
+}
+
+const advancedStepCreationExplanation = "adequate storage instructions for early step"
+
 // DetermineCreatableSteps determines which advanced prep steps are creatable for a recipe.
 func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx context.Context) ([]*types.AdvancedPrepStepDatabaseCreationInput, error) {
 	results, err := w.dataManager.GetFinalizedMealPlanIDsForTheNextWeek(ctx)
@@ -165,11 +189,6 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 				return nil, observability.PrepareError(getRecipeErr, nil, "fetching recipe")
 			}
 
-			steps, graphErr := w.grapher.FindStepsEligibleForAdvancedCreation(ctx, recipe)
-			if graphErr != nil {
-				return nil, observability.PrepareError(graphErr, nil, "generating graph for recipe")
-			}
-
 			frozenIngredientSteps := frozenIngredientDefrostStepsFilter(recipe)
 			for stepID, ingredientIndices := range frozenIngredientSteps {
 				explanation := buildThawStepCreationExplanation(ingredientIndices)
@@ -188,31 +207,20 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 				})
 			}
 
+			steps, graphErr := w.grapher.FindStepsEligibleForAdvancedCreation(ctx, recipe)
+			if graphErr != nil {
+				return nil, observability.PrepareError(graphErr, nil, "generating graph for recipe")
+			}
+
 			for _, step := range steps {
-				var (
-					shortestDuration,
-					longestDuration uint32
-				)
-
-				for _, product := range step.Products {
-					if product.MaximumStorageDurationInSeconds < shortestDuration || shortestDuration == 0 {
-						shortestDuration = product.MaximumStorageDurationInSeconds
-					}
-
-					if product.MaximumStorageDurationInSeconds > longestDuration || longestDuration == 0 {
-						longestDuration = product.MaximumStorageDurationInSeconds
-					}
-				}
-
-				cannotCompleteBefore := whicheverIsLater(time.Now(), mealPlanEvent.StartsAt.Add(time.Duration(shortestDuration)*-time.Second))
-				cannotCompleteAfter := whicheverIsLater(mealPlanEvent.StartsAt, mealPlanEvent.StartsAt.Add(time.Duration(longestDuration)*-time.Second))
+				cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForStep(step, mealPlanEvent)
 
 				inputs = append(inputs, &types.AdvancedPrepStepDatabaseCreationInput{
 					ID:                   ksuid.New().String(),
 					CannotCompleteBefore: cannotCompleteBefore,
 					CannotCompleteAfter:  cannotCompleteAfter,
 					Status:               types.AdvancedPrepStepStatusUnfinished,
-					CreationExplanation:  "adequate storage instructions for early step",
+					CreationExplanation:  advancedStepCreationExplanation,
 					MealPlanOptionID:     result.MealPlanOptionID,
 					RecipeStepID:         step.ID,
 				})
