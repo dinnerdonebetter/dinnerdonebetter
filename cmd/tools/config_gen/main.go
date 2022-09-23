@@ -220,10 +220,10 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			ContentType: contentTypeJSON,
 		},
 		Events: msgconfig.Config{
-			Consumers: msgconfig.ProviderConfig{
+			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 			},
-			Publishers: msgconfig.ProviderConfig{
+			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderPubSub,
 			},
 		},
@@ -299,13 +299,13 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			ContentType: contentTypeJSON,
 		},
 		Events: msgconfig.Config{
-			Consumers: msgconfig.ProviderConfig{
+			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				RedisConfig: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
-			Publishers: msgconfig.ProviderConfig{
+			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				RedisConfig: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
@@ -449,13 +449,13 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			RunMode: testingEnv,
 		},
 		Events: msgconfig.Config{
-			Consumers: msgconfig.ProviderConfig{
+			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				RedisConfig: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
-			Publishers: msgconfig.ProviderConfig{
+			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				RedisConfig: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},

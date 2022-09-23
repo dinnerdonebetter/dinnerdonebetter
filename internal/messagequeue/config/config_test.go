@@ -27,7 +27,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
-			Consumers: ProviderConfig{
+			Consumers: MessageQueueConfig{
 				Provider: ProviderRedis,
 			},
 		}
@@ -57,7 +57,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
-			Publishers: ProviderConfig{
+			Publishers: MessageQueueConfig{
 				Provider: ProviderRedis,
 			},
 		}

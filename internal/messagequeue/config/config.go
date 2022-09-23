@@ -39,8 +39,8 @@ type (
 		QueueAddress string `json:"message_queue_address,omitempty" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
 	}
 
-	// ProviderConfig is used to indicate how the messaging provider should be configured.
-	ProviderConfig struct {
+	// MessageQueueConfig is used to indicate how the messaging provider should be configured.
+	MessageQueueConfig struct {
 		_            struct{}
 		Provider     Provider      `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
 		SQSConfig    sqs.Config    `json:"sqs,omitempty" mapstructure:"sqs" toml:"sqs,omitempty"`
@@ -51,8 +51,8 @@ type (
 	// Config is used to indicate how the messaging provider should be configured.
 	Config struct {
 		_          struct{}
-		Consumers  ProviderConfig `json:"consumers,omitempty" mapstructure:"consumers" toml:"consumers,omitempty"`
-		Publishers ProviderConfig `json:"publishers,omitempty" mapstructure:"publishers" toml:"publishers,omitempty"`
+		Consumers  MessageQueueConfig `json:"consumers,omitempty" mapstructure:"consumers" toml:"consumers,omitempty"`
+		Publishers MessageQueueConfig `json:"publishers,omitempty" mapstructure:"publishers" toml:"publishers,omitempty"`
 	}
 )
 

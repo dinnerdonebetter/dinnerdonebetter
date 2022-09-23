@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	// Providers is what we provide to dependency injection.
+	// Providers are what we provide to dependency injection.
 	Providers = wire.NewSet(
 		ProvideEmailer,
 	)

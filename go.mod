@@ -25,6 +25,7 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/websocket v1.4.2
+	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/lib/pq v1.10.2
 	github.com/luna-duclos/instrumentedsql v1.1.3
@@ -88,6 +89,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/gregjones/httpcache v0.0.0-20171119193500-2bcd89a1743f // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
