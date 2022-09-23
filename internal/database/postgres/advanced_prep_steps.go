@@ -260,8 +260,8 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, mealPlanOptionID s
 			input.Status,
 			input.StatusExplanation,
 			input.CreationExplanation,
-			input.CannotCompleteBefore,
-			input.CannotCompleteAfter,
+			input.CannotCompleteBefore.Truncate(time.Second),
+			input.CannotCompleteAfter.Truncate(time.Second),
 		}
 
 		if err = q.performWriteQuery(ctx, tx, "create advanced prep step", createAdvancedPrepStepQuery, createAdvancedPrepStepArgs); err != nil {
