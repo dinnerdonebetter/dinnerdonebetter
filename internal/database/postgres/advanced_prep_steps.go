@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"github.com/lib/pq"
 	"time"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -260,8 +261,8 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, mealPlanOptionID s
 			input.Status,
 			input.StatusExplanation,
 			input.CreationExplanation,
-			input.CannotCompleteBefore.Truncate(time.Second),
-			input.CannotCompleteAfter.Truncate(time.Second),
+			pq.FormatTimestamp(input.CannotCompleteBefore.Truncate(time.Second)),
+			pq.FormatTimestamp(input.CannotCompleteAfter.Truncate(time.Second)),
 		}
 
 		if err = q.performWriteQuery(ctx, tx, "create advanced prep step", createAdvancedPrepStepQuery, createAdvancedPrepStepArgs); err != nil {
