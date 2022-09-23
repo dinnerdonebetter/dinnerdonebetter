@@ -15,6 +15,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/graphing"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -60,16 +61,23 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := w.logger.Clone()
+
 	optionsAndSteps, err := w.DetermineCreatableSteps(ctx)
 	if err != nil {
 		return observability.PrepareError(err, nil, "determining creatable steps")
 	}
 
+	logger = logger.WithValue("creatable_steps_qty", len(optionsAndSteps))
+
 	var result *multierror.Error
 	for mealPlanOptionID, steps := range optionsAndSteps {
-		createdSteps, creationErr := w.dataManager.CreateAdvancedPrepStep(ctx, mealPlanOptionID, steps)
+		l := logger.Clone().WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID).WithValue("creatable_prep_step_qty", len(steps))
+
+		createdSteps, creationErr := w.dataManager.CreateAdvancedPrepStepsForMealPlanOption(ctx, mealPlanOptionID, steps)
 		if creationErr != nil {
 			result = multierror.Append(result, creationErr)
+			observability.AcknowledgeError(creationErr, l, span, "creating advanced prep steps for meal plan optino")
 		}
 
 		for _, createdStep := range createdSteps {
@@ -82,7 +90,7 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 				Context:                   nil,
 				AttributableToHouseholdID: "",
 			}); err != nil {
-				result = multierror.Append(result, publishErr)
+				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
 			}
 		}
 	}
@@ -173,16 +181,31 @@ const advancedStepCreationExplanation = "adequate storage instructions for early
 
 // DetermineCreatableSteps determines which advanced prep steps are creatable for a recipe.
 func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx context.Context) (map[string][]*types.AdvancedPrepStepDatabaseCreationInput, error) {
+	logger := w.logger.Clone()
+	logger.Info("fetching finalized meal plan IDs to determine creatable steps")
+
 	results, err := w.dataManager.GetFinalizedMealPlanIDsForTheNextWeek(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting finalized meal plan data for the next week")
 	}
 
+	logger = logger.WithValue("steps_to_create", len(results))
+	logger.Info("determining creatable steps")
+
 	inputs := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{}
 	for _, result := range results {
+		l := logger.Clone().WithValues(map[string]interface{}{
+			keys.MealPlanIDKey:       result.MealPlanID,
+			keys.MealPlanEventIDKey:  result.MealPlanEventID,
+			keys.MealPlanOptionIDKey: result.MealPlanOptionID,
+			keys.MealIDKey:           result.MealID,
+			"recipe_ids":             result.RecipeIDs,
+		})
+		l.Info("fetching meal plan event")
+
 		mealPlanEvent, getMealPlanEventErr := w.dataManager.GetMealPlanEvent(ctx, result.MealPlanID, result.MealPlanEventID)
 		if getMealPlanEventErr != nil {
-			return nil, observability.PrepareError(getMealPlanEventErr, nil, "fetching meal plan event")
+			return nil, observability.PrepareAndLogError(getMealPlanEventErr, l, nil, "fetching meal plan event")
 		}
 
 		if _, ok := inputs[result.MealPlanOptionID]; !ok {
@@ -192,10 +215,12 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 		for _, recipeID := range result.RecipeIDs {
 			recipe, getRecipeErr := w.dataManager.GetRecipe(ctx, recipeID)
 			if getRecipeErr != nil {
-				return nil, observability.PrepareError(getRecipeErr, nil, "fetching recipe")
+				return nil, observability.PrepareAndLogError(getRecipeErr, l, nil, "fetching recipe")
 			}
 
 			frozenIngredientSteps := frozenIngredientDefrostStepsFilter(recipe)
+			logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen step inputs")
+
 			for stepID, ingredientIndices := range frozenIngredientSteps {
 				explanation := buildThawStepCreationExplanation(ingredientIndices)
 				if explanation == "" {
@@ -215,8 +240,10 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 
 			steps, graphErr := w.grapher.FindStepsEligibleForAdvancedCreation(ctx, recipe)
 			if graphErr != nil {
-				return nil, observability.PrepareError(graphErr, nil, "generating graph for recipe")
+				return nil, observability.PrepareAndLogError(graphErr, l, nil, "generating graph for recipe")
 			}
+
+			logger.WithValue("advanced_steps_qty", len(steps)).Info("creating advanced prep step inputs")
 
 			for _, step := range steps {
 				cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(step, mealPlanEvent)
