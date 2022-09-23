@@ -139,13 +139,13 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleAdvancedPrepStepList := fakes.BuildFakeAdvancedPrepStepList()
+		exampleAdvancedPrepStepList := fakes.BuildFakeAdvancedPrepStepList().AdvancedPrepSteps
 
 		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
 		advancedPrepStepDataManager.On(
 			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			helper.exampleMealPlan.ID,
 		).Return(exampleAdvancedPrepStepList, nil)
 		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
 
@@ -154,7 +154,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.AdvancedPrepStepList{}),
+			mock.IsType([]*types.AdvancedPrepStep{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -198,8 +198,8 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 		advancedPrepStepDataManager.On(
 			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.AdvancedPrepStepList)(nil), sql.ErrNoRows)
+			helper.exampleMealPlan.ID,
+		).Return([]*types.AdvancedPrepStep(nil), sql.ErrNoRows)
 		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -207,7 +207,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.AdvancedPrepStepList{}),
+			mock.IsType([]*types.AdvancedPrepStep{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -227,8 +227,8 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 		advancedPrepStepDataManager.On(
 			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.AdvancedPrepStepList)(nil), errors.New("blah"))
+			helper.exampleMealPlan.ID,
+		).Return([]*types.AdvancedPrepStep(nil), errors.New("blah"))
 		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

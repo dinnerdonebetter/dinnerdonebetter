@@ -16,20 +16,6 @@ import (
 
 var (
 	_ types.AdvancedPrepStepDataManager = (*Querier)(nil)
-
-	// advancedPrepStepsTableColumns are the columns for the valid_instruments table.
-	advancedPrepStepsTableColumns = []string{
-		"advanced_prep_steps.id",
-		"advanced_prep_steps.belongs_to_meal_plan_option",
-		"advanced_prep_steps.satisfies_recipe_step",
-		"advanced_prep_steps.status",
-		"advanced_prep_steps.status_explanation",
-		"advanced_prep_steps.creation_explanation",
-		"advanced_prep_steps.cannot_complete_before",
-		"advanced_prep_steps.cannot_complete_after",
-		"advanced_prep_steps.created_at",
-		"advanced_prep_steps.settled_at",
-	}
 )
 
 // scanAdvancedPrepStep takes a database Scanner (i.e. *sql.Row) and scans the result into a valid instrument struct.
