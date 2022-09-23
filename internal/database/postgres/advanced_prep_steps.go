@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"time"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -270,8 +271,8 @@ func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, mealPlanOptionID s
 
 		outputs = append(outputs, &types.AdvancedPrepStep{
 			ID:                   input.ID,
-			CannotCompleteBefore: input.CannotCompleteBefore,
-			CannotCompleteAfter:  input.CannotCompleteAfter,
+			CannotCompleteBefore: input.CannotCompleteBefore.Truncate(time.Second),
+			CannotCompleteAfter:  input.CannotCompleteAfter.Truncate(time.Second),
 			MealPlanOption:       types.MealPlanOption{ID: mealPlanOptionID},
 			RecipeStep:           types.RecipeStep{ID: input.RecipeStepID},
 			CreatedAt:            q.currentTime(),
