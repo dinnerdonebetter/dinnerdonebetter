@@ -3,8 +3,9 @@ package postgres
 import (
 	"context"
 	_ "embed"
-	"github.com/lib/pq"
 	"time"
+
+	"github.com/lib/pq"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -240,8 +241,8 @@ var createAdvancedPrepStepQuery string
 //go:embed queries/meal_plan_options/mark_as_steps_created.sql
 var markMealPlanOptionAsHavingStepsCreatedQuery string
 
-// CreateAdvancedPrepStep creates advanced prep steps.
-func (q *Querier) CreateAdvancedPrepStep(ctx context.Context, mealPlanOptionID string, inputs []*types.AdvancedPrepStepDatabaseCreationInput) ([]*types.AdvancedPrepStep, error) {
+// CreateAdvancedPrepStepsForMealPlanOption creates advanced prep steps.
+func (q *Querier) CreateAdvancedPrepStepsForMealPlanOption(ctx context.Context, mealPlanOptionID string, inputs []*types.AdvancedPrepStepDatabaseCreationInput) ([]*types.AdvancedPrepStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

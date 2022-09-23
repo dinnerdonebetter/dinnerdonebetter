@@ -33,8 +33,8 @@ func (m *AdvancedPrepStepDataManager) GetAdvancedPrepSteps(ctx context.Context, 
 	return args.Get(0).(*types.AdvancedPrepStepList), args.Error(1)
 }
 
-// CreateAdvancedPrepStep is a mock function.
-func (m *AdvancedPrepStepDataManager) CreateAdvancedPrepStep(ctx context.Context, mealPlanOptionID string, inputs []*types.AdvancedPrepStepDatabaseCreationInput) ([]*types.AdvancedPrepStep, error) {
+// CreateAdvancedPrepStepsForMealPlanOption is a mock function.
+func (m *AdvancedPrepStepDataManager) CreateAdvancedPrepStepsForMealPlanOption(ctx context.Context, mealPlanOptionID string, inputs []*types.AdvancedPrepStepDatabaseCreationInput) ([]*types.AdvancedPrepStep, error) {
 	args := m.Called(ctx, mealPlanOptionID, inputs)
 	return args.Get(0).([]*types.AdvancedPrepStep), args.Error(1)
 }
