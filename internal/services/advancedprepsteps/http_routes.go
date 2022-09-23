@@ -60,8 +60,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, x)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListByMealPlanHandler is our list route.
+func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -85,10 +85,15 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	advancedPrepSteps, err := s.advancedPrepStepDataManager.GetAdvancedPrepSteps(ctx, filter)
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	advancedPrepSteps, err := s.advancedPrepStepDataManager.GetAdvancedPrepStepsForMealPlan(ctx, mealPlanID)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		advancedPrepSteps = &types.AdvancedPrepStepList{AdvancedPrepSteps: []*types.AdvancedPrepStep{}}
+		advancedPrepSteps = []*types.AdvancedPrepStep{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plans")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

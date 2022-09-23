@@ -27,10 +27,10 @@ func (m *AdvancedPrepStepDataManager) GetAdvancedPrepStep(ctx context.Context, a
 	return args.Get(0).(*types.AdvancedPrepStep), args.Error(1)
 }
 
-// GetAdvancedPrepSteps is a mock function.
-func (m *AdvancedPrepStepDataManager) GetAdvancedPrepSteps(ctx context.Context, filter *types.QueryFilter) (*types.AdvancedPrepStepList, error) {
-	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.AdvancedPrepStepList), args.Error(1)
+// GetAdvancedPrepStepsForMealPlan is a mock function.
+func (m *AdvancedPrepStepDataManager) GetAdvancedPrepStepsForMealPlan(ctx context.Context, mealPlanID string) ([]*types.AdvancedPrepStep, error) {
+	args := m.Called(ctx, mealPlanID)
+	return args.Get(0).([]*types.AdvancedPrepStep), args.Error(1)
 }
 
 // CreateAdvancedPrepStepsForMealPlanOption is a mock function.

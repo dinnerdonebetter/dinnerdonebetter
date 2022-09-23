@@ -143,7 +143,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
 		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepSteps",
+			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleAdvancedPrepStepList, nil)
@@ -158,7 +158,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -182,7 +182,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
@@ -196,7 +196,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
 		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepSteps",
+			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.AdvancedPrepStepList)(nil), sql.ErrNoRows)
@@ -211,7 +211,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -225,7 +225,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
 		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepSteps",
+			"GetAdvancedPrepStepsForMealPlan",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.AdvancedPrepStepList)(nil), errors.New("blah"))
@@ -239,7 +239,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
