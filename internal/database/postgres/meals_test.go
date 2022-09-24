@@ -194,6 +194,58 @@ func TestQuerier_MealExists(T *testing.T) {
 	})
 }
 
+func prepareMockToSuccessfullyGetMeal(t *testing.T, exampleMeal *types.Meal, db *sqlmockExpecterWrapper) {
+	t.Helper()
+
+	getMealArgs := []interface{}{
+		exampleMeal.ID,
+	}
+
+	db.ExpectQuery(formatQueryForSQLMock(getMealByIDQuery)).
+		WithArgs(interfaceToDriverValue(getMealArgs)...).
+		WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
+
+	for _, recipe := range exampleMeal.Recipes {
+		allIngredients := []*types.RecipeStepIngredient{}
+		allInstruments := []*types.RecipeStepInstrument{}
+		allProducts := []*types.RecipeStepProduct{}
+		for _, step := range recipe.Steps {
+			allIngredients = append(allIngredients, step.Ingredients...)
+			allInstruments = append(allInstruments, step.Instruments...)
+			allProducts = append(allProducts, step.Products...)
+		}
+
+		getRecipeArgs := []interface{}{
+			recipe.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
+			WithArgs(interfaceToDriverValue(getRecipeArgs)...).
+			WillReturnRows(buildMockFullRowsFromRecipe(recipe))
+
+		getRecipeStepIngredientsForRecipeArgs := []interface{}{
+			recipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
+			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
+
+		productsArgs := []interface{}{
+			recipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(productsArgs)...).
+			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
+
+		instrumentsArgs := []interface{}{
+			recipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(instrumentsArgs)...).
+			WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
+	}
+}
+
 func TestQuerier_GetMeal(T *testing.T) {
 	T.Parallel()
 
@@ -211,53 +263,7 @@ func TestQuerier_GetMeal(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getMealArgs := []interface{}{
-			exampleMeal.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealByIDQuery)).
-			WithArgs(interfaceToDriverValue(getMealArgs)...).
-			WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
-
-		for _, recipe := range exampleMeal.Recipes {
-			allIngredients := []*types.RecipeStepIngredient{}
-			allInstruments := []*types.RecipeStepInstrument{}
-			allProducts := []*types.RecipeStepProduct{}
-			for _, step := range recipe.Steps {
-				allIngredients = append(allIngredients, step.Ingredients...)
-				allInstruments = append(allInstruments, step.Instruments...)
-				allProducts = append(allProducts, step.Products...)
-			}
-
-			getRecipeArgs := []interface{}{
-				recipe.ID,
-			}
-
-			db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
-				WithArgs(interfaceToDriverValue(getRecipeArgs)...).
-				WillReturnRows(buildMockFullRowsFromRecipe(recipe))
-
-			getRecipeStepIngredientsForRecipeArgs := []interface{}{
-				recipe.ID,
-			}
-			db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
-				WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
-				WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
-
-			productsArgs := []interface{}{
-				recipe.ID,
-			}
-			db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
-				WithArgs(interfaceToDriverValue(productsArgs)...).
-				WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
-
-			instrumentsArgs := []interface{}{
-				recipe.ID,
-			}
-			db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
-				WithArgs(interfaceToDriverValue(instrumentsArgs)...).
-				WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
-		}
+		prepareMockToSuccessfullyGetMeal(t, exampleMeal, db)
 
 		actual, err := c.GetMeal(ctx, exampleMeal.ID)
 		assert.NoError(t, err)

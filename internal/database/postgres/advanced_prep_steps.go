@@ -155,13 +155,14 @@ func (q *Querier) GetAdvancedPrepStepsForMealPlan(ctx context.Context, mealPlanI
 		mealPlanID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "advanced prep steps list", listAdvancedPrepStepsForMealPlanQuery, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing advanced prep steps list retrieval query")
+	rows, getRowsErr := q.performReadQuery(ctx, q.db, "advanced prep steps list", listAdvancedPrepStepsForMealPlanQuery, args)
+	if getRowsErr != nil {
+		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing advanced prep steps list retrieval query")
 	}
 
-	if x, err = q.scanAdvancedPrepSteps(ctx, rows); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep steps")
+	x, scanErr := q.scanAdvancedPrepSteps(ctx, rows)
+	if scanErr != nil {
+		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning advanced prep steps")
 	}
 
 	logger.Info("advanced steps retrieved")
