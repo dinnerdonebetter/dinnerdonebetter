@@ -232,6 +232,8 @@ func prepareMockToSuccessfullyGetMealPlan(t *testing.T, exampleMealPlan *types.M
 			db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVotesForMealPlanOptionQuery)).
 				WithArgs(interfaceToDriverValue(getMealPlanOptionVotesForMealPlanOptionArgs)...).
 				WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, opt.Votes...))
+
+			prepareMockToSuccessfullyGetMeal(t, &opt.Meal, db)
 		}
 	}
 }
@@ -245,6 +247,9 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		exampleMealPlan.Events = []*types.MealPlanEvent{exampleMealPlan.Events[0]}
+		for i := range exampleMealPlan.Events[0].Options {
+			exampleMealPlan.Events[0].Options[i].Meal = *fakes.BuildFakeMeal()
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1106,47 +1111,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdByIDArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		getMealPlanArgs := []interface{}{
-			exampleMealPlan.ID,
-			exampleHousehold.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
-			WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
-
-		for _, evt := range exampleMealPlan.Events {
-			getMealPlanEventArgs := []interface{}{
-				exampleMealPlan.ID,
-			}
-
-			db.ExpectQuery(formatQueryForSQLMock(getMealPlanEventsForMealPlanQuery)).
-				WithArgs(interfaceToDriverValue(getMealPlanEventArgs)...).
-				WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, evt))
-
-			getMealPlanOptionsForMealPlanEventsArgs := []interface{}{
-				evt.ID,
-				exampleMealPlan.ID,
-			}
-
-			db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventQuery)).
-				WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
-				WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
-		}
-
-		for _, event := range exampleMealPlan.Events {
-			for _, opt := range event.Options {
-				votesForOptionArgs := []interface{}{
-					exampleMealPlan.ID,
-					event.ID,
-					opt.ID,
-				}
-
-				db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVotesForMealPlanOptionQuery)).
-					WithArgs(interfaceToDriverValue(votesForOptionArgs)...).
-					WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, opt.Votes...))
-			}
-		}
+		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)
 
 		db.ExpectBegin()
 
