@@ -121,9 +121,9 @@ func (c *Client) ArchiveUser(ctx context.Context, userID string) error {
 }
 
 const (
-	png  = "png"
-	jpeg = "jpeg"
-	gif  = "gif"
+	pngExtension  = "pngExtension"
+	jpegExtension = "jpegExtension"
+	gifExtension  = "gifExtension"
 )
 
 // UploadNewAvatar uploads a new avatar.
@@ -136,7 +136,7 @@ func (c *Client) UploadNewAvatar(ctx context.Context, avatar []byte, extension s
 	}
 
 	ex := strings.ToLower(strings.TrimSpace(extension))
-	if ex != jpeg && ex != png && ex != gif {
+	if ex != jpegExtension && ex != pngExtension && ex != gifExtension {
 		err := fmt.Errorf("%s: %w", extension, ErrInvalidImageExtension)
 		return observability.PrepareError(err, span, "uploading avatar")
 	}

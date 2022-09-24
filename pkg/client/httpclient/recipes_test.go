@@ -319,3 +319,97 @@ func (s *recipesTestSuite) TestClient_ArchiveRecipe() {
 		assert.Error(t, err)
 	})
 }
+
+func (s *recipesTestSuite) TestClient_GetRecipeDAG() {
+	const expectedPathFormat = "/api/v1/recipes/%s/dag"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)
+		actual, err := c.GetRecipeDAG(s.ctx, s.exampleRecipe.ID)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, s.exampleRecipe, actual)
+	})
+
+	s.Run("with invalid recipe ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.GetRecipeDAG(s.ctx, "")
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetRecipeDAG(s.ctx, s.exampleRecipe.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetRecipeDAG(s.ctx, s.exampleRecipe.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func (s *recipesTestSuite) TestClient_GetAdvancedPrepStepsForRecipe() {
+	const expectedPathFormat = "/api/v1/recipes/%s/prep_steps"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)
+		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, s.exampleRecipe.ID)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, s.exampleRecipe, actual)
+	})
+
+	s.Run("with invalid recipe ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, "")
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, s.exampleRecipe.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, s.exampleRecipe.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}

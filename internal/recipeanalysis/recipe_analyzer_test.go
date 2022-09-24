@@ -1,4 +1,4 @@
-package graphing
+package recipeanalysis
 
 import (
 	"context"
@@ -17,7 +17,7 @@ func TestRecipeGrapher_makeGraphForRecipe(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.SkipNow()
 
-		g := &recipeGrapher{
+		g := &recipeAnalyzer{
 			tracer: tracing.NewTracerForTest(t.Name()),
 		}
 

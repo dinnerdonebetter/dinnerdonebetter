@@ -271,7 +271,7 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CompletionHandler(helper.res, helper.req)
+		helper.service.MarkAsCompletedHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
@@ -295,7 +295,7 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CompletionHandler(helper.res, helper.req)
+		helper.service.MarkAsCompletedHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
@@ -315,7 +315,7 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.advancedPrepStepDataManager = dbManager
 
-		helper.service.CompletionHandler(helper.res, helper.req)
+		helper.service.MarkAsCompletedHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
@@ -343,7 +343,7 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CompletionHandler(helper.res, helper.req)
+		helper.service.MarkAsCompletedHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 

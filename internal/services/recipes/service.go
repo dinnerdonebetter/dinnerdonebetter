@@ -3,12 +3,13 @@ package recipes
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/graphing"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -25,21 +26,26 @@ type (
 	service struct {
 		logger                    logging.Logger
 		recipeDataManager         types.RecipeDataManager
-		recipeGrapher             graphing.RecipeGrapher
+		recipeAnalyzer            recipeanalysis.RecipeAnalyzer
 		recipeIDFetcher           func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
+		timeFunc                  func() time.Time
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
 	}
 )
+
+func defaultTimeFunc() time.Time {
+	return time.Now()
+}
 
 // ProvideService builds a new RecipesService.
 func ProvideService(
 	logger logging.Logger,
 	cfg *Config,
 	recipeDataManager types.RecipeDataManager,
-	recipeGrapher graphing.RecipeGrapher,
+	recipeGrapher recipeanalysis.RecipeAnalyzer,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
@@ -57,7 +63,8 @@ func ProvideService(
 		recipeDataManager:         recipeDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
-		recipeGrapher:             recipeGrapher,
+		timeFunc:                  defaultTimeFunc,
+		recipeAnalyzer:            recipeGrapher,
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 

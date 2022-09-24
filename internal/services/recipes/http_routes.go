@@ -392,7 +392,7 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	dag, err := s.recipeGrapher.GenerateDAGDiagramForRecipe(ctx, x)
+	dag, err := s.recipeAnalyzer.GenerateDAGDiagramForRecipe(ctx, x)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -405,4 +405,52 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+}
+
+// EstimatedPrepStepsHandler is a handler that returns expected prep steps for a given recipe.
+func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
+	// fetch recipe from database.
+	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	fakeEvent := &types.MealPlanEvent{StartsAt: s.timeFunc(), EndsAt: s.timeFunc()}
+	// we deliberately call this with fake data because
+	stepInputs, err := s.recipeAnalyzer.GenerateAdvancedStepCreationForRecipe(ctx, fakeEvent, "", x)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, stepInputs)
 }

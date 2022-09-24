@@ -10,13 +10,14 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/graphing"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/pointers"
+	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	"github.com/prixfixeco/api_server/pkg/utils/pointers"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
@@ -29,7 +30,7 @@ func TestProvideAdvancedPrepStepCreationEnsurerWorker(T *testing.T) {
 		actual := ProvideAdvancedPrepStepCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
-			&graphing.MockRecipeGrapher{},
+			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
 			&customerdata.MockCollector{},
 			tracing.NewNoopTracerProvider(),
@@ -47,7 +48,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_HandleMessage(T *testing.T) {
 		w := ProvideAdvancedPrepStepCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
-			&graphing.MockRecipeGrapher{},
+			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
 			&customerdata.MockCollector{},
 			tracing.NewNoopTracerProvider(),
@@ -74,7 +75,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		w := ProvideAdvancedPrepStepCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
-			&graphing.MockRecipeGrapher{},
+			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
 			&customerdata.MockCollector{},
 			tracing.NewNoopTracerProvider(),
@@ -101,7 +102,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		w := ProvideAdvancedPrepStepCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
-			&graphing.MockRecipeGrapher{},
+			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
 			&customerdata.MockCollector{},
 			tracing.NewNoopTracerProvider(),
@@ -202,30 +203,39 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		mdm := database.NewMockDatabase()
 		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
 
-		mockGrapher := &graphing.MockRecipeGrapher{}
+		expectedReturnResults := []*types.AdvancedPrepStepDatabaseCreationInput{
+			{
+				CannotCompleteBefore: time.Now(),
+				CannotCompleteAfter:  time.Now(),
+				CompletedAt:          nil,
+				Status:               types.AdvancedPrepStepStatusUnfinished,
+				CreationExplanation:  t.Name(),
+				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
+				RecipeStepID:         exampleRecipe.ID,
+			},
+		}
+
+		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		for _, result := range exampleFinalizedMealPlanResults {
 			mdm.MealPlanEventDataManager.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
 
 			for _, recipeID := range result.RecipeIDs {
 				mdm.RecipeDataManager.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
-				mockGrapher.On("FindStepsEligibleForAdvancedCreation", testutils.ContextMatcher, recipeMap[recipeID]).Return([]*types.RecipeStep{}, nil)
+
+				mockAnalyzer.On(
+					"GenerateAdvancedStepCreationForRecipe",
+					testutils.ContextMatcher,
+					exampleMealPlanEvent,
+					result.MealPlanOptionID,
+					recipeMap[recipeID],
+				).Return(expectedReturnResults, nil)
 			}
 		}
-		w.grapher = mockGrapher
+		w.analyzer = mockAnalyzer
 		w.dataManager = mdm
 
 		expected := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{
-			exampleFinalizedMealPlanResult.MealPlanOptionID: {
-				{
-					CannotCompleteBefore: exampleMealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
-					CannotCompleteAfter:  exampleMealPlanEvent.StartsAt.Add(-time.Hour * 24),
-					CompletedAt:          nil,
-					Status:               types.AdvancedPrepStepStatusUnfinished,
-					CreationExplanation:  buildThawStepCreationExplanation([]int{0}),
-					MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-					RecipeStepID:         recipeStepID,
-				},
-			},
+			exampleFinalizedMealPlanResult.MealPlanOptionID: expectedReturnResults,
 		}
 
 		actual, err := w.DetermineCreatableSteps(ctx)
@@ -239,7 +249,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		}
 		assert.Equal(t, expected, actual)
 
-		mock.AssertExpectationsForObjects(t, mdm, mockGrapher)
+		mock.AssertExpectationsForObjects(t, mdm, mockAnalyzer)
 	})
 
 	T.Run("creates step that can be done in advance and ignores later steps", func(t *testing.T) {
@@ -248,7 +258,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		w := ProvideAdvancedPrepStepCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
-			graphing.NewRecipeGrapher(tracing.NewNoopTracerProvider()),
+			recipeanalysis.NewRecipeAnalyzer(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&mockpublishers.Publisher{},
 			&customerdata.MockCollector{},
 			tracing.NewNoopTracerProvider(),
@@ -393,28 +403,39 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		mdm := database.NewMockDatabase()
 		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
 
+		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
+		expectedReturnResults := []*types.AdvancedPrepStepDatabaseCreationInput{
+			{
+				CannotCompleteBefore: time.Now(),
+				CannotCompleteAfter:  time.Now(),
+				CompletedAt:          nil,
+				Status:               types.AdvancedPrepStepStatusUnfinished,
+				CreationExplanation:  t.Name(),
+				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
+				RecipeStepID:         recipeStep1ID,
+			},
+		}
+
 		for _, result := range exampleFinalizedMealPlanResults {
 			mdm.MealPlanEventDataManager.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
 
 			for _, recipeID := range result.RecipeIDs {
 				mdm.RecipeDataManager.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
+
+				mockAnalyzer.On(
+					"GenerateAdvancedStepCreationForRecipe",
+					testutils.ContextMatcher,
+					exampleMealPlanEvent,
+					result.MealPlanOptionID,
+					recipeMap[recipeID],
+				).Return(expectedReturnResults, nil)
 			}
 		}
 		w.dataManager = mdm
+		w.analyzer = mockAnalyzer
 
-		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(exampleRecipe.Steps[0], exampleMealPlanEvent)
 		expected := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{
-			exampleFinalizedMealPlanResult.MealPlanOptionID: {
-				{
-					CannotCompleteBefore: cannotCompleteBefore,
-					CannotCompleteAfter:  cannotCompleteAfter,
-					CompletedAt:          nil,
-					Status:               types.AdvancedPrepStepStatusUnfinished,
-					CreationExplanation:  advancedStepCreationExplanation,
-					MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-					RecipeStepID:         recipeStep1ID,
-				},
-			},
+			exampleFinalizedMealPlanResult.MealPlanOptionID: expectedReturnResults,
 		}
 
 		actual, err := w.DetermineCreatableSteps(ctx)
@@ -430,6 +451,6 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		}
 		assert.Equal(t, expected, actual)
 
-		mock.AssertExpectationsForObjects(t, mdm)
+		mock.AssertExpectationsForObjects(t, mdm, mockAnalyzer)
 	})
 }

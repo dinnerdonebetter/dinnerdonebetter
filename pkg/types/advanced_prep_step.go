@@ -15,10 +15,6 @@ const (
 
 	// AdvancedPrepStepCreatedCustomerEventType indicates an advanced prep step was created.
 	AdvancedPrepStepCreatedCustomerEventType CustomerEventType = "advanced_prep_step_created"
-	// AdvancedPrepStepUpdatedCustomerEventType indicates an advanced prep step was updated.
-	AdvancedPrepStepUpdatedCustomerEventType CustomerEventType = "advanced_prep_step_updated"
-	// AdvancedPrepStepArchivedCustomerEventType indicates an advanced prep step was archived.
-	AdvancedPrepStepArchivedCustomerEventType CustomerEventType = "advanced_prep_steparchived"
 
 	// AdvancedPrepStepStatusUnfinished represents the unfinished enum member for advanced prep step status in the DB.
 	AdvancedPrepStepStatusUnfinished = "unfinished"
@@ -84,7 +80,7 @@ type (
 	AdvancedPrepStepDataService interface {
 		ListByMealPlanHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
-		CompletionHandler(res http.ResponseWriter, req *http.Request)
+		MarkAsCompletedHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
