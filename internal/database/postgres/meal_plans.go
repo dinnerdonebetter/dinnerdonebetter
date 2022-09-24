@@ -215,6 +215,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 		if mealPlanFetchErr != nil {
 			return nil, observability.PrepareError(mealPlanFetchErr, span, "scanning meal plans")
 		}
+
 		fullMealPlans = append(fullMealPlans, fmp)
 	}
 	x.MealPlans = fullMealPlans
