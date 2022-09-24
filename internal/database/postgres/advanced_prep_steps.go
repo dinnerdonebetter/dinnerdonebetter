@@ -19,7 +19,7 @@ var (
 )
 
 // scanAdvancedPrepStep takes a database Scanner (i.e. *sql.Row) and scans the result into a valid instrument struct.
-func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanner) (x *types.AdvancedPrepStep, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,46 +72,32 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 		&x.SettledAt,
 	}
 
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
+		return nil, observability.PrepareError(err, span, "")
 	}
 
-	return x, filteredCount, totalCount, nil
+	return x, nil
 }
 
 // scanAdvancedPrepSteps takes some database rows and turns them into a slice of advanced prep steps.
-func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validInstruments []*types.AdvancedPrepStep, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.ResultIterator) (validInstruments []*types.AdvancedPrepStep, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	for rows.Next() {
-		x, fc, tc, scanErr := q.scanAdvancedPrepStep(ctx, rows, includeCounts)
+		x, scanErr := q.scanAdvancedPrepStep(ctx, rows)
 		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
+			return nil, scanErr
 		}
 
 		validInstruments = append(validInstruments, x)
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
+		return nil, observability.PrepareError(err, span, "handling rows")
 	}
 
-	return validInstruments, filteredCount, totalCount, nil
+	return validInstruments, nil
 }
 
 //go:embed queries/advanced_prep_steps/get_one.sql
@@ -139,7 +125,7 @@ func (q *Querier) GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID st
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing advanced prep step retrieval query")
 	}
 
-	if x, _, _, err = q.scanAdvancedPrepStep(ctx, rows, true); err != nil {
+	if x, err = q.scanAdvancedPrepStep(ctx, rows); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep step")
 	}
 
@@ -174,7 +160,7 @@ func (q *Querier) GetAdvancedPrepStepsForMealPlan(ctx context.Context, mealPlanI
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing advanced prep steps list retrieval query")
 	}
 
-	if x, _, _, err = q.scanAdvancedPrepSteps(ctx, rows, true); err != nil {
+	if x, err = q.scanAdvancedPrepSteps(ctx, rows); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep steps")
 	}
 
