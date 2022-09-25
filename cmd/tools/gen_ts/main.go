@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
@@ -10,11 +9,10 @@ import (
 )
 
 func writeFile(filename, content string) error {
-	return ioutil.WriteFile(filename, []byte(content), os.ModePerm)
+	return os.WriteFile(filename, []byte(content), os.ModePerm)
 }
 
 func buildConverterMap() map[string]*typescriptify.TypeScriptify {
-
 	adminConverter := typescriptify.New().
 		Add(types.UserAccountStatusUpdateInput{})
 

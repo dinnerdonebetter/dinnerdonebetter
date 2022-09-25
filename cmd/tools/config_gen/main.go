@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
-	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	"log"
 	"os"
 	"path/filepath"
@@ -28,6 +26,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
 	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/server"
+	"github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
@@ -46,6 +45,7 @@ import (
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
@@ -55,9 +55,11 @@ import (
 )
 
 const (
-	defaultPort              = 8000
-	defaultCookieDomain      = ".prixfixe.local"
-	debugCookieSecret        = "HEREISA32CHARSECRETWHICHISMADEUP"
+	defaultPort         = 8000
+	defaultCookieDomain = ".prixfixe.local"
+	/* #nosec G101 */
+	debugCookieSecret = "HEREISA32CHARSECRETWHICHISMADEUP"
+	/* #nosec G101 */
 	debugCookieSigningKey    = "DIFFERENT32CHARSECRETTHATIMADEUP"
 	devPostgresDBConnDetails = "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable"
 	defaultCookieName        = authservice.DefaultCookieName
@@ -66,7 +68,7 @@ const (
 	developmentEnv = "development"
 	testingEnv     = "testing"
 
-	// message provider topics
+	// message provider topics.
 	dataChangesTopicName = "data_changes"
 
 	pasetoSecretSize      = 32
@@ -132,20 +134,12 @@ var (
 			ServiceName:               "prixfixe_service",
 		},
 	}
-
-	localEmailConfig = emailconfig.Config{
-		Provider: "",
-	}
-
-	localCustomerDataPlatformConfig = customerdataconfig.Config{
-		Provider: "",
-		APIToken: "",
-	}
 )
 
 func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig, indent, validate bool) error {
-	if err := os.MkdirAll(filepath.Dir(outputPath), 0777); err != nil {
-		// that's okay
+	/* #nosec G301 */
+	if err := os.MkdirAll(filepath.Dir(outputPath), 0o777); err != nil {
+		// okay, who gives a shit?
 		_ = err
 	}
 
@@ -170,7 +164,8 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 		return err
 	}
 
-	return os.WriteFile(outputPath, output, 0644)
+	/* #nosec G306 */
+	return os.WriteFile(outputPath, output, 0o644)
 }
 
 type configFunc func(ctx context.Context, filePath string) error
@@ -312,9 +307,7 @@ func buildLocalDevConfig() *config.InstanceConfig {
 				},
 			},
 		},
-		Email:        localEmailConfig,
-		CustomerData: localCustomerDataPlatformConfig,
-		Server:       localServer,
+		Server: localServer,
 		Database: dbconfig.Config{
 			Debug:             true,
 			RunMigrations:     true,
@@ -465,8 +458,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Encoding: encoding.Config{
 			ContentType: contentTypeJSON,
 		},
-		Email:        localEmailConfig,
-		CustomerData: localCustomerDataPlatformConfig,
 		Server: server.Config{
 			Debug:           false,
 			HTTPPort:        defaultPort,

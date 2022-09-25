@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
-	"fmt"
 	"image/png"
 	"log"
 
@@ -29,5 +28,5 @@ func main() {
 	}
 
 	// base64 encode the image for easy HTML use.
-	log.Println(fmt.Sprintf("%s%s", base64ImagePrefix, base64.StdEncoding.EncodeToString(b.Bytes())))
+	log.Printf("%s%s", base64ImagePrefix, base64.StdEncoding.EncodeToString(b.Bytes()))
 }

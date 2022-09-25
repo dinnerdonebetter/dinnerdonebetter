@@ -265,7 +265,7 @@ func whicheverIsLater(t1, t2 time.Time) time.Time {
 	return t1
 }
 
-func buildThawStepCreationExplanation(ingredientIndices []int) string {
+func buildThawStepCreationExplanation(ingredientIndices ...int) string {
 	if len(ingredientIndices) == 0 {
 		return ""
 	}
@@ -325,7 +325,7 @@ func (g *recipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Conte
 	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen step inputs")
 
 	for stepID, ingredientIndices := range frozenIngredientSteps {
-		explanation := buildThawStepCreationExplanation(ingredientIndices)
+		explanation := buildThawStepCreationExplanation(ingredientIndices...)
 		if explanation == "" {
 			continue
 		}

@@ -4,13 +4,13 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"github.com/prixfixeco/api_server/internal/database/postgres"
 	"log"
 	"os"
 	"strings"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/database/postgres"
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 
@@ -50,26 +50,6 @@ var (
 	dbString string
 	debug    bool
 )
-
-func padID(s string) string {
-	var x []byte
-
-	if len(s) > 27 {
-		log.Panicf("invalid identifier: %q", s)
-	}
-
-	stopIndex := 0
-	for i, b := range s {
-		x = append(x, byte(b))
-		stopIndex = i + 1
-	}
-
-	for i := stopIndex; i < 27; i++ {
-		x = append(x, []byte("_")[0])
-	}
-
-	return string(x)
-}
 
 func init() {
 	flag.StringVarP(&dbString, "dburl", "u", defaultDBURL, "where the database is hosted")

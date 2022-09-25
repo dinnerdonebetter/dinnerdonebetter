@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -10,7 +11,7 @@ import (
 )
 
 const (
-	// `PrixFixe1!` hashed (without backticks).
+	/* #nosec G101 */     // `PrixFixe1!` hashed (without backticks).
 	defaultHashedPassword = "$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho"
 	default2FASekret      = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 )

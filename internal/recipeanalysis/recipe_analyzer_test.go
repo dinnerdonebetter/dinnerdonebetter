@@ -2,26 +2,34 @@ package recipeanalysis
 
 import (
 	"context"
-	"github.com/prixfixeco/api_server/internal/pointers"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
-	"gonum.org/v1/gonum/graph/simple"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
+
+func newAnalyzerForTest(t *testing.T) *recipeAnalyzer {
+	t.Helper()
+
+	return &recipeAnalyzer{
+		tracer: tracing.NewTracerForTest(t.Name()),
+		logger: logging.NewNoopLogger(),
+	}
+}
 
 func TestRecipeGrapher_makeGraphForRecipe(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
-		g := &recipeAnalyzer{
-			tracer: tracing.NewTracerForTest(t.Name()),
-		}
+		g := newAnalyzerForTest(t)
 
 		ctx := context.Background()
 		r := &types.Recipe{
@@ -30,11 +38,9 @@ func TestRecipeGrapher_makeGraphForRecipe(T *testing.T) {
 			},
 		}
 
-		expected := &simple.DirectedGraph{}
-
 		actual, err := g.makeGraphForRecipe(ctx, r)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.NotNil(t, actual)
 	})
 }
 
@@ -44,9 +50,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 	T.Run("creates frozen thawing steps", func(t *testing.T) {
 		t.Parallel()
 
-		g := &recipeAnalyzer{
-			tracer: tracing.NewTracerForTest(t.Name()),
-		}
+		g := newAnalyzerForTest(t)
 		ctx := context.Background()
 
 		exampleMeal := fakes.BuildFakeMeal()
@@ -138,14 +142,20 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 				CannotCompleteAfter:  time.Now(),
 				CompletedAt:          nil,
 				Status:               types.AdvancedPrepStepStatusUnfinished,
-				CreationExplanation:  t.Name(),
+				CreationExplanation:  buildThawStepCreationExplanation(0),
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-				RecipeStepID:         exampleRecipe.ID,
+				RecipeStepID:         recipeStepID,
 			},
 		}
 
 		actual, err := g.GenerateAdvancedStepCreationForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
 		assert.NoError(t, err)
+
+		for i := range expected {
+			expected[i].ID = actual[i].ID
+			expected[i].CannotCompleteBefore = actual[i].CannotCompleteBefore
+			expected[i].CannotCompleteAfter = actual[i].CannotCompleteAfter
+		}
 
 		assert.Equal(t, expected, actual)
 	})
@@ -153,9 +163,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 	T.Run("creates step that can be done in advance and ignores later steps", func(t *testing.T) {
 		t.Parallel()
 
-		g := &recipeAnalyzer{
-			tracer: tracing.NewTracerForTest(t.Name()),
-		}
+		g := newAnalyzerForTest(t)
 
 		ctx := context.Background()
 
@@ -175,7 +183,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 		exampleMealPlanOption.Meal = *exampleMeal
 
 		recipeStep1ID := fakes.BuildFakeID()
-		recipeStep2ID := fakes.BuildFakeID()
+		recipeStepProductID := fakes.BuildFakeID()
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipe := &types.Recipe{
@@ -218,7 +226,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 							Name:                               "massaged kale",
 							Type:                               types.RecipeStepProductIngredientType,
 							BelongsToRecipeStep:                recipeStep1ID,
-							ID:                                 fakes.BuildFakeID(),
+							ID:                                 recipeStepProductID,
 							QuantityNotes:                      "",
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name: "gram", PluralName: "gram",
@@ -238,11 +246,11 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 					MaximumTemperatureInCelsius:   nil,
 					Index:                         1,
 					BelongsToRecipe:               exampleRecipeID,
-					ID:                            recipeStep1ID,
+					ID:                            fakes.BuildFakeID(),
 					Preparation:                   types.ValidPreparation{Name: "sautee"},
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: pointers.StringPointer(recipeStep2ID),
+							RecipeStepProductID: pointers.StringPointer(recipeStepProductID),
 							Ingredient:          nil,
 							Name:                "massaged kale",
 							ID:                  fakes.BuildFakeID(),
@@ -292,7 +300,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 				CannotCompleteAfter:  time.Now(),
 				CompletedAt:          nil,
 				Status:               types.AdvancedPrepStepStatusUnfinished,
-				CreationExplanation:  t.Name(),
+				CreationExplanation:  advancedStepCreationExplanation,
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
 				RecipeStepID:         recipeStep1ID,
 			},
@@ -300,6 +308,12 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 
 		actual, err := g.GenerateAdvancedStepCreationForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
 		assert.NoError(t, err)
+
+		for i := range expected {
+			expected[i].ID = actual[i].ID
+			expected[i].CannotCompleteBefore = actual[i].CannotCompleteBefore
+			expected[i].CannotCompleteAfter = actual[i].CannotCompleteAfter
+		}
 
 		assert.Equal(t, expected, actual)
 	})
