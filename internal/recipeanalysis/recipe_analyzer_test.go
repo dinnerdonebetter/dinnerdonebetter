@@ -142,7 +142,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 				CannotCompleteAfter:  time.Now(),
 				CompletedAt:          nil,
 				Status:               types.AdvancedPrepStepStatusUnfinished,
-				CreationExplanation:  buildThawStepCreationExplanation(0),
+				CreationExplanation:  buildThawStepCreationExplanation(1, 0),
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
 				RecipeStepID:         recipeStepID,
 			},
