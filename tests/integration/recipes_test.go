@@ -1,10 +1,9 @@
 package integration
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -307,10 +306,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
 			}
 
-			var b bytes.Buffer
-			require.NoError(t, json.NewEncoder(&b).Encode(exampleRecipeInput))
-			t.Logf("creating recipe with input: %s", b.String())
-
 			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
@@ -319,9 +314,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			created, err = testClients.user.GetRecipe(ctx, created.ID)
 			requireNotNilAndNoProblems(t, created, err)
 			checkRecipeEquality(t, expected, created)
-
-			createdJSON, _ := json.Marshal(created)
-			t.Log(string(createdJSON))
 
 			recipeStepProductIndex := -1
 			for i, ingredient := range created.Steps[1].Ingredients {
@@ -581,6 +573,188 @@ func (s *TestSuite) TestRecipes_Searching() {
 			for _, createdRecipe := range expected {
 				assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
+		}
+	})
+}
+
+func (s *TestSuite) TestRecipes_GetAdvancedPrepStepsForRecipe() {
+	s.runForEachClient("advanced prep steps with frozen chicken breast", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating prerequisite valid preparation")
+			diceBase := fakes.BuildFakeValidPreparation()
+			diceInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(diceBase)
+			dice, err := testClients.admin.CreateValidPreparation(ctx, diceInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", dice.ID)
+
+			t.Log("creating valid measurement units")
+			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
+			exampleGramsInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleGrams)
+			grams, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleGramsInput)
+			require.NoError(t, err)
+			t.Logf("valid measurement unit %q created", grams.ID)
+			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
+
+			grams, err = testClients.admin.GetValidMeasurementUnit(ctx, grams.ID)
+			requireNotNilAndNoProblems(t, grams, err)
+			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
+
+			t.Log("creating prerequisite valid ingredient")
+			chickenBreastBase := fakes.BuildFakeValidIngredient()
+			chickenBreastInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(chickenBreastBase)
+			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Float32Pointer(2.5)
+			chickenBreast, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, chickenBreastInput)
+			require.NoError(t, createdValidIngredientErr)
+
+			t.Log("creating prerequisite valid preparation")
+			sauteeBase := fakes.BuildFakeValidPreparation()
+			sauteeInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(sauteeBase)
+			sautee, err := testClients.admin.CreateValidPreparation(ctx, sauteeInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", sautee.ID)
+
+			t.Log("creating recipe")
+			expected := &types.Recipe{
+				Name:        "sopa de frijol",
+				Description: "",
+				Steps: []*types.RecipeStep{
+					{
+						MinimumTemperatureInCelsius: nil,
+						Products: []*types.RecipeStepProduct{
+							{
+								Name:            "diced chicken breast",
+								Type:            types.RecipeStepProductIngredientType,
+								MeasurementUnit: *grams,
+								QuantityNotes:   "",
+								MinimumQuantity: 1000,
+							},
+						},
+						Notes:       "first step",
+						Preparation: *dice,
+						Ingredients: []*types.RecipeStepIngredient{
+							{
+								RecipeStepProductID: nil,
+								Ingredient:          chickenBreast,
+								Name:                "pinto beans",
+								MeasurementUnit:     *grams,
+								MinimumQuantity:     500,
+								ProductOfRecipeStep: false,
+							},
+						},
+						Index: 0,
+					},
+					{
+						MinimumTemperatureInCelsius: nil,
+						Products: []*types.RecipeStepProduct{
+							{
+								Name:            "final output",
+								Type:            types.RecipeStepProductIngredientType,
+								MeasurementUnit: *grams,
+								QuantityNotes:   "",
+								MinimumQuantity: 1010,
+							},
+						},
+						Notes:       "second step",
+						Preparation: *sautee,
+						Ingredients: []*types.RecipeStepIngredient{
+							{
+								Name:                "diced chicken breast",
+								MeasurementUnit:     *grams,
+								MinimumQuantity:     1000,
+								ProductOfRecipeStep: true,
+							},
+						},
+						Index: 1,
+					},
+				},
+			}
+
+			exampleRecipeInput := &types.RecipeCreationRequestInput{
+				Name:        expected.Name,
+				Description: expected.Description,
+			}
+			for _, step := range expected.Steps {
+				newStep := &types.RecipeStepCreationRequestInput{
+					MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
+					Notes:                         step.Notes,
+					PreparationID:                 step.Preparation.ID,
+					BelongsToRecipe:               step.BelongsToRecipe,
+					ID:                            step.ID,
+					Index:                         step.Index,
+					MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
+					MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
+					Optional:                      step.Optional,
+				}
+
+				for _, ingredient := range step.Ingredients {
+					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
+						ID:                  ingredient.ID,
+						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
+						Name:                ingredient.Name,
+						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
+						QuantityNotes:       ingredient.QuantityNotes,
+						IngredientNotes:     ingredient.IngredientNotes,
+						MinimumQuantity:     ingredient.MinimumQuantity,
+						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+					}
+
+					if ingredient.Ingredient != nil {
+						newIngredient.IngredientID = &ingredient.Ingredient.ID
+					}
+
+					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
+				}
+
+				for _, product := range step.Products {
+					newProduct := &types.RecipeStepProductCreationRequestInput{
+						ID:                  product.ID,
+						Name:                product.Name,
+						Type:                product.Type,
+						MeasurementUnitID:   product.MeasurementUnit.ID,
+						QuantityNotes:       product.QuantityNotes,
+						BelongsToRecipeStep: product.BelongsToRecipeStep,
+						MinimumQuantity:     product.MinimumQuantity,
+					}
+					newStep.Products = append(newStep.Products, newProduct)
+				}
+
+				exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
+			}
+
+			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
+			require.NoError(t, err)
+			t.Logf("recipe %q created", created.ID)
+			checkRecipeEquality(t, expected, created)
+
+			steps, err := testClients.user.GetAdvancedPrepStepsForRecipe(ctx, created.ID)
+			requireNotNilAndNoProblems(t, created, err)
+
+			require.NotEmpty(t, steps)
+		}
+	})
+}
+
+func (s *TestSuite) TestRecipes_DAGGeneration() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+
+			t.Log("fetching changed recipe")
+			actual, err := testClients.user.GetRecipeDAG(ctx, createdRecipe.ID)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			t.Log("cleaning up recipe")
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

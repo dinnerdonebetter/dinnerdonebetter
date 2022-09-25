@@ -2,6 +2,8 @@ package httpclient
 
 import (
 	"context"
+	"image"
+	"image/png"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -156,4 +158,62 @@ func (c *Client) ArchiveRecipe(ctx context.Context, recipeID string) error {
 	}
 
 	return nil
+}
+
+// GetRecipeDAG gets a recipe.
+func (c *Client) GetRecipeDAG(ctx context.Context, recipeID string) (image.Image, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if recipeID == "" {
+		return nil, buildInvalidIDError("recipe")
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	req, err := c.requestBuilder.BuildGetRecipeDAGRequest(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe request")
+	}
+
+	// this will fail lol
+	res, err := c.fetchResponseToRequest(ctx, c.authedClient, req)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
+	}
+
+	img, err := png.Decode(res.Body)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
+	}
+
+	return img, nil
+}
+
+// GetAdvancedPrepStepsForRecipe gets a recipe.
+func (c *Client) GetAdvancedPrepStepsForRecipe(ctx context.Context, recipeID string) ([]*types.AdvancedPrepStepDatabaseCreationInput, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if recipeID == "" {
+		return nil, buildInvalidIDError("recipe")
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	req, err := c.requestBuilder.BuildGetRecipeAdvancedPrepStepsRequest(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe request")
+	}
+
+	var prepSteps []*types.AdvancedPrepStepDatabaseCreationInput
+	if err = c.fetchAndUnmarshal(ctx, req, &prepSteps); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
+	}
+
+	return prepSteps, nil
 }

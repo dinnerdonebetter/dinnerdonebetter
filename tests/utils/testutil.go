@@ -46,13 +46,15 @@ func BuildArbitraryImage(widthAndHeight int) image.Image {
 }
 
 // BuildArbitraryImagePNGBytes builds an image with a bunch of colors in it.
-func BuildArbitraryImagePNGBytes(widthAndHeight int) []byte {
+func BuildArbitraryImagePNGBytes(widthAndHeight int) (img image.Image, imgBytes []byte) {
 	var b bytes.Buffer
-	if err := png.Encode(&b, BuildArbitraryImage(widthAndHeight)); err != nil {
+
+	img = BuildArbitraryImage(widthAndHeight)
+	if err := png.Encode(&b, img); err != nil {
 		panic(err)
 	}
 
-	return b.Bytes()
+	return img, b.Bytes()
 }
 
 // BuildTestRequest builds an arbitrary *http.Request.

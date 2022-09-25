@@ -17,9 +17,7 @@ run:
   # of this option's value:
   #   	vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
   skip-dirs:
-    - cmd/tools
-    - internal/database/postgres/generated
-    - cmd/email_debugger
+    - cmd/playground
     - tests/integration
 
   # which files to skip: they will be analyzed, but issues from them

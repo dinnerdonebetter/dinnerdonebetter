@@ -181,6 +181,23 @@ func buildTestClientWithInvalidResponse(t *testing.T, spec *requestSpec) *Client
 	return buildTestClient(t, ts)
 }
 
+func buildTestClientWithBytesResponse(t *testing.T, spec *requestSpec, outputBody []byte) (*Client, *httptest.Server) {
+	t.Helper()
+
+	ts := httptest.NewTLSServer(http.HandlerFunc(
+		func(res http.ResponseWriter, req *http.Request) {
+			t.Helper()
+
+			assertRequestQuality(t, req, spec)
+
+			_, err := res.Write(outputBody)
+			assert.NoError(t, err)
+		},
+	))
+
+	return buildTestClient(t, ts), ts
+}
+
 func buildTestClientWithJSONResponse(t *testing.T, spec *requestSpec, outputBody interface{}) (*Client, *httptest.Server) {
 	t.Helper()
 

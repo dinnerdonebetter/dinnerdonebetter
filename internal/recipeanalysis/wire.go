@@ -1,4 +1,4 @@
-package graphing
+package recipeanalysis
 
 import (
 	"github.com/google/wire"
@@ -6,5 +6,5 @@ import (
 
 // Providers are our collection of what we provide to other services.
 var Providers = wire.NewSet(
-	NewRecipeGrapher,
+	NewRecipeAnalyzer,
 )

@@ -281,7 +281,7 @@ func (s *usersTestSuite) TestClient_UploadNewAvatar() {
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
 		exampleAvatar := []byte(t.Name())
-		exampleExtension := png
+		exampleExtension := pngExtension
 
 		err := c.UploadNewAvatar(s.ctx, exampleAvatar, exampleExtension)
 		assert.NoError(t, err)
@@ -291,7 +291,7 @@ func (s *usersTestSuite) TestClient_UploadNewAvatar() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		exampleExtension := png
+		exampleExtension := pngExtension
 
 		err := c.UploadNewAvatar(s.ctx, nil, exampleExtension)
 		assert.Error(t, err)
@@ -312,7 +312,7 @@ func (s *usersTestSuite) TestClient_UploadNewAvatar() {
 
 		c := buildTestClientWithInvalidURL(t)
 		exampleAvatar := []byte(t.Name())
-		exampleExtension := png
+		exampleExtension := pngExtension
 
 		err := c.UploadNewAvatar(s.ctx, exampleAvatar, exampleExtension)
 		assert.Error(t, err)
@@ -323,7 +323,7 @@ func (s *usersTestSuite) TestClient_UploadNewAvatar() {
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 		exampleAvatar := []byte(t.Name())
-		exampleExtension := png
+		exampleExtension := pngExtension
 
 		err := c.UploadNewAvatar(s.ctx, exampleAvatar, exampleExtension)
 		assert.Error(t, err)

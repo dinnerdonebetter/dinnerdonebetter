@@ -3,20 +3,21 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
-	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	"github.com/prixfixeco/api_server/internal/graphing"
-	"github.com/prixfixeco/api_server/internal/workers"
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"go.opentelemetry.io/otel"
+
 	"github.com/prixfixeco/api_server/internal/config"
+	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"go.opentelemetry.io/otel"
+	"github.com/prixfixeco/api_server/internal/recipeanalysis"
+	"github.com/prixfixeco/api_server/internal/workers"
 )
 
 const (
@@ -70,7 +71,7 @@ func CreateAdvancedPrepSteps(ctx context.Context, _ PubSubMessage) error {
 	advancedPrepStepCreationEnsurerWorker := workers.ProvideAdvancedPrepStepCreationEnsurerWorker(
 		logger,
 		dataManager,
-		graphing.NewRecipeGrapher(tracerProvider),
+		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
 		dataChangesPublisher,
 		cdp,
 		tracerProvider,

@@ -12,11 +12,11 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
-	"github.com/prixfixeco/api_server/internal/graphing"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/workers"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
@@ -92,7 +92,7 @@ func main() {
 	advancedPrepStepCreationEnsurerWorker := workers.ProvideAdvancedPrepStepCreationEnsurerWorker(
 		logger,
 		dataManager,
-		&graphing.MockRecipeGrapher{},
+		&recipeanalysis.MockRecipeAnalyzer{},
 		dataChangesPublisher,
 		cdp,
 		tracerProvider,

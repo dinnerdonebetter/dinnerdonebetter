@@ -14,12 +14,12 @@ import (
 	config2 "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/graphing"
 	config3 "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/random"
+	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	"github.com/prixfixeco/api_server/internal/server"
 	"github.com/prixfixeco/api_server/internal/services/admin"
@@ -142,8 +142,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	recipesConfig := &servicesConfigurations.Recipes
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
-	recipeGrapher := graphing.NewRecipeGrapher(tracerProvider)
-	recipeDataService, err := recipes.ProvideService(logger, recipesConfig, recipeDataManager, recipeGrapher, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
+	recipeDataService, err := recipes.ProvideService(logger, recipesConfig, recipeDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

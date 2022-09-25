@@ -168,3 +168,57 @@ func (b *Builder) BuildArchiveRecipeRequest(ctx context.Context, recipeID string
 
 	return req, nil
 }
+
+// BuildGetRecipeDAGRequest builds an HTTP request for fetching a recipe.
+func (b *Builder) BuildGetRecipeDAGRequest(ctx context.Context, recipeID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		recipesBasePath,
+		recipeID,
+		"dag",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
+// BuildGetRecipeAdvancedPrepStepsRequest builds an HTTP request for fetching a recipe.
+func (b *Builder) BuildGetRecipeAdvancedPrepStepsRequest(ctx context.Context, recipeID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		recipesBasePath,
+		recipeID,
+		"prep_steps",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}

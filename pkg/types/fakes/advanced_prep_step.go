@@ -44,3 +44,26 @@ func BuildFakeAdvancedPrepStepList() *types.AdvancedPrepStepList {
 		AdvancedPrepSteps: examples,
 	}
 }
+
+// BuildFakeAdvancedPrepStepDatabaseCreationInputs builds a faked AdvancedPrepStepList.
+func BuildFakeAdvancedPrepStepDatabaseCreationInputs() []*types.AdvancedPrepStepDatabaseCreationInput {
+	var examples []*types.AdvancedPrepStepDatabaseCreationInput
+	for i := 0; i < exampleQuantity; i++ {
+		now := time.Now().Add(0).Truncate(time.Second).UTC()
+		inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
+
+		examples = append(examples, &types.AdvancedPrepStepDatabaseCreationInput{
+			CompletedAt:          nil,
+			MealPlanOptionID:     "",
+			RecipeStepID:         "",
+			ID:                   BuildFakeID(),
+			CannotCompleteBefore: now,
+			CannotCompleteAfter:  inOneWeek,
+			Status:               "unfinished",
+			StatusExplanation:    buildUniqueString(),
+			CreationExplanation:  buildUniqueString(),
+		})
+	}
+
+	return examples
+}

@@ -15,10 +15,10 @@ import (
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	"github.com/prixfixeco/api_server/internal/graphing"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
@@ -956,13 +956,13 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 		helper.service.recipeDataManager = recipeDataManager
 
 		fakeImage := testutils.BuildArbitraryImage(1)
-		mockGrapher := &graphing.MockRecipeGrapher{}
+		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
 		mockGrapher.On(
 			"GenerateDAGDiagramForRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe,
 		).Return(fakeImage, nil)
-		helper.service.recipeGrapher = mockGrapher
+		helper.service.recipeAnalyzer = mockGrapher
 
 		helper.service.DAGHandler(helper.res, helper.req)
 
@@ -1028,13 +1028,13 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 		helper.service.recipeDataManager = recipeDataManager
 
 		fakeImage := testutils.BuildArbitraryImage(1)
-		mockGrapher := &graphing.MockRecipeGrapher{}
+		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
 		mockGrapher.On(
 			"GenerateDAGDiagramForRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe,
 		).Return(fakeImage, errors.New("blah"))
-		helper.service.recipeGrapher = mockGrapher
+		helper.service.recipeAnalyzer = mockGrapher
 
 		helper.service.DAGHandler(helper.res, helper.req)
 

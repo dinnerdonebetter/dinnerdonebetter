@@ -104,8 +104,8 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	s.encoderDecoder.RespondWithData(ctx, res, advancedPrepSteps)
 }
 
-// CompletionHandler returns a handler that updates a meal plan.
-func (s *service) CompletionHandler(res http.ResponseWriter, req *http.Request) {
+// MarkAsCompletedHandler returns a handler that updates a meal plan.
+func (s *service) MarkAsCompletedHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

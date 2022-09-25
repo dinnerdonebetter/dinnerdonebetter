@@ -34,8 +34,8 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 			PluralName:                              fake.LoremIpsumSentence(exampleQuantity),
 			AnimalDerived:                           fake.Bool(),
 			RestrictToPreparations:                  fake.Bool(),
-			MinimumIdealStorageTemperatureInCelsius: fake.Float32(),
-			MaximumIdealStorageTemperatureInCelsius: fake.Float32(),
+			MinimumIdealStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
+			MaximumIdealStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

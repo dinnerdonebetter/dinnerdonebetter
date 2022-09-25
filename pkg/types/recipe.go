@@ -119,6 +119,7 @@ type (
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 		DAGHandler(res http.ResponseWriter, req *http.Request)
+		EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
