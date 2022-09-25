@@ -263,7 +263,7 @@ func (s *TestSuite) TestUsers_AvatarManagement() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			avatar := testutils.BuildArbitraryImagePNGBytes(256)
+			_, avatar := testutils.BuildArbitraryImagePNGBytes(256)
 
 			require.NoError(t, testClients.user.UploadNewAvatar(ctx, avatar, "png"))
 

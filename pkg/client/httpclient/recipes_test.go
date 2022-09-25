@@ -1,7 +1,12 @@
 package httpclient
 
 import (
+	"bytes"
 	"context"
+	"image"
+	"image/color"
+	"image/png"
+	"math"
 	"net/http"
 	"testing"
 
@@ -320,19 +325,48 @@ func (s *recipesTestSuite) TestClient_ArchiveRecipe() {
 	})
 }
 
+// buildArbitraryImage builds an image with a bunch of colors in it.
+func buildArbitraryImage(widthAndHeight int) image.Image {
+	img := image.NewRGBA(image.Rectangle{Min: image.Point{}, Max: image.Point{X: widthAndHeight, Y: widthAndHeight}})
+
+	// Set color for each pixel.
+	for x := 0; x < widthAndHeight; x++ {
+		for y := 0; y < widthAndHeight; y++ {
+			img.Set(x, y, color.RGBA{R: uint8(x % math.MaxUint8), G: uint8(y % math.MaxUint8), B: uint8(x + y%math.MaxUint8), A: math.MaxUint8})
+		}
+	}
+
+	return img
+}
+
+// buildArbitraryImagePNGBytes builds an image with a bunch of colors in it.
+func buildArbitraryImagePNGBytes(widthAndHeight int) (img image.Image, imgBytes []byte) {
+	var b bytes.Buffer
+
+	img = buildArbitraryImage(widthAndHeight)
+	if err := png.Encode(&b, img); err != nil {
+		panic(err)
+	}
+
+	return img, b.Bytes()
+}
+
 func (s *recipesTestSuite) TestClient_GetRecipeDAG() {
 	const expectedPathFormat = "/api/v1/recipes/%s/dag"
 
 	s.Run("standard", func() {
 		t := s.T()
 
+		exampleImage, imageBytes := buildArbitraryImagePNGBytes(15)
+		require.NotNil(t, exampleImage)
+
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)
+		c, _ := buildTestClientWithBytesResponse(t, spec, imageBytes)
 		actual, err := c.GetRecipeDAG(s.ctx, s.exampleRecipe.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleRecipe, actual)
+		assert.Equal(t, exampleImage, actual)
 	})
 
 	s.Run("with invalid recipe ID", func() {
@@ -373,13 +407,14 @@ func (s *recipesTestSuite) TestClient_GetAdvancedPrepStepsForRecipe() {
 	s.Run("standard", func() {
 		t := s.T()
 
+		examplePrepSteps := fakes.BuildFakeAdvancedPrepStepDatabaseCreationInputs()
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)
+		c, _ := buildTestClientWithJSONResponse(t, spec, examplePrepSteps)
 		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, s.exampleRecipe.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleRecipe, actual)
+		assert.Equal(t, examplePrepSteps, actual)
 	})
 
 	s.Run("with invalid recipe ID", func() {

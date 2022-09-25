@@ -128,7 +128,7 @@ func (g *recipeAnalyzer) makeGraphForRecipe(ctx context.Context, recipe *types.R
 		}
 
 		for _, instrument := range step.Instruments {
-			if !instrument.ProductOfRecipeStep {
+			if !instrument.ProductOfRecipeStep || instrument.RecipeStepProductID == nil {
 				continue
 			}
 

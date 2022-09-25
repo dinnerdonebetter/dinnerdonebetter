@@ -121,9 +121,9 @@ func (c *Client) ArchiveUser(ctx context.Context, userID string) error {
 }
 
 const (
-	pngExtension  = "pngExtension"
-	jpegExtension = "jpegExtension"
-	gifExtension  = "gifExtension"
+	pngExtension  = "png"
+	jpegExtension = "jpeg"
+	gifExtension  = "gif"
 )
 
 // UploadNewAvatar uploads a new avatar.

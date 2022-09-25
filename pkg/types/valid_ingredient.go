@@ -103,30 +103,30 @@ type (
 	// ValidIngredientCreationRequestInput represents what a user could set as input for creating valid ingredients.
 	ValidIngredientCreationRequestInput struct {
 		_                                       struct{}
-		ID                                      string  `json:"-"`
-		Name                                    string  `json:"name"`
-		Description                             string  `json:"description"`
-		Warning                                 string  `json:"warning"`
-		IconPath                                string  `json:"iconPath"`
-		PluralName                              string  `json:"pluralName"`
-		StorageInstructions                     string  `json:"storageInstructions"`
-		MinimumIdealStorageTemperatureInCelsius float32 `json:"minimumIdealStorageTemperatureInCelsius"`
-		MaximumIdealStorageTemperatureInCelsius float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		IsMeasuredVolumetrically                bool    `json:"isMeasuredVolumetrically"`
-		ContainsShellfish                       bool    `json:"containsShellfish"`
-		ContainsWheat                           bool    `json:"containsWheat"`
-		ContainsFish                            bool    `json:"containsFish"`
-		ContainsGluten                          bool    `json:"containsGluten"`
-		AnimalFlesh                             bool    `json:"animalFlesh"`
-		ContainsEgg                             bool    `json:"containsEgg"`
-		IsLiquid                                bool    `json:"isLiquid"`
-		ContainsSoy                             bool    `json:"containsSoy"`
-		ContainsPeanut                          bool    `json:"containsPeanut"`
-		AnimalDerived                           bool    `json:"animalDerived"`
-		RestrictToPreparations                  bool    `json:"restrictToPreparations"`
-		ContainsDairy                           bool    `json:"containsDairy"`
-		ContainsSesame                          bool    `json:"containsSesame"`
-		ContainsTreeNut                         bool    `json:"containsTreeNut"`
+		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius"`
+		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius"`
+		ID                                      string   `json:"-"`
+		Warning                                 string   `json:"warning"`
+		IconPath                                string   `json:"iconPath"`
+		PluralName                              string   `json:"pluralName"`
+		StorageInstructions                     string   `json:"storageInstructions"`
+		Name                                    string   `json:"name"`
+		Description                             string   `json:"description"`
+		ContainsWheat                           bool     `json:"containsWheat"`
+		ContainsShellfish                       bool     `json:"containsShellfish"`
+		IsMeasuredVolumetrically                bool     `json:"isMeasuredVolumetrically"`
+		ContainsFish                            bool     `json:"containsFish"`
+		ContainsGluten                          bool     `json:"containsGluten"`
+		AnimalFlesh                             bool     `json:"animalFlesh"`
+		ContainsEgg                             bool     `json:"containsEgg"`
+		IsLiquid                                bool     `json:"isLiquid"`
+		ContainsSoy                             bool     `json:"containsSoy"`
+		ContainsPeanut                          bool     `json:"containsPeanut"`
+		AnimalDerived                           bool     `json:"animalDerived"`
+		RestrictToPreparations                  bool     `json:"restrictToPreparations"`
+		ContainsDairy                           bool     `json:"containsDairy"`
+		ContainsSesame                          bool     `json:"containsSesame"`
+		ContainsTreeNut                         bool     `json:"containsTreeNut"`
 	}
 
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
@@ -383,8 +383,8 @@ func ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput(input 
 		PluralName:                              input.PluralName,
 		AnimalDerived:                           input.AnimalDerived,
 		RestrictToPreparations:                  input.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: &input.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: &input.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
+		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     input.StorageInstructions,
 	}
 
