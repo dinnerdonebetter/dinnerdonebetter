@@ -138,7 +138,7 @@ queries_lint:
 
 .PHONY: golang_lint
 golang_lint:
-	@docker pull golangci/golangci-lint:v1.46.2
+	@docker pull golangci/golangci-lint:v1.49
 	docker run \
 		--rm \
 		--volume $(PWD):$(PWD) \
