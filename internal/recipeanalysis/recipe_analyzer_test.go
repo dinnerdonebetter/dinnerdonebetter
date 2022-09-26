@@ -126,16 +126,6 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 			},
 		}
 
-		exampleFinalizedMealPlanResult := &types.FinalizedMealPlanDatabaseResult{
-			MealPlanID:       exampleMealPlan.ID,
-			MealPlanEventID:  exampleMealPlanEvent.ID,
-			MealPlanOptionID: exampleMealPlanOption.ID,
-			MealID:           exampleMeal.ID,
-			RecipeIDs: []string{
-				exampleRecipe.ID,
-			},
-		}
-
 		expected := []*types.AdvancedPrepStepDatabaseCreationInput{
 			{
 				CannotCompleteBefore: time.Now(),
@@ -143,7 +133,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 				CompletedAt:          nil,
 				Status:               types.AdvancedPrepStepStatusUnfinished,
 				CreationExplanation:  buildThawStepCreationExplanation(1, 0),
-				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
+				MealPlanOptionID:     exampleMealPlanOption.ID,
 				RecipeStepID:         recipeStepID,
 			},
 		}
@@ -284,16 +274,6 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 			},
 		}
 
-		exampleFinalizedMealPlanResult := &types.FinalizedMealPlanDatabaseResult{
-			MealPlanID:       exampleMealPlan.ID,
-			MealPlanEventID:  exampleMealPlanEvent.ID,
-			MealPlanOptionID: exampleMealPlanOption.ID,
-			MealID:           exampleMeal.ID,
-			RecipeIDs: []string{
-				exampleRecipe.ID,
-			},
-		}
-
 		expected := []*types.AdvancedPrepStepDatabaseCreationInput{
 			{
 				CannotCompleteBefore: time.Now(),
@@ -301,7 +281,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 				CompletedAt:          nil,
 				Status:               types.AdvancedPrepStepStatusUnfinished,
 				CreationExplanation:  advancedStepCreationExplanation,
-				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
+				MealPlanOptionID:     exampleMealPlanOption.ID,
 				RecipeStepID:         recipeStep1ID,
 			},
 		}

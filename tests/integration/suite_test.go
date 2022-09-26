@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -26,8 +26,8 @@ var (
 )
 
 type testClientWrapper struct {
-	user     *httpclient.Client
-	admin    *httpclient.Client
+	user     *apiclient.Client
+	admin    *apiclient.Client
 	authType string
 }
 
@@ -46,7 +46,7 @@ type TestSuite struct {
 	cookieClient,
 	pasetoClient,
 	adminCookieClient,
-	adminPASETOClient *httpclient.Client
+	adminPASETOClient *apiclient.Client
 }
 
 var _ suite.SetupTestSuite = (*TestSuite)(nil)

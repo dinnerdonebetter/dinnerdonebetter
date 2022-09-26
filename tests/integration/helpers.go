@@ -17,7 +17,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -43,7 +43,7 @@ func requireNotNilAndNoProblems(t *testing.T, i interface{}, err error) {
 	require.NotNil(t, i)
 }
 
-func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, cookie *http.Cookie, cookieClient, pasetoClient *httpclient.Client) {
+func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, cookie *http.Cookie, cookieClient, pasetoClient *apiclient.Client) {
 	t.Helper()
 
 	if input == nil {
@@ -84,7 +84,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	return user, cookie, cookieClient, pasetoClient
 }
 
-func initializeCookiePoweredClient(ctx context.Context, cookie *http.Cookie) (*httpclient.Client, error) {
+func initializeCookiePoweredClient(ctx context.Context, cookie *http.Cookie) (*apiclient.Client, error) {
 	if parsedURLToUse == nil {
 		panic("url not set!")
 	}
@@ -94,17 +94,17 @@ func initializeCookiePoweredClient(ctx context.Context, cookie *http.Cookie) (*h
 		return nil, err
 	}
 
-	c, err := httpclient.NewClient(parsedURLToUse,
+	c, err := apiclient.NewClient(parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
-		httpclient.UsingLogger(logger),
-		httpclient.UsingCookie(cookie),
+		apiclient.UsingLogger(logger),
+		apiclient.UsingCookie(cookie),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	if debug {
-		if setOptionErr := c.SetOptions(httpclient.UsingDebug(true)); setOptionErr != nil {
+		if setOptionErr := c.SetOptions(apiclient.UsingDebug(true)); setOptionErr != nil {
 			return nil, setOptionErr
 		}
 	}
@@ -112,18 +112,18 @@ func initializeCookiePoweredClient(ctx context.Context, cookie *http.Cookie) (*h
 	return c, nil
 }
 
-func initializePASETOPoweredClient(clientID string, secretKey []byte) (*httpclient.Client, error) {
-	c, err := httpclient.NewClient(parsedURLToUse,
+func initializePASETOPoweredClient(clientID string, secretKey []byte) (*apiclient.Client, error) {
+	c, err := apiclient.NewClient(parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
-		httpclient.UsingLogger(logging.NewNoopLogger()),
-		httpclient.UsingPASETO(clientID, secretKey),
+		apiclient.UsingLogger(logging.NewNoopLogger()),
+		apiclient.UsingPASETO(clientID, secretKey),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	if debug {
-		if setOptionErr := c.SetOptions(httpclient.UsingDebug(true)); setOptionErr != nil {
+		if setOptionErr := c.SetOptions(apiclient.UsingDebug(true)); setOptionErr != nil {
 			return nil, setOptionErr
 		}
 	}
@@ -131,10 +131,10 @@ func initializePASETOPoweredClient(clientID string, secretKey []byte) (*httpclie
 	return c, nil
 }
 
-func buildSimpleClient(t *testing.T) *httpclient.Client {
+func buildSimpleClient(t *testing.T) *apiclient.Client {
 	t.Helper()
 
-	c, err := httpclient.NewClient(parsedURLToUse, tracing.NewNoopTracerProvider())
+	c, err := apiclient.NewClient(parsedURLToUse, tracing.NewNoopTracerProvider())
 	require.NoError(t, err)
 
 	return c
@@ -150,7 +150,7 @@ func generateTOTPTokenForUser(t *testing.T, u *types.User) string {
 	return code
 }
 
-func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookieClient, pasetoClient *httpclient.Client) {
+func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookieClient, pasetoClient *apiclient.Client) {
 	t.Helper()
 
 	ctx, span := tracing.StartSpan(ctx)

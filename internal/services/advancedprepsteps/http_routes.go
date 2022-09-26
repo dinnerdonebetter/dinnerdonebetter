@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	// AdvancedPrepStepIDURIParamKey is a standard string that we'll use to refer to meal plan IDs with.
+	// AdvancedPrepStepIDURIParamKey is a standard string that we'll use to refer to advanced prep step IDs with.
 	AdvancedPrepStepIDURIParamKey = "advancedPrepStepID"
 )
 
-// ReadHandler returns a GET handler that returns a meal plan.
+// ReadHandler returns a GET handler that returns an advanced prep step.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -40,18 +40,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	// determine meal plan ID.
+	// determine advanced prep step ID.
 	advancedPrepStepID := s.advancedPrepStepIDFetcher(req)
 	tracing.AttachMealPlanEventIDToSpan(span, advancedPrepStepID)
 	logger = logger.WithValue(keys.AdvancedPrepStepIDKey, advancedPrepStepID)
 
-	// fetch meal plan from database.
+	// fetch advanced prep step from database.
 	x, err := s.advancedPrepStepDataManager.GetAdvancedPrepStep(ctx, advancedPrepStepID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving meal plan")
+		observability.AcknowledgeError(err, logger, span, "retrieving advanced prep step")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -95,7 +95,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		// in the event no rows exist, return an empty list.
 		advancedPrepSteps = []*types.AdvancedPrepStep{}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving meal plans")
+		observability.AcknowledgeError(err, logger, span, "retrieving advanced prep steps for meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -104,8 +104,8 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	s.encoderDecoder.RespondWithData(ctx, res, advancedPrepSteps)
 }
 
-// MarkAsCompletedHandler returns a handler that updates a meal plan.
-func (s *service) MarkAsCompletedHandler(res http.ResponseWriter, req *http.Request) {
+// StatusChangeHandler returns a handler that updates an advanced prep step.
+func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -113,9 +113,9 @@ func (s *service) MarkAsCompletedHandler(res http.ResponseWriter, req *http.Requ
 	tracing.AttachRequestToSpan(span, req)
 
 	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+	sessionCtxData, sessionCtxFetchErr := s.sessionContextDataFetcher(req)
+	if sessionCtxFetchErr != nil {
+		observability.AcknowledgeError(sessionCtxFetchErr, logger, span, "retrieving session context data")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
@@ -124,26 +124,56 @@ func (s *service) MarkAsCompletedHandler(res http.ResponseWriter, req *http.Requ
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine advanced prep step ID.
 	advancedPrepStepID := s.advancedPrepStepIDFetcher(req)
 	tracing.AttachMealPlanEventIDToSpan(span, advancedPrepStepID)
 	logger = logger.WithValue(keys.AdvancedPrepStepIDKey, advancedPrepStepID)
 
-	if err = s.advancedPrepStepDataManager.MarkAdvancedPrepStepAsComplete(ctx, advancedPrepStepID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving meal plan")
+	// read parsed input struct from request body.
+	providedInput := new(types.AdvancedPrepStepStatusChangeRequestInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+	providedInput.ID = advancedPrepStepID
+
+	if err := providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	exists, existenceCheckErr := s.advancedPrepStepDataManager.AdvancedPrepStepExists(ctx, mealPlanID, advancedPrepStepID)
+	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking recipe existence")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	}
+
+	if err := s.advancedPrepStepDataManager.ChangeAdvancedPrepStepStatus(ctx, providedInput); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving advanced prep step")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanEventDataType,
-			EventType:                 types.MealPlanEventArchivedCustomerEventType,
+			DataType:                  types.AdvancedPrepStepDataType,
+			EventType:                 types.AdvancedPrepStepStatusChangedCustomerEventType,
 			MealPlanEventID:           advancedPrepStepID,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
 	}

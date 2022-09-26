@@ -16,8 +16,8 @@ type AdvancedPrepStepDataManager struct {
 }
 
 // AdvancedPrepStepExists is a mock function.
-func (m *AdvancedPrepStepDataManager) AdvancedPrepStepExists(ctx context.Context, advancedPrepStepID string) (bool, error) {
-	args := m.Called(ctx, advancedPrepStepID)
+func (m *AdvancedPrepStepDataManager) AdvancedPrepStepExists(ctx context.Context, mealPlanID, advancedPrepStepID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, advancedPrepStepID)
 	return args.Bool(0), args.Error(1)
 }
 
@@ -39,7 +39,7 @@ func (m *AdvancedPrepStepDataManager) CreateAdvancedPrepStepsForMealPlanOption(c
 	return args.Get(0).([]*types.AdvancedPrepStep), args.Error(1)
 }
 
-// MarkAdvancedPrepStepAsComplete is a mock function.
-func (m *AdvancedPrepStepDataManager) MarkAdvancedPrepStepAsComplete(ctx context.Context, advancedPrepStepID string) error {
-	return m.Called(ctx, advancedPrepStepID).Error(0)
+// ChangeAdvancedPrepStepStatus is a mock function.
+func (m *AdvancedPrepStepDataManager) ChangeAdvancedPrepStepStatus(ctx context.Context, input *types.AdvancedPrepStepStatusChangeRequestInput) error {
+	return m.Called(ctx, input).Error(0)
 }

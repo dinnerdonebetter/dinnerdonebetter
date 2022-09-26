@@ -3,9 +3,9 @@ package storage
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -71,7 +71,7 @@ func TestUploader_SaveFile(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		tempFile, err := ioutil.TempFile("", "")
+		tempFile, err := os.CreateTemp("", "")
 		require.NoError(t, err)
 
 		ctx := context.Background()

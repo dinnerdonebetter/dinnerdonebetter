@@ -10,16 +10,21 @@ import (
 )
 
 const (
-	// AdvancedPrepStepDataType indicates an event is related to a valid preparation.
+	// AdvancedPrepStepDataType indicates an event is related to a advanced prep step.
 	AdvancedPrepStepDataType dataType = "advanced_prep_step"
 
 	// AdvancedPrepStepCreatedCustomerEventType indicates an advanced prep step was created.
 	AdvancedPrepStepCreatedCustomerEventType CustomerEventType = "advanced_prep_step_created"
 
+	// AdvancedPrepStepStatusChangedCustomerEventType indicates an advanced prep step was created.
+	AdvancedPrepStepStatusChangedCustomerEventType CustomerEventType = "advanced_prep_step_status_changed"
+
 	// AdvancedPrepStepStatusUnfinished represents the unfinished enum member for advanced prep step status in the DB.
 	AdvancedPrepStepStatusUnfinished = "unfinished"
-	// AdvancedPrepStepStatusPostponed represents the postponed enum member for advanced prep step status in the DB.
-	AdvancedPrepStepStatusPostponed = "postponed"
+	// AdvancedPrepStepStatusDelayed represents the delayed enum member for advanced prep step status in the DB.
+	AdvancedPrepStepStatusDelayed = "delayed"
+	// AdvancedPrepStepStatusIgnored represents the ignored enum member for advanced prep step status in the DB.
+	AdvancedPrepStepStatusIgnored = "ignored"
 	// AdvancedPrepStepStatusCanceled represents the canceled enum member for advanced prep step status in the DB.
 	AdvancedPrepStepStatusCanceled = "canceled"
 	// AdvancedPrepStepStatusFinished represents the finished enum member for advanced prep step status in the DB.
@@ -32,7 +37,7 @@ func init() {
 }
 
 type (
-	// AdvancedPrepStep represents a valid preparation.
+	// AdvancedPrepStep represents a advanced prep step.
 	AdvancedPrepStep struct {
 		_                    struct{}
 		CannotCompleteBefore time.Time      `json:"cannotCompleteBefore"`
@@ -47,14 +52,14 @@ type (
 		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
 	}
 
-	// AdvancedPrepStepList represents a list of valid preparations.
+	// AdvancedPrepStepList represents a list of advanced prep steps.
 	AdvancedPrepStepList struct {
 		_                 struct{}
 		AdvancedPrepSteps []*AdvancedPrepStep `json:"data"`
 		Pagination
 	}
 
-	// AdvancedPrepStepDatabaseCreationInput represents what a user could set as input for creating valid preparations.
+	// AdvancedPrepStepDatabaseCreationInput represents what a user could set as input for creating advanced prep steps.
 	AdvancedPrepStepDatabaseCreationInput struct {
 		_                    struct{}
 		CannotCompleteBefore time.Time
@@ -68,26 +73,35 @@ type (
 		ID                   string
 	}
 
-	// AdvancedPrepStepDatabaseCreationEstimate represents what a user could set as input for creating valid preparations.
+	// AdvancedPrepStepStatusChangeRequestInput represents what a user could set as input for updating advanced prep steps.
+	AdvancedPrepStepStatusChangeRequestInput struct {
+		_                 struct{}
+		Status            string `json:"status"`
+		StatusExplanation string `json:"statusExplanation"`
+		ID                string `json:"-"`
+	}
+
+	// AdvancedPrepStepDatabaseCreationEstimate represents what a user could set as input for creating advanced prep steps.
 	AdvancedPrepStepDatabaseCreationEstimate struct {
 		_                   struct{}
 		CreationExplanation string `json:"creationExplanation"`
 		RecipeStepID        string `json:"recipeStepID"`
 	}
 
-	// AdvancedPrepStepDataManager describes a structure capable of storing valid preparations permanently.
+	// AdvancedPrepStepDataManager describes a structure capable of storing advanced prep steps permanently.
 	AdvancedPrepStepDataManager interface {
+		AdvancedPrepStepExists(ctx context.Context, mealPlanID, advancedPrepStepID string) (bool, error)
 		GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID string) (*AdvancedPrepStep, error)
 		GetAdvancedPrepStepsForMealPlan(ctx context.Context, mealPlanID string) ([]*AdvancedPrepStep, error)
 		CreateAdvancedPrepStepsForMealPlanOption(ctx context.Context, mealPlanOptionID string, inputs []*AdvancedPrepStepDatabaseCreationInput) ([]*AdvancedPrepStep, error)
-		MarkAdvancedPrepStepAsComplete(ctx context.Context, advancedPrepStepID string) error
+		ChangeAdvancedPrepStepStatus(ctx context.Context, input *AdvancedPrepStepStatusChangeRequestInput) error
 	}
 
-	// AdvancedPrepStepDataService describes a structure capable of serving traffic related to valid preparations.
+	// AdvancedPrepStepDataService describes a structure capable of serving traffic related to advanced prep steps.
 	AdvancedPrepStepDataService interface {
 		ListByMealPlanHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
-		MarkAsCompletedHandler(res http.ResponseWriter, req *http.Request)
+		StatusChangeHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
@@ -104,10 +118,27 @@ func (x *AdvancedPrepStepDatabaseCreationInput) ValidateWithContext(ctx context.
 		validation.Field(&x.CannotCompleteBefore, validation.Required),
 		validation.Field(&x.Status, validation.In(
 			AdvancedPrepStepStatusUnfinished,
-			AdvancedPrepStepStatusPostponed,
+			AdvancedPrepStepStatusDelayed,
+			AdvancedPrepStepStatusIgnored,
 			AdvancedPrepStepStatusCanceled,
 			AdvancedPrepStepStatusFinished,
 		)),
 		validation.Field(&x.CannotCompleteAfter, validation.Required),
+	)
+}
+
+// ValidateWithContext validates a AdvancedPrepStepStatusChangeRequestInput.
+func (x *AdvancedPrepStepStatusChangeRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.Status, validation.In(
+			AdvancedPrepStepStatusUnfinished,
+			AdvancedPrepStepStatusDelayed,
+			AdvancedPrepStepStatusIgnored,
+			AdvancedPrepStepStatusCanceled,
+			AdvancedPrepStepStatusFinished,
+		)),
 	)
 }

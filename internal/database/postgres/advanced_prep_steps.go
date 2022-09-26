@@ -100,6 +100,43 @@ func (q *Querier) scanAdvancedPrepSteps(ctx context.Context, rows database.Resul
 	return validInstruments, nil
 }
 
+//go:embed queries/advanced_prep_steps/exists.sql
+var advancedPrepStepsExistsQuery string
+
+// AdvancedPrepStepExists checks if an advanced prep step exists.
+func (q *Querier) AdvancedPrepStepExists(ctx context.Context, mealPlanID, advancedPrepStepID string) (bool, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if advancedPrepStepID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.AdvancedPrepStepIDKey, advancedPrepStepID)
+	tracing.AttachAdvancedPrepStepIDToSpan(span, advancedPrepStepID)
+
+	args := []interface{}{
+		mealPlanID,
+		advancedPrepStepID,
+	}
+
+	result, err := q.performBooleanQuery(ctx, q.db, advancedPrepStepsExistsQuery, args)
+	if err != nil {
+		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan existence check")
+	}
+
+	logger.Info("advanced step existence retrieved")
+
+	return result, nil
+}
+
 //go:embed queries/advanced_prep_steps/get_one.sql
 var getAdvancedPrepStepsQuery string
 
@@ -239,31 +276,40 @@ func (q *Querier) CreateAdvancedPrepStepsForMealPlanOption(ctx context.Context, 
 	return outputs, nil
 }
 
-//go:embed queries/advanced_prep_steps/complete.sql
-var completeAdvancedPrepStepQuery string
+//go:embed queries/advanced_prep_steps/change_status.sql
+var changeAdvancedPrepStepStatusQuery string
 
-// MarkAdvancedPrepStepAsComplete marks an advanced prep step as complete.
-func (q *Querier) MarkAdvancedPrepStepAsComplete(ctx context.Context, advancedPrepStepID string) error {
+// ChangeAdvancedPrepStepStatus changes an advanced prep step's status.
+func (q *Querier) ChangeAdvancedPrepStepStatus(ctx context.Context, input *types.AdvancedPrepStepStatusChangeRequestInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if advancedPrepStepID == "" {
-		return ErrInvalidIDProvided
+	if input == nil {
+		return ErrNilInputProvided
 	}
-	tracing.AttachAdvancedPrepStepIDToSpan(span, advancedPrepStepID)
-	logger = logger.WithValue(keys.AdvancedPrepStepIDKey, advancedPrepStepID)
+	tracing.AttachAdvancedPrepStepIDToSpan(span, input.ID)
+	logger = logger.WithValue(keys.AdvancedPrepStepIDKey, input.ID)
 
-	args := []interface{}{
-		advancedPrepStepID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "prep step complete", completeAdvancedPrepStepQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "marking prep step as complete")
+	var settledAt *time.Time
+	if input.Status == types.AdvancedPrepStepStatusFinished {
+		t := q.timeFunc()
+		settledAt = &t
 	}
 
-	logger.Info("prep step marked as complete")
+	changeAdvancedPrepStepStatusArgs := []interface{}{
+		input.ID,
+		input.Status,
+		input.StatusExplanation,
+		settledAt,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "prep step status change", changeAdvancedPrepStepStatusQuery, changeAdvancedPrepStepStatusArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "changing prep step status")
+	}
+
+	logger.Info("prep step status changed")
 
 	return nil
 }

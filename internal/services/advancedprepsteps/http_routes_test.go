@@ -1,6 +1,7 @@
 package advancedprepsteps
 
 import (
+	"bytes"
 	"database/sql"
 	"errors"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
@@ -247,7 +249,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
+func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -255,11 +257,27 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
+		exampleCreationInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
+		exampleCreationInput.ID = helper.exampleAdvancedPrepStep.ID
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
 		dbManager := database.NewMockDatabase()
 		dbManager.AdvancedPrepStepDataManager.On(
-			"MarkAdvancedPrepStepAsComplete",
+			"AdvancedPrepStepExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleAdvancedPrepStep.ID,
+		).Return(true, nil)
+
+		dbManager.AdvancedPrepStepDataManager.On(
+			"ChangeAdvancedPrepStepStatus",
+			testutils.ContextMatcher,
+			exampleCreationInput,
 		).Return(nil)
 		helper.service.advancedPrepStepDataManager = dbManager
 
@@ -271,7 +289,7 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.MarkAsCompletedHandler(helper.res, helper.req)
+		helper.service.StatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
@@ -295,7 +313,7 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.MarkAsCompletedHandler(helper.res, helper.req)
+		helper.service.StatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
@@ -307,15 +325,31 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
+		exampleCreationInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
+		exampleCreationInput.ID = helper.exampleAdvancedPrepStep.ID
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
 		dbManager := database.NewMockDatabase()
 		dbManager.AdvancedPrepStepDataManager.On(
-			"MarkAdvancedPrepStepAsComplete",
+			"AdvancedPrepStepExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleAdvancedPrepStep.ID,
+		).Return(true, nil)
+
+		dbManager.AdvancedPrepStepDataManager.On(
+			"ChangeAdvancedPrepStepStatus",
+			testutils.ContextMatcher,
+			exampleCreationInput,
 		).Return(errors.New("blah"))
 		helper.service.advancedPrepStepDataManager = dbManager
 
-		helper.service.MarkAsCompletedHandler(helper.res, helper.req)
+		helper.service.StatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
@@ -327,11 +361,27 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
+		exampleCreationInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
+		exampleCreationInput.ID = helper.exampleAdvancedPrepStep.ID
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
 		dbManager := database.NewMockDatabase()
 		dbManager.AdvancedPrepStepDataManager.On(
-			"MarkAdvancedPrepStepAsComplete",
+			"AdvancedPrepStepExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
 			helper.exampleAdvancedPrepStep.ID,
+		).Return(true, nil)
+
+		dbManager.AdvancedPrepStepDataManager.On(
+			"ChangeAdvancedPrepStepStatus",
+			testutils.ContextMatcher,
+			exampleCreationInput,
 		).Return(nil)
 		helper.service.advancedPrepStepDataManager = dbManager
 
@@ -343,7 +393,7 @@ func TestAdvancedPrepStepsService_CompletionHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.MarkAsCompletedHandler(helper.res, helper.req)
+		helper.service.StatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 

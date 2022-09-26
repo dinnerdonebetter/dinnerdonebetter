@@ -85,7 +85,7 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 				HouseholdID:               "",
 				Context:                   nil,
 				AttributableToHouseholdID: "",
-			}); err != nil {
+			}); publishErr != nil {
 				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
 			}
 		}

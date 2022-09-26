@@ -3,14 +3,14 @@ package integration
 import (
 	"context"
 	"fmt"
-	"github.com/prixfixeco/api_server/internal/pointers"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/internal/pointers"
+	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -40,7 +40,7 @@ func convertRecipeToRecipeUpdateInput(x *types.Recipe) *types.RecipeUpdateReques
 	}
 }
 
-func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client *httpclient.Client, recipe *types.Recipe) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
+func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client *apiclient.Client, recipe *types.Recipe) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
 	t.Helper()
 
 	t.Log("creating prerequisite valid preparation")

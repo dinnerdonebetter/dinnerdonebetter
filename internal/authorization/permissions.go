@@ -228,6 +228,11 @@ const (
 	UpdateMealPlanOptionVotesPermission Permission = "update.meal_plan_option_votes"
 	// ArchiveMealPlanOptionVotesPermission is a household user permission.
 	ArchiveMealPlanOptionVotesPermission Permission = "archive.meal_plan_option_votes"
+
+	// ReadAdvancedPrepStepsPermission is a household user permission.
+	ReadAdvancedPrepStepsPermission Permission = "read.advanced_prep_steps"
+	// UpdateAdvancedPrepStepsPermission is a household user permission.
+	UpdateAdvancedPrepStepsPermission Permission = "update.advanced_prep_steps"
 )
 
 // ID implements the gorbac Permission interface.
@@ -381,6 +386,9 @@ var (
 		SearchMealPlanOptionVotesPermission.ID():  SearchMealPlanOptionVotesPermission,
 		UpdateMealPlanOptionVotesPermission.ID():  UpdateMealPlanOptionVotesPermission,
 		ArchiveMealPlanOptionVotesPermission.ID(): ArchiveMealPlanOptionVotesPermission,
+
+		ReadAdvancedPrepStepsPermission.ID():   ReadAdvancedPrepStepsPermission,
+		UpdateAdvancedPrepStepsPermission.ID(): UpdateAdvancedPrepStepsPermission,
 	}
 )
 
