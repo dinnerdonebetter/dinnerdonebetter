@@ -451,6 +451,14 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 		return
 	}
 
+	responseEvents := []*types.AdvancedPrepStepDatabaseCreationEstimate{}
+	for _, input := range stepInputs {
+		responseEvents = append(responseEvents, &types.AdvancedPrepStepDatabaseCreationEstimate{
+			CreationExplanation: input.CreationExplanation,
+			RecipeStepID:        input.RecipeStepID,
+		})
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, stepInputs)
+	s.encoderDecoder.RespondWithData(ctx, res, responseEvents)
 }

@@ -27,7 +27,7 @@ jobs:
  lint:
    strategy:
      matrix:
-       linter-version: [ 'v1.46.2' ]
+       linter-version: [ 'v1.49' ]
    runs-on: ubuntu-latest
    steps:
      - uses: actions/checkout@v2

@@ -51,6 +51,16 @@ func findStepIndexForRecipeStepProductID(recipe *types.Recipe, recipeStepProduct
 	return -1, errRecipeStepIDNotFound
 }
 
+func findStepIndexForRecipeStepID(recipe *types.Recipe, recipeStepID string) (int64, error) {
+	for _, step := range recipe.Steps {
+		if step.ID == recipeStepID {
+			return graphIDForStep(step), nil
+		}
+	}
+
+	return -1, errRecipeStepIDNotFound
+}
+
 func graphIDForStep(step *types.RecipeStep) int64 {
 	return int64(step.Index + 1)
 }
@@ -265,7 +275,7 @@ func whicheverIsLater(t1, t2 time.Time) time.Time {
 	return t1
 }
 
-func buildThawStepCreationExplanation(ingredientIndices ...int) string {
+func buildThawStepCreationExplanation(recipeStepIndex int64, ingredientIndices ...int) string {
 	if len(ingredientIndices) == 0 {
 		return ""
 	}
@@ -282,7 +292,7 @@ func buildThawStepCreationExplanation(ingredientIndices ...int) string {
 		d = "ingredient"
 	}
 
-	return fmt.Sprintf("frozen %s (%s) might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "))
+	return fmt.Sprintf("frozen %s (%s) for step #%d might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "), recipeStepIndex)
 }
 
 func determineCreationMinAndMaxTimesForRecipeStep(step *types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (cannotCompleteBefore, cannotCompleteAfter time.Time) {
@@ -325,7 +335,13 @@ func (g *recipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Conte
 	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen step inputs")
 
 	for stepID, ingredientIndices := range frozenIngredientSteps {
-		explanation := buildThawStepCreationExplanation(ingredientIndices...)
+		stepIndex, err := findStepIndexForRecipeStepID(recipe, stepID)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "determining recipe step index for step ID")
+			continue
+		}
+
+		explanation := buildThawStepCreationExplanation(stepIndex, ingredientIndices...)
 		if explanation == "" {
 			continue
 		}

@@ -27,12 +27,10 @@ jobs:
       - name: Authorize Docker push
         run: gcloud auth configure-docker
 
-      - name: Build and Push Container
+      - name: Build Container
         run: |
           docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push gcr.io/prixfixe-dev/api_server:latest
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -74,7 +72,12 @@ jobs:
         # if: github.event_name == 'release'
         working-directory: environments/dev/terraform
 
-      # if this step fails, you need to add the `Service Account User` role to the Github Actions IAM Principal.
+      - name: Push Container
+        run: |
+          docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
+          docker push gcr.io/prixfixe-dev/api_server:latest
+
+      # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
       - id: deploy-api-server
         uses: google-github-actions/deploy-cloudrun@v0
         with:
