@@ -18,15 +18,21 @@ import (
 const here = "github.com/prixfixeco/api_server/"
 
 func init() {
+	loc, err := time.LoadLocation("America/Chicago")
+	if err != nil {
+		panic(err)
+	}
+
 	zerolog.CallerSkipFrameCount += 2
 	zerolog.DisableSampling(true)
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 	zerolog.TimestampFunc = func() time.Time {
-		return time.Now().UTC()
+		return time.Now().In(loc)
 	}
 	zerolog.CallerMarshalFunc = func(file string, line int) string {
 		return strings.TrimPrefix(file, here) + ", line " + strconv.Itoa(line)
 	}
+	zerolog.LevelFieldName = "severity"
 }
 
 // logger is our log wrapper.
@@ -37,7 +43,11 @@ type zerologLogger struct {
 
 // buildZerologger builds a new zerologger.
 func buildZerologger() zerolog.Logger {
-	return zerolog.New(os.Stdout).With().Timestamp().Logger().Level(zerolog.InfoLevel)
+	output := zerolog.ConsoleWriter{
+		Out:        os.Stdout,
+		TimeFormat: time.RFC3339Nano,
+	}
+	return zerolog.New(output).With().Timestamp().Logger().Level(zerolog.InfoLevel)
 }
 
 // NewZerologLogger builds a new zerologLogger.
