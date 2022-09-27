@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	advancedprepstepsservice "github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	"net/http"
 	"path"
 
@@ -669,7 +670,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			advancedPrepStepPath,
 		)
 		advancedPrepStepsRouteWithPrefix := fmt.Sprintf("/%s", advancedPrepStepsRoute)
-		advancedPrepStepIDRouteParam := buildURLVarChunk(mealplaneventsservice.MealPlanEventIDURIParamKey, "")
+		advancedPrepStepIDRouteParam := buildURLVarChunk(advancedprepstepsservice.AdvancedPrepStepIDURIParamKey, "")
 		v1Router.Route(advancedPrepStepsRouteWithPrefix, func(advancedPrepStepsRouter routing.Router) {
 			advancedPrepStepsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAdvancedPrepStepsPermission)).
