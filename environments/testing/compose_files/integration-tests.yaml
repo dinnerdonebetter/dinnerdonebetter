@@ -74,7 +74,7 @@ services:
               type: 'bind'
         build:
             context: '../../../'
-            dockerfile: 'environments/testing/dockerfiles/advanced_prep_step_creator.Dockerfile'
+            dockerfile: 'environments/testing/dockerfiles/meal_plan_task_creator.Dockerfile'
     prixfixe_api_server:
         # logging:
         #     driver: none

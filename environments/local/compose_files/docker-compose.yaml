@@ -100,7 +100,7 @@ services:
           type: 'bind'
       build:
         context: '../../..'
-        dockerfile: 'environments/local/advanced_prep_step_creator.Dockerfile'
+        dockerfile: 'environments/local/meal_plan_task_creator.Dockerfile'
     prixfixe-server:
       container_name: "api_server"
       depends_on:
