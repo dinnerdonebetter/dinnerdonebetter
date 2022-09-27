@@ -54,6 +54,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 		AllowedMethods: []string{
 			http.MethodGet,
 			http.MethodPost,
+			http.MethodPatch,
 			http.MethodPut,
 			http.MethodDelete,
 			http.MethodOptions,
