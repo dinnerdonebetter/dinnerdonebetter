@@ -43,11 +43,7 @@ type zerologLogger struct {
 
 // buildZerologger builds a new zerologger.
 func buildZerologger() zerolog.Logger {
-	output := zerolog.ConsoleWriter{
-		Out:        os.Stdout,
-		TimeFormat: time.RFC3339Nano,
-	}
-	return zerolog.New(output).With().Timestamp().Logger().Level(zerolog.InfoLevel)
+	return zerolog.New(os.Stdout).With().Timestamp().Logger().Level(zerolog.InfoLevel)
 }
 
 // NewZerologLogger builds a new zerologLogger.
