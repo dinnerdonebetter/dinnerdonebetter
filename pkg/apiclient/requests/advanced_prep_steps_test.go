@@ -98,7 +98,7 @@ func TestBuilder_BuildChangeAdvancedPrepStepStatusRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.ID)
+		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, exampleInput.ID)
 
 		actual, err := helper.builder.BuildChangeAdvancedPrepStepStatusRequest(helper.ctx, exampleInput)
 		assert.NoError(t, err)
