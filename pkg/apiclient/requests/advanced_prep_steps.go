@@ -78,7 +78,7 @@ func (b *Builder) BuildChangeAdvancedPrepStepStatusRequest(ctx context.Context, 
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
+	req, err := b.buildDataRequest(ctx, http.MethodPatch, uri, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building request")
 	}

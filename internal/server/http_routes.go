@@ -682,7 +682,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 
 				singleAdvancedPrepStepRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateAdvancedPrepStepsPermission)).
-					Post(root, s.advancedPrepStepsService.StatusChangeHandler)
+					Patch(root, s.advancedPrepStepsService.StatusChangeHandler)
 			})
 		})
 
