@@ -148,12 +148,12 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	exists, existenceCheckErr := s.advancedPrepStepDataManager.AdvancedPrepStepExists(ctx, mealPlanID, advancedPrepStepID)
-	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking recipe existence")
+	prepStep, fetchAdvancedPrepStepErr := s.advancedPrepStepDataManager.GetAdvancedPrepStep(ctx, advancedPrepStepID)
+	if fetchAdvancedPrepStepErr != nil && !errors.Is(fetchAdvancedPrepStepErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(fetchAdvancedPrepStepErr, logger, span, "checking recipe existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
-	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+	} else if errors.Is(fetchAdvancedPrepStepErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	}
@@ -164,11 +164,15 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
+	prepStep.StatusExplanation = providedInput.StatusExplanation
+	prepStep.Status = providedInput.Status
+
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.AdvancedPrepStepDataType,
 			EventType:                 types.AdvancedPrepStepStatusChangedCustomerEventType,
-			MealPlanEventID:           advancedPrepStepID,
+			AdvancedPrepStep:          prepStep,
+			AdvancedPrepStepID:        advancedPrepStepID,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
@@ -178,6 +182,5 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		}
 	}
 
-	// encode our response and peace.
-	res.WriteHeader(http.StatusNoContent)
+	s.encoderDecoder.RespondWithData(ctx, res, prepStep)
 }

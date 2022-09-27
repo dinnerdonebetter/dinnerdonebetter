@@ -261,6 +261,10 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 		exampleCreationInput.ID = helper.exampleAdvancedPrepStep.ID
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
+		expectedPrepStep := helper.exampleAdvancedPrepStep
+		expectedPrepStep.Status = exampleCreationInput.Status
+		expectedPrepStep.StatusExplanation = exampleCreationInput.StatusExplanation
+
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
@@ -268,11 +272,10 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 
 		dbManager := database.NewMockDatabase()
 		dbManager.AdvancedPrepStepDataManager.On(
-			"AdvancedPrepStepExists",
+			"GetAdvancedPrepStep",
 			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
 			helper.exampleAdvancedPrepStep.ID,
-		).Return(true, nil)
+		).Return(expectedPrepStep, nil)
 
 		dbManager.AdvancedPrepStepDataManager.On(
 			"ChangeAdvancedPrepStepStatus",
@@ -291,7 +294,7 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 
 		helper.service.StatusChangeHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -336,11 +339,10 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 
 		dbManager := database.NewMockDatabase()
 		dbManager.AdvancedPrepStepDataManager.On(
-			"AdvancedPrepStepExists",
+			"GetAdvancedPrepStep",
 			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
 			helper.exampleAdvancedPrepStep.ID,
-		).Return(true, nil)
+		).Return(helper.exampleAdvancedPrepStep, nil)
 
 		dbManager.AdvancedPrepStepDataManager.On(
 			"ChangeAdvancedPrepStepStatus",
@@ -365,6 +367,10 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 		exampleCreationInput.ID = helper.exampleAdvancedPrepStep.ID
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
+		expectedPrepStep := helper.exampleAdvancedPrepStep
+		expectedPrepStep.Status = exampleCreationInput.Status
+		expectedPrepStep.StatusExplanation = exampleCreationInput.StatusExplanation
+
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
@@ -372,11 +378,10 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 
 		dbManager := database.NewMockDatabase()
 		dbManager.AdvancedPrepStepDataManager.On(
-			"AdvancedPrepStepExists",
+			"GetAdvancedPrepStep",
 			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
 			helper.exampleAdvancedPrepStep.ID,
-		).Return(true, nil)
+		).Return(expectedPrepStep, nil)
 
 		dbManager.AdvancedPrepStepDataManager.On(
 			"ChangeAdvancedPrepStepStatus",
@@ -395,7 +400,7 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 
 		helper.service.StatusChangeHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
