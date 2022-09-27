@@ -187,15 +187,12 @@ linters:
   disable-all: false
   enable:
     # Enabled By Default
-    - deadcode         # Finds unused code
     - errcheck         # Errcheck is a program for checking for unchecked errs in go programs. These unchecked errs can be critical bugs in some cases
     - gosimple         # Linter for Go source code that specializes in simplifying a code
     - govet            # Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
     - ineffassign      # Detects when assignments to existing variables are not used
     - staticcheck      # Staticcheck is a go vet on steroids, applying a ton of static analysis checks
-    - structcheck      # Finds unused struct fields
     - unused           # Checks Go code for unused constants, variables, functions and types
-    - varcheck         # Finds unused global variables and constants
     - bodyclose        # checks whether HTTP response body is closed successfully  # NOTE: disabled because of go 1.18
     - nilerr           # Finds the code that returns nil even if it checks that the error is not nil.
     - asciicheck       # Simple linter to check that your code does not contain non-ASCII identifiers
@@ -217,7 +214,6 @@ linters:
     - gomodguard       # Allow and block list linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.
     - goprintffuncname # Checks that printf-like functions are named with f at the end
     - gosec            # Inspects source code for security problems
-    - ifshort          # Checks that your code uses short syntax for if-statements whenever possible
     - importas         # Enforces consistent import aliases
     - makezero         # Finds slice declarations with non-zero initial length
     - misspell         # Finds commonly misspelled English words in comments
@@ -228,7 +224,6 @@ linters:
     - prealloc         # Finds slice declarations that could potentially be preallocated
     - predeclared      # find code that shadows one of Go's predeclared identifiers
     - promlinter       # Check Prometheus metrics naming via promlint
-    - revive           # Fast, configurable, extensible, flexible, and beautiful linter for Go. Drop-in replacement of golint.
     - sqlclosecheck    # Checks that sql.Rows and sql.Stmt are closed.
     - thelper          # thelper detects golang test helpers without t.Helper() call and checks the consistency of test helpers
     - tparallel        # tparallel detects inappropriate usage of t.Parallel() method in your Go test codes
@@ -260,6 +255,7 @@ linters:
     - gocyclo          # Computes and checks the cyclomatic complexity of functions
     - nestif           # Reports deeply nested if statements
     - typecheck        # Like the front-end of a Go compiler, parses and type-checks Go code
+    # - revive         # Fast, configurable, extensible, flexible, and beautiful linter for Go. Drop-in replacement of golint.
     # Normally enabled:
     - dupl             # Tool for code clone detection
     - exhaustivestruct # Checks if all struct's fields are initialized
@@ -308,7 +304,7 @@ issues:
         - gosec
         - gomnd
 
-    - path: pkg/client/httpclient/roundtripper_*
+    - path: pkg/apiclient/roundtripper_*
       linters:
         - bodyclose
 
@@ -373,6 +369,10 @@ issues:
       text: "return statements should not be cuddled if block has more than two lines"
 
     ## BEGIN SPECIAL SNOWFLAKES
+
+    - path: cmd/
+      linters:
+        - revive
 
     - path: cmd/config_gen
       linters:
@@ -443,7 +443,7 @@ issues:
         - lll
       source: "^//go:generate "
 
-  # Independently from option `exclude` we use default exclude patterns, it can be disabled by this option. To list all
+  # Independently of option `exclude` we use default exclude patterns, it can be disabled by this option. To list all
   # excluded by default patterns execute `golangci-lint run --help`.
   # Default value for this option is true.
   exclude-use-default: false

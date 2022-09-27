@@ -1,15 +1,15 @@
 package integration
 
 import (
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	"log"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
@@ -39,7 +39,7 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 
 			var (
 				user       *types.User
-				userClient *httpclient.Client
+				userClient *apiclient.Client
 			)
 
 			switch testClients.authType {

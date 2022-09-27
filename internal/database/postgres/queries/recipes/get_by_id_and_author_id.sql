@@ -35,9 +35,9 @@ SELECT
 	recipe_steps.archived_at,
 	recipe_steps.belongs_to_recipe
 FROM recipes
-	     FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
-	     FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
+	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
+	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipes.archived_at IS NULL
-  AND recipes.id = $1
-  AND recipes.created_by_user = $2
+	AND recipes.id = $1
+	AND recipes.created_by_user = $2
 ORDER BY recipe_steps.index;

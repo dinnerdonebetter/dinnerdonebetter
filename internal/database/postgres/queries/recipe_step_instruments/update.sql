@@ -10,5 +10,5 @@ UPDATE recipe_step_instruments SET
 	maximum_quantity = $9,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND belongs_to_recipe_step = $10
-  AND id = $11;
+	AND belongs_to_recipe_step = $10
+	AND id = $11;

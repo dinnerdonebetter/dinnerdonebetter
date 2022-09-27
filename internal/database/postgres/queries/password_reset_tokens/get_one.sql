@@ -8,5 +8,5 @@ SELECT
 	password_reset_tokens.belongs_to_user
 FROM password_reset_tokens
 WHERE password_reset_tokens.redeemed_at IS NULL
-  AND NOW() < password_reset_tokens.expires_at
-  AND password_reset_tokens.token = $1;
+	AND NOW() < password_reset_tokens.expires_at
+	AND password_reset_tokens.token = $1;

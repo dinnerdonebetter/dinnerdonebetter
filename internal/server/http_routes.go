@@ -672,13 +672,17 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		advancedPrepStepIDRouteParam := buildURLVarChunk(mealplaneventsservice.MealPlanEventIDURIParamKey, "")
 		v1Router.Route(advancedPrepStepsRouteWithPrefix, func(advancedPrepStepsRouter routing.Router) {
 			advancedPrepStepsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAdvancedPrepStepsPermission)).
 				Get(root, s.advancedPrepStepsService.ListByMealPlanHandler)
 
-			advancedPrepStepsRouter.Route(advancedPrepStepIDRouteParam, func(singleMealPlanEventRouter routing.Router) {
-				singleMealPlanEventRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
+			advancedPrepStepsRouter.Route(advancedPrepStepIDRouteParam, func(singleAdvancedPrepStepRouter routing.Router) {
+				singleAdvancedPrepStepRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAdvancedPrepStepsPermission)).
 					Get(root, s.advancedPrepStepsService.ReadHandler)
+
+				singleAdvancedPrepStepRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateAdvancedPrepStepsPermission)).
+					Post(root, s.advancedPrepStepsService.StatusChangeHandler)
 			})
 		})
 

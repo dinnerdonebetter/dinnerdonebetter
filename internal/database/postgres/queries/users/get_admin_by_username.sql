@@ -18,6 +18,6 @@ SELECT
 	users.archived_at
 FROM users
 WHERE users.archived_at IS NULL
-  AND users.service_roles ILIKE '%service_admin%'
+	AND users.service_roles ILIKE '%service_admin%'
 	AND users.username = $1
 	AND users.two_factor_secret_verified_at IS NOT NULL;

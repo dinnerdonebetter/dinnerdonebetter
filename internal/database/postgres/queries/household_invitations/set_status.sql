@@ -4,4 +4,4 @@ UPDATE household_invitations SET
 	last_updated_at = NOW(),
 	archived_at = NOW()
 WHERE archived_at IS NULL
-  AND id = $3;
+	AND id = $3;

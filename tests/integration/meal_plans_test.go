@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -24,7 +24,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createMealPlanForTest(ctx context.Context, t *testing.T, mealPlan *types.MealPlan, adminClient, client *httpclient.Client) *types.MealPlan {
+func createMealPlanForTest(ctx context.Context, t *testing.T, mealPlan *types.MealPlan, adminClient, client *apiclient.Client) *types.MealPlan {
 	t.Helper()
 
 	t.Log("creating meal plan")
@@ -69,7 +69,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			createdUsers := []*types.User{}
-			createdClients := []*httpclient.Client{}
+			createdClients := []*apiclient.Client{}
 
 			for i := 0; i < 2; i++ {
 				t.Logf("creating user to invite")
@@ -259,7 +259,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			createdUsers := []*types.User{}
-			createdClients := []*httpclient.Client{}
+			createdClients := []*apiclient.Client{}
 
 			for i := 0; i < 2; i++ {
 				t.Logf("creating user to invite")

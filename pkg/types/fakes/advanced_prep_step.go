@@ -8,7 +8,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// BuildFakeAdvancedPrepStep builds a faked meal plan event.
+// BuildFakeAdvancedPrepStep builds a faked advanced prep step.
 func BuildFakeAdvancedPrepStep() *types.AdvancedPrepStep {
 	now := time.Now().Add(0).Truncate(time.Second).UTC()
 	inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
@@ -66,4 +66,13 @@ func BuildFakeAdvancedPrepStepDatabaseCreationInputs() []*types.AdvancedPrepStep
 	}
 
 	return examples
+}
+
+// BuildFakeAdvancedPrepStepStatusChangeRequestInput builds a faked advanced prep step.
+func BuildFakeAdvancedPrepStepStatusChangeRequestInput() *types.AdvancedPrepStepStatusChangeRequestInput {
+	return &types.AdvancedPrepStepStatusChangeRequestInput{
+		ID:                BuildFakeID(),
+		Status:            "unfinished",
+		StatusExplanation: buildUniqueString(),
+	}
 }

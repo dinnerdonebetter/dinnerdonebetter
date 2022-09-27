@@ -9,7 +9,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -673,7 +673,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// create dummy users
 			users := []*types.User{}
-			clients := []*httpclient.Client{}
+			clients := []*apiclient.Client{}
 
 			// create users
 			for i := 0; i < userCount; i++ {
@@ -912,7 +912,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			newCookie, err := testutils.GetLoginCookie(ctx, urlToUse, u)
 			require.NoError(t, err)
 
-			require.NoError(t, c.SetOptions(httpclient.UsingCookie(newCookie)))
+			require.NoError(t, c.SetOptions(apiclient.UsingCookie(newCookie)))
 
 			household, err := c.GetCurrentHousehold(ctx)
 			requireNotNilAndNoProblems(t, household, err)

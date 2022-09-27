@@ -18,5 +18,5 @@ SELECT
 	users.archived_at
 FROM users
 WHERE users.archived_at IS NULL
-  AND users.id = $1
-  AND users.two_factor_secret_verified_at IS NOT NULL;
+	AND users.id = $1
+	AND users.two_factor_secret_verified_at IS NOT NULL;

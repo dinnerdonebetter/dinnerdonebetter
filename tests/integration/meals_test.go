@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -23,7 +23,7 @@ func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *httpclient.Client, mealInput *types.Meal) *types.Meal {
+func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *apiclient.Client, mealInput *types.Meal) *types.Meal {
 	t.Helper()
 
 	createdRecipes := []*types.Recipe{}

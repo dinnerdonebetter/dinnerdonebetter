@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -61,7 +61,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			},
 		}
 
-		f, err := ioutil.TempFile("", "")
+		f, err := os.CreateTemp("", "")
 		require.NoError(t, err)
 
 		assert.NoError(t, cfg.EncodeToFile(f.Name(), json.Marshal))
@@ -72,7 +72,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 
 		cfg := &InstanceConfig{}
 
-		f, err := ioutil.TempFile("", "")
+		f, err := os.CreateTemp("", "")
 		require.NoError(t, err)
 
 		assert.Error(t, cfg.EncodeToFile(f.Name(), func(interface{}) ([]byte, error) {

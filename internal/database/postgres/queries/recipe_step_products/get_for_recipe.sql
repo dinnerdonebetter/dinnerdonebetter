@@ -27,11 +27,11 @@ SELECT
 	recipe_step_products.archived_at,
 	recipe_step_products.belongs_to_recipe_step
 FROM recipe_step_products
-	     JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
-	     JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-	     LEFT OUTER JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
+	JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	LEFT OUTER JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_at IS NULL
-  AND recipe_steps.archived_at IS NULL
-  AND recipe_steps.belongs_to_recipe = $1
-  AND recipes.archived_at IS NULL
-  AND recipes.id = $1;
+	AND recipe_steps.archived_at IS NULL
+	AND recipe_steps.belongs_to_recipe = $1
+	AND recipes.archived_at IS NULL
+	AND recipes.id = $1;

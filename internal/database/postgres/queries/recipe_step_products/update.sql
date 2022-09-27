@@ -13,5 +13,5 @@ SET
 	storage_instructions = $11,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND belongs_to_recipe_step = $12
-  AND id = $13;
+	AND belongs_to_recipe_step = $12
+	AND id = $13;

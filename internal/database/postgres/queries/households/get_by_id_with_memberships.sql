@@ -35,8 +35,8 @@ SELECT
 	household_user_memberships.last_updated_at,
 	household_user_memberships.archived_at
 FROM households
-	     JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-	     JOIN users ON household_user_memberships.belongs_to_user = users.id
+	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+	JOIN users ON household_user_memberships.belongs_to_user = users.id
 WHERE households.archived_at IS NULL
-  AND household_user_memberships.archived_at IS NULL
-  AND households.id = $1;
+	AND household_user_memberships.archived_at IS NULL
+	AND households.id = $1;
