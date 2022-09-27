@@ -129,7 +129,7 @@ func (q *Querier) AdvancedPrepStepExists(ctx context.Context, mealPlanID, advanc
 
 	result, err := q.performBooleanQuery(ctx, q.db, advancedPrepStepsExistsQuery, args)
 	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing advanced step existence check")
 	}
 
 	logger.Info("advanced step existence retrieved")
@@ -157,11 +157,7 @@ func (q *Querier) GetAdvancedPrepStep(ctx context.Context, advancedPrepStepID st
 		advancedPrepStepID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "advanced prep step", getAdvancedPrepStepsQuery, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing advanced prep step retrieval query")
-	}
-
+	rows := q.getOneRow(ctx, q.db, "advanced prep step", getAdvancedPrepStepsQuery, args)
 	if x, err = q.scanAdvancedPrepStep(ctx, rows); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep step")
 	}
