@@ -30,12 +30,12 @@ type PubSubMessage struct {
 	Data []byte `json:"data"`
 }
 
-// CreateAdvancedPrepSteps is our cloud function entrypoint.
-func CreateAdvancedPrepSteps(ctx context.Context, _ PubSubMessage) error {
+// CreateMealPlanTasks is our cloud function entrypoint.
+func CreateMealPlanTasks(ctx context.Context, _ PubSubMessage) error {
 	logger := zerolog.NewZerologLogger()
 	logger.SetLevel(logging.DebugLevel)
 
-	cfg, err := config.GetAdvancedPrepStepCreatorWorkerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
@@ -68,7 +68,7 @@ func CreateAdvancedPrepSteps(ctx context.Context, _ PubSubMessage) error {
 		log.Fatal(err)
 	}
 
-	advancedPrepStepCreationEnsurerWorker := workers.ProvideAdvancedPrepStepCreationEnsurerWorker(
+	mealPlanTaskCreationEnsurerWorker := workers.ProvideMealPlanTaskCreationEnsurerWorker(
 		logger,
 		dataManager,
 		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
@@ -77,7 +77,7 @@ func CreateAdvancedPrepSteps(ctx context.Context, _ PubSubMessage) error {
 		tracerProvider,
 	)
 
-	if err = advancedPrepStepCreationEnsurerWorker.HandleMessage(ctx, nil); err != nil {
+	if err = mealPlanTaskCreationEnsurerWorker.HandleMessage(ctx, nil); err != nil {
 		observability.AcknowledgeError(err, logger, nil, "closing database connection")
 		return err
 	}

@@ -451,9 +451,9 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 		return
 	}
 
-	responseEvents := []*types.AdvancedPrepStepDatabaseCreationEstimate{}
+	responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
 	for _, input := range stepInputs {
-		responseEvents = append(responseEvents, &types.AdvancedPrepStepDatabaseCreationEstimate{
+		responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
 			CreationExplanation: input.CreationExplanation,
 			RecipeStepID:        input.RecipeStepID,
 		})

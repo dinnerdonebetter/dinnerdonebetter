@@ -95,7 +95,7 @@ services:
         - source: '../../..'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/advanced-prep-step-creator-config.json'
+        - source: '../../environments/local/config_files/meal-plan-task-creator-config.json'
           target: '/etc/config'
           type: 'bind'
       build:

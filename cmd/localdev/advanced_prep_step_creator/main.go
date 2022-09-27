@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	dataChangesTopicName          = "data_changes"
-	advancedPrepStepCreationTopic = "advanced_prep_step_creation"
+	dataChangesTopicName      = "data_changes"
+	mealPlanTaskCreationTopic = "meal_plan_task_creation"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
@@ -35,7 +35,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logger.Info("starting advanced prep step worker...")
+	logger.Info("starting meal plan task worker...")
 
 	// find and validate our configuration filepath.
 	configFilepath := os.Getenv(configFilepathEnvVar)
@@ -53,7 +53,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.Observability.Tracing.Jaeger.ServiceName = "advanced_prep_step_creation_workers"
+	cfg.Observability.Tracing.Jaeger.ServiceName = "meal_plan_task_creation_workers"
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
@@ -89,7 +89,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	advancedPrepStepCreationEnsurerWorker := workers.ProvideAdvancedPrepStepCreationEnsurerWorker(
+	mealPlanTaskCreationEnsurerWorker := workers.ProvideMealPlanTaskCreationEnsurerWorker(
 		logger,
 		dataManager,
 		&recipeanalysis.MockRecipeAnalyzer{},
@@ -98,12 +98,12 @@ func main() {
 		tracerProvider,
 	)
 
-	advancedPrepStepCreationConsumer, err := consumerProvider.ProvideConsumer(ctx, advancedPrepStepCreationTopic, advancedPrepStepCreationEnsurerWorker.HandleMessage)
+	mealPlanTaskCreationConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanTaskCreationTopic, mealPlanTaskCreationEnsurerWorker.HandleMessage)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	go advancedPrepStepCreationConsumer.Consume(nil, nil)
+	go mealPlanTaskCreationConsumer.Consume(nil, nil)
 
 	logger.Info("working...")
 

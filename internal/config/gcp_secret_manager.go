@@ -116,7 +116,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.MealPlanEvents.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.MealPlanOptions.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.MealPlanOptionVotes.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.AdvancedPrepSteps.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlanTasks.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Households.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Users.DataChangesTopicName = dataChangesTopicName
@@ -212,8 +212,8 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	return cfg, nil
 }
 
-// GetAdvancedPrepStepCreatorWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetAdvancedPrepStepCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+// GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
 
 	client, secretManagerCreationErr := secretmanager.NewClient(ctx)

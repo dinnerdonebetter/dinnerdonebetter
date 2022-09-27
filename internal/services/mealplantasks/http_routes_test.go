@@ -1,4 +1,4 @@
-package advancedprepsteps
+package mealplantasks
 
 import (
 	"bytes"
@@ -20,7 +20,7 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-func TestAdvancedPrepStepsService_ReadHandler(T *testing.T) {
+func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -28,20 +28,20 @@ func TestAdvancedPrepStepsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
-		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepStep",
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager.On(
+			"GetMealPlanTask",
 			testutils.ContextMatcher,
-			helper.exampleAdvancedPrepStep.ID,
-		).Return(helper.exampleAdvancedPrepStep, nil)
-		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
+			helper.exampleMealPlanTask.ID,
+		).Return(helper.exampleMealPlanTask, nil)
+		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.AdvancedPrepStep{}),
+			mock.IsType(&types.MealPlanTask{}),
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -49,7 +49,7 @@ func TestAdvancedPrepStepsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, advancedPrepStepDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -81,13 +81,13 @@ func TestAdvancedPrepStepsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
-		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepStep",
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager.On(
+			"GetMealPlanTask",
 			testutils.ContextMatcher,
-			helper.exampleAdvancedPrepStep.ID,
-		).Return((*types.AdvancedPrepStep)(nil), sql.ErrNoRows)
-		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
+			helper.exampleMealPlanTask.ID,
+		).Return((*types.MealPlanTask)(nil), sql.ErrNoRows)
+		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -101,7 +101,7 @@ func TestAdvancedPrepStepsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, advancedPrepStepDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager, encoderDecoder)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -109,13 +109,13 @@ func TestAdvancedPrepStepsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
-		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepStep",
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager.On(
+			"GetMealPlanTask",
 			testutils.ContextMatcher,
-			helper.exampleAdvancedPrepStep.ID,
-		).Return((*types.AdvancedPrepStep)(nil), errors.New("blah"))
-		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
+			helper.exampleMealPlanTask.ID,
+		).Return((*types.MealPlanTask)(nil), errors.New("blah"))
+		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -129,11 +129,11 @@ func TestAdvancedPrepStepsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, advancedPrepStepDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager, encoderDecoder)
 	})
 }
 
-func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
+func TestMealPlanTasksService_ListHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -141,22 +141,22 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleAdvancedPrepStepList := fakes.BuildFakeAdvancedPrepStepList().AdvancedPrepSteps
+		exampleMealPlanTaskList := fakes.BuildFakeMealPlanTaskList().MealPlanTasks
 
-		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
-		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepStepsForMealPlan",
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager.On(
+			"GetMealPlanTasksForMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-		).Return(exampleAdvancedPrepStepList, nil)
-		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
+		).Return(exampleMealPlanTaskList, nil)
+		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.AdvancedPrepStep{}),
+			mock.IsType([]*types.MealPlanTask{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -164,7 +164,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, advancedPrepStepDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -196,20 +196,20 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
-		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepStepsForMealPlan",
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager.On(
+			"GetMealPlanTasksForMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-		).Return([]*types.AdvancedPrepStep(nil), sql.ErrNoRows)
-		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
+		).Return([]*types.MealPlanTask(nil), sql.ErrNoRows)
+		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.AdvancedPrepStep{}),
+			mock.IsType([]*types.MealPlanTask{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -217,7 +217,7 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, advancedPrepStepDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving meal plans from database", func(t *testing.T) {
@@ -225,13 +225,13 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		advancedPrepStepDataManager := &mocktypes.AdvancedPrepStepDataManager{}
-		advancedPrepStepDataManager.On(
-			"GetAdvancedPrepStepsForMealPlan",
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager.On(
+			"GetMealPlanTasksForMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-		).Return([]*types.AdvancedPrepStep(nil), errors.New("blah"))
-		helper.service.advancedPrepStepDataManager = advancedPrepStepDataManager
+		).Return([]*types.MealPlanTask(nil), errors.New("blah"))
+		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -245,11 +245,11 @@ func TestAdvancedPrepStepsService_ListHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, advancedPrepStepDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager, encoderDecoder)
 	})
 }
 
-func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
+func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -257,11 +257,11 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleCreationInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
-		exampleCreationInput.ID = helper.exampleAdvancedPrepStep.ID
+		exampleCreationInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
+		exampleCreationInput.ID = helper.exampleMealPlanTask.ID
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
-		expectedPrepStep := helper.exampleAdvancedPrepStep
+		expectedPrepStep := helper.exampleMealPlanTask
 		expectedPrepStep.Status = exampleCreationInput.Status
 		expectedPrepStep.StatusExplanation = exampleCreationInput.StatusExplanation
 
@@ -271,18 +271,18 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.AdvancedPrepStepDataManager.On(
-			"GetAdvancedPrepStep",
+		dbManager.MealPlanTaskDataManager.On(
+			"GetMealPlanTask",
 			testutils.ContextMatcher,
-			helper.exampleAdvancedPrepStep.ID,
+			helper.exampleMealPlanTask.ID,
 		).Return(expectedPrepStep, nil)
 
-		dbManager.AdvancedPrepStepDataManager.On(
-			"ChangeAdvancedPrepStepStatus",
+		dbManager.MealPlanTaskDataManager.On(
+			"ChangeMealPlanTaskStatus",
 			testutils.ContextMatcher,
 			exampleCreationInput,
 		).Return(nil)
-		helper.service.advancedPrepStepDataManager = dbManager
+		helper.service.mealPlanTaskDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -328,8 +328,8 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleCreationInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
-		exampleCreationInput.ID = helper.exampleAdvancedPrepStep.ID
+		exampleCreationInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
+		exampleCreationInput.ID = helper.exampleMealPlanTask.ID
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -338,18 +338,18 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.AdvancedPrepStepDataManager.On(
-			"GetAdvancedPrepStep",
+		dbManager.MealPlanTaskDataManager.On(
+			"GetMealPlanTask",
 			testutils.ContextMatcher,
-			helper.exampleAdvancedPrepStep.ID,
-		).Return(helper.exampleAdvancedPrepStep, nil)
+			helper.exampleMealPlanTask.ID,
+		).Return(helper.exampleMealPlanTask, nil)
 
-		dbManager.AdvancedPrepStepDataManager.On(
-			"ChangeAdvancedPrepStepStatus",
+		dbManager.MealPlanTaskDataManager.On(
+			"ChangeMealPlanTaskStatus",
 			testutils.ContextMatcher,
 			exampleCreationInput,
 		).Return(errors.New("blah"))
-		helper.service.advancedPrepStepDataManager = dbManager
+		helper.service.mealPlanTaskDataManager = dbManager
 
 		helper.service.StatusChangeHandler(helper.res, helper.req)
 
@@ -363,11 +363,11 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleCreationInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
-		exampleCreationInput.ID = helper.exampleAdvancedPrepStep.ID
+		exampleCreationInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
+		exampleCreationInput.ID = helper.exampleMealPlanTask.ID
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
-		expectedPrepStep := helper.exampleAdvancedPrepStep
+		expectedPrepStep := helper.exampleMealPlanTask
 		expectedPrepStep.Status = exampleCreationInput.Status
 		expectedPrepStep.StatusExplanation = exampleCreationInput.StatusExplanation
 
@@ -377,18 +377,18 @@ func TestAdvancedPrepStepsService_StatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.AdvancedPrepStepDataManager.On(
-			"GetAdvancedPrepStep",
+		dbManager.MealPlanTaskDataManager.On(
+			"GetMealPlanTask",
 			testutils.ContextMatcher,
-			helper.exampleAdvancedPrepStep.ID,
+			helper.exampleMealPlanTask.ID,
 		).Return(expectedPrepStep, nil)
 
-		dbManager.AdvancedPrepStepDataManager.On(
-			"ChangeAdvancedPrepStepStatus",
+		dbManager.MealPlanTaskDataManager.On(
+			"ChangeMealPlanTaskStatus",
 			testutils.ContextMatcher,
 			exampleCreationInput,
 		).Return(nil)
-		helper.service.advancedPrepStepDataManager = dbManager
+		helper.service.mealPlanTaskDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(

@@ -577,7 +577,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 	})
 }
 
-func (s *TestSuite) TestRecipes_GetAdvancedPrepStepsForRecipe() {
+func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 	s.runForEachClient("advanced prep steps with frozen chicken breast", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
@@ -731,7 +731,7 @@ func (s *TestSuite) TestRecipes_GetAdvancedPrepStepsForRecipe() {
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
 
-			steps, err := testClients.user.GetAdvancedPrepStepsForRecipe(ctx, created.ID)
+			steps, err := testClients.user.GetMealPlanTasksForRecipe(ctx, created.ID)
 			requireNotNilAndNoProblems(t, created, err)
 
 			require.NotEmpty(t, steps)

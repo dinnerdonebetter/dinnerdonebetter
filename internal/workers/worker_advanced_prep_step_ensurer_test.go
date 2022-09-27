@@ -21,13 +21,13 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-func TestProvideAdvancedPrepStepCreationEnsurerWorker(T *testing.T) {
+func TestProvideMealPlanTaskCreationEnsurerWorker(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideAdvancedPrepStepCreationEnsurerWorker(
+		actual := ProvideMealPlanTaskCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
@@ -39,13 +39,13 @@ func TestProvideAdvancedPrepStepCreationEnsurerWorker(T *testing.T) {
 	})
 }
 
-func TestAdvancedPrepStepCreationEnsurerWorker_HandleMessage(T *testing.T) {
+func TestMealPlanTaskCreationEnsurerWorker_HandleMessage(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		w := ProvideAdvancedPrepStepCreationEnsurerWorker(
+		w := ProvideMealPlanTaskCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
@@ -66,13 +66,13 @@ func TestAdvancedPrepStepCreationEnsurerWorker_HandleMessage(T *testing.T) {
 	})
 }
 
-func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T) {
+func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with nothing to do", func(t *testing.T) {
 		t.Parallel()
 
-		w := ProvideAdvancedPrepStepCreationEnsurerWorker(
+		w := ProvideMealPlanTaskCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
@@ -83,7 +83,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		assert.NotNil(t, w)
 
 		ctx := context.Background()
-		expected := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{}
+		expected := map[string][]*types.MealPlanTaskDatabaseCreationInput{}
 
 		mdm := database.NewMockDatabase()
 		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
@@ -99,7 +99,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 	T.Run("creates frozen thawing steps", func(t *testing.T) {
 		t.Parallel()
 
-		w := ProvideAdvancedPrepStepCreationEnsurerWorker(
+		w := ProvideMealPlanTaskCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
@@ -203,12 +203,12 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		mdm := database.NewMockDatabase()
 		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
 
-		expectedReturnResults := []*types.AdvancedPrepStepDatabaseCreationInput{
+		expectedReturnResults := []*types.MealPlanTaskDatabaseCreationInput{
 			{
 				CannotCompleteBefore: time.Now(),
 				CannotCompleteAfter:  time.Now(),
 				CompletedAt:          nil,
-				Status:               types.AdvancedPrepStepStatusUnfinished,
+				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  t.Name(),
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
 				RecipeStepID:         exampleRecipe.ID,
@@ -234,7 +234,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		w.analyzer = mockAnalyzer
 		w.dataManager = mdm
 
-		expected := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{
+		expected := map[string][]*types.MealPlanTaskDatabaseCreationInput{
 			exampleFinalizedMealPlanResult.MealPlanOptionID: expectedReturnResults,
 		}
 
@@ -255,7 +255,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 	T.Run("creates step that can be done in advance and ignores later steps", func(t *testing.T) {
 		t.Parallel()
 
-		w := ProvideAdvancedPrepStepCreationEnsurerWorker(
+		w := ProvideMealPlanTaskCreationEnsurerWorker(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
 			recipeanalysis.NewRecipeAnalyzer(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
@@ -404,12 +404,12 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
 
 		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
-		expectedReturnResults := []*types.AdvancedPrepStepDatabaseCreationInput{
+		expectedReturnResults := []*types.MealPlanTaskDatabaseCreationInput{
 			{
 				CannotCompleteBefore: time.Now(),
 				CannotCompleteAfter:  time.Now(),
 				CompletedAt:          nil,
-				Status:               types.AdvancedPrepStepStatusUnfinished,
+				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  t.Name(),
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
 				RecipeStepID:         recipeStep1ID,
@@ -434,7 +434,7 @@ func TestAdvancedPrepStepCreationEnsurerWorker_DetermineCreatableSteps(T *testin
 		w.dataManager = mdm
 		w.analyzer = mockAnalyzer
 
-		expected := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{
+		expected := map[string][]*types.MealPlanTaskDatabaseCreationInput{
 			exampleFinalizedMealPlanResult.MealPlanOptionID: expectedReturnResults,
 		}
 

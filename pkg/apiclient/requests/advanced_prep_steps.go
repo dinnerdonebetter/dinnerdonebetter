@@ -10,24 +10,24 @@ import (
 )
 
 const (
-	advancedPrepStepsBasePath = "advanced_prep_steps"
+	mealPlanTasksBasePath = "meal_plan_tasks"
 )
 
-// BuildGetAdvancedPrepStepRequest builds an HTTP request for fetching a meal plan.
-func (b *Builder) BuildGetAdvancedPrepStepRequest(ctx context.Context, advancedPrepStepID string) (*http.Request, error) {
+// BuildGetMealPlanTaskRequest builds an HTTP request for fetching a meal plan.
+func (b *Builder) BuildGetMealPlanTaskRequest(ctx context.Context, mealPlanTaskID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if advancedPrepStepID == "" {
+	if mealPlanTaskID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachAdvancedPrepStepIDToSpan(span, advancedPrepStepID)
+	tracing.AttachMealPlanTaskIDToSpan(span, mealPlanTaskID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		advancedPrepStepsBasePath,
-		advancedPrepStepID,
+		mealPlanTasksBasePath,
+		mealPlanTaskID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -39,15 +39,15 @@ func (b *Builder) BuildGetAdvancedPrepStepRequest(ctx context.Context, advancedP
 	return req, nil
 }
 
-// BuildGetAdvancedPrepStepsRequest builds an HTTP request for fetching a list of advanced prep steps.
-func (b *Builder) BuildGetAdvancedPrepStepsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
+// BuildGetMealPlanTasksRequest builds an HTTP request for fetching a list of advanced prep steps.
+func (b *Builder) BuildGetMealPlanTasksRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	uri := b.BuildURL(
 		ctx,
 		filter.ToValues(),
-		advancedPrepStepsBasePath,
+		mealPlanTasksBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -60,20 +60,20 @@ func (b *Builder) BuildGetAdvancedPrepStepsRequest(ctx context.Context, filter *
 	return req, nil
 }
 
-// BuildChangeAdvancedPrepStepStatusRequest builds an HTTP request for archiving a meal plan.
-func (b *Builder) BuildChangeAdvancedPrepStepStatusRequest(ctx context.Context, input *types.AdvancedPrepStepStatusChangeRequestInput) (*http.Request, error) {
+// BuildChangeMealPlanTaskStatusRequest builds an HTTP request for archiving a meal plan.
+func (b *Builder) BuildChangeMealPlanTaskStatusRequest(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachAdvancedPrepStepIDToSpan(span, input.ID)
+	tracing.AttachMealPlanTaskIDToSpan(span, input.ID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		advancedPrepStepsBasePath,
+		mealPlanTasksBasePath,
 		input.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)

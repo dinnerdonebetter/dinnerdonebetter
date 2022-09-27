@@ -17,10 +17,10 @@ type MockRecipeAnalyzer struct {
 }
 
 // GenerateAdvancedStepCreationForRecipe implements our interface.
-func (m *MockRecipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.AdvancedPrepStepDatabaseCreationInput, error) {
+func (m *MockRecipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
 	returnArgs := m.Called(ctx, mealPlanEvent, mealPlanOptionID, recipe)
 
-	return returnArgs.Get(0).([]*types.AdvancedPrepStepDatabaseCreationInput), returnArgs.Error(1)
+	return returnArgs.Get(0).([]*types.MealPlanTaskDatabaseCreationInput), returnArgs.Error(1)
 }
 
 // FindStepsEligibleForAdvancedCreation implements our interface.

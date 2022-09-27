@@ -1,4 +1,4 @@
-package advancedprepsteps
+package mealplantasks
 
 import (
 	"errors"
@@ -20,11 +20,11 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                      logging.NewNoopLogger(),
-		advancedPrepStepDataManager: &mocktypes.AdvancedPrepStepDataManager{},
-		advancedPrepStepIDFetcher:   func(req *http.Request) string { return "" },
-		encoderDecoder:              mockencoding.NewMockEncoderDecoder(),
-		tracer:                      tracing.NewTracerForTest("test"),
+		logger:                  logging.NewNoopLogger(),
+		mealPlanTaskDataManager: &mocktypes.MealPlanTaskDataManager{},
+		mealPlanTaskIDFetcher:   func(req *http.Request) string { return "" },
+		encoderDecoder:          mockencoding.NewMockEncoderDecoder(),
+		tracer:                  tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -45,7 +45,7 @@ func TestProvideMealPlansService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			AdvancedPrepStepIDURIParamKey,
+			MealPlanTaskIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
@@ -58,7 +58,7 @@ func TestProvideMealPlansService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.AdvancedPrepStepDataManager{},
+			&mocktypes.MealPlanTaskDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -84,7 +84,7 @@ func TestProvideMealPlansService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.AdvancedPrepStepDataManager{},
+			&mocktypes.MealPlanTaskDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

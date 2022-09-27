@@ -69,7 +69,7 @@ func graphIDForStep(step *types.RecipeStep) int64 {
 type RecipeAnalyzer interface {
 	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
 	FindStepsEligibleForAdvancedCreation(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error)
-	GenerateAdvancedStepCreationForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.AdvancedPrepStepDatabaseCreationInput, error)
+	GenerateAdvancedStepCreationForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
 }
 
 var _ RecipeAnalyzer = (*recipeAnalyzer)(nil)
@@ -319,7 +319,7 @@ func determineCreationMinAndMaxTimesForRecipeStep(step *types.RecipeStep, mealPl
 
 const advancedStepCreationExplanation = "adequate storage instructions for early step"
 
-func (g *recipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.AdvancedPrepStepDatabaseCreationInput, error) {
+func (g *recipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -329,7 +329,7 @@ func (g *recipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Conte
 		keys.RecipeIDKey:         recipe.ID,
 	})
 
-	inputs := []*types.AdvancedPrepStepDatabaseCreationInput{}
+	inputs := []*types.MealPlanTaskDatabaseCreationInput{}
 
 	frozenIngredientSteps := frozenIngredientDefrostStepsFilter(recipe)
 	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen step inputs")
@@ -346,11 +346,11 @@ func (g *recipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Conte
 			continue
 		}
 
-		inputs = append(inputs, &types.AdvancedPrepStepDatabaseCreationInput{
+		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
 			ID:                   ksuid.New().String(),
 			CannotCompleteBefore: mealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
 			CannotCompleteAfter:  mealPlanEvent.StartsAt.Add(-time.Hour * 24),
-			Status:               types.AdvancedPrepStepStatusUnfinished,
+			Status:               types.MealPlanTaskStatusUnfinished,
 			CreationExplanation:  explanation,
 			MealPlanOptionID:     mealPlanOptionID,
 			RecipeStepID:         stepID,
@@ -367,11 +367,11 @@ func (g *recipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Conte
 	for _, step := range steps {
 		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(step, mealPlanEvent)
 
-		inputs = append(inputs, &types.AdvancedPrepStepDatabaseCreationInput{
+		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
 			ID:                   ksuid.New().String(),
 			CannotCompleteBefore: cannotCompleteBefore,
 			CannotCompleteAfter:  cannotCompleteAfter,
-			Status:               types.AdvancedPrepStepStatusUnfinished,
+			Status:               types.MealPlanTaskStatusUnfinished,
 			CreationExplanation:  advancedStepCreationExplanation,
 			MealPlanOptionID:     mealPlanOptionID,
 			RecipeStepID:         step.ID,

@@ -9,8 +9,8 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// GetAdvancedPrepStep gets an advanced prep step.
-func (c *Client) GetAdvancedPrepStep(ctx context.Context, validIngredientID string) (*types.AdvancedPrepStep, error) {
+// GetMealPlanTask gets an advanced prep step.
+func (c *Client) GetMealPlanTask(ctx context.Context, validIngredientID string) (*types.MealPlanTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -19,15 +19,15 @@ func (c *Client) GetAdvancedPrepStep(ctx context.Context, validIngredientID stri
 	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AdvancedPrepStepIDKey, validIngredientID)
-	tracing.AttachAdvancedPrepStepIDToSpan(span, validIngredientID)
+	logger = logger.WithValue(keys.MealPlanTaskIDKey, validIngredientID)
+	tracing.AttachMealPlanTaskIDToSpan(span, validIngredientID)
 
-	req, err := c.requestBuilder.BuildGetAdvancedPrepStepRequest(ctx, validIngredientID)
+	req, err := c.requestBuilder.BuildGetMealPlanTaskRequest(ctx, validIngredientID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get advanced prep step request")
 	}
 
-	var validIngredient *types.AdvancedPrepStep
+	var validIngredient *types.MealPlanTask
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving advanced prep step")
 	}
@@ -35,8 +35,8 @@ func (c *Client) GetAdvancedPrepStep(ctx context.Context, validIngredientID stri
 	return validIngredient, nil
 }
 
-// UpdateAdvancedPrepStepStatus updates an advanced prep step.
-func (c *Client) UpdateAdvancedPrepStepStatus(ctx context.Context, input *types.AdvancedPrepStepStatusChangeRequestInput) (*types.AdvancedPrepStep, error) {
+// UpdateMealPlanTaskStatus updates an advanced prep step.
+func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) (*types.MealPlanTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -50,12 +50,12 @@ func (c *Client) UpdateAdvancedPrepStepStatus(ctx context.Context, input *types.
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildChangeAdvancedPrepStepStatusRequest(ctx, input)
+	req, err := c.requestBuilder.BuildChangeMealPlanTaskStatusRequest(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create advanced prep step request")
 	}
 
-	var validIngredient *types.AdvancedPrepStep
+	var validIngredient *types.MealPlanTask
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating advanced prep step")
 	}

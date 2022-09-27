@@ -1,5 +1,5 @@
 SELECT
-	advanced_prep_steps.id AS advanced_prep_steps_id,
+	meal_plan_tasks.id AS advanced_prep_steps_id,
 	meal_plan_options.id AS meal_plan_options_id,
 	meal_plan_options.assigned_cook,
 	meal_plan_options.assigned_dishwasher,
@@ -36,18 +36,25 @@ SELECT
 	recipe_steps.last_updated_at,
 	recipe_steps.archived_at,
 	recipe_steps.belongs_to_recipe,
-	advanced_prep_steps.status,
-	advanced_prep_steps.status_explanation,
-	advanced_prep_steps.creation_explanation,
-	advanced_prep_steps.cannot_complete_before,
-	advanced_prep_steps.cannot_complete_after,
-	advanced_prep_steps.created_at,
-	advanced_prep_steps.completed_at
-FROM advanced_prep_steps
-	 FULL OUTER JOIN meal_plan_options ON advanced_prep_steps.belongs_to_meal_plan_option=meal_plan_options.id
-	 FULL OUTER JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
-	 FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
-	 JOIN recipe_steps ON advanced_prep_steps.satisfies_recipe_step=recipe_steps.id
-	 JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
-WHERE advanced_prep_steps.belongs_to_meal_plan_option = $1
-AND advanced_prep_steps.completed_at IS NULL;
+    meal_plan_tasks.assigned_to_user,
+    meal_plan_tasks.status,
+	meal_plan_tasks.status_explanation,
+	meal_plan_tasks.creation_explanation,
+	meal_plan_tasks.cannot_complete_before,
+	meal_plan_tasks.cannot_complete_after,
+	meal_plan_tasks.created_at,
+	meal_plan_tasks.completed_at
+FROM meal_plan_tasks
+	FULL OUTER JOIN meal_plan_options ON meal_plan_tasks.belongs_to_meal_plan_option=meal_plan_options.id
+	FULL OUTER JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+	FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
+	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
+	JOIN recipe_steps ON meal_plan_tasks.satisfies_recipe_step=recipe_steps.id
+	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
+WHERE meal_plan_options.archived_at IS NULL
+	AND meal_plan_events.archived_at IS NULL
+	AND meal_plans.archived_at IS NULL
+	AND meals.archived_at IS NULL
+	AND recipe_steps.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
+	AND meal_plans.id = $1;

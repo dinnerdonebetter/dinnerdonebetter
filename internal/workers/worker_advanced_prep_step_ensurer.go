@@ -18,11 +18,11 @@ import (
 )
 
 const (
-	advancedPrepStepCreationEnsurerWorkerName = "advanced_prep_step_creation_ensurer"
+	mealPlanTaskCreationEnsurerWorkerName = "meal_plan_task_creation_ensurer"
 )
 
-// AdvancedPrepStepCreationEnsurerWorker ensurers advanced prep steps are created.
-type AdvancedPrepStepCreationEnsurerWorker struct {
+// MealPlanTaskCreationEnsurerWorker ensurers meal plan tasks are created.
+type MealPlanTaskCreationEnsurerWorker struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
 	analyzer              recipeanalysis.RecipeAnalyzer
@@ -32,18 +32,18 @@ type AdvancedPrepStepCreationEnsurerWorker struct {
 	customerDataCollector customerdata.Collector
 }
 
-// ProvideAdvancedPrepStepCreationEnsurerWorker provides a AdvancedPrepStepCreationEnsurerWorker.
-func ProvideAdvancedPrepStepCreationEnsurerWorker(
+// ProvideMealPlanTaskCreationEnsurerWorker provides a MealPlanTaskCreationEnsurerWorker.
+func ProvideMealPlanTaskCreationEnsurerWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
 	grapher recipeanalysis.RecipeAnalyzer,
 	postUpdatesPublisher messagequeue.Publisher,
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
-) *AdvancedPrepStepCreationEnsurerWorker {
-	return &AdvancedPrepStepCreationEnsurerWorker{
-		logger:                logging.EnsureLogger(logger).WithName(advancedPrepStepCreationEnsurerWorkerName),
-		tracer:                tracing.NewTracer(tracerProvider.Tracer(advancedPrepStepCreationEnsurerWorkerName)),
+) *MealPlanTaskCreationEnsurerWorker {
+	return &MealPlanTaskCreationEnsurerWorker{
+		logger:                logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
+		tracer:                tracing.NewTracer(tracerProvider.Tracer(mealPlanTaskCreationEnsurerWorkerName)),
 		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataManager:           dataManager,
 		analyzer:              grapher,
@@ -53,7 +53,7 @@ func ProvideAdvancedPrepStepCreationEnsurerWorker(
 }
 
 // HandleMessage handles a pending write.
-func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Context, _ []byte) error {
+func (w *MealPlanTaskCreationEnsurerWorker) HandleMessage(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -70,7 +70,7 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 	for mealPlanOptionID, steps := range optionsAndSteps {
 		l := logger.Clone().WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID).WithValue("creatable_prep_step_qty", len(steps))
 
-		createdSteps, creationErr := w.dataManager.CreateAdvancedPrepStepsForMealPlanOption(ctx, mealPlanOptionID, steps)
+		createdSteps, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, mealPlanOptionID, steps)
 		if creationErr != nil {
 			result = multierror.Append(result, creationErr)
 			observability.AcknowledgeError(creationErr, l, span, "creating advanced prep steps for meal plan optino")
@@ -78,10 +78,10 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 
 		for _, createdStep := range createdSteps {
 			if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				DataType:                  types.AdvancedPrepStepDataType,
-				EventType:                 types.AdvancedPrepStepCreatedCustomerEventType,
-				AdvancedPrepStep:          createdStep,
-				AdvancedPrepStepID:        createdStep.ID,
+				DataType:                  types.MealPlanTaskDataType,
+				EventType:                 types.MealPlanTaskCreatedCustomerEventType,
+				MealPlanTask:              createdStep,
+				MealPlanTaskID:            createdStep.ID,
 				HouseholdID:               "",
 				Context:                   nil,
 				AttributableToHouseholdID: "",
@@ -99,7 +99,7 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) HandleMessage(ctx context.Contex
 }
 
 // DetermineCreatableSteps determines which advanced prep steps are creatable for a recipe.
-func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx context.Context) (map[string][]*types.AdvancedPrepStepDatabaseCreationInput, error) {
+func (w *MealPlanTaskCreationEnsurerWorker) DetermineCreatableSteps(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -114,7 +114,7 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 	logger = logger.WithValue("steps_to_create", len(results))
 	logger.Info("determining creatable steps")
 
-	inputs := map[string][]*types.AdvancedPrepStepDatabaseCreationInput{}
+	inputs := map[string][]*types.MealPlanTaskDatabaseCreationInput{}
 	for _, result := range results {
 		l := logger.Clone().WithValues(map[string]interface{}{
 			keys.MealPlanIDKey:       result.MealPlanID,
@@ -131,7 +131,7 @@ func (w *AdvancedPrepStepCreationEnsurerWorker) DetermineCreatableSteps(ctx cont
 		}
 
 		if _, ok := inputs[result.MealPlanOptionID]; !ok {
-			inputs[result.MealPlanOptionID] = []*types.AdvancedPrepStepDatabaseCreationInput{}
+			inputs[result.MealPlanOptionID] = []*types.MealPlanTaskDatabaseCreationInput{}
 		}
 
 		for _, recipeID := range result.RecipeIDs {

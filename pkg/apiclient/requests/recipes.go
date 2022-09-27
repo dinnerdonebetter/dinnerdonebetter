@@ -196,8 +196,8 @@ func (b *Builder) BuildGetRecipeDAGRequest(ctx context.Context, recipeID string)
 	return req, nil
 }
 
-// BuildGetRecipeAdvancedPrepStepsRequest builds an HTTP request for fetching a recipe.
-func (b *Builder) BuildGetRecipeAdvancedPrepStepsRequest(ctx context.Context, recipeID string) (*http.Request, error) {
+// BuildGetRecipeMealPlanTasksRequest builds an HTTP request for fetching a recipe.
+func (b *Builder) BuildGetRecipeMealPlanTasksRequest(ctx context.Context, recipeID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 

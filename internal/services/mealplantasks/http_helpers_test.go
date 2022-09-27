@@ -1,4 +1,4 @@
-package advancedprepsteps
+package mealplantasks
 
 import (
 	"context"
@@ -16,15 +16,15 @@ import (
 )
 
 type mealPlanEventsServiceHTTPRoutesTestHelper struct {
-	ctx                     context.Context
-	req                     *http.Request
-	res                     *httptest.ResponseRecorder
-	service                 *service
-	exampleUser             *types.User
-	exampleHousehold        *types.Household
-	exampleMealPlan         *types.MealPlan
-	exampleMealPlanEvent    *types.MealPlanEvent
-	exampleAdvancedPrepStep *types.AdvancedPrepStep
+	ctx                  context.Context
+	req                  *http.Request
+	res                  *httptest.ResponseRecorder
+	service              *service
+	exampleUser          *types.User
+	exampleHousehold     *types.Household
+	exampleMealPlan      *types.MealPlan
+	exampleMealPlanEvent *types.MealPlanEvent
+	exampleMealPlanTask  *types.MealPlanTask
 }
 
 func buildTestHelper(t *testing.T) *mealPlanEventsServiceHTTPRoutesTestHelper {
@@ -40,8 +40,8 @@ func buildTestHelper(t *testing.T) *mealPlanEventsServiceHTTPRoutesTestHelper {
 	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
 	helper.exampleMealPlanEvent = fakes.BuildFakeMealPlanEvent()
 	helper.exampleMealPlanEvent.BelongsToMealPlan = helper.exampleMealPlan.ID
-	helper.exampleAdvancedPrepStep = fakes.BuildFakeAdvancedPrepStep()
-	helper.exampleAdvancedPrepStep.MealPlanOption.BelongsToMealPlanEvent = helper.exampleMealPlanEvent.ID
+	helper.exampleMealPlanTask = fakes.BuildFakeMealPlanTask()
+	helper.exampleMealPlanTask.MealPlanOption.BelongsToMealPlanEvent = helper.exampleMealPlanEvent.ID
 
 	helper.service.mealPlanIDFetcher = func(*http.Request) string {
 		return helper.exampleMealPlan.ID
@@ -51,8 +51,8 @@ func buildTestHelper(t *testing.T) *mealPlanEventsServiceHTTPRoutesTestHelper {
 		return helper.exampleMealPlanEvent.ID
 	}
 
-	helper.service.advancedPrepStepIDFetcher = func(*http.Request) string {
-		return helper.exampleAdvancedPrepStep.ID
+	helper.service.mealPlanTaskIDFetcher = func(*http.Request) string {
+		return helper.exampleMealPlanTask.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{

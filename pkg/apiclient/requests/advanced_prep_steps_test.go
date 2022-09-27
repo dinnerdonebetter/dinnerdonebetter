@@ -10,21 +10,21 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
-func TestBuilder_BuildGetAdvancedPrepStepRequest(T *testing.T) {
+func TestBuilder_BuildGetMealPlanTaskRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/advanced_prep_steps/%s"
+	const expectedPathFormat = "/api/v1/meal_plan_tasks/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		exampleAdvancedPrepStep := fakes.BuildFakeAdvancedPrepStep()
+		exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleAdvancedPrepStep.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleMealPlanTask.ID)
 
-		actual, err := helper.builder.BuildGetAdvancedPrepStepRequest(helper.ctx, exampleAdvancedPrepStep.ID)
+		actual, err := helper.builder.BuildGetMealPlanTaskRequest(helper.ctx, exampleMealPlanTask.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -35,7 +35,7 @@ func TestBuilder_BuildGetAdvancedPrepStepRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetAdvancedPrepStepRequest(helper.ctx, "")
+		actual, err := helper.builder.BuildGetMealPlanTaskRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -46,18 +46,18 @@ func TestBuilder_BuildGetAdvancedPrepStepRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleAdvancedPrepStep := fakes.BuildFakeAdvancedPrepStep()
+		exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
 
-		actual, err := helper.builder.BuildGetAdvancedPrepStepRequest(helper.ctx, exampleAdvancedPrepStep.ID)
+		actual, err := helper.builder.BuildGetMealPlanTaskRequest(helper.ctx, exampleMealPlanTask.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildGetAdvancedPrepStepsRequest(T *testing.T) {
+func TestBuilder_BuildGetMealPlanTasksRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/advanced_prep_steps"
+	const expectedPathFormat = "/api/v1/meal_plan_tasks"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -67,7 +67,7 @@ func TestBuilder_BuildGetAdvancedPrepStepsRequest(T *testing.T) {
 		filter := (*types.QueryFilter)(nil)
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
 
-		actual, err := helper.builder.BuildGetAdvancedPrepStepsRequest(helper.ctx, filter)
+		actual, err := helper.builder.BuildGetMealPlanTasksRequest(helper.ctx, filter)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -81,26 +81,26 @@ func TestBuilder_BuildGetAdvancedPrepStepsRequest(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetAdvancedPrepStepsRequest(helper.ctx, filter)
+		actual, err := helper.builder.BuildGetMealPlanTasksRequest(helper.ctx, filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildChangeAdvancedPrepStepStatusRequest(T *testing.T) {
+func TestBuilder_BuildChangeMealPlanTaskStatusRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/advanced_prep_steps/%s"
+	const expectedPathFormat = "/api/v1/meal_plan_tasks/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
+		exampleInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
 		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, exampleInput.ID)
 
-		actual, err := helper.builder.BuildChangeAdvancedPrepStepStatusRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildChangeMealPlanTaskStatusRequest(helper.ctx, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -111,7 +111,7 @@ func TestBuilder_BuildChangeAdvancedPrepStepStatusRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildChangeAdvancedPrepStepStatusRequest(helper.ctx, nil)
+		actual, err := helper.builder.BuildChangeMealPlanTaskStatusRequest(helper.ctx, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -122,9 +122,9 @@ func TestBuilder_BuildChangeAdvancedPrepStepStatusRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeAdvancedPrepStepStatusChangeRequestInput()
+		exampleInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
 
-		actual, err := helper.builder.BuildChangeAdvancedPrepStepStatusRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildChangeMealPlanTaskStatusRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

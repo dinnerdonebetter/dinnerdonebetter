@@ -8,12 +8,12 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// BuildFakeAdvancedPrepStep builds a faked advanced prep step.
-func BuildFakeAdvancedPrepStep() *types.AdvancedPrepStep {
+// BuildFakeMealPlanTask builds a faked advanced prep step.
+func BuildFakeMealPlanTask() *types.MealPlanTask {
 	now := time.Now().Add(0).Truncate(time.Second).UTC()
 	inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
 
-	return &types.AdvancedPrepStep{
+	return &types.MealPlanTask{
 		ID:                   BuildFakeID(),
 		CannotCompleteBefore: now,
 		CannotCompleteAfter:  inOneWeek,
@@ -27,32 +27,32 @@ func BuildFakeAdvancedPrepStep() *types.AdvancedPrepStep {
 	}
 }
 
-// BuildFakeAdvancedPrepStepList builds a faked AdvancedPrepStepList.
-func BuildFakeAdvancedPrepStepList() *types.AdvancedPrepStepList {
-	var examples []*types.AdvancedPrepStep
+// BuildFakeMealPlanTaskList builds a faked MealPlanTaskList.
+func BuildFakeMealPlanTaskList() *types.MealPlanTaskList {
+	var examples []*types.MealPlanTask
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeAdvancedPrepStep())
+		examples = append(examples, BuildFakeMealPlanTask())
 	}
 
-	return &types.AdvancedPrepStepList{
+	return &types.MealPlanTaskList{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		AdvancedPrepSteps: examples,
+		MealPlanTasks: examples,
 	}
 }
 
-// BuildFakeAdvancedPrepStepDatabaseCreationInputs builds a faked AdvancedPrepStepList.
-func BuildFakeAdvancedPrepStepDatabaseCreationInputs() []*types.AdvancedPrepStepDatabaseCreationInput {
-	var examples []*types.AdvancedPrepStepDatabaseCreationInput
+// BuildFakeMealPlanTaskDatabaseCreationInputs builds a faked MealPlanTaskList.
+func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabaseCreationInput {
+	var examples []*types.MealPlanTaskDatabaseCreationInput
 	for i := 0; i < exampleQuantity; i++ {
 		now := time.Now().Add(0).Truncate(time.Second).UTC()
 		inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
 
-		examples = append(examples, &types.AdvancedPrepStepDatabaseCreationInput{
+		examples = append(examples, &types.MealPlanTaskDatabaseCreationInput{
 			CompletedAt:          nil,
 			MealPlanOptionID:     "",
 			RecipeStepID:         "",
@@ -68,9 +68,9 @@ func BuildFakeAdvancedPrepStepDatabaseCreationInputs() []*types.AdvancedPrepStep
 	return examples
 }
 
-// BuildFakeAdvancedPrepStepStatusChangeRequestInput builds a faked advanced prep step.
-func BuildFakeAdvancedPrepStepStatusChangeRequestInput() *types.AdvancedPrepStepStatusChangeRequestInput {
-	return &types.AdvancedPrepStepStatusChangeRequestInput{
+// BuildFakeMealPlanTaskStatusChangeRequestInput builds a faked advanced prep step.
+func BuildFakeMealPlanTaskStatusChangeRequestInput() *types.MealPlanTaskStatusChangeRequestInput {
+	return &types.MealPlanTaskStatusChangeRequestInput{
 		ID:                BuildFakeID(),
 		Status:            "unfinished",
 		StatusExplanation: buildUniqueString(),
