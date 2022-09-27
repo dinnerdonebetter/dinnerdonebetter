@@ -46,7 +46,7 @@ SELECT
 	valid_ingredient_measurement_units.last_updated_at,
 	valid_ingredient_measurement_units.archived_at
 FROM valid_ingredient_measurement_units
-	     JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-	     JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
+	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
 WHERE valid_ingredient_measurement_units.archived_at IS NULL
-  AND valid_ingredient_measurement_units.id = $1;
+	AND valid_ingredient_measurement_units.id = $1;

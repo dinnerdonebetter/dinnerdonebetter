@@ -7,4 +7,4 @@ SET
 	usable_for_storage = $5,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND id = $6;
+	AND id = $6;

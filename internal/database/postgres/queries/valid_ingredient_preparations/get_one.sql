@@ -43,7 +43,7 @@ SELECT
 	valid_ingredient_preparations.last_updated_at,
 	valid_ingredient_preparations.archived_at
 FROM valid_ingredient_preparations
-	     JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	     JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
+	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
+	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
 WHERE valid_ingredient_preparations.archived_at IS NULL
-  AND valid_ingredient_preparations.id = $1;
+	AND valid_ingredient_preparations.id = $1;

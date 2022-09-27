@@ -11,4 +11,4 @@ UPDATE recipe_step_ingredients SET
 	ingredient_notes = $10,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL AND belongs_to_recipe_step = $11
-  AND id = $12;
+	AND id = $12;

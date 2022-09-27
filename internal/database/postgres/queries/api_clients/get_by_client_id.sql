@@ -9,4 +9,4 @@ SELECT
 	api_clients.belongs_to_user
 FROM api_clients
 WHERE api_clients.archived_at IS NULL
-  AND api_clients.client_id = $1;
+	AND api_clients.client_id = $1;

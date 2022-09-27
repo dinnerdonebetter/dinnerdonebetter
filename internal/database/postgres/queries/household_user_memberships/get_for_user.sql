@@ -8,6 +8,6 @@ SELECT
 	household_user_memberships.last_updated_at,
 	household_user_memberships.archived_at
 FROM household_user_memberships
-	     JOIN households ON households.id = household_user_memberships.belongs_to_household
+	JOIN households ON households.id = household_user_memberships.belongs_to_household
 WHERE household_user_memberships.archived_at IS NULL
-  AND household_user_memberships.belongs_to_user = $1;
+	AND household_user_memberships.belongs_to_user = $1;

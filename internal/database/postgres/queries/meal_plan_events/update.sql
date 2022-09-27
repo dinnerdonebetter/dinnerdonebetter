@@ -6,4 +6,4 @@ SET notes = $1,
 	belongs_to_meal_plan = $5,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND id = $6;
+	AND id = $6;

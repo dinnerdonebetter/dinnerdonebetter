@@ -10,4 +10,4 @@ SELECT
 	valid_instruments.archived_at
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
-  AND valid_instruments.id = $1;
+	AND valid_instruments.id = $1;

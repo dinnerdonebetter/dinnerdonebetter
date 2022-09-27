@@ -57,10 +57,10 @@ FROM recipe_step_ingredients
 	 JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
 	 JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_ingredients.archived_at IS NULL
-  AND recipe_step_ingredients.belongs_to_recipe_step = $1
-  AND recipe_step_ingredients.id = $2
-  AND recipe_steps.archived_at IS NULL
-  AND recipe_steps.belongs_to_recipe = $3
-  AND recipe_steps.id = $4
-  AND recipes.archived_at IS NULL
-  AND recipes.id = $5;
+	AND recipe_step_ingredients.belongs_to_recipe_step = $1
+	AND recipe_step_ingredients.id = $2
+	AND recipe_steps.archived_at IS NULL
+	AND recipe_steps.belongs_to_recipe = $3
+	AND recipe_steps.id = $4
+	AND recipes.archived_at IS NULL
+	AND recipes.id = $5;

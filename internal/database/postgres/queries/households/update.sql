@@ -6,5 +6,5 @@ SET
 	time_zone = $4,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND belongs_to_user = $5
-  AND id = $6;
+	AND belongs_to_user = $5
+	AND id = $6;

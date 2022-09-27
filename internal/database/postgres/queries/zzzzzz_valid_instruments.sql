@@ -9,33 +9,33 @@ SELECT
 	valid_instruments.last_updated_at,
 	valid_instruments.archived_at,
 	(
-	    SELECT
-	        COUNT(valid_instruments.id)
-	    FROM
-	        valid_instruments
-	    WHERE
-	        valid_instruments.archived_at IS NULL
-	      AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
-	      AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
-	      AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
-	      AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
+	 SELECT
+		COUNT(valid_instruments.id)
+	 FROM
+		valid_instruments
+	 WHERE
+		valid_instruments.archived_at IS NULL
+	 AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
+	 AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
+	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
+	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
 	) as filtered_count,
 	(
-	    SELECT
-	        COUNT(valid_instruments.id)
-	    FROM
-	        valid_instruments
-	    WHERE
-	        valid_instruments.archived_at IS NULL
+	 SELECT
+		COUNT(valid_instruments.id)
+	 FROM
+		valid_instruments
+	 WHERE
+		valid_instruments.archived_at IS NULL
 	) as total_count
 FROM
 	valid_instruments
 WHERE
 	valid_instruments.archived_at IS NULL
-  AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
-  AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
-  AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
-  AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
+	AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
+	AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
+	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
+	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
 GROUP BY
 	valid_instruments.id
 ORDER BY

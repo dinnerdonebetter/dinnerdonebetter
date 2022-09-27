@@ -24,10 +24,10 @@ SELECT
 	recipe_steps.archived_at,
 	recipe_steps.belongs_to_recipe
 FROM recipe_steps
-	     JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-	     JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipe_steps.archived_at IS NULL
-  AND recipe_steps.belongs_to_recipe = $1
-  AND recipe_steps.id = $2
-  AND recipes.archived_at IS NULL
-  AND recipes.id = $3;
+	AND recipe_steps.belongs_to_recipe = $1
+	AND recipe_steps.id = $2
+	AND recipes.archived_at IS NULL
+	AND recipes.id = $3;

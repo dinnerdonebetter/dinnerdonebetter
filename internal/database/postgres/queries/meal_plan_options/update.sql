@@ -7,5 +7,5 @@ SET
 	prep_steps_created = $5,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND belongs_to_meal_plan_event = $6
-  AND id = $7;
+	AND belongs_to_meal_plan_event = $6
+	AND id = $7;

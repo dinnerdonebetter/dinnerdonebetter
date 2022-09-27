@@ -18,4 +18,4 @@ SELECT
 	users.archived_at
 FROM users
 WHERE users.archived_at IS NULL
-  AND users.email_address = $1;
+	AND users.email_address = $1;

@@ -12,5 +12,5 @@ SELECT
 	valid_preparations.archived_at
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
-  AND valid_preparations.name ILIKE $1
+	AND valid_preparations.name ILIKE $1
 LIMIT 50;

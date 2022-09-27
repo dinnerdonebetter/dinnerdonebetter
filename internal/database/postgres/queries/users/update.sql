@@ -8,4 +8,4 @@ UPDATE users SET
 	birth_month = $7,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND id = $8;
+	AND id = $8;

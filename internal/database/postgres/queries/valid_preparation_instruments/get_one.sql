@@ -26,8 +26,8 @@ SELECT
 	valid_preparation_instruments.archived_at
 FROM
 	valid_preparation_instruments
-	    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-	    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+	 JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	 JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_instruments.archived_at IS NULL
-  AND valid_preparation_instruments.id = $1;
+	AND valid_preparation_instruments.id = $1;

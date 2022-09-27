@@ -13,4 +13,4 @@ SELECT
 	valid_measurement_units.archived_at
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
-  AND valid_measurement_units.id = $1;
+	AND valid_measurement_units.id = $1;

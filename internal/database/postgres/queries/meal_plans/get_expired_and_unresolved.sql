@@ -9,7 +9,7 @@ SELECT
 	meal_plans.belongs_to_household
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
-  AND meal_plans.status = 'awaiting_votes'
-  AND voting_deadline < now()
+	AND meal_plans.status = 'awaiting_votes'
+	AND voting_deadline < now()
 GROUP BY meal_plans.id
 ORDER BY meal_plans.id;
