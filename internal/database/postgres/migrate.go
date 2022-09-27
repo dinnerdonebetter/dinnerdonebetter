@@ -230,6 +230,11 @@ var (
 			Description: "remove constraint on advanced prep steps",
 			Script:      fetchMigration("00043_remove_constraint_on_advanced_prep_steps"),
 		},
+		{
+			Version:     44,
+			Description: "update advanced prep steps status enum",
+			Script:      fetchMigration("00044_update_prep_step_status_enum"),
+		},
 	}
 )
 
