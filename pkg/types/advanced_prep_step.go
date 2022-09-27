@@ -10,12 +10,11 @@ import (
 )
 
 const (
-	// AdvancedPrepStepDataType indicates an event is related to a advanced prep step.
+	// AdvancedPrepStepDataType indicates an event is related to an advanced prep step.
 	AdvancedPrepStepDataType dataType = "advanced_prep_step"
 
 	// AdvancedPrepStepCreatedCustomerEventType indicates an advanced prep step was created.
 	AdvancedPrepStepCreatedCustomerEventType CustomerEventType = "advanced_prep_step_created"
-
 	// AdvancedPrepStepStatusChangedCustomerEventType indicates an advanced prep step was created.
 	AdvancedPrepStepStatusChangedCustomerEventType CustomerEventType = "advanced_prep_step_status_changed"
 
@@ -43,7 +42,7 @@ type (
 		CannotCompleteBefore time.Time      `json:"cannotCompleteBefore"`
 		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
 		CreatedAt            time.Time      `json:"createdAt"`
-		SettledAt            *uint64        `json:"completedAt"`
+		CompletedAt          *time.Time     `json:"completedAt"`
 		RecipeStep           RecipeStep     `json:"recipeStep"`
 		ID                   string         `json:"id"`
 		Status               string         `json:"status"`
@@ -64,7 +63,7 @@ type (
 		_                    struct{}
 		CannotCompleteBefore time.Time
 		CannotCompleteAfter  time.Time
-		CompletedAt          *uint64
+		CompletedAt          *time.Time
 		Status               string
 		CreationExplanation  string
 		StatusExplanation    string

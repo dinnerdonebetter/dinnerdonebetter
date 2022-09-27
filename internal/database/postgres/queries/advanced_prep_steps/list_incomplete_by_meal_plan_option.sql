@@ -42,7 +42,7 @@ SELECT
 	advanced_prep_steps.cannot_complete_before,
 	advanced_prep_steps.cannot_complete_after,
 	advanced_prep_steps.created_at,
-	advanced_prep_steps.settled_at
+	advanced_prep_steps.completed_at
 FROM advanced_prep_steps
 	 FULL OUTER JOIN meal_plan_options ON advanced_prep_steps.belongs_to_meal_plan_option=meal_plan_options.id
 	 FULL OUTER JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
@@ -50,4 +50,4 @@ FROM advanced_prep_steps
 	 JOIN recipe_steps ON advanced_prep_steps.satisfies_recipe_step=recipe_steps.id
 	 JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE advanced_prep_steps.belongs_to_meal_plan_option = $1
-AND advanced_prep_steps.settled_at IS NULL;
+AND advanced_prep_steps.completed_at IS NULL;

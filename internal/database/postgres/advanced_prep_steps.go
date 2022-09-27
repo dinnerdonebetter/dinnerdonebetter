@@ -69,7 +69,7 @@ func (q *Querier) scanAdvancedPrepStep(ctx context.Context, scan database.Scanne
 		&x.CannotCompleteBefore,
 		&x.CannotCompleteAfter,
 		&x.CreatedAt,
-		&x.SettledAt,
+		&x.CompletedAt,
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
@@ -249,7 +249,7 @@ func (q *Querier) CreateAdvancedPrepStepsForMealPlanOption(ctx context.Context, 
 			Status:               input.Status,
 			StatusExplanation:    input.StatusExplanation,
 			CreationExplanation:  input.CreationExplanation,
-			SettledAt:            input.CompletedAt,
+			CompletedAt:          input.CompletedAt,
 		})
 	}
 

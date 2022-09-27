@@ -23,7 +23,7 @@ func BuildFakeAdvancedPrepStep() *types.AdvancedPrepStep {
 		Status:               "unfinished",
 		StatusExplanation:    buildUniqueString(),
 		CreationExplanation:  buildUniqueString(),
-		SettledAt:            nil,
+		CompletedAt:          nil,
 	}
 }
 
