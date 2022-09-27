@@ -150,7 +150,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 
 	prepStep, fetchAdvancedPrepStepErr := s.advancedPrepStepDataManager.GetAdvancedPrepStep(ctx, advancedPrepStepID)
 	if fetchAdvancedPrepStepErr != nil && !errors.Is(fetchAdvancedPrepStepErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(fetchAdvancedPrepStepErr, logger, span, "checking recipe existence")
+		observability.AcknowledgeError(fetchAdvancedPrepStepErr, logger, span, "checking advanced step existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	} else if errors.Is(fetchAdvancedPrepStepErr, sql.ErrNoRows) {
