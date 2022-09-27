@@ -235,6 +235,11 @@ var (
 			Description: "update advanced prep steps status enum",
 			Script:      fetchMigration("00044_update_prep_step_status_enum"),
 		},
+		{
+			Version:     45,
+			Description: "rename advanced prep step column again",
+			Script:      fetchMigration("00045_rename_advanced_prep_step_column_again"),
+		},
 	}
 )
 
