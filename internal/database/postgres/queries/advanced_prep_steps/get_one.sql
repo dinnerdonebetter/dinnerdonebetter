@@ -45,7 +45,8 @@ SELECT
 	advanced_prep_steps.settled_at
 FROM advanced_prep_steps
 	FULL OUTER JOIN meal_plan_options ON advanced_prep_steps.belongs_to_meal_plan_option=meal_plan_options.id
-	FULL OUTER JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
+    FULL OUTER JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+    FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
 	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
 	JOIN recipe_steps ON advanced_prep_steps.satisfies_recipe_step=recipe_steps.id
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
