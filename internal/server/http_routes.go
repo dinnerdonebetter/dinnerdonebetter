@@ -663,7 +663,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		})
 
 		// MealPlanTasks
-		mealPlanTaskPath := "meal_plan_tasks"
+		mealPlanTaskPath := "tasks"
 		mealPlanTasksRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
@@ -675,6 +675,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			mealPlanTasksRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanTasksPermission)).
 				Get(root, s.mealPlanTasksService.ListByMealPlanHandler)
+			mealPlanTasksRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanTasksPermission)).
+				Get(root, s.mealPlanTasksService.CreateHandler)
 
 			mealPlanTasksRouter.Route(mealPlanTaskIDRouteParam, func(singleMealPlanTaskRouter routing.Router) {
 				singleMealPlanTaskRouter.

@@ -10,13 +10,18 @@ import (
 )
 
 const (
-	mealPlanTasksBasePath = "meal_plan_tasks"
+	mealPlanTasksBasePath = "tasks"
 )
 
 // BuildGetMealPlanTaskRequest builds an HTTP request for fetching a meal plan.
-func (b *Builder) BuildGetMealPlanTaskRequest(ctx context.Context, mealPlanTaskID string) (*http.Request, error) {
+func (b *Builder) BuildGetMealPlanTaskRequest(ctx context.Context, mealPlanID, mealPlanTaskID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanTaskID == "" {
 		return nil, ErrInvalidIDProvided
@@ -26,6 +31,8 @@ func (b *Builder) BuildGetMealPlanTaskRequest(ctx context.Context, mealPlanTaskI
 	uri := b.BuildURL(
 		ctx,
 		nil,
+		mealPlansBasePath,
+		mealPlanID,
 		mealPlanTasksBasePath,
 		mealPlanTaskID,
 	)
@@ -40,13 +47,20 @@ func (b *Builder) BuildGetMealPlanTaskRequest(ctx context.Context, mealPlanTaskI
 }
 
 // BuildGetMealPlanTasksRequest builds an HTTP request for fetching a list of advanced prep steps.
-func (b *Builder) BuildGetMealPlanTasksRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
+func (b *Builder) BuildGetMealPlanTasksRequest(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	uri := b.BuildURL(
 		ctx,
 		filter.ToValues(),
+		mealPlansBasePath,
+		mealPlanID,
 		mealPlanTasksBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -61,9 +75,14 @@ func (b *Builder) BuildGetMealPlanTasksRequest(ctx context.Context, filter *type
 }
 
 // BuildChangeMealPlanTaskStatusRequest builds an HTTP request for archiving a meal plan.
-func (b *Builder) BuildChangeMealPlanTaskStatusRequest(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) (*http.Request, error) {
+func (b *Builder) BuildChangeMealPlanTaskStatusRequest(ctx context.Context, mealPlanID string, input *types.MealPlanTaskStatusChangeRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -73,6 +92,8 @@ func (b *Builder) BuildChangeMealPlanTaskStatusRequest(ctx context.Context, inpu
 	uri := b.BuildURL(
 		ctx,
 		nil,
+		mealPlansBasePath,
+		mealPlanID,
 		mealPlanTasksBasePath,
 		input.ID,
 	)

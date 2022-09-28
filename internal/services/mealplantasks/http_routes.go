@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/segmentio/ksuid"
+
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -15,6 +17,74 @@ const (
 	// MealPlanTaskIDURIParamKey is a standard string that we'll use to refer to advanced prep step IDs with.
 	MealPlanTaskIDURIParamKey = "mealPlanTaskID"
 )
+
+// CreateHandler is our meal plan task creation route.
+func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// read parsed input struct from request body.
+	providedInput := new(types.MealPlanTaskCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	input := types.MealPlanTaskDatabaseCreationInputFromMealPlanTaskCreationRequestInput(providedInput)
+	input.ID = ksuid.New().String()
+	tracing.AttachMealPlanTaskIDToSpan(span, input.ID)
+
+	logger = logger.WithValue("input", input)
+
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	mealPlanTask, err := s.mealPlanTaskDataManager.CreateMealPlanTask(ctx, mealPlanID, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating meal plan")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.MealPlanDataType,
+			EventType:                 types.MealPlanCreatedCustomerEventType,
+			MealPlanTask:              mealPlanTask,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanTask, http.StatusCreated)
+}
 
 // ReadHandler returns a GET handler that returns an advanced prep step.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {

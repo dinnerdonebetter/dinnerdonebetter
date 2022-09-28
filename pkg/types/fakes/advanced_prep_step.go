@@ -8,7 +8,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// BuildFakeMealPlanTask builds a faked advanced prep step.
+// BuildFakeMealPlanTask builds a faked meal plan task.
 func BuildFakeMealPlanTask() *types.MealPlanTask {
 	now := time.Now().Add(0).Truncate(time.Second).UTC()
 	inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
@@ -17,8 +17,6 @@ func BuildFakeMealPlanTask() *types.MealPlanTask {
 		ID:                   BuildFakeID(),
 		CannotCompleteBefore: now,
 		CannotCompleteAfter:  inOneWeek,
-		MealPlanOption:       *BuildFakeMealPlanOption(),
-		RecipeStep:           *BuildFakeRecipeStep(),
 		CreatedAt:            fake.Date(),
 		Status:               "unfinished",
 		StatusExplanation:    buildUniqueString(),
@@ -68,7 +66,7 @@ func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabase
 	return examples
 }
 
-// BuildFakeMealPlanTaskStatusChangeRequestInput builds a faked advanced prep step.
+// BuildFakeMealPlanTaskStatusChangeRequestInput builds a faked meal plan task.
 func BuildFakeMealPlanTaskStatusChangeRequestInput() *types.MealPlanTaskStatusChangeRequestInput {
 	return &types.MealPlanTaskStatusChangeRequestInput{
 		ID:                BuildFakeID(),

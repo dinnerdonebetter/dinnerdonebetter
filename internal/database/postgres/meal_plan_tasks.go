@@ -27,42 +27,6 @@ func (q *Querier) scanMealPlanTask(ctx context.Context, scan database.Scanner) (
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.MealPlanOption.ID,
-		&x.MealPlanOption.AssignedCook,
-		&x.MealPlanOption.AssignedDishwasher,
-		&x.MealPlanOption.Chosen,
-		&x.MealPlanOption.TieBroken,
-		&x.MealPlanOption.Meal.ID,
-		&x.MealPlanOption.Notes,
-		&x.MealPlanOption.PrepStepsCreated,
-		&x.MealPlanOption.CreatedAt,
-		&x.MealPlanOption.LastUpdatedAt,
-		&x.MealPlanOption.ArchivedAt,
-		&x.MealPlanOption.BelongsToMealPlanEvent,
-		&x.RecipeStep.ID,
-		&x.RecipeStep.Index,
-		&x.RecipeStep.Preparation.ID,
-		&x.RecipeStep.Preparation.Name,
-		&x.RecipeStep.Preparation.Description,
-		&x.RecipeStep.Preparation.IconPath,
-		&x.RecipeStep.Preparation.YieldsNothing,
-		&x.RecipeStep.Preparation.RestrictToIngredients,
-		&x.RecipeStep.Preparation.ZeroIngredientsAllowable,
-		&x.RecipeStep.Preparation.PastTense,
-		&x.RecipeStep.Preparation.CreatedAt,
-		&x.RecipeStep.Preparation.LastUpdatedAt,
-		&x.RecipeStep.Preparation.ArchivedAt,
-		&x.RecipeStep.MinimumEstimatedTimeInSeconds,
-		&x.RecipeStep.MaximumEstimatedTimeInSeconds,
-		&x.RecipeStep.MinimumTemperatureInCelsius,
-		&x.RecipeStep.MaximumTemperatureInCelsius,
-		&x.RecipeStep.Notes,
-		&x.RecipeStep.ExplicitInstructions,
-		&x.RecipeStep.Optional,
-		&x.RecipeStep.CreatedAt,
-		&x.RecipeStep.LastUpdatedAt,
-		&x.RecipeStep.ArchivedAt,
-		&x.RecipeStep.BelongsToRecipe,
 		&x.AssignedToUser,
 		&x.Status,
 		&x.StatusExplanation,
@@ -104,7 +68,7 @@ func (q *Querier) scanMealPlanTasks(ctx context.Context, rows database.ResultIte
 //go:embed queries/meal_plan_tasks/exists.sql
 var mealPlanTasksExistsQuery string
 
-// MealPlanTaskExists checks if an advanced prep step exists.
+// MealPlanTaskExists checks if a meal plan task exists.
 func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -141,7 +105,7 @@ func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTa
 //go:embed queries/meal_plan_tasks/get_one.sql
 var getMealPlanTasksQuery string
 
-// GetMealPlanTask fetches an advanced prep step.
+// GetMealPlanTask fetches a meal plan task.
 func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x *types.MealPlanTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -164,6 +128,70 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 	}
 
 	logger.Info("advanced steps retrieved")
+
+	return x, nil
+}
+
+//go:embed queries/meal_plan_tasks/create.sql
+var createMealPlanTasksQuery string
+
+// CreateMealPlanTask creates a meal plan task.
+func (q *Querier) CreateMealPlanTask(ctx context.Context, mealPlanID string, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
+
+	args := []interface{}{
+		input.ID,
+		input.Status,
+		input.StatusExplanation,
+		input.CreationExplanation,
+		input.CannotCompleteBefore,
+		input.CannotCompleteAfter,
+		input.AssignedToUser,
+	}
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	// create the meal plan.
+	if err = q.performWriteQuery(ctx, tx, "meal plan task creation", createMealPlanTasksQuery, args); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
+	}
+
+	x := &types.MealPlanTask{
+		CannotCompleteBefore: input.CannotCompleteBefore,
+		CannotCompleteAfter:  input.CannotCompleteAfter,
+		CreatedAt:            q.timeFunc(),
+		CompletedAt:          input.CompletedAt,
+		ID:                   input.ID,
+		AssignedToUser:       input.AssignedToUser,
+		Status:               input.Status,
+		CreationExplanation:  input.CreationExplanation,
+		StatusExplanation:    input.StatusExplanation,
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
+
+	tracing.AttachMealPlanIDToSpan(span, x.ID)
+	logger.Info("meal plan created")
 
 	return x, nil
 }
@@ -244,8 +272,6 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, meal
 			ID:                   input.ID,
 			CannotCompleteBefore: input.CannotCompleteBefore.Truncate(time.Second),
 			CannotCompleteAfter:  input.CannotCompleteAfter.Truncate(time.Second),
-			MealPlanOption:       types.MealPlanOption{ID: mealPlanOptionID},
-			RecipeStep:           types.RecipeStep{ID: input.RecipeStepID},
 			CreatedAt:            q.currentTime(),
 			Status:               input.Status,
 			StatusExplanation:    input.StatusExplanation,
@@ -276,7 +302,7 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, meal
 //go:embed queries/meal_plan_tasks/change_status.sql
 var changeMealPlanTaskStatusQuery string
 
-// ChangeMealPlanTaskStatus changes an advanced prep step's status.
+// ChangeMealPlanTaskStatus changes a meal plan task's status.
 func (q *Querier) ChangeMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

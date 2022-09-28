@@ -41,7 +41,6 @@ func buildTestHelper(t *testing.T) *mealPlanEventsServiceHTTPRoutesTestHelper {
 	helper.exampleMealPlanEvent = fakes.BuildFakeMealPlanEvent()
 	helper.exampleMealPlanEvent.BelongsToMealPlan = helper.exampleMealPlan.ID
 	helper.exampleMealPlanTask = fakes.BuildFakeMealPlanTask()
-	helper.exampleMealPlanTask.MealPlanOption.BelongsToMealPlanEvent = helper.exampleMealPlanEvent.ID
 
 	helper.service.mealPlanIDFetcher = func(*http.Request) string {
 		return helper.exampleMealPlan.ID

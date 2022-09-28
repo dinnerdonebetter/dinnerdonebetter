@@ -231,6 +231,8 @@ const (
 
 	// ReadMealPlanTasksPermission is a household user permission.
 	ReadMealPlanTasksPermission Permission = "read.meal_plan_tasks"
+	// CreateMealPlanTasksPermission is a household user permission.
+	CreateMealPlanTasksPermission Permission = "create.meal_plan_tasks"
 	// UpdateMealPlanTasksPermission is a household user permission.
 	UpdateMealPlanTasksPermission Permission = "update.meal_plan_tasks"
 )
@@ -280,6 +282,8 @@ var (
 		CreateValidIngredientMeasurementUnitsPermission.ID():  CreateValidIngredientMeasurementUnitsPermission,
 		UpdateValidIngredientMeasurementUnitsPermission.ID():  UpdateValidIngredientMeasurementUnitsPermission,
 		ArchiveValidIngredientMeasurementUnitsPermission.ID(): ArchiveValidIngredientMeasurementUnitsPermission,
+
+		CreateMealPlanTasksPermission.ID(): CreateMealPlanTasksPermission,
 	}
 
 	// household admin permissions.

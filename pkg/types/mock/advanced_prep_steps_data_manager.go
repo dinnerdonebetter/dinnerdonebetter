@@ -27,6 +27,12 @@ func (m *MealPlanTaskDataManager) GetMealPlanTask(ctx context.Context, mealPlanT
 	return args.Get(0).(*types.MealPlanTask), args.Error(1)
 }
 
+// CreateMealPlanTask is a mock function.
+func (m *MealPlanTaskDataManager) CreateMealPlanTask(ctx context.Context, mealPlanID string, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
+	args := m.Called(ctx, mealPlanID, input)
+	return args.Get(0).(*types.MealPlanTask), args.Error(1)
+}
+
 // GetMealPlanTasksForMealPlan is a mock function.
 func (m *MealPlanTaskDataManager) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) ([]*types.MealPlanTask, error) {
 	args := m.Called(ctx, mealPlanID)

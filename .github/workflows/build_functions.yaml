@@ -28,7 +28,7 @@ jobs:
           'data_changes',
           'meal_plan_finalizer',
           'meal_planning_prober',
-          'advanced_prep_step_creator',
+          'meal_plan_task_creator',
         ]
     runs-on: ubuntu-latest
     steps:

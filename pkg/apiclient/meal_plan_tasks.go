@@ -9,34 +9,40 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// GetMealPlanTask gets an advanced prep step.
-func (c *Client) GetMealPlanTask(ctx context.Context, validIngredientID string) (*types.MealPlanTask, error) {
+// GetMealPlanTask gets an meal plan task.
+func (c *Client) GetMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID string) (*types.MealPlanTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
-	if validIngredientID == "" {
+	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.MealPlanTaskIDKey, validIngredientID)
-	tracing.AttachMealPlanTaskIDToSpan(span, validIngredientID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	req, err := c.requestBuilder.BuildGetMealPlanTaskRequest(ctx, validIngredientID)
+	if mealPlanTaskID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
+	tracing.AttachMealPlanTaskIDToSpan(span, mealPlanTaskID)
+
+	req, err := c.requestBuilder.BuildGetMealPlanTaskRequest(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get advanced prep step request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan task request")
 	}
 
 	var validIngredient *types.MealPlanTask
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving advanced prep step")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan task")
 	}
 
 	return validIngredient, nil
 }
 
-// UpdateMealPlanTaskStatus updates an advanced prep step.
-func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) (*types.MealPlanTask, error) {
+// UpdateMealPlanTaskStatus updates an meal plan task.
+func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, mealPlanID string, input *types.MealPlanTaskStatusChangeRequestInput) (*types.MealPlanTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -46,18 +52,24 @@ func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, input *types.Meal
 		return nil, ErrNilInputProvided
 	}
 
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildChangeMealPlanTaskStatusRequest(ctx, input)
+	req, err := c.requestBuilder.BuildChangeMealPlanTaskStatusRequest(ctx, mealPlanID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create advanced prep step request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan task request")
 	}
 
 	var validIngredient *types.MealPlanTask
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating advanced prep step")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 
 	return validIngredient, nil
