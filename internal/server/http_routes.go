@@ -16,7 +16,7 @@ import (
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
-	advancedprepstepsservice "github.com/prixfixeco/api_server/internal/services/mealplantasks"
+	mealplantasksservice "github.com/prixfixeco/api_server/internal/services/mealplantasks"
 	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
@@ -670,7 +670,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			mealPlanTaskPath,
 		)
 		mealPlanTasksRouteWithPrefix := fmt.Sprintf("/%s", mealPlanTasksRoute)
-		mealPlanTaskIDRouteParam := buildURLVarChunk(advancedprepstepsservice.MealPlanTaskIDURIParamKey, "")
+		mealPlanTaskIDRouteParam := buildURLVarChunk(mealplantasksservice.MealPlanTaskIDURIParamKey, "")
 		v1Router.Route(mealPlanTasksRouteWithPrefix, func(mealPlanTasksRouter routing.Router) {
 			mealPlanTasksRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanTasksPermission)).

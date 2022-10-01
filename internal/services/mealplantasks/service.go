@@ -22,7 +22,7 @@ const (
 var _ types.MealPlanTaskDataService = (*service)(nil)
 
 type (
-	// service handles advanced prep steps.
+	// service handles meal plan tasks.
 	service struct {
 		logger                    logging.Logger
 		mealPlanTaskDataManager   types.MealPlanTaskDataManager

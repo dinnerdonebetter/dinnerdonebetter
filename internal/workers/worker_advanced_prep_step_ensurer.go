@@ -73,7 +73,7 @@ func (w *MealPlanTaskCreationEnsurerWorker) HandleMessage(ctx context.Context, _
 		createdSteps, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, mealPlanOptionID, steps)
 		if creationErr != nil {
 			result = multierror.Append(result, creationErr)
-			observability.AcknowledgeError(creationErr, l, span, "creating advanced prep steps for meal plan optino")
+			observability.AcknowledgeError(creationErr, l, span, "creating meal plan tasks for meal plan optino")
 		}
 
 		for _, createdStep := range createdSteps {
@@ -98,7 +98,7 @@ func (w *MealPlanTaskCreationEnsurerWorker) HandleMessage(ctx context.Context, _
 	return result
 }
 
-// DetermineCreatableSteps determines which advanced prep steps are creatable for a recipe.
+// DetermineCreatableSteps determines which meal plan tasks are creatable for a recipe.
 func (w *MealPlanTaskCreationEnsurerWorker) DetermineCreatableSteps(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
@@ -140,7 +140,7 @@ func (w *MealPlanTaskCreationEnsurerWorker) DetermineCreatableSteps(ctx context.
 				return nil, observability.PrepareAndLogError(getRecipeErr, l, span, "fetching recipe")
 			}
 
-			creatableSteps, determineStepsErr := w.analyzer.GenerateAdvancedStepCreationForRecipe(ctx, mealPlanEvent, result.MealPlanOptionID, recipe)
+			creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, mealPlanEvent, result.MealPlanOptionID, recipe)
 			if determineStepsErr != nil {
 				return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
 			}

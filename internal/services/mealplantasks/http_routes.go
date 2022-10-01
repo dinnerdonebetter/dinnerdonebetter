@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	// MealPlanTaskIDURIParamKey is a standard string that we'll use to refer to advanced prep step IDs with.
+	// MealPlanTaskIDURIParamKey is a standard string that we'll use to refer to meal plan task IDs with.
 	MealPlanTaskIDURIParamKey = "mealPlanTaskID"
 )
 
@@ -86,7 +86,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanTask, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns an advanced prep step.
+// ReadHandler returns a GET handler that returns an meal plan task.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -110,18 +110,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	// determine advanced prep step ID.
+	// determine meal plan task ID.
 	mealPlanTaskID := s.mealPlanTaskIDFetcher(req)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanTaskID)
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 
-	// fetch advanced prep step from database.
+	// fetch meal plan task from database.
 	x, err := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving advanced prep step")
+		observability.AcknowledgeError(err, logger, span, "retrieving meal plan task")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -165,7 +165,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		// in the event no rows exist, return an empty list.
 		mealPlanTasks = []*types.MealPlanTask{}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving advanced prep steps for meal plan")
+		observability.AcknowledgeError(err, logger, span, "retrieving meal plan tasks for meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -174,7 +174,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	s.encoderDecoder.RespondWithData(ctx, res, mealPlanTasks)
 }
 
-// StatusChangeHandler returns a handler that updates an advanced prep step.
+// StatusChangeHandler returns a handler that updates an meal plan task.
 func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -198,7 +198,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	// determine advanced prep step ID.
+	// determine meal plan task ID.
 	mealPlanTaskID := s.mealPlanTaskIDFetcher(req)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanTaskID)
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
@@ -220,7 +220,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 
 	prepStep, fetchMealPlanTaskErr := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
 	if fetchMealPlanTaskErr != nil && !errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(fetchMealPlanTaskErr, logger, span, "checking advanced step existence")
+		observability.AcknowledgeError(fetchMealPlanTaskErr, logger, span, "checking meal plan task existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	} else if errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
@@ -229,7 +229,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	if err := s.mealPlanTaskDataManager.ChangeMealPlanTaskStatus(ctx, providedInput); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving advanced prep step")
+		observability.AcknowledgeError(err, logger, span, "archiving meal plan task")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

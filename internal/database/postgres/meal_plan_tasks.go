@@ -44,7 +44,7 @@ func (q *Querier) scanMealPlanTask(ctx context.Context, scan database.Scanner) (
 	return x, nil
 }
 
-// scanMealPlanTasks takes some database rows and turns them into a slice of advanced prep steps.
+// scanMealPlanTasks takes some database rows and turns them into a slice of meal plan tasks.
 func (q *Querier) scanMealPlanTasks(ctx context.Context, rows database.ResultIterator) (validInstruments []*types.MealPlanTask, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -94,10 +94,10 @@ func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTa
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanTasksExistsQuery, args)
 	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "performing advanced step existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan task existence check")
 	}
 
-	logger.Info("advanced step existence retrieved")
+	logger.Info("meal plan task existence retrieved")
 
 	return result, nil
 }
@@ -122,12 +122,12 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 		mealPlanTaskID,
 	}
 
-	rows := q.getOneRow(ctx, q.db, "advanced prep step", getMealPlanTasksQuery, args)
+	rows := q.getOneRow(ctx, q.db, "meal plan task", getMealPlanTasksQuery, args)
 	if x, err = q.scanMealPlanTask(ctx, rows); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning advanced prep step")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan task")
 	}
 
-	logger.Info("advanced steps retrieved")
+	logger.Info("meal plan tasks retrieved")
 
 	return x, nil
 }
@@ -199,7 +199,7 @@ func (q *Querier) CreateMealPlanTask(ctx context.Context, mealPlanID string, inp
 //go:embed queries/meal_plan_tasks/list_all_by_meal_plan.sql
 var listMealPlanTasksForMealPlanQuery string
 
-// GetMealPlanTasksForMealPlan fetches a list of advanced prep steps.
+// GetMealPlanTasksForMealPlan fetches a list of meal plan tasks.
 func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -217,17 +217,17 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 		mealPlanID,
 	}
 
-	rows, getRowsErr := q.performReadQuery(ctx, q.db, "advanced prep steps list", listMealPlanTasksForMealPlanQuery, args)
+	rows, getRowsErr := q.performReadQuery(ctx, q.db, "meal plan tasks list", listMealPlanTasksForMealPlanQuery, args)
 	if getRowsErr != nil {
-		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing advanced prep steps list retrieval query")
+		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing meal plan tasks list retrieval query")
 	}
 
 	x, scanErr := q.scanMealPlanTasks(ctx, rows)
 	if scanErr != nil {
-		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning advanced prep steps")
+		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning meal plan tasks")
 	}
 
-	logger.Info("advanced steps retrieved")
+	logger.Info("meal plan tasks retrieved")
 
 	return x, nil
 }
@@ -238,7 +238,7 @@ var createMealPlanTaskQuery string
 //go:embed queries/meal_plan_options/mark_as_steps_created.sql
 var markMealPlanOptionAsHavingStepsCreatedQuery string
 
-// CreateMealPlanTasksForMealPlanOption creates advanced prep steps.
+// CreateMealPlanTasksForMealPlanOption creates meal plan tasks.
 func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, mealPlanOptionID string, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -263,9 +263,9 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, meal
 			pq.FormatTimestamp(input.CannotCompleteAfter.Truncate(time.Second)),
 		}
 
-		if err = q.performWriteQuery(ctx, tx, "create advanced prep step", createMealPlanTaskQuery, createMealPlanTaskArgs); err != nil {
+		if err = q.performWriteQuery(ctx, tx, "create meal plan task", createMealPlanTaskQuery, createMealPlanTaskArgs); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareAndLogError(err, logger, span, "create advanced prep step")
+			return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan task")
 		}
 
 		outputs = append(outputs, &types.MealPlanTask{
@@ -285,16 +285,16 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, meal
 		mealPlanOptionID,
 	}
 
-	if err = q.performWriteQuery(ctx, tx, "create advanced prep step", markMealPlanOptionAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
+	if err = q.performWriteQuery(ctx, tx, "create meal plan task", markMealPlanOptionAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareAndLogError(err, logger, span, "create advanced prep step")
+		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan task")
 	}
 
 	if commitErr := tx.Commit(); commitErr != nil {
 		return nil, observability.PrepareAndLogError(commitErr, logger, span, "committing transaction")
 	}
 
-	logger.Info("advanced steps created")
+	logger.Info("meal plan tasks created")
 
 	return outputs, nil
 }

@@ -578,7 +578,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 }
 
 func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
-	s.runForEachClient("advanced prep steps with frozen chicken breast", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("meal plan tasks with frozen chicken breast", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

@@ -350,7 +350,7 @@ func AttachValidMeasurementUnitIDToSpan(span trace.Span, validMeasurementUnitID 
 	AttachStringToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 }
 
-// AttachMealPlanTaskIDToSpan attaches an advanced prep step ID to a given span.
+// AttachMealPlanTaskIDToSpan attaches a meal plan task ID to a given span.
 func AttachMealPlanTaskIDToSpan(span trace.Span, mealPlanTaskID string) {
 	AttachStringToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 }

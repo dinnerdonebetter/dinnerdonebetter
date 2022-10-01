@@ -44,7 +44,7 @@ func TestRecipeGrapher_makeGraphForRecipe(T *testing.T) {
 	})
 }
 
-func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
+func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 	T.Parallel()
 
 	T.Run("creates frozen thawing steps", func(t *testing.T) {
@@ -138,7 +138,7 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 			},
 		}
 
-		actual, err := g.GenerateAdvancedStepCreationForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
+		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
 		assert.NoError(t, err)
 
 		for i := range expected {
@@ -280,13 +280,13 @@ func TestRecipeAnalyzer_GenerateAdvancedStepCreationForRecipe(T *testing.T) {
 				CannotCompleteAfter:  time.Now(),
 				CompletedAt:          nil,
 				Status:               types.MealPlanTaskStatusUnfinished,
-				CreationExplanation:  advancedStepCreationExplanation,
+				CreationExplanation:  storagePrepCreationExplanation,
 				MealPlanOptionID:     exampleMealPlanOption.ID,
 				RecipeStepID:         recipeStep1ID,
 			},
 		}
 
-		actual, err := g.GenerateAdvancedStepCreationForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
+		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
 		assert.NoError(t, err)
 
 		for i := range expected {

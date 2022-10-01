@@ -212,9 +212,9 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	if err != nil {
 		return nil, err
 	}
-	advancedprepstepsConfig := &servicesConfigurations.MealPlanTasks
+	mealplantasksConfig := &servicesConfigurations.MealPlanTasks
 	mealPlanTaskDataManager := database.ProvideMealPlanTaskDataManager(dataManager)
-	mealPlanTaskDataService, err := mealplantasks.ProvideService(logger, advancedprepstepsConfig, mealPlanTaskDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealPlanTaskDataService, err := mealplantasks.ProvideService(logger, mealplantasksConfig, mealPlanTaskDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

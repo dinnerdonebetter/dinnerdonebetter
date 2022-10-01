@@ -54,8 +54,8 @@ jobs:
       - name: Build meal plan finalizer cloud function directory
         run: ./scripts/build_cloud_function.sh meal_plan_finalizer
 
-      - name: Build advanced prep step creator cloud function directory
-        run: ./scripts/build_cloud_function.sh advanced_prep_step_creator
+      - name: Build meal plan task creator cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_plan_task_creator
 
       - name: copy server config file
         working-directory: environments/dev

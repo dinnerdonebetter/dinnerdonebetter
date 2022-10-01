@@ -57,10 +57,10 @@ services:
         build:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/meal_plan_finalizer.Dockerfile'
-    advanced_prep_step_creator:
+    meal_plan_task_creator:
         logging:
             driver: none
-        container_name: advanced_prep_step_creator
+        container_name: meal_plan_task_creator
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/config'
@@ -83,7 +83,7 @@ services:
         depends_on:
             - queue_loader
             - meal_plan_finalizer
-            - advanced_prep_step_creator
+            - meal_plan_task_creator
         environment:
             USE_NOOP_LOGGER: 'nope'
             CONFIGURATION_FILEPATH: '/etc/config'
@@ -103,7 +103,7 @@ services:
         depends_on:
             - queue_loader
             - meal_plan_finalizer
-            - advanced_prep_step_creator
+            - meal_plan_task_creator
         links:
             - prixfixe_api_server
         build:

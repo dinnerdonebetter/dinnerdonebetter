@@ -444,7 +444,7 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 
 	fakeEvent := &types.MealPlanEvent{StartsAt: s.timeFunc(), EndsAt: s.timeFunc()}
 	// we deliberately call this with fake data because
-	stepInputs, err := s.recipeAnalyzer.GenerateAdvancedStepCreationForRecipe(ctx, fakeEvent, "", x)
+	stepInputs, err := s.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, fakeEvent, "", x)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

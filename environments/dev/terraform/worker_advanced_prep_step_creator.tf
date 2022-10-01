@@ -1,6 +1,6 @@
 resource "google_project_iam_custom_role" "meal_plan_task_creator_role" {
   role_id     = "meal_plan_task_creator_role"
-  title       = "Advanced Prep Step Creator Role"
+  title       = "Meal Plan Task Creator Role"
   description = "An IAM role for the meal plan task creator"
   permissions = [
     "secretmanager.versions.access",
@@ -54,8 +54,8 @@ resource "google_storage_bucket_object" "meal_plan_task_creator_archive" {
 }
 
 resource "google_service_account" "meal_plan_task_creator_user_service_account" {
-  account_id   = "adv-prep-step-create-worker"
-  display_name = "Advanced Prep Step Creator"
+  account_id   = "meal-plan-task-create-worker"
+  display_name = "Meal Plan Task Creator"
 }
 
 resource "google_project_iam_member" "meal_plan_task_creator_user" {
@@ -92,7 +92,7 @@ resource "google_sql_user" "meal_plan_task_creator_user" {
 
 resource "google_cloudfunctions_function" "meal_plan_task_creator" {
   name                = "meal-plan-task-creation"
-  description         = "Advanced Prep Step Creator"
+  description         = "Meal Plan Task Creator"
   runtime             = local.go_runtime
   available_memory_mb = 128
 
@@ -100,7 +100,7 @@ resource "google_cloudfunctions_function" "meal_plan_task_creator" {
   source_archive_object = google_storage_bucket_object.meal_plan_task_creator_archive.name
   service_account_email = google_service_account.meal_plan_task_creator_user_service_account.email
 
-  entry_point = "CreateAdvancedPrepSteps"
+  entry_point = "CreateMealPlanTasks"
 
   event_trigger {
     event_type = local.pubsub_topic_publish_event

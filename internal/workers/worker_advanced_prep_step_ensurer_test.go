@@ -223,7 +223,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 				mdm.RecipeDataManager.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
 
 				mockAnalyzer.On(
-					"GenerateAdvancedStepCreationForRecipe",
+					"GenerateMealPlanTasksForRecipe",
 					testutils.ContextMatcher,
 					exampleMealPlanEvent,
 					result.MealPlanOptionID,
@@ -423,7 +423,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 				mdm.RecipeDataManager.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
 
 				mockAnalyzer.On(
-					"GenerateAdvancedStepCreationForRecipe",
+					"GenerateMealPlanTasksForRecipe",
 					testutils.ContextMatcher,
 					exampleMealPlanEvent,
 					result.MealPlanOptionID,

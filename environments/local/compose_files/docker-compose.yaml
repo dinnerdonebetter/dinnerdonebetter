@@ -86,7 +86,7 @@ services:
       build:
         context: '../../..'
         dockerfile: 'environments/local/meal_plan_finalizer.Dockerfile'
-    advanced_prep_step_creator:
+    meal_plan_task_creator:
       environment:
         TARGET_ADDRESS: 'http://api_server:8000'
         CONFIGURATION_FILEPATH: '/etc/config'

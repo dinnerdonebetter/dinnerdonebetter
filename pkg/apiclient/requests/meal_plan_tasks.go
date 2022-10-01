@@ -46,7 +46,7 @@ func (b *Builder) BuildGetMealPlanTaskRequest(ctx context.Context, mealPlanID, m
 	return req, nil
 }
 
-// BuildGetMealPlanTasksRequest builds an HTTP request for fetching a list of advanced prep steps.
+// BuildGetMealPlanTasksRequest builds an HTTP request for fetching a list of meal plan tasks.
 func (b *Builder) BuildGetMealPlanTasksRequest(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
