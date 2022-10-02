@@ -201,6 +201,36 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 	return recipeStep, nil
 }
 
+//go:embed queries/recipe_steps/get_one_by_id.sql
+var getRecipeStepByIDQuery string
+
+// getRecipeStepByID fetches a recipe step from the database.
+func (q *Querier) getRecipeStepByID(ctx context.Context, querier database.SQLQueryExecutor, recipeStepID string) (*types.RecipeStep, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if recipeStepID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+
+	args := []interface{}{
+		recipeStepID,
+	}
+
+	row := q.getOneRow(ctx, querier, "recipe step", getRecipeStepByIDQuery, args)
+
+	recipeStep, _, _, err := q.scanRecipeStep(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStep")
+	}
+
+	return recipeStep, nil
+}
+
 // GetRecipeSteps fetches a list of recipe steps from the database that meet a particular filter.
 func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *types.QueryFilter) (x *types.RecipeStepList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

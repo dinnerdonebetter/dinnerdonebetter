@@ -186,9 +186,12 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 	}
 
 	for _, stepID := range recipeStepIDs {
-		// FIXME: flesh out recipe steps here
+		recipeStep, getRecipeStepErr := q.getRecipeStepByID(ctx, q.db, stepID)
+		if getRecipeStepErr != nil {
+			return nil, observability.PrepareAndLogError(getRecipeStepErr, logger, span, "getting recipe step for meal plan task")
+		}
 
-		x.RecipeSteps = append(x.RecipeSteps, &types.RecipeStep{ID: stepID})
+		x.RecipeSteps = append(x.RecipeSteps, recipeStep)
 	}
 
 	logger.Info("meal plan tasks retrieved")
