@@ -290,6 +290,83 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 	})
 }
 
+func TestQuerier_getRecipeStepByID(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeStep := fakes.BuildFakeRecipeStep()
+		exampleRecipeStep.Instruments = nil
+		exampleRecipeStep.Ingredients = nil
+		exampleRecipeStep.Products = nil
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipeStep.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepByIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromRecipeSteps(false, 0, exampleRecipeStep))
+
+		actual, err := c.getRecipeStepByID(ctx, c.db, exampleRecipeStep.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeStep, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid recipe ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeStep := fakes.BuildFakeRecipeStep()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.getRecipeStepByID(ctx, c.db, exampleRecipeStep.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with invalid recipe step ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.getRecipeStepByID(ctx, c.db, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeStep := fakes.BuildFakeRecipeStep()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipeStep.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepByIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.getRecipeStepByID(ctx, c.db, exampleRecipeStep.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_GetRecipeSteps(T *testing.T) {
 	T.Parallel()
 
