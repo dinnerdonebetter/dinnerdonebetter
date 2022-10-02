@@ -200,7 +200,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 
 	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "mealPlans", query, args)
+	rows, err := q.getRows(ctx, q.db, "mealPlans", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing meal plans list retrieval query")
 	}
@@ -480,7 +480,7 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.performReadQuery(ctx, q.db, "expired and unresolved meal plan", getExpiredAndUnresolvedMealPlansQuery, nil)
+	rows, err := q.getRows(ctx, q.db, "expired and unresolved meal plan", getExpiredAndUnresolvedMealPlansQuery, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with expired voting periods retrieval query")
 	}
@@ -509,7 +509,7 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.performReadQuery(ctx, q.db, "finalized meal plans", getFinalizedMealPlansQuery, nil)
+	rows, err := q.getRows(ctx, q.db, "finalized meal plans", getFinalizedMealPlansQuery, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing finalized meal plan IDs for the week retrieval query")
 	}

@@ -118,17 +118,6 @@ func BuildFakeUserAccountStatusUpdateInputFromUser(user *types.User) *types.User
 	}
 }
 
-// BuildFakeUserRegistrationInput builds a faked UserLoginInput.
-func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
-	return &types.UserRegistrationInput{
-		Username:     fake.Username(),
-		Password:     fake.Password(true, true, true, true, false, 32),
-		EmailAddress: fake.Email(),
-		BirthDay:     func(x uint8) *uint8 { return &x }(fake.Uint8()),
-		BirthMonth:   func(x uint8) *uint8 { return &x }(fake.Uint8()),
-	}
-}
-
 // BuildFakeUserLoginInputFromUser builds a faked UserLoginInput.
 func BuildFakeUserLoginInputFromUser(user *types.User) *types.UserLoginInput {
 	return &types.UserLoginInput{
@@ -163,21 +152,6 @@ func BuildFakeUserPermissionsRequestInput() *types.UserPermissionsRequestInput {
 			buildUniqueString(),
 			buildUniqueString(),
 		},
-	}
-}
-
-// BuildFakeTOTPSecretVerificationInput builds a faked TOTPSecretVerificationInput.
-func BuildFakeTOTPSecretVerificationInput() *types.TOTPSecretVerificationInput {
-	user := BuildFakeUser()
-
-	token, err := totp.GenerateCode(user.TwoFactorSecret, time.Now().UTC())
-	if err != nil {
-		log.Panicf("error generating TOTP token for fakes user: %v", err)
-	}
-
-	return &types.TOTPSecretVerificationInput{
-		UserID:    user.ID,
-		TOTPToken: token,
 	}
 }
 
@@ -217,16 +191,6 @@ func BuildFakeUsernameReminderRequestInput() *types.UsernameReminderRequestInput
 // BuildFakePasswordResetTokenCreationRequestInput builds a faked PasswordResetTokenCreationRequestInput.
 func BuildFakePasswordResetTokenCreationRequestInput() *types.PasswordResetTokenCreationRequestInput {
 	return &types.PasswordResetTokenCreationRequestInput{EmailAddress: fake.Email()}
-}
-
-// BuildFakePasswordResetTokenDatabaseCreationInput builds a faked PasswordResetTokenDatabaseCreationInput.
-func BuildFakePasswordResetTokenDatabaseCreationInput() *types.PasswordResetTokenDatabaseCreationInput {
-	return &types.PasswordResetTokenDatabaseCreationInput{
-		ID:            ksuid.New().String(),
-		Token:         fake.UUID(),
-		BelongsToUser: ksuid.New().String(),
-		ExpiresAt:     time.Now().Add(30 * time.Minute),
-	}
 }
 
 // BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken builds a faked PasswordResetTokenDatabaseCreationInput.

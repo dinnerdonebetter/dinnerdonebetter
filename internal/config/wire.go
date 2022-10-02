@@ -48,7 +48,7 @@ var (
 			"MealPlanEvents",
 			"MealPlanOptions",
 			"MealPlanOptionVotes",
-			"AdvancedPrepSteps",
+			"MealPlanTasks",
 		),
 	)
 )

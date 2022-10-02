@@ -201,7 +201,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 		args = append(args, userID)
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "get recipe", query, args)
+	rows, err := q.getRows(ctx, q.db, "get recipe", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning recipe")
 	}
@@ -295,7 +295,7 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 
 	query, args := q.buildListQuery(ctx, "recipes", nil, nil, nil, "", recipesTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipes", query, args)
+	rows, err := q.getRows(ctx, q.db, "recipes", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
 	}
@@ -324,7 +324,7 @@ func (q *Querier) getRecipeIDsForMeal(ctx context.Context, mealID string) (x []s
 		mealID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipes", getRecipesForMealQuery, args)
+	rows, err := q.getRows(ctx, q.db, "recipes", getRecipesForMealQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
 	}
@@ -357,7 +357,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
 	query, args := q.buildListQueryWithILike(ctx, "recipes", nil, nil, where, "", recipesTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipes", query, args)
+	rows, err := q.getRows(ctx, q.db, "recipes", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing recipes search query")
 	}

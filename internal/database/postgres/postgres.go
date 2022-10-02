@@ -211,7 +211,7 @@ func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecut
 	return row
 }
 
-func (q *Querier) performReadQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) (*sql.Rows, error) {
+func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) (*sql.Rows, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

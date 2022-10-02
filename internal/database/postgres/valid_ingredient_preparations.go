@@ -257,7 +257,7 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 
 	query, args := q.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "validIngredientPreparations", query, args)
+	rows, err := q.getRows(ctx, q.db, "validIngredientPreparations", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}
@@ -323,7 +323,7 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx, *filter.Limit, []string{preparationID})
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for preparation", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}
@@ -373,7 +373,7 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx, x.Limit, []string{ingredientID})
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid preparation ingredients for ingredient", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid preparation ingredients for ingredient", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}

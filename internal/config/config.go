@@ -14,7 +14,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/server"
-	"github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
@@ -22,6 +21,7 @@ import (
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
+	"github.com/prixfixeco/api_server/internal/services/mealplantasks"
 	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
@@ -99,7 +99,7 @@ type (
 		Websockets                      websocketsservice.Config                      `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
 		Webhooks                        webhooksservice.Config                        `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
 		Users                           usersservice.Config                           `json:"users" mapstructure:"users" toml:"users,omitempty"`
-		AdvancedPrepSteps               advancedprepsteps.Config                      `json:"advancedPrepSteps" mapstructure:"advanced_prep_steps" toml:"advanced_prep_steps,omitempty"`
+		MealPlanTasks                   mealplantasks.Config                          `json:"mealPlanTasks" mapstructure:"meal_plan_tasks" toml:"meal_plan_tasks,omitempty"`
 		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )

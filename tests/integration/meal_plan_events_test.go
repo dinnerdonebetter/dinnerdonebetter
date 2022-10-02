@@ -82,9 +82,7 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			exampleMealPlan := fakes.BuildFakeMealPlan()
-			exampleMealPlan.Events = nil
-			createdMealPlan := createMealPlanForTest(ctx, t, exampleMealPlan, testClients.admin, testClients.user)
+			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 
 			t.Log("creating meal plan events")
 			var expected []*types.MealPlanEvent

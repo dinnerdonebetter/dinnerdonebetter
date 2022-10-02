@@ -23,7 +23,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	"github.com/prixfixeco/api_server/internal/server"
 	adminservice "github.com/prixfixeco/api_server/internal/services/admin"
-	advancedprepstepsservice "github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationssservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -32,6 +31,7 @@ import (
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
+	mealplantasks "github.com/prixfixeco/api_server/internal/services/mealplantasks"
 	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
@@ -100,7 +100,7 @@ func Build(
 		validmeasurementunits.Providers,
 		validpreparationinstrumentsservice.Providers,
 		validingredientmeasurementunitsservice.Providers,
-		advancedprepstepsservice.Providers,
+		mealplantasks.Providers,
 		graphing.Providers,
 	)
 

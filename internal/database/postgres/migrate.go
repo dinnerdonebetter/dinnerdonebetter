@@ -240,6 +240,11 @@ var (
 			Description: "rename advanced prep step column again",
 			Script:      fetchMigration("00045_rename_advanced_prep_step_column_again"),
 		},
+		{
+			Version:     46,
+			Description: "rename advanced prep step table",
+			Script:      fetchMigration("00046_meal_plan_tasks"),
+		},
 	}
 )
 

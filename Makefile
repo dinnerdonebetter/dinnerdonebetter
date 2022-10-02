@@ -185,6 +185,7 @@ clean_ts:
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
 	go run cmd/tools/gen_ts/main.go
+
 ## Integration tests
 
 .PHONY: wipe_docker
@@ -230,11 +231,9 @@ integration_tests_postgres:
 	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(OBSERVE)),integration-tests-with-observability.yaml,integration-tests.yaml) \
 	up \
 	--build \
-	--force-recreate \
 	--remove-orphans \
-	--renew-anon-volumes \
-	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),, --abort-on-container-exit) \
-	--always-recreate-deps
+	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--abort-on-container-exit) \
+	--renew-anon-volumes
 
 ## Running
 
@@ -244,6 +243,7 @@ dev: $(ARTIFACTS_DIR)
 	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
 	--quiet-pull \
 	--no-recreate \
+	# --abort-on-container-exit \
 	--always-recreate-deps
 
 .PHONY: init_db

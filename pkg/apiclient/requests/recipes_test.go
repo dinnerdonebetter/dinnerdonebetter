@@ -306,7 +306,7 @@ func TestBuilder_BuildGetRecipeDAGRequest(T *testing.T) {
 	})
 }
 
-func TestBuilder_BuildGetRecipeAdvancedPrepStepsRequest(T *testing.T) {
+func TestBuilder_BuildGetRecipeMealPlanTasksRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/recipes/%s/prep_steps"
@@ -320,7 +320,7 @@ func TestBuilder_BuildGetRecipeAdvancedPrepStepsRequest(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleRecipe.ID)
 
-		actual, err := helper.builder.BuildGetRecipeAdvancedPrepStepsRequest(helper.ctx, exampleRecipe.ID)
+		actual, err := helper.builder.BuildGetRecipeMealPlanTasksRequest(helper.ctx, exampleRecipe.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -331,7 +331,7 @@ func TestBuilder_BuildGetRecipeAdvancedPrepStepsRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetRecipeAdvancedPrepStepsRequest(helper.ctx, "")
+		actual, err := helper.builder.BuildGetRecipeMealPlanTasksRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -344,7 +344,7 @@ func TestBuilder_BuildGetRecipeAdvancedPrepStepsRequest(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 
-		actual, err := helper.builder.BuildGetRecipeAdvancedPrepStepsRequest(helper.ctx, exampleRecipe.ID)
+		actual, err := helper.builder.BuildGetRecipeMealPlanTasksRequest(helper.ctx, exampleRecipe.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

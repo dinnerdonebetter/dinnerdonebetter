@@ -198,7 +198,7 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 		wrapQueryForILIKE(query),
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units", validMeasurementUnitSearchQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid measurement units", validMeasurementUnitSearchQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
@@ -234,7 +234,7 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 
 	query, args := q.buildListQuery(ctx, "valid_measurement_units", nil, nil, nil, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "validMeasurementUnits", query, args)
+	rows, err := q.getRows(ctx, q.db, "validMeasurementUnits", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}

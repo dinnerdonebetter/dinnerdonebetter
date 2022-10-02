@@ -7,7 +7,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// BuildFakeValidPreparationInstrument builds a faked valid ingredient preparation.
+// BuildFakeValidPreparationInstrument builds a faked valid preparation instrument.
 func BuildFakeValidPreparationInstrument() *types.ValidPreparationInstrument {
 	return &types.ValidPreparationInstrument{
 		ID:          ksuid.New().String(),
@@ -36,7 +36,7 @@ func BuildFakeValidPreparationInstrumentList() *types.ValidPreparationInstrument
 	}
 }
 
-// BuildFakeValidPreparationInstrumentUpdateRequestInput builds a faked ValidPreparationInstrumentUpdateRequestInput from a valid ingredient preparation.
+// BuildFakeValidPreparationInstrumentUpdateRequestInput builds a faked ValidPreparationInstrumentUpdateRequestInput from a valid preparation instrument.
 func BuildFakeValidPreparationInstrumentUpdateRequestInput() *types.ValidPreparationInstrumentUpdateRequestInput {
 	validPreparationInstrument := BuildFakeValidPreparationInstrument()
 	return &types.ValidPreparationInstrumentUpdateRequestInput{
@@ -46,7 +46,7 @@ func BuildFakeValidPreparationInstrumentUpdateRequestInput() *types.ValidPrepara
 	}
 }
 
-// BuildFakeValidPreparationInstrumentUpdateRequestInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentUpdateRequestInput from a valid ingredient preparation.
+// BuildFakeValidPreparationInstrumentUpdateRequestInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentUpdateRequestInput from a valid preparation instrument.
 func BuildFakeValidPreparationInstrumentUpdateRequestInputFromValidPreparationInstrument(validPreparationInstrument *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentUpdateRequestInput {
 	return &types.ValidPreparationInstrumentUpdateRequestInput{
 		Notes:              &validPreparationInstrument.Notes,
@@ -61,7 +61,7 @@ func BuildFakeValidPreparationInstrumentCreationRequestInput() *types.ValidPrepa
 	return BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(validPreparationInstrument)
 }
 
-// BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentCreationRequestInput from a valid ingredient preparation.
+// BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentCreationRequestInput from a valid preparation instrument.
 func BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(validPreparationInstrument *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentCreationRequestInput {
 	return &types.ValidPreparationInstrumentCreationRequestInput{
 		ID:                 validPreparationInstrument.ID,
@@ -71,13 +71,7 @@ func BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparation
 	}
 }
 
-// BuildFakeValidPreparationInstrumentDatabaseCreationInput builds a faked ValidPreparationInstrumentDatabaseCreationInput.
-func BuildFakeValidPreparationInstrumentDatabaseCreationInput() *types.ValidPreparationInstrumentDatabaseCreationInput {
-	validPreparationInstrument := BuildFakeValidPreparationInstrument()
-	return BuildFakeValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrument(validPreparationInstrument)
-}
-
-// BuildFakeValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentDatabaseCreationInput from a valid ingredient preparation.
+// BuildFakeValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentDatabaseCreationInput from a valid preparation instrument.
 func BuildFakeValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrument(validPreparationInstrument *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentDatabaseCreationInput {
 	return &types.ValidPreparationInstrumentDatabaseCreationInput{
 		ID:                 validPreparationInstrument.ID,

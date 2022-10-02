@@ -20,8 +20,8 @@ import (
 )
 
 const (
-	mealPlanFinalizationTopic     = "meal_plan_finalizer"
-	advancedPrepStepCreationTopic = "advanced_prep_step_creation"
+	mealPlanFinalizationTopic = "meal_plan_finalizer"
+	mealPlanTaskCreationTopic = "meal_plan_task_creation"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
@@ -89,15 +89,15 @@ func main() {
 		}
 	}()
 
-	advancedPrepStepCreationTicker := time.Tick(time.Second)
-	advancedPrepStepCreationPublisher, err := publisherProvider.ProviderPublisher(advancedPrepStepCreationTopic)
+	mealPlanTaskCreationTicker := time.Tick(time.Second)
+	mealPlanTaskCreationPublisher, err := publisherProvider.ProviderPublisher(mealPlanTaskCreationTopic)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	go func() {
-		for range advancedPrepStepCreationTicker {
-			if err = advancedPrepStepCreationPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.CreateAdvancedPrepStepsChoreType}); err != nil {
+		for range mealPlanTaskCreationTicker {
+			if err = mealPlanTaskCreationPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.CreateMealPlanTasksChoreType}); err != nil {
 				log.Fatal(err)
 			}
 		}

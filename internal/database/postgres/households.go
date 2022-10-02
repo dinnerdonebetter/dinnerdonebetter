@@ -191,7 +191,7 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID, userID string) 
 		householdID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdAndMembershipsByIDQuery, args)
+	rows, err := q.getRows(ctx, q.db, "household", getHouseholdAndMembershipsByIDQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}
@@ -227,7 +227,7 @@ func (q *Querier) GetHouseholdByID(ctx context.Context, householdID string) (*ty
 		householdID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdAndMembershipsByIDQuery, args)
+	rows, err := q.getRows(ctx, q.db, "household", getHouseholdAndMembershipsByIDQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}
@@ -331,7 +331,7 @@ func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryEx
 
 	query, args := q.buildGetHouseholdsQuery(ctx, userID, forAdmin, filter)
 
-	rows, err := q.performReadQuery(ctx, querier, "households", query, args)
+	rows, err := q.getRows(ctx, querier, "households", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}

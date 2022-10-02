@@ -165,7 +165,7 @@
 		"users": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"advancedPrepSteps": {
+		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"auth": {

@@ -87,12 +87,6 @@ func BuildFakeValidPreparationCreationRequestInputFromValidPreparation(validPrep
 	}
 }
 
-// BuildFakeValidPreparationDatabaseCreationInput builds a faked ValidPreparationDatabaseCreationInput.
-func BuildFakeValidPreparationDatabaseCreationInput() *types.ValidPreparationDatabaseCreationInput {
-	validPreparation := BuildFakeValidPreparation()
-	return BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(validPreparation)
-}
-
 // BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation builds a faked ValidPreparationDatabaseCreationInput from a valid preparation.
 func BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationDatabaseCreationInput {
 	return &types.ValidPreparationDatabaseCreationInput{

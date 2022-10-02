@@ -3,8 +3,8 @@ package types
 const (
 	// FinalizeMealPlansWithExpiredVotingPeriodsChoreType asks the worker to finalize meal plans with expired voting periods.
 	FinalizeMealPlansWithExpiredVotingPeriodsChoreType choreType = "finalize_meal_plans_with_expired_voting_periods"
-	// CreateAdvancedPrepStepsChoreType asks the worker to finalize meal plans with expired voting periods.
-	CreateAdvancedPrepStepsChoreType choreType = "create_advanced_prep_steps"
+	// CreateMealPlanTasksChoreType asks the worker to finalize meal plans with expired voting periods.
+	CreateMealPlanTasksChoreType choreType = "create_meal_plan_tasks"
 )
 
 type (
@@ -53,8 +53,8 @@ type (
 		ValidPreparationInstrument       *ValidPreparationInstrument     `json:"validPreparationInstrument,omitempty"`
 		ValidIngredientMeasurementUnitID string                          `json:"validIngredientMeasurementUnitID,omitempty"`
 		ValidIngredientMeasurementUnit   *ValidIngredientMeasurementUnit `json:"validIngredientMeasurementUnit,omitempty"`
-		AdvancedPrepStep                 *AdvancedPrepStep               `json:"advancedPrepStep,omitempty"`
-		AdvancedPrepStepID               string                          `json:"advancedPrepStepID,omitempty"`
+		MealPlanTask                     *MealPlanTask                   `json:"mealPlanTask,omitempty"`
+		MealPlanTaskID                   string                          `json:"mealPlanTaskID,omitempty"`
 		Context                          map[string]string               `json:"context,omitempty"`
 		AttributableToUserID             string                          `json:"attributableToUserID,omitempty"`
 		AttributableToHouseholdID        string                          `json:"attributableToHouseholdID,omitempty"`

@@ -194,8 +194,8 @@ func (c *Client) GetRecipeDAG(ctx context.Context, recipeID string) (image.Image
 	return img, nil
 }
 
-// GetAdvancedPrepStepsForRecipe gets a recipe.
-func (c *Client) GetAdvancedPrepStepsForRecipe(ctx context.Context, recipeID string) ([]*types.AdvancedPrepStepDatabaseCreationInput, error) {
+// GetMealPlanTasksForRecipe gets a recipe.
+func (c *Client) GetMealPlanTasksForRecipe(ctx context.Context, recipeID string) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -207,12 +207,12 @@ func (c *Client) GetAdvancedPrepStepsForRecipe(ctx context.Context, recipeID str
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	req, err := c.requestBuilder.BuildGetRecipeAdvancedPrepStepsRequest(ctx, recipeID)
+	req, err := c.requestBuilder.BuildGetRecipeMealPlanTasksRequest(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe request")
 	}
 
-	var prepSteps []*types.AdvancedPrepStepDatabaseCreationInput
+	var prepSteps []*types.MealPlanTaskDatabaseCreationInput
 	if err = c.fetchAndUnmarshal(ctx, req, &prepSteps); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
 	}

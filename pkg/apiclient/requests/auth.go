@@ -77,7 +77,7 @@ func (b *Builder) BuildChangePasswordRequest(ctx context.Context, cookie *http.C
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
-		return nil, err
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	req.AddCookie(cookie)
@@ -106,7 +106,7 @@ func (b *Builder) BuildCycleTwoFactorSecretRequest(ctx context.Context, cookie *
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, err
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	req.AddCookie(cookie)

@@ -139,6 +139,6 @@ const (
 	// ValidMeasurementUnitIDKey is the standard key for referring to a valid measurement unit's ID.
 	ValidMeasurementUnitIDKey = "valid_measurement_unit.id"
 
-	// AdvancedPrepStepIDKey is the standard key for referring to a valid measurement unit's ID.
-	AdvancedPrepStepIDKey = "advanced_prep_step.id"
+	// MealPlanTaskIDKey is the standard key for referring to a valid measurement unit's ID.
+	MealPlanTaskIDKey = "meal_plan_task.id"
 )

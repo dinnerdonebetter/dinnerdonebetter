@@ -189,10 +189,9 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 	args := []interface{}{
 		recipeID,
 		recipeStepID,
-		recipeID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipeStep", getRecipeStepQuery, args)
+	row := q.getOneRow(ctx, q.db, "recipe step", getRecipeStepQuery, args)
 
 	recipeStep, _, _, err := q.scanRecipeStep(ctx, row, false)
 	if err != nil {
@@ -231,7 +230,7 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 
 	query, args := q.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipeSteps", query, args)
+	rows, err := q.getRows(ctx, q.db, "recipeSteps", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe steps list retrieval query")
 	}

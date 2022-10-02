@@ -10,42 +10,6 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// BuildFakeSessionContextData builds a faked SessionContextData.
-func BuildFakeSessionContextData() *types.SessionContextData {
-	fakeHouseholdID := fake.UUID()
-
-	return &types.SessionContextData{
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			fakeHouseholdID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdAdminRole.String()),
-		},
-		Requester: types.RequesterInfo{
-			AccountStatus:            types.GoodStandingUserAccountStatus,
-			AccountStatusExplanation: "",
-			UserID:                   ksuid.New().String(),
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
-		},
-		ActiveHouseholdID: fakeHouseholdID,
-	}
-}
-
-// BuildFakeSessionContextDataForHousehold builds a faked SessionContextData.
-func BuildFakeSessionContextDataForHousehold(household *types.Household) *types.SessionContextData {
-	fakeHouseholdID := fake.UUID()
-
-	return &types.SessionContextData{
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			household.ID: authorization.NewHouseholdRolePermissionChecker(authorization.ServiceUserRole.String()),
-		},
-		Requester: types.RequesterInfo{
-			AccountStatus:            types.GoodStandingUserAccountStatus,
-			AccountStatusExplanation: "",
-			UserID:                   ksuid.New().String(),
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
-		},
-		ActiveHouseholdID: fakeHouseholdID,
-	}
-}
-
 // BuildFakeHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
 func BuildFakeHouseholdUserMembershipCreationRequestInput() *types.HouseholdUserMembershipCreationRequestInput {
 	return &types.HouseholdUserMembershipCreationRequestInput{

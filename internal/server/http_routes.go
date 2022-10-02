@@ -9,7 +9,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing"
-	advancedprepstepsservice "github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
@@ -17,6 +16,7 @@ import (
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
+	mealplantasksservice "github.com/prixfixeco/api_server/internal/services/mealplantasks"
 	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
@@ -662,28 +662,31 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
-		// AdvancedPrepSteps
-		advancedPrepStepPath := "advanced_prep_steps"
-		advancedPrepStepsRoute := path.Join(
+		// MealPlanTasks
+		mealPlanTaskPath := "tasks"
+		mealPlanTasksRoute := path.Join(
 			mealPlanPath,
 			mealPlanIDRouteParam,
-			advancedPrepStepPath,
+			mealPlanTaskPath,
 		)
-		advancedPrepStepsRouteWithPrefix := fmt.Sprintf("/%s", advancedPrepStepsRoute)
-		advancedPrepStepIDRouteParam := buildURLVarChunk(advancedprepstepsservice.AdvancedPrepStepIDURIParamKey, "")
-		v1Router.Route(advancedPrepStepsRouteWithPrefix, func(advancedPrepStepsRouter routing.Router) {
-			advancedPrepStepsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAdvancedPrepStepsPermission)).
-				Get(root, s.advancedPrepStepsService.ListByMealPlanHandler)
+		mealPlanTasksRouteWithPrefix := fmt.Sprintf("/%s", mealPlanTasksRoute)
+		mealPlanTaskIDRouteParam := buildURLVarChunk(mealplantasksservice.MealPlanTaskIDURIParamKey, "")
+		v1Router.Route(mealPlanTasksRouteWithPrefix, func(mealPlanTasksRouter routing.Router) {
+			mealPlanTasksRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanTasksPermission)).
+				Get(root, s.mealPlanTasksService.ListByMealPlanHandler)
+			mealPlanTasksRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanTasksPermission)).
+				Post(root, s.mealPlanTasksService.CreateHandler)
 
-			advancedPrepStepsRouter.Route(advancedPrepStepIDRouteParam, func(singleAdvancedPrepStepRouter routing.Router) {
-				singleAdvancedPrepStepRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAdvancedPrepStepsPermission)).
-					Get(root, s.advancedPrepStepsService.ReadHandler)
+			mealPlanTasksRouter.Route(mealPlanTaskIDRouteParam, func(singleMealPlanTaskRouter routing.Router) {
+				singleMealPlanTaskRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanTasksPermission)).
+					Get(root, s.mealPlanTasksService.ReadHandler)
 
-				singleAdvancedPrepStepRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateAdvancedPrepStepsPermission)).
-					Patch(root, s.advancedPrepStepsService.StatusChangeHandler)
+				singleMealPlanTaskRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanTasksPermission)).
+					Patch(root, s.mealPlanTasksService.StatusChangeHandler)
 			})
 		})
 

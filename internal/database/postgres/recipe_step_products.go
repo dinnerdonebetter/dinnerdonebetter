@@ -245,7 +245,7 @@ func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID s
 		recipeID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", getRecipeStepProductsForRecipeQuery, args)
+	rows, err := q.getRows(ctx, q.db, "recipe step products", getRecipeStepProductsForRecipeQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step products list retrieval query")
 	}
@@ -293,7 +293,7 @@ func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeSte
 
 	query, args := q.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", query, args)
+	rows, err := q.getRows(ctx, q.db, "recipe step products", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step products list retrieval query")
 	}

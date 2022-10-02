@@ -174,7 +174,7 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 
 	query, args := q.buildListQuery(ctx, "api_clients", nil, nil, nil, userOwnershipColumn, apiClientsTableColumns, userID, false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "API clients", query, args)
+	rows, err := q.getRows(ctx, q.db, "API clients", query, args)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, err

@@ -26,7 +26,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
 	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/server"
-	"github.com/prixfixeco/api_server/internal/services/advancedprepsteps"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
@@ -34,6 +33,7 @@ import (
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
+	"github.com/prixfixeco/api_server/internal/services/mealplantasks"
 	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
@@ -171,12 +171,12 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/dev/config_files/service-config.json":                      devEnvironmentServerConfig,
-	"environments/local/config_files/service-config.json":                    localDevelopmentServiceConfig,
-	"environments/local/config_files/queue-loader-config.json":               localDevelopmentWorkerConfig,
-	"environments/local/config_files/meal-plan-finalizer-config.json":        localDevelopmentWorkerConfig,
-	"environments/local/config_files/advanced-prep-step-creator-config.json": localDevelopmentWorkerConfig,
-	"environments/testing/config_files/integration-tests-config.json":        integrationTestConfig,
+	"environments/dev/config_files/service-config.json":                  devEnvironmentServerConfig,
+	"environments/local/config_files/service-config.json":                localDevelopmentServiceConfig,
+	"environments/local/config_files/queue-loader-config.json":           localDevelopmentWorkerConfig,
+	"environments/local/config_files/meal-plan-finalizer-config.json":    localDevelopmentWorkerConfig,
+	"environments/local/config_files/meal-plan-task-creator-config.json": localDevelopmentWorkerConfig,
+	"environments/testing/config_files/integration-tests-config.json":    integrationTestConfig,
 }
 
 func generatePASETOKey() []byte {
@@ -412,7 +412,7 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			AdvancedPrepSteps: advancedprepsteps.Config{
+			MealPlanTasks: mealplantasks.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},
@@ -573,7 +573,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			AdvancedPrepSteps: advancedprepsteps.Config{
+			MealPlanTasks: mealplantasks.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

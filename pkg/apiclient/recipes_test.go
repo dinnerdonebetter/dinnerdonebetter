@@ -401,16 +401,16 @@ func (s *recipesTestSuite) TestClient_GetRecipeDAG() {
 	})
 }
 
-func (s *recipesTestSuite) TestClient_GetAdvancedPrepStepsForRecipe() {
+func (s *recipesTestSuite) TestClient_GetMealPlanTasksForRecipe() {
 	const expectedPathFormat = "/api/v1/recipes/%s/prep_steps"
 
 	s.Run("standard", func() {
 		t := s.T()
 
-		examplePrepSteps := fakes.BuildFakeAdvancedPrepStepDatabaseCreationInputs()
+		examplePrepSteps := fakes.BuildFakeMealPlanTaskDatabaseCreationInputs()
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, examplePrepSteps)
-		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, s.exampleRecipe.ID)
+		actual, err := c.GetMealPlanTasksForRecipe(s.ctx, s.exampleRecipe.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -421,7 +421,7 @@ func (s *recipesTestSuite) TestClient_GetAdvancedPrepStepsForRecipe() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, "")
+		actual, err := c.GetMealPlanTasksForRecipe(s.ctx, "")
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -431,7 +431,7 @@ func (s *recipesTestSuite) TestClient_GetAdvancedPrepStepsForRecipe() {
 		t := s.T()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, s.exampleRecipe.ID)
+		actual, err := c.GetMealPlanTasksForRecipe(s.ctx, s.exampleRecipe.ID)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -442,7 +442,7 @@ func (s *recipesTestSuite) TestClient_GetAdvancedPrepStepsForRecipe() {
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetAdvancedPrepStepsForRecipe(s.ctx, s.exampleRecipe.ID)
+		actual, err := c.GetMealPlanTasksForRecipe(s.ctx, s.exampleRecipe.ID)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)

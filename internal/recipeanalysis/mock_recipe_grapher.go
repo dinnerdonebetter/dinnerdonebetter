@@ -16,15 +16,15 @@ type MockRecipeAnalyzer struct {
 	mock.Mock
 }
 
-// GenerateAdvancedStepCreationForRecipe implements our interface.
-func (m *MockRecipeAnalyzer) GenerateAdvancedStepCreationForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.AdvancedPrepStepDatabaseCreationInput, error) {
+// GenerateMealPlanTasksForRecipe implements our interface.
+func (m *MockRecipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
 	returnArgs := m.Called(ctx, mealPlanEvent, mealPlanOptionID, recipe)
 
-	return returnArgs.Get(0).([]*types.AdvancedPrepStepDatabaseCreationInput), returnArgs.Error(1)
+	return returnArgs.Get(0).([]*types.MealPlanTaskDatabaseCreationInput), returnArgs.Error(1)
 }
 
-// FindStepsEligibleForAdvancedCreation implements our interface.
-func (m *MockRecipeAnalyzer) FindStepsEligibleForAdvancedCreation(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
+// FindStepsEligibleForMealPlanTasks implements our interface.
+func (m *MockRecipeAnalyzer) FindStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
 	returnArgs := m.Called(ctx, recipe)
 
 	return returnArgs.Get(0).([]*types.RecipeStep), returnArgs.Error(1)

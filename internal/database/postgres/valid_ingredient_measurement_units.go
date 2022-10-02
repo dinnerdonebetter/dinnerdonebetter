@@ -287,7 +287,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx, x.Limit, []string{ingredientID})
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for ingredient", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid measurement units for ingredient", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
@@ -337,7 +337,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx, x.Limit, []string{validMeasurementUnitID})
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for measurement unit", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid measurement units for measurement unit", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
@@ -383,7 +383,7 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 
 	query, args := q.buildListQuery(ctx, "valid_ingredient_measurement_units", joins, groupBys, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "validIngredientMeasurementUnits", query, args)
+	rows, err := q.getRows(ctx, q.db, "validIngredientMeasurementUnits", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}

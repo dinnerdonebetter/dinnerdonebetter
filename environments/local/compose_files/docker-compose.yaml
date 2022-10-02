@@ -62,10 +62,10 @@ services:
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../../..'
+        - source: '../../'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/queue-loader-config.json'
+        - source: '../../local/config_files/queue-loader-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
@@ -77,30 +77,30 @@ services:
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../../..'
+        - source: '../../'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/meal-plan-finalizer-config.json'
+        - source: '../../local/config_files/meal-plan-finalizer-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
         context: '../../..'
         dockerfile: 'environments/local/meal_plan_finalizer.Dockerfile'
-    advanced_prep_step_creator:
+    meal_plan_task_creator:
       environment:
         TARGET_ADDRESS: 'http://api_server:8000'
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../../..'
+        - source: '../../'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/advanced-prep-step-creator-config.json'
+        - source: '../../local/config_files/meal-plan-task-creator-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
         context: '../../..'
-        dockerfile: 'environments/local/advanced_prep_step_creator.Dockerfile'
+        dockerfile: 'environments/local/meal_plan_task_creator.Dockerfile'
     prixfixe-server:
       container_name: "api_server"
       depends_on:

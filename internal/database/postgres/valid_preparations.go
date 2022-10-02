@@ -195,7 +195,7 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 		wrapQueryForILIKE(query),
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid preparations", validPreparationSearchQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid preparations", validPreparationSearchQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}
@@ -231,7 +231,7 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 
 	query, args := q.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "validPreparations", query, args)
+	rows, err := q.getRows(ctx, q.db, "validPreparations", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}
