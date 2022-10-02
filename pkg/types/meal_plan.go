@@ -139,7 +139,11 @@ func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) 
 		return errInvalidVotingDeadline
 	}
 
-	return nil
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.Events, validation.Required),
+	)
 }
 
 var _ validation.ValidatableWithContext = (*MealPlanDatabaseCreationInput)(nil)

@@ -50,12 +50,6 @@ func BuildFakeWebhookCreationRequestInput() *types.WebhookCreationRequestInput {
 	return BuildFakeWebhookCreationInputFromWebhook(webhook)
 }
 
-// BuildFakeWebhookDatabaseCreationInput builds a faked WebhookCreationRequestInput from a webhook.
-func BuildFakeWebhookDatabaseCreationInput() *types.WebhookDatabaseCreationInput {
-	webhook := BuildFakeWebhook()
-	return BuildFakeWebhookDatabaseCreationInputFromWebhook(webhook)
-}
-
 // BuildFakeWebhookCreationInputFromWebhook builds a faked WebhookCreationRequestInput.
 func BuildFakeWebhookCreationInputFromWebhook(webhook *types.Webhook) *types.WebhookCreationRequestInput {
 	return &types.WebhookCreationRequestInput{

@@ -97,7 +97,7 @@ func buildRawURL(u *url.URL, qp url.Values, includeVersionPrefix bool, parts ...
 
 	u, err := url.Parse(path.Join(parts...))
 	if err != nil {
-		return nil, err
+		return nil, observability.PrepareError(err, nil, "building URL")
 	}
 
 	if qp != nil {

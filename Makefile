@@ -243,6 +243,7 @@ dev: $(ARTIFACTS_DIR)
 	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
 	--quiet-pull \
 	--no-recreate \
+	# --abort-on-container-exit \
 	--always-recreate-deps
 
 .PHONY: init_db

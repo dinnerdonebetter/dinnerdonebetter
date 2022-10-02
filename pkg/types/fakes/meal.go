@@ -42,23 +42,6 @@ func BuildFakeMealList() *types.MealList {
 	}
 }
 
-// BuildFakeMealUpdateRequestInput builds a faked MealUpdateRequestInput from a recipe.
-func BuildFakeMealUpdateRequestInput() *types.MealUpdateRequestInput {
-	recipe := BuildFakeMeal()
-
-	recipeIDs := []string{}
-	for _, r := range BuildFakeRecipeList().Recipes {
-		recipeIDs = append(recipeIDs, r.ID)
-	}
-
-	return &types.MealUpdateRequestInput{
-		Name:          &recipe.Name,
-		Description:   &recipe.Description,
-		CreatedByUser: &recipe.CreatedByUser,
-		Recipes:       recipeIDs,
-	}
-}
-
 // BuildFakeMealUpdateRequestInputFromMeal builds a faked MealUpdateRequestInput from a recipe.
 func BuildFakeMealUpdateRequestInputFromMeal(recipe *types.Meal) *types.MealUpdateRequestInput {
 	recipeIDs := []string{}
@@ -94,12 +77,6 @@ func BuildFakeMealCreationRequestInputFromMeal(recipe *types.Meal) *types.MealCr
 		CreatedByUser: recipe.CreatedByUser,
 		Recipes:       recipeIDs,
 	}
-}
-
-// BuildFakeMealDatabaseCreationInput builds a faked MealDatabaseCreationInput.
-func BuildFakeMealDatabaseCreationInput() *types.MealDatabaseCreationInput {
-	recipe := BuildFakeMeal()
-	return BuildFakeMealDatabaseCreationInputFromMeal(recipe)
 }
 
 // BuildFakeMealDatabaseCreationInputFromMeal builds a faked MealDatabaseCreationInput from a recipe.

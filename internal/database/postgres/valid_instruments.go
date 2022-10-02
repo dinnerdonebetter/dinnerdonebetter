@@ -187,7 +187,7 @@ func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) (
 		wrapQueryForILIKE(query),
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
@@ -219,7 +219,7 @@ func (q *Querier) SearchForValidInstrumentsForPreparation(ctx context.Context, p
 		wrapQueryForILIKE(query),
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
@@ -257,7 +257,7 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 
 	query, args := q.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "validInstruments", query, args)
+	rows, err := q.getRows(ctx, q.db, "validInstruments", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}

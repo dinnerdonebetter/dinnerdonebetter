@@ -71,7 +71,7 @@ func (b *Builder) BuildCreateAPIClientRequest(ctx context.Context, cookie *http.
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, err
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	req.AddCookie(cookie)

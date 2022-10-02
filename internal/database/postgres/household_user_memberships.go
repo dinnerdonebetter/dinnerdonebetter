@@ -124,7 +124,7 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 
 	getHouseholdMembershipsArgs := []interface{}{userID}
 
-	membershipRows, membershipReadErr := q.performReadQuery(ctx, q.db, "household memberships for user", getHouseholdMembershipsForUserQuery, getHouseholdMembershipsArgs)
+	membershipRows, membershipReadErr := q.getRows(ctx, q.db, "household memberships for user", getHouseholdMembershipsForUserQuery, getHouseholdMembershipsArgs)
 	if membershipReadErr != nil {
 		return nil, observability.PrepareError(membershipReadErr, span, "fetching user's memberships from database")
 	}

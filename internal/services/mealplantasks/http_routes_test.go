@@ -257,13 +257,13 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleCreationInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
-		exampleCreationInput.ID = helper.exampleMealPlanTask.ID
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+		exampleStatusChangeInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
+		exampleStatusChangeInput.ID = helper.exampleMealPlanTask.ID
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleStatusChangeInput)
 
 		expectedPrepStep := helper.exampleMealPlanTask
-		expectedPrepStep.Status = exampleCreationInput.Status
-		expectedPrepStep.StatusExplanation = exampleCreationInput.StatusExplanation
+		expectedPrepStep.Status = *exampleStatusChangeInput.Status
+		expectedPrepStep.StatusExplanation = *exampleStatusChangeInput.StatusExplanation
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
@@ -280,7 +280,7 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		dbManager.MealPlanTaskDataManager.On(
 			"ChangeMealPlanTaskStatus",
 			testutils.ContextMatcher,
-			exampleCreationInput,
+			exampleStatusChangeInput,
 		).Return(nil)
 		helper.service.mealPlanTaskDataManager = dbManager
 
@@ -368,8 +368,8 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		expectedPrepStep := helper.exampleMealPlanTask
-		expectedPrepStep.Status = exampleCreationInput.Status
-		expectedPrepStep.StatusExplanation = exampleCreationInput.StatusExplanation
+		expectedPrepStep.Status = *exampleCreationInput.Status
+		expectedPrepStep.StatusExplanation = *exampleCreationInput.StatusExplanation
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))

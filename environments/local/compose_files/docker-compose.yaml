@@ -62,10 +62,10 @@ services:
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../../..'
+        - source: '../../'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/queue-loader-config.json'
+        - source: '../../local/config_files/queue-loader-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
@@ -77,10 +77,10 @@ services:
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../../..'
+        - source: '../../'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/meal-plan-finalizer-config.json'
+        - source: '../../local/config_files/meal-plan-finalizer-config.json'
           target: '/etc/config'
           type: 'bind'
       build:
@@ -92,10 +92,10 @@ services:
         CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
-        - source: '../../..'
+        - source: '../../'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/meal-plan-task-creator-config.json'
+        - source: '../../local/config_files/meal-plan-task-creator-config.json'
           target: '/etc/config'
           type: 'bind'
       build:

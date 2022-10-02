@@ -176,7 +176,7 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 		mealPlanID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan events", getMealPlanEventsForMealPlanQuery, args)
+	rows, err := q.getRows(ctx, q.db, "meal plan events", getMealPlanEventsForMealPlanQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing meal plan events list retrieval query")
 	}
@@ -221,7 +221,7 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 
 	query, args := q.buildListQuery(ctx, "meal_plan_events", nil, nil, nil, "", mealPlanEventsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan events", query, args)
+	rows, err := q.getRows(ctx, q.db, "meal plan events", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan events list retrieval query")
 	}

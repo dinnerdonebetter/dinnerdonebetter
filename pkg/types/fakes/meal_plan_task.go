@@ -5,6 +5,7 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -22,6 +23,24 @@ func BuildFakeMealPlanTask() *types.MealPlanTask {
 		StatusExplanation:    buildUniqueString(),
 		CreationExplanation:  buildUniqueString(),
 		CompletedAt:          nil,
+	}
+}
+
+// BuildFakeMealPlanTaskCreationRequestInput builds a faked meal plan task.
+func BuildFakeMealPlanTaskCreationRequestInput() *types.MealPlanTaskCreationRequestInput {
+	x := BuildFakeMealPlanTask()
+
+	return BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask(x)
+}
+
+// BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask builds a faked meal plan task.
+func BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask(x *types.MealPlanTask) *types.MealPlanTaskCreationRequestInput {
+	return &types.MealPlanTaskCreationRequestInput{
+		CannotCompleteBefore: x.CannotCompleteBefore,
+		CannotCompleteAfter:  x.CannotCompleteAfter,
+		Status:               x.Status,
+		StatusExplanation:    x.StatusExplanation,
+		CreationExplanation:  x.CreationExplanation,
 	}
 }
 
@@ -51,13 +70,11 @@ func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabase
 		inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
 
 		examples = append(examples, &types.MealPlanTaskDatabaseCreationInput{
-			CompletedAt:          nil,
-			MealPlanOptionID:     "",
-			RecipeStepID:         "",
+			MealPlanOptionID: "",
+			// RecipeStepID:         "",
 			ID:                   BuildFakeID(),
 			CannotCompleteBefore: now,
 			CannotCompleteAfter:  inOneWeek,
-			Status:               "unfinished",
 			StatusExplanation:    buildUniqueString(),
 			CreationExplanation:  buildUniqueString(),
 		})
@@ -70,7 +87,7 @@ func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabase
 func BuildFakeMealPlanTaskStatusChangeRequestInput() *types.MealPlanTaskStatusChangeRequestInput {
 	return &types.MealPlanTaskStatusChangeRequestInput{
 		ID:                BuildFakeID(),
-		Status:            "unfinished",
-		StatusExplanation: buildUniqueString(),
+		Status:            pointers.StringPointer("unfinished"),
+		StatusExplanation: pointers.StringPointer(buildUniqueString()),
 	}
 }

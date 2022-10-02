@@ -46,6 +46,37 @@ func (b *Builder) BuildGetMealPlanTaskRequest(ctx context.Context, mealPlanID, m
 	return req, nil
 }
 
+// BuildCreateMealPlanTaskRequest builds an HTTP request for fetching a meal plan.
+func (b *Builder) BuildCreateMealPlanTaskRequest(ctx context.Context, mealPlanID string, input *types.MealPlanTaskCreationRequestInput) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		mealPlansBasePath,
+		mealPlanID,
+		mealPlanTasksBasePath,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
 // BuildGetMealPlanTasksRequest builds an HTTP request for fetching a list of meal plan tasks.
 func (b *Builder) BuildGetMealPlanTasksRequest(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

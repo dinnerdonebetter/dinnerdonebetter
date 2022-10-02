@@ -350,10 +350,9 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 			ID:                   ksuid.New().String(),
 			CannotCompleteBefore: mealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
 			CannotCompleteAfter:  mealPlanEvent.StartsAt.Add(-time.Hour * 24),
-			Status:               types.MealPlanTaskStatusUnfinished,
 			CreationExplanation:  explanation,
 			MealPlanOptionID:     mealPlanOptionID,
-			RecipeStepID:         stepID,
+			// RecipeStepID:         stepID,
 		})
 	}
 
@@ -371,10 +370,9 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 			ID:                   ksuid.New().String(),
 			CannotCompleteBefore: cannotCompleteBefore,
 			CannotCompleteAfter:  cannotCompleteAfter,
-			Status:               types.MealPlanTaskStatusUnfinished,
 			CreationExplanation:  storagePrepCreationExplanation,
 			MealPlanOptionID:     mealPlanOptionID,
-			RecipeStepID:         step.ID,
+			// RecipeStepID:         step.ID,
 		})
 	}
 

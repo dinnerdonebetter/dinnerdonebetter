@@ -677,7 +677,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				Get(root, s.mealPlanTasksService.ListByMealPlanHandler)
 			mealPlanTasksRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanTasksPermission)).
-				Get(root, s.mealPlanTasksService.CreateHandler)
+				Post(root, s.mealPlanTasksService.CreateHandler)
 
 			mealPlanTasksRouter.Route(mealPlanTaskIDRouteParam, func(singleMealPlanTaskRouter routing.Router) {
 				singleMealPlanTaskRouter.

@@ -337,7 +337,7 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 		wrapQueryForILIKE(usernameQuery),
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "user search by username", searchForUserByUsernameQuery, args)
+	rows, err := q.getRows(ctx, q.db, "user search by username", searchForUserByUsernameQuery, args)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, err
@@ -375,7 +375,7 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 
 	query, args := q.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "users", query, args)
+	rows, err := q.getRows(ctx, q.db, "users", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning user")
 	}

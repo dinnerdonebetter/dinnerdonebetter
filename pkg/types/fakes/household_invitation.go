@@ -46,18 +46,6 @@ func BuildFakeHouseholdInvitationCreationRequestInput() *types.HouseholdInvitati
 	return BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(invitation)
 }
 
-// BuildFakeHouseholdInvitationUpdateRequestInput builds a faked HouseholdInvitationUpdateRequestInput from a webhook.
-func BuildFakeHouseholdInvitationUpdateRequestInput() *types.HouseholdInvitationUpdateRequestInput {
-	invitation := BuildFakeHouseholdInvitation()
-	return BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(invitation)
-}
-
-// BuildFakeHouseholdInvitationDatabaseCreationInput builds a faked HouseholdInvitationCreationRequestInput from a webhook.
-func BuildFakeHouseholdInvitationDatabaseCreationInput() *types.HouseholdInvitationDatabaseCreationInput {
-	invitation := BuildFakeHouseholdInvitation()
-	return BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(invitation)
-}
-
 // BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation builds a faked HouseholdInvitationCreationRequestInput.
 func BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationCreationRequestInput {
 	return &types.HouseholdInvitationCreationRequestInput{

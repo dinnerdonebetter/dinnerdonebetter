@@ -55,6 +55,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.ID = ksuid.New().String()
 	tracing.AttachMealPlanTaskIDToSpan(span, input.ID)
 
+	for i := range input.RecipeSteps {
+		input.RecipeSteps[i].ID = ksuid.New().String()
+		input.RecipeSteps[i].MealPlanTaskID = input.ID
+	}
+
 	logger = logger.WithValue("input", input)
 
 	// determine meal plan ID.
@@ -62,7 +67,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	mealPlanTask, err := s.mealPlanTaskDataManager.CreateMealPlanTask(ctx, mealPlanID, input)
+	mealPlanTask, err := s.mealPlanTaskDataManager.CreateMealPlanTask(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -73,6 +78,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.MealPlanDataType,
 			EventType:                 types.MealPlanCreatedCustomerEventType,
+			MealPlanID:                mealPlanID,
 			MealPlanTask:              mealPlanTask,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -86,7 +92,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanTask, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns an meal plan task.
+// ReadHandler returns a GET handler that returns a meal plan task.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -174,7 +180,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	s.encoderDecoder.RespondWithData(ctx, res, mealPlanTasks)
 }
 
-// StatusChangeHandler returns a handler that updates an meal plan task.
+// StatusChangeHandler returns a handler that updates a meal plan task.
 func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -218,7 +224,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	prepStep, fetchMealPlanTaskErr := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
+	mealPlanTask, fetchMealPlanTaskErr := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
 	if fetchMealPlanTaskErr != nil && !errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(fetchMealPlanTaskErr, logger, span, "checking meal plan task existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -228,22 +234,19 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
+	mealPlanTask.Update(providedInput)
+
 	if err := s.mealPlanTaskDataManager.ChangeMealPlanTaskStatus(ctx, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan task")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	// NOTE: do what you need here
-	prepStep.StatusExplanation = providedInput.StatusExplanation
-	prepStep.Status = providedInput.Status
-	prepStep.AssignedToUser = providedInput.AssignedToUser
-
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.MealPlanTaskDataType,
 			EventType:                 types.MealPlanTaskStatusChangedCustomerEventType,
-			MealPlanTask:              prepStep,
+			MealPlanTask:              mealPlanTask,
 			MealPlanTaskID:            mealPlanTaskID,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -254,5 +257,5 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		}
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, prepStep)
+	s.encoderDecoder.RespondWithData(ctx, res, mealPlanTask)
 }

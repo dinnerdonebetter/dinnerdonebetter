@@ -166,7 +166,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 		mealID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal", getMealByIDQuery, args)
+	rows, err := q.getRows(ctx, q.db, "meal", getMealByIDQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal retrieval query")
 	}
@@ -215,7 +215,7 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 
 	query, args := q.buildListQuery(ctx, "meals", nil, nil, nil, "", mealsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "meals", query, args)
+	rows, err := q.getRows(ctx, q.db, "meals", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
 	}
@@ -251,7 +251,7 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 	where := squirrel.ILike{"name": wrapQueryForILIKE(mealNameQuery)}
 	query, args := q.buildListQueryWithILike(ctx, "meals", nil, nil, where, "", mealsTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "meals", query, args)
+	rows, err := q.getRows(ctx, q.db, "meals", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals search query")
 	}

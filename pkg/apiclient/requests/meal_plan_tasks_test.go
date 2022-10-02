@@ -57,6 +57,53 @@ func TestBuilder_BuildGetMealPlanTaskRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildCreateMealPlanTaskRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/meal_plans/%s/tasks"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		exampleInput := fakes.BuildFakeMealPlanTaskCreationRequestInput()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleMealPlanID)
+
+		actual, err := helper.builder.BuildCreateMealPlanTaskRequest(helper.ctx, exampleMealPlanID, exampleInput)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid meal plan task ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleMealPlanID := fakes.BuildFakeID()
+
+		actual, err := helper.builder.BuildCreateMealPlanTaskRequest(helper.ctx, exampleMealPlanID, nil)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		exampleInput := fakes.BuildFakeMealPlanTaskCreationRequestInput()
+
+		actual, err := helper.builder.BuildCreateMealPlanTaskRequest(helper.ctx, exampleMealPlanID, exampleInput)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildGetMealPlanTasksRequest(T *testing.T) {
 	T.Parallel()
 

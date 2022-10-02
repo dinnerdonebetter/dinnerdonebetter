@@ -211,7 +211,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  t.Name(),
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-				RecipeStepID:         exampleRecipe.ID,
+				// RecipeStepID:         exampleRecipe.ID,
 			},
 		}
 
@@ -412,7 +412,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  t.Name(),
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-				RecipeStepID:         recipeStep1ID,
+				// RecipeStepID:         recipeStep1ID,
 			},
 		}
 

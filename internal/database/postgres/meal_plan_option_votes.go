@@ -227,7 +227,7 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 		mealPlanOptionID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan option votes for meal plan option", getMealPlanOptionVotesForMealPlanOptionQuery, args)
+	rows, err := q.getRows(ctx, q.db, "meal plan option votes for meal plan option", getMealPlanOptionVotesForMealPlanOptionQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan option votes for meal plan option list retrieval query")
 	}
@@ -281,7 +281,7 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 
 	query, args := q.buildListQuery(ctx, "meal_plan_option_votes", getMealPlanOptionVotesJoins, nil, nil, householdOwnershipColumn, mealPlanOptionVotesTableColumns, "", false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan option votes", query, args)
+	rows, err := q.getRows(ctx, q.db, "meal plan option votes", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan option votes list retrieval query")
 	}

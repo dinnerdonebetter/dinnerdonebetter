@@ -239,7 +239,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 
 	query, args := q.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, householdID, false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "webhooks", query, args)
+	rows, err := q.getRows(ctx, q.db, "webhooks", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
 	}

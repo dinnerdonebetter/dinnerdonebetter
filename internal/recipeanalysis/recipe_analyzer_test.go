@@ -134,7 +134,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  buildThawStepCreationExplanation(1, 0),
 				MealPlanOptionID:     exampleMealPlanOption.ID,
-				RecipeStepID:         recipeStepID,
+				// RecipeStepID:         recipeStepID,
 			},
 		}
 
@@ -282,7 +282,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  storagePrepCreationExplanation,
 				MealPlanOptionID:     exampleMealPlanOption.ID,
-				RecipeStepID:         recipeStep1ID,
+				// RecipeStepID:         recipeStep1ID,
 			},
 		}
 
