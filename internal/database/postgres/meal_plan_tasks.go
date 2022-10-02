@@ -186,9 +186,12 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 	}
 
 	for _, stepID := range recipeStepIDs {
-		// FIXME: flesh out recipe steps here
+		recipeStep, getRecipeStepErr := q.getRecipeStepByID(ctx, q.db, stepID)
+		if getRecipeStepErr != nil {
+			return nil, observability.PrepareAndLogError(getRecipeStepErr, logger, span, "getting recipe step for meal plan task")
+		}
 
-		x.RecipeSteps = append(x.RecipeSteps, &types.RecipeStep{ID: stepID})
+		x.RecipeSteps = append(x.RecipeSteps, recipeStep)
 	}
 
 	logger.Info("meal plan tasks retrieved")
@@ -347,7 +350,19 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning meal plan tasks")
 	}
 
-	// TODO: saturate recipe steps here
+	for i, mealPlanTask := range x {
+		recipeSteps := []*types.RecipeStep{}
+		for _, step := range mealPlanTask.RecipeSteps {
+			recipeStep, recipeStepGetErr := q.getRecipeStepByID(ctx, q.db, step.ID)
+			if recipeStepGetErr != nil {
+				return nil, observability.PrepareAndLogError(recipeStepGetErr, logger, span, "getting recipe step for meal plan tasks")
+			}
+
+			recipeSteps = append(recipeSteps, recipeStep)
+		}
+
+		x[i].RecipeSteps = recipeSteps
+	}
 
 	logger.Info("meal plan tasks retrieved")
 

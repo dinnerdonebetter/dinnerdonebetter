@@ -88,7 +88,7 @@ func buildErroneousMockRowsFromWebhooks(includeCounts bool, filteredCount uint64
 	return exampleRows
 }
 
-func TestQuerier_ScanWebhooks(T *testing.T) {
+func TestQuerier_scanWebhooks(T *testing.T) {
 	T.Parallel()
 
 	T.Run("surfaces row errs", func(t *testing.T) {
