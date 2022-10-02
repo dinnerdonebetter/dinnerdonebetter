@@ -346,13 +346,20 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 			continue
 		}
 
+		taskID := ksuid.New().String()
 		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
-			ID:                   ksuid.New().String(),
+			ID:                   taskID,
 			CannotCompleteBefore: mealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
 			CannotCompleteAfter:  mealPlanEvent.StartsAt.Add(-time.Hour * 24),
 			CreationExplanation:  explanation,
 			MealPlanOptionID:     mealPlanOptionID,
-			// SatisfiesRecipeStep:         stepID,
+			RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
+				{
+					ID:                    ksuid.New().String(),
+					BelongsToMealPlanTask: taskID,
+					SatisfiesRecipeStep:   stepID,
+				},
+			},
 		})
 	}
 
@@ -366,13 +373,20 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 	for _, step := range steps {
 		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(step, mealPlanEvent)
 
+		taskID := ksuid.New().String()
 		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
-			ID:                   ksuid.New().String(),
+			ID:                   taskID,
 			CannotCompleteBefore: cannotCompleteBefore,
 			CannotCompleteAfter:  cannotCompleteAfter,
 			CreationExplanation:  storagePrepCreationExplanation,
 			MealPlanOptionID:     mealPlanOptionID,
-			// SatisfiesRecipeStep:         step.ID,
+			RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
+				{
+					ID:                    ksuid.New().String(),
+					BelongsToMealPlanTask: taskID,
+					SatisfiesRecipeStep:   step.ID,
+				},
+			},
 		})
 	}
 

@@ -132,6 +132,11 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				CannotCompleteAfter:  time.Now(),
 				CreationExplanation:  buildThawStepCreationExplanation(1, 0),
 				MealPlanOptionID:     exampleMealPlanOption.ID,
+				RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
+					{
+						SatisfiesRecipeStep: recipeStepID,
+					},
+				},
 			},
 		}
 
@@ -142,6 +147,11 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 			expected[i].ID = actual[i].ID
 			expected[i].CannotCompleteBefore = actual[i].CannotCompleteBefore
 			expected[i].CannotCompleteAfter = actual[i].CannotCompleteAfter
+
+			for j := range expected[i].RecipeSteps {
+				expected[i].RecipeSteps[j].BelongsToMealPlanTask = actual[i].RecipeSteps[j].BelongsToMealPlanTask
+				expected[i].RecipeSteps[j].ID = actual[i].RecipeSteps[j].ID
+			}
 		}
 
 		assert.Equal(t, expected, actual)
@@ -169,7 +179,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 		exampleMealPlanOption.BelongsToMealPlanEvent = exampleMealPlanEvent.ID
 		exampleMealPlanOption.Meal = *exampleMeal
 
-		recipeStep1ID := fakes.BuildFakeID()
+		recipeStepID := fakes.BuildFakeID()
 		recipeStepProductID := fakes.BuildFakeID()
 
 		exampleRecipeID := fakes.BuildFakeID()
@@ -184,7 +194,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 					MaximumTemperatureInCelsius:   nil,
 					Index:                         0,
 					BelongsToRecipe:               exampleRecipeID,
-					ID:                            recipeStep1ID,
+					ID:                            recipeStepID,
 					Preparation:                   types.ValidPreparation{Name: "massage"},
 					Ingredients: []*types.RecipeStepIngredient{
 						{
@@ -199,7 +209,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							},
 							Name:                "kale",
 							ID:                  fakes.BuildFakeID(),
-							BelongsToRecipeStep: recipeStep1ID,
+							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     500,
 							MaximumQuantity:     1000,
@@ -212,7 +222,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							StorageInstructions:                "store in an airtight container",
 							Name:                               "massaged kale",
 							Type:                               types.RecipeStepProductIngredientType,
-							BelongsToRecipeStep:                recipeStep1ID,
+							BelongsToRecipeStep:                recipeStepID,
 							ID:                                 recipeStepProductID,
 							QuantityNotes:                      "",
 							MeasurementUnit: types.ValidMeasurementUnit{
@@ -241,7 +251,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							Ingredient:          nil,
 							Name:                "massaged kale",
 							ID:                  fakes.BuildFakeID(),
-							BelongsToRecipeStep: recipeStep1ID,
+							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     500,
 							MaximumQuantity:     1000,
@@ -254,7 +264,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							StorageInstructions:                "",
 							Name:                               "cooked kale",
 							Type:                               types.RecipeStepProductIngredientType,
-							BelongsToRecipeStep:                recipeStep1ID,
+							BelongsToRecipeStep:                recipeStepID,
 							ID:                                 fakes.BuildFakeID(),
 							QuantityNotes:                      "",
 							MeasurementUnit: types.ValidMeasurementUnit{
@@ -277,6 +287,11 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				CannotCompleteAfter:  time.Now(),
 				CreationExplanation:  storagePrepCreationExplanation,
 				MealPlanOptionID:     exampleMealPlanOption.ID,
+				RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
+					{
+						SatisfiesRecipeStep: recipeStepID,
+					},
+				},
 			},
 		}
 
@@ -287,6 +302,11 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 			expected[i].ID = actual[i].ID
 			expected[i].CannotCompleteBefore = actual[i].CannotCompleteBefore
 			expected[i].CannotCompleteAfter = actual[i].CannotCompleteAfter
+
+			for j := range expected[i].RecipeSteps {
+				expected[i].RecipeSteps[j].BelongsToMealPlanTask = actual[i].RecipeSteps[j].BelongsToMealPlanTask
+				expected[i].RecipeSteps[j].ID = actual[i].RecipeSteps[j].ID
+			}
 		}
 
 		assert.Equal(t, expected, actual)
