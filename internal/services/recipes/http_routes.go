@@ -455,7 +455,7 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 	for _, input := range stepInputs {
 		responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
 			CreationExplanation: input.CreationExplanation,
-			// RecipeStepID:        input.RecipeStepID,
+			// SatisfiesRecipeStep:        input.SatisfiesRecipeStep,
 		})
 	}
 

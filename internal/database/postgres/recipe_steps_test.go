@@ -225,7 +225,6 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
-			exampleRecipeID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepQuery)).
@@ -277,7 +276,6 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
-			exampleRecipeID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepQuery)).

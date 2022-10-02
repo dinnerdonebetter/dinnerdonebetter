@@ -130,11 +130,8 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 			{
 				CannotCompleteBefore: time.Now(),
 				CannotCompleteAfter:  time.Now(),
-				CompletedAt:          nil,
-				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  buildThawStepCreationExplanation(1, 0),
 				MealPlanOptionID:     exampleMealPlanOption.ID,
-				// RecipeStepID:         recipeStepID,
 			},
 		}
 
@@ -278,11 +275,8 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 			{
 				CannotCompleteBefore: time.Now(),
 				CannotCompleteAfter:  time.Now(),
-				CompletedAt:          nil,
-				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  storagePrepCreationExplanation,
 				MealPlanOptionID:     exampleMealPlanOption.ID,
-				// RecipeStepID:         recipeStep1ID,
 			},
 		}
 

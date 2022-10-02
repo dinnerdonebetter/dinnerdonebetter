@@ -42,7 +42,7 @@ func (s *TestSuite) TestMealPlanTasks_CompleteLifecycle() {
 
 			exampleMealPlanTaskInput.MealPlanOptionID = createdMealPlan.Events[0].Options[0].ID
 			exampleMealPlanTaskInput.RecipeStepIDs = []string{
-				createdMealPlan.Events[0].Options[0].Meal.Recipes[0].ID,
+				createdMealPlan.Events[0].Options[0].Meal.Recipes[0].Steps[0].ID,
 			}
 
 			logJSON(t, exampleMealPlanTaskInput)

@@ -16,12 +16,17 @@ func TestMealPlanTaskDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := MealPlanTaskDatabaseCreationInput{
-			ID:               fake.LoremIpsumSentence(exampleQuantity),
-			MealPlanOptionID: fake.LoremIpsumSentence(exampleQuantity),
-			// RecipeStepID:         fake.LoremIpsumSentence(exampleQuantity),
+			ID:                   fake.LoremIpsumSentence(exampleQuantity),
+			MealPlanOptionID:     fake.LoremIpsumSentence(exampleQuantity),
 			CannotCompleteBefore: fake.Date(),
 			CannotCompleteAfter:  fake.Date(),
-			CompletedAt:          nil,
+			RecipeSteps: []*MealPlanTaskRecipeStepDatabaseCreationInput{
+				{
+					ID:                    "",
+					SatisfiesRecipeStep:   "",
+					BelongsToMealPlanTask: "",
+				},
+			},
 		}
 
 		require.NoError(t, x.ValidateWithContext(ctx))

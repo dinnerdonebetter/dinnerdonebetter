@@ -71,7 +71,7 @@ func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabase
 
 		examples = append(examples, &types.MealPlanTaskDatabaseCreationInput{
 			MealPlanOptionID: "",
-			// RecipeStepID:         "",
+			// SatisfiesRecipeStep:         "",
 			ID:                   BuildFakeID(),
 			CannotCompleteBefore: now,
 			CannotCompleteAfter:  inOneWeek,

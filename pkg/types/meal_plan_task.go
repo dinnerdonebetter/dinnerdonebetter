@@ -45,13 +45,13 @@ type (
 		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
 		CreatedAt            time.Time      `json:"createdAt"`
 		CompletedAt          *time.Time     `json:"completedAt"`
-		ID                   string         `json:"id"`
 		AssignedToUser       *string        `json:"assignedToUser"`
+		ID                   string         `json:"id"`
 		Status               string         `json:"status"`
 		CreationExplanation  string         `json:"creationExplanation"`
 		StatusExplanation    string         `json:"statusExplanation"`
-		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
 		RecipeSteps          []*RecipeStep  `json:"recipeSteps"`
+		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
 	}
 
 	// MealPlanTaskRecipeStep represents a meal plan task's recipe step.
@@ -97,10 +97,10 @@ type (
 
 	// MealPlanTaskRecipeStepDatabaseCreationInput represents what a user could set as input for creating meal plan tasks.
 	MealPlanTaskRecipeStepDatabaseCreationInput struct {
-		_              struct{}
-		MealPlanTaskID string
-		RecipeStepID   string
-		ID             string
+		_                     struct{}
+		BelongsToMealPlanTask string
+		SatisfiesRecipeStep   string
+		ID                    string
 	}
 
 	// MealPlanTaskStatusChangeRequestInput represents what a user could set as input for updating meal plan tasks.
@@ -205,7 +205,7 @@ func MealPlanTaskDatabaseCreationInputFromMealPlanTaskCreationRequestInput(input
 	}
 
 	for _, recipeStepID := range input.RecipeStepIDs {
-		x.RecipeSteps = append(x.RecipeSteps, &MealPlanTaskRecipeStepDatabaseCreationInput{RecipeStepID: recipeStepID})
+		x.RecipeSteps = append(x.RecipeSteps, &MealPlanTaskRecipeStepDatabaseCreationInput{SatisfiesRecipeStep: recipeStepID})
 	}
 
 	return x

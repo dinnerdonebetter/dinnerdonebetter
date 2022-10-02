@@ -118,32 +118,6 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 	return mealPlanTasks, nil
 }
 
-// scanMealPlanTasks takes some database rows and turns them into a slice of meal plan tasks.
-func (q *Querier) scanMealPlanTasks(ctx context.Context, rows database.ResultIterator) (mealPlanTasks []*types.MealPlanTask, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, recipeStepIDs, scanErr := q.scanMealPlanTaskWithRecipes(ctx, rows)
-		if scanErr != nil {
-			return nil, scanErr
-		}
-
-		for _, stepID := range recipeStepIDs {
-			// FIXME
-			x.RecipeSteps = append(x.RecipeSteps, &types.RecipeStep{ID: stepID})
-		}
-
-		mealPlanTasks = append(mealPlanTasks, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return mealPlanTasks, nil
-}
-
 //go:embed queries/meal_plan_tasks/exists.sql
 var mealPlanTasksExistsQuery string
 
@@ -212,7 +186,8 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 	}
 
 	for _, stepID := range recipeStepIDs {
-		// FIXME
+		// FIXME: flesh out recipe steps here
+
 		x.RecipeSteps = append(x.RecipeSteps, &types.RecipeStep{ID: stepID})
 	}
 
@@ -325,10 +300,10 @@ func (q *Querier) createMealPlanTaskRecipeStep(ctx context.Context, querier data
 
 	args := []interface{}{
 		input.ID,
-		input.MealPlanTaskID,
-		input.RecipeStepID,
+		input.BelongsToMealPlanTask,
+		input.SatisfiesRecipeStep,
 	}
-	tracing.AttachMealPlanTaskIDToSpan(span, input.MealPlanTaskID)
+	tracing.AttachMealPlanTaskIDToSpan(span, input.BelongsToMealPlanTask)
 
 	// create the meal plan.
 	if err := q.performWriteQuery(ctx, querier, "meal plan task recipe step creation", createMealPlanTaskRecipeStepQuery, args); err != nil {

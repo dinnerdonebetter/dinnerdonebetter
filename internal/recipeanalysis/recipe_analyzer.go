@@ -352,7 +352,7 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 			CannotCompleteAfter:  mealPlanEvent.StartsAt.Add(-time.Hour * 24),
 			CreationExplanation:  explanation,
 			MealPlanOptionID:     mealPlanOptionID,
-			// RecipeStepID:         stepID,
+			// SatisfiesRecipeStep:         stepID,
 		})
 	}
 
@@ -372,7 +372,7 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 			CannotCompleteAfter:  cannotCompleteAfter,
 			CreationExplanation:  storagePrepCreationExplanation,
 			MealPlanOptionID:     mealPlanOptionID,
-			// RecipeStepID:         step.ID,
+			// SatisfiesRecipeStep:         step.ID,
 		})
 	}
 

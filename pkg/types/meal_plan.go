@@ -142,6 +142,7 @@ func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) 
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
+		validation.Field(&x.VotingDeadline, validation.Required),
 		validation.Field(&x.Events, validation.Required),
 	)
 }

@@ -57,7 +57,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	for i := range input.RecipeSteps {
 		input.RecipeSteps[i].ID = ksuid.New().String()
-		input.RecipeSteps[i].MealPlanTaskID = input.ID
+		input.RecipeSteps[i].BelongsToMealPlanTask = input.ID
 	}
 
 	logger = logger.WithValue("input", input)

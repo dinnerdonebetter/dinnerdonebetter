@@ -207,11 +207,8 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			{
 				CannotCompleteBefore: time.Now(),
 				CannotCompleteAfter:  time.Now(),
-				CompletedAt:          nil,
-				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  t.Name(),
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-				// RecipeStepID:         exampleRecipe.ID,
 			},
 		}
 
@@ -408,11 +405,8 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			{
 				CannotCompleteBefore: time.Now(),
 				CannotCompleteAfter:  time.Now(),
-				CompletedAt:          nil,
-				Status:               types.MealPlanTaskStatusUnfinished,
 				CreationExplanation:  t.Name(),
 				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
-				// RecipeStepID:         recipeStep1ID,
 			},
 		}
 

@@ -16,10 +16,17 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanCreationRequestInput{
 			VotingDeadline: time.Now().Add(24 * time.Hour),
+			Events: []*MealPlanEventCreationRequestInput{
+				{
+					MealName: BreakfastMealName,
+					Notes:    t.Name(),
+					StartsAt: time.Now(),
+					EndsAt:   time.Now().Add(24 * time.Hour),
+				},
+			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, x.ValidateWithContext(context.Background()))
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -27,8 +34,7 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
-		assert.Error(t, actual)
+		assert.Error(t, x.ValidateWithContext(context.Background()))
 	})
 }
 
