@@ -14,10 +14,10 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
-func newAnalyzerForTest(t *testing.T) *recipeAnalyzer {
+func newAnalyzerForTest(t *testing.T) *RecipeAnalyzerImpl {
 	t.Helper()
 
-	return &recipeAnalyzer{
+	return &RecipeAnalyzerImpl{
 		tracer: tracing.NewTracerForTest(t.Name()),
 		logger: logging.NewNoopLogger(),
 	}
