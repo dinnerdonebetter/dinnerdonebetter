@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
 
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -20,9 +21,9 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		CreatedAt:                          fake.Date(),
 		BelongsToRecipeStep:                fake.UUID(),
 		Compostable:                        fake.Bool(),
-		MaximumStorageDurationInSeconds:    fake.Uint32(),
-		MinimumStorageTemperatureInCelsius: func(f float32) *float32 { return &f }(fake.Float32()),
-		MaximumStorageTemperatureInCelsius: func(f float32) *float32 { return &f }(fake.Float32()),
+		MaximumStorageDurationInSeconds:    pointers.Uint32Pointer(fake.Uint32()),
+		MinimumStorageTemperatureInCelsius: pointers.Float32Pointer(fake.Float32()),
+		MaximumStorageTemperatureInCelsius: pointers.Float32Pointer(fake.Float32()),
 		StorageInstructions:                buildUniqueString(),
 	}
 }
@@ -57,7 +58,7 @@ func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpda
 		MeasurementUnitID:                  &recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:                &recipeStepProduct.BelongsToRecipeStep,
 		Compostable:                        &recipeStepProduct.Compostable,
-		MaximumStorageDurationInSeconds:    &recipeStepProduct.MaximumStorageDurationInSeconds,
+		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                &recipeStepProduct.StorageInstructions,
@@ -75,7 +76,7 @@ func BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(recipeSte
 		MeasurementUnitID:                  &recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:                &recipeStepProduct.BelongsToRecipeStep,
 		Compostable:                        &recipeStepProduct.Compostable,
-		MaximumStorageDurationInSeconds:    &recipeStepProduct.MaximumStorageDurationInSeconds,
+		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                &recipeStepProduct.StorageInstructions,

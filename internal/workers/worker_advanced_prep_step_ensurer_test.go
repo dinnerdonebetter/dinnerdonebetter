@@ -173,7 +173,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							ID:                                 fakes.BuildFakeID(),
 							QuantityNotes:                      "",
 							MeasurementUnit:                    types.ValidMeasurementUnit{},
-							MaximumStorageDurationInSeconds:    0,
+							MaximumStorageDurationInSeconds:    nil,
 							MaximumQuantity:                    0,
 							MinimumQuantity:                    0,
 							Compostable:                        false,
@@ -328,7 +328,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name: "gram", PluralName: "gram",
 							},
-							MaximumStorageDurationInSeconds: 259200,
+							MaximumStorageDurationInSeconds: pointers.Uint32Pointer(259200),
 							MaximumQuantity:                 0,
 							MinimumQuantity:                 0,
 							Compostable:                     false,
@@ -370,7 +370,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name: "gram", PluralName: "gram",
 							},
-							MaximumStorageDurationInSeconds: 0,
+							MaximumStorageDurationInSeconds: nil,
 							MaximumQuantity:                 0,
 							MinimumQuantity:                 0,
 							Compostable:                     false,

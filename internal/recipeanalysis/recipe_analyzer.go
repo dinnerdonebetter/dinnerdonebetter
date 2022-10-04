@@ -9,10 +9,12 @@ import (
 	"time"
 
 	"github.com/goccy/go-graphviz"
+	"github.com/heimdalr/dag"
 	"github.com/segmentio/ksuid"
 	"gonum.org/v1/gonum/graph"
 	dotencoding "gonum.org/v1/gonum/graph/encoding/dot"
 	"gonum.org/v1/gonum/graph/simple"
+	"gonum.org/v1/gonum/graph/topo"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -20,6 +22,8 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
+
+var errNotAcyclic = errors.New("recipe is not acyclic")
 
 var _ graph.Node = (*recipeStepGraphNode)(nil)
 
@@ -38,6 +42,7 @@ func (g recipeStepGraphNode) ID() int64 {
 }
 
 var errRecipeStepIDNotFound = errors.New("recipe step ID not found")
+var errRecipeStepNotFound = errors.New("recipe step not found")
 
 func findStepIndexForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID string) (int64, error) {
 	for _, step := range recipe.Steps {
@@ -51,6 +56,18 @@ func findStepIndexForRecipeStepProductID(recipe *types.Recipe, recipeStepProduct
 	return -1, errRecipeStepIDNotFound
 }
 
+func findStepIDForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID string) (string, error) {
+	for _, step := range recipe.Steps {
+		for _, product := range step.Products {
+			if product.ID == recipeStepProductID {
+				return fmt.Sprintf("%d", step.Index+1), nil
+			}
+		}
+	}
+
+	return "", errRecipeStepIDNotFound
+}
+
 func findStepIndexForRecipeStepID(recipe *types.Recipe, recipeStepID string) (int64, error) {
 	for _, step := range recipe.Steps {
 		if step.ID == recipeStepID {
@@ -61,6 +78,16 @@ func findStepIndexForRecipeStepID(recipe *types.Recipe, recipeStepID string) (in
 	return -1, errRecipeStepIDNotFound
 }
 
+func findStepForIndex(recipe *types.Recipe, index int64) (*types.RecipeStep, error) {
+	for _, step := range recipe.Steps {
+		if int64(step.Index+1) == index {
+			return step, nil
+		}
+	}
+
+	return nil, errRecipeStepNotFound
+}
+
 func graphIDForStep(step *types.RecipeStep) int64 {
 	return int64(step.Index + 1)
 }
@@ -68,7 +95,6 @@ func graphIDForStep(step *types.RecipeStep) int64 {
 // RecipeAnalyzer generates DAG diagrams from recipes.
 type RecipeAnalyzer interface {
 	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
-	FindStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error)
 	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
 }
 
@@ -93,17 +119,12 @@ func (g *recipeAnalyzer) GenerateDAGDiagramForRecipe(ctx context.Context, recipe
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
-	dag, err := g.makeGraphForRecipe(ctx, recipe)
+	recipeGraph, err := g.makeGraphForRecipe(ctx, recipe)
 	if err != nil {
 		return nil, err
 	}
 
-	img, err := g.renderGraph(ctx, dag)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = g.FindStepsEligibleForMealPlanTasks(ctx, recipe)
+	img, err := g.renderGraph(ctx, recipeGraph)
 	if err != nil {
 		return nil, err
 	}
@@ -153,6 +174,74 @@ func (g *recipeAnalyzer) makeGraphForRecipe(ctx context.Context, recipe *types.R
 		}
 	}
 
+	directedCycles := topo.DirectedCyclesIn(recipeGraph)
+	if len(directedCycles) > 0 {
+		return nil, errNotAcyclic
+	}
+
+	if _, err := g.makeDAGForRecipe(ctx, recipe); err != nil {
+		return nil, fmt.Errorf("parsing recipe as DAG: %w", err)
+	}
+
+	return recipeGraph, nil
+}
+
+type RecipeStepIdentifier struct {
+	recipeStep *types.RecipeStep
+}
+
+func (i *RecipeStepIdentifier) ID() string {
+	return fmt.Sprintf("%d", i.recipeStep.Index+1)
+}
+
+// makeDAGForRecipe makes a proper DAG for the provided Recipe. Gonum has the notion of a directed graph, but
+// doesn't seem to really give a rat's ass if it's acyclic, the way that the DAG library does.
+func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Recipe) (*dag.DAG, error) {
+	_, span := g.tracer.StartSpan(ctx)
+	defer span.End()
+
+	recipeGraph := dag.NewDAG()
+
+	for _, step := range recipe.Steps {
+		if _, err := recipeGraph.AddVertex(&RecipeStepIdentifier{recipeStep: step}); err != nil {
+			return nil, fmt.Errorf("adding step %d to graph: %w", step.Index, err)
+		}
+	}
+
+	for _, step := range recipe.Steps {
+		for _, ingredient := range step.Ingredients {
+			if !ingredient.ProductOfRecipeStep {
+				continue
+			}
+
+			toStepID, err := findStepIDForRecipeStepProductID(recipe, *ingredient.RecipeStepProductID)
+			if err != nil {
+				return nil, fmt.Errorf("finding step ID for step %d for recipe step product ID: %w", step.Index, err)
+			}
+
+			if err = recipeGraph.AddEdge(fmt.Sprintf("%d", step.Index+1), toStepID); err != nil {
+				return nil, fmt.Errorf("adding step %d to graph: %w", step.Index, err)
+			}
+		}
+
+		for _, instrument := range step.Instruments {
+			if !instrument.ProductOfRecipeStep || instrument.RecipeStepProductID == nil {
+				continue
+			}
+
+			toStep, err := findStepIDForRecipeStepProductID(recipe, *instrument.RecipeStepProductID)
+			if err != nil {
+				return nil, fmt.Errorf("finding step ID for step %d for recipe step ingredient ID: %w", step.Index, err)
+			}
+
+			if err = recipeGraph.AddEdge(step.ID, toStep); err != nil {
+				return nil, fmt.Errorf("adding step %d to graph: %w", step.Index, err)
+			}
+		}
+	}
+
+	recipeGraph.ReduceTransitively()
+
 	return recipeGraph, nil
 }
 
@@ -179,8 +268,8 @@ func (g *recipeAnalyzer) renderGraph(ctx context.Context, recipeGraph graph.Grap
 	return img, nil
 }
 
-// FindStepsEligibleForMealPlanTasks finds steps eligible for meal plan task creation.
-func (g *recipeAnalyzer) FindStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
+// findStepsEligibleForMealPlanTasks finds steps eligible for meal plan task creation.
+func (g *recipeAnalyzer) findStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -227,7 +316,7 @@ func (g *recipeAnalyzer) FindStepsEligibleForMealPlanTasks(ctx context.Context, 
 			for _, step := range recipe.Steps {
 				allProductsHaveStorageInstructionsAndDurations := true
 				for _, product := range step.Products {
-					if product.MaximumStorageDurationInSeconds == 0 || strings.TrimSpace(product.StorageInstructions) == "" {
+					if product.MaximumStorageDurationInSeconds == nil || strings.TrimSpace(product.StorageInstructions) == "" {
 						allProductsHaveStorageInstructionsAndDurations = false
 					}
 				}
@@ -240,6 +329,65 @@ func (g *recipeAnalyzer) FindStepsEligibleForMealPlanTasks(ctx context.Context, 
 	}
 
 	return stepsWorthNotifyingAbout, nil
+}
+
+func findAllAncestorsForNode(recipeGraph graph.Directed, node graph.Node) []graph.Node {
+	out := []graph.Node{}
+
+	ancestors := recipeGraph.To(node.ID())
+
+	for ancestors.Next() {
+		n := ancestors.Node()
+
+		if !nodeHasMultipleInboundVertices(recipeGraph, n) {
+			out = append(out, n)
+			out = append(out, findAllAncestorsForNode(recipeGraph, n)...)
+		}
+	}
+
+	return out
+}
+
+func (g *recipeAnalyzer) findStepsWhichCulminateInStorablePreparedIngredients(ctx context.Context, recipe *types.Recipe) ([][]*types.RecipeStep, error) {
+	ctx, span := g.tracer.StartSpan(ctx)
+	defer span.End()
+
+	recipeGraph, err := g.makeGraphForRecipe(ctx, recipe)
+	if err != nil {
+		return nil, err
+	}
+
+	junctionNodes := []graph.Node{}
+
+	nodes := recipeGraph.Nodes()
+	for nodes.Next() {
+		n := nodes.Node()
+
+		if nodeHasMultipleInboundVertices(recipeGraph, n) {
+			junctionNodes = append(junctionNodes, n)
+		}
+	}
+
+	stepSets := [][]graph.Node{}
+	for _, junctionNode := range junctionNodes {
+		ancestors := findAllAncestorsForNode(recipeGraph, junctionNode)
+		stepSets = append(stepSets, ancestors)
+	}
+
+	out := [][]*types.RecipeStep{}
+	for _, set := range stepSets {
+		steps := []*types.RecipeStep{}
+		for _, step := range set {
+			s, findStepErr := findStepForIndex(recipe, step.ID())
+			if findStepErr != nil {
+				return nil, findStepErr
+			}
+			steps = append(steps, s)
+		}
+		out = append(out, steps)
+	}
+
+	return out, nil
 }
 
 // frozenIngredientDefrostStepsFilter iterates through a recipe and returns
@@ -295,19 +443,23 @@ func buildThawStepCreationExplanation(recipeStepIndex int64, ingredientIndices .
 	return fmt.Sprintf("frozen %s (%s) for step #%d might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "), recipeStepIndex)
 }
 
-func determineCreationMinAndMaxTimesForRecipeStep(step *types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (cannotCompleteBefore, cannotCompleteAfter time.Time) {
+func determineCreationMinAndMaxTimesForRecipeStep(steps []*types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (cannotCompleteBefore, cannotCompleteAfter time.Time) {
 	var (
 		shortestDuration,
 		longestDuration uint32
 	)
 
-	for _, product := range step.Products {
-		if product.MaximumStorageDurationInSeconds < shortestDuration || shortestDuration == 0 {
-			shortestDuration = product.MaximumStorageDurationInSeconds
-		}
+	for _, step := range steps {
+		for _, product := range step.Products {
+			if product.MaximumStorageDurationInSeconds != nil {
+				if *product.MaximumStorageDurationInSeconds < shortestDuration || shortestDuration == 0 {
+					shortestDuration = *product.MaximumStorageDurationInSeconds
+				}
 
-		if product.MaximumStorageDurationInSeconds > longestDuration || longestDuration == 0 {
-			longestDuration = product.MaximumStorageDurationInSeconds
+				if *product.MaximumStorageDurationInSeconds > longestDuration || longestDuration == 0 {
+					longestDuration = *product.MaximumStorageDurationInSeconds
+				}
+			}
 		}
 	}
 
@@ -332,12 +484,12 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 	inputs := []*types.MealPlanTaskDatabaseCreationInput{}
 
 	frozenIngredientSteps := frozenIngredientDefrostStepsFilter(recipe)
-	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen step inputs")
+	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen stepSet inputs")
 
 	for stepID, ingredientIndices := range frozenIngredientSteps {
 		stepIndex, err := findStepIndexForRecipeStepID(recipe, stepID)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "determining recipe step index for step ID")
+			observability.AcknowledgeError(err, logger, span, "determining recipe stepSet index for stepSet ID")
 			continue
 		}
 
@@ -363,31 +515,42 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 		})
 	}
 
-	steps, graphErr := g.FindStepsEligibleForMealPlanTasks(ctx, recipe)
+	_, graphErr := g.findStepsEligibleForMealPlanTasks(ctx, recipe)
 	if graphErr != nil {
-		return nil, observability.PrepareAndLogError(graphErr, logger, nil, "generating graph for recipe")
+		return nil, observability.PrepareAndLogError(graphErr, logger, nil, "finding steps eligible for advanced preparation")
 	}
 
-	logger.WithValue("steps_qty", len(steps)).Info("creating inputs from steps")
+	stepSets, graphErr := g.findStepsWhichCulminateInStorablePreparedIngredients(ctx, recipe)
+	if graphErr != nil {
+		return nil, observability.PrepareAndLogError(graphErr, logger, nil, "finding steps eligible for advanced preparation")
+	}
 
-	for _, step := range steps {
-		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(step, mealPlanEvent)
+	logger.WithValue("steps_qty", len(stepSets)).Info("creating inputs from stepSets")
+
+	for _, stepSet := range stepSets {
+		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(stepSet, mealPlanEvent)
 
 		taskID := ksuid.New().String()
-		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
+		input := &types.MealPlanTaskDatabaseCreationInput{
 			ID:                   taskID,
 			CannotCompleteBefore: cannotCompleteBefore,
 			CannotCompleteAfter:  cannotCompleteAfter,
 			CreationExplanation:  storagePrepCreationExplanation,
 			MealPlanOptionID:     mealPlanOptionID,
-			RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
-				{
+			RecipeSteps:          []*types.MealPlanTaskRecipeStepDatabaseCreationInput{},
+		}
+
+		for _, step := range stepSet {
+			input.RecipeSteps = append(input.RecipeSteps,
+				&types.MealPlanTaskRecipeStepDatabaseCreationInput{
 					ID:                    ksuid.New().String(),
 					BelongsToMealPlanTask: taskID,
 					SatisfiesRecipeStep:   step.ID,
 				},
-			},
-		})
+			)
+		}
+
+		inputs = append(inputs, input)
 	}
 
 	return inputs, nil

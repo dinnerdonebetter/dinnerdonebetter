@@ -40,7 +40,7 @@ func convertRecipeStepProductToRecipeStepProductUpdateInput(x *types.RecipeStepP
 		MaximumQuantity:                    &x.MaximumQuantity,
 		QuantityNotes:                      &x.QuantityNotes,
 		Compostable:                        &x.Compostable,
-		MaximumStorageDurationInSeconds:    &x.MaximumStorageDurationInSeconds,
+		MaximumStorageDurationInSeconds:    x.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: x.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: x.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                &x.StorageInstructions,

@@ -54,5 +54,5 @@ environments/testing/certificates
 *.pem
 
 cmd/tools/db_initializer/dump.sql
-cmd/playground/*
+cmd/playground/*.go
 

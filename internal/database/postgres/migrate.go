@@ -245,6 +245,11 @@ var (
 			Description: "rename advanced prep step table",
 			Script:      fetchMigration("00046_meal_plan_tasks"),
 		},
+		{
+			Version:     47,
+			Description: "nullable storage durations for products",
+			Script:      fetchMigration("00047_nullable_storage_durations_for_products"),
+		},
 	}
 )
 
