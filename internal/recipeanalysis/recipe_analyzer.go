@@ -95,7 +95,6 @@ func graphIDForStep(step *types.RecipeStep) int64 {
 // RecipeAnalyzer generates DAG diagrams from recipes.
 type RecipeAnalyzer interface {
 	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
-	FindStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error)
 	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
 }
 
@@ -126,11 +125,6 @@ func (g *recipeAnalyzer) GenerateDAGDiagramForRecipe(ctx context.Context, recipe
 	}
 
 	img, err := g.renderGraph(ctx, recipeGraph)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = g.FindStepsEligibleForMealPlanTasks(ctx, recipe)
 	if err != nil {
 		return nil, err
 	}
@@ -274,8 +268,8 @@ func (g *recipeAnalyzer) renderGraph(ctx context.Context, recipeGraph graph.Grap
 	return img, nil
 }
 
-// FindStepsEligibleForMealPlanTasks finds steps eligible for meal plan task creation.
-func (g *recipeAnalyzer) FindStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
+// findStepsEligibleForMealPlanTasks finds steps eligible for meal plan task creation.
+func (g *recipeAnalyzer) findStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -354,7 +348,7 @@ func findAllAncestorsForNode(recipeGraph graph.Directed, node graph.Node) []grap
 	return out
 }
 
-func (g *recipeAnalyzer) FindStepsWhichCulminateInStorablePreparedIngredients(ctx context.Context, recipe *types.Recipe) ([][]*types.RecipeStep, error) {
+func (g *recipeAnalyzer) findStepsWhichCulminateInStorablePreparedIngredients(ctx context.Context, recipe *types.Recipe) ([][]*types.RecipeStep, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -449,20 +443,22 @@ func buildThawStepCreationExplanation(recipeStepIndex int64, ingredientIndices .
 	return fmt.Sprintf("frozen %s (%s) for step #%d might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "), recipeStepIndex)
 }
 
-func determineCreationMinAndMaxTimesForRecipeStep(step *types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (cannotCompleteBefore, cannotCompleteAfter time.Time) {
+func determineCreationMinAndMaxTimesForRecipeStep(steps []*types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (cannotCompleteBefore, cannotCompleteAfter time.Time) {
 	var (
 		shortestDuration,
 		longestDuration uint32
 	)
 
-	for _, product := range step.Products {
-		if product.MaximumStorageDurationInSeconds != nil {
-			if *product.MaximumStorageDurationInSeconds < shortestDuration || shortestDuration == 0 {
-				shortestDuration = *product.MaximumStorageDurationInSeconds
-			}
+	for _, step := range steps {
+		for _, product := range step.Products {
+			if product.MaximumStorageDurationInSeconds != nil {
+				if *product.MaximumStorageDurationInSeconds < shortestDuration || shortestDuration == 0 {
+					shortestDuration = *product.MaximumStorageDurationInSeconds
+				}
 
-			if *product.MaximumStorageDurationInSeconds > longestDuration || longestDuration == 0 {
-				longestDuration = *product.MaximumStorageDurationInSeconds
+				if *product.MaximumStorageDurationInSeconds > longestDuration || longestDuration == 0 {
+					longestDuration = *product.MaximumStorageDurationInSeconds
+				}
 			}
 		}
 	}
@@ -488,12 +484,12 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 	inputs := []*types.MealPlanTaskDatabaseCreationInput{}
 
 	frozenIngredientSteps := frozenIngredientDefrostStepsFilter(recipe)
-	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen step inputs")
+	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen stepSet inputs")
 
 	for stepID, ingredientIndices := range frozenIngredientSteps {
 		stepIndex, err := findStepIndexForRecipeStepID(recipe, stepID)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "determining recipe step index for step ID")
+			observability.AcknowledgeError(err, logger, span, "determining recipe stepSet index for stepSet ID")
 			continue
 		}
 
@@ -519,31 +515,42 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 		})
 	}
 
-	steps, graphErr := g.FindStepsEligibleForMealPlanTasks(ctx, recipe)
+	_, graphErr := g.findStepsEligibleForMealPlanTasks(ctx, recipe)
 	if graphErr != nil {
-		return nil, observability.PrepareAndLogError(graphErr, logger, nil, "generating graph for recipe")
+		return nil, observability.PrepareAndLogError(graphErr, logger, nil, "finding steps eligible for advanced preparation")
 	}
 
-	logger.WithValue("steps_qty", len(steps)).Info("creating inputs from steps")
+	stepSets, graphErr := g.findStepsWhichCulminateInStorablePreparedIngredients(ctx, recipe)
+	if graphErr != nil {
+		return nil, observability.PrepareAndLogError(graphErr, logger, nil, "finding steps eligible for advanced preparation")
+	}
 
-	for _, step := range steps {
-		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(step, mealPlanEvent)
+	logger.WithValue("steps_qty", len(stepSets)).Info("creating inputs from stepSets")
+
+	for _, stepSet := range stepSets {
+		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(stepSet, mealPlanEvent)
 
 		taskID := ksuid.New().String()
-		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
+		input := &types.MealPlanTaskDatabaseCreationInput{
 			ID:                   taskID,
 			CannotCompleteBefore: cannotCompleteBefore,
 			CannotCompleteAfter:  cannotCompleteAfter,
 			CreationExplanation:  storagePrepCreationExplanation,
 			MealPlanOptionID:     mealPlanOptionID,
-			RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
-				{
+			RecipeSteps:          []*types.MealPlanTaskRecipeStepDatabaseCreationInput{},
+		}
+
+		for _, step := range stepSet {
+			input.RecipeSteps = append(input.RecipeSteps,
+				&types.MealPlanTaskRecipeStepDatabaseCreationInput{
 					ID:                    ksuid.New().String(),
 					BelongsToMealPlanTask: taskID,
 					SatisfiesRecipeStep:   step.ID,
 				},
-			},
-		})
+			)
+		}
+
+		inputs = append(inputs, input)
 	}
 
 	return inputs, nil
