@@ -42,6 +42,7 @@ func (g recipeStepGraphNode) ID() int64 {
 }
 
 var errRecipeStepIDNotFound = errors.New("recipe step ID not found")
+var errRecipeStepNotFound = errors.New("recipe step not found")
 
 func findStepIndexForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID string) (int64, error) {
 	for _, step := range recipe.Steps {
@@ -67,18 +68,6 @@ func findStepIDForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID 
 	return "", errRecipeStepIDNotFound
 }
 
-func findStepForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID string) (*types.RecipeStep, error) {
-	for _, step := range recipe.Steps {
-		for _, product := range step.Products {
-			if product.ID == recipeStepProductID {
-				return step, nil
-			}
-		}
-	}
-
-	return nil, errRecipeStepIDNotFound
-}
-
 func findStepIndexForRecipeStepID(recipe *types.Recipe, recipeStepID string) (int64, error) {
 	for _, step := range recipe.Steps {
 		if step.ID == recipeStepID {
@@ -87,6 +76,16 @@ func findStepIndexForRecipeStepID(recipe *types.Recipe, recipeStepID string) (in
 	}
 
 	return -1, errRecipeStepIDNotFound
+}
+
+func findStepForIndex(recipe *types.Recipe, index int64) (*types.RecipeStep, error) {
+	for _, step := range recipe.Steps {
+		if int64(step.Index+1) == index {
+			return step, nil
+		}
+	}
+
+	return nil, errRecipeStepNotFound
 }
 
 func graphIDForStep(step *types.RecipeStep) int64 {
@@ -100,24 +99,24 @@ type RecipeAnalyzer interface {
 	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
 }
 
-var _ RecipeAnalyzer = (*RecipeAnalyzerImpl)(nil)
+var _ RecipeAnalyzer = (*recipeAnalyzer)(nil)
 
-// RecipeAnalyzerImpl creates graphs from recipes.
-type RecipeAnalyzerImpl struct {
+// recipeAnalyzer creates graphs from recipes.
+type recipeAnalyzer struct {
 	tracer tracing.Tracer
 	logger logging.Logger
 }
 
-// NewRecipeAnalyzer creates a RecipeAnalyzerImpl.
+// NewRecipeAnalyzer creates a recipeAnalyzer.
 func NewRecipeAnalyzer(logger logging.Logger, tracerProvider tracing.TracerProvider) RecipeAnalyzer {
-	return &RecipeAnalyzerImpl{
+	return &recipeAnalyzer{
 		logger: logging.EnsureLogger(logger).WithName("recipe_analyzer"),
 		tracer: tracing.NewTracer(tracerProvider.Tracer("recipe_grapher")),
 	}
 }
 
 // GenerateDAGDiagramForRecipe generates DAG diagrams for a given recipe.
-func (g *RecipeAnalyzerImpl) GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error) {
+func (g *recipeAnalyzer) GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -139,7 +138,7 @@ func (g *RecipeAnalyzerImpl) GenerateDAGDiagramForRecipe(ctx context.Context, re
 	return img, nil
 }
 
-func (g *RecipeAnalyzerImpl) makeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
+func (g *recipeAnalyzer) makeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -186,6 +185,10 @@ func (g *RecipeAnalyzerImpl) makeGraphForRecipe(ctx context.Context, recipe *typ
 		return nil, errNotAcyclic
 	}
 
+	if _, err := g.makeDAGForRecipe(ctx, recipe); err != nil {
+		return nil, fmt.Errorf("parsing recipe as DAG: %w", err)
+	}
+
 	return recipeGraph, nil
 }
 
@@ -199,7 +202,7 @@ func (i *RecipeStepIdentifier) ID() string {
 
 // makeDAGForRecipe makes a proper DAG for the provided Recipe. Gonum has the notion of a directed graph, but
 // doesn't seem to really give a rat's ass if it's acyclic, the way that the DAG library does.
-func (g *RecipeAnalyzerImpl) makeDAGForRecipe(ctx context.Context, recipe *types.Recipe) (*dag.DAG, error) {
+func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Recipe) (*dag.DAG, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -248,7 +251,7 @@ func (g *RecipeAnalyzerImpl) makeDAGForRecipe(ctx context.Context, recipe *types
 	return recipeGraph, nil
 }
 
-func (g *RecipeAnalyzerImpl) renderGraph(ctx context.Context, recipeGraph graph.Graph) (image.Image, error) {
+func (g *recipeAnalyzer) renderGraph(ctx context.Context, recipeGraph graph.Graph) (image.Image, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -272,7 +275,7 @@ func (g *RecipeAnalyzerImpl) renderGraph(ctx context.Context, recipeGraph graph.
 }
 
 // FindStepsEligibleForMealPlanTasks finds steps eligible for meal plan task creation.
-func (g *RecipeAnalyzerImpl) FindStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
+func (g *recipeAnalyzer) FindStepsEligibleForMealPlanTasks(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -319,7 +322,7 @@ func (g *RecipeAnalyzerImpl) FindStepsEligibleForMealPlanTasks(ctx context.Conte
 			for _, step := range recipe.Steps {
 				allProductsHaveStorageInstructionsAndDurations := true
 				for _, product := range step.Products {
-					if product.MaximumStorageDurationInSeconds == 0 || strings.TrimSpace(product.StorageInstructions) == "" {
+					if product.MaximumStorageDurationInSeconds == nil || strings.TrimSpace(product.StorageInstructions) == "" {
 						allProductsHaveStorageInstructionsAndDurations = false
 					}
 				}
@@ -333,8 +336,6 @@ func (g *RecipeAnalyzerImpl) FindStepsEligibleForMealPlanTasks(ctx context.Conte
 
 	return stepsWorthNotifyingAbout, nil
 }
-
-// FIXME: we need a function that finds all arrows (https://en.wikipedia.org/wiki/Glossary_of_graph_theory#arrow) within a given recipe
 
 func findAllAncestorsForNode(recipeGraph graph.Directed, node graph.Node) []graph.Node {
 	out := []graph.Node{}
@@ -353,7 +354,7 @@ func findAllAncestorsForNode(recipeGraph graph.Directed, node graph.Node) []grap
 	return out
 }
 
-func (g *RecipeAnalyzerImpl) FindStepsWhichCulminateInStorablePreparedIngredients(ctx context.Context, recipe *types.Recipe) ([]*types.RecipeStep, error) {
+func (g *recipeAnalyzer) FindStepsWhichCulminateInStorablePreparedIngredients(ctx context.Context, recipe *types.Recipe) ([][]*types.RecipeStep, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -379,7 +380,20 @@ func (g *RecipeAnalyzerImpl) FindStepsWhichCulminateInStorablePreparedIngredient
 		stepSets = append(stepSets, ancestors)
 	}
 
-	return nil, nil
+	out := [][]*types.RecipeStep{}
+	for _, set := range stepSets {
+		steps := []*types.RecipeStep{}
+		for _, step := range set {
+			s, findStepErr := findStepForIndex(recipe, step.ID())
+			if findStepErr != nil {
+				return nil, findStepErr
+			}
+			steps = append(steps, s)
+		}
+		out = append(out, steps)
+	}
+
+	return out, nil
 }
 
 // frozenIngredientDefrostStepsFilter iterates through a recipe and returns
@@ -442,12 +456,14 @@ func determineCreationMinAndMaxTimesForRecipeStep(step *types.RecipeStep, mealPl
 	)
 
 	for _, product := range step.Products {
-		if product.MaximumStorageDurationInSeconds < shortestDuration || shortestDuration == 0 {
-			shortestDuration = product.MaximumStorageDurationInSeconds
-		}
+		if product.MaximumStorageDurationInSeconds != nil {
+			if *product.MaximumStorageDurationInSeconds < shortestDuration || shortestDuration == 0 {
+				shortestDuration = *product.MaximumStorageDurationInSeconds
+			}
 
-		if product.MaximumStorageDurationInSeconds > longestDuration || longestDuration == 0 {
-			longestDuration = product.MaximumStorageDurationInSeconds
+			if *product.MaximumStorageDurationInSeconds > longestDuration || longestDuration == 0 {
+				longestDuration = *product.MaximumStorageDurationInSeconds
+			}
 		}
 	}
 
@@ -459,7 +475,7 @@ func determineCreationMinAndMaxTimesForRecipeStep(step *types.RecipeStep, mealPl
 
 const storagePrepCreationExplanation = "adequate storage instructions for early step"
 
-func (g *RecipeAnalyzerImpl) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
+func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 

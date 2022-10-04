@@ -14,10 +14,10 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
-func newAnalyzerForTest(t *testing.T) *RecipeAnalyzerImpl {
+func newAnalyzerForTest(t *testing.T) *recipeAnalyzer {
 	t.Helper()
 
-	return &RecipeAnalyzerImpl{
+	return &recipeAnalyzer{
 		tracer: tracing.NewTracerForTest(t.Name()),
 		logger: logging.NewNoopLogger(),
 	}
@@ -39,6 +39,27 @@ func TestRecipeGrapher_makeGraphForRecipe(T *testing.T) {
 		}
 
 		actual, err := g.makeGraphForRecipe(ctx, r)
+		assert.NoError(t, err)
+		assert.NotNil(t, actual)
+	})
+}
+
+func TestRecipeGrapher_makeDAGForRecipe(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		g := newAnalyzerForTest(t)
+
+		ctx := context.Background()
+		r := &types.Recipe{
+			Steps: []*types.RecipeStep{
+				{},
+			},
+		}
+
+		actual, err := g.makeDAGForRecipe(ctx, r)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})
@@ -115,7 +136,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							ID:                                 fakes.BuildFakeID(),
 							QuantityNotes:                      "",
 							MeasurementUnit:                    types.ValidMeasurementUnit{},
-							MaximumStorageDurationInSeconds:    0,
+							MaximumStorageDurationInSeconds:    nil,
 							MaximumQuantity:                    0,
 							MinimumQuantity:                    0,
 							Compostable:                        false,
@@ -228,7 +249,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name: "gram", PluralName: "gram",
 							},
-							MaximumStorageDurationInSeconds: 259200,
+							MaximumStorageDurationInSeconds: pointers.Uint32Pointer(259200),
 							MaximumQuantity:                 0,
 							MinimumQuantity:                 0,
 							Compostable:                     false,
@@ -270,7 +291,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name: "gram", PluralName: "gram",
 							},
-							MaximumStorageDurationInSeconds: 0,
+							MaximumStorageDurationInSeconds: nil,
 							MaximumQuantity:                 0,
 							MinimumQuantity:                 0,
 							Compostable:                     false,

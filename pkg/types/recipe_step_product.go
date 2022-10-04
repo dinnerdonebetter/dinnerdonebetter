@@ -42,14 +42,14 @@ type (
 		LastUpdatedAt                      *time.Time           `json:"lastUpdatedAt"`
 		MaximumStorageTemperatureInCelsius *float32             `json:"maximumStorageTemperatureInCelsius"`
 		ArchivedAt                         *time.Time           `json:"archivedAt"`
-		StorageInstructions                string               `json:"storageInstructions"`
-		Name                               string               `json:"name"`
+		MaximumStorageDurationInSeconds    *uint32              `json:"maximumStorageDurationInSeconds"`
 		Type                               string               `json:"type"`
+		Name                               string               `json:"name"`
 		BelongsToRecipeStep                string               `json:"belongsToRecipeStep"`
 		ID                                 string               `json:"id"`
 		QuantityNotes                      string               `json:"quantityNotes"`
+		StorageInstructions                string               `json:"storageInstructions"`
 		MeasurementUnit                    ValidMeasurementUnit `json:"measurementUnit"`
-		MaximumStorageDurationInSeconds    uint32               `json:"maximumStorageDurationInSeconds"`
 		MaximumQuantity                    float32              `json:"maximumQuantity"`
 		MinimumQuantity                    float32              `json:"minimumQuantity"`
 		Compostable                        bool                 `json:"compostable"`
@@ -67,14 +67,14 @@ type (
 		_                                  struct{}
 		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
-		StorageInstructions                string   `json:"storageInstructions"`
-		QuantityNotes                      string   `json:"quantityNotes"`
+		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds"`
+		Type                               string   `json:"type"`
 		MeasurementUnitID                  string   `json:"measurementUnitID"`
 		BelongsToRecipeStep                string   `json:"-"`
-		Type                               string   `json:"type"`
+		QuantityNotes                      string   `json:"quantityNotes"`
 		Name                               string   `json:"name"`
 		ID                                 string   `json:"-"`
-		MaximumStorageDurationInSeconds    uint32   `json:"maximumStorageDurationInSeconds"`
+		StorageInstructions                string   `json:"storageInstructions"`
 		MaximumQuantity                    float32  `json:"maximumQuantity"`
 		MinimumQuantity                    float32  `json:"minimumQuantity"`
 		Compostable                        bool     `json:"compostable"`
@@ -85,14 +85,14 @@ type (
 		_                                  struct{}
 		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
-		StorageInstructions                string   `json:"storageInstructions"`
-		MeasurementUnitID                  string   `json:"measurementUnitID"`
+		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds"`
+		Type                               string   `json:"type"`
 		QuantityNotes                      string   `json:"quantityNotes"`
 		BelongsToRecipeStep                string   `json:"belongsToRecipeStep"`
-		Type                               string   `json:"type"`
+		MeasurementUnitID                  string   `json:"measurementUnitID"`
 		Name                               string   `json:"name"`
 		ID                                 string   `json:"id"`
-		MaximumStorageDurationInSeconds    uint32   `json:"maximumStorageDurationInSeconds"`
+		StorageInstructions                string   `json:"storageInstructions"`
 		MaximumQuantity                    float32  `json:"maximumQuantity"`
 		MinimumQuantity                    float32  `json:"minimumQuantity"`
 		Compostable                        bool     `json:"compostable"`
@@ -165,8 +165,8 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.Compostable = *input.Compostable
 	}
 
-	if input.MaximumStorageDurationInSeconds != nil && *input.MaximumStorageDurationInSeconds != x.MaximumStorageDurationInSeconds {
-		x.MaximumStorageDurationInSeconds = *input.MaximumStorageDurationInSeconds
+	if input.MaximumStorageDurationInSeconds != nil && input.MaximumStorageDurationInSeconds != x.MaximumStorageDurationInSeconds {
+		x.MaximumStorageDurationInSeconds = input.MaximumStorageDurationInSeconds
 	}
 
 	if input.MinimumStorageTemperatureInCelsius != nil && input.MinimumStorageTemperatureInCelsius != x.MinimumStorageTemperatureInCelsius {
@@ -225,7 +225,7 @@ func RecipeStepProductUpdateRequestInputFromRecipeStepProduct(input *RecipeStepP
 		MinimumQuantity:                    &input.MinimumQuantity,
 		MaximumQuantity:                    &input.MaximumQuantity,
 		Compostable:                        &input.Compostable,
-		MaximumStorageDurationInSeconds:    &input.MaximumStorageDurationInSeconds,
+		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                &input.StorageInstructions,

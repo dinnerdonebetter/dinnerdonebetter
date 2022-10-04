@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/api_server/internal/pointers"
 )
 
 func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
@@ -21,9 +23,9 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 			MinimumQuantity:                    fake.Float32(),
 			QuantityNotes:                      fake.LoremIpsumSentence(exampleQuantity),
 			Compostable:                        fake.Bool(),
-			MaximumStorageDurationInSeconds:    fake.Uint32(),
-			MinimumStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
-			MaximumStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
+			MaximumStorageDurationInSeconds:    pointers.Uint32Pointer(fake.Uint32()),
+			MinimumStorageTemperatureInCelsius: pointers.Float32Pointer(fake.Float32()),
+			MaximumStorageTemperatureInCelsius: pointers.Float32Pointer(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
