@@ -2,6 +2,7 @@ package recipeanalysis
 
 import (
 	"context"
+	"sort"
 	"testing"
 	"time"
 
@@ -389,6 +390,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				CannotCompleteAfter:  time.Now(),
 				CreationExplanation:  storagePrepCreationExplanation,
 				MealPlanOptionID:     exampleMealPlanOption.ID,
+				// These can be created in any order, so we do some funky comparison stuff later
 				RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
 					{
 						AppliesToRecipeStep: recipeStep1ID,
@@ -407,6 +409,9 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 
 		require.Equal(t, len(actual), len(expected))
 
+		expectedRecipeStepIDs := []string{}
+		actualRecipeStepIDs := []string{}
+
 		for i := range expected {
 			expected[i].ID = actual[i].ID
 			expected[i].CannotCompleteBefore = actual[i].CannotCompleteBefore
@@ -415,6 +420,19 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 			for j := range expected[i].RecipeSteps {
 				expected[i].RecipeSteps[j].BelongsToMealPlanTask = actual[i].RecipeSteps[j].BelongsToMealPlanTask
 				expected[i].RecipeSteps[j].ID = actual[i].RecipeSteps[j].ID
+
+				expectedRecipeStepIDs = append(expectedRecipeStepIDs, expected[i].RecipeSteps[j].AppliesToRecipeStep)
+				actualRecipeStepIDs = append(actualRecipeStepIDs, actual[i].RecipeSteps[j].AppliesToRecipeStep)
+			}
+		}
+
+		sort.Strings(expectedRecipeStepIDs)
+		sort.Strings(actualRecipeStepIDs)
+
+		for i := range expected {
+			for j := range expected[i].RecipeSteps {
+				expected[i].RecipeSteps[j] = nil
+				actual[i].RecipeSteps[j] = nil
 			}
 		}
 
