@@ -222,7 +222,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 				mockAnalyzer.On(
 					"GenerateMealPlanTasksForRecipe",
 					testutils.ContextMatcher,
-					exampleMealPlanEvent,
+					exampleMealPlanEvent.StartsAt,
 					result.MealPlanOptionID,
 					recipeMap[recipeID],
 				).Return(expectedReturnResults, nil)
@@ -419,7 +419,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 				mockAnalyzer.On(
 					"GenerateMealPlanTasksForRecipe",
 					testutils.ContextMatcher,
-					exampleMealPlanEvent,
+					exampleMealPlanEvent.StartsAt,
 					result.MealPlanOptionID,
 					recipeMap[recipeID],
 				).Return(expectedReturnResults, nil)

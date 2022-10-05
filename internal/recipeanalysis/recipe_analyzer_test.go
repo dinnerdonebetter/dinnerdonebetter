@@ -156,13 +156,14 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				MealPlanOptionID:     exampleMealPlanOption.ID,
 				RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
 					{
-						SatisfiesRecipeStep: recipeStepID,
+						AppliesToRecipeStep: recipeStepID,
+						SatisfiesRecipeStep: false,
 					},
 				},
 			},
 		}
 
-		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
+		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent.StartsAt, exampleMealPlanOption.ID, exampleRecipe)
 		assert.NoError(t, err)
 
 		for i := range expected {
@@ -390,16 +391,18 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				MealPlanOptionID:     exampleMealPlanOption.ID,
 				RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
 					{
-						SatisfiesRecipeStep: recipeStep1ID,
+						AppliesToRecipeStep: recipeStep1ID,
+						SatisfiesRecipeStep: true,
 					},
 					{
-						SatisfiesRecipeStep: recipeStep2ID,
+						AppliesToRecipeStep: recipeStep2ID,
+						SatisfiesRecipeStep: true,
 					},
 				},
 			},
 		}
 
-		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
+		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent.StartsAt, exampleMealPlanOption.ID, exampleRecipe)
 		assert.NoError(t, err)
 
 		require.Equal(t, len(actual), len(expected))

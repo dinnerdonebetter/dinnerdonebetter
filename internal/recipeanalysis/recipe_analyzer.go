@@ -95,7 +95,7 @@ func graphIDForStep(step *types.RecipeStep) int64 {
 // RecipeAnalyzer generates DAG diagrams from recipes.
 type RecipeAnalyzer interface {
 	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
-	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
+	GenerateMealPlanTasksForRecipe(ctx context.Context, startsAt time.Time, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
 }
 
 var _ RecipeAnalyzer = (*recipeAnalyzer)(nil)
@@ -443,7 +443,7 @@ func buildThawStepCreationExplanation(recipeStepIndex int64, ingredientIndices .
 	return fmt.Sprintf("frozen %s (%s) for step #%d might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "), recipeStepIndex)
 }
 
-func determineCreationMinAndMaxTimesForRecipeStep(steps []*types.RecipeStep, mealPlanEvent *types.MealPlanEvent) (cannotCompleteBefore, cannotCompleteAfter time.Time) {
+func determineCreationMinAndMaxTimesForRecipeStep(steps []*types.RecipeStep, startsAt time.Time) (valid bool, cannotCompleteBefore, cannotCompleteAfter time.Time) {
 	var (
 		shortestDuration,
 		longestDuration uint32
@@ -463,20 +463,23 @@ func determineCreationMinAndMaxTimesForRecipeStep(steps []*types.RecipeStep, mea
 		}
 	}
 
-	cannotCompleteBefore = whicheverIsLater(time.Now(), mealPlanEvent.StartsAt.Add(time.Duration(shortestDuration)*-time.Second))
-	cannotCompleteAfter = whicheverIsLater(mealPlanEvent.StartsAt, mealPlanEvent.StartsAt.Add(time.Duration(longestDuration)*-time.Second))
+	if shortestDuration == 0 && longestDuration == 0 {
+		return false, time.Time{}, time.Time{}
+	}
 
-	return cannotCompleteBefore, cannotCompleteAfter
+	cannotCompleteBefore = whicheverIsLater(time.Now(), startsAt.Add(time.Duration(shortestDuration)*-time.Second))
+	cannotCompleteAfter = whicheverIsLater(startsAt, startsAt.Add(time.Duration(longestDuration)*-time.Second))
+
+	return true, cannotCompleteBefore, cannotCompleteAfter
 }
 
 const storagePrepCreationExplanation = "adequate storage instructions for early step"
 
-func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanEvent *types.MealPlanEvent, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
+func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, startsAt time.Time, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := g.logger.Clone().WithValues(map[string]interface{}{
-		keys.MealPlanEventIDKey:  mealPlanEvent.ID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
 		keys.RecipeIDKey:         recipe.ID,
 	})
@@ -501,15 +504,16 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 		taskID := ksuid.New().String()
 		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
 			ID:                   taskID,
-			CannotCompleteBefore: mealPlanEvent.StartsAt.Add(2 * -time.Hour * 24),
-			CannotCompleteAfter:  mealPlanEvent.StartsAt.Add(-time.Hour * 24),
+			CannotCompleteBefore: startsAt.Add(2 * -time.Hour * 24),
+			CannotCompleteAfter:  startsAt.Add(-time.Hour * 24),
 			CreationExplanation:  explanation,
 			MealPlanOptionID:     mealPlanOptionID,
 			RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
 				{
 					ID:                    ksuid.New().String(),
 					BelongsToMealPlanTask: taskID,
-					SatisfiesRecipeStep:   stepID,
+					AppliesToRecipeStep:   stepID,
+					SatisfiesRecipeStep:   false,
 				},
 			},
 		})
@@ -528,29 +532,32 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 	logger.WithValue("steps_qty", len(stepSets)).Info("creating inputs from stepSets")
 
 	for _, stepSet := range stepSets {
-		cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(stepSet, mealPlanEvent)
+		valid, cannotCompleteBefore, cannotCompleteAfter := determineCreationMinAndMaxTimesForRecipeStep(stepSet, startsAt)
 
-		taskID := ksuid.New().String()
-		input := &types.MealPlanTaskDatabaseCreationInput{
-			ID:                   taskID,
-			CannotCompleteBefore: cannotCompleteBefore,
-			CannotCompleteAfter:  cannotCompleteAfter,
-			CreationExplanation:  storagePrepCreationExplanation,
-			MealPlanOptionID:     mealPlanOptionID,
-			RecipeSteps:          []*types.MealPlanTaskRecipeStepDatabaseCreationInput{},
+		if valid {
+			taskID := ksuid.New().String()
+			input := &types.MealPlanTaskDatabaseCreationInput{
+				ID:                   taskID,
+				CannotCompleteBefore: cannotCompleteBefore,
+				CannotCompleteAfter:  cannotCompleteAfter,
+				CreationExplanation:  storagePrepCreationExplanation,
+				MealPlanOptionID:     mealPlanOptionID,
+				RecipeSteps:          []*types.MealPlanTaskRecipeStepDatabaseCreationInput{},
+			}
+
+			for _, step := range stepSet {
+				input.RecipeSteps = append(input.RecipeSteps,
+					&types.MealPlanTaskRecipeStepDatabaseCreationInput{
+						ID:                    ksuid.New().String(),
+						BelongsToMealPlanTask: taskID,
+						AppliesToRecipeStep:   step.ID,
+						SatisfiesRecipeStep:   true,
+					},
+				)
+			}
+
+			inputs = append(inputs, input)
 		}
-
-		for _, step := range stepSet {
-			input.RecipeSteps = append(input.RecipeSteps,
-				&types.MealPlanTaskRecipeStepDatabaseCreationInput{
-					ID:                    ksuid.New().String(),
-					BelongsToMealPlanTask: taskID,
-					SatisfiesRecipeStep:   step.ID,
-				},
-			)
-		}
-
-		inputs = append(inputs, input)
 	}
 
 	return inputs, nil
