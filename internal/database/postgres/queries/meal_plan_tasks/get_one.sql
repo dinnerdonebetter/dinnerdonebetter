@@ -20,6 +20,7 @@ SELECT
     meal_plan_tasks.creation_explanation,
     meal_plan_tasks.status_explanation,
     meal_plan_tasks.assigned_to_user,
+    meal_plan_task_recipe_steps.attributable_to_recipe_step,
     meal_plan_task_recipe_steps.satisfies_recipe_step
 FROM meal_plan_tasks
     FULL OUTER JOIN meal_plan_options ON meal_plan_tasks.belongs_to_meal_plan_option=meal_plan_options.id
@@ -27,7 +28,7 @@ FROM meal_plan_tasks
     FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
     FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
     JOIN meal_plan_task_recipe_steps ON meal_plan_task_recipe_steps.belongs_to_meal_plan_task=meal_plan_tasks.id
-    JOIN recipe_steps ON meal_plan_task_recipe_steps.satisfies_recipe_step=recipe_steps.id
+    JOIN recipe_steps ON meal_plan_task_recipe_steps.attributable_to_recipe_step=recipe_steps.id
 WHERE meal_plan_options.archived_at IS NULL
     AND meal_plan_events.archived_at IS NULL
     AND meal_plans.archived_at IS NULL

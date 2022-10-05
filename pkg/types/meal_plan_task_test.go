@@ -23,7 +23,7 @@ func TestMealPlanTaskDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 			RecipeSteps: []*MealPlanTaskRecipeStepDatabaseCreationInput{
 				{
 					ID:                    "",
-					SatisfiesRecipeStep:   "",
+					AppliesToRecipeStep:   "",
 					BelongsToMealPlanTask: "",
 				},
 			},

@@ -41,25 +41,24 @@ type (
 	// MealPlanTask represents a meal plan task.
 	MealPlanTask struct {
 		_                    struct{}
-		CannotCompleteBefore time.Time      `json:"cannotCompleteBefore"`
-		CannotCompleteAfter  time.Time      `json:"cannotCompleteAfter"`
-		CreatedAt            time.Time      `json:"createdAt"`
-		CompletedAt          *time.Time     `json:"completedAt"`
-		AssignedToUser       *string        `json:"assignedToUser"`
-		ID                   string         `json:"id"`
-		Status               string         `json:"status"`
-		CreationExplanation  string         `json:"creationExplanation"`
-		StatusExplanation    string         `json:"statusExplanation"`
-		RecipeSteps          []*RecipeStep  `json:"recipeSteps"`
-		MealPlanOption       MealPlanOption `json:"mealPlanOption"`
+		CannotCompleteBefore time.Time                `json:"cannotCompleteBefore"`
+		CannotCompleteAfter  time.Time                `json:"cannotCompleteAfter"`
+		CreatedAt            time.Time                `json:"createdAt"`
+		CompletedAt          *time.Time               `json:"completedAt"`
+		AssignedToUser       *string                  `json:"assignedToUser"`
+		ID                   string                   `json:"id"`
+		Status               string                   `json:"status"`
+		CreationExplanation  string                   `json:"creationExplanation"`
+		StatusExplanation    string                   `json:"statusExplanation"`
+		RecipeSteps          []MealPlanTaskRecipeStep `json:"recipeSteps"`
+		MealPlanOption       MealPlanOption           `json:"mealPlanOption"`
 	}
 
 	// MealPlanTaskRecipeStep represents a meal plan task's recipe step.
 	MealPlanTaskRecipeStep struct {
-		_              struct{}
-		MealPlanTaskID string
-		RecipeStepID   string
-		ID             string
+		_                        struct{}
+		AttributableToRecipeStep string `json:"attributableToRecipeStep"`
+		SatisfiesRecipeStep      bool   `json:"satisfiesRecipeStep"`
 	}
 
 	// MealPlanTaskList represents a list of meal plan tasks.
@@ -99,8 +98,9 @@ type (
 	MealPlanTaskRecipeStepDatabaseCreationInput struct {
 		_                     struct{}
 		BelongsToMealPlanTask string
-		SatisfiesRecipeStep   string
+		AppliesToRecipeStep   string
 		ID                    string
+		SatisfiesRecipeStep   bool
 	}
 
 	// MealPlanTaskStatusChangeRequestInput represents what a user could set as input for updating meal plan tasks.
@@ -205,7 +205,7 @@ func MealPlanTaskDatabaseCreationInputFromMealPlanTaskCreationRequestInput(input
 	}
 
 	for _, recipeStepID := range input.RecipeStepIDs {
-		x.RecipeSteps = append(x.RecipeSteps, &MealPlanTaskRecipeStepDatabaseCreationInput{SatisfiesRecipeStep: recipeStepID})
+		x.RecipeSteps = append(x.RecipeSteps, &MealPlanTaskRecipeStepDatabaseCreationInput{AppliesToRecipeStep: recipeStepID})
 	}
 
 	return x

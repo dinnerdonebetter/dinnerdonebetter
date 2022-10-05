@@ -2,6 +2,7 @@ package recipeanalysis
 
 import (
 	"context"
+	"sort"
 	"testing"
 	"time"
 
@@ -156,13 +157,14 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				MealPlanOptionID:     exampleMealPlanOption.ID,
 				RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
 					{
-						SatisfiesRecipeStep: recipeStepID,
+						AppliesToRecipeStep: recipeStepID,
+						SatisfiesRecipeStep: false,
 					},
 				},
 			},
 		}
 
-		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
+		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent.StartsAt, exampleMealPlanOption.ID, exampleRecipe)
 		assert.NoError(t, err)
 
 		for i := range expected {
@@ -388,21 +390,27 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				CannotCompleteAfter:  time.Now(),
 				CreationExplanation:  storagePrepCreationExplanation,
 				MealPlanOptionID:     exampleMealPlanOption.ID,
+				// These can be created in any order, so we do some funky comparison stuff later
 				RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
 					{
-						SatisfiesRecipeStep: recipeStep1ID,
+						AppliesToRecipeStep: recipeStep1ID,
+						SatisfiesRecipeStep: true,
 					},
 					{
-						SatisfiesRecipeStep: recipeStep2ID,
+						AppliesToRecipeStep: recipeStep2ID,
+						SatisfiesRecipeStep: true,
 					},
 				},
 			},
 		}
 
-		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent, exampleMealPlanOption.ID, exampleRecipe)
+		actual, err := g.GenerateMealPlanTasksForRecipe(ctx, exampleMealPlanEvent.StartsAt, exampleMealPlanOption.ID, exampleRecipe)
 		assert.NoError(t, err)
 
 		require.Equal(t, len(actual), len(expected))
+
+		expectedRecipeStepIDs := []string{}
+		actualRecipeStepIDs := []string{}
 
 		for i := range expected {
 			expected[i].ID = actual[i].ID
@@ -412,6 +420,19 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 			for j := range expected[i].RecipeSteps {
 				expected[i].RecipeSteps[j].BelongsToMealPlanTask = actual[i].RecipeSteps[j].BelongsToMealPlanTask
 				expected[i].RecipeSteps[j].ID = actual[i].RecipeSteps[j].ID
+
+				expectedRecipeStepIDs = append(expectedRecipeStepIDs, expected[i].RecipeSteps[j].AppliesToRecipeStep)
+				actualRecipeStepIDs = append(actualRecipeStepIDs, actual[i].RecipeSteps[j].AppliesToRecipeStep)
+			}
+		}
+
+		sort.Strings(expectedRecipeStepIDs)
+		sort.Strings(actualRecipeStepIDs)
+
+		for i := range expected {
+			for j := range expected[i].RecipeSteps {
+				expected[i].RecipeSteps[j] = nil
+				actual[i].RecipeSteps[j] = nil
 			}
 		}
 

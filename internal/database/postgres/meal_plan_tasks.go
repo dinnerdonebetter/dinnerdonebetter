@@ -17,14 +17,14 @@ var (
 )
 
 // scanMealPlanTaskWithRecipes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.MealPlanTask, recipeIDs []string, err error) {
+func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.MealPlanTask, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	x = &types.MealPlanTask{}
 
 	for rows.Next() {
-		var recipeID string
+		mealPlanTaskRecipeStep := types.MealPlanTaskRecipeStep{}
 
 		targetVars := []interface{}{
 			&x.ID,
@@ -48,17 +48,18 @@ func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database
 			&x.CreationExplanation,
 			&x.StatusExplanation,
 			&x.AssignedToUser,
-			&recipeID,
+			&mealPlanTaskRecipeStep.AttributableToRecipeStep,
+			&mealPlanTaskRecipeStep.SatisfiesRecipeStep,
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
-			return nil, nil, observability.PrepareError(err, span, "scanning complete meal")
+			return nil, observability.PrepareError(err, span, "scanning complete meal")
 		}
 
-		recipeIDs = append(recipeIDs, recipeID)
+		x.RecipeSteps = append(x.RecipeSteps, mealPlanTaskRecipeStep)
 	}
 
-	return x, recipeIDs, nil
+	return x, nil
 }
 
 // scanMealPlanTasksWithRecipes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
@@ -71,7 +72,7 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 	x := &types.MealPlanTask{}
 
 	for rows.Next() {
-		var recipeStepID string
+		mealPlanTaskRecipeStep := types.MealPlanTaskRecipeStep{}
 
 		targetVars := []interface{}{
 			&x.ID,
@@ -95,14 +96,15 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 			&x.CreationExplanation,
 			&x.StatusExplanation,
 			&x.AssignedToUser,
-			&recipeStepID,
+			&mealPlanTaskRecipeStep.AttributableToRecipeStep,
+			&mealPlanTaskRecipeStep.SatisfiesRecipeStep,
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
 			return nil, observability.PrepareError(err, span, "scanning complete meal")
 		}
 
-		x.RecipeSteps = append(x.RecipeSteps, &types.RecipeStep{ID: recipeStepID})
+		x.RecipeSteps = append(x.RecipeSteps, mealPlanTaskRecipeStep)
 
 		if lastMealPlanTaskID == "" {
 			lastMealPlanTaskID = x.ID
@@ -180,18 +182,9 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan task rows")
 	}
 
-	x, recipeStepIDs, err := q.scanMealPlanTaskWithRecipes(ctx, rows)
+	x, err = q.scanMealPlanTaskWithRecipes(ctx, rows)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan task")
-	}
-
-	for _, stepID := range recipeStepIDs {
-		recipeStep, getRecipeStepErr := q.getRecipeStepByID(ctx, q.db, stepID)
-		if getRecipeStepErr != nil {
-			return nil, observability.PrepareAndLogError(getRecipeStepErr, logger, span, "getting recipe step for meal plan task")
-		}
-
-		x.RecipeSteps = append(x.RecipeSteps, recipeStep)
 	}
 
 	logger.Info("meal plan tasks retrieved")
@@ -304,6 +297,7 @@ func (q *Querier) createMealPlanTaskRecipeStep(ctx context.Context, querier data
 	args := []interface{}{
 		input.ID,
 		input.BelongsToMealPlanTask,
+		input.AppliesToRecipeStep,
 		input.SatisfiesRecipeStep,
 	}
 	tracing.AttachMealPlanTaskIDToSpan(span, input.BelongsToMealPlanTask)
@@ -348,20 +342,6 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 	x, scanErr := q.scanMealPlanTasksWithRecipes(ctx, rows)
 	if scanErr != nil {
 		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning meal plan tasks")
-	}
-
-	for i, mealPlanTask := range x {
-		recipeSteps := []*types.RecipeStep{}
-		for _, step := range mealPlanTask.RecipeSteps {
-			recipeStep, recipeStepGetErr := q.getRecipeStepByID(ctx, q.db, step.ID)
-			if recipeStepGetErr != nil {
-				return nil, observability.PrepareAndLogError(recipeStepGetErr, logger, span, "getting recipe step for meal plan tasks")
-			}
-
-			recipeSteps = append(recipeSteps, recipeStep)
-		}
-
-		x[i].RecipeSteps = recipeSteps
 	}
 
 	logger.Info("meal plan tasks retrieved")

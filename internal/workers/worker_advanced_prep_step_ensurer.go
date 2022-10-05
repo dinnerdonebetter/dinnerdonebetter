@@ -140,7 +140,7 @@ func (w *MealPlanTaskCreationEnsurerWorker) DetermineCreatableSteps(ctx context.
 				return nil, observability.PrepareAndLogError(getRecipeErr, l, span, "fetching recipe")
 			}
 
-			creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, mealPlanEvent, result.MealPlanOptionID, recipe)
+			creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, mealPlanEvent.StartsAt, result.MealPlanOptionID, recipe)
 			if determineStepsErr != nil {
 				return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
 			}

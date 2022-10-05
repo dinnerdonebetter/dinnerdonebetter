@@ -250,6 +250,11 @@ var (
 			Description: "nullable storage durations for products",
 			Script:      fetchMigration("00047_nullable_storage_durations_for_products"),
 		},
+		{
+			Version:     48,
+			Description: "satisfies recipe step as boolean",
+			Script:      fetchMigration("00048_satisfies_recipe_step_as_boolean"),
+		},
 	}
 )
 
