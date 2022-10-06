@@ -115,8 +115,8 @@ type (
 	// MealPlanTaskDatabaseCreationEstimate represents what a user could set as input for creating meal plan tasks.
 	MealPlanTaskDatabaseCreationEstimate struct {
 		_                   struct{}
-		CreationExplanation string   `json:"creationExplanation"`
-		RecipeStepIDs       []string `json:"recipeStepIDs"`
+		CreationExplanation string                   `json:"creationExplanation"`
+		RecipeSteps         []MealPlanTaskRecipeStep `json:"recipeSteps"`
 	}
 
 	// MealPlanTaskDataManager describes a structure capable of storing meal plan tasks permanently.
