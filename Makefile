@@ -273,6 +273,9 @@ line_count: ensure_scc_installed
 start_dev_cloud_sql_proxy:
 	cloud_sql_proxy -dir=/cloudsql -instances='prixfixe-dev:us-central1:dev=tcp:5434'
 
+.PHONY: proxy_dev_db
+proxy_dev_db: start_dev_cloud_sql_proxy
+
 dump_dev_db:
 	rm -f cmd/tools/db_initializer/db_dumps/dump.sql
 	for table in valid_preparations valid_measurement_units valid_instruments valid_ingredients valid_ingredient_preparations valid_ingredient_measurement_units valid_preparation_instruments recipes recipe_steps recipe_step_products recipe_step_instruments recipe_step_ingredients meals meal_recipes; do \

@@ -60,7 +60,7 @@ func findStepIDForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID 
 	for _, step := range recipe.Steps {
 		for _, product := range step.Products {
 			if product.ID == recipeStepProductID {
-				return fmt.Sprintf("%d", step.Index+1), nil
+				return fmt.Sprintf("%d", graphIDForStep(step)), nil
 			}
 		}
 	}
@@ -80,7 +80,7 @@ func findStepIndexForRecipeStepID(recipe *types.Recipe, recipeStepID string) (in
 
 func findStepForIndex(recipe *types.Recipe, index int64) (*types.RecipeStep, error) {
 	for _, step := range recipe.Steps {
-		if int64(step.Index+1) == index {
+		if graphIDForStep(step) == index {
 			return step, nil
 		}
 	}
@@ -191,7 +191,7 @@ type RecipeStepIdentifier struct {
 }
 
 func (i *RecipeStepIdentifier) ID() string {
-	return fmt.Sprintf("%d", i.recipeStep.Index+1)
+	return fmt.Sprintf("%d", graphIDForStep(i.recipeStep))
 }
 
 // makeDAGForRecipe makes a proper DAG for the provided Recipe. Gonum has the notion of a directed graph, but
@@ -204,7 +204,7 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 
 	for _, step := range recipe.Steps {
 		if _, err := recipeGraph.AddVertex(&RecipeStepIdentifier{recipeStep: step}); err != nil {
-			return nil, fmt.Errorf("adding step %d to graph: %w", step.Index, err)
+			return nil, fmt.Errorf("adding initial step %d to graph: %w", step.Index, err)
 		}
 	}
 
@@ -219,8 +219,8 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 				return nil, fmt.Errorf("finding step ID for step %d for recipe step product ID: %w", step.Index, err)
 			}
 
-			if err = recipeGraph.AddEdge(fmt.Sprintf("%d", step.Index+1), toStepID); err != nil {
-				return nil, fmt.Errorf("adding step %d to graph: %w", step.Index, err)
+			if err = recipeGraph.AddEdge(fmt.Sprintf("%d", graphIDForStep(step)), toStepID); err != nil {
+				return nil, fmt.Errorf("adding recipe step %d to graph: %w", step.Index, err)
 			}
 		}
 
@@ -234,8 +234,8 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 				return nil, fmt.Errorf("finding step ID for step %d for recipe step ingredient ID: %w", step.Index, err)
 			}
 
-			if err = recipeGraph.AddEdge(step.ID, toStep); err != nil {
-				return nil, fmt.Errorf("adding step %d to graph: %w", step.Index, err)
+			if err = recipeGraph.AddEdge(fmt.Sprintf("%d", graphIDForStep(step)), toStep); err != nil {
+				return nil, fmt.Errorf("adding ingredient step %d to graph: %w", step.Index, err)
 			}
 		}
 	}

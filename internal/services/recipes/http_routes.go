@@ -452,9 +452,17 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 
 	responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
 	for _, input := range stepInputs {
+		recipeSteps := []types.MealPlanTaskRecipeStep{}
+		for _, step := range input.RecipeSteps {
+			recipeSteps = append(recipeSteps, types.MealPlanTaskRecipeStep{
+				AttributableToRecipeStep: step.ID,
+				SatisfiesRecipeStep:      step.SatisfiesRecipeStep,
+			})
+		}
+
 		responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
 			CreationExplanation: input.CreationExplanation,
-			// AppliesToRecipeStep:        input.AppliesToRecipeStep,
+			RecipeSteps:         recipeSteps,
 		})
 	}
 
