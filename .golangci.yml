@@ -295,6 +295,7 @@ issues:
         - goerr113
         - bodyclose
         - unparam
+        - unused
         - gocognit
         - gomnd
         - forcetypeassert
