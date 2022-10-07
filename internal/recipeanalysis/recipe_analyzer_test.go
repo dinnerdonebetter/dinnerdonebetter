@@ -2,6 +2,8 @@ package recipeanalysis
 
 import (
 	"context"
+	"image/png"
+	"os"
 	"sort"
 	"testing"
 	"time"
@@ -15,6 +17,19 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
+
+func saveDebugDAGOfRecipe(t *testing.T, g RecipeAnalyzer, recipe *types.Recipe) {
+	t.Helper()
+
+	ctx := context.Background()
+
+	img, err := g.GenerateDAGDiagramForRecipe(ctx, recipe)
+	require.NoError(t, err)
+
+	f, err := os.CreateTemp("", "")
+	require.NoError(t, err)
+	require.NoError(t, png.Encode(f, img))
+}
 
 func newAnalyzerForTest(t *testing.T) *recipeAnalyzer {
 	t.Helper()
@@ -206,8 +221,10 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 		recipeStep1ID := fakes.BuildFakeID()
 		recipeStep2ID := fakes.BuildFakeID()
 		recipeStep3ID := fakes.BuildFakeID()
+		recipeStep4ID := fakes.BuildFakeID()
 		recipeStepProduct1ID := fakes.BuildFakeID()
 		recipeStepProduct2ID := fakes.BuildFakeID()
+		recipeStepProduct3ID := fakes.BuildFakeID()
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipe := &types.Recipe{
@@ -215,17 +232,12 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 			ID:   exampleRecipeID,
 			Steps: []*types.RecipeStep{
 				{
-					MaximumEstimatedTimeInSeconds: nil,
-					MinimumTemperatureInCelsius:   nil,
-					MinimumEstimatedTimeInSeconds: nil,
-					MaximumTemperatureInCelsius:   nil,
-					Index:                         0,
-					BelongsToRecipe:               exampleRecipeID,
-					ID:                            recipeStep1ID,
-					Preparation:                   types.ValidPreparation{Name: "massage"},
+					Index:           0,
+					BelongsToRecipe: exampleRecipeID,
+					ID:              recipeStep1ID,
+					Preparation:     types.ValidPreparation{Name: "chop"},
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: nil,
 							Ingredient: &types.ValidIngredient{
 								MaximumIdealStorageTemperatureInCelsius: nil,
 								MinimumIdealStorageTemperatureInCelsius: nil,
@@ -236,7 +248,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							},
 							Name:                "kale",
 							ID:                  fakes.BuildFakeID(),
-							BelongsToRecipeStep: recipeStep1ID,
+							BelongsToRecipeStep: recipeStep2ID,
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name:       "gram",
 								PluralName: "grams",
@@ -247,14 +259,52 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 					},
 					Products: []*types.RecipeStepProduct{
 						{
-							MinimumStorageTemperatureInCelsius: nil,
-							MaximumStorageTemperatureInCelsius: nil,
-							StorageInstructions:                "store in an airtight container",
-							Name:                               "massaged kale",
-							Type:                               types.RecipeStepProductIngredientType,
-							BelongsToRecipeStep:                recipeStep1ID,
-							ID:                                 recipeStepProduct1ID,
-							QuantityNotes:                      "",
+							Name:                "chopped kale",
+							Type:                types.RecipeStepProductIngredientType,
+							BelongsToRecipeStep: recipeStep1ID,
+							ID:                  recipeStepProduct1ID,
+							QuantityNotes:       "",
+							MeasurementUnit: types.ValidMeasurementUnit{
+								Name:       "gram",
+								PluralName: "grams",
+							},
+							MaximumStorageDurationInSeconds: pointers.Uint32Pointer(600),
+							StorageInstructions:             "store in an airtight container",
+							MaximumQuantity:                 0,
+							MinimumQuantity:                 0,
+							Compostable:                     false,
+						},
+					},
+				},
+				{
+					Index:           1,
+					BelongsToRecipe: exampleRecipeID,
+					ID:              recipeStep2ID,
+					Preparation:     types.ValidPreparation{Name: "massage"},
+					Ingredients: []*types.RecipeStepIngredient{
+						{
+							ProductOfRecipeStep: true,
+							RecipeStepProductID: pointers.StringPointer(recipeStepProduct1ID),
+							Ingredient:          nil,
+							Name:                "chopped kale",
+							ID:                  fakes.BuildFakeID(),
+							BelongsToRecipeStep: recipeStep2ID,
+							MeasurementUnit: types.ValidMeasurementUnit{
+								Name:       "gram",
+								PluralName: "grams",
+							},
+							MinimumQuantity: 500,
+							MaximumQuantity: 1000,
+						},
+					},
+					Products: []*types.RecipeStepProduct{
+						{
+							StorageInstructions: "store in an airtight container",
+							Name:                "massaged kale",
+							Type:                types.RecipeStepProductIngredientType,
+							BelongsToRecipeStep: recipeStep2ID,
+							ID:                  recipeStepProduct2ID,
+							QuantityNotes:       "",
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name:       "gram",
 								PluralName: "grams",
@@ -265,31 +315,24 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							Compostable:                     false,
 						},
 					},
-					Instruments: nil,
 				},
 				{
-					MaximumEstimatedTimeInSeconds: nil,
-					MinimumTemperatureInCelsius:   nil,
-					MinimumEstimatedTimeInSeconds: nil,
-					MaximumTemperatureInCelsius:   nil,
-					Index:                         1,
-					BelongsToRecipe:               exampleRecipeID,
-					ID:                            recipeStep2ID,
-					Preparation:                   types.ValidPreparation{Name: "chop"},
+					Index:           2,
+					BelongsToRecipe: exampleRecipeID,
+					ID:              recipeStep3ID,
+					Preparation:     types.ValidPreparation{Name: "chop"},
 					Ingredients: []*types.RecipeStepIngredient{
 						{
 							RecipeStepProductID: nil,
 							Ingredient: &types.ValidIngredient{
-								MaximumIdealStorageTemperatureInCelsius: nil,
-								MinimumIdealStorageTemperatureInCelsius: nil,
-								PluralName:                              "cherry tomatoes",
-								StorageInstructions:                     "",
-								Name:                                    "cherry tomato",
-								ID:                                      fakes.BuildFakeID(),
+								PluralName:          "cherry tomatoes",
+								StorageInstructions: "",
+								Name:                "cherry tomato",
+								ID:                  fakes.BuildFakeID(),
 							},
 							Name:                "cherry tomato",
 							ID:                  fakes.BuildFakeID(),
-							BelongsToRecipeStep: recipeStep2ID,
+							BelongsToRecipeStep: recipeStep3ID,
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name:       "gram",
 								PluralName: "grams",
@@ -305,8 +348,8 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							StorageInstructions:                "",
 							Name:                               "chopped cherry tomatoes",
 							Type:                               types.RecipeStepProductIngredientType,
-							BelongsToRecipeStep:                recipeStep2ID,
-							ID:                                 recipeStepProduct2ID,
+							BelongsToRecipeStep:                recipeStep3ID,
+							ID:                                 recipeStepProduct3ID,
 							QuantityNotes:                      "",
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name:       "gram",
@@ -318,25 +361,20 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							Compostable:                     false,
 						},
 					},
-					Instruments: nil,
 				},
 				{
-					MaximumEstimatedTimeInSeconds: nil,
-					MinimumTemperatureInCelsius:   nil,
-					MinimumEstimatedTimeInSeconds: nil,
-					MaximumTemperatureInCelsius:   nil,
-					Index:                         2,
-					BelongsToRecipe:               exampleRecipeID,
-					ID:                            recipeStep3ID,
-					Preparation:                   types.ValidPreparation{Name: "sautee"},
+					Index:           3,
+					BelongsToRecipe: exampleRecipeID,
+					ID:              recipeStep4ID,
+					Preparation:     types.ValidPreparation{Name: "sautee"},
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: pointers.StringPointer(recipeStepProduct1ID),
+							RecipeStepProductID: pointers.StringPointer(recipeStepProduct2ID),
 							Ingredient:          nil,
 							Name:                "massaged kale",
 							ID:                  fakes.BuildFakeID(),
 							ProductOfRecipeStep: true,
-							BelongsToRecipeStep: recipeStep3ID,
+							BelongsToRecipeStep: recipeStep4ID,
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name:       "gram",
 								PluralName: "grams",
@@ -345,12 +383,12 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							MaximumQuantity: 1000,
 						},
 						{
-							RecipeStepProductID: pointers.StringPointer(recipeStepProduct2ID),
+							RecipeStepProductID: pointers.StringPointer(recipeStepProduct3ID),
 							Ingredient:          nil,
-							Name:                "massaged kale",
+							Name:                "chopped cherry tomatoes",
 							ID:                  fakes.BuildFakeID(),
 							ProductOfRecipeStep: true,
-							BelongsToRecipeStep: recipeStep3ID,
+							BelongsToRecipeStep: recipeStep4ID,
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name:       "gram",
 								PluralName: "grams",
@@ -366,7 +404,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							StorageInstructions:                "",
 							Name:                               "cooked kale",
 							Type:                               types.RecipeStepProductIngredientType,
-							BelongsToRecipeStep:                recipeStep3ID,
+							BelongsToRecipeStep:                recipeStep4ID,
 							ID:                                 fakes.BuildFakeID(),
 							QuantityNotes:                      "",
 							MeasurementUnit: types.ValidMeasurementUnit{
@@ -379,7 +417,6 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							Compostable:                     false,
 						},
 					},
-					Instruments: nil,
 				},
 			},
 		}
@@ -396,6 +433,15 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 						AppliesToRecipeStep: recipeStep1ID,
 						SatisfiesRecipeStep: true,
 					},
+				},
+			},
+			{
+				CannotCompleteBefore: time.Now(),
+				CannotCompleteAfter:  time.Now(),
+				CreationExplanation:  storagePrepCreationExplanation,
+				MealPlanOptionID:     exampleMealPlanOption.ID,
+				// These can be created in any order, so we do some funky comparison stuff later
+				RecipeSteps: []*types.MealPlanTaskRecipeStepDatabaseCreationInput{
 					{
 						AppliesToRecipeStep: recipeStep2ID,
 						SatisfiesRecipeStep: true,

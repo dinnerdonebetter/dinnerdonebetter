@@ -134,6 +134,21 @@ type (
 	}
 )
 
+// Len implements the sorter interface.
+func (r *RecipeStepList) Len() int {
+	return len(r.RecipeSteps)
+}
+
+// Less implements the sorter interface.
+func (r *RecipeStepList) Less(i, j int) bool {
+	return r.RecipeSteps[i].Index < r.RecipeSteps[j].Index
+}
+
+// Swap implements the sorter interface.
+func (r *RecipeStepList) Swap(i, j int) {
+	r.RecipeSteps[i], r.RecipeSteps[j] = r.RecipeSteps[j], r.RecipeSteps[i]
+}
+
 // Update merges an RecipeStepUpdateRequestInput with a recipe step.
 func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 	if input.Index != nil && *input.Index != x.Index {
