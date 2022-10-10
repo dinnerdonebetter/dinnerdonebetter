@@ -255,6 +255,11 @@ var (
 			Description: "satisfies recipe step as boolean",
 			Script:      fetchMigration("00048_satisfies_recipe_step_as_boolean"),
 		},
+		{
+			Version:     49,
+			Description: "explicit recipe prep steps",
+			Script:      fetchMigration("00049_explicit_recipe_prep_steps"),
+		},
 	}
 )
 

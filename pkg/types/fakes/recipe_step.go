@@ -2,14 +2,13 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // BuildFakeRecipeStep builds a faked recipe step.
 func BuildFakeRecipeStep() *types.RecipeStep {
-	recipeStepID := ksuid.New().String()
+	recipeStepID := BuildFakeID()
 
 	var ingredients []*types.RecipeStepIngredient
 	for i := 0; i < exampleQuantity; i++ {
@@ -44,7 +43,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		Products:                      products,
 		Optional:                      false,
 		CreatedAt:                     fake.Date(),
-		BelongsToRecipe:               ksuid.New().String(),
+		BelongsToRecipe:               BuildFakeID(),
 		Ingredients:                   ingredients,
 		ExplicitInstructions:          buildUniqueString(),
 		Instruments:                   instruments,

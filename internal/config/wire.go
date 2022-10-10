@@ -40,7 +40,7 @@ var (
 			"ValidInstrumentMeasurementUnits",
 			"Meals",
 			"Recipes",
-			"RecipeSteps",
+			"TaskSteps",
 			"RecipeStepProducts",
 			"RecipeStepInstruments",
 			"RecipeStepIngredients",

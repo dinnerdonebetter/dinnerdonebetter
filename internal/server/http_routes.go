@@ -511,7 +511,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
-		// RecipeSteps
+		// TaskSteps
 		recipeStepPath := "steps"
 		recipeStepsRoute := path.Join(
 			recipePath,

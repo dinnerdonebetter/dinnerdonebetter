@@ -4,7 +4,6 @@ import (
 	"math"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -12,7 +11,7 @@ import (
 // BuildFakeMealPlanOptionVote builds a faked meal plan option vote.
 func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 	return &types.MealPlanOptionVote{
-		ID:                      ksuid.New().String(),
+		ID:                      BuildFakeID(),
 		Rank:                    uint8(fake.Number(1, math.MaxUint8)),
 		Abstain:                 fake.Bool(),
 		Notes:                   buildUniqueString(),

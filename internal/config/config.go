@@ -198,7 +198,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating RecipeSteps service portion of config: %w", err)
+			return fmt.Errorf("error validating TaskSteps service portion of config: %w", err)
 		}
 
 		if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {

@@ -2,7 +2,6 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -10,7 +9,7 @@ import (
 // BuildFakeValidPreparationInstrument builds a faked valid preparation instrument.
 func BuildFakeValidPreparationInstrument() *types.ValidPreparationInstrument {
 	return &types.ValidPreparationInstrument{
-		ID:          ksuid.New().String(),
+		ID:          BuildFakeID(),
 		Notes:       buildUniqueString(),
 		Preparation: *BuildFakeValidPreparation(),
 		Instrument:  *BuildFakeValidInstrument(),

@@ -2,7 +2,6 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -14,7 +13,7 @@ func BuildFakeHouseholdUserMembershipWithUser() *types.HouseholdUserMembershipWi
 	u.TwoFactorSecret = ""
 
 	return &types.HouseholdUserMembershipWithUser{
-		ID:                 ksuid.New().String(),
+		ID:                 BuildFakeID(),
 		BelongsToUser:      u,
 		BelongsToHousehold: fake.UUID(),
 		HouseholdRoles:     []string{authorization.HouseholdMemberRole.String()},

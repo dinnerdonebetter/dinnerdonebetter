@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -12,9 +11,9 @@ import (
 // BuildFakeAPIClient builds a faked APIClient.
 func BuildFakeAPIClient() *types.APIClient {
 	return &types.APIClient{
-		ID:            ksuid.New().String(),
+		ID:            BuildFakeID(),
 		Name:          fake.Password(true, true, true, false, false, 32),
-		ClientID:      ksuid.New().String(),
+		ClientID:      BuildFakeID(),
 		ClientSecret:  []byte(fake.Password(true, true, true, true, false, 32)),
 		BelongsToUser: fake.UUID(),
 		CreatedAt:     fake.Date(),

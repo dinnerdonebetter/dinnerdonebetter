@@ -2,7 +2,6 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -10,7 +9,7 @@ import (
 // BuildFakeRecipeStepInstrument builds a faked recipe step instrument.
 func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 	return &types.RecipeStepInstrument{
-		ID:                  ksuid.New().String(),
+		ID:                  BuildFakeID(),
 		Instrument:          BuildFakeValidInstrument(),
 		Name:                buildUniqueString(),
 		ProductOfRecipeStep: fake.Bool(),

@@ -2,7 +2,6 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -10,7 +9,7 @@ import (
 // BuildFakeValidMeasurementUnit builds a faked valid ingredient.
 func BuildFakeValidMeasurementUnit() *types.ValidMeasurementUnit {
 	return &types.ValidMeasurementUnit{
-		ID:          ksuid.New().String(),
+		ID:          BuildFakeID(),
 		Name:        buildUniqueString(),
 		Description: buildUniqueString(),
 		Volumetric:  fake.Bool(),

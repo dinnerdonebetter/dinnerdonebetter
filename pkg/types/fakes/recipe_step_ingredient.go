@@ -2,7 +2,6 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -11,7 +10,7 @@ import (
 // NOTE: this currently represents a typical recipe step ingredient with a valid ingredient and not a product.
 func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 	return &types.RecipeStepIngredient{
-		ID:                  ksuid.New().String(),
+		ID:                  BuildFakeID(),
 		Name:                buildUniqueString(),
 		Ingredient:          BuildFakeValidIngredient(),
 		MeasurementUnit:     *BuildFakeValidMeasurementUnit(),
@@ -22,7 +21,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		Optional:            fake.Bool(),
 		IngredientNotes:     buildUniqueString(),
 		CreatedAt:           fake.Date(),
-		BelongsToRecipeStep: ksuid.New().String(),
+		BelongsToRecipeStep: BuildFakeID(),
 	}
 }
 

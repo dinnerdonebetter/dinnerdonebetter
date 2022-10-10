@@ -295,6 +295,16 @@ func AttachRecipeIDToSpan(span trace.Span, recipeID string) {
 	AttachStringToSpan(span, keys.RecipeIDKey, recipeID)
 }
 
+// AttachRecipePrepTaskIDToSpan attaches a recipe prep task ID to a given span.
+func AttachRecipePrepTaskIDToSpan(span trace.Span, recipePrepTaskID string) {
+	AttachStringToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
+}
+
+// AttachRecipePrepTaskStepIDToSpan attaches a recipe prep task step ID to a given span.
+func AttachRecipePrepTaskStepIDToSpan(span trace.Span, recipePrepTaskStepID string) {
+	AttachStringToSpan(span, keys.RecipePrepTaskStepIDKey, recipePrepTaskStepID)
+}
+
 // AttachRecipeStepIDToSpan attaches a recipe step ID to a given span.
 func AttachRecipeStepIDToSpan(span trace.Span, recipeStepID string) {
 	AttachStringToSpan(span, keys.RecipeStepIDKey, recipeStepID)

@@ -2,7 +2,6 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -11,7 +10,7 @@ import (
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 	return &types.RecipeStepProduct{
-		ID:                                 ksuid.New().String(),
+		ID:                                 BuildFakeID(),
 		Name:                               buildUniqueString(),
 		Type:                               types.RecipeStepProductIngredientType,
 		MinimumQuantity:                    fake.Float32(),
