@@ -110,6 +110,7 @@ type (
 
 	// RecipePrepTaskDataManager describes a structure capable of storing recipes permanently.
 	RecipePrepTaskDataManager interface {
+		RecipePrepTaskExists(ctx context.Context, recipePrepTaskID string) (bool, error)
 		GetRecipePrepTask(ctx context.Context, recipePrepTaskID string) (*RecipePrepTask, error)
 		GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*RecipePrepTask, error)
 		CreateRecipePrepTask(ctx context.Context, input *RecipePrepTaskDatabaseCreationInput) (*RecipePrepTask, error)

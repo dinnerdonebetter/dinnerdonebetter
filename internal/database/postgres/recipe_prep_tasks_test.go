@@ -3,13 +3,16 @@ package postgres
 import (
 	"context"
 	"database/sql/driver"
+	"testing"
+	"time"
+
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"testing"
+
+	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) *sqlmock.Rows {
@@ -147,7 +150,7 @@ func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		createRecipePrepTaskQueryArgs := []interface{}{
 			exampleInput.ID,
 			exampleInput.Notes,
 			exampleInput.ExplicitStorageInstructions,
@@ -162,12 +165,30 @@ func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 		db.ExpectBegin()
 
 		db.ExpectExec(formatQueryForSQLMock(createRecipePrepTaskQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
+			WithArgs(interfaceToDriverValue(createRecipePrepTaskQueryArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
+
+		c.timeFunc = func() time.Time {
+			return expected.CreatedAt
+		}
+
+		for _, taskStep := range exampleInput.TaskSteps {
+			createRecipePrepTaskStepArgs := []interface{}{
+				taskStep.ID,
+				taskStep.BelongsToRecipePrepTask,
+				taskStep.BelongsToRecipeStep,
+				taskStep.SatisfiesRecipeStep,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(createRecipePrepTaskStepQuery)).
+				WithArgs(interfaceToDriverValue(createRecipePrepTaskStepArgs)...).
+				WillReturnResult(newArbitraryDatabaseResult())
+		}
+
+		db.ExpectCommit()
 
 		actual, err := c.CreateRecipePrepTask(ctx, exampleInput)
 		assert.NoError(t, err)
-
 		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
@@ -201,7 +222,9 @@ func TestQuerier_createRecipePrepTaskStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		assert.NoError(t, c.createRecipePrepTaskStep(ctx, tx, exampleInput))
+		actual, err := c.createRecipePrepTaskStep(ctx, tx, exampleInput)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -215,7 +238,7 @@ func TestQuerier_GetRecipePrepTasksForRecipe(T *testing.T) {
 
 		ctx := context.Background()
 		exampleRecipe := fakes.BuildFakeRecipe()
-		exampleRecipePrepTasks := fakes.BuildFakeRecipePrepTaskList()
+		expected := fakes.BuildFakeRecipePrepTaskList().RecipePrepTasks
 
 		c, db := buildTestClient(t)
 
@@ -225,11 +248,11 @@ func TestQuerier_GetRecipePrepTasksForRecipe(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipePrepTasks(exampleRecipePrepTasks.RecipePrepTasks...))
+			WillReturnRows(buildMockRowsFromRecipePrepTasks(expected...))
 
 		actual, err := c.GetRecipePrepTasksForRecipe(ctx, exampleRecipe.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipePrepTasks.RecipePrepTasks, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
