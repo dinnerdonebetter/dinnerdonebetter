@@ -3,10 +3,12 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"fmt"
 	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -183,6 +185,22 @@ var _ validation.ValidatableWithContext = (*RecipeCreationRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeCreationRequestInput.
 func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	stepIndicesMentionedInPrepTasks := map[uint32]bool{}
+
+	var errResult *multierror.Error
+	for i, task := range x.PrepTasks {
+		for j, step := range task.TaskSteps {
+			if _, ok := stepIndicesMentionedInPrepTasks[step.BelongsToRecipeStepIndex]; ok {
+				errResult = multierror.Append(fmt.Errorf("duplicate step mentioned in step %d for task %d", i+1, j+1), errResult)
+			} else {
+				stepIndicesMentionedInPrepTasks[step.BelongsToRecipeStepIndex] = true
+			}
+		}
+	}
+	if errResult != nil {
+		return errResult
+	}
+
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

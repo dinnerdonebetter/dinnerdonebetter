@@ -85,8 +85,23 @@ func BuildFakeRecipeUpdateRequestInputFromRecipe(recipe *types.Recipe) *types.Re
 
 // BuildFakeRecipeCreationRequestInput builds a faked RecipeCreationRequestInput.
 func BuildFakeRecipeCreationRequestInput() *types.RecipeCreationRequestInput {
-	recipe := BuildFakeRecipe()
-	return BuildFakeRecipeCreationRequestInputFromRecipe(recipe)
+	exampleRecipe := BuildFakeRecipe()
+	exampleCreationInput := BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
+	exampleCreationInput.CreatedByUser = ""
+	examplePrepTask := BuildFakeRecipePrepTask()
+	examplePrepTaskInput := BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(exampleRecipe, examplePrepTask)
+	examplePrepTaskInput.TaskSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+		{
+			BelongsToRecipeStepIndex: exampleCreationInput.Steps[0].Index,
+			BelongsToRecipePrepTask:  examplePrepTask.ID,
+			SatisfiesRecipeStep:      false,
+		},
+	}
+	exampleCreationInput.PrepTasks = []*types.RecipePrepTaskWithinRecipeCreationRequestInput{
+		examplePrepTaskInput,
+	}
+
+	return exampleCreationInput
 }
 
 // BuildFakeRecipeCreationRequestInputFromRecipe builds a faked RecipeCreationRequestInput from a recipe.

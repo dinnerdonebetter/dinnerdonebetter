@@ -187,8 +187,21 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeCreationRequestInput()
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 		exampleInput.CreatedByUser = ""
+		examplePrepTask := fakes.BuildFakeRecipePrepTask()
+		examplePrepTaskInput := fakes.BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(exampleRecipe, examplePrepTask)
+		examplePrepTaskInput.TaskSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+			{
+				BelongsToRecipeStepIndex: exampleInput.Steps[0].Index,
+				BelongsToRecipePrepTask:  examplePrepTask.ID,
+				SatisfiesRecipeStep:      false,
+			},
+		}
+		exampleInput.PrepTasks = []*types.RecipePrepTaskWithinRecipeCreationRequestInput{
+			examplePrepTaskInput,
+		}
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)
