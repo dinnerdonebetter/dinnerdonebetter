@@ -35,6 +35,7 @@ var (
 		ProvideAPIClientDataManager,
 		ProvidePasswordResetTokenDataManager,
 		ProvideWebhookDataManager,
+		ProvideRecipePrepTaskDataManager,
 	)
 )
 
@@ -165,5 +166,10 @@ func ProvidePasswordResetTokenDataManager(db DataManager) types.PasswordResetTok
 
 // ProvideWebhookDataManager is an arbitrary function for dependency injection's sake.
 func ProvideWebhookDataManager(db DataManager) types.WebhookDataManager {
+	return db
+}
+
+// ProvideRecipePrepTaskDataManager is an arbitrary function for dependency injection's sake.
+func ProvideRecipePrepTaskDataManager(db DataManager) types.RecipePrepTaskDataManager {
 	return db
 }

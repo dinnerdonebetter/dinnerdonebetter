@@ -18,6 +18,7 @@ import (
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	mealplantasksservice "github.com/prixfixeco/api_server/internal/services/mealplantasks"
 	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
+	recipepreptasksservice "github.com/prixfixeco/api_server/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
@@ -508,6 +509,36 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipesPermission)).
 					Put(root, s.recipesService.UpdateHandler)
+			})
+		})
+
+		// PrepTasks
+		recipePrepTaskPath := "prep_tasks"
+		recipePrepTasksRoute := path.Join(
+			recipePath,
+			recipeIDRouteParam,
+			recipePrepTaskPath,
+		)
+		recipePrepTasksRouteWithPrefix := fmt.Sprintf("/%s", recipePrepTasksRoute)
+		recipePrepTaskIDRouteParam := buildURLVarChunk(recipepreptasksservice.RecipePrepTaskIDURIParamKey, "")
+		v1Router.Route(recipePrepTasksRouteWithPrefix, func(recipePrepTasksRouter routing.Router) {
+			recipePrepTasksRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipePrepTasksPermission)).
+				Post(root, s.recipePrepTasksService.CreateHandler)
+			recipePrepTasksRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipePrepTasksPermission)).
+				Get(root, s.recipePrepTasksService.ListHandler)
+
+			recipePrepTasksRouter.Route(recipePrepTaskIDRouteParam, func(singleRecipeStepRouter routing.Router) {
+				singleRecipeStepRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipePrepTasksPermission)).
+					Get(root, s.recipePrepTasksService.ReadHandler)
+				singleRecipeStepRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipePrepTasksPermission)).
+					Delete(root, s.recipePrepTasksService.ArchiveHandler)
+				singleRecipeStepRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipePrepTasksPermission)).
+					Put(root, s.recipePrepTasksService.UpdateHandler)
 			})
 		})
 

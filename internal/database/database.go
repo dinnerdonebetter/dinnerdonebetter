@@ -91,5 +91,6 @@ type (
 		types.ValidMeasurementUnitDataManager
 		types.ValidPreparationInstrumentDataManager
 		types.ValidIngredientMeasurementUnitDataManager
+		types.RecipePrepTaskDataManager
 	}
 )
