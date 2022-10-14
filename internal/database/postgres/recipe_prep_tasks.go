@@ -322,8 +322,8 @@ func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database
 //go:embed queries/recipe_prep_tasks/list_all_by_recipe.sql
 var listRecipePrepTasksForRecipeQuery string
 
-// GetRecipePrepTasksForRecipe gets a recipe prep task.
-func (q *Querier) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*types.RecipePrepTask, err error) {
+// getRecipePrepTasksForRecipe gets a recipe prep task.
+func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, querier database.SQLQueryExecutor, recipeID string) (x []*types.RecipePrepTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -339,7 +339,7 @@ func (q *Querier) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID stri
 		recipeID,
 	}
 
-	rows, getRowsErr := q.getRows(ctx, q.db, "recipe prep tasks list", listRecipePrepTasksForRecipeQuery, args)
+	rows, getRowsErr := q.getRows(ctx, querier, "recipe prep tasks list", listRecipePrepTasksForRecipeQuery, args)
 	if getRowsErr != nil {
 		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing recipe prep tasks list retrieval query")
 	}
@@ -352,6 +352,11 @@ func (q *Querier) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID stri
 	logger.Info("recipe prep tasks retrieved")
 
 	return x, nil
+}
+
+// GetRecipePrepTasksForRecipe gets a recipe prep task.
+func (q *Querier) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*types.RecipePrepTask, err error) {
+	return q.getRecipePrepTasksForRecipe(ctx, q.db, recipeID)
 }
 
 //go:embed queries/recipe_prep_tasks/update.sql

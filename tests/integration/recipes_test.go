@@ -106,6 +106,12 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
 	}
 
+	examplePrepTask := fakes.BuildFakeRecipePrepTask()
+	examplePrepTask.TaskSteps = []*types.RecipePrepTaskStep{}
+	exampleRecipeInput.PrepTasks = []*types.RecipePrepTaskWithinRecipeCreationRequestInput{
+		fakes.BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(exampleRecipe, examplePrepTask),
+	}
+
 	createdRecipe, err := client.CreateRecipe(ctx, exampleRecipeInput)
 	require.NoError(t, err)
 	t.Logf("recipe %q created", createdRecipe.ID)
@@ -421,8 +427,13 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 			for i := range exampleRecipeInput.Steps {
 				exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
 			}
-
 			exampleRecipeInput.AlsoCreateMeal = true
+
+			examplePrepTask := fakes.BuildFakeRecipePrepTask()
+			examplePrepTask.TaskSteps = []*types.RecipePrepTaskStep{}
+			exampleRecipeInput.PrepTasks = []*types.RecipePrepTaskWithinRecipeCreationRequestInput{
+				fakes.BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(exampleRecipe, examplePrepTask),
+			}
 
 			createdRecipe, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)

@@ -298,6 +298,14 @@ func prepareMockToSuccessfullyGetRecipe(ctx context.Context, t *testing.T, recip
 		WithArgs(interfaceToDriverValue(args)...).
 		WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
+	listRecipePrepTasksForRecipeArgs := []interface{}{
+		exampleRecipe.ID,
+	}
+
+	db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
+		WithArgs(interfaceToDriverValue(listRecipePrepTasksForRecipeArgs)...).
+		WillReturnRows(buildMockRowsFromRecipePrepTasks(exampleRecipe.PrepTasks...))
+
 	getRecipeStepIngredientsForRecipeArgs := []interface{}{
 		exampleRecipe.ID,
 	}
@@ -369,6 +377,14 @@ func TestQuerier_getRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
+		listRecipePrepTasksForRecipeArgs := []interface{}{
+			exampleRecipe.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(listRecipePrepTasksForRecipeArgs)...).
+			WillReturnRows(buildMockRowsFromRecipePrepTasks(exampleRecipe.PrepTasks...))
+
 		getRecipeStepIngredientsForRecipeArgs := []interface{}{
 			exampleRecipe.ID,
 		}
@@ -410,6 +426,14 @@ func TestQuerier_getRecipe(T *testing.T) {
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDAndAuthorIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
+
+		listRecipePrepTasksForRecipeArgs := []interface{}{
+			exampleRecipe.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(listRecipePrepTasksForRecipeArgs)...).
+			WillReturnRows(buildMockRowsFromRecipePrepTasks(exampleRecipe.PrepTasks...))
 
 		getRecipeStepIngredientsForRecipeArgs := []interface{}{
 			exampleRecipe.ID,
@@ -466,6 +490,14 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
+
+		listRecipePrepTasksForRecipeArgs := []interface{}{
+			exampleRecipe.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(listRecipePrepTasksForRecipeArgs)...).
+			WillReturnRows(buildMockRowsFromRecipePrepTasks(exampleRecipe.PrepTasks...))
 
 		getRecipeStepIngredientsForRecipeArgs := []interface{}{
 			exampleRecipe.ID,
@@ -602,6 +634,14 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
+		listRecipePrepTasksForRecipeArgs := []interface{}{
+			exampleRecipe.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(listRecipePrepTasksForRecipeArgs)...).
+			WillReturnRows(buildMockRowsFromRecipePrepTasks(exampleRecipe.PrepTasks...))
+
 		getRecipeStepIngredientsForRecipeArgs := []interface{}{
 			exampleRecipe.ID,
 		}
@@ -727,6 +767,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 		for i := range exampleRecipeList.Recipes {
 			exampleRecipeList.Recipes[i].Steps = nil
+			exampleRecipeList.Recipes[i].PrepTasks = nil
 		}
 
 		ctx := context.Background()
@@ -754,6 +795,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		exampleRecipeList.Limit = 0
 		for i := range exampleRecipeList.Recipes {
 			exampleRecipeList.Recipes[i].Steps = nil
+			exampleRecipeList.Recipes[i].PrepTasks = nil
 		}
 
 		ctx := context.Background()
@@ -826,6 +868,7 @@ func TestQuerier_getRecipeIDsForMeal(T *testing.T) {
 		exampleRecipeIDs := []string{}
 		for i := range exampleRecipeList.Recipes {
 			exampleRecipeList.Recipes[i].Steps = nil
+			exampleRecipeList.Recipes[i].PrepTasks = nil
 			exampleRecipeIDs = append(exampleRecipeIDs, exampleRecipeList.Recipes[i].ID)
 		}
 
@@ -858,6 +901,7 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 		for i := range exampleRecipeList.Recipes {
 			exampleRecipeList.Recipes[i].Steps = nil
+			exampleRecipeList.Recipes[i].PrepTasks = nil
 		}
 
 		ctx := context.Background()
@@ -885,6 +929,7 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 		for i := range exampleRecipeList.Recipes {
 			exampleRecipeList.Recipes[i].Steps = nil
+			exampleRecipeList.Recipes[i].PrepTasks = nil
 		}
 
 		ctx := context.Background()
@@ -912,6 +957,7 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 		for i := range exampleRecipeList.Recipes {
 			exampleRecipeList.Recipes[i].Steps = nil
+			exampleRecipeList.Recipes[i].PrepTasks = nil
 		}
 
 		ctx := context.Background()
@@ -960,6 +1006,10 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			}
 
 			step.Products = nil
+		}
+
+		for i := range exampleRecipe.PrepTasks {
+			exampleRecipe.PrepTasks[i].BelongsToRecipe = exampleRecipe.ID
 		}
 
 		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
@@ -1045,6 +1095,37 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			}
 		}
 
+		for _, prepTask := range exampleInput.PrepTasks {
+			createRecipePrepTaskQueryArgs := []interface{}{
+				prepTask.ID,
+				prepTask.Notes,
+				prepTask.ExplicitStorageInstructions,
+				prepTask.MinimumTimeBufferBeforeRecipeInSeconds,
+				prepTask.MaximumTimeBufferBeforeRecipeInSeconds,
+				prepTask.StorageType,
+				prepTask.MinimumStorageTemperatureInCelsius,
+				prepTask.MaximumStorageTemperatureInCelsius,
+				prepTask.BelongsToRecipe,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(createRecipePrepTaskQuery)).
+				WithArgs(interfaceToDriverValue(createRecipePrepTaskQueryArgs)...).
+				WillReturnResult(newArbitraryDatabaseResult())
+
+			for _, taskStep := range prepTask.TaskSteps {
+				createRecipePrepTaskStepArgs := []interface{}{
+					taskStep.ID,
+					taskStep.BelongsToRecipePrepTask,
+					taskStep.BelongsToRecipeStep,
+					taskStep.SatisfiesRecipeStep,
+				}
+
+				db.ExpectExec(formatQueryForSQLMock(createRecipePrepTaskStepQuery)).
+					WithArgs(interfaceToDriverValue(createRecipePrepTaskStepArgs)...).
+					WillReturnResult(newArbitraryDatabaseResult())
+			}
+		}
+
 		db.ExpectCommit()
 
 		c.timeFunc = func() time.Time {
@@ -1071,6 +1152,11 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			}
 		}
 
+		for i, prepTask := range exampleRecipe.PrepTasks {
+			prepTask.BelongsToRecipe = actual.ID
+			prepTask.CreatedAt = actual.PrepTasks[i].CreatedAt
+		}
+
 		assert.Equal(t, exampleRecipe, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
@@ -1081,6 +1167,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.Steps = nil
+		exampleRecipe.PrepTasks = nil
 		exampleRecipe.ID = "1"
 
 		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
@@ -1312,6 +1399,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.ID = "1"
 		exampleRecipe.Steps = nil
+		exampleRecipe.PrepTasks = nil
 		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
 
 		ctx := context.Background()
@@ -1352,6 +1440,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.Steps = nil
+		exampleRecipe.PrepTasks = nil
 		exampleRecipe.ID = "1"
 
 		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)

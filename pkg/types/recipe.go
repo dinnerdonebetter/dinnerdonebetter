@@ -32,18 +32,19 @@ type (
 	// Recipe represents a recipe.
 	Recipe struct {
 		_                  struct{}
-		CreatedAt          time.Time     `json:"createdAt"`
-		ArchivedAt         *time.Time    `json:"archivedAt"`
-		InspiredByRecipeID *string       `json:"inspiredByRecipeID"`
-		LastUpdatedAt      *time.Time    `json:"lastUpdatedAt"`
-		Source             string        `json:"source"`
-		Description        string        `json:"description"`
-		Name               string        `json:"name"`
-		CreatedByUser      string        `json:"belongsToUser"`
-		ID                 string        `json:"id"`
-		Steps              []*RecipeStep `json:"steps"`
-		SealOfApproval     bool          `json:"sealOfApproval"`
-		YieldsPortions     uint8         `json:"yieldsPortions"`
+		CreatedAt          time.Time         `json:"createdAt"`
+		ArchivedAt         *time.Time        `json:"archivedAt"`
+		InspiredByRecipeID *string           `json:"inspiredByRecipeID"`
+		LastUpdatedAt      *time.Time        `json:"lastUpdatedAt"`
+		Source             string            `json:"source"`
+		Description        string            `json:"description"`
+		Name               string            `json:"name"`
+		CreatedByUser      string            `json:"belongsToUser"`
+		ID                 string            `json:"id"`
+		Steps              []*RecipeStep     `json:"steps"`
+		PrepTasks          []*RecipePrepTask `json:"prepTasks"`
+		SealOfApproval     bool              `json:"sealOfApproval"`
+		YieldsPortions     uint8             `json:"yieldsPortions"`
 	}
 
 	// RecipeList represents a list of recipes.
@@ -57,31 +58,33 @@ type (
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
 		_                  struct{}
-		InspiredByRecipeID *string                           `json:"inspiredByRecipeID"`
-		CreatedByUser      string                            `json:"-"`
-		ID                 string                            `json:"-"`
-		Name               string                            `json:"name"`
-		Source             string                            `json:"source"`
-		Description        string                            `json:"description"`
-		Steps              []*RecipeStepCreationRequestInput `json:"steps"`
-		AlsoCreateMeal     bool                              `json:"alsoCreateMeal"`
-		SealOfApproval     bool                              `json:"sealOfApproval"`
-		YieldsPortions     uint8                             `json:"yieldsPortions"`
+		InspiredByRecipeID *string                                           `json:"inspiredByRecipeID"`
+		CreatedByUser      string                                            `json:"-"`
+		ID                 string                                            `json:"-"`
+		Name               string                                            `json:"name"`
+		Source             string                                            `json:"source"`
+		Description        string                                            `json:"description"`
+		Steps              []*RecipeStepCreationRequestInput                 `json:"steps"`
+		PrepTasks          []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks"`
+		AlsoCreateMeal     bool                                              `json:"alsoCreateMeal"`
+		SealOfApproval     bool                                              `json:"sealOfApproval"`
+		YieldsPortions     uint8                                             `json:"yieldsPortions"`
 	}
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
 		_                  struct{}
-		InspiredByRecipeID *string                            `json:"inspiredByRecipeID"`
-		CreatedByUser      string                             `json:"belongsToHousehold"`
-		ID                 string                             `json:"id"`
-		Name               string                             `json:"name"`
-		Source             string                             `json:"source"`
-		Description        string                             `json:"description"`
-		Steps              []*RecipeStepDatabaseCreationInput `json:"steps"`
-		AlsoCreateMeal     bool                               `json:"alsoCreateMeal"`
-		SealOfApproval     bool                               `json:"sealOfApproval"`
-		YieldsPortions     uint8                              `json:"yieldsPortions"`
+		InspiredByRecipeID *string                                `json:"inspiredByRecipeID"`
+		CreatedByUser      string                                 `json:"belongsToHousehold"`
+		ID                 string                                 `json:"id"`
+		Name               string                                 `json:"name"`
+		Source             string                                 `json:"source"`
+		Description        string                                 `json:"description"`
+		Steps              []*RecipeStepDatabaseCreationInput     `json:"steps"`
+		PrepTasks          []*RecipePrepTaskDatabaseCreationInput `json:"prepTasks"`
+		AlsoCreateMeal     bool                                   `json:"alsoCreateMeal"`
+		SealOfApproval     bool                                   `json:"sealOfApproval"`
+		YieldsPortions     uint8                                  `json:"yieldsPortions"`
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.
@@ -123,6 +126,32 @@ type (
 	}
 )
 
+// FindStepForIndex finds a step for a given index.
+func (x *Recipe) FindStepForIndex(index uint32) *RecipeStep {
+	for _, step := range x.Steps {
+		if step.Index == index {
+			return step
+		}
+	}
+
+	// we could return an error here, but that would make my life a little harder
+	// so if you fuck up and submit a wrong value, and it's your fault here.
+	return nil
+}
+
+// FindStepByID finds a step for a given ID.
+func (x *Recipe) FindStepByID(id string) *RecipeStep {
+	for _, step := range x.Steps {
+		if step.ID == id {
+			return step
+		}
+	}
+
+	// we could return an error here, but that would make my life a little harder
+	// so if you fuck up and submit a wrong value, and it's your fault here.
+	return nil
+}
+
 // Update merges an RecipeUpdateRequestInput with a recipe.
 func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
@@ -162,6 +191,32 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 	)
 }
 
+// FindStepByIndex finds a step for a given index.
+func (x *RecipeCreationRequestInput) FindStepByIndex(index uint32) *RecipeStepCreationRequestInput {
+	for _, step := range x.Steps {
+		if step.Index == index {
+			return step
+		}
+	}
+
+	// we could return an error here, but that would make my life a little harder
+	// so if you fuck up and submit a wrong value, and it's your fault here.
+	return nil
+}
+
+// FindStepByID finds a step for a given ID.
+func (x *RecipeCreationRequestInput) FindStepByID(id string) *RecipeStepCreationRequestInput {
+	for _, step := range x.Steps {
+		if step.ID == id {
+			return step
+		}
+	}
+
+	// we could return an error here, but that would make my life a little harder
+	// so if you fuck up and submit a wrong value, and it's your fault here.
+	return nil
+}
+
 var _ validation.ValidatableWithContext = (*RecipeDatabaseCreationInput)(nil)
 
 // ValidateWithContext validates a RecipeDatabaseCreationInput.
@@ -197,6 +252,11 @@ func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationReq
 		steps = append(steps, RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(step))
 	}
 
+	prepTasks := []*RecipePrepTaskDatabaseCreationInput{}
+	for _, task := range input.PrepTasks {
+		prepTasks = append(prepTasks, RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput(input, task))
+	}
+
 	x := &RecipeDatabaseCreationInput{
 		AlsoCreateMeal:     input.AlsoCreateMeal,
 		Name:               input.Name,
@@ -204,6 +264,7 @@ func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationReq
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		Steps:              steps,
+		PrepTasks:          prepTasks,
 		SealOfApproval:     input.SealOfApproval,
 		YieldsPortions:     input.YieldsPortions,
 	}

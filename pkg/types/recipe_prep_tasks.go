@@ -78,6 +78,20 @@ type (
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                                    `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 	}
 
+	// RecipePrepTaskWithinRecipeCreationRequestInput represents what a user could set as input for creating recipes.
+	RecipePrepTaskWithinRecipeCreationRequestInput struct {
+		_                                      struct{}
+		Notes                                  string                                                `json:"notes"`
+		ExplicitStorageInstructions            string                                                `json:"explicitStorageInstructions"`
+		StorageType                            string                                                `json:"storageType"`
+		BelongsToRecipe                        string                                                `json:"belongsToRecipe"`
+		TaskSteps                              []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps"`
+		MaximumTimeBufferBeforeRecipeInSeconds uint32                                                `json:"maximumTimeBufferBeforeRecipeInSeconds"`
+		MinimumStorageTemperatureInCelsius     uint32                                                `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius     uint32                                                `json:"maximumStorageTemperatureInCelsius"`
+		MinimumTimeBufferBeforeRecipeInSeconds uint32                                                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
+	}
+
 	// RecipePrepTaskDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskDatabaseCreationInput struct {
 		_                                      struct{}
@@ -223,6 +237,38 @@ func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskCreationInput(input *R
 		taskSteps = append(taskSteps, &RecipePrepTaskStepDatabaseCreationInput{
 			ID:                      x.ID,
 			BelongsToRecipeStep:     x.BelongsToRecipeStep,
+			BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
+			SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
+		})
+	}
+
+	x := &RecipePrepTaskDatabaseCreationInput{
+		Notes:                                  input.Notes,
+		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
+		StorageType:                            input.StorageType,
+		BelongsToRecipe:                        input.BelongsToRecipe,
+		TaskSteps:                              taskSteps,
+		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
+		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
+	}
+
+	return x
+}
+
+// RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput creates a DatabaseCreationInput from a CreationInput.
+func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput(recipe *RecipeCreationRequestInput, input *RecipePrepTaskWithinRecipeCreationRequestInput) *RecipePrepTaskDatabaseCreationInput {
+	taskSteps := []*RecipePrepTaskStepDatabaseCreationInput{}
+	for _, x := range input.TaskSteps {
+		recipeStep := ""
+		if y := recipe.FindStepByIndex(x.BelongsToRecipeStepIndex); y != nil {
+			recipeStep = y.ID
+		}
+
+		taskSteps = append(taskSteps, &RecipePrepTaskStepDatabaseCreationInput{
+			ID:                      x.ID,
+			BelongsToRecipeStep:     recipeStep,
 			BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
 			SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
 		})

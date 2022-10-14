@@ -8,15 +8,23 @@ import (
 
 // BuildFakeRecipe builds a faked recipe.
 func BuildFakeRecipe() *types.Recipe {
+	recipeID := BuildFakeID()
+
 	var steps []*types.RecipeStep
 	for i := 0; i < exampleQuantity; i++ {
 		step := BuildFakeRecipeStep()
 		step.Index = uint32(i)
+		step.BelongsToRecipe = recipeID
 		steps = append(steps, step)
 	}
 
+	prepTasks := BuildFakeRecipePrepTaskList().RecipePrepTasks
+	for i := range prepTasks {
+		prepTasks[i].BelongsToRecipe = recipeID
+	}
+
 	return &types.Recipe{
-		ID:                 BuildFakeID(),
+		ID:                 recipeID,
 		Name:               buildUniqueString(),
 		Source:             buildUniqueString(),
 		Description:        buildUniqueString(),
@@ -24,6 +32,7 @@ func BuildFakeRecipe() *types.Recipe {
 		CreatedAt:          fake.Date(),
 		CreatedByUser:      BuildFakeID(),
 		Steps:              steps,
+		PrepTasks:          prepTasks,
 		SealOfApproval:     false,
 		YieldsPortions:     fake.Uint8(),
 	}
@@ -87,6 +96,11 @@ func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.
 		steps = append(steps, BuildFakeRecipeStepCreationRequestInputFromRecipeStep(step))
 	}
 
+	prepTasks := []*types.RecipePrepTaskWithinRecipeCreationRequestInput{}
+	for _, prepTask := range recipe.PrepTasks {
+		prepTasks = append(prepTasks, BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(recipe, prepTask))
+	}
+
 	return &types.RecipeCreationRequestInput{
 		Name:               recipe.Name,
 		Source:             recipe.Source,
@@ -96,6 +110,7 @@ func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.
 		SealOfApproval:     recipe.SealOfApproval,
 		YieldsPortions:     recipe.YieldsPortions,
 		Steps:              steps,
+		PrepTasks:          prepTasks,
 	}
 }
 
@@ -104,6 +119,11 @@ func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types
 	steps := []*types.RecipeStepDatabaseCreationInput{}
 	for _, step := range recipe.Steps {
 		steps = append(steps, BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(step))
+	}
+
+	prepTasks := []*types.RecipePrepTaskDatabaseCreationInput{}
+	for _, prepTask := range recipe.PrepTasks {
+		prepTasks = append(prepTasks, BuildFakeRecipePrepTaskDatabaseCreationInputFromRecipePrepTask(prepTask))
 	}
 
 	return &types.RecipeDatabaseCreationInput{
@@ -116,5 +136,6 @@ func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types
 		SealOfApproval:     recipe.SealOfApproval,
 		YieldsPortions:     recipe.YieldsPortions,
 		Steps:              steps,
+		PrepTasks:          prepTasks,
 	}
 }

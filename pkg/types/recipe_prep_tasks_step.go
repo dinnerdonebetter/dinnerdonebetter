@@ -33,6 +33,15 @@ type (
 		SatisfiesRecipeStep     bool   `json:"satisfiesRecipeStep"`
 	}
 
+	// RecipePrepTaskStepWithinRecipeCreationRequestInput represents a recipe prep task step.
+	RecipePrepTaskStepWithinRecipeCreationRequestInput struct {
+		_                        struct{}
+		ID                       string `json:"id"`
+		BelongsToRecipePrepTask  string `json:"-"`
+		BelongsToRecipeStepIndex uint32 `json:"belongsToRecipeStepIndex"`
+		SatisfiesRecipeStep      bool   `json:"satisfiesRecipeStep"`
+	}
+
 	// RecipePrepTaskStepCreationRequestInput represents a recipe prep task step.
 	RecipePrepTaskStepCreationRequestInput struct {
 		_                       struct{}

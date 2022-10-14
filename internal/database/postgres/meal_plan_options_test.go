@@ -991,6 +991,14 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			},
 		}
 
+		for i := range exampleMealPlan.Events {
+			for j := range exampleMealPlan.Events[i].Options {
+				for k := range exampleMealPlan.Events[i].Options[j].Meal.Recipes {
+					exampleMealPlan.Events[i].Options[j].Meal.Recipes[k].PrepTasks = nil
+				}
+			}
+		}
+
 		c, db := buildTestClient(t)
 
 		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)

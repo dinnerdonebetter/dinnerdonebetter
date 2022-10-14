@@ -92,6 +92,20 @@ func BuildFakeRecipePrepTaskStepCreationRequestInputFromRecipePrepTaskStep(input
 	}
 }
 
+func BuildFakeRecipePrepTaskStepWithinRecipeCreationRequestInputFromRecipePrepTaskStep(recipe *types.Recipe, input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepWithinRecipeCreationRequestInput {
+	var belongsToIndex uint32
+	if x := recipe.FindStepByID(input.BelongsToRecipeStep); x != nil {
+		belongsToIndex = x.Index
+	}
+
+	return &types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+		ID:                       input.ID,
+		BelongsToRecipeStepIndex: belongsToIndex,
+		BelongsToRecipePrepTask:  input.BelongsToRecipePrepTask,
+		SatisfiesRecipeStep:      input.SatisfiesRecipeStep,
+	}
+}
+
 func BuildFakeRecipePrepTaskStepUpdateRequestInput() *types.RecipePrepTaskStepUpdateRequestInput {
 	return &types.RecipePrepTaskStepUpdateRequestInput{
 		ID:                      BuildFakeID(),
@@ -145,6 +159,25 @@ func BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(input *types.
 	}
 
 	return &types.RecipePrepTaskCreationRequestInput{
+		Notes:                                  input.Notes,
+		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
+		StorageType:                            input.StorageType,
+		BelongsToRecipe:                        input.BelongsToRecipe,
+		TaskSteps:                              taskSteps,
+		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
+		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
+	}
+}
+
+func BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(recipe *types.Recipe, input *types.RecipePrepTask) *types.RecipePrepTaskWithinRecipeCreationRequestInput {
+	taskSteps := []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{}
+	for _, x := range input.TaskSteps {
+		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepWithinRecipeCreationRequestInputFromRecipePrepTaskStep(recipe, x))
+	}
+
+	return &types.RecipePrepTaskWithinRecipeCreationRequestInput{
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		StorageType:                            input.StorageType,

@@ -57,6 +57,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	for i, step := range input.Steps {
 		input.Steps[i].ID = ksuid.New().String()
+		input.Steps[i].BelongsToRecipe = input.ID
 		for j := range step.Ingredients {
 			input.Steps[i].Ingredients[j].ID = ksuid.New().String()
 			input.Steps[i].Ingredients[j].BelongsToRecipeStep = input.Steps[i].ID
@@ -71,6 +72,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			input.Steps[i].Products[j].ID = ksuid.New().String()
 			input.Steps[i].Products[j].BelongsToRecipeStep = input.Steps[i].ID
 		}
+	}
+
+	for i := range input.PrepTasks {
+		input.PrepTasks[i].ID = ksuid.New().String()
+		input.PrepTasks[i].BelongsToRecipe = input.ID
 	}
 
 	input.CreatedByUser = sessionCtxData.Requester.UserID

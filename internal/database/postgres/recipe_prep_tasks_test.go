@@ -245,12 +245,12 @@ func TestQuerier_GetRecipePrepTasksForRecipe(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		listRecipePrepTasksForRecipeArgs := []interface{}{
 			exampleRecipe.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
+			WithArgs(interfaceToDriverValue(listRecipePrepTasksForRecipeArgs)...).
 			WillReturnRows(buildMockRowsFromRecipePrepTasks(expected...))
 
 		actual, err := c.GetRecipePrepTasksForRecipe(ctx, exampleRecipe.ID)
