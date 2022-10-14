@@ -63,10 +63,25 @@ func (s *TestSuite) TestRecipePrepTasks_CompleteLifecycle() {
 
 			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
-			t.Log("changing recipe prep task")
-			newRecipePrepTask := fakes.BuildFakeRecipePrepTask()
-			newRecipePrepTask.BelongsToRecipe = createdRecipe.ID
-			exampleInput := fakes.BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(newRecipePrepTask)
+			var createdRecipeStep *types.RecipeStep
+			for _, step := range createdRecipe.Steps {
+				createdRecipeStep = step
+				break
+			}
+			require.NotNil(t, createdRecipeStep)
+
+			t.Log("creating recipe prep task")
+			exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
+			exampleRecipePrepTask.BelongsToRecipe = createdRecipe.ID
+			exampleRecipePrepTask.TaskSteps = []*types.RecipePrepTaskStep{
+				{
+					BelongsToRecipeStep:     createdRecipeStep.ID,
+					BelongsToRecipePrepTask: exampleRecipePrepTask.ID,
+					SatisfiesRecipeStep:     true,
+				},
+			}
+
+			exampleInput := fakes.BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(exampleRecipePrepTask)
 
 			createdRecipePrepTask, err := testClients.user.CreateRecipePrepTask(ctx, exampleInput)
 			requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
@@ -75,11 +90,17 @@ func (s *TestSuite) TestRecipePrepTasks_CompleteLifecycle() {
 			actual, err := testClients.user.GetRecipePrepTask(ctx, createdRecipe.ID, createdRecipePrepTask.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			updatedRecipePrepTask := fakes.BuildFakeRecipePrepTask()
-			updateInput := convertRecipePrepTaskToRecipePrepTaskUpdateInput(updatedRecipePrepTask)
-			newRecipePrepTask.Update(updateInput)
+			t.Log("changing recipe prep task")
+			newRecipePrepTask := fakes.BuildFakeRecipePrepTask()
+			newRecipePrepTask.ID = createdRecipePrepTask.ID
+			newRecipePrepTask.BelongsToRecipe = createdRecipe.ID
+			newRecipePrepTask.TaskSteps = createdRecipePrepTask.TaskSteps
+			createdRecipePrepTask.Update(convertRecipePrepTaskToRecipePrepTaskUpdateInput(newRecipePrepTask))
+			require.NoError(t, testClients.user.UpdateRecipePrepTask(ctx, createdRecipePrepTask))
 
-			assert.NoError(t, testClients.user.UpdateRecipePrepTask(ctx, newRecipePrepTask))
+			t.Log("fetching changed recipe prep task")
+			actual, err = testClients.user.GetRecipePrepTask(ctx, createdRecipe.ID, createdRecipePrepTask.ID)
+			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe prep task equality
 			checkRecipePrepTaskEquality(t, newRecipePrepTask, actual)
@@ -104,17 +125,41 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 
 			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
+			var createdRecipeStep *types.RecipeStep
+			for _, step := range createdRecipe.Steps {
+				createdRecipeStep = step
+				break
+			}
+			require.NotNil(t, createdRecipeStep)
+
 			t.Log("creating recipe prep tasks")
 			var expected []*types.RecipePrepTask
 			for i := 0; i < 5; i++ {
 				exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 				exampleRecipePrepTask.BelongsToRecipe = createdRecipe.ID
+				exampleRecipePrepTask.TaskSteps = []*types.RecipePrepTaskStep{
+					{
+						BelongsToRecipeStep:     createdRecipeStep.ID,
+						BelongsToRecipePrepTask: exampleRecipePrepTask.ID,
+						SatisfiesRecipeStep:     true,
+					},
+				}
+
+				exampleInput := fakes.BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(exampleRecipePrepTask)
+
+				createdRecipePrepTask, err := testClients.user.CreateRecipePrepTask(ctx, exampleInput)
+				requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
 
 				exampleRecipePrepTaskInput := fakes.BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(exampleRecipePrepTask)
 
 				createdRecipePrepTask, createdRecipePrepTaskErr := testClients.user.CreateRecipePrepTask(ctx, exampleRecipePrepTaskInput)
 				require.NoError(t, createdRecipePrepTaskErr)
 				t.Logf("recipe prep task %q created", createdRecipePrepTask.ID)
+
+				for j := range createdRecipePrepTask.TaskSteps {
+					exampleRecipePrepTask.TaskSteps[j].ID = createdRecipePrepTask.TaskSteps[j].ID
+					exampleRecipePrepTask.TaskSteps[j].BelongsToRecipePrepTask = createdRecipePrepTask.ID
+				}
 
 				checkRecipePrepTaskEquality(t, exampleRecipePrepTask, createdRecipePrepTask)
 
@@ -130,10 +175,10 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.RecipePrepTasks),
+				len(expected) <= len(actual),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.RecipePrepTasks),
+				len(actual),
 			)
 
 			t.Log("cleaning up")

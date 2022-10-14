@@ -9,7 +9,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// GetRecipePrepTask gets a recipe step.
+// GetRecipePrepTask gets a recipe prep task.
 func (c *Client) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (*types.RecipePrepTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -23,26 +23,26 @@ func (c *Client) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTask
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipePrepTaskID == "" {
-		return nil, buildInvalidIDError("recipe step")
+		return nil, buildInvalidIDError("recipe prep task")
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
 	req, err := c.requestBuilder.BuildGetRecipePrepTaskRequest(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe prep task request")
 	}
 
 	var recipePrepTask *types.RecipePrepTask
 	if err = c.fetchAndUnmarshal(ctx, req, &recipePrepTask); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe prep task")
 	}
 
 	return recipePrepTask, nil
 }
 
-// GetRecipePrepTasks retrieves a list of recipe steps.
-func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter *types.QueryFilter) (*types.RecipePrepTaskList, error) {
+// GetRecipePrepTasks retrieves a list of recipe prep tasks.
+func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter *types.QueryFilter) ([]*types.RecipePrepTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -57,18 +57,18 @@ func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter
 
 	req, err := c.requestBuilder.BuildGetRecipePrepTasksRequest(ctx, recipeID, filter)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe steps list request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe prep tasks list request")
 	}
 
-	var recipePrepTasks *types.RecipePrepTaskList
+	var recipePrepTasks []*types.RecipePrepTask
 	if err = c.fetchAndUnmarshal(ctx, req, &recipePrepTasks); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe steps")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe prep tasks")
 	}
 
 	return recipePrepTasks, nil
 }
 
-// CreateRecipePrepTask creates a recipe step.
+// CreateRecipePrepTask creates a recipe prep task.
 func (c *Client) CreateRecipePrepTask(ctx context.Context, input *types.RecipePrepTaskCreationRequestInput) (*types.RecipePrepTask, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -85,18 +85,18 @@ func (c *Client) CreateRecipePrepTask(ctx context.Context, input *types.RecipePr
 
 	req, err := c.requestBuilder.BuildCreateRecipePrepTaskRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step request")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe prep task request")
 	}
 
 	var recipePrepTask *types.RecipePrepTask
 	if err = c.fetchAndUnmarshal(ctx, req, &recipePrepTask); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 	}
 
 	return recipePrepTask, nil
 }
 
-// UpdateRecipePrepTask updates a recipe step.
+// UpdateRecipePrepTask updates a recipe prep task.
 func (c *Client) UpdateRecipePrepTask(ctx context.Context, recipePrepTask *types.RecipePrepTask) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -111,17 +111,17 @@ func (c *Client) UpdateRecipePrepTask(ctx context.Context, recipePrepTask *types
 
 	req, err := c.requestBuilder.BuildUpdateRecipePrepTaskRequest(ctx, recipePrepTask)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building update recipe step request")
+		return observability.PrepareAndLogError(err, logger, span, "building update recipe prep task request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &recipePrepTask); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe step %s", recipePrepTask.ID)
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task %s", recipePrepTask.ID)
 	}
 
 	return nil
 }
 
-// ArchiveRecipePrepTask archives a recipe step.
+// ArchiveRecipePrepTask archives a recipe prep task.
 func (c *Client) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -142,11 +142,11 @@ func (c *Client) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrep
 
 	req, err := c.requestBuilder.BuildArchiveRecipePrepTaskRequest(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive recipe prep task request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step %s", recipePrepTaskID)
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe prep task %s", recipePrepTaskID)
 	}
 
 	return nil

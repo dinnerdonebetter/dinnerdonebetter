@@ -199,6 +199,7 @@ func TestRecipePrepTasksService_ReadHandler(T *testing.T) {
 		recipePrepTaskDataManager.On(
 			"GetRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(helper.exampleRecipePrepTask, nil)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
@@ -252,6 +253,7 @@ func TestRecipePrepTasksService_ReadHandler(T *testing.T) {
 		recipePrepTaskDataManager.On(
 			"GetRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return((*types.RecipePrepTask)(nil), sql.ErrNoRows)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
@@ -280,6 +282,7 @@ func TestRecipePrepTasksService_ReadHandler(T *testing.T) {
 		recipePrepTaskDataManager.On(
 			"GetRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return((*types.RecipePrepTask)(nil), errors.New("blah"))
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
@@ -437,6 +440,7 @@ func TestRecipePrepTasksService_UpdateHandler(T *testing.T) {
 		dbManager.RecipePrepTaskDataManager.On(
 			"GetRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(helper.exampleRecipePrepTask, nil)
 
@@ -526,6 +530,7 @@ func TestRecipePrepTasksService_UpdateHandler(T *testing.T) {
 		recipePrepTaskDataManager.On(
 			"GetRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return((*types.RecipePrepTask)(nil), sql.ErrNoRows)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
@@ -555,6 +560,7 @@ func TestRecipePrepTasksService_UpdateHandler(T *testing.T) {
 		recipePrepTaskDataManager.On(
 			"GetRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return((*types.RecipePrepTask)(nil), errors.New("blah"))
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
@@ -584,6 +590,7 @@ func TestRecipePrepTasksService_UpdateHandler(T *testing.T) {
 		dbManager.RecipePrepTaskDataManager.On(
 			"GetRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(helper.exampleRecipePrepTask, nil)
 
@@ -619,6 +626,7 @@ func TestRecipePrepTasksService_UpdateHandler(T *testing.T) {
 		dbManager.RecipePrepTaskDataManager.On(
 			"GetRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(helper.exampleRecipePrepTask, nil)
 
@@ -657,12 +665,14 @@ func TestRecipePrepTasksService_ArchiveHandler(T *testing.T) {
 		dbManager.RecipePrepTaskDataManager.On(
 			"RecipePrepTaskExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(true, nil)
 
 		dbManager.RecipePrepTaskDataManager.On(
 			"ArchiveRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(nil)
 		helper.service.recipePrepTaskDataManager = dbManager
@@ -715,6 +725,7 @@ func TestRecipePrepTasksService_ArchiveHandler(T *testing.T) {
 		recipePrepTaskDataManager.On(
 			"RecipePrepTaskExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(false, nil)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
@@ -743,6 +754,7 @@ func TestRecipePrepTasksService_ArchiveHandler(T *testing.T) {
 		recipePrepTaskDataManager.On(
 			"RecipePrepTaskExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
@@ -763,12 +775,14 @@ func TestRecipePrepTasksService_ArchiveHandler(T *testing.T) {
 		dbManager.RecipePrepTaskDataManager.On(
 			"RecipePrepTaskExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(true, nil)
 
 		dbManager.RecipePrepTaskDataManager.On(
 			"ArchiveRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(errors.New("blah"))
 		helper.service.recipePrepTaskDataManager = dbManager
@@ -789,12 +803,14 @@ func TestRecipePrepTasksService_ArchiveHandler(T *testing.T) {
 		dbManager.RecipePrepTaskDataManager.On(
 			"RecipePrepTaskExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(true, nil)
 
 		dbManager.RecipePrepTaskDataManager.On(
 			"ArchiveRecipePrepTask",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipePrepTask.ID,
 		).Return(nil)
 		helper.service.recipePrepTaskDataManager = dbManager

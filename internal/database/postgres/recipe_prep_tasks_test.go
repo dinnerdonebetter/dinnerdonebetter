@@ -92,10 +92,12 @@ func TestQuerier_RecipePrepTaskExists(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
 		c, db := buildTestClient(t)
 		args := []interface{}{
+			exampleRecipe.ID,
 			exampleRecipePrepTask.ID,
 		}
 
@@ -103,7 +105,7 @@ func TestQuerier_RecipePrepTaskExists(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
 
-		actual, err := c.RecipePrepTaskExists(ctx, exampleRecipePrepTask.ID)
+		actual, err := c.RecipePrepTaskExists(ctx, exampleRecipe.ID, exampleRecipePrepTask.ID)
 		assert.NoError(t, err)
 		assert.True(t, actual)
 
@@ -118,6 +120,7 @@ func TestQuerier_GetRecipePrepTask(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
 		c, db := buildTestClient(t)
@@ -130,7 +133,7 @@ func TestQuerier_GetRecipePrepTask(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipePrepTasks(exampleRecipePrepTask))
 
-		actual, err := c.GetRecipePrepTask(ctx, exampleRecipePrepTask.ID)
+		actual, err := c.GetRecipePrepTask(ctx, exampleRecipe.ID, exampleRecipePrepTask.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleRecipePrepTask, actual)
 
@@ -298,6 +301,7 @@ func TestQuerier_ArchiveRecipePrepTask(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
 		c, db := buildTestClient(t)
@@ -310,7 +314,7 @@ func TestQuerier_ArchiveRecipePrepTask(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		assert.NoError(t, c.ArchiveRecipePrepTask(ctx, exampleRecipePrepTask.ID))
+		assert.NoError(t, c.ArchiveRecipePrepTask(ctx, exampleRecipe.ID, exampleRecipePrepTask.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

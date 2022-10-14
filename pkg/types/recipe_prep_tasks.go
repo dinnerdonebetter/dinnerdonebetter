@@ -110,12 +110,12 @@ type (
 
 	// RecipePrepTaskDataManager describes a structure capable of storing recipes permanently.
 	RecipePrepTaskDataManager interface {
-		RecipePrepTaskExists(ctx context.Context, recipePrepTaskID string) (bool, error)
-		GetRecipePrepTask(ctx context.Context, recipePrepTaskID string) (*RecipePrepTask, error)
+		RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error)
+		GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (*RecipePrepTask, error)
 		GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*RecipePrepTask, error)
 		CreateRecipePrepTask(ctx context.Context, input *RecipePrepTaskDatabaseCreationInput) (*RecipePrepTask, error)
 		UpdateRecipePrepTask(ctx context.Context, updated *RecipePrepTask) error
-		ArchiveRecipePrepTask(ctx context.Context, recipePrepTaskID string) error
+		ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error
 	}
 
 	// RecipePrepTaskDataService describes a structure capable of serving traffic related to recipes.
@@ -192,8 +192,25 @@ func (x *RecipePrepTaskDatabaseCreationInput) ValidateWithContext(ctx context.Co
 
 // RecipePrepTaskUpdateRequestInputFromRecipePrepTask creates a DatabaseCreationInput from a CreationInput.
 func RecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *RecipePrepTask) *RecipePrepTaskUpdateRequestInput {
+	taskSteps := []*RecipePrepTaskStepUpdateRequestInput{}
+	for _, x := range input.TaskSteps {
+		taskSteps = append(taskSteps, &RecipePrepTaskStepUpdateRequestInput{
+			ID:                      x.ID,
+			BelongsToRecipeStep:     &x.BelongsToRecipeStep,
+			BelongsToRecipePrepTask: &x.BelongsToRecipePrepTask,
+			SatisfiesRecipeStep:     &x.SatisfiesRecipeStep,
+		})
+	}
 	x := &RecipePrepTaskUpdateRequestInput{
-		BelongsToRecipe: &input.BelongsToRecipe,
+		Notes:                                  &input.Notes,
+		ExplicitStorageInstructions:            &input.ExplicitStorageInstructions,
+		MinimumTimeBufferBeforeRecipeInSeconds: &input.MinimumTimeBufferBeforeRecipeInSeconds,
+		MaximumTimeBufferBeforeRecipeInSeconds: &input.MaximumTimeBufferBeforeRecipeInSeconds,
+		StorageType:                            &input.StorageType,
+		MinimumStorageTemperatureInCelsius:     &input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     &input.MaximumStorageTemperatureInCelsius,
+		BelongsToRecipe:                        &input.BelongsToRecipe,
+		TaskSteps:                              taskSteps,
 	}
 
 	return x
@@ -201,8 +218,26 @@ func RecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *RecipePrepTask) *
 
 // RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskCreationInput creates a DatabaseCreationInput from a CreationInput.
 func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskCreationInput(input *RecipePrepTaskCreationRequestInput) *RecipePrepTaskDatabaseCreationInput {
+	taskSteps := []*RecipePrepTaskStepDatabaseCreationInput{}
+	for _, x := range input.TaskSteps {
+		taskSteps = append(taskSteps, &RecipePrepTaskStepDatabaseCreationInput{
+			ID:                      x.ID,
+			BelongsToRecipeStep:     x.BelongsToRecipeStep,
+			BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
+			SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
+		})
+	}
+
 	x := &RecipePrepTaskDatabaseCreationInput{
-		BelongsToRecipe: input.BelongsToRecipe,
+		Notes:                                  input.Notes,
+		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
+		StorageType:                            input.StorageType,
+		BelongsToRecipe:                        input.BelongsToRecipe,
+		TaskSteps:                              taskSteps,
+		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
+		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
 	}
 
 	return x

@@ -53,6 +53,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := types.RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskCreationInput(providedInput)
 	input.ID = ksuid.New().String()
+	for i := range input.TaskSteps {
+		input.TaskSteps[i].ID = ksuid.New().String()
+		input.TaskSteps[i].BelongsToRecipePrepTask = input.ID
+	}
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -116,7 +120,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	// fetch recipe prep task from database.
-	x, err := s.recipePrepTaskDataManager.GetRecipePrepTask(ctx, recipePrepTaskID)
+	x, err := s.recipePrepTaskDataManager.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -218,7 +222,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	// fetch recipe prep task from database.
-	recipePrepTask, err := s.recipePrepTaskDataManager.GetRecipePrepTask(ctx, recipePrepTaskID)
+	recipePrepTask, err := s.recipePrepTaskDataManager.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -284,7 +288,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	exists, existenceCheckErr := s.recipePrepTaskDataManager.RecipePrepTaskExists(ctx, recipePrepTaskID)
+	exists, existenceCheckErr := s.recipePrepTaskDataManager.RecipePrepTaskExists(ctx, recipeID, recipePrepTaskID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking recipe prep task existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -294,7 +298,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.recipePrepTaskDataManager.ArchiveRecipePrepTask(ctx, recipePrepTaskID); err != nil {
+	if err = s.recipePrepTaskDataManager.ArchiveRecipePrepTask(ctx, recipeID, recipePrepTaskID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving recipe prep task")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return

@@ -18,9 +18,8 @@ SELECT
 FROM recipe_prep_tasks
      FULL OUTER JOIN recipe_prep_task_steps ON recipe_prep_task_steps.belongs_to_recipe_prep_task=recipe_prep_tasks.id
      FULL OUTER JOIN recipe_steps ON recipe_prep_task_steps.belongs_to_recipe_step=recipe_steps.id
-     FULL OUTER JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+     FULL OUTER JOIN recipes ON recipe_prep_tasks.belongs_to_recipe=recipes.id
 WHERE recipe_prep_tasks.archived_at IS NULL
-  AND recipe_prep_task_steps.archived_at IS NULL
   AND recipe_steps.archived_at IS NULL
   AND recipes.archived_at IS NULL
   AND recipes.id = $1

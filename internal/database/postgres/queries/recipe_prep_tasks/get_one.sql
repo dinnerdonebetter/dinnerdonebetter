@@ -16,7 +16,7 @@ SELECT
     recipe_prep_task_steps.belongs_to_recipe_prep_task,
     recipe_prep_task_steps.satisfies_recipe_step
 FROM recipe_prep_tasks
-     FULL OUTER JOIN meal_plan_task_recipe_steps ON recipe_prep_task_steps.belongs_to_recipe_prep_task=recipe_prep_tasks.id
+     FULL OUTER JOIN recipe_prep_task_steps ON recipe_prep_tasks.id=recipe_prep_task_steps.belongs_to_recipe_prep_task
 WHERE recipe_prep_tasks.archived_at IS NULL
     AND recipe_prep_tasks.id = $1
-    AND meal_plan_task_recipe_steps.archived_at IS NULL;
+    AND recipe_prep_tasks.archived_at IS NULL;

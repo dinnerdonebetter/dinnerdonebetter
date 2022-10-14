@@ -45,7 +45,7 @@ func (q *Querier) scanRecipePrepTaskWithSteps(ctx context.Context, rows database
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning complete meal")
+			return nil, observability.PrepareError(err, span, "scanning recipe prep task with step")
 		}
 
 		x.TaskSteps = append(x.TaskSteps, recipePrepTaskRecipeStep)
@@ -111,11 +111,17 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 var recipePrepTasksExistsQuery string
 
 // RecipePrepTaskExists checks if a recipe prep task exists.
-func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipePrepTaskID string) (bool, error) {
+func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipePrepTaskID == "" {
 		return false, ErrInvalidIDProvided
@@ -124,6 +130,7 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipePrepTaskID str
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
 	args := []interface{}{
+		recipeID,
 		recipePrepTaskID,
 	}
 
@@ -141,11 +148,17 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipePrepTaskID str
 var getRecipePrepTasksQuery string
 
 // GetRecipePrepTask fetches a recipe prep task.
-func (q *Querier) GetRecipePrepTask(ctx context.Context, recipePrepTaskID string) (x *types.RecipePrepTask, err error) {
+func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (x *types.RecipePrepTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipePrepTaskID == "" {
 		return nil, ErrInvalidIDProvided
@@ -381,11 +394,17 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 var archiveRecipePrepStepTaskQuery string
 
 // ArchiveRecipePrepTask marks a recipe prep task as archived.
-func (q *Querier) ArchiveRecipePrepTask(ctx context.Context, recipePrepTaskID string) error {
+func (q *Querier) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipePrepTaskID == "" {
 		return ErrInvalidIDProvided
