@@ -23,8 +23,3 @@ CREATE TABLE IF NOT EXISTS recipe_prep_task_steps (
     "belongs_to_recipe_step" CHAR(27) NOT NULL REFERENCES recipe_steps("id") ON DELETE CASCADE,
     "belongs_to_recipe_prep_task" CHAR(27) NOT NULL REFERENCES recipe_prep_tasks("id") ON DELETE CASCADE
 );
-
--- ALTER TABLE recipe_step_products DROP COLUMN minimum_storage_temperature_in_celsius;
--- ALTER TABLE recipe_step_products DROP COLUMN maximum_storage_temperature_in_celsius;
--- ALTER TABLE recipe_step_products DROP COLUMN maximum_storage_duration_in_seconds;
--- ALTER TABLE recipe_step_products DROP COLUMN storage_instructions;
