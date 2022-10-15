@@ -23,6 +23,7 @@ import (
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	"github.com/prixfixeco/api_server/internal/services/mealplantasks"
 	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
+	"github.com/prixfixeco/api_server/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
@@ -100,6 +101,7 @@ type (
 		Webhooks                        webhooksservice.Config                        `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
 		Users                           usersservice.Config                           `json:"users" mapstructure:"users" toml:"users,omitempty"`
 		MealPlanTasks                   mealplantasks.Config                          `json:"mealPlanTasks" mapstructure:"meal_plan_tasks" toml:"meal_plan_tasks,omitempty"`
+		RecipePrepTasks                 recipepreptasks.Config                        `json:"recipePrepTasks" mapstructure:"recipe_prep_tasks" toml:"recipe_prep_tasks,omitempty"`
 		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )
@@ -198,7 +200,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating RecipeSteps service portion of config: %w", err)
+			return fmt.Errorf("error validating TaskSteps service portion of config: %w", err)
 		}
 
 		if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {

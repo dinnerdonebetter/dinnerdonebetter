@@ -112,7 +112,6 @@ func TestQuerier_RecipeStepExists(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
-			exampleRecipeID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(recipeStepExistenceQuery)).
@@ -166,7 +165,6 @@ func TestQuerier_RecipeStepExists(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
-			exampleRecipeID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(recipeStepExistenceQuery)).
@@ -192,7 +190,6 @@ func TestQuerier_RecipeStepExists(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
-			exampleRecipeID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(recipeStepExistenceQuery)).

@@ -223,6 +223,14 @@ func prepareMockToSuccessfullyGetMeal(t *testing.T, exampleMeal *types.Meal, db 
 			WithArgs(interfaceToDriverValue(getRecipeArgs)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(recipe))
 
+		listRecipePrepTasksForRecipeArgs := []interface{}{
+			recipe.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(listRecipePrepTasksForRecipeArgs)...).
+			WillReturnRows(buildMockRowsFromRecipePrepTasks(recipe.PrepTasks...))
+
 		getRecipeStepIngredientsForRecipeArgs := []interface{}{
 			recipe.ID,
 		}

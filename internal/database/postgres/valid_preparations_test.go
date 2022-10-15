@@ -91,7 +91,6 @@ func TestQuerier_ValidPreparationExists(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		c, db := buildTestClient(t)
@@ -126,7 +125,6 @@ func TestQuerier_ValidPreparationExists(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		c, db := buildTestClient(t)
@@ -149,7 +147,6 @@ func TestQuerier_ValidPreparationExists(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		c, db := buildTestClient(t)
@@ -175,9 +172,9 @@ func TestQuerier_GetValidPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
@@ -209,9 +206,9 @@ func TestQuerier_GetValidPreparation(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
@@ -236,9 +233,9 @@ func TestQuerier_GetRandomValidPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{}
@@ -282,9 +279,9 @@ func TestQuerier_SearchForValidPreparations(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparations := fakes.BuildFakeValidPreparationList()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
@@ -362,10 +359,10 @@ func TestQuerier_GetValidPreparations(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		filter := types.DefaultQueryFilter()
 		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		query, args := c.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
@@ -384,12 +381,12 @@ func TestQuerier_GetValidPreparations(T *testing.T) {
 	T.Run("with nil filter", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		filter := (*types.QueryFilter)(nil)
 		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
 		exampleValidPreparationList.Page = 0
 		exampleValidPreparationList.Limit = 0
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		query, args := c.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
@@ -408,9 +405,9 @@ func TestQuerier_GetValidPreparations(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		filter := types.DefaultQueryFilter()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		query, args := c.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
@@ -429,9 +426,9 @@ func TestQuerier_GetValidPreparations(T *testing.T) {
 	T.Run("with erroneous response from database", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		filter := types.DefaultQueryFilter()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		query, args := c.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
@@ -454,11 +451,11 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidPreparation.ID = "1"
 		exampleInput := fakes.BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(exampleValidPreparation)
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
@@ -501,11 +498,11 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		expectedErr := errors.New(t.Name())
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleInput := fakes.BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(exampleValidPreparation)
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
@@ -542,9 +539,9 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
@@ -579,9 +576,9 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
@@ -611,9 +608,9 @@ func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
@@ -641,9 +638,9 @@ func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{

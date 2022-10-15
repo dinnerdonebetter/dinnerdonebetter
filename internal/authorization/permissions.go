@@ -143,6 +143,15 @@ const (
 	// ArchiveRecipesPermission is a household user permission.
 	ArchiveRecipesPermission Permission = "archive.recipes"
 
+	// CreateRecipePrepTasksPermission is a household user permission.
+	CreateRecipePrepTasksPermission Permission = "create.recipe_prep_tasks"
+	// ReadRecipePrepTasksPermission is a household user permission.
+	ReadRecipePrepTasksPermission Permission = "read.recipe_prep_tasks"
+	// UpdateRecipePrepTasksPermission is a household user permission.
+	UpdateRecipePrepTasksPermission Permission = "update.recipe_prep_tasks"
+	// ArchiveRecipePrepTasksPermission is a household user permission.
+	ArchiveRecipePrepTasksPermission Permission = "archive.recipe_prep_tasks"
+
 	// CreateRecipeStepsPermission is a household user permission.
 	CreateRecipeStepsPermission Permission = "create.recipe_steps"
 	// ReadRecipeStepsPermission is a household user permission.
@@ -337,6 +346,11 @@ var (
 		SearchRecipeStepsPermission.ID():  SearchRecipeStepsPermission,
 		UpdateRecipeStepsPermission.ID():  UpdateRecipeStepsPermission,
 		ArchiveRecipeStepsPermission.ID(): ArchiveRecipeStepsPermission,
+
+		CreateRecipePrepTasksPermission.ID():  CreateRecipePrepTasksPermission,
+		ReadRecipePrepTasksPermission.ID():    ReadRecipePrepTasksPermission,
+		UpdateRecipePrepTasksPermission.ID():  UpdateRecipePrepTasksPermission,
+		ArchiveRecipePrepTasksPermission.ID(): ArchiveRecipePrepTasksPermission,
 
 		CreateRecipeStepInstrumentsPermission.ID():  CreateRecipeStepInstrumentsPermission,
 		ReadRecipeStepInstrumentsPermission.ID():    ReadRecipeStepInstrumentsPermission,

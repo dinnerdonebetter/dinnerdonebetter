@@ -153,7 +153,6 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 	args := []interface{}{
 		recipeID,
 		recipeStepID,
-		recipeID,
 	}
 
 	result, err := q.performBooleanQuery(ctx, q.db, recipeStepExistenceQuery, args)

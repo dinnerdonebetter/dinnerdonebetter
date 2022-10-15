@@ -8,7 +8,6 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/pquerna/otp/totp"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -19,7 +18,7 @@ func BuildFakeUser() *types.User {
 	fakeDate := fake.Date()
 
 	return &types.User{
-		ID:                        ksuid.New().String(),
+		ID:                        BuildFakeID(),
 		EmailAddress:              fake.Email(),
 		Username:                  fake.Password(true, true, true, false, false, 32),
 		BirthDay:                  func(x uint8) *uint8 { return &x }(fake.Uint8()),
@@ -112,7 +111,7 @@ func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDa
 // BuildFakeUserAccountStatusUpdateInputFromUser builds a faked UserAccountStatusUpdateInput.
 func BuildFakeUserAccountStatusUpdateInputFromUser(user *types.User) *types.UserAccountStatusUpdateInput {
 	return &types.UserAccountStatusUpdateInput{
-		TargetUserID: ksuid.New().String(),
+		TargetUserID: BuildFakeID(),
 		NewStatus:    user.AccountStatus,
 		Reason:       fake.Sentence(10),
 	}
@@ -173,9 +172,9 @@ func BuildFakePasswordResetToken() *types.PasswordResetToken {
 	fakeDate := fake.Date()
 
 	return &types.PasswordResetToken{
-		ID:            ksuid.New().String(),
+		ID:            BuildFakeID(),
 		Token:         fake.UUID(),
-		BelongsToUser: ksuid.New().String(),
+		BelongsToUser: BuildFakeID(),
 		ExpiresAt:     fakeDate.Add(30 * time.Minute),
 		CreatedAt:     fakeDate,
 	}

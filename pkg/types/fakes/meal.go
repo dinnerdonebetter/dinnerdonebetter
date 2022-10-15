@@ -2,7 +2,6 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -15,11 +14,11 @@ func BuildFakeMeal() *types.Meal {
 	}
 
 	return &types.Meal{
-		ID:            ksuid.New().String(),
+		ID:            BuildFakeID(),
 		Name:          buildUniqueString(),
 		Description:   buildUniqueString(),
 		CreatedAt:     fake.Date(),
-		CreatedByUser: ksuid.New().String(),
+		CreatedByUser: BuildFakeID(),
 		Recipes:       recipes,
 	}
 }

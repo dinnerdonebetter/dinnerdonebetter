@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -12,7 +11,7 @@ import (
 // BuildFakeWebhook builds a faked Webhook.
 func BuildFakeWebhook() *types.Webhook {
 	return &types.Webhook{
-		ID:                 ksuid.New().String(),
+		ID:                 BuildFakeID(),
 		Name:               fake.UUID(),
 		ContentType:        "application/json",
 		URL:                fake.URL(),

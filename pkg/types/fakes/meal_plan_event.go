@@ -4,14 +4,13 @@ import (
 	"time"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // BuildFakeMealPlanEvent builds a faked meal plan event.
 func BuildFakeMealPlanEvent() *types.MealPlanEvent {
-	mealPlanEventID := ksuid.New().String()
+	mealPlanEventID := BuildFakeID()
 
 	now := time.Now().Add(0).Truncate(time.Second).UTC()
 	inTenMinutes := now.Add(time.Minute * 10).Add(0).Truncate(time.Second).UTC()

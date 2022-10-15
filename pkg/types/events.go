@@ -55,6 +55,8 @@ type (
 		ValidIngredientMeasurementUnit   *ValidIngredientMeasurementUnit `json:"validIngredientMeasurementUnit,omitempty"`
 		MealPlanTask                     *MealPlanTask                   `json:"mealPlanTask,omitempty"`
 		MealPlanTaskID                   string                          `json:"mealPlanTaskID,omitempty"`
+		RecipePrepTask                   *RecipePrepTask                 `json:"recipePrepTask,omitempty"`
+		RecipePrepTaskID                 string                          `json:"recipePrepTaskID,omitempty"`
 		Context                          map[string]string               `json:"context,omitempty"`
 		AttributableToUserID             string                          `json:"attributableToUserID,omitempty"`
 		AttributableToHouseholdID        string                          `json:"attributableToHouseholdID,omitempty"`

@@ -2,14 +2,13 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // BuildFakeHousehold builds a faked household.
 func BuildFakeHousehold() *types.Household {
-	householdID := ksuid.New().String()
+	householdID := BuildFakeID()
 
 	var memberships []*types.HouseholdUserMembershipWithUser
 	for i := 0; i < exampleQuantity; i++ {
@@ -76,7 +75,7 @@ func BuildFakeHouseholdCreationInput() *types.HouseholdCreationRequestInput {
 // BuildFakeHouseholdCreationRequestInputFromHousehold builds a faked HouseholdCreationRequestInput from a household.
 func BuildFakeHouseholdCreationRequestInputFromHousehold(household *types.Household) *types.HouseholdCreationRequestInput {
 	return &types.HouseholdCreationRequestInput{
-		ID:            ksuid.New().String(),
+		ID:            BuildFakeID(),
 		Name:          household.Name,
 		ContactEmail:  household.ContactEmail,
 		ContactPhone:  household.ContactPhone,

@@ -179,6 +179,8 @@ check_queries:
 
 ## Generated files
 
+gen: configs
+
 clean_ts:
 	rm -rf $(ARTIFACTS_DIR)/typescript
 

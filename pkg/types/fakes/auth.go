@@ -4,7 +4,6 @@ import (
 	"time"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -14,8 +13,8 @@ import (
 func BuildFakeHouseholdUserMembershipCreationRequestInput() *types.HouseholdUserMembershipCreationRequestInput {
 	return &types.HouseholdUserMembershipCreationRequestInput{
 		Reason:         fake.Sentence(10),
-		UserID:         ksuid.New().String(),
-		HouseholdID:    ksuid.New().String(),
+		UserID:         BuildFakeID(),
+		HouseholdID:    BuildFakeID(),
 		HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
 	}
 }
@@ -65,7 +64,7 @@ func BuildFakeChangeActiveHouseholdInput() *types.ChangeActiveHouseholdInput {
 // BuildFakePASETOCreationInput builds a faked PASETOCreationInput.
 func BuildFakePASETOCreationInput() *types.PASETOCreationInput {
 	return &types.PASETOCreationInput{
-		ClientID:    ksuid.New().String(),
+		ClientID:    BuildFakeID(),
 		RequestTime: time.Now().Unix(),
 	}
 }

@@ -224,19 +224,23 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 		return nil, sql.ErrNoRows
 	}
 
-	// need to grab ingredients here and add them to steps
+	prepTasks, err := q.getRecipePrepTasksForRecipe(ctx, q.db, recipeID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
+	}
+
+	x.PrepTasks = prepTasks
+
 	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
 	}
 
-	// need to grab products here and add them to steps
 	products, err := q.getRecipeStepProductsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step products for recipe")
 	}
 
-	// need to grab instruments here and add them to steps
 	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step instruments for recipe")
@@ -434,6 +438,17 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		}
 
 		x.Steps = append(x.Steps, s)
+	}
+
+	for _, prepTaskInput := range input.PrepTasks {
+		prepTaskInput.BelongsToRecipe = input.ID
+		pt, createPrepTaskErr := q.createRecipePrepTask(ctx, tx, prepTaskInput)
+		if createPrepTaskErr != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(createPrepTaskErr, span, "creating recipe prep task")
+		}
+
+		x.PrepTasks = append(x.PrepTasks, pt)
 	}
 
 	if input.AlsoCreateMeal {

@@ -115,6 +115,12 @@ const (
 	// RecipeStepIDKey is the standard key for referring to a recipe step's ID.
 	RecipeStepIDKey = "recipe_step.id"
 
+	// RecipePrepTaskIDKey is the standard key for referring to a recipe prep task's ID.
+	RecipePrepTaskIDKey = "recipe_prep_task.id"
+
+	// RecipePrepTaskStepIDKey is the standard key for referring to a recipe prep task step's ID.
+	RecipePrepTaskStepIDKey = "recipe_prep_task_step.id"
+
 	// RecipeStepInstrumentIDKey is the standard key for referring to a recipe step instrument's ID.
 	RecipeStepInstrumentIDKey = "recipe_step_instrument.id"
 
