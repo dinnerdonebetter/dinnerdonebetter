@@ -265,6 +265,11 @@ var (
 			Description: "simplify meal plan tasks",
 			Script:      fetchMigration("00050_simplify_meal_plan_tasks"),
 		},
+		{
+			Version:     51,
+			Description: "unique restriction for recipe prep task steps",
+			Script:      fetchMigration("00051_unique_restriction_for_recipe_prep_task_steps"),
+		},
 	}
 )
 
