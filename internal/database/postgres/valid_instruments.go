@@ -178,7 +178,7 @@ func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) (
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidInstrumentIDToSpan(span, query)
@@ -208,7 +208,7 @@ func (q *Querier) SearchForValidInstrumentsForPreparation(ctx context.Context, p
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidInstrumentIDToSpan(span, query)

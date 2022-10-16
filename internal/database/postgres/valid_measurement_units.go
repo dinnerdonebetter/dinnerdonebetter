@@ -189,7 +189,7 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, query)

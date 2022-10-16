@@ -214,7 +214,7 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string) (
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidIngredientIDToSpan(span, query)
@@ -244,7 +244,7 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidIngredientIDToSpan(span, query)

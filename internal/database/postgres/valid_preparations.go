@@ -186,7 +186,7 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 	logger := q.logger.Clone()
 
 	if query == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidPreparationIDToSpan(span, query)

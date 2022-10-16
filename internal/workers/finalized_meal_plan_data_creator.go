@@ -21,8 +21,8 @@ const (
 	mealPlanTaskCreationEnsurerWorkerName = "meal_plan_task_creation_ensurer"
 )
 
-// MealPlanTaskCreationEnsurerWorker ensurers meal plan tasks are created.
-type MealPlanTaskCreationEnsurerWorker struct {
+// FinalizedMealPlanDataCreator ensurers meal plan tasks are created.
+type FinalizedMealPlanDataCreator struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
 	analyzer              recipeanalysis.RecipeAnalyzer
@@ -32,7 +32,7 @@ type MealPlanTaskCreationEnsurerWorker struct {
 	customerDataCollector customerdata.Collector
 }
 
-// ProvideMealPlanTaskCreationEnsurerWorker provides a MealPlanTaskCreationEnsurerWorker.
+// ProvideMealPlanTaskCreationEnsurerWorker provides a FinalizedMealPlanDataCreator.
 func ProvideMealPlanTaskCreationEnsurerWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
@@ -40,8 +40,8 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 	postUpdatesPublisher messagequeue.Publisher,
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
-) *MealPlanTaskCreationEnsurerWorker {
-	return &MealPlanTaskCreationEnsurerWorker{
+) *FinalizedMealPlanDataCreator {
+	return &FinalizedMealPlanDataCreator{
 		logger:                logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
 		tracer:                tracing.NewTracer(tracerProvider.Tracer(mealPlanTaskCreationEnsurerWorkerName)),
 		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
@@ -53,7 +53,7 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 }
 
 // HandleMessage handles a pending write.
-func (w *MealPlanTaskCreationEnsurerWorker) HandleMessage(ctx context.Context, _ []byte) error {
+func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -78,12 +78,13 @@ func (w *MealPlanTaskCreationEnsurerWorker) HandleMessage(ctx context.Context, _
 
 		for _, createdStep := range createdSteps {
 			if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				DataType:                  types.MealPlanTaskDataType,
-				EventType:                 types.MealPlanTaskCreatedCustomerEventType,
-				MealPlanTask:              createdStep,
-				MealPlanTaskID:            createdStep.ID,
+				DataType:       types.MealPlanTaskDataType,
+				EventType:      types.MealPlanTaskCreatedCustomerEventType,
+				MealPlanTask:   createdStep,
+				MealPlanTaskID: createdStep.ID,
+				Context:        nil,
+				// TODO: attribute these
 				HouseholdID:               "",
-				Context:                   nil,
 				AttributableToHouseholdID: "",
 			}); publishErr != nil {
 				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
@@ -99,7 +100,7 @@ func (w *MealPlanTaskCreationEnsurerWorker) HandleMessage(ctx context.Context, _
 }
 
 // DetermineCreatableSteps determines which meal plan tasks are creatable for a recipe.
-func (w *MealPlanTaskCreationEnsurerWorker) DetermineCreatableSteps(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
+func (w *FinalizedMealPlanDataCreator) DetermineCreatableSteps(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
