@@ -7,6 +7,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
@@ -23,18 +24,7 @@ func BuildFakeHouseholdUserMembershipCreationRequestInput() *types.HouseholdUser
 func BuildFakeHouseholdUserMembershipDatabaseCreationInput() *types.HouseholdUserMembershipDatabaseCreationInput {
 	input := BuildFakeHouseholdUserMembershipCreationRequestInput()
 
-	return BuildFakeHouseholdUserMembershipDatabaseCreationInputFromHouseholdUserMembershipCreationRequestInput(input)
-}
-
-// BuildFakeHouseholdUserMembershipDatabaseCreationInputFromHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
-func BuildFakeHouseholdUserMembershipDatabaseCreationInputFromHouseholdUserMembershipCreationRequestInput(input *types.HouseholdUserMembershipCreationRequestInput) *types.HouseholdUserMembershipDatabaseCreationInput {
-	return &types.HouseholdUserMembershipDatabaseCreationInput{
-		ID:             input.ID,
-		Reason:         input.Reason,
-		UserID:         input.UserID,
-		HouseholdID:    input.HouseholdID,
-		HouseholdRoles: input.HouseholdRoles,
-	}
+	return converters.ConvertHouseholdUserMembershipCreationRequestInputToHouseholdUserMembershipDatabaseCreationInput(input)
 }
 
 // BuildFakeUserPermissionModificationInput builds a faked ModifyUserPermissionsInput.

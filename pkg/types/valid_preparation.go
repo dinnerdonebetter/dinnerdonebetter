@@ -166,36 +166,6 @@ func (x *ValidPreparationDatabaseCreationInput) ValidateWithContext(ctx context.
 	)
 }
 
-// ValidPreparationUpdateRequestInputFromValidPreparation creates a DatabaseCreationInput from a CreationInput.
-func ValidPreparationUpdateRequestInputFromValidPreparation(input *ValidPreparation) *ValidPreparationUpdateRequestInput {
-	x := &ValidPreparationUpdateRequestInput{
-		Name:                     &input.Name,
-		Description:              &input.Description,
-		IconPath:                 &input.IconPath,
-		YieldsNothing:            &input.YieldsNothing,
-		RestrictToIngredients:    &input.RestrictToIngredients,
-		ZeroIngredientsAllowable: &input.ZeroIngredientsAllowable,
-		PastTense:                &input.PastTense,
-	}
-
-	return x
-}
-
-// ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput(input *ValidPreparationCreationRequestInput) *ValidPreparationDatabaseCreationInput {
-	x := &ValidPreparationDatabaseCreationInput{
-		Name:                     input.Name,
-		Description:              input.Description,
-		IconPath:                 input.IconPath,
-		YieldsNothing:            input.YieldsNothing,
-		RestrictToIngredients:    input.RestrictToIngredients,
-		ZeroIngredientsAllowable: input.ZeroIngredientsAllowable,
-		PastTense:                input.PastTense,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*ValidPreparationUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a ValidPreparationUpdateRequestInput.

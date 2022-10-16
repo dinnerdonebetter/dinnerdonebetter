@@ -31,15 +31,6 @@ func BuildFakeUser() *types.User {
 	}
 }
 
-// BuildUserCreationResponseFromUser builds a faked UserCreationResponse.
-func BuildUserCreationResponseFromUser(user *types.User) *types.UserCreationResponse {
-	return &types.UserCreationResponse{
-		CreatedUserID: user.ID,
-		Username:      user.Username,
-		CreatedAt:     user.CreatedAt,
-	}
-}
-
 // BuildFakeUserList builds a faked UserList.
 func BuildFakeUserList() *types.UserList {
 	var examples []*types.User
@@ -92,19 +83,6 @@ func BuildFakeUserRegistrationInputWithInviteFromUser(user *types.User) *types.U
 		BirthMonth:      user.BirthMonth,
 		InvitationToken: fake.UUID(),
 		InvitationID:    BuildFakeID(),
-	}
-}
-
-// BuildFakeUserDataStoreCreationInputFromUser builds a faked UserDatabaseCreationInput.
-func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDatabaseCreationInput {
-	return &types.UserDatabaseCreationInput{
-		ID:              user.ID,
-		EmailAddress:    user.EmailAddress,
-		Username:        user.Username,
-		HashedPassword:  user.HashedPassword,
-		TwoFactorSecret: user.TwoFactorSecret,
-		BirthDay:        user.BirthDay,
-		BirthMonth:      user.BirthMonth,
 	}
 }
 
@@ -190,16 +168,6 @@ func BuildFakeUsernameReminderRequestInput() *types.UsernameReminderRequestInput
 // BuildFakePasswordResetTokenCreationRequestInput builds a faked PasswordResetTokenCreationRequestInput.
 func BuildFakePasswordResetTokenCreationRequestInput() *types.PasswordResetTokenCreationRequestInput {
 	return &types.PasswordResetTokenCreationRequestInput{EmailAddress: fake.Email()}
-}
-
-// BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken builds a faked PasswordResetTokenDatabaseCreationInput.
-func BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken(input *types.PasswordResetToken) *types.PasswordResetTokenDatabaseCreationInput {
-	return &types.PasswordResetTokenDatabaseCreationInput{
-		ID:            input.ID,
-		Token:         input.Token,
-		BelongsToUser: input.BelongsToUser,
-		ExpiresAt:     input.ExpiresAt,
-	}
 }
 
 // BuildFakePasswordResetTokenRedemptionRequestInput builds a faked PasswordResetTokenRedemptionRequestInput.

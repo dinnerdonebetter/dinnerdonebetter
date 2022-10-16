@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -379,7 +380,7 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 		exampleValidIngredientMeasurementUnit.Ingredient = types.ValidIngredient{ID: exampleValidIngredientMeasurementUnit.Ingredient.ID}
 		exampleValidIngredientMeasurementUnit.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleValidIngredientMeasurementUnit.MeasurementUnit.ID}
 
-		exampleInput := fakes.BuildFakeValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
+		exampleInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDatabaseCreationInput(exampleValidIngredientMeasurementUnit)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -427,7 +428,7 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 		exampleValidIngredientMeasurementUnit.Ingredient = types.ValidIngredient{ID: exampleValidIngredientMeasurementUnit.Ingredient.ID}
 		exampleValidIngredientMeasurementUnit.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleValidIngredientMeasurementUnit.MeasurementUnit.ID}
 
-		exampleInput := fakes.BuildFakeValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
+		exampleInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDatabaseCreationInput(exampleValidIngredientMeasurementUnit)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

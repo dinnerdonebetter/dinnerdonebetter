@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -36,7 +37,7 @@ func (s *TestSuite) TestMealPlanTasks_CompleteLifecycle() {
 
 			t.Log("creating meal plan task")
 			exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
-			exampleMealPlanTaskInput := fakes.BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask(exampleMealPlanTask)
+			exampleMealPlanTaskInput := converters.ConvertMealPlanTaskToMealPlanTaskCreationRequestInput(exampleMealPlanTask)
 
 			exampleMealPlanTaskInput.MealPlanOptionID = createdMealPlan.Events[0].Options[0].ID
 			exampleMealPlanTaskInput.RecipePrepTaskID = createdMealPlan.Events[0].Options[0].Meal.Recipes[0].PrepTasks[0].ID

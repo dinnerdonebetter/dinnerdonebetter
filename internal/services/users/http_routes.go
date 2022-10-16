@@ -98,7 +98,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachRequestToSpan(span, req)
 
 	// determine desired filter.
-	qf := types.ExtractQueryFilter(req)
+	qf := types.ExtractQueryFilterFromRequest(req)
 
 	// fetch user data.
 	users, err := s.userDataManager.GetUsers(ctx, qf)

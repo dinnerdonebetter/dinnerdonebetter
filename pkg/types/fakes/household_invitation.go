@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeHouseholdInvitation builds a faked HouseholdInvitation.
@@ -43,37 +44,5 @@ func BuildFakeHouseholdInvitationList() *types.HouseholdInvitationList {
 // BuildFakeHouseholdInvitationCreationRequestInput builds a faked HouseholdInvitationCreationRequestInput from a webhook.
 func BuildFakeHouseholdInvitationCreationRequestInput() *types.HouseholdInvitationCreationRequestInput {
 	invitation := BuildFakeHouseholdInvitation()
-	return BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(invitation)
-}
-
-// BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation builds a faked HouseholdInvitationCreationRequestInput.
-func BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationCreationRequestInput {
-	return &types.HouseholdInvitationCreationRequestInput{
-		ID:                     householdInvitation.ID,
-		FromUser:               householdInvitation.FromUser.ID,
-		Note:                   householdInvitation.Note,
-		ToEmail:                householdInvitation.ToEmail,
-		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
-	}
-}
-
-// BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation builds a faked HouseholdInvitationUpdateRequestInput.
-func BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationUpdateRequestInput {
-	return &types.HouseholdInvitationUpdateRequestInput{
-		Token: householdInvitation.Token,
-		Note:  householdInvitation.Note,
-	}
-}
-
-// BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation builds a faked HouseholdInvitationCreationRequestInput.
-func BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationDatabaseCreationInput {
-	return &types.HouseholdInvitationDatabaseCreationInput{
-		ID:                     householdInvitation.ID,
-		FromUser:               householdInvitation.FromUser.ID,
-		ToUser:                 householdInvitation.ToUser,
-		Note:                   householdInvitation.Note,
-		ToEmail:                householdInvitation.ToEmail,
-		Token:                  householdInvitation.Token,
-		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
-	}
+	return converters.ConvertHouseholdInvitationToHouseholdInvitationCreationInput(invitation)
 }

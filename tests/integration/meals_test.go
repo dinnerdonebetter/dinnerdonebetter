@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -81,7 +82,7 @@ func (s *TestSuite) TestMeals_Listing() {
 
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 
 			require.NoError(t, err)
@@ -94,7 +95,7 @@ func (s *TestSuite) TestMeals_Listing() {
 
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -142,7 +143,7 @@ func (s *TestSuite) TestMeals_Searching() {
 
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
@@ -155,7 +156,7 @@ func (s *TestSuite) TestMeals_Searching() {
 
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)

@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -67,7 +68,7 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 
 			t.Log("creating new valid ingredient for recipe step ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
@@ -130,7 +131,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 
 			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -150,7 +151,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 				exampleRecipeStepIngredient.Ingredient = &types.ValidIngredient{ID: x[0].ID}
 				exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 
-				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+				exampleRecipeStepIngredientInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
 				createdRecipeStepIngredient, createdRecipeStepIngredientErr := testClients.user.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
 				require.NoError(t, createdRecipeStepIngredientErr)
 

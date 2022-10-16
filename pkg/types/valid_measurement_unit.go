@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/segmentio/ksuid"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -173,39 +171,6 @@ func (x *ValidMeasurementUnitDatabaseCreationInput) ValidateWithContext(ctx cont
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 	)
-}
-
-// ValidMeasurementUnitUpdateRequestInputFromValidMeasurementUnit creates a DatabaseCreationInput from a CreationInput.
-func ValidMeasurementUnitUpdateRequestInputFromValidMeasurementUnit(input *ValidMeasurementUnit) *ValidMeasurementUnitUpdateRequestInput {
-	x := &ValidMeasurementUnitUpdateRequestInput{
-		Name:        &input.Name,
-		Description: &input.Description,
-		IconPath:    &input.IconPath,
-		Volumetric:  &input.Volumetric,
-		Universal:   &input.Universal,
-		Metric:      &input.Metric,
-		Imperial:    &input.Imperial,
-		PluralName:  &input.PluralName,
-	}
-
-	return x
-}
-
-// ValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnitCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnitCreationInput(input *ValidMeasurementUnitCreationRequestInput) *ValidMeasurementUnitDatabaseCreationInput {
-	x := &ValidMeasurementUnitDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        input.Name,
-		Description: input.Description,
-		Volumetric:  input.Volumetric,
-		IconPath:    input.IconPath,
-		Universal:   input.Universal,
-		Metric:      input.Metric,
-		Imperial:    input.Imperial,
-		PluralName:  input.PluralName,
-	}
-
-	return x
 }
 
 var _ validation.ValidatableWithContext = (*ValidMeasurementUnitUpdateRequestInput)(nil)

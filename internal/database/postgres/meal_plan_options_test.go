@@ -15,6 +15,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -429,7 +430,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		exampleMealPlanOption.ID = "1"
 		exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
 		exampleMealPlanOption.Meal = types.Meal{ID: exampleMealPlanOption.Meal.ID}
-		exampleInput := fakes.BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(exampleMealPlanOption)
+		exampleInput := converters.ConvertMealPlanOptionToMealPlanOptionDatabaseCreationInput(exampleMealPlanOption)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -475,7 +476,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		expectedErr := errors.New(t.Name())
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 		exampleMealPlanOption.Meal = types.Meal{ID: exampleMealPlanOption.Meal.ID}
-		exampleInput := fakes.BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(exampleMealPlanOption)
+		exampleInput := converters.ConvertMealPlanOptionToMealPlanOptionDatabaseCreationInput(exampleMealPlanOption)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

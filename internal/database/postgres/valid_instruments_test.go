@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -536,7 +537,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 		exampleValidInstrument.ID = "1"
-		exampleInput := fakes.BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(exampleValidInstrument)
+		exampleInput := converters.ConvertValidInstrumentToValidInstrumentDatabaseCreationInput(exampleValidInstrument)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -581,7 +582,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
-		exampleInput := fakes.BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(exampleValidInstrument)
+		exampleInput := converters.ConvertValidInstrumentToValidInstrumentDatabaseCreationInput(exampleValidInstrument)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

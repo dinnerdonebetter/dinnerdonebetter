@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -232,7 +233,7 @@ func (s *householdsTestSuite) TestClient_CreateHousehold() {
 		t := s.T()
 
 		s.exampleHousehold.BelongsToUser = ""
-		exampleInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(s.exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(s.exampleHousehold)
 
 		c := buildTestClientWithRequestBodyValidation(t, spec, exampleInput, exampleInput, s.exampleHousehold)
 		actual, err := c.CreateHousehold(s.ctx, exampleInput)
@@ -270,7 +271,7 @@ func (s *householdsTestSuite) TestClient_CreateHousehold() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(s.exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(s.exampleHousehold)
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateHousehold(s.ctx, exampleInput)
@@ -282,7 +283,7 @@ func (s *householdsTestSuite) TestClient_CreateHousehold() {
 		t := s.T()
 
 		s.exampleHousehold.BelongsToUser = ""
-		exampleInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(s.exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(s.exampleHousehold)
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
@@ -375,7 +376,7 @@ func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
 		invitation := fakes.BuildFakeHouseholdInvitation()
 		invitation.FromUser.TwoFactorSecret = ""
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(invitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationCreationInput(invitation)
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.DestinationHouseholdID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, invitation)
 

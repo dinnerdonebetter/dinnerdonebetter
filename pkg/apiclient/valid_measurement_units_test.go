@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -225,7 +226,7 @@ func (s *validMeasurementUnitsTestSuite) TestClient_CreateValidMeasurementUnit()
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(s.exampleValidMeasurementUnit)
+		exampleInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(s.exampleValidMeasurementUnit)
 
 		c := buildTestClientWithInvalidURL(t)
 
@@ -237,7 +238,7 @@ func (s *validMeasurementUnitsTestSuite) TestClient_CreateValidMeasurementUnit()
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(s.exampleValidMeasurementUnit)
+		exampleInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(s.exampleValidMeasurementUnit)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateValidMeasurementUnit(s.ctx, exampleInput)

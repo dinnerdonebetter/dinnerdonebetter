@@ -561,7 +561,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMeal.ID = "1"
 
-		exampleInput := fakes.BuildFakeMealDatabaseCreationInputFromMeal(exampleMeal)
+		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -623,7 +623,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		t.Parallel()
 
 		exampleMeal := fakes.BuildFakeMeal()
-		exampleInput := fakes.BuildFakeMealDatabaseCreationInputFromMeal(exampleMeal)
+		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -643,7 +643,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMeal.ID = "1"
 
-		exampleInput := fakes.BuildFakeMealDatabaseCreationInputFromMeal(exampleMeal)
+		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -676,7 +676,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMeal.ID = "1"
 
-		exampleInput := fakes.BuildFakeMealDatabaseCreationInputFromMeal(exampleMeal)
+		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -723,7 +723,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMeal.ID = "1"
 
-		exampleInput := fakes.BuildFakeMealDatabaseCreationInputFromMeal(exampleMeal)
+		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

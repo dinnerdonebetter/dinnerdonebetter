@@ -191,38 +191,6 @@ func (x *MealPlanEventDatabaseCreationInput) ValidateWithContext(ctx context.Con
 	)
 }
 
-// MealPlanEventUpdateRequestInputFromMealPlanEvent creates a DatabaseCreationInput from a CreationInput.
-func MealPlanEventUpdateRequestInputFromMealPlanEvent(input *MealPlanEvent) *MealPlanEventUpdateRequestInput {
-	x := &MealPlanEventUpdateRequestInput{
-		BelongsToMealPlan: input.BelongsToMealPlan,
-		Notes:             &input.Notes,
-		StartsAt:          &input.StartsAt,
-		EndsAt:            &input.EndsAt,
-		MealName:          &input.MealName,
-	}
-
-	return x
-}
-
-// MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput creates a DatabaseCreationInput from a CreationInput.
-func MealPlanEventDatabaseCreationInputFromMealPlanEventCreationRequestInput(input *MealPlanEventCreationRequestInput) *MealPlanEventDatabaseCreationInput {
-	options := []*MealPlanOptionDatabaseCreationInput{}
-	for _, option := range input.Options {
-		options = append(options, MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(option))
-	}
-
-	x := &MealPlanEventDatabaseCreationInput{
-		Notes:             input.Notes,
-		StartsAt:          input.StartsAt,
-		EndsAt:            input.EndsAt,
-		MealName:          input.MealName,
-		BelongsToMealPlan: input.BelongsToMealPlan,
-		Options:           options,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*MealPlanEventUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a MealPlanEventUpdateRequestInput.

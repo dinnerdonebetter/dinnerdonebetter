@@ -168,32 +168,6 @@ func (x *ValidInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.C
 	)
 }
 
-// ValidInstrumentUpdateRequestInputFromValidInstrument creates a DatabaseCreationInput from a CreationInput.
-func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument) *ValidInstrumentUpdateRequestInput {
-	x := &ValidInstrumentUpdateRequestInput{
-		Name:             &input.Name,
-		PluralName:       &input.PluralName,
-		Description:      &input.Description,
-		IconPath:         &input.IconPath,
-		UsableForStorage: &input.UsableForStorage,
-	}
-
-	return x
-}
-
-// ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput(input *ValidInstrumentCreationRequestInput) *ValidInstrumentDatabaseCreationInput {
-	x := &ValidInstrumentDatabaseCreationInput{
-		Name:             input.Name,
-		PluralName:       input.PluralName,
-		Description:      input.Description,
-		IconPath:         input.IconPath,
-		UsableForStorage: input.UsableForStorage,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*ValidInstrumentUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a ValidInstrumentUpdateRequestInput.
@@ -203,19 +177,4 @@ func (x *ValidInstrumentUpdateRequestInput) ValidateWithContext(ctx context.Cont
 		x,
 		validation.Field(&x.Name, validation.Required),
 	)
-}
-
-// ToValidInstrument produces a ValidInstrument from a NullableValidInstrument.
-func (x *NullableValidInstrument) ToValidInstrument() *ValidInstrument {
-	return &ValidInstrument{
-		LastUpdatedAt:    x.LastUpdatedAt,
-		ArchivedAt:       x.ArchivedAt,
-		Description:      *x.Description,
-		IconPath:         *x.IconPath,
-		ID:               *x.ID,
-		Name:             *x.Name,
-		PluralName:       *x.PluralName,
-		CreatedAt:        *x.CreatedAt,
-		UsableForStorage: *x.UsableForStorage,
-	}
 }

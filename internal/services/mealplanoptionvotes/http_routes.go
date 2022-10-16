@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -58,7 +59,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
 
-	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
+	input := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput(providedInput)
 	for i := range input.Votes {
 		input.Votes[i].ID = ksuid.New().String()
 		input.Votes[i].ByUser = sessionCtxData.Requester.UserID
@@ -210,7 +211,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).

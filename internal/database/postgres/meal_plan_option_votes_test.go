@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -470,7 +471,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 		exampleMealPlanOptionVote.ID = "1"
-		exampleInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
+		exampleInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -523,7 +524,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 		exampleMealPlanOptionVote.ID = "1"
-		exampleInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
+		exampleInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -542,7 +543,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-		exampleInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
+		exampleInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -583,7 +584,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 		exampleMealPlanOptionVote.ID = "1"
-		exampleInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
+		exampleInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

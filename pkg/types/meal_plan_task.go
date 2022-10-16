@@ -167,19 +167,6 @@ func (x *MealPlanTaskDatabaseCreationInput) ValidateWithContext(ctx context.Cont
 	)
 }
 
-// MealPlanTaskDatabaseCreationInputFromMealPlanTaskCreationRequestInput creates a DatabaseCreationInput from a CreationInput.
-func MealPlanTaskDatabaseCreationInputFromMealPlanTaskCreationRequestInput(input *MealPlanTaskCreationRequestInput) *MealPlanTaskDatabaseCreationInput {
-	x := &MealPlanTaskDatabaseCreationInput{
-		AssignedToUser:      input.AssignedToUser,
-		CreationExplanation: input.CreationExplanation,
-		StatusExplanation:   input.StatusExplanation,
-		MealPlanOptionID:    input.MealPlanOptionID,
-		RecipePrepTaskID:    input.RecipePrepTaskID,
-	}
-
-	return x
-}
-
 // ValidateWithContext validates a MealPlanTaskStatusChangeRequestInput.
 func (x *MealPlanTaskStatusChangeRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(

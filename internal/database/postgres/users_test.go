@@ -18,6 +18,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -768,7 +769,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -870,7 +871,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -900,7 +901,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -949,7 +950,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -998,7 +999,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -1126,7 +1127,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -1217,7 +1218,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -1323,7 +1324,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -1389,7 +1390,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -1468,7 +1469,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -1557,7 +1558,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime
@@ -1646,7 +1647,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 		exampleUser.AccountStatus = ""
-		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedAt = exampleCreationTime

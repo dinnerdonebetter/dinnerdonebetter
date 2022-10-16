@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -457,7 +458,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 		exampleValidMeasurementUnit.ID = "1"
-		exampleInput := fakes.BuildFakeValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+		exampleInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput(exampleValidMeasurementUnit)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -505,7 +506,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-		exampleInput := fakes.BuildFakeValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+		exampleInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput(exampleValidMeasurementUnit)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

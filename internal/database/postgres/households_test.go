@@ -15,6 +15,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -576,7 +577,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.PaymentProcessorCustomerID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)
-		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdDatabaseCreationInput(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -642,7 +643,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)
-		exampleCreationInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
+		exampleCreationInput := converters.ConvertHouseholdToHouseholdDatabaseCreationInput(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -664,7 +665,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{}
-		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdDatabaseCreationInput(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -705,7 +706,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)
-		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdDatabaseCreationInput(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -756,7 +757,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)
-		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdDatabaseCreationInput(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

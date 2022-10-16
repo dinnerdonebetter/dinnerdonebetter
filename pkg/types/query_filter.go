@@ -189,8 +189,8 @@ func (qf *QueryFilter) ToValues() url.Values {
 	return v
 }
 
-// ExtractQueryFilter can extract a QueryFilter from a request.
-func ExtractQueryFilter(req *http.Request) *QueryFilter {
+// ExtractQueryFilterFromRequest can extract a QueryFilter from a request.
+func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 	qf := &QueryFilter{}
 	qf.FromParams(req.URL.Query())
 

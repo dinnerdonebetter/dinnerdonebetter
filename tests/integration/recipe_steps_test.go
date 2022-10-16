@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -99,7 +100,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrument.ID)
@@ -107,7 +108,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -135,7 +136,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 					exampleRecipeStep.Instruments[j].Instrument = createdValidInstrument
 				}
 
-				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(exampleRecipeStep)
+				exampleRecipeStepInput := converters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)
 				exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
 
 				createdRecipeStep, createdRecipeStepErr := testClients.user.CreateRecipeStep(ctx, exampleRecipeStepInput)

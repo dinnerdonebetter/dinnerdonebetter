@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
@@ -38,8 +39,8 @@ func buildTestHelper(t *testing.T) *validInstrumentsServiceHTTPRoutesTestHelper 
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidInstrument = fakes.BuildFakeValidInstrument()
-	helper.exampleCreationInput = fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(helper.exampleValidInstrument)
-	helper.exampleUpdateInput = fakes.BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument(helper.exampleValidInstrument)
+	helper.exampleCreationInput = converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(helper.exampleValidInstrument)
+	helper.exampleUpdateInput = converters.ConvertValidInstrumentToValidInstrumentUpdateRequestInput(helper.exampleValidInstrument)
 
 	helper.service.validInstrumentIDFetcher = func(*http.Request) string {
 		return helper.exampleValidInstrument.ID

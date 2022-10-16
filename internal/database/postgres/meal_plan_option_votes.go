@@ -297,7 +297,7 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 var mealPlanOptionVoteCreationQuery string
 
 // CreateMealPlanOptionVote creates a meal plan option vote in the database.
-func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVoteDatabaseCreationInput) ([]*types.MealPlanOptionVote, error) {
+func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVotesDatabaseCreationInput) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

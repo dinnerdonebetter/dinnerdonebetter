@@ -34,7 +34,7 @@ func (m *MealPlanOptionVoteDataManager) GetMealPlanOptionVotes(ctx context.Conte
 }
 
 // CreateMealPlanOptionVote is a mock function.
-func (m *MealPlanOptionVoteDataManager) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVoteDatabaseCreationInput) ([]*types.MealPlanOptionVote, error) {
+func (m *MealPlanOptionVoteDataManager) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVotesDatabaseCreationInput) ([]*types.MealPlanOptionVote, error) {
 	args := m.Called(ctx, input)
 	return args.Get(0).([]*types.MealPlanOptionVote), args.Error(1)
 }

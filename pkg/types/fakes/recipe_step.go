@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeRecipeStep builds a faked recipe step.
@@ -85,94 +86,8 @@ func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput
 	}
 }
 
-// BuildFakeRecipeStepUpdateRequestInputFromRecipeStep builds a faked RecipeStepUpdateRequestInput from a recipe step.
-func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
-	return &types.RecipeStepUpdateRequestInput{
-		Optional:                      &recipeStep.Optional,
-		Index:                         &recipeStep.Index,
-		Preparation:                   &recipeStep.Preparation,
-		MinimumEstimatedTimeInSeconds: recipeStep.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: recipeStep.MaximumEstimatedTimeInSeconds,
-		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
-		Notes:                         &recipeStep.Notes,
-		ExplicitInstructions:          &recipeStep.ExplicitInstructions,
-		BelongsToRecipe:               recipeStep.BelongsToRecipe,
-	}
-}
-
 // BuildFakeRecipeStepCreationRequestInput builds a faked RecipeStepCreationRequestInput.
 func BuildFakeRecipeStepCreationRequestInput() *types.RecipeStepCreationRequestInput {
 	recipeStep := BuildFakeRecipeStep()
-	return BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep)
-}
-
-// BuildFakeRecipeStepCreationRequestInputFromRecipeStep builds a faked RecipeStepCreationRequestInput from a recipe step.
-func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepCreationRequestInput {
-	ingredients := []*types.RecipeStepIngredientCreationRequestInput{}
-	for _, ingredient := range recipeStep.Ingredients {
-		ingredients = append(ingredients, BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(ingredient))
-	}
-
-	instruments := []*types.RecipeStepInstrumentCreationRequestInput{}
-	for _, instrument := range recipeStep.Instruments {
-		instruments = append(instruments, BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(instrument))
-	}
-
-	products := []*types.RecipeStepProductCreationRequestInput{}
-	for _, product := range recipeStep.Products {
-		products = append(products, BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(product))
-	}
-
-	return &types.RecipeStepCreationRequestInput{
-		ID:                            recipeStep.ID,
-		Optional:                      recipeStep.Optional,
-		Index:                         recipeStep.Index,
-		PreparationID:                 recipeStep.Preparation.ID,
-		MinimumEstimatedTimeInSeconds: recipeStep.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: recipeStep.MaximumEstimatedTimeInSeconds,
-		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
-		Notes:                         recipeStep.Notes,
-		ExplicitInstructions:          recipeStep.ExplicitInstructions,
-		BelongsToRecipe:               recipeStep.BelongsToRecipe,
-		Products:                      products,
-		Ingredients:                   ingredients,
-		Instruments:                   instruments,
-	}
-}
-
-// ConvertRecipeStepToRecipeStepDatabaseCreationInput builds a faked RecipeStepDatabaseCreationInput from a recipe step.
-func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.RecipeStep) *types.RecipeStepDatabaseCreationInput {
-	ingredients := []*types.RecipeStepIngredientDatabaseCreationInput{}
-	for _, i := range recipeStep.Ingredients {
-		ingredients = append(ingredients, ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(i))
-	}
-
-	instruments := []*types.RecipeStepInstrumentDatabaseCreationInput{}
-	for _, i := range recipeStep.Instruments {
-		instruments = append(instruments, BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(i))
-	}
-
-	products := []*types.RecipeStepProductDatabaseCreationInput{}
-	for _, p := range recipeStep.Products {
-		products = append(products, BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(p))
-	}
-
-	return &types.RecipeStepDatabaseCreationInput{
-		ID:                            recipeStep.ID,
-		Index:                         recipeStep.Index,
-		PreparationID:                 recipeStep.Preparation.ID,
-		Optional:                      recipeStep.Optional,
-		MinimumEstimatedTimeInSeconds: recipeStep.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: recipeStep.MaximumEstimatedTimeInSeconds,
-		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
-		Notes:                         recipeStep.Notes,
-		ExplicitInstructions:          recipeStep.ExplicitInstructions,
-		Ingredients:                   ingredients,
-		Instruments:                   instruments,
-		Products:                      products,
-		BelongsToRecipe:               recipeStep.BelongsToRecipe,
-	}
+	return converters.ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep)
 }

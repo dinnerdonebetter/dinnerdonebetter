@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 	"time"
 
@@ -39,7 +40,7 @@ func createMealPlanForTest(ctx context.Context, t *testing.T, mealPlan *types.Me
 		}
 	}
 
-	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan)
+	exampleMealPlanInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(mealPlan)
 	createdMealPlan, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
 	require.NoError(t, err)
 	require.NotEmpty(t, createdMealPlan.ID)
@@ -141,7 +142,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				},
 			}
 
-			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
+			exampleMealPlanInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
 			createdMealPlan, err := testClients.user.CreateMealPlan(ctx, exampleMealPlanInput)
 			require.NotEmpty(t, createdMealPlan.ID)
 			require.NoError(t, err)
@@ -331,7 +332,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				},
 			}
 
-			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
+			exampleMealPlanInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
 			createdMealPlan, err := testClients.user.CreateMealPlan(ctx, exampleMealPlanInput)
 			require.NotEmpty(t, createdMealPlan.ID)
 			require.NoError(t, err)

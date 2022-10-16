@@ -2,6 +2,7 @@ package integration
 
 import (
 	"encoding/json"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,7 +92,7 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 				exampleMealPlanEvent.Options = nil
 				exampleMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 
-				exampleMealPlanEventInput := fakes.BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(exampleMealPlanEvent)
+				exampleMealPlanEventInput := converters.ConvertMealPlanEventToMealPlanEventCreationRequestInput(exampleMealPlanEvent)
 				createdMealPlanEvent, err := testClients.user.CreateMealPlanEvent(ctx, createdMealPlan.ID, exampleMealPlanEventInput)
 				require.NoError(t, err)
 				t.Logf("meal plan event %q created", createdMealPlanEvent.ID)

@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -189,7 +190,7 @@ func (s *mealPlansTestSuite) TestClient_CreateMealPlan() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(s.exampleMealPlan)
+		exampleInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(s.exampleMealPlan)
 
 		c := buildTestClientWithInvalidURL(t)
 
@@ -201,7 +202,7 @@ func (s *mealPlansTestSuite) TestClient_CreateMealPlan() {
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(s.exampleMealPlan)
+		exampleInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(s.exampleMealPlan)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateMealPlan(s.ctx, exampleInput)

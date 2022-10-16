@@ -164,7 +164,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
@@ -205,7 +205,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).

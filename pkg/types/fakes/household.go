@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeHousehold builds a faked household.
@@ -69,29 +70,5 @@ func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateRequestInput {
 // BuildFakeHouseholdCreationInput builds a faked HouseholdCreationRequestInput.
 func BuildFakeHouseholdCreationInput() *types.HouseholdCreationRequestInput {
 	household := BuildFakeHousehold()
-	return BuildFakeHouseholdCreationRequestInputFromHousehold(household)
-}
-
-// BuildFakeHouseholdCreationRequestInputFromHousehold builds a faked HouseholdCreationRequestInput from a household.
-func BuildFakeHouseholdCreationRequestInputFromHousehold(household *types.Household) *types.HouseholdCreationRequestInput {
-	return &types.HouseholdCreationRequestInput{
-		ID:            BuildFakeID(),
-		Name:          household.Name,
-		ContactEmail:  household.ContactEmail,
-		ContactPhone:  household.ContactPhone,
-		BelongsToUser: household.BelongsToUser,
-		TimeZone:      household.TimeZone,
-	}
-}
-
-// BuildFakeHouseholdDatabaseCreationInputFromHousehold builds a faked HouseholdCreationRequestInput.
-func BuildFakeHouseholdDatabaseCreationInputFromHousehold(household *types.Household) *types.HouseholdDatabaseCreationInput {
-	return &types.HouseholdDatabaseCreationInput{
-		ID:            household.ID,
-		Name:          household.Name,
-		ContactEmail:  household.ContactEmail,
-		ContactPhone:  household.ContactPhone,
-		BelongsToUser: household.BelongsToUser,
-		TimeZone:      household.TimeZone,
-	}
+	return converters.ConvertHouseholdToHouseholdCreationRequestInput(household)
 }

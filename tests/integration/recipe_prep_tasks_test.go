@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"github.com/prixfixeco/api_server/pkg/apiclient"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -75,7 +76,7 @@ func createRecipePrepTaskForTest(ctx context.Context, t *testing.T, adminClient,
 		},
 	}
 
-	exampleInput := fakes.BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(exampleRecipePrepTask)
+	exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
 	createdRecipePrepTask, err := client.CreateRecipePrepTask(ctx, exampleInput)
 	requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
@@ -154,12 +155,12 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 					},
 				}
 
-				exampleInput := fakes.BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(exampleRecipePrepTask)
+				exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
 				createdRecipePrepTask, err := testClients.user.CreateRecipePrepTask(ctx, exampleInput)
 				requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
 
-				exampleRecipePrepTaskInput := fakes.BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(exampleRecipePrepTask)
+				exampleRecipePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
 				createdRecipePrepTask, createdRecipePrepTaskErr := testClients.user.CreateRecipePrepTask(ctx, exampleRecipePrepTaskInput)
 				require.NoError(t, createdRecipePrepTaskErr)

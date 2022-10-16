@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -44,7 +45,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrument.ID)
@@ -79,7 +80,7 @@ func (s *TestSuite) TestValidInstruments_GetRandom() {
 
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrument.ID)
@@ -107,7 +108,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			var expected []*types.ValidInstrument
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
-				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+				exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
 				t.Logf("valid instrument %q created", createdValidInstrument.ID)
@@ -151,7 +152,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			searchQuery := exampleValidInstrument.Name
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+				exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
 				t.Logf("valid instrument %q created", createdValidInstrument.ID)

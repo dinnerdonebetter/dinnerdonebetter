@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -468,7 +469,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 				exampleMealPlan.Events[i].Options[j].CreatedAt = exampleMealPlan.CreatedAt
 			}
 		}
-		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
+		exampleInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -551,7 +552,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			exampleMealPlan.Events[i].BelongsToMealPlan = "1"
 			exampleMealPlan.Events[i].CreatedAt = exampleMealPlan.CreatedAt
 		}
-		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
+		exampleInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -575,7 +576,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			exampleMealPlan.Events[i].BelongsToMealPlan = "1"
 			exampleMealPlan.Events[i].CreatedAt = exampleMealPlan.CreatedAt
 		}
-		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
+		exampleInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -625,7 +626,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 				exampleMealPlan.Events[i].Options[j].CreatedAt = exampleMealPlan.CreatedAt
 			}
 		}
-		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
+		exampleInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(exampleMealPlan)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

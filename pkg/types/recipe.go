@@ -248,21 +248,6 @@ func (x *RecipeDatabaseCreationInput) ValidateWithContext(ctx context.Context) e
 	)
 }
 
-// RecipeUpdateRequestInputFromRecipe creates a DatabaseCreationInput from a CreationInput.
-func RecipeUpdateRequestInputFromRecipe(input *Recipe) *RecipeUpdateRequestInput {
-	x := &RecipeUpdateRequestInput{
-		Name:               &input.Name,
-		Source:             &input.Source,
-		Description:        &input.Description,
-		InspiredByRecipeID: input.InspiredByRecipeID,
-		CreatedByUser:      &input.CreatedByUser,
-		SealOfApproval:     &input.SealOfApproval,
-		YieldsPortions:     &input.YieldsPortions,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*RecipeUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeUpdateRequestInput.

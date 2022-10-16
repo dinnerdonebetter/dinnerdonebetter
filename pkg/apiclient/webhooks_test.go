@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -120,7 +121,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeWebhookCreationInputFromWebhook(s.exampleWebhook)
+		exampleInput := converters.ConvertWebhookToWebhookCreationRequestInput(s.exampleWebhook)
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhook)
@@ -153,7 +154,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeWebhookCreationInputFromWebhook(s.exampleWebhook)
+		exampleInput := converters.ConvertWebhookToWebhookCreationRequestInput(s.exampleWebhook)
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateWebhook(s.ctx, exampleInput)
@@ -164,7 +165,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeWebhookCreationInputFromWebhook(s.exampleWebhook)
+		exampleInput := converters.ConvertWebhookToWebhookCreationRequestInput(s.exampleWebhook)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateWebhook(s.ctx, exampleInput)

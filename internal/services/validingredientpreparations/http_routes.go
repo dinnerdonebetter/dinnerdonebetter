@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -55,7 +56,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := types.ValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparationCreationInput(providedInput)
+	input := converters.ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
 	tracing.AttachValidIngredientPreparationIDToSpan(span, input.ID)
@@ -127,7 +128,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
@@ -299,7 +300,7 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	logger := s.logger.WithRequest(req).
@@ -338,7 +339,7 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	logger := s.logger.WithRequest(req).

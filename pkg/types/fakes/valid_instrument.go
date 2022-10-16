@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeValidInstrument builds a faked valid instrument.
@@ -49,43 +50,8 @@ func BuildFakeValidInstrumentUpdateRequestInput() *types.ValidInstrumentUpdateRe
 	}
 }
 
-// BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument builds a faked ValidInstrumentUpdateRequestInput from a valid instrument.
-func BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
-	return &types.ValidInstrumentUpdateRequestInput{
-		Name:             &validInstrument.Name,
-		PluralName:       &validInstrument.PluralName,
-		Description:      &validInstrument.Description,
-		IconPath:         &validInstrument.IconPath,
-		UsableForStorage: &validInstrument.UsableForStorage,
-	}
-}
-
 // BuildFakeValidInstrumentCreationRequestInput builds a faked ValidInstrumentCreationRequestInput.
 func BuildFakeValidInstrumentCreationRequestInput() *types.ValidInstrumentCreationRequestInput {
 	validInstrument := BuildFakeValidInstrument()
-	return BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(validInstrument)
-}
-
-// BuildFakeValidInstrumentCreationRequestInputFromValidInstrument builds a faked ValidInstrumentCreationRequestInput from a valid instrument.
-func BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentCreationRequestInput {
-	return &types.ValidInstrumentCreationRequestInput{
-		ID:               validInstrument.ID,
-		Name:             validInstrument.Name,
-		PluralName:       validInstrument.PluralName,
-		Description:      validInstrument.Description,
-		IconPath:         validInstrument.IconPath,
-		UsableForStorage: validInstrument.UsableForStorage,
-	}
-}
-
-// BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument builds a faked ValidInstrumentDatabaseCreationInput from a valid instrument.
-func BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentDatabaseCreationInput {
-	return &types.ValidInstrumentDatabaseCreationInput{
-		ID:               validInstrument.ID,
-		Name:             validInstrument.Name,
-		PluralName:       validInstrument.PluralName,
-		Description:      validInstrument.Description,
-		IconPath:         validInstrument.IconPath,
-		UsableForStorage: validInstrument.UsableForStorage,
-	}
+	return converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(validInstrument)
 }

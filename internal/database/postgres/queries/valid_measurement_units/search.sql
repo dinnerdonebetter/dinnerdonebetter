@@ -12,6 +12,6 @@ SELECT
 	valid_measurement_units.last_updated_at,
 	valid_measurement_units.archived_at
 FROM valid_measurement_units
-WHERE valid_measurement_units.name ILIKE $1
+WHERE (valid_measurement_units.name ILIKE $1 OR valid_measurement_units.universal is TRUE)
 AND valid_measurement_units.archived_at IS NULL
 LIMIT 50;

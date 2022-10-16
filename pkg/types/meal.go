@@ -143,19 +143,6 @@ func (x *MealDatabaseCreationInput) ValidateWithContext(ctx context.Context) err
 	)
 }
 
-// MealDatabaseCreationInputFromMealCreationInput creates a DatabaseCreationInput from a CreationInput.
-func MealDatabaseCreationInputFromMealCreationInput(input *MealCreationRequestInput) *MealDatabaseCreationInput {
-	x := &MealDatabaseCreationInput{
-		ID:            input.ID,
-		Name:          input.Name,
-		Description:   input.Description,
-		CreatedByUser: input.CreatedByUser,
-		Recipes:       input.Recipes,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*MealUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a MealUpdateRequestInput.

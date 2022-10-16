@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -81,7 +82,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 
 			t.Log("creating valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
@@ -120,7 +121,7 @@ func (s *TestSuite) TestValidIngredients_GetRandom() {
 
 			t.Log("creating valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
@@ -147,7 +148,7 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			var expected []*types.ValidIngredient
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
-				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
 				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
@@ -191,7 +192,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			searchQuery := exampleValidIngredient.Name
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)

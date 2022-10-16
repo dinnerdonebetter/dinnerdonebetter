@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeRecipe builds a faked recipe.
@@ -59,37 +60,16 @@ func BuildFakeRecipeList() *types.RecipeList {
 // BuildFakeRecipeUpdateRequestInput builds a faked RecipeUpdateRequestInput from a recipe.
 func BuildFakeRecipeUpdateRequestInput() *types.RecipeUpdateRequestInput {
 	recipe := BuildFakeRecipe()
-	return &types.RecipeUpdateRequestInput{
-		Name:               &recipe.Name,
-		Source:             &recipe.Source,
-		Description:        &recipe.Description,
-		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		CreatedByUser:      &recipe.CreatedByUser,
-		SealOfApproval:     &recipe.SealOfApproval,
-		YieldsPortions:     &recipe.YieldsPortions,
-	}
-}
-
-// BuildFakeRecipeUpdateRequestInputFromRecipe builds a faked RecipeUpdateRequestInput from a recipe.
-func BuildFakeRecipeUpdateRequestInputFromRecipe(recipe *types.Recipe) *types.RecipeUpdateRequestInput {
-	return &types.RecipeUpdateRequestInput{
-		Name:               &recipe.Name,
-		Source:             &recipe.Source,
-		Description:        &recipe.Description,
-		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		CreatedByUser:      &recipe.CreatedByUser,
-		SealOfApproval:     &recipe.SealOfApproval,
-		YieldsPortions:     &recipe.YieldsPortions,
-	}
+	return converters.ConvertRecipeToRecipeUpdateRequestInput(recipe)
 }
 
 // BuildFakeRecipeCreationRequestInput builds a faked RecipeCreationRequestInput.
 func BuildFakeRecipeCreationRequestInput() *types.RecipeCreationRequestInput {
 	exampleRecipe := BuildFakeRecipe()
-	exampleCreationInput := BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
+	exampleCreationInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(exampleRecipe)
 	exampleCreationInput.CreatedByUser = ""
 	examplePrepTask := BuildFakeRecipePrepTask()
-	examplePrepTaskInput := BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(exampleRecipe, examplePrepTask)
+	examplePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(exampleRecipe, examplePrepTask)
 	examplePrepTaskInput.TaskSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 		{
 			BelongsToRecipeStepIndex: exampleCreationInput.Steps[0].Index,
@@ -102,55 +82,4 @@ func BuildFakeRecipeCreationRequestInput() *types.RecipeCreationRequestInput {
 	}
 
 	return exampleCreationInput
-}
-
-// BuildFakeRecipeCreationRequestInputFromRecipe builds a faked RecipeCreationRequestInput from a recipe.
-func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.RecipeCreationRequestInput {
-	steps := []*types.RecipeStepCreationRequestInput{}
-	for _, step := range recipe.Steps {
-		steps = append(steps, BuildFakeRecipeStepCreationRequestInputFromRecipeStep(step))
-	}
-
-	prepTasks := []*types.RecipePrepTaskWithinRecipeCreationRequestInput{}
-	for _, prepTask := range recipe.PrepTasks {
-		prepTasks = append(prepTasks, BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(recipe, prepTask))
-	}
-
-	return &types.RecipeCreationRequestInput{
-		Name:               recipe.Name,
-		Source:             recipe.Source,
-		Description:        recipe.Description,
-		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		CreatedByUser:      recipe.CreatedByUser,
-		SealOfApproval:     recipe.SealOfApproval,
-		YieldsPortions:     recipe.YieldsPortions,
-		Steps:              steps,
-		PrepTasks:          prepTasks,
-	}
-}
-
-// BuildFakeRecipeDatabaseCreationInputFromRecipe builds a faked RecipeDatabaseCreationInput from a recipe.
-func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types.RecipeDatabaseCreationInput {
-	steps := []*types.RecipeStepDatabaseCreationInput{}
-	for _, step := range recipe.Steps {
-		steps = append(steps, ConvertRecipeStepToRecipeStepDatabaseCreationInput(step))
-	}
-
-	prepTasks := []*types.RecipePrepTaskDatabaseCreationInput{}
-	for _, prepTask := range recipe.PrepTasks {
-		prepTasks = append(prepTasks, BuildFakeRecipePrepTaskDatabaseCreationInputFromRecipePrepTask(prepTask))
-	}
-
-	return &types.RecipeDatabaseCreationInput{
-		ID:                 recipe.ID,
-		Name:               recipe.Name,
-		Source:             recipe.Source,
-		Description:        recipe.Description,
-		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		CreatedByUser:      recipe.CreatedByUser,
-		SealOfApproval:     recipe.SealOfApproval,
-		YieldsPortions:     recipe.YieldsPortions,
-		Steps:              steps,
-		PrepTasks:          prepTasks,
-	}
 }

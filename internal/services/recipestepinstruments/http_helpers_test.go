@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
@@ -45,8 +46,8 @@ func buildTestHelper(t *testing.T) *recipeStepInstrumentsServiceHTTPRoutesTestHe
 	helper.exampleRecipeStep.BelongsToRecipe = helper.exampleRecipe.ID
 	helper.exampleRecipeStepInstrument = fakes.BuildFakeRecipeStepInstrument()
 	helper.exampleRecipeStepInstrument.BelongsToRecipeStep = helper.exampleRecipeStep.ID
-	helper.exampleCreationInput = fakes.BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(helper.exampleRecipeStepInstrument)
-	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(helper.exampleRecipeStepInstrument)
+	helper.exampleCreationInput = converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(helper.exampleRecipeStepInstrument)
+	helper.exampleUpdateInput = converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(helper.exampleRecipeStepInstrument)
 
 	helper.service.recipeIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipe.ID

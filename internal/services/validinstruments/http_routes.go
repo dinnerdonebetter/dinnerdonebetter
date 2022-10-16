@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -51,7 +52,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := types.ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput(providedInput)
+	input := converters.ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
 	tracing.AttachValidInstrumentIDToSpan(span, input.ID)
@@ -123,7 +124,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
@@ -163,7 +164,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).

@@ -106,21 +106,6 @@ func (w *WebhookCreationRequestInput) ValidateWithContext(ctx context.Context) e
 	)
 }
 
-// WebhookDatabaseCreationInputFromWebhookCreationInput creates a DatabaseCreationInput from a CreationInput.
-func WebhookDatabaseCreationInputFromWebhookCreationInput(input *WebhookCreationRequestInput) *WebhookDatabaseCreationInput {
-	x := &WebhookDatabaseCreationInput{}
-
-	x.Name = input.Name
-	x.ContentType = input.ContentType
-	x.URL = input.URL
-	x.Method = input.Method
-	x.Events = input.Events
-	x.DataTypes = input.DataTypes
-	x.Topics = input.Topics
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*WebhookDatabaseCreationInput)(nil)
 
 // ValidateWithContext validates a WebhookDatabaseCreationInput.

@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -454,7 +455,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 		ctx := context.Background()
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidPreparation.ID = "1"
-		exampleInput := fakes.BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(exampleValidPreparation)
+		exampleInput := converters.ConvertValidPreparationToValidPreparationDatabaseCreationInput(exampleValidPreparation)
 
 		c, db := buildTestClient(t)
 
@@ -501,7 +502,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 		ctx := context.Background()
 		expectedErr := errors.New(t.Name())
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
-		exampleInput := fakes.BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(exampleValidPreparation)
+		exampleInput := converters.ConvertValidPreparationToValidPreparationDatabaseCreationInput(exampleValidPreparation)
 
 		c, db := buildTestClient(t)
 

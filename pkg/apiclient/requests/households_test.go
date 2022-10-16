@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -169,7 +170,7 @@ func TestBuilder_BuildCreateHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(exampleHousehold)
 
 		actual, err := helper.builder.BuildCreateHouseholdRequest(helper.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -205,7 +206,7 @@ func TestBuilder_BuildCreateHouseholdRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
+		exampleInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(exampleHousehold)
 
 		actual, err := helper.builder.BuildCreateHouseholdRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)

@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -132,7 +133,7 @@ func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 
 		ctx := context.Background()
 		expected := fakes.BuildFakeRecipePrepTask()
-		exampleInput := fakes.BuildFakeRecipePrepTaskDatabaseCreationInputFromRecipePrepTask(expected)
+		exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(expected)
 
 		c, db := buildTestClient(t)
 
@@ -189,7 +190,7 @@ func TestQuerier_createRecipePrepTaskStep(T *testing.T) {
 
 		ctx := context.Background()
 		expected := fakes.BuildFakeRecipePrepTaskStep()
-		exampleInput := fakes.BuildFakeRecipePrepTaskStepDatabaseCreationInputFromRecipePrepTaskStep(expected)
+		exampleInput := converters.ConvertRecipePrepTaskStepToRecipePrepTaskStepDatabaseCreationInput(expected)
 
 		c, db := buildTestClient(t)
 

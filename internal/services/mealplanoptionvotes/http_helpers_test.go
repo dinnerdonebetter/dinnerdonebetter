@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
@@ -50,8 +51,8 @@ func buildTestHelper(t *testing.T) *mealPlanOptionVotesServiceHTTPRoutesTestHelp
 	helper.exampleMealPlanOptionVote = fakes.BuildFakeMealPlanOptionVote()
 	helper.exampleMealPlanOptionVote.BelongsToMealPlanOption = helper.exampleMealPlanOption.ID
 	helper.exampleMealPlanOptionVotes = []*types.MealPlanOptionVote{helper.exampleMealPlanOptionVote}
-	helper.exampleCreationInput = fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(helper.exampleMealPlanOptionVote)
-	helper.exampleUpdateInput = fakes.BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(helper.exampleMealPlanOptionVote)
+	helper.exampleCreationInput = converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteCreationRequestInput(helper.exampleMealPlanOptionVote)
+	helper.exampleUpdateInput = converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput(helper.exampleMealPlanOptionVote)
 
 	helper.service.mealPlanIDFetcher = func(*http.Request) string {
 		return helper.exampleMealPlan.ID

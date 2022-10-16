@@ -182,7 +182,7 @@ func TestExtractQueryFilter(T *testing.T) {
 		require.NotNil(t, req)
 
 		req.URL.RawQuery = exampleInput.Encode()
-		actual := ExtractQueryFilter(req)
+		actual := ExtractQueryFilterFromRequest(req)
 		assert.Equal(t, expected, actual)
 	})
 }

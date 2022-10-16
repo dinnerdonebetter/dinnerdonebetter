@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeRecipeStepInstrument builds a faked recipe step instrument.
@@ -59,68 +60,8 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 	}
 }
 
-// BuildFakeRecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument builds a faked RecipeStepInstrumentUpdateRequestInput from a recipe step instrument.
-func BuildFakeRecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
-	return &types.RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID:        &recipeStepInstrument.Instrument.ID,
-		Name:                &recipeStepInstrument.Name,
-		ProductOfRecipeStep: &recipeStepInstrument.ProductOfRecipeStep,
-		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
-		Notes:               &recipeStepInstrument.Notes,
-		PreferenceRank:      &recipeStepInstrument.PreferenceRank,
-		BelongsToRecipeStep: &recipeStepInstrument.BelongsToRecipeStep,
-		Optional:            &recipeStepInstrument.Optional,
-		MinimumQuantity:     &recipeStepInstrument.MinimumQuantity,
-		MaximumQuantity:     &recipeStepInstrument.MaximumQuantity,
-	}
-}
-
 // BuildFakeRecipeStepInstrumentCreationRequestInput builds a faked RecipeStepInstrumentCreationRequestInput.
 func BuildFakeRecipeStepInstrumentCreationRequestInput() *types.RecipeStepInstrumentCreationRequestInput {
 	recipeStepInstrument := BuildFakeRecipeStepInstrument()
-	return BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(recipeStepInstrument)
-}
-
-// BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument builds a faked RecipeStepInstrumentCreationRequestInput from a recipe step instrument.
-func BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentCreationRequestInput {
-	var instrumentID *string
-	if recipeStepInstrument.Instrument != nil {
-		instrumentID = &recipeStepInstrument.Instrument.ID
-	}
-
-	return &types.RecipeStepInstrumentCreationRequestInput{
-		ID:                  recipeStepInstrument.ID,
-		InstrumentID:        instrumentID,
-		Name:                recipeStepInstrument.Name,
-		ProductOfRecipeStep: recipeStepInstrument.ProductOfRecipeStep,
-		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
-		Notes:               recipeStepInstrument.Notes,
-		PreferenceRank:      recipeStepInstrument.PreferenceRank,
-		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
-		Optional:            recipeStepInstrument.Optional,
-		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,
-		MaximumQuantity:     recipeStepInstrument.MaximumQuantity,
-	}
-}
-
-// BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument builds a faked RecipeStepInstrumentDatabaseCreationInput from a recipe step instrument.
-func BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentDatabaseCreationInput {
-	var instrumentID *string
-	if recipeStepInstrument.Instrument != nil {
-		instrumentID = &recipeStepInstrument.Instrument.ID
-	}
-
-	return &types.RecipeStepInstrumentDatabaseCreationInput{
-		ID:                  recipeStepInstrument.ID,
-		InstrumentID:        instrumentID,
-		Name:                recipeStepInstrument.Name,
-		ProductOfRecipeStep: recipeStepInstrument.ProductOfRecipeStep,
-		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
-		Notes:               recipeStepInstrument.Notes,
-		PreferenceRank:      recipeStepInstrument.PreferenceRank,
-		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
-		Optional:            recipeStepInstrument.Optional,
-		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,
-		MaximumQuantity:     recipeStepInstrument.MaximumQuantity,
-	}
+	return converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recipeStepInstrument)
 }

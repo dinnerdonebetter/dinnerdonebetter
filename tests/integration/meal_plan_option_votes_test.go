@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -50,7 +51,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			t.Log("creating meal plan option vote")
 			exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 			exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
-			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
+			exampleMealPlanOptionVoteInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteCreationRequestInput(exampleMealPlanOptionVote)
 			createdMealPlanOptionVotes, err := testClients.user.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, exampleMealPlanOptionVoteInput)
 			require.NoError(t, err)
 			t.Logf("meal plan option votes created")
@@ -113,7 +114,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			t.Log("creating meal plan option vote")
 			exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 			exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
-			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
+			exampleMealPlanOptionVoteInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteCreationRequestInput(exampleMealPlanOptionVote)
 			createdMealPlanOptionVotes, err := testClients.user.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, exampleMealPlanOptionVoteInput)
 			require.NoError(t, err)
 			t.Logf("meal plan option votes created")
