@@ -231,8 +231,8 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 		BelongsToRecipe:                        input.BelongsToRecipe,
 	}
 
-	for _, recipeStep := range input.TaskSteps {
-		s, err := q.createRecipePrepTaskStep(ctx, querier, recipeStep)
+	for _, recipePrepTaskStep := range input.TaskSteps {
+		s, err := q.createRecipePrepTaskStep(ctx, querier, recipePrepTaskStep)
 		if err != nil {
 			q.rollbackTransaction(ctx, querier)
 			return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")

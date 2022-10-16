@@ -16,17 +16,9 @@ func TestMealPlanTaskDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := MealPlanTaskDatabaseCreationInput{
-			ID:                   fake.LoremIpsumSentence(exampleQuantity),
-			MealPlanOptionID:     fake.LoremIpsumSentence(exampleQuantity),
-			CannotCompleteBefore: fake.Date(),
-			CannotCompleteAfter:  fake.Date(),
-			RecipeSteps: []*MealPlanTaskRecipeStepDatabaseCreationInput{
-				{
-					ID:                    "",
-					AppliesToRecipeStep:   "",
-					BelongsToMealPlanTask: "",
-				},
-			},
+			ID:               fake.LoremIpsumSentence(exampleQuantity),
+			MealPlanOptionID: fake.LoremIpsumSentence(exampleQuantity),
+			RecipePrepTaskID: fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		require.NoError(t, x.ValidateWithContext(ctx))

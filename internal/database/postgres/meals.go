@@ -181,7 +181,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 	}
 
 	for _, id := range recipeIDs {
-		r, getRecipeErr := q.GetRecipe(ctx, id)
+		r, getRecipeErr := q.getRecipe(ctx, id, "")
 		if getRecipeErr != nil {
 			return nil, observability.PrepareError(getRecipeErr, span, "fetching recipe for meal")
 		}

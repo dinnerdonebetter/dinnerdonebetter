@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/prixfixeco/api_server/pkg/utils"
 	"log"
 	"net/url"
 	"os"
@@ -23,7 +24,6 @@ import (
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 const (
@@ -54,11 +54,11 @@ func init() {
 		log.Fatal(err)
 	}
 
-	parsedURLToUse = testutils.DetermineServiceURL()
+	parsedURLToUse = utils.DetermineServiceURL()
 	urlToUse = parsedURLToUse.String()
 
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	testutils.EnsureServerIsUp(ctx, urlToUse)
+	utils.EnsureServerIsUp(ctx, urlToUse)
 
 	dbAddr := os.Getenv("TARGET_DATABASE")
 	if dbAddr == "" {

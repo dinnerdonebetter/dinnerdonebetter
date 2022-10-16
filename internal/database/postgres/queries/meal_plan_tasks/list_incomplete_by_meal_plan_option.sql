@@ -40,8 +40,6 @@ SELECT
 	meal_plan_tasks.status,
 	meal_plan_tasks.status_explanation,
 	meal_plan_tasks.creation_explanation,
-	meal_plan_tasks.cannot_complete_before,
-	meal_plan_tasks.cannot_complete_after,
 	meal_plan_tasks.created_at,
 	meal_plan_tasks.completed_at
 FROM meal_plan_tasks

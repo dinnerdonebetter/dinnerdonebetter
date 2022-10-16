@@ -19,8 +19,6 @@ func checkMealPlanTaskEquality(t *testing.T, expected, actual *types.MealPlanTas
 	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan %s to be %v, but it was %v", expected.Status, expected.Status, actual.Status)
 	assert.Equal(t, expected.StatusExplanation, actual.StatusExplanation, "expected StatusExplanation for meal plan %s to be %v, but it was %v", expected.StatusExplanation, expected.StatusExplanation, actual.StatusExplanation)
 	assert.Equal(t, expected.AssignedToUser, actual.AssignedToUser, "expected AssignedToUser for meal plan %s to be %v, but it was %v", expected.AssignedToUser, expected.AssignedToUser, actual.AssignedToUser)
-	assert.Equal(t, expected.CannotCompleteBefore, actual.CannotCompleteBefore, "expected CannotCompleteBefore for meal plan %s to be %v, but it was %v", expected.CannotCompleteBefore, expected.CannotCompleteBefore, actual.CannotCompleteBefore)
-	assert.Equal(t, expected.CannotCompleteAfter, actual.CannotCompleteAfter, "expected CannotCompleteAfter for meal plan %s to be %v, but it was %v", expected.CannotCompleteAfter, expected.CannotCompleteAfter, actual.CannotCompleteAfter)
 	assert.Equal(t, expected.CompletedAt, actual.CompletedAt, "expected CompletedAt for meal plan %s to be %v, but it was %v", expected.CompletedAt, expected.CompletedAt, actual.CompletedAt)
 
 	assert.NotZero(t, actual.CreatedAt)
@@ -41,11 +39,7 @@ func (s *TestSuite) TestMealPlanTasks_CompleteLifecycle() {
 			exampleMealPlanTaskInput := fakes.BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask(exampleMealPlanTask)
 
 			exampleMealPlanTaskInput.MealPlanOptionID = createdMealPlan.Events[0].Options[0].ID
-			exampleMealPlanTaskInput.RecipeStepIDs = []string{
-				createdMealPlan.Events[0].Options[0].Meal.Recipes[0].Steps[0].ID,
-			}
-
-			logJSON(t, exampleMealPlanTaskInput)
+			exampleMealPlanTaskInput.RecipePrepTaskID = createdMealPlan.Events[0].Options[0].Meal.Recipes[0].PrepTasks[0].ID
 
 			createdMealPlanTask, err := testClients.admin.CreateMealPlanTask(ctx, createdMealPlan.ID, exampleMealPlanTaskInput)
 			require.NoError(t, err)

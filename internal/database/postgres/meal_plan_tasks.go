@@ -24,7 +24,7 @@ func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database
 	x = &types.MealPlanTask{}
 
 	for rows.Next() {
-		mealPlanTaskRecipeStep := types.MealPlanTaskRecipeStep{}
+		recipePrepTaskStep := &types.RecipePrepTaskStep{}
 
 		targetVars := []interface{}{
 			&x.ID,
@@ -40,23 +40,35 @@ func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database
 			&x.MealPlanOption.LastUpdatedAt,
 			&x.MealPlanOption.ArchivedAt,
 			&x.MealPlanOption.BelongsToMealPlanEvent,
-			&x.CannotCompleteBefore,
-			&x.CannotCompleteAfter,
+			&x.RecipePrepTask.ID,
+			&x.RecipePrepTask.Notes,
+			&x.RecipePrepTask.ExplicitStorageInstructions,
+			&x.RecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
+			&x.RecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
+			&x.RecipePrepTask.StorageType,
+			&x.RecipePrepTask.MinimumStorageTemperatureInCelsius,
+			&x.RecipePrepTask.MaximumStorageTemperatureInCelsius,
+			&x.RecipePrepTask.BelongsToRecipe,
+			&x.RecipePrepTask.CreatedAt,
+			&x.RecipePrepTask.LastUpdatedAt,
+			&x.RecipePrepTask.ArchivedAt,
+			&recipePrepTaskStep.ID,
+			&recipePrepTaskStep.BelongsToRecipeStep,
+			&recipePrepTaskStep.BelongsToRecipePrepTask,
+			&recipePrepTaskStep.SatisfiesRecipeStep,
 			&x.CreatedAt,
 			&x.CompletedAt,
 			&x.Status,
 			&x.CreationExplanation,
 			&x.StatusExplanation,
 			&x.AssignedToUser,
-			&mealPlanTaskRecipeStep.AttributableToRecipeStep,
-			&mealPlanTaskRecipeStep.SatisfiesRecipeStep,
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
 			return nil, observability.PrepareError(err, span, "scanning complete meal")
 		}
 
-		x.RecipeSteps = append(x.RecipeSteps, mealPlanTaskRecipeStep)
+		x.RecipePrepTask.TaskSteps = append(x.RecipePrepTask.TaskSteps, recipePrepTaskStep)
 	}
 
 	return x, nil
@@ -72,8 +84,6 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 	x := &types.MealPlanTask{}
 
 	for rows.Next() {
-		mealPlanTaskRecipeStep := types.MealPlanTaskRecipeStep{}
-
 		targetVars := []interface{}{
 			&x.ID,
 			&x.MealPlanOption.ID,
@@ -88,23 +98,17 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 			&x.MealPlanOption.LastUpdatedAt,
 			&x.MealPlanOption.ArchivedAt,
 			&x.MealPlanOption.BelongsToMealPlanEvent,
-			&x.CannotCompleteBefore,
-			&x.CannotCompleteAfter,
 			&x.CreatedAt,
 			&x.CompletedAt,
 			&x.Status,
 			&x.CreationExplanation,
 			&x.StatusExplanation,
 			&x.AssignedToUser,
-			&mealPlanTaskRecipeStep.AttributableToRecipeStep,
-			&mealPlanTaskRecipeStep.SatisfiesRecipeStep,
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
 			return nil, observability.PrepareError(err, span, "scanning complete meal")
 		}
-
-		x.RecipeSteps = append(x.RecipeSteps, mealPlanTaskRecipeStep)
 
 		if lastMealPlanTaskID == "" {
 			lastMealPlanTaskID = x.ID
@@ -212,9 +216,8 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 		types.MealPlanTaskStatusUnfinished,
 		input.StatusExplanation,
 		input.CreationExplanation,
-		input.CannotCompleteBefore,
-		input.CannotCompleteAfter,
 		input.MealPlanOptionID,
+		input.RecipePrepTaskID,
 		input.AssignedToUser,
 	}
 
@@ -225,21 +228,12 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 	}
 
 	x := &types.MealPlanTask{
-		CannotCompleteBefore: input.CannotCompleteBefore,
-		CannotCompleteAfter:  input.CannotCompleteAfter,
-		CreatedAt:            q.timeFunc(),
-		ID:                   input.ID,
-		AssignedToUser:       input.AssignedToUser,
-		Status:               types.MealPlanTaskStatusUnfinished,
-		CreationExplanation:  input.CreationExplanation,
-		StatusExplanation:    input.StatusExplanation,
-	}
-
-	for _, recipeStep := range input.RecipeSteps {
-		if err := q.createMealPlanTaskRecipeStep(ctx, querier, recipeStep); err != nil {
-			q.rollbackTransaction(ctx, querier)
-			return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
-		}
+		CreatedAt:           q.timeFunc(),
+		ID:                  input.ID,
+		AssignedToUser:      input.AssignedToUser,
+		Status:              types.MealPlanTaskStatusUnfinished,
+		CreationExplanation: input.CreationExplanation,
+		StatusExplanation:   input.StatusExplanation,
 	}
 
 	tracing.AttachMealPlanIDToSpan(span, x.ID)
@@ -277,40 +271,6 @@ func (q *Querier) CreateMealPlanTask(ctx context.Context, input *types.MealPlanT
 	logger.Info("meal plan task created")
 
 	return x, nil
-}
-
-//go:embed queries/meal_plan_task_recipe_steps/create.sql
-var createMealPlanTaskRecipeStepQuery string
-
-// createMealPlanTaskRecipeStep creates a meal plan task recipe step.
-func (q *Querier) createMealPlanTaskRecipeStep(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanTaskRecipeStepDatabaseCreationInput) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if input == nil {
-		return ErrNilInputProvided
-	}
-	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
-
-	args := []interface{}{
-		input.ID,
-		input.BelongsToMealPlanTask,
-		input.AppliesToRecipeStep,
-		input.SatisfiesRecipeStep,
-	}
-	tracing.AttachMealPlanTaskIDToSpan(span, input.BelongsToMealPlanTask)
-
-	// create the meal plan.
-	if err := q.performWriteQuery(ctx, querier, "meal plan task recipe step creation", createMealPlanTaskRecipeStepQuery, args); err != nil {
-		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareAndLogError(err, logger, span, "creating meal plan task recipe step")
-	}
-
-	logger.Info("meal plan task recipe step created")
-
-	return nil
 }
 
 //go:embed queries/meal_plan_tasks/list_all_by_meal_plan.sql

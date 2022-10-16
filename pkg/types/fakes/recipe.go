@@ -133,7 +133,7 @@ func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.
 func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types.RecipeDatabaseCreationInput {
 	steps := []*types.RecipeStepDatabaseCreationInput{}
 	for _, step := range recipe.Steps {
-		steps = append(steps, BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(step))
+		steps = append(steps, ConvertRecipeStepToRecipeStepDatabaseCreationInput(step))
 	}
 
 	prepTasks := []*types.RecipePrepTaskDatabaseCreationInput{}

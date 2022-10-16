@@ -162,17 +162,6 @@ quicktest: $(ARTIFACTS_DIR) vendor clear
 	go build $(TOTAL_PACKAGE_LIST)
 	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
 
-.PHONY: frontend_tests
-frontend_tests:
-	docker-compose --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/frontend_tests.yaml up \
-	--build \
-	--quiet-pull \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	--abort-on-container-exit
-
 .PHONY: check_queries
 check_queries:
 	$(SQL_GENERATOR) compile
@@ -233,7 +222,10 @@ integration_tests_postgres:
 	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(OBSERVE)),integration-tests-with-observability.yaml,integration-tests.yaml) \
 	up \
 	--build \
+	--quiet-pull \
+	--force-recreate \
 	--remove-orphans \
+	--always-recreate-deps \
 	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--abort-on-container-exit) \
 	--renew-anon-volumes
 

@@ -107,7 +107,12 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	}
 
 	examplePrepTask := fakes.BuildFakeRecipePrepTask()
-	examplePrepTask.TaskSteps = []*types.RecipePrepTaskStep{}
+	examplePrepTask.TaskSteps = []*types.RecipePrepTaskStep{
+		{
+			BelongsToRecipeStep: exampleRecipe.Steps[0].ID,
+			SatisfiesRecipeStep: false,
+		},
+	}
 	exampleRecipeInput.PrepTasks = []*types.RecipePrepTaskWithinRecipeCreationRequestInput{
 		fakes.BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(exampleRecipe, examplePrepTask),
 	}

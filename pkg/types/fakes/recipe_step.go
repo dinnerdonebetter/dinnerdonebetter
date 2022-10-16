@@ -142,11 +142,11 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 	}
 }
 
-// BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep builds a faked RecipeStepDatabaseCreationInput from a recipe step.
-func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepDatabaseCreationInput {
+// ConvertRecipeStepToRecipeStepDatabaseCreationInput builds a faked RecipeStepDatabaseCreationInput from a recipe step.
+func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.RecipeStep) *types.RecipeStepDatabaseCreationInput {
 	ingredients := []*types.RecipeStepIngredientDatabaseCreationInput{}
 	for _, i := range recipeStep.Ingredients {
-		ingredients = append(ingredients, BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(i))
+		ingredients = append(ingredients, ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(i))
 	}
 
 	instruments := []*types.RecipeStepInstrumentDatabaseCreationInput{}

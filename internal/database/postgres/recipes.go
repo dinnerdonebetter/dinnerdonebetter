@@ -440,12 +440,11 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		x.Steps = append(x.Steps, s)
 	}
 
-	for _, prepTaskInput := range input.PrepTasks {
-		prepTaskInput.BelongsToRecipe = input.ID
+	for i, prepTaskInput := range input.PrepTasks {
 		pt, createPrepTaskErr := q.createRecipePrepTask(ctx, tx, prepTaskInput)
 		if createPrepTaskErr != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(createPrepTaskErr, span, "creating recipe prep task")
+			return nil, observability.PrepareError(createPrepTaskErr, span, "creating recipe prep task #%d", i+1)
 		}
 
 		x.PrepTasks = append(x.PrepTasks, pt)

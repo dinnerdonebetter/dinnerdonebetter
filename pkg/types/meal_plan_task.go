@@ -40,25 +40,17 @@ func init() {
 type (
 	// MealPlanTask represents a meal plan task.
 	MealPlanTask struct {
-		_                    struct{}
-		CannotCompleteBefore time.Time                `json:"cannotCompleteBefore"`
-		CannotCompleteAfter  time.Time                `json:"cannotCompleteAfter"`
-		CreatedAt            time.Time                `json:"createdAt"`
-		CompletedAt          *time.Time               `json:"completedAt"`
-		AssignedToUser       *string                  `json:"assignedToUser"`
-		ID                   string                   `json:"id"`
-		Status               string                   `json:"status"`
-		CreationExplanation  string                   `json:"creationExplanation"`
-		StatusExplanation    string                   `json:"statusExplanation"`
-		RecipeSteps          []MealPlanTaskRecipeStep `json:"recipeSteps"`
-		MealPlanOption       MealPlanOption           `json:"mealPlanOption"`
-	}
-
-	// MealPlanTaskRecipeStep represents a meal plan task's recipe step.
-	MealPlanTaskRecipeStep struct {
-		_                        struct{}
-		AttributableToRecipeStep string `json:"attributableToRecipeStep"`
-		SatisfiesRecipeStep      bool   `json:"satisfiesRecipeStep"`
+		_                   struct{}
+		CreatedAt           time.Time      `json:"createdAt"`
+		LastUpdatedAt       *time.Time     `json:"lastUpdatedAt"`
+		CompletedAt         *time.Time     `json:"completedAt"`
+		AssignedToUser      *string        `json:"assignedToUser"`
+		ID                  string         `json:"id"`
+		Status              string         `json:"status"`
+		CreationExplanation string         `json:"creationExplanation"`
+		StatusExplanation   string         `json:"statusExplanation"`
+		MealPlanOption      MealPlanOption `json:"mealPlanOption"`
+		RecipePrepTask      RecipePrepTask `json:"recipePrepTask"`
 	}
 
 	// MealPlanTaskList represents a list of meal plan tasks.
@@ -70,37 +62,24 @@ type (
 
 	// MealPlanTaskCreationRequestInput represents a meal plan task.
 	MealPlanTaskCreationRequestInput struct {
-		_                    struct{}
-		CannotCompleteBefore time.Time `json:"cannotCompleteBefore"`
-		CannotCompleteAfter  time.Time `json:"cannotCompleteAfter"`
-		AssignedToUser       *string   `json:"assignedToUser"`
-		Status               string    `json:"status"`
-		CreationExplanation  string    `json:"creationExplanation"`
-		StatusExplanation    string    `json:"statusExplanation"`
-		MealPlanOptionID     string    `json:"mealPlanOptionID"`
-		RecipeStepIDs        []string  `json:"recipeStepIDs"`
+		_                   struct{}
+		AssignedToUser      *string `json:"assignedToUser"`
+		Status              string  `json:"status"`
+		CreationExplanation string  `json:"creationExplanation"`
+		StatusExplanation   string  `json:"statusExplanation"`
+		MealPlanOptionID    string  `json:"mealPlanOptionID"`
+		RecipePrepTaskID    string  `json:"recipePrepTaskID"`
 	}
 
 	// MealPlanTaskDatabaseCreationInput represents what a user could set as input for creating meal plan tasks.
 	MealPlanTaskDatabaseCreationInput struct {
-		_                    struct{}
-		CannotCompleteBefore time.Time
-		CannotCompleteAfter  time.Time
-		AssignedToUser       *string
-		CreationExplanation  string
-		StatusExplanation    string
-		MealPlanOptionID     string
-		ID                   string
-		RecipeSteps          []*MealPlanTaskRecipeStepDatabaseCreationInput
-	}
-
-	// MealPlanTaskRecipeStepDatabaseCreationInput represents what a user could set as input for creating meal plan tasks.
-	MealPlanTaskRecipeStepDatabaseCreationInput struct {
-		_                     struct{}
-		BelongsToMealPlanTask string
-		AppliesToRecipeStep   string
-		ID                    string
-		SatisfiesRecipeStep   bool
+		_                   struct{}
+		AssignedToUser      *string
+		CreationExplanation string
+		StatusExplanation   string
+		MealPlanOptionID    string
+		RecipePrepTaskID    string
+		ID                  string
 	}
 
 	// MealPlanTaskStatusChangeRequestInput represents what a user could set as input for updating meal plan tasks.
@@ -115,8 +94,7 @@ type (
 	// MealPlanTaskDatabaseCreationEstimate represents what a user could set as input for creating meal plan tasks.
 	MealPlanTaskDatabaseCreationEstimate struct {
 		_                   struct{}
-		CreationExplanation string                   `json:"creationExplanation"`
-		RecipeSteps         []MealPlanTaskRecipeStep `json:"recipeSteps"`
+		CreationExplanation string `json:"creationExplanation"`
 	}
 
 	// MealPlanTaskDataManager describes a structure capable of storing meal plan tasks permanently.
@@ -165,12 +143,11 @@ func (x *MealPlanTaskCreationRequestInput) ValidateWithContext(ctx context.Conte
 		ctx,
 		x,
 		validation.Field(&x.MealPlanOptionID, validation.Required),
-		validation.Field(&x.CannotCompleteBefore, validation.Required),
-		validation.Field(&x.CannotCompleteAfter, validation.Required),
+		validation.Field(&x.RecipePrepTaskID, validation.Required),
 		validation.Field(&x.Status, validation.In(
 			MealPlanTaskStatusUnfinished,
 			MealPlanTaskStatusDelayed,
-			// MealPlanTaskStatusIgnored,
+			MealPlanTaskStatusIgnored,
 			MealPlanTaskStatusCanceled,
 			MealPlanTaskStatusFinished,
 		)),
@@ -186,26 +163,18 @@ func (x *MealPlanTaskDatabaseCreationInput) ValidateWithContext(ctx context.Cont
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.MealPlanOptionID, validation.Required),
-		validation.Field(&x.RecipeSteps, validation.Required),
-		validation.Field(&x.CannotCompleteBefore, validation.Required),
-		validation.Field(&x.CannotCompleteAfter, validation.Required),
+		validation.Field(&x.RecipePrepTaskID, validation.Required),
 	)
 }
 
 // MealPlanTaskDatabaseCreationInputFromMealPlanTaskCreationRequestInput creates a DatabaseCreationInput from a CreationInput.
 func MealPlanTaskDatabaseCreationInputFromMealPlanTaskCreationRequestInput(input *MealPlanTaskCreationRequestInput) *MealPlanTaskDatabaseCreationInput {
 	x := &MealPlanTaskDatabaseCreationInput{
-		CannotCompleteBefore: input.CannotCompleteBefore,
-		CannotCompleteAfter:  input.CannotCompleteAfter,
-		AssignedToUser:       input.AssignedToUser,
-		CreationExplanation:  input.CreationExplanation,
-		StatusExplanation:    input.StatusExplanation,
-		MealPlanOptionID:     input.MealPlanOptionID,
-		RecipeSteps:          []*MealPlanTaskRecipeStepDatabaseCreationInput{},
-	}
-
-	for _, recipeStepID := range input.RecipeStepIDs {
-		x.RecipeSteps = append(x.RecipeSteps, &MealPlanTaskRecipeStepDatabaseCreationInput{AppliesToRecipeStep: recipeStepID})
+		AssignedToUser:      input.AssignedToUser,
+		CreationExplanation: input.CreationExplanation,
+		StatusExplanation:   input.StatusExplanation,
+		MealPlanOptionID:    input.MealPlanOptionID,
+		RecipePrepTaskID:    input.RecipePrepTaskID,
 	}
 
 	return x
@@ -220,7 +189,7 @@ func (x *MealPlanTaskStatusChangeRequestInput) ValidateWithContext(ctx context.C
 		validation.Field(&x.Status, validation.In(
 			MealPlanTaskStatusUnfinished,
 			MealPlanTaskStatusDelayed,
-			// MealPlanTaskStatusIgnored,
+			MealPlanTaskStatusIgnored,
 			MealPlanTaskStatusCanceled,
 			MealPlanTaskStatusFinished,
 		)),

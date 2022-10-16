@@ -2,6 +2,7 @@ package fakes
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	fake "github.com/brianvoe/gofakeit/v5"
@@ -29,6 +30,10 @@ func BuildFakeSQLQuery() (query string, args []interface{}) {
 // BuildFakeID builds a fake ID.
 func BuildFakeID() string {
 	return ksuid.New().String()
+}
+
+func BuildFakeNumber() int {
+	return fake.Number(1, math.MaxInt8-1)
 }
 
 // BuildFakeNumericID builds a fake ID.

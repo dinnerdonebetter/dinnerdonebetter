@@ -125,11 +125,6 @@ func (w *MealPlanTaskCreationEnsurerWorker) DetermineCreatableSteps(ctx context.
 		})
 		l.Info("fetching meal plan event")
 
-		mealPlanEvent, getMealPlanEventErr := w.dataManager.GetMealPlanEvent(ctx, result.MealPlanID, result.MealPlanEventID)
-		if getMealPlanEventErr != nil {
-			return nil, observability.PrepareAndLogError(getMealPlanEventErr, l, span, "fetching meal plan event")
-		}
-
 		if _, ok := inputs[result.MealPlanOptionID]; !ok {
 			inputs[result.MealPlanOptionID] = []*types.MealPlanTaskDatabaseCreationInput{}
 		}
@@ -140,7 +135,7 @@ func (w *MealPlanTaskCreationEnsurerWorker) DetermineCreatableSteps(ctx context.
 				return nil, observability.PrepareAndLogError(getRecipeErr, l, span, "fetching recipe")
 			}
 
-			creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, mealPlanEvent.StartsAt, result.MealPlanOptionID, recipe)
+			creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, result.MealPlanOptionID, recipe)
 			if determineStepsErr != nil {
 				return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
 			}

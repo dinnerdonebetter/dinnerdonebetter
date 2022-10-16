@@ -594,7 +594,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepIngredient.ID = "1"
 		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
 		exampleRecipeStepIngredient.Ingredient = &types.ValidIngredient{ID: exampleRecipeStepIngredient.Ingredient.ID}
-		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+		exampleInput := fakes.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -645,7 +645,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+		exampleInput := fakes.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -692,7 +692,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepIngredient.ID = "3"
 		exampleRecipeStepIngredient.BelongsToRecipeStep = "2"
 
-		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+		exampleInput := fakes.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

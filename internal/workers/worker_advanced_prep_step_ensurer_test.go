@@ -205,10 +205,8 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 
 		expectedReturnResults := []*types.MealPlanTaskDatabaseCreationInput{
 			{
-				CannotCompleteBefore: time.Now(),
-				CannotCompleteAfter:  time.Now(),
-				CreationExplanation:  t.Name(),
-				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
+				CreationExplanation: t.Name(),
+				MealPlanOptionID:    exampleFinalizedMealPlanResult.MealPlanOptionID,
 			},
 		}
 
@@ -222,7 +220,6 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 				mockAnalyzer.On(
 					"GenerateMealPlanTasksForRecipe",
 					testutils.ContextMatcher,
-					exampleMealPlanEvent.StartsAt,
 					result.MealPlanOptionID,
 					recipeMap[recipeID],
 				).Return(expectedReturnResults, nil)
@@ -403,10 +400,8 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		expectedReturnResults := []*types.MealPlanTaskDatabaseCreationInput{
 			{
-				CannotCompleteBefore: time.Now(),
-				CannotCompleteAfter:  time.Now(),
-				CreationExplanation:  t.Name(),
-				MealPlanOptionID:     exampleFinalizedMealPlanResult.MealPlanOptionID,
+				CreationExplanation: t.Name(),
+				MealPlanOptionID:    exampleFinalizedMealPlanResult.MealPlanOptionID,
 			},
 		}
 
@@ -419,7 +414,6 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 				mockAnalyzer.On(
 					"GenerateMealPlanTasksForRecipe",
 					testutils.ContextMatcher,
-					exampleMealPlanEvent.StartsAt,
 					result.MealPlanOptionID,
 					recipeMap[recipeID],
 				).Return(expectedReturnResults, nil)
@@ -435,14 +429,6 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		actual, err := w.DetermineCreatableSteps(ctx)
 		assert.NoError(t, err)
 
-		// because we can't guarantee what this will be without too much effort
-		for k, v := range actual {
-			for j := range v {
-				actual[k][j].ID = ""
-				assert.WithinDuration(t, expected[k][j].CannotCompleteBefore, actual[k][j].CannotCompleteBefore, time.Second*30)
-				actual[k][j].CannotCompleteBefore = expected[k][j].CannotCompleteBefore
-			}
-		}
 		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, mdm, mockAnalyzer)

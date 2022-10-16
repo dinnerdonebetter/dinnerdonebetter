@@ -93,10 +93,8 @@ type (
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
 	RecipeStepIngredientUpdateRequestInput struct {
 		_ struct{}
-
-		// IngredientID is already a pointer, and I don't feel like making it a double pointer.
-		IngredientID *string `json:"ingredientID"`
-		// RecipeStepProductID is already a pointer, and I don't feel like making it a double pointer.
+		// IngredientID and RecipeStepProductID are already pointers, and I don't feel like making it a double pointer.
+		IngredientID        *string  `json:"ingredientID"`
 		RecipeStepProductID *string  `json:"recipeStepProductID"`
 		Name                *string  `json:"name"`
 		Optional            *bool    `json:"optional"`
@@ -211,24 +209,6 @@ func RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(input *Recip
 		MaximumQuantity:     &input.MaximumQuantity,
 		ProductOfRecipeStep: &input.ProductOfRecipeStep,
 		Optional:            &input.Optional,
-	}
-
-	return x
-}
-
-// RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput creates a DatabaseCreationInput from a CreationInput.
-func RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(input *RecipeStepIngredientCreationRequestInput) *RecipeStepIngredientDatabaseCreationInput {
-	x := &RecipeStepIngredientDatabaseCreationInput{
-		IngredientID:        input.IngredientID,
-		Name:                input.Name,
-		MeasurementUnitID:   input.MeasurementUnitID,
-		MinimumQuantity:     input.MinimumQuantity,
-		MaximumQuantity:     input.MaximumQuantity,
-		QuantityNotes:       input.QuantityNotes,
-		ProductOfRecipeStep: input.ProductOfRecipeStep,
-		IngredientNotes:     input.IngredientNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		Optional:            input.Optional,
 	}
 
 	return x

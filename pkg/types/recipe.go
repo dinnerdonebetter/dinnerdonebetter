@@ -210,7 +210,7 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 }
 
 // FindStepByIndex finds a step for a given index.
-func (x *RecipeCreationRequestInput) FindStepByIndex(index uint32) *RecipeStepCreationRequestInput {
+func (x *RecipeDatabaseCreationInput) FindStepByIndex(index uint32) *RecipeStepDatabaseCreationInput {
 	for _, step := range x.Steps {
 		if step.Index == index {
 			return step
@@ -223,7 +223,7 @@ func (x *RecipeCreationRequestInput) FindStepByIndex(index uint32) *RecipeStepCr
 }
 
 // FindStepByID finds a step for a given ID.
-func (x *RecipeCreationRequestInput) FindStepByID(id string) *RecipeStepCreationRequestInput {
+func (x *RecipeDatabaseCreationInput) FindStepByID(id string) *RecipeStepDatabaseCreationInput {
 	for _, step := range x.Steps {
 		if step.ID == id {
 			return step
@@ -258,33 +258,6 @@ func RecipeUpdateRequestInputFromRecipe(input *Recipe) *RecipeUpdateRequestInput
 		CreatedByUser:      &input.CreatedByUser,
 		SealOfApproval:     &input.SealOfApproval,
 		YieldsPortions:     &input.YieldsPortions,
-	}
-
-	return x
-}
-
-// RecipeDatabaseCreationInputFromRecipeCreationInput creates a DatabaseCreationInput from a CreationInput.
-func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationRequestInput) *RecipeDatabaseCreationInput {
-	steps := []*RecipeStepDatabaseCreationInput{}
-	for _, step := range input.Steps {
-		steps = append(steps, RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(step))
-	}
-
-	prepTasks := []*RecipePrepTaskDatabaseCreationInput{}
-	for _, task := range input.PrepTasks {
-		prepTasks = append(prepTasks, RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput(input, task))
-	}
-
-	x := &RecipeDatabaseCreationInput{
-		AlsoCreateMeal:     input.AlsoCreateMeal,
-		Name:               input.Name,
-		Source:             input.Source,
-		Description:        input.Description,
-		InspiredByRecipeID: input.InspiredByRecipeID,
-		Steps:              steps,
-		PrepTasks:          prepTasks,
-		SealOfApproval:     input.SealOfApproval,
-		YieldsPortions:     input.YieldsPortions,
 	}
 
 	return x

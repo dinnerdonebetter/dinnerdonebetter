@@ -13,6 +13,9 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 		recipePrepTaskSteps = append(recipePrepTaskSteps, BuildFakeRecipePrepTaskStep())
 	}
 
+	minStorageTemp := BuildFakeNumber()
+	minTimeBuffer := BuildFakeNumber()
+
 	return &types.RecipePrepTask{
 		ID:                          BuildFakeID(),
 		Notes:                       buildUniqueString(),
@@ -24,10 +27,10 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 			types.RecipePrepTaskStorageTypeWireRack,
 		}),
 		TaskSteps:                              recipePrepTaskSteps,
-		MinimumTimeBufferBeforeRecipeInSeconds: fake.Uint32(),
-		MaximumTimeBufferBeforeRecipeInSeconds: fake.Uint32(),
-		MinimumStorageTemperatureInCelsius:     fake.Uint32(),
-		MaximumStorageTemperatureInCelsius:     fake.Uint32(),
+		MaximumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer) + 1,
+		MinimumStorageTemperatureInCelsius:     uint32(minStorageTemp),
+		MaximumStorageTemperatureInCelsius:     uint32(minTimeBuffer),
+		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minStorageTemp) + 1,
 		BelongsToRecipe:                        BuildFakeID(),
 		CreatedAt:                              fake.Date(),
 		LastUpdatedAt:                          nil,
@@ -76,7 +79,6 @@ func BuildFakeRecipePrepTaskStep() *types.RecipePrepTaskStep {
 
 func BuildFakeRecipePrepTaskStepCreationRequestInput() *types.RecipePrepTaskStepCreationRequestInput {
 	return &types.RecipePrepTaskStepCreationRequestInput{
-		ID:                      BuildFakeID(),
 		BelongsToRecipeStep:     BuildFakeID(),
 		BelongsToRecipePrepTask: BuildFakeID(),
 		SatisfiesRecipeStep:     fake.Bool(),
@@ -85,7 +87,6 @@ func BuildFakeRecipePrepTaskStepCreationRequestInput() *types.RecipePrepTaskStep
 
 func BuildFakeRecipePrepTaskStepCreationRequestInputFromRecipePrepTaskStep(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepCreationRequestInput {
 	return &types.RecipePrepTaskStepCreationRequestInput{
-		ID:                      input.ID,
 		BelongsToRecipeStep:     input.BelongsToRecipeStep,
 		BelongsToRecipePrepTask: input.BelongsToRecipePrepTask,
 		SatisfiesRecipeStep:     input.SatisfiesRecipeStep,
@@ -99,7 +100,6 @@ func BuildFakeRecipePrepTaskStepWithinRecipeCreationRequestInputFromRecipePrepTa
 	}
 
 	return &types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
-		ID:                       input.ID,
 		BelongsToRecipeStepIndex: belongsToIndex,
 		BelongsToRecipePrepTask:  input.BelongsToRecipePrepTask,
 		SatisfiesRecipeStep:      input.SatisfiesRecipeStep,
@@ -139,16 +139,19 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepCreationRequestInput())
 	}
 
+	minStorageTemp := BuildFakeNumber()
+	minTimeBuffer := BuildFakeNumber()
+
 	return &types.RecipePrepTaskCreationRequestInput{
 		Notes:                                  buildUniqueString(),
 		ExplicitStorageInstructions:            buildUniqueString(),
 		StorageType:                            types.RecipePrepTaskStorageTypeUncovered,
 		BelongsToRecipe:                        BuildFakeID(),
 		TaskSteps:                              taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: fake.Uint32(),
-		MinimumStorageTemperatureInCelsius:     fake.Uint32(),
-		MaximumStorageTemperatureInCelsius:     fake.Uint32(),
-		MinimumTimeBufferBeforeRecipeInSeconds: fake.Uint32(),
+		MaximumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer) + 1,
+		MinimumStorageTemperatureInCelsius:     uint32(minStorageTemp),
+		MaximumStorageTemperatureInCelsius:     uint32(minTimeBuffer),
+		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minStorageTemp) + 1,
 	}
 }
 

@@ -28,7 +28,8 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/heimdalr/dag v1.2.1
-	github.com/lib/pq v1.10.2
+	github.com/kyleconroy/sqlc v1.15.0
+	github.com/lib/pq v1.10.6
 	github.com/luna-duclos/instrumentedsql v1.1.3
 	github.com/makiuchi-d/gozxing v0.0.0-20210324052758-57132e828831
 	github.com/moul/http2curl v1.0.0
@@ -58,6 +59,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.3.0
 	gocloud.dev v0.23.0
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
+	golang.org/x/tools v0.1.9
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/genproto v0.0.0-20220207185906-7721543eae58
 	gopkg.in/launchdarkly/go-sdk-common.v2 v2.5.1
@@ -89,7 +91,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/gregjones/httpcache v0.0.0-20171119193500-2bcd89a1743f // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
@@ -121,7 +123,7 @@ require (
 	google.golang.org/api v0.68.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.44.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/launchdarkly/go-jsonstream.v1 v1.0.1 // indirect
 	gopkg.in/launchdarkly/go-sdk-events.v1 v1.1.1 // indirect
 	gopkg.in/launchdarkly/go-server-sdk-evaluation.v1 v1.5.0 // indirect
