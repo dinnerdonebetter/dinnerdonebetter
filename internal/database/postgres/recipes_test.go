@@ -266,11 +266,6 @@ func prepareMockToSuccessfullyGetRecipe(ctx context.Context, t *testing.T, recip
 
 	if recipe == nil {
 		exampleRecipe = fakes.BuildFakeRecipe()
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
 	} else {
 		exampleRecipe = recipe
 	}
@@ -339,11 +334,6 @@ func TestQuerier_getRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleUserID := fakes.BuildFakeID()
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
 
 		prepareMockToSuccessfullyGetRecipe(ctx, t, exampleRecipe, exampleUserID, c, db)
 
@@ -359,11 +349,6 @@ func TestQuerier_getRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleUserID := fakes.BuildFakeID()
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -404,11 +389,6 @@ func TestQuerier_getRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleUserID := fakes.BuildFakeID()
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
 
 		allIngredients := []*types.RecipeStepIngredient{}
 		for _, step := range exampleRecipe.Steps {
@@ -464,12 +444,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
-
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
 
 		allIngredients := []*types.RecipeStepIngredient{}
 		allInstruments := []*types.RecipeStepInstrument{}
@@ -565,12 +539,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
-
 		for _, step := range exampleRecipe.Steps {
 			step.Ingredients = []*types.RecipeStepIngredient{
 				fakes.BuildFakeRecipeStepIngredient(),
@@ -606,12 +574,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
-
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
 
 		allIngredients := []*types.RecipeStepIngredient{}
 		allInstruments := []*types.RecipeStepInstrument{}
@@ -721,12 +683,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
-
-		exampleRecipe.Steps = []*types.RecipeStep{
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-			fakes.BuildFakeRecipeStep(),
-		}
 
 		for _, step := range exampleRecipe.Steps {
 			step.Ingredients = []*types.RecipeStepIngredient{

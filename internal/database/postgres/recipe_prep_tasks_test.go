@@ -38,6 +38,9 @@ func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) 
 	exampleRows := sqlmock.NewRows(columns)
 
 	for _, x := range recipePrepTasks {
+		minimumStorageTemperatureInCelsius := uint32(x.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier)
+		maximumStorageTemperatureInCelsius := uint32(x.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier)
+
 		for _, y := range x.TaskSteps {
 			rowValues := []driver.Value{
 				x.ID,
@@ -46,8 +49,8 @@ func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) 
 				x.MinimumTimeBufferBeforeRecipeInSeconds,
 				x.MaximumTimeBufferBeforeRecipeInSeconds,
 				x.StorageType,
-				x.MinimumStorageTemperatureInCelsius,
-				x.MaximumStorageTemperatureInCelsius,
+				minimumStorageTemperatureInCelsius,
+				maximumStorageTemperatureInCelsius,
 				x.BelongsToRecipe,
 				x.CreatedAt,
 				x.LastUpdatedAt,
@@ -63,26 +66,6 @@ func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) 
 	}
 
 	return exampleRows
-}
-
-func TestQuerier_scanRecipePrepTaskWithRecipes(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		//
-	})
-}
-
-func TestQuerier_scanRecipePrepTasksWithSteps(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		//
-	})
 }
 
 func TestQuerier_RecipePrepTaskExists(T *testing.T) {
