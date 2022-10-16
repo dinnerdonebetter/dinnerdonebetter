@@ -261,8 +261,8 @@ func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 			exampleRecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
 			exampleRecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
 			exampleRecipePrepTask.StorageType,
-			exampleRecipePrepTask.MinimumStorageTemperatureInCelsius,
-			exampleRecipePrepTask.MaximumStorageTemperatureInCelsius,
+			uint32(exampleRecipePrepTask.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
+			uint32(exampleRecipePrepTask.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
 			exampleRecipePrepTask.BelongsToRecipe,
 			exampleRecipePrepTask.ID,
 		}
