@@ -59,7 +59,7 @@ func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []by
 
 	logger := w.logger.Clone()
 
-	optionsAndSteps, err := w.DetermineCreatableSteps(ctx)
+	optionsAndSteps, err := w.DetermineCreatableMealPlanTasks(ctx)
 	if err != nil {
 		return observability.PrepareError(err, nil, "determining creatable steps")
 	}
@@ -99,8 +99,8 @@ func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []by
 	return result
 }
 
-// DetermineCreatableSteps determines which meal plan tasks are creatable for a recipe.
-func (w *FinalizedMealPlanDataCreator) DetermineCreatableSteps(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
+// DetermineCreatableMealPlanTasks determines which meal plan tasks are creatable for a recipe.
+func (w *FinalizedMealPlanDataCreator) DetermineCreatableMealPlanTasks(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
