@@ -231,8 +231,8 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 		BelongsToRecipe:                        input.BelongsToRecipe,
 	}
 
-	for _, recipeStep := range input.TaskSteps {
-		s, err := q.createRecipePrepTaskStep(ctx, querier, recipeStep)
+	for _, recipePrepTaskStep := range input.TaskSteps {
+		s, err := q.createRecipePrepTaskStep(ctx, querier, recipePrepTaskStep)
 		if err != nil {
 			q.rollbackTransaction(ctx, querier)
 			return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
@@ -323,7 +323,7 @@ func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database
 var listRecipePrepTasksForRecipeQuery string
 
 // getRecipePrepTasksForRecipe gets a recipe prep task.
-func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, querier database.SQLQueryExecutor, recipeID string) (x []*types.RecipePrepTask, err error) {
+func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*types.RecipePrepTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -339,7 +339,7 @@ func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, querier datab
 		recipeID,
 	}
 
-	rows, getRowsErr := q.getRows(ctx, querier, "recipe prep tasks list", listRecipePrepTasksForRecipeQuery, args)
+	rows, getRowsErr := q.getRows(ctx, q.db, "recipe prep tasks list", listRecipePrepTasksForRecipeQuery, args)
 	if getRowsErr != nil {
 		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing recipe prep tasks list retrieval query")
 	}
@@ -356,7 +356,7 @@ func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, querier datab
 
 // GetRecipePrepTasksForRecipe gets a recipe prep task.
 func (q *Querier) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*types.RecipePrepTask, err error) {
-	return q.getRecipePrepTasksForRecipe(ctx, q.db, recipeID)
+	return q.getRecipePrepTasksForRecipe(ctx, recipeID)
 }
 
 //go:embed queries/recipe_prep_tasks/update.sql

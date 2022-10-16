@@ -55,11 +55,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.ID = ksuid.New().String()
 	tracing.AttachMealPlanTaskIDToSpan(span, input.ID)
 
-	for i := range input.RecipeSteps {
-		input.RecipeSteps[i].ID = ksuid.New().String()
-		input.RecipeSteps[i].BelongsToMealPlanTask = input.ID
-	}
-
 	logger = logger.WithValue("input", input)
 
 	// determine meal plan ID.

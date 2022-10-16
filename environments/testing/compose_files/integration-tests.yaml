@@ -30,9 +30,6 @@ services:
             CONFIGURATION_FILEPATH: '/etc/config'
             JAEGER_DISABLED: 'false'
         volumes:
-            - source: '${GOPATH}/.cache/go-build'
-              target: '/root/.cache/go-build'
-              type: 'bind'
             - source: '../../../'
               target: '/go/src/github.com/prixfixeco/api_server'
               type: 'bind'
@@ -51,9 +48,6 @@ services:
             CONFIGURATION_FILEPATH: '/etc/config'
             JAEGER_DISABLED: 'false'
         volumes:
-            - source: '${GOPATH}/.cache/go-build'
-              target: '/root/.cache/go-build'
-              type: 'bind'
             - source: '../../../'
               target: '/go/src/github.com/prixfixeco/api_server'
               type: 'bind'
@@ -72,9 +66,6 @@ services:
             CONFIGURATION_FILEPATH: '/etc/config'
             JAEGER_DISABLED: 'false'
         volumes:
-            - source: '${GOPATH}/.cache/go-build'
-              target: '/root/.cache/go-build'
-              type: 'bind'
             - source: '../../../'
               target: '/go/src/github.com/prixfixeco/api_server'
               type: 'bind'
@@ -102,9 +93,6 @@ services:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/integration-server.Dockerfile'
         volumes:
-            - source: '${GOPATH}/.cache/go-build'
-              target: '/root/.cache/go-build'
-              type: 'bind'
             - source: '../../../environments/testing/config_files/integration-tests-config.json'
               target: '/etc/config'
               type: 'bind'
@@ -122,7 +110,3 @@ services:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/integration-tests.Dockerfile'
         container_name: 'integration_tests'
-        volumes:
-            - source: '${GOPATH}/.cache/go-build'
-              target: '/root/.cache/go-build'
-              type: 'bind'

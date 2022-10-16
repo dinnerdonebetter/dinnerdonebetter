@@ -99,8 +99,8 @@ func BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(r
 	}
 }
 
-// BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient builds a faked RecipeStepIngredientDatabaseCreationInput from a recipe step ingredient.
-func BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientDatabaseCreationInput {
+// ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput builds a faked RecipeStepIngredientDatabaseCreationInput from a recipe step ingredient.
+func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientDatabaseCreationInput {
 	return &types.RecipeStepIngredientDatabaseCreationInput{
 		ID:                  recipeStepIngredient.ID,
 		Name:                recipeStepIngredient.Name,

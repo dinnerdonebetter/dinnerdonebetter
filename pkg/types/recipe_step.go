@@ -228,59 +228,6 @@ func (x *RecipeStepDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 	)
 }
 
-// RecipeStepUpdateRequestInputFromRecipeStep creates a DatabaseCreationInput from a CreationInput.
-func RecipeStepUpdateRequestInputFromRecipeStep(input *RecipeStep) *RecipeStepUpdateRequestInput {
-	x := &RecipeStepUpdateRequestInput{
-		MinimumTemperatureInCelsius:   input.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   input.MaximumTemperatureInCelsius,
-		Notes:                         &input.Notes,
-		BelongsToRecipe:               input.BelongsToRecipe,
-		Preparation:                   &input.Preparation,
-		Index:                         &input.Index,
-		MinimumEstimatedTimeInSeconds: input.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: input.MaximumEstimatedTimeInSeconds,
-		Optional:                      &input.Optional,
-		ExplicitInstructions:          &input.ExplicitInstructions,
-	}
-
-	return x
-}
-
-// RecipeStepDatabaseCreationInputFromRecipeStepCreationInput creates a DatabaseCreationInput from a CreationInput.
-func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeStepCreationRequestInput) *RecipeStepDatabaseCreationInput {
-	ingredients := []*RecipeStepIngredientDatabaseCreationInput{}
-	for _, ingredient := range input.Ingredients {
-		ingredients = append(ingredients, RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(ingredient))
-	}
-
-	instruments := []*RecipeStepInstrumentDatabaseCreationInput{}
-	for _, instrument := range input.Instruments {
-		instruments = append(instruments, RecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrumentCreationInput(instrument))
-	}
-
-	products := []*RecipeStepProductDatabaseCreationInput{}
-	for _, product := range input.Products {
-		products = append(products, RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(product))
-	}
-
-	x := &RecipeStepDatabaseCreationInput{
-		Index:                         input.Index,
-		PreparationID:                 input.PreparationID,
-		MinimumEstimatedTimeInSeconds: input.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: input.MaximumEstimatedTimeInSeconds,
-		MinimumTemperatureInCelsius:   input.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   input.MaximumTemperatureInCelsius,
-		Notes:                         input.Notes,
-		Products:                      products,
-		Optional:                      input.Optional,
-		Ingredients:                   ingredients,
-		Instruments:                   instruments,
-		ExplicitInstructions:          input.ExplicitInstructions,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*RecipeStepUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeStepUpdateRequestInput.

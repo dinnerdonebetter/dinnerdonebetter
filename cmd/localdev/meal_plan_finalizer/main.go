@@ -20,7 +20,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/workers"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
+	"github.com/prixfixeco/api_server/pkg/utils"
 )
 
 const (
@@ -83,9 +83,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	urlToUse := testutils.DetermineServiceURL().String()
+	urlToUse := utils.DetermineServiceURL().String()
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	testutils.EnsureServerIsUp(ctx, urlToUse)
+	utils.EnsureServerIsUp(ctx, urlToUse)
 	dataManager.IsReady(ctx, 50)
 
 	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.Consumers.RedisConfig)

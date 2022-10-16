@@ -496,7 +496,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		exampleRecipeStep.Products = nil
 		exampleRecipeStep.Instruments = nil
 		exampleRecipeStep.Preparation = types.ValidPreparation{}
-		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
+		exampleInput := fakes.ConvertRecipeStepToRecipeStepDatabaseCreationInput(exampleRecipeStep)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -546,7 +546,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
+		exampleInput := fakes.ConvertRecipeStepToRecipeStepDatabaseCreationInput(exampleRecipeStep)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -607,7 +607,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleRecipeStep.Instruments[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
-		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
+		exampleInput := fakes.ConvertRecipeStepToRecipeStepDatabaseCreationInput(exampleRecipeStep)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -716,7 +716,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = "2"
 		}
 
-		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
+		exampleInput := fakes.ConvertRecipeStepToRecipeStepDatabaseCreationInput(exampleRecipeStep)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -786,7 +786,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleRecipeStep.Products[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
-		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
+		exampleInput := fakes.ConvertRecipeStepToRecipeStepDatabaseCreationInput(exampleRecipeStep)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

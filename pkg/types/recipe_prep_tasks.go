@@ -3,10 +3,12 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"fmt"
 	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -95,16 +97,16 @@ type (
 	// RecipePrepTaskDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskDatabaseCreationInput struct {
 		_                                      struct{}
-		ID                                     string
-		Notes                                  string
-		ExplicitStorageInstructions            string
-		StorageType                            string
-		BelongsToRecipe                        string
-		TaskSteps                              []*RecipePrepTaskStepDatabaseCreationInput
-		MaximumTimeBufferBeforeRecipeInSeconds uint32
-		MinimumStorageTemperatureInCelsius     uint32
-		MaximumStorageTemperatureInCelsius     uint32
-		MinimumTimeBufferBeforeRecipeInSeconds uint32
+		ID                                     string                                     `json:"id"`
+		Notes                                  string                                     `json:"notes"`
+		ExplicitStorageInstructions            string                                     `json:"explicitStorageInstructions"`
+		StorageType                            string                                     `json:"storageType"`
+		BelongsToRecipe                        string                                     `json:"belongsToRecipe"`
+		TaskSteps                              []*RecipePrepTaskStepDatabaseCreationInput `json:"recipeSteps"`
+		MaximumTimeBufferBeforeRecipeInSeconds uint32                                     `json:"maximumTimeBufferBeforeRecipeInSeconds"`
+		MinimumStorageTemperatureInCelsius     uint32                                     `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius     uint32                                     `json:"maximumStorageTemperatureInCelsius"`
+		MinimumTimeBufferBeforeRecipeInSeconds uint32                                     `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 	}
 
 	// RecipePrepTaskUpdateRequestInput represents what a user could set as input for updating recipes.
@@ -185,11 +187,33 @@ var _ validation.ValidatableWithContext = (*RecipePrepTaskCreationRequestInput)(
 
 // ValidateWithContext validates a RecipePrepTaskCreationRequestInput.
 func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var result *multierror.Error
+
+	err := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.BelongsToRecipe, validation.Required),
+		validation.Field(&x.StorageType, validation.Required),
+		validation.Field(&x.MaximumTimeBufferBeforeRecipeInSeconds, validation.Required),
+		validation.Field(&x.MinimumStorageTemperatureInCelsius, validation.Required),
+		validation.Field(&x.MaximumStorageTemperatureInCelsius, validation.Required),
+		validation.Field(&x.MinimumTimeBufferBeforeRecipeInSeconds, validation.Required),
 	)
+
+	// TODO: uncomment me
+	// if x.MinimumStorageTemperatureInCelsius > x.MaximumStorageTemperatureInCelsius {
+	// 	result = multierror.Append(fmt.Errorf("minimum storage temperature (%d) is greater than maximum storage temperature (%d)", x.MinimumStorageTemperatureInCelsius, x.MaximumStorageTemperatureInCelsius))
+	// }
+
+	if err != nil {
+		result = multierror.Append(err, result)
+	}
+
+	if result != nil {
+		return result
+	}
+
+	return nil
 }
 
 var _ validation.ValidatableWithContext = (*RecipePrepTaskDatabaseCreationInput)(nil)
@@ -235,7 +259,6 @@ func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskCreationInput(input *R
 	taskSteps := []*RecipePrepTaskStepDatabaseCreationInput{}
 	for _, x := range input.TaskSteps {
 		taskSteps = append(taskSteps, &RecipePrepTaskStepDatabaseCreationInput{
-			ID:                      x.ID,
 			BelongsToRecipeStep:     x.BelongsToRecipeStep,
 			BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
 			SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
@@ -258,20 +281,18 @@ func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskCreationInput(input *R
 }
 
 // RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput creates a DatabaseCreationInput from a CreationInput.
-func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput(recipe *RecipeCreationRequestInput, input *RecipePrepTaskWithinRecipeCreationRequestInput) *RecipePrepTaskDatabaseCreationInput {
+func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput(recipe *RecipeDatabaseCreationInput, input *RecipePrepTaskWithinRecipeCreationRequestInput) (*RecipePrepTaskDatabaseCreationInput, error) {
 	taskSteps := []*RecipePrepTaskStepDatabaseCreationInput{}
-	for _, x := range input.TaskSteps {
-		recipeStep := ""
+	for i, x := range input.TaskSteps {
 		if y := recipe.FindStepByIndex(x.BelongsToRecipeStepIndex); y != nil {
-			recipeStep = y.ID
+			taskSteps = append(taskSteps, &RecipePrepTaskStepDatabaseCreationInput{
+				BelongsToRecipeStep:     y.ID,
+				BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
+				SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
+			})
+		} else {
+			return nil, fmt.Errorf("task step #%d has an invalid recipe step index", i+1)
 		}
-
-		taskSteps = append(taskSteps, &RecipePrepTaskStepDatabaseCreationInput{
-			ID:                      x.ID,
-			BelongsToRecipeStep:     recipeStep,
-			BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
-			SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
-		})
 	}
 
 	x := &RecipePrepTaskDatabaseCreationInput{
@@ -286,7 +307,7 @@ func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationIn
 		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
 	}
 
-	return x
+	return x, nil
 }
 
 var _ validation.ValidatableWithContext = (*RecipePrepTaskUpdateRequestInput)(nil)

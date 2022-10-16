@@ -260,6 +260,11 @@ var (
 			Description: "explicit recipe prep steps",
 			Script:      fetchMigration("00049_explicit_recipe_prep_steps"),
 		},
+		{
+			Version:     50,
+			Description: "simplify meal plan tasks",
+			Script:      fetchMigration("00050_simplify_meal_plan_tasks"),
+		},
 	}
 )
 

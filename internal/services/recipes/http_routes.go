@@ -12,6 +12,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -52,11 +53,17 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := types.RecipeDatabaseCreationInputFromRecipeCreationInput(providedInput)
+	input, err := converters.ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(providedInput)
+	if err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	input.ID = ksuid.New().String()
 
 	for i, step := range input.Steps {
-		input.Steps[i].ID = ksuid.New().String()
+		// ordinarily we'd set the ID here, but it was done for us above in the converter.
 		input.Steps[i].BelongsToRecipe = input.ID
 		for j := range step.Ingredients {
 			input.Steps[i].Ingredients[j].ID = ksuid.New().String()
@@ -77,6 +84,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	for i := range input.PrepTasks {
 		input.PrepTasks[i].ID = ksuid.New().String()
 		input.PrepTasks[i].BelongsToRecipe = input.ID
+
+		for j := range input.PrepTasks[i].TaskSteps {
+			input.PrepTasks[i].TaskSteps[j].ID = ksuid.New().String()
+			input.PrepTasks[i].TaskSteps[j].BelongsToRecipePrepTask = input.PrepTasks[i].ID
+		}
 	}
 
 	input.CreatedByUser = sessionCtxData.Requester.UserID
@@ -449,7 +461,7 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// we deliberately call this with fake data because
-	stepInputs, err := s.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, s.timeFunc(), "", x)
+	stepInputs, err := s.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -458,17 +470,8 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 
 	responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
 	for _, input := range stepInputs {
-		recipeSteps := []types.MealPlanTaskRecipeStep{}
-		for _, step := range input.RecipeSteps {
-			recipeSteps = append(recipeSteps, types.MealPlanTaskRecipeStep{
-				AttributableToRecipeStep: step.ID,
-				SatisfiesRecipeStep:      step.SatisfiesRecipeStep,
-			})
-		}
-
 		responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
 			CreationExplanation: input.CreationExplanation,
-			RecipeSteps:         recipeSteps,
 		})
 	}
 

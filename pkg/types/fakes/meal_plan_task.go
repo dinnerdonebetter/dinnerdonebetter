@@ -1,8 +1,6 @@
 package fakes
 
 import (
-	"time"
-
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/internal/pointers"
@@ -11,18 +9,13 @@ import (
 
 // BuildFakeMealPlanTask builds a faked meal plan task.
 func BuildFakeMealPlanTask() *types.MealPlanTask {
-	now := time.Now().Add(0).Truncate(time.Second).UTC()
-	inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
-
 	return &types.MealPlanTask{
-		ID:                   BuildFakeID(),
-		CannotCompleteBefore: now,
-		CannotCompleteAfter:  inOneWeek,
-		CreatedAt:            fake.Date(),
-		Status:               "unfinished",
-		StatusExplanation:    buildUniqueString(),
-		CreationExplanation:  buildUniqueString(),
-		CompletedAt:          nil,
+		ID:                  BuildFakeID(),
+		CreatedAt:           fake.Date(),
+		Status:              "unfinished",
+		StatusExplanation:   buildUniqueString(),
+		CreationExplanation: buildUniqueString(),
+		CompletedAt:         nil,
 	}
 }
 
@@ -36,11 +29,9 @@ func BuildFakeMealPlanTaskCreationRequestInput() *types.MealPlanTaskCreationRequ
 // BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask builds a faked meal plan task.
 func BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask(x *types.MealPlanTask) *types.MealPlanTaskCreationRequestInput {
 	return &types.MealPlanTaskCreationRequestInput{
-		CannotCompleteBefore: x.CannotCompleteBefore,
-		CannotCompleteAfter:  x.CannotCompleteAfter,
-		Status:               x.Status,
-		StatusExplanation:    x.StatusExplanation,
-		CreationExplanation:  x.CreationExplanation,
+		Status:              x.Status,
+		StatusExplanation:   x.StatusExplanation,
+		CreationExplanation: x.CreationExplanation,
 	}
 }
 
@@ -66,17 +57,11 @@ func BuildFakeMealPlanTaskList() *types.MealPlanTaskList {
 func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabaseCreationInput {
 	var examples []*types.MealPlanTaskDatabaseCreationInput
 	for i := 0; i < exampleQuantity; i++ {
-		now := time.Now().Add(0).Truncate(time.Second).UTC()
-		inOneWeek := now.Add((time.Hour * 24) * 7).Add(0).Truncate(time.Second).UTC()
-
 		examples = append(examples, &types.MealPlanTaskDatabaseCreationInput{
-			MealPlanOptionID: "",
-			// AppliesToRecipeStep:         "",
-			ID:                   BuildFakeID(),
-			CannotCompleteBefore: now,
-			CannotCompleteAfter:  inOneWeek,
-			StatusExplanation:    buildUniqueString(),
-			CreationExplanation:  buildUniqueString(),
+			MealPlanOptionID:    "",
+			ID:                  BuildFakeID(),
+			StatusExplanation:   buildUniqueString(),
+			CreationExplanation: buildUniqueString(),
 		})
 	}
 

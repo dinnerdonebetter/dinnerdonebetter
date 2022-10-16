@@ -3,7 +3,6 @@ package recipeanalysis
 import (
 	"context"
 	"image"
-	"time"
 
 	"github.com/stretchr/testify/mock"
 
@@ -18,8 +17,8 @@ type MockRecipeAnalyzer struct {
 }
 
 // GenerateMealPlanTasksForRecipe implements our interface.
-func (m *MockRecipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, startsAt time.Time, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
-	returnArgs := m.Called(ctx, startsAt, mealPlanOptionID, recipe)
+func (m *MockRecipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
+	returnArgs := m.Called(ctx, mealPlanOptionID, recipe)
 
 	return returnArgs.Get(0).([]*types.MealPlanTaskDatabaseCreationInput), returnArgs.Error(1)
 }

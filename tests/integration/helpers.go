@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/prixfixeco/api_server/pkg/utils"
 	"net/http"
 	"testing"
 	"time"
@@ -30,7 +31,7 @@ func stringPointer(s string) *string {
 func logJSON(t *testing.T, x interface{}) {
 	t.Helper()
 
-	rawBytes, err := json.MarshalIndent(x, "", "\t")
+	rawBytes, err := json.MarshalIndent(x, "", "")
 	require.NoError(t, err)
 
 	t.Log(string(rawBytes))
@@ -156,14 +157,14 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 	ctx, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	u := testutils.DetermineServiceURL()
+	u := utils.DetermineServiceURL()
 	urlToUse = u.String()
 
 	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
 	require.NoError(t, err)
 
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	testutils.EnsureServerIsUp(ctx, urlToUse)
+	utils.EnsureServerIsUp(ctx, urlToUse)
 
 	adminCookie, err := testutils.GetLoginCookie(ctx, urlToUse, premadeAdminUser)
 	require.NoError(t, err)

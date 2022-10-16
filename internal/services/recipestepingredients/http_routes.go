@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -51,7 +52,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := types.RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(providedInput)
+	input := converters.ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
 	// determine recipe ID.

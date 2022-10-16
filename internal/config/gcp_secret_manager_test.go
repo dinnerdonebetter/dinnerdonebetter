@@ -29,6 +29,7 @@ import (
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
 	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
+	recipepreptasksservice "github.com/prixfixeco/api_server/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
@@ -105,6 +106,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				Websockets:                      websocketsservice.Config{},
 				Webhooks:                        webhooksservice.Config{},
 				Users:                           usersservice.Config{},
+				RecipePrepTasks:                 recipepreptasksservice.Config{},
 				Auth: authservice.Config{
 					MinimumPasswordLength: 8,
 					MinimumUsernameLength: 8,
