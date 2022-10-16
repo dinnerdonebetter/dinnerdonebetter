@@ -226,6 +226,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		if err := cfg.Services.MealPlanOptionVotes.ValidateWithContext(ctx); err != nil {
 			return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
 		}
+
+		if err := cfg.Services.RecipePrepTasks.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
+		}
 	}
 
 	return nil

@@ -324,9 +324,8 @@ func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.C
 			continue
 		}
 
-		taskID := ksuid.New().String()
 		outputs = append(outputs, &types.MealPlanTaskDatabaseCreationInput{
-			ID:                  taskID,
+			ID:                  ksuid.New().String(),
 			CreationExplanation: explanation,
 			MealPlanOptionID:    mealPlanOptionID,
 		})
@@ -335,11 +334,24 @@ func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.C
 	return outputs
 }
 
+const recipeTaskStepCreationExplanation = "recipe prep task exists for steps"
+
 func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
 	inputs := g.generateMealPlanTasksForFrozenIngredients(ctx, mealPlanOptionID, recipe)
+
+	for _, prepTask := range recipe.PrepTasks {
+		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
+			AssignedToUser:      nil,
+			CreationExplanation: recipeTaskStepCreationExplanation,
+			StatusExplanation:   "",
+			MealPlanOptionID:    mealPlanOptionID,
+			RecipePrepTaskID:    prepTask.ID,
+			ID:                  ksuid.New().String(),
+		})
+	}
 
 	return inputs, nil
 }
