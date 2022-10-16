@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -554,7 +555,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 		exampleValidIngredient.ID = "1"
-		exampleInput := fakes.BuildFakeValidIngredientDatabaseCreationInputFromValidIngredient(exampleValidIngredient)
+		exampleInput := converters.ConvertValidIngredientToValidIngredientDatabaseCreationInput(exampleValidIngredient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -617,7 +618,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
-		exampleInput := fakes.BuildFakeValidIngredientDatabaseCreationInputFromValidIngredient(exampleValidIngredient)
+		exampleInput := converters.ConvertValidIngredientToValidIngredientDatabaseCreationInput(exampleValidIngredient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

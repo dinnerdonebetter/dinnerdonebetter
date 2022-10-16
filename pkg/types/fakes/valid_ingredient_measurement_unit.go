@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeValidIngredientMeasurementUnit builds a faked valid ingredient measurement unit.
@@ -49,43 +50,8 @@ func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *types.ValidIng
 	}
 }
 
-// BuildFakeValidIngredientMeasurementUnitUpdateRequestInputFromValidIngredientMeasurementUnit builds a faked ValidIngredientMeasurementUnitUpdateRequestInput from a valid ingredient measurement unit.
-func BuildFakeValidIngredientMeasurementUnitUpdateRequestInputFromValidIngredientMeasurementUnit(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitUpdateRequestInput {
-	return &types.ValidIngredientMeasurementUnitUpdateRequestInput{
-		Notes:                    &validIngredientMeasurementUnit.Notes,
-		ValidMeasurementUnitID:   &validIngredientMeasurementUnit.MeasurementUnit.ID,
-		ValidIngredientID:        &validIngredientMeasurementUnit.Ingredient.ID,
-		MinimumAllowableQuantity: &validIngredientMeasurementUnit.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: &validIngredientMeasurementUnit.MaximumAllowableQuantity,
-	}
-}
-
 // BuildFakeValidIngredientMeasurementUnitCreationRequestInput builds a faked ValidIngredientMeasurementUnitCreationRequestInput.
 func BuildFakeValidIngredientMeasurementUnitCreationRequestInput() *types.ValidIngredientMeasurementUnitCreationRequestInput {
 	validIngredientMeasurementUnit := BuildFakeValidIngredientMeasurementUnit()
-	return BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredientMeasurementUnit(validIngredientMeasurementUnit)
-}
-
-// BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredientMeasurementUnit builds a faked ValidIngredientMeasurementUnitCreationRequestInput from a valid ingredient measurement unit.
-func BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredientMeasurementUnit(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitCreationRequestInput {
-	return &types.ValidIngredientMeasurementUnitCreationRequestInput{
-		ID:                       validIngredientMeasurementUnit.ID,
-		Notes:                    validIngredientMeasurementUnit.Notes,
-		ValidMeasurementUnitID:   validIngredientMeasurementUnit.MeasurementUnit.ID,
-		ValidIngredientID:        validIngredientMeasurementUnit.Ingredient.ID,
-		MinimumAllowableQuantity: validIngredientMeasurementUnit.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: validIngredientMeasurementUnit.MaximumAllowableQuantity,
-	}
-}
-
-// BuildFakeValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnit builds a faked ValidIngredientMeasurementUnitDatabaseCreationInput from a valid ingredient measurement unit.
-func BuildFakeValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnit(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitDatabaseCreationInput {
-	return &types.ValidIngredientMeasurementUnitDatabaseCreationInput{
-		ID:                       validIngredientMeasurementUnit.ID,
-		Notes:                    validIngredientMeasurementUnit.Notes,
-		ValidMeasurementUnitID:   validIngredientMeasurementUnit.MeasurementUnit.ID,
-		ValidIngredientID:        validIngredientMeasurementUnit.Ingredient.ID,
-		MinimumAllowableQuantity: validIngredientMeasurementUnit.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: validIngredientMeasurementUnit.MaximumAllowableQuantity,
-	}
+	return converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(validIngredientMeasurementUnit)
 }

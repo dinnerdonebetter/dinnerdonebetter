@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,7 +41,7 @@ func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -53,7 +54,7 @@ func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 
 			t.Log("creating prerequisite valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 
@@ -68,7 +69,7 @@ func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 			exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 			exampleValidPreparationInstrument.Instrument = *createdValidInstrument
 			exampleValidPreparationInstrument.Preparation = *createdValidPreparation
-			exampleValidPreparationInstrumentInput := fakes.BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(exampleValidPreparationInstrument)
+			exampleValidPreparationInstrumentInput := converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(exampleValidPreparationInstrument)
 			createdValidPreparationInstrument, err := testClients.admin.CreateValidPreparationInstrument(ctx, exampleValidPreparationInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation instrument %q created", createdValidPreparationInstrument.ID)
@@ -120,7 +121,7 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing() {
 			for i := 0; i < 5; i++ {
 				t.Log("creating prerequisite valid preparation")
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
-				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+				exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 				createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, err)
 				t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -133,7 +134,7 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing() {
 
 				t.Log("creating prerequisite valid instrument")
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
-				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+				exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 				createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, err)
 
@@ -147,7 +148,7 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing() {
 				exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 				exampleValidPreparationInstrument.Instrument = *createdValidInstrument
 				exampleValidPreparationInstrument.Preparation = *createdValidPreparation
-				exampleValidPreparationInstrumentInput := fakes.BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(exampleValidPreparationInstrument)
+				exampleValidPreparationInstrumentInput := converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(exampleValidPreparationInstrument)
 				createdValidPreparationInstrument, createdValidPreparationInstrumentErr := testClients.admin.CreateValidPreparationInstrument(ctx, exampleValidPreparationInstrumentInput)
 				require.NoError(t, createdValidPreparationInstrumentErr)
 
@@ -185,7 +186,7 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing_ByValue() {
 
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -198,7 +199,7 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing_ByValue() {
 
 			t.Log("creating prerequisite valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 
@@ -213,7 +214,7 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing_ByValue() {
 			exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 			exampleValidPreparationInstrument.Instrument = *createdValidInstrument
 			exampleValidPreparationInstrument.Preparation = *createdValidPreparation
-			exampleValidPreparationInstrumentInput := fakes.BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(exampleValidPreparationInstrument)
+			exampleValidPreparationInstrumentInput := converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(exampleValidPreparationInstrument)
 			createdValidPreparationInstrument, err := testClients.admin.CreateValidPreparationInstrument(ctx, exampleValidPreparationInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation instrument %q created", createdValidPreparationInstrument.ID)

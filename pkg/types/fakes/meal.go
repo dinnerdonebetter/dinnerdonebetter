@@ -63,33 +63,33 @@ func BuildFakeMealCreationRequestInput() *types.MealCreationRequestInput {
 }
 
 // BuildFakeMealCreationRequestInputFromMeal builds a faked MealCreationRequestInput from a recipe.
-func BuildFakeMealCreationRequestInputFromMeal(recipe *types.Meal) *types.MealCreationRequestInput {
+func BuildFakeMealCreationRequestInputFromMeal(meal *types.Meal) *types.MealCreationRequestInput {
 	recipeIDs := []string{}
 	for _, r := range BuildFakeRecipeList().Recipes {
 		recipeIDs = append(recipeIDs, r.ID)
 	}
 
 	return &types.MealCreationRequestInput{
-		ID:            recipe.ID,
-		Name:          recipe.Name,
-		Description:   recipe.Description,
-		CreatedByUser: recipe.CreatedByUser,
+		ID:            meal.ID,
+		Name:          meal.Name,
+		Description:   meal.Description,
+		CreatedByUser: meal.CreatedByUser,
 		Recipes:       recipeIDs,
 	}
 }
 
-// BuildFakeMealDatabaseCreationInputFromMeal builds a faked MealDatabaseCreationInput from a recipe.
-func BuildFakeMealDatabaseCreationInputFromMeal(recipe *types.Meal) *types.MealDatabaseCreationInput {
+// ConvertMealToMealDatabaseCreationInput builds a faked MealDatabaseCreationInput from a recipe.
+func ConvertMealToMealDatabaseCreationInput(meal *types.Meal) *types.MealDatabaseCreationInput {
 	recipeIDs := []string{}
 	for _, r := range BuildFakeRecipeList().Recipes {
 		recipeIDs = append(recipeIDs, r.ID)
 	}
 
 	return &types.MealDatabaseCreationInput{
-		ID:            recipe.ID,
-		Name:          recipe.Name,
-		Description:   recipe.Description,
-		CreatedByUser: recipe.CreatedByUser,
+		ID:            meal.ID,
+		Name:          meal.Name,
+		Description:   meal.Description,
+		CreatedByUser: meal.CreatedByUser,
 		Recipes:       recipeIDs,
 	}
 }

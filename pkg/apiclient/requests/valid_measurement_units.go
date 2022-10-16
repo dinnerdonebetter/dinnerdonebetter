@@ -9,6 +9,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -133,7 +134,7 @@ func (b *Builder) BuildUpdateValidMeasurementUnitRequest(ctx context.Context, va
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := types.ValidMeasurementUnitUpdateRequestInputFromValidMeasurementUnit(validMeasurementUnit)
+	input := converters.ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(validMeasurementUnit)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {

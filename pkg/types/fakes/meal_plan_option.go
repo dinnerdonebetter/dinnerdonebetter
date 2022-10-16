@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeMealPlanOption builds a faked meal plan option.
@@ -50,56 +51,11 @@ func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
 // BuildFakeMealPlanOptionUpdateRequestInput builds a faked MealPlanOptionUpdateRequestInput from a meal plan option.
 func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequestInput {
 	mealPlanOption := BuildFakeMealPlanOption()
-	return &types.MealPlanOptionUpdateRequestInput{
-		MealID:                 &mealPlanOption.Meal.ID,
-		Notes:                  &mealPlanOption.Notes,
-		AssignedCook:           mealPlanOption.AssignedCook,
-		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
-		BelongsToMealPlanEvent: &mealPlanOption.BelongsToMealPlanEvent,
-		PrepStepsCreated:       &mealPlanOption.PrepStepsCreated,
-	}
-}
-
-// BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption builds a faked MealPlanOptionUpdateRequestInput from a meal plan option.
-func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
-	return &types.MealPlanOptionUpdateRequestInput{
-		MealID:                 &mealPlanOption.Meal.ID,
-		Notes:                  &mealPlanOption.Notes,
-		AssignedCook:           mealPlanOption.AssignedCook,
-		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
-		BelongsToMealPlanEvent: &mealPlanOption.BelongsToMealPlanEvent,
-		PrepStepsCreated:       &mealPlanOption.PrepStepsCreated,
-	}
+	return converters.ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(mealPlanOption)
 }
 
 // BuildFakeMealPlanOptionCreationRequestInput builds a faked MealPlanOptionCreationRequestInput.
 func BuildFakeMealPlanOptionCreationRequestInput() *types.MealPlanOptionCreationRequestInput {
 	mealPlanOption := BuildFakeMealPlanOption()
-	return BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOption)
-}
-
-// BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption builds a faked MealPlanOptionCreationRequestInput from a meal plan option.
-func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionCreationRequestInput {
-	return &types.MealPlanOptionCreationRequestInput{
-		ID:                     mealPlanOption.ID,
-		MealID:                 mealPlanOption.Meal.ID,
-		Notes:                  mealPlanOption.Notes,
-		AssignedCook:           mealPlanOption.AssignedCook,
-		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
-		BelongsToMealPlanEvent: mealPlanOption.BelongsToMealPlanEvent,
-		PrepStepsCreated:       mealPlanOption.PrepStepsCreated,
-	}
-}
-
-// BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption builds a faked MealPlanOptionDatabaseCreationInput from a meal plan option.
-func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionDatabaseCreationInput {
-	return &types.MealPlanOptionDatabaseCreationInput{
-		ID:                     mealPlanOption.ID,
-		MealID:                 mealPlanOption.Meal.ID,
-		Notes:                  mealPlanOption.Notes,
-		AssignedCook:           mealPlanOption.AssignedCook,
-		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
-		BelongsToMealPlanEvent: mealPlanOption.BelongsToMealPlanEvent,
-		PrepStepsCreated:       mealPlanOption.PrepStepsCreated,
-	}
+	return converters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(mealPlanOption)
 }

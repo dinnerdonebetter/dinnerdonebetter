@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeValidPreparationInstrument builds a faked valid preparation instrument.
@@ -45,37 +46,8 @@ func BuildFakeValidPreparationInstrumentUpdateRequestInput() *types.ValidPrepara
 	}
 }
 
-// BuildFakeValidPreparationInstrumentUpdateRequestInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentUpdateRequestInput from a valid preparation instrument.
-func BuildFakeValidPreparationInstrumentUpdateRequestInputFromValidPreparationInstrument(validPreparationInstrument *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentUpdateRequestInput {
-	return &types.ValidPreparationInstrumentUpdateRequestInput{
-		Notes:              &validPreparationInstrument.Notes,
-		ValidPreparationID: &validPreparationInstrument.Preparation.ID,
-		ValidInstrumentID:  &validPreparationInstrument.Instrument.ID,
-	}
-}
-
 // BuildFakeValidPreparationInstrumentCreationRequestInput builds a faked ValidPreparationInstrumentCreationRequestInput.
 func BuildFakeValidPreparationInstrumentCreationRequestInput() *types.ValidPreparationInstrumentCreationRequestInput {
 	validPreparationInstrument := BuildFakeValidPreparationInstrument()
-	return BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(validPreparationInstrument)
-}
-
-// BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentCreationRequestInput from a valid preparation instrument.
-func BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(validPreparationInstrument *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentCreationRequestInput {
-	return &types.ValidPreparationInstrumentCreationRequestInput{
-		ID:                 validPreparationInstrument.ID,
-		Notes:              validPreparationInstrument.Notes,
-		ValidPreparationID: validPreparationInstrument.Preparation.ID,
-		ValidInstrumentID:  validPreparationInstrument.Instrument.ID,
-	}
-}
-
-// BuildFakeValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrument builds a faked ValidPreparationInstrumentDatabaseCreationInput from a valid preparation instrument.
-func BuildFakeValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrument(validPreparationInstrument *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentDatabaseCreationInput {
-	return &types.ValidPreparationInstrumentDatabaseCreationInput{
-		ID:                 validPreparationInstrument.ID,
-		Notes:              validPreparationInstrument.Notes,
-		ValidPreparationID: validPreparationInstrument.Preparation.ID,
-		ValidInstrumentID:  validPreparationInstrument.Instrument.ID,
-	}
+	return converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(validPreparationInstrument)
 }

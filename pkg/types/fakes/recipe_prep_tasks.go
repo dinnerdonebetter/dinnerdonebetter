@@ -5,6 +5,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 func BuildFakeRecipePrepTask() *types.RecipePrepTask {
@@ -47,27 +48,6 @@ func BuildFakeRecipePrepTaskList() *types.RecipePrepTaskList {
 	return recipePrepTasks
 }
 
-// BuildFakeRecipePrepTaskDatabaseCreationInputFromRecipePrepTask builds a faked RecipePrepTaskDatabaseCreationInput from a recipe prep task.
-func BuildFakeRecipePrepTaskDatabaseCreationInputFromRecipePrepTask(recipePrepTask *types.RecipePrepTask) *types.RecipePrepTaskDatabaseCreationInput {
-	taskSteps := []*types.RecipePrepTaskStepDatabaseCreationInput{}
-	for _, step := range recipePrepTask.TaskSteps {
-		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepDatabaseCreationInputFromRecipePrepTaskStep(step))
-	}
-
-	return &types.RecipePrepTaskDatabaseCreationInput{
-		ID:                                     recipePrepTask.ID,
-		Notes:                                  recipePrepTask.Notes,
-		ExplicitStorageInstructions:            recipePrepTask.ExplicitStorageInstructions,
-		StorageType:                            recipePrepTask.StorageType,
-		TaskSteps:                              taskSteps,
-		MinimumTimeBufferBeforeRecipeInSeconds: recipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
-		MaximumTimeBufferBeforeRecipeInSeconds: recipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     uint32(recipePrepTask.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
-		MaximumStorageTemperatureInCelsius:     uint32(recipePrepTask.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
-		BelongsToRecipe:                        recipePrepTask.BelongsToRecipe,
-	}
-}
-
 func BuildFakeRecipePrepTaskStep() *types.RecipePrepTaskStep {
 	return &types.RecipePrepTaskStep{
 		ID:                      BuildFakeID(),
@@ -85,51 +65,12 @@ func BuildFakeRecipePrepTaskStepCreationRequestInput() *types.RecipePrepTaskStep
 	}
 }
 
-func BuildFakeRecipePrepTaskStepCreationRequestInputFromRecipePrepTaskStep(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepCreationRequestInput {
-	return &types.RecipePrepTaskStepCreationRequestInput{
-		BelongsToRecipeStep:     input.BelongsToRecipeStep,
-		BelongsToRecipePrepTask: input.BelongsToRecipePrepTask,
-		SatisfiesRecipeStep:     input.SatisfiesRecipeStep,
-	}
-}
-
-func BuildFakeRecipePrepTaskStepWithinRecipeCreationRequestInputFromRecipePrepTaskStep(recipe *types.Recipe, input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepWithinRecipeCreationRequestInput {
-	var belongsToIndex uint32
-	if x := recipe.FindStepByID(input.BelongsToRecipeStep); x != nil {
-		belongsToIndex = x.Index
-	}
-
-	return &types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
-		BelongsToRecipeStepIndex: belongsToIndex,
-		BelongsToRecipePrepTask:  input.BelongsToRecipePrepTask,
-		SatisfiesRecipeStep:      input.SatisfiesRecipeStep,
-	}
-}
-
 func BuildFakeRecipePrepTaskStepUpdateRequestInput() *types.RecipePrepTaskStepUpdateRequestInput {
 	return &types.RecipePrepTaskStepUpdateRequestInput{
 		ID:                      BuildFakeID(),
 		BelongsToRecipeStep:     pointers.StringPointer(BuildFakeID()),
 		BelongsToRecipePrepTask: pointers.StringPointer(BuildFakeID()),
 		SatisfiesRecipeStep:     pointers.BoolPointer(fake.Bool()),
-	}
-}
-
-func BuildFakeRecipePrepTaskStepUpdateRequestInputFromRecipePrepTaskStep(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepUpdateRequestInput {
-	return &types.RecipePrepTaskStepUpdateRequestInput{
-		ID:                      input.ID,
-		BelongsToRecipeStep:     pointers.StringPointer(input.BelongsToRecipeStep),
-		BelongsToRecipePrepTask: pointers.StringPointer(input.BelongsToRecipePrepTask),
-		SatisfiesRecipeStep:     pointers.BoolPointer(input.SatisfiesRecipeStep),
-	}
-}
-
-func BuildFakeRecipePrepTaskStepDatabaseCreationInputFromRecipePrepTaskStep(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepDatabaseCreationInput {
-	return &types.RecipePrepTaskStepDatabaseCreationInput{
-		ID:                      input.ID,
-		BelongsToRecipeStep:     input.BelongsToRecipeStep,
-		BelongsToRecipePrepTask: input.BelongsToRecipePrepTask,
-		SatisfiesRecipeStep:     input.SatisfiesRecipeStep,
 	}
 }
 
@@ -155,44 +96,6 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 	}
 }
 
-func BuildFakeRecipePrepTaskCreationRequestInputFromRecipePrepTask(input *types.RecipePrepTask) *types.RecipePrepTaskCreationRequestInput {
-	taskSteps := []*types.RecipePrepTaskStepCreationRequestInput{}
-	for _, x := range input.TaskSteps {
-		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepCreationRequestInputFromRecipePrepTaskStep(x))
-	}
-
-	return &types.RecipePrepTaskCreationRequestInput{
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		StorageType:                            input.StorageType,
-		BelongsToRecipe:                        input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
-	}
-}
-
-func BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(recipe *types.Recipe, input *types.RecipePrepTask) *types.RecipePrepTaskWithinRecipeCreationRequestInput {
-	taskSteps := []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{}
-	for _, x := range input.TaskSteps {
-		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepWithinRecipeCreationRequestInputFromRecipePrepTaskStep(recipe, x))
-	}
-
-	return &types.RecipePrepTaskWithinRecipeCreationRequestInput{
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		StorageType:                            input.StorageType,
-		BelongsToRecipe:                        input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
-	}
-}
-
 func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequestInput {
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
 	for i := 0; i < exampleQuantity; i++ {
@@ -215,7 +118,7 @@ func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequ
 func BuildFakeRecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *types.RecipePrepTask) *types.RecipePrepTaskUpdateRequestInput {
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
 	for _, x := range input.TaskSteps {
-		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepUpdateRequestInputFromRecipePrepTaskStep(x))
+		taskSteps = append(taskSteps, converters.ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(x))
 	}
 
 	return &types.RecipePrepTaskUpdateRequestInput{

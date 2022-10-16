@@ -44,7 +44,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVoteDatabaseCreationInput) bool { return true }),
+			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleMealPlanOptionVotes, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -146,7 +146,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVoteDatabaseCreationInput) bool { return true }),
+			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
 		).Return([]*types.MealPlanOptionVote(nil), errors.New("blah"))
 		helper.service.dataManager = dbManager
 
@@ -175,7 +175,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVoteDatabaseCreationInput) bool { return true }),
+			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleMealPlanOptionVotes, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -240,7 +240,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVoteDatabaseCreationInput) bool { return true }),
+			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleMealPlanOptionVotes, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -289,7 +289,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVoteDatabaseCreationInput) bool { return true }),
+			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleMealPlanOptionVotes, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -354,7 +354,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVoteDatabaseCreationInput) bool { return true }),
+			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleMealPlanOptionVotes, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -414,7 +414,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanOptionVoteDatabaseCreationInput) bool { return true }),
+			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleMealPlanOptionVotes, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}

@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeRecipeStepIngredient builds a faked recipe step ingredient.
@@ -60,58 +61,8 @@ func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredie
 	}
 }
 
-// BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient builds a faked RecipeStepIngredientUpdateRequestInput from a recipe step ingredient.
-func BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
-	return &types.RecipeStepIngredientUpdateRequestInput{
-		Name:                &recipeStepIngredient.Name,
-		Optional:            &recipeStepIngredient.Optional,
-		IngredientID:        &recipeStepIngredient.Ingredient.ID,
-		MeasurementUnitID:   &recipeStepIngredient.MeasurementUnit.ID,
-		MinimumQuantity:     &recipeStepIngredient.MinimumQuantity,
-		MaximumQuantity:     &recipeStepIngredient.MaximumQuantity,
-		QuantityNotes:       &recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: &recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     &recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: &recipeStepIngredient.BelongsToRecipeStep,
-	}
-}
-
 // BuildFakeRecipeStepIngredientCreationRequestInput builds a faked RecipeStepIngredientCreationRequestInput.
 func BuildFakeRecipeStepIngredientCreationRequestInput() *types.RecipeStepIngredientCreationRequestInput {
 	recipeStepIngredient := BuildFakeRecipeStepIngredient()
-	return BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(recipeStepIngredient)
-}
-
-// BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient builds a faked RecipeStepIngredientCreationRequestInput from a recipe step ingredient.
-func BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientCreationRequestInput {
-	return &types.RecipeStepIngredientCreationRequestInput{
-		ID:                  recipeStepIngredient.ID,
-		Name:                recipeStepIngredient.Name,
-		Optional:            recipeStepIngredient.Optional,
-		IngredientID:        &recipeStepIngredient.Ingredient.ID,
-		MeasurementUnitID:   recipeStepIngredient.MeasurementUnit.ID,
-		MinimumQuantity:     recipeStepIngredient.MinimumQuantity,
-		MaximumQuantity:     recipeStepIngredient.MaximumQuantity,
-		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
-	}
-}
-
-// ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput builds a faked RecipeStepIngredientDatabaseCreationInput from a recipe step ingredient.
-func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientDatabaseCreationInput {
-	return &types.RecipeStepIngredientDatabaseCreationInput{
-		ID:                  recipeStepIngredient.ID,
-		Name:                recipeStepIngredient.Name,
-		Optional:            recipeStepIngredient.Optional,
-		IngredientID:        &recipeStepIngredient.Ingredient.ID,
-		MeasurementUnitID:   recipeStepIngredient.MeasurementUnit.ID,
-		MinimumQuantity:     recipeStepIngredient.MinimumQuantity,
-		MaximumQuantity:     recipeStepIngredient.MaximumQuantity,
-		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
-	}
+	return converters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recipeStepIngredient)
 }

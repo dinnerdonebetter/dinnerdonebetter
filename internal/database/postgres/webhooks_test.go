@@ -15,6 +15,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -425,7 +426,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 		t.Parallel()
 
 		exampleWebhook := fakes.BuildFakeWebhook()
-		exampleInput := fakes.BuildFakeWebhookDatabaseCreationInputFromWebhook(exampleWebhook)
+		exampleInput := converters.ConvertWebhookToWebhookDatabaseCreationInput(exampleWebhook)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -472,7 +473,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 		t.Parallel()
 
 		exampleWebhook := fakes.BuildFakeWebhook()
-		exampleInput := fakes.BuildFakeWebhookDatabaseCreationInputFromWebhook(exampleWebhook)
+		exampleInput := converters.ConvertWebhookToWebhookDatabaseCreationInput(exampleWebhook)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -113,7 +114,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 		t.Parallel()
 
 		exampleToken := fakes.BuildFakePasswordResetToken()
-		exampleInput := fakes.BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken(exampleToken)
+		exampleInput := converters.ConvertPasswordResetTokenToPasswordResetTokenDatabaseCreationInput(exampleToken)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -154,7 +155,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 		t.Parallel()
 
 		exampleToken := fakes.BuildFakePasswordResetToken()
-		exampleInput := fakes.BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken(exampleToken)
+		exampleInput := converters.ConvertPasswordResetTokenToPasswordResetTokenDatabaseCreationInput(exampleToken)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

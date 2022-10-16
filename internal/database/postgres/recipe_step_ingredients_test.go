@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -594,7 +595,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepIngredient.ID = "1"
 		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
 		exampleRecipeStepIngredient.Ingredient = &types.ValidIngredient{ID: exampleRecipeStepIngredient.Ingredient.ID}
-		exampleInput := fakes.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
+		exampleInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -645,7 +646,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleInput := fakes.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
+		exampleInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -692,7 +693,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepIngredient.ID = "3"
 		exampleRecipeStepIngredient.BelongsToRecipeStep = "2"
 
-		exampleInput := fakes.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
+		exampleInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

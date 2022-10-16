@@ -158,32 +158,6 @@ func (x *ValidIngredientMeasurementUnitDatabaseCreationInput) ValidateWithContex
 	)
 }
 
-// ValidIngredientMeasurementUnitFromValidIngredientMeasurementUnit creates a DatabaseCreationInput from a CreationInput.
-func ValidIngredientMeasurementUnitFromValidIngredientMeasurementUnit(input *ValidIngredientMeasurementUnit) *ValidIngredientMeasurementUnitUpdateRequestInput {
-	x := &ValidIngredientMeasurementUnitUpdateRequestInput{
-		Notes:                    &input.Notes,
-		ValidMeasurementUnitID:   &input.MeasurementUnit.ID,
-		ValidIngredientID:        &input.Ingredient.ID,
-		MinimumAllowableQuantity: &input.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: &input.MaximumAllowableQuantity,
-	}
-
-	return x
-}
-
-// ValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnitCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnitCreationInput(input *ValidIngredientMeasurementUnitCreationRequestInput) *ValidIngredientMeasurementUnitDatabaseCreationInput {
-	x := &ValidIngredientMeasurementUnitDatabaseCreationInput{
-		Notes:                    input.Notes,
-		ValidMeasurementUnitID:   input.ValidMeasurementUnitID,
-		ValidIngredientID:        input.ValidIngredientID,
-		MinimumAllowableQuantity: input.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: input.MaximumAllowableQuantity,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*ValidIngredientMeasurementUnitUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a ValidIngredientMeasurementUnitUpdateRequestInput.

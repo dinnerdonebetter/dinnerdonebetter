@@ -14,6 +14,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -560,7 +561,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 
 		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 		exampleRecipeStepProduct.ID = "1"
-		exampleInput := fakes.BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(exampleRecipeStepProduct)
+		exampleInput := converters.ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(exampleRecipeStepProduct)
 		exampleRecipeStepProduct.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepProduct.MeasurementUnit.ID}
 
 		ctx := context.Background()
@@ -613,7 +614,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
-		exampleInput := fakes.BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(exampleRecipeStepProduct)
+		exampleInput := converters.ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(exampleRecipeStepProduct)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

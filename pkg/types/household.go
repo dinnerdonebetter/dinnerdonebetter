@@ -175,30 +175,3 @@ func HouseholdCreationInputForNewUser(u *User) *HouseholdCreationRequestInput {
 		BelongsToUser: u.ID,
 	}
 }
-
-// HouseholdDatabaseCreationInputFromHouseholdCreationInput creates a DatabaseCreationInput from a CreationInput.
-func HouseholdDatabaseCreationInputFromHouseholdCreationInput(input *HouseholdCreationRequestInput) *HouseholdDatabaseCreationInput {
-	x := &HouseholdDatabaseCreationInput{
-		ID:            input.ID,
-		Name:          input.Name,
-		ContactEmail:  input.ContactEmail,
-		ContactPhone:  input.ContactPhone,
-		BelongsToUser: input.BelongsToUser,
-		TimeZone:      input.TimeZone,
-	}
-
-	return x
-}
-
-// HouseholdUpdateRequestInputFromHousehold creates a HouseholdCreationRequestInput from a CreationInput.
-func HouseholdUpdateRequestInputFromHousehold(input *Household) *HouseholdUpdateRequestInput {
-	x := &HouseholdUpdateRequestInput{
-		Name:          &input.Name,
-		ContactEmail:  &input.ContactEmail,
-		ContactPhone:  &input.ContactPhone,
-		BelongsToUser: input.BelongsToUser,
-		TimeZone:      &input.TimeZone,
-	}
-
-	return x
-}

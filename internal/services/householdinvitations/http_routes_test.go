@@ -21,6 +21,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrandom "github.com/prixfixeco/api_server/internal/random/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -665,7 +666,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -755,7 +756,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -784,7 +785,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -813,7 +814,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -850,7 +851,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -899,7 +900,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -976,7 +977,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1005,7 +1006,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1046,7 +1047,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1082,7 +1083,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1130,7 +1131,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1192,7 +1193,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1221,7 +1222,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1278,7 +1279,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1314,7 +1315,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error

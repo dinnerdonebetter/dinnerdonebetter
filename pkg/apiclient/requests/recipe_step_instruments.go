@@ -7,6 +7,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -152,7 +153,7 @@ func (b *Builder) BuildUpdateRecipeStepInstrumentRequest(ctx context.Context, re
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := types.RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(recipeStepInstrument)
+	input := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(recipeStepInstrument)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {

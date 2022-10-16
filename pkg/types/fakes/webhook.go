@@ -6,6 +6,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeWebhook builds a faked Webhook.
@@ -46,35 +47,5 @@ func BuildFakeWebhookList() *types.WebhookList {
 // BuildFakeWebhookCreationRequestInput builds a faked WebhookCreationRequestInput from a webhook.
 func BuildFakeWebhookCreationRequestInput() *types.WebhookCreationRequestInput {
 	webhook := BuildFakeWebhook()
-	return BuildFakeWebhookCreationInputFromWebhook(webhook)
-}
-
-// BuildFakeWebhookCreationInputFromWebhook builds a faked WebhookCreationRequestInput.
-func BuildFakeWebhookCreationInputFromWebhook(webhook *types.Webhook) *types.WebhookCreationRequestInput {
-	return &types.WebhookCreationRequestInput{
-		ID:                 webhook.ID,
-		Name:               webhook.Name,
-		ContentType:        webhook.ContentType,
-		URL:                webhook.URL,
-		Method:             webhook.Method,
-		Events:             webhook.Events,
-		DataTypes:          webhook.DataTypes,
-		Topics:             webhook.Topics,
-		BelongsToHousehold: webhook.BelongsToHousehold,
-	}
-}
-
-// BuildFakeWebhookDatabaseCreationInputFromWebhook builds a faked WebhookCreationRequestInput.
-func BuildFakeWebhookDatabaseCreationInputFromWebhook(webhook *types.Webhook) *types.WebhookDatabaseCreationInput {
-	return &types.WebhookDatabaseCreationInput{
-		ID:                 webhook.ID,
-		Name:               webhook.Name,
-		ContentType:        webhook.ContentType,
-		URL:                webhook.URL,
-		Method:             webhook.Method,
-		Events:             webhook.Events,
-		DataTypes:          webhook.DataTypes,
-		Topics:             webhook.Topics,
-		BelongsToHousehold: webhook.BelongsToHousehold,
-	}
+	return converters.ConvertWebhookToWebhookCreationRequestInput(webhook)
 }

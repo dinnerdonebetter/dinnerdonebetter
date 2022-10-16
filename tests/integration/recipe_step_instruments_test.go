@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -66,7 +67,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrument.ID)
@@ -76,7 +77,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepInstrument.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
-			exampleRecipeStepInstrumentInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(exampleRecipeStepInstrument)
+			exampleRecipeStepInstrumentInput := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
 			createdRecipeStepInstrument, err := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, exampleRecipeStepInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("recipe step instrument %q created", createdRecipeStepInstrument.ID)
@@ -93,7 +94,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 
 			t.Log("creating valid instrument")
 			newExampleValidInstrument := fakes.BuildFakeValidInstrument()
-			newExampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(newExampleValidInstrument)
+			newExampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(newExampleValidInstrument)
 			newValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, newExampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrument.ID)
@@ -136,21 +137,21 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 			t.Log("creating prerequisite valid preparation")
 			lineBase := fakes.BuildFakeValidPreparation()
-			lineInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(lineBase)
+			lineInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(lineBase)
 			line, err := testClients.admin.CreateValidPreparation(ctx, lineInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", line.ID)
 
 			t.Log("creating prerequisite valid preparation")
 			roastBase := fakes.BuildFakeValidPreparation()
-			roastInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(roastBase)
+			roastInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(roastBase)
 			roast, err := testClients.admin.CreateValidPreparation(ctx, roastInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", roast.ID)
 
 			t.Log("creating valid instrument")
 			bakingSheetBase := fakes.BuildFakeValidInstrument()
-			bakingSheetBaseInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(bakingSheetBase)
+			bakingSheetBaseInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(bakingSheetBase)
 			bakingSheet, err := testClients.admin.CreateValidInstrument(ctx, bakingSheetBaseInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", bakingSheet.ID)
@@ -158,7 +159,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 			t.Log("creating valid measurement units")
 			sheetsBase := fakes.BuildFakeValidMeasurementUnit()
-			sheetsBaseInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(sheetsBase)
+			sheetsBaseInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(sheetsBase)
 			sheets, err := testClients.admin.CreateValidMeasurementUnit(ctx, sheetsBaseInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", sheets.ID)
@@ -166,7 +167,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 			t.Log("creating valid measurement units")
 			headsBase := fakes.BuildFakeValidMeasurementUnit()
-			headsBaseInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(headsBase)
+			headsBaseInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(headsBase)
 			head, err := testClients.admin.CreateValidMeasurementUnit(ctx, headsBaseInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", head.ID)
@@ -174,7 +175,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 			t.Log("creating valid measurement units")
 			exampleUnits := fakes.BuildFakeValidMeasurementUnit()
-			exampleUnitsInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleUnits)
+			exampleUnitsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleUnits)
 			unit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleUnitsInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", unit.ID)
@@ -182,13 +183,13 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 			t.Log("creating prerequisite valid ingredient")
 			aluminumFoilBase := fakes.BuildFakeValidIngredient()
-			aluminumFoilInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(aluminumFoilBase)
+			aluminumFoilInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(aluminumFoilBase)
 			aluminumFoil, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, aluminumFoilInput)
 			require.NoError(t, createdValidIngredientErr)
 
 			t.Log("creating prerequisite valid ingredient")
 			garlic := fakes.BuildFakeValidIngredient()
-			garlicInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(garlic)
+			garlicInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(garlic)
 			garlic, garlicErr := testClients.admin.CreateValidIngredient(ctx, garlicInput)
 			require.NoError(t, garlicErr)
 
@@ -373,7 +374,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrument.ID)
@@ -385,7 +386,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 				exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 				exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepInstrument.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
-				exampleRecipeStepInstrumentInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(exampleRecipeStepInstrument)
+				exampleRecipeStepInstrumentInput := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
 				createdRecipeStepInstrument, createdRecipeStepInstrumentErr := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, exampleRecipeStepInstrumentInput)
 				require.NoError(t, createdRecipeStepInstrumentErr)
 				t.Logf("recipe step instrument %q created", createdRecipeStepInstrument.ID)

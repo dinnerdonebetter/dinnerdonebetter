@@ -127,18 +127,6 @@ func (x *HouseholdInvitationCreationRequestInput) ValidateWithContext(ctx contex
 	)
 }
 
-// HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput creates a DatabaseCreationInput from a CreationInput.
-func HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput(input *HouseholdInvitationCreationRequestInput) *HouseholdInvitationDatabaseCreationInput {
-	x := &HouseholdInvitationDatabaseCreationInput{
-		ID:                     input.ID,
-		FromUser:               input.FromUser,
-		ToEmail:                input.ToEmail,
-		DestinationHouseholdID: input.DestinationHouseholdID,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*HouseholdInvitationUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a HouseholdInvitationUpdateRequestInput.

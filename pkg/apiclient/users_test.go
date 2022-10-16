@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -188,7 +189,7 @@ func (s *usersTestSuite) TestClient_CreateUser() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		expected := fakes.BuildUserCreationResponseFromUser(s.exampleUser)
+		expected := converters.ConvertUserToUserCreationResponse(s.exampleUser)
 		exampleInput := fakes.BuildFakeUserRegistrationInputFromUser(s.exampleUser)
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c := buildTestClientWithRequestBodyValidation(t, spec, &types.UserRegistrationInput{}, exampleInput, expected)

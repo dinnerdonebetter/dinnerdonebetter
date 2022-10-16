@@ -6,6 +6,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeMealPlanEvent builds a faked meal plan event.
@@ -71,56 +72,8 @@ func BuildFakeMealPlanEventUpdateRequestInput() *types.MealPlanEventUpdateReques
 	}
 }
 
-// BuildFakeMealPlanEventUpdateRequestInputFromMealPlanEvent builds a faked MealPlanEventUpdateRequestInput from a meal plan.
-func BuildFakeMealPlanEventUpdateRequestInputFromMealPlanEvent(mealPlanEvent *types.MealPlanEvent) *types.MealPlanEventUpdateRequestInput {
-	return &types.MealPlanEventUpdateRequestInput{
-		Notes:             &mealPlanEvent.Notes,
-		StartsAt:          &mealPlanEvent.StartsAt,
-		EndsAt:            &mealPlanEvent.EndsAt,
-		MealName:          &mealPlanEvent.MealName,
-		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
-	}
-}
-
 // BuildFakeMealPlanEventCreationRequestInput builds a faked MealPlanEventCreationRequestInput.
 func BuildFakeMealPlanEventCreationRequestInput() *types.MealPlanEventCreationRequestInput {
 	mealPlan := BuildFakeMealPlanEvent()
-	return BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(mealPlan)
-}
-
-// BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent builds a faked MealPlanEventCreationRequestInput from a meal plan.
-func BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(mealPlanEvent *types.MealPlanEvent) *types.MealPlanEventCreationRequestInput {
-	options := []*types.MealPlanOptionCreationRequestInput{}
-	for _, opt := range mealPlanEvent.Options {
-		opt.BelongsToMealPlanEvent = mealPlanEvent.ID
-		options = append(options, BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(opt))
-	}
-
-	return &types.MealPlanEventCreationRequestInput{
-		ID:                mealPlanEvent.ID,
-		Notes:             mealPlanEvent.Notes,
-		StartsAt:          mealPlanEvent.StartsAt,
-		EndsAt:            mealPlanEvent.EndsAt,
-		MealName:          mealPlanEvent.MealName,
-		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
-		Options:           options,
-	}
-}
-
-// BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent builds a faked MealPlanEventDatabaseCreationInput from a meal plan.
-func BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent(mealPlanEvent *types.MealPlanEvent) *types.MealPlanEventDatabaseCreationInput {
-	options := []*types.MealPlanOptionDatabaseCreationInput{}
-	for _, option := range mealPlanEvent.Options {
-		options = append(options, BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(option))
-	}
-
-	return &types.MealPlanEventDatabaseCreationInput{
-		ID:                mealPlanEvent.ID,
-		Notes:             mealPlanEvent.Notes,
-		StartsAt:          mealPlanEvent.StartsAt,
-		EndsAt:            mealPlanEvent.EndsAt,
-		MealName:          mealPlanEvent.MealName,
-		Options:           options,
-		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
-	}
+	return converters.ConvertMealPlanEventToMealPlanEventCreationRequestInput(mealPlan)
 }

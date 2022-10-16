@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -44,7 +45,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 
 			t.Log("creating prerequisite valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -57,7 +58,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 
@@ -72,7 +73,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 			exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 			exampleValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
 			exampleValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
-			exampleValidIngredientMeasurementUnitInput := fakes.BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
+			exampleValidIngredientMeasurementUnitInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit)
 			createdValidIngredientMeasurementUnit, err := testClients.admin.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient measurement unit %q created", createdValidIngredientMeasurementUnit.ID)
@@ -124,7 +125,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 			for i := 0; i < 5; i++ {
 				t.Log("creating prerequisite valid measurement unit")
 				exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-				exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+				exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 				createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, err)
 				t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -137,7 +138,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 
 				t.Log("creating prerequisite valid ingredient")
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
-				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 				createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, err)
 
@@ -151,7 +152,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 				exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 				exampleValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
 				exampleValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
-				exampleValidIngredientMeasurementUnitInput := fakes.BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
+				exampleValidIngredientMeasurementUnitInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit)
 				createdValidIngredientMeasurementUnit, createdValidIngredientMeasurementUnitErr := testClients.admin.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
 				require.NoError(t, createdValidIngredientMeasurementUnitErr)
 
@@ -189,7 +190,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing_ByValues() {
 
 			t.Log("creating prerequisite valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -202,7 +203,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing_ByValues() {
 
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 
@@ -217,7 +218,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing_ByValues() {
 			exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 			exampleValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
 			exampleValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
-			exampleValidIngredientMeasurementUnitInput := fakes.BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
+			exampleValidIngredientMeasurementUnitInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(exampleValidIngredientMeasurementUnit)
 			createdValidIngredientMeasurementUnit, err := testClients.admin.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient measurement unit %q created", createdValidIngredientMeasurementUnit.ID)

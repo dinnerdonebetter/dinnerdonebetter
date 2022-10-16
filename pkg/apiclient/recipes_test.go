@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -188,10 +189,10 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 		t := s.T()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
-		exampleInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(exampleRecipe)
 		exampleInput.CreatedByUser = ""
 		examplePrepTask := fakes.BuildFakeRecipePrepTask()
-		examplePrepTaskInput := fakes.BuildFakeRecipePrepTaskWithinRecipeCreationRequestInputFromRecipePrepTask(exampleRecipe, examplePrepTask)
+		examplePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(exampleRecipe, examplePrepTask)
 		examplePrepTaskInput.TaskSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 			{
 				BelongsToRecipeStepIndex: exampleInput.Steps[0].Index,
@@ -235,7 +236,7 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(s.exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(s.exampleRecipe)
 
 		c := buildTestClientWithInvalidURL(t)
 
@@ -247,7 +248,7 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(s.exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(s.exampleRecipe)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateRecipe(s.ctx, exampleInput)

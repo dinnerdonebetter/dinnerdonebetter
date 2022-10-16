@@ -7,6 +7,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -178,7 +179,7 @@ func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, meal
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := types.MealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(mealPlanOptionVote)
+	input := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput(mealPlanOptionVote)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {

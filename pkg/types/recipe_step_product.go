@@ -210,53 +210,6 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 	)
 }
 
-// RecipeStepProductUpdateRequestInputFromRecipeStepProduct creates a DatabaseCreationInput from a CreationInput.
-func RecipeStepProductUpdateRequestInputFromRecipeStepProduct(input *RecipeStepProduct) *RecipeStepProductUpdateRequestInput {
-	if input == nil {
-		return nil
-	}
-
-	x := &RecipeStepProductUpdateRequestInput{
-		Name:                               &input.Name,
-		Type:                               &input.Type,
-		MeasurementUnitID:                  &input.MeasurementUnit.ID,
-		QuantityNotes:                      &input.QuantityNotes,
-		BelongsToRecipeStep:                &input.BelongsToRecipeStep,
-		MinimumQuantity:                    &input.MinimumQuantity,
-		MaximumQuantity:                    &input.MaximumQuantity,
-		Compostable:                        &input.Compostable,
-		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
-		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
-		StorageInstructions:                &input.StorageInstructions,
-	}
-
-	return x
-}
-
-// RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput creates a DatabaseCreationInput from a CreationInput.
-func RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(input *RecipeStepProductCreationRequestInput) *RecipeStepProductDatabaseCreationInput {
-	if input == nil {
-		return nil
-	}
-
-	x := &RecipeStepProductDatabaseCreationInput{
-		Name:                               input.Name,
-		Type:                               input.Type,
-		MeasurementUnitID:                  input.MeasurementUnitID,
-		QuantityNotes:                      input.QuantityNotes,
-		MinimumQuantity:                    input.MinimumQuantity,
-		MaximumQuantity:                    input.MaximumQuantity,
-		Compostable:                        input.Compostable,
-		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
-		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
-		StorageInstructions:                input.StorageInstructions,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*RecipeStepProductUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeStepProductUpdateRequestInput.

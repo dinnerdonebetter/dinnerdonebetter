@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -49,7 +50,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 
 			t.Log("creating valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -88,7 +89,7 @@ func (s *TestSuite) TestValidPreparations_GetRandom() {
 
 			t.Log("creating valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -115,7 +116,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			var expected []*types.ValidPreparation
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
-				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+				exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 				createdValidPreparation, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, createdValidPreparationErr)
 				t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -159,7 +160,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			searchQuery := exampleValidPreparation.Name
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+				exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 				createdValidPreparation, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, createdValidPreparationErr)
 				t.Logf("valid preparation %q created", createdValidPreparation.ID)

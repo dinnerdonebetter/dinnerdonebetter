@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeValidMeasurementUnit builds a faked valid ingredient.
@@ -55,51 +56,8 @@ func BuildFakeValidMeasurementUnitUpdateRequestInput() *types.ValidMeasurementUn
 	}
 }
 
-// BuildFakeValidMeasurementUnitUpdateRequestInputFromValidMeasurementUnit builds a faked ValidMeasurementUnitUpdateRequestInput from a valid ingredient.
-func BuildFakeValidMeasurementUnitUpdateRequestInputFromValidMeasurementUnit(validMeasurementUnit *types.ValidMeasurementUnit) *types.ValidMeasurementUnitUpdateRequestInput {
-	return &types.ValidMeasurementUnitUpdateRequestInput{
-		Name:        &validMeasurementUnit.Name,
-		Description: &validMeasurementUnit.Description,
-		Volumetric:  &validMeasurementUnit.Volumetric,
-		IconPath:    &validMeasurementUnit.IconPath,
-		Universal:   &validMeasurementUnit.Universal,
-		Metric:      &validMeasurementUnit.Metric,
-		Imperial:    &validMeasurementUnit.Imperial,
-		PluralName:  &validMeasurementUnit.PluralName,
-	}
-}
-
 // BuildFakeValidMeasurementUnitCreationRequestInput builds a faked ValidMeasurementUnitCreationRequestInput.
 func BuildFakeValidMeasurementUnitCreationRequestInput() *types.ValidMeasurementUnitCreationRequestInput {
 	validMeasurementUnit := BuildFakeValidMeasurementUnit()
-	return BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(validMeasurementUnit)
-}
-
-// BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit builds a faked ValidMeasurementUnitCreationRequestInput from a valid ingredient.
-func BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(validMeasurementUnit *types.ValidMeasurementUnit) *types.ValidMeasurementUnitCreationRequestInput {
-	return &types.ValidMeasurementUnitCreationRequestInput{
-		Name:        validMeasurementUnit.Name,
-		Description: validMeasurementUnit.Description,
-		Volumetric:  validMeasurementUnit.Volumetric,
-		IconPath:    validMeasurementUnit.IconPath,
-		Universal:   validMeasurementUnit.Universal,
-		Metric:      validMeasurementUnit.Metric,
-		Imperial:    validMeasurementUnit.Imperial,
-		PluralName:  validMeasurementUnit.PluralName,
-	}
-}
-
-// BuildFakeValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnit builds a faked ValidMeasurementUnitDatabaseCreationInput from a valid ingredient.
-func BuildFakeValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnit(validMeasurementUnit *types.ValidMeasurementUnit) *types.ValidMeasurementUnitDatabaseCreationInput {
-	return &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:          validMeasurementUnit.ID,
-		Name:        validMeasurementUnit.Name,
-		Description: validMeasurementUnit.Description,
-		Volumetric:  validMeasurementUnit.Volumetric,
-		IconPath:    validMeasurementUnit.IconPath,
-		Universal:   validMeasurementUnit.Universal,
-		Metric:      validMeasurementUnit.Metric,
-		Imperial:    validMeasurementUnit.Imperial,
-		PluralName:  validMeasurementUnit.PluralName,
-	}
+	return converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(validMeasurementUnit)
 }

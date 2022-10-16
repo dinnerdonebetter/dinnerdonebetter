@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -260,7 +261,7 @@ func (s *validInstrumentsTestSuite) TestClient_CreateValidInstrument() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(s.exampleValidInstrument)
+		exampleInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(s.exampleValidInstrument)
 
 		c := buildTestClientWithInvalidURL(t)
 
@@ -272,7 +273,7 @@ func (s *validInstrumentsTestSuite) TestClient_CreateValidInstrument() {
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(s.exampleValidInstrument)
+		exampleInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(s.exampleValidInstrument)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateValidInstrument(s.ctx, exampleInput)

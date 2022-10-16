@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -229,88 +228,6 @@ func (x *RecipePrepTaskDatabaseCreationInput) ValidateWithContext(ctx context.Co
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.BelongsToRecipe, validation.Required),
 	)
-}
-
-// RecipePrepTaskUpdateRequestInputFromRecipePrepTask creates a DatabaseCreationInput from a CreationInput.
-func RecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *RecipePrepTask) *RecipePrepTaskUpdateRequestInput {
-	taskSteps := []*RecipePrepTaskStepUpdateRequestInput{}
-	for _, x := range input.TaskSteps {
-		taskSteps = append(taskSteps, &RecipePrepTaskStepUpdateRequestInput{
-			ID:                      x.ID,
-			BelongsToRecipeStep:     &x.BelongsToRecipeStep,
-			BelongsToRecipePrepTask: &x.BelongsToRecipePrepTask,
-			SatisfiesRecipeStep:     &x.SatisfiesRecipeStep,
-		})
-	}
-	x := &RecipePrepTaskUpdateRequestInput{
-		Notes:                                  &input.Notes,
-		ExplicitStorageInstructions:            &input.ExplicitStorageInstructions,
-		MinimumTimeBufferBeforeRecipeInSeconds: &input.MinimumTimeBufferBeforeRecipeInSeconds,
-		MaximumTimeBufferBeforeRecipeInSeconds: &input.MaximumTimeBufferBeforeRecipeInSeconds,
-		StorageType:                            &input.StorageType,
-		MinimumStorageTemperatureInCelsius:     &input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     &input.MaximumStorageTemperatureInCelsius,
-		BelongsToRecipe:                        &input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
-	}
-
-	return x
-}
-
-// RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskCreationInput creates a DatabaseCreationInput from a CreationInput.
-func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskCreationInput(input *RecipePrepTaskCreationRequestInput) *RecipePrepTaskDatabaseCreationInput {
-	taskSteps := []*RecipePrepTaskStepDatabaseCreationInput{}
-	for _, x := range input.TaskSteps {
-		taskSteps = append(taskSteps, &RecipePrepTaskStepDatabaseCreationInput{
-			BelongsToRecipeStep:     x.BelongsToRecipeStep,
-			BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
-			SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
-		})
-	}
-
-	x := &RecipePrepTaskDatabaseCreationInput{
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		StorageType:                            input.StorageType,
-		BelongsToRecipe:                        input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     uint32(input.MinimumStorageTemperatureInCelsius * RecipePrepTaskStorageTemperatureModifier),
-		MaximumStorageTemperatureInCelsius:     uint32(input.MaximumStorageTemperatureInCelsius * RecipePrepTaskStorageTemperatureModifier),
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
-	}
-
-	return x
-}
-
-// RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput creates a DatabaseCreationInput from a CreationInput.
-func RecipePrepTaskDatabaseCreationInputFromRecipePrepTaskWithinRecipeCreationInput(recipe *RecipeDatabaseCreationInput, input *RecipePrepTaskWithinRecipeCreationRequestInput) (*RecipePrepTaskDatabaseCreationInput, error) {
-	taskSteps := []*RecipePrepTaskStepDatabaseCreationInput{}
-	for i, x := range input.TaskSteps {
-		if y := recipe.FindStepByIndex(x.BelongsToRecipeStepIndex); y != nil {
-			taskSteps = append(taskSteps, &RecipePrepTaskStepDatabaseCreationInput{
-				BelongsToRecipeStep:     y.ID,
-				BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
-				SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
-			})
-		} else {
-			return nil, fmt.Errorf("task step #%d has an invalid recipe step index", i+1)
-		}
-	}
-
-	x := &RecipePrepTaskDatabaseCreationInput{
-		Notes:                                  input.Notes,
-		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
-		StorageType:                            input.StorageType,
-		BelongsToRecipe:                        input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     uint32(input.MinimumStorageTemperatureInCelsius * RecipePrepTaskStorageTemperatureModifier),
-		MaximumStorageTemperatureInCelsius:     uint32(input.MaximumStorageTemperatureInCelsius * RecipePrepTaskStorageTemperatureModifier),
-		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
-	}
-
-	return x, nil
 }
 
 var _ validation.ValidatableWithContext = (*RecipePrepTaskUpdateRequestInput)(nil)

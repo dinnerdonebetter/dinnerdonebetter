@@ -9,6 +9,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -94,7 +95,7 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 	}
 
 	if instrument.ID != nil {
-		x.Instrument = instrument.ToValidInstrument()
+		x.Instrument = converters.ConvertNullableValidInstrumentToValidInstrument(instrument)
 	}
 
 	return x, filteredCount, totalCount, nil

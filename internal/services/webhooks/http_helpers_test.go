@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
@@ -38,7 +39,7 @@ func newTestHelper(t *testing.T) *webhooksServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleWebhook = fakes.BuildFakeWebhook()
 	helper.exampleWebhook.BelongsToHousehold = helper.exampleHousehold.ID
-	helper.exampleCreationInput = fakes.BuildFakeWebhookCreationInputFromWebhook(helper.exampleWebhook)
+	helper.exampleCreationInput = converters.ConvertWebhookToWebhookCreationRequestInput(helper.exampleWebhook)
 
 	helper.service.webhookIDFetcher = func(*http.Request) string {
 		return helper.exampleWebhook.ID

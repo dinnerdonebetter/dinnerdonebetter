@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v5"
@@ -34,7 +35,7 @@ func (s *TestSuite) TestHouseholds_Creating() {
 
 			// Create household.
 			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
+			exampleHouseholdInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(exampleHousehold)
 			createdHousehold, err := testClients.user.CreateHousehold(ctx, exampleHouseholdInput)
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
@@ -60,7 +61,7 @@ func (s *TestSuite) TestHouseholds_Listing() {
 			for i := 0; i < 5; i++ {
 				// Create household.
 				exampleHousehold := fakes.BuildFakeHousehold()
-				exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
+				exampleHouseholdInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(exampleHousehold)
 				createdHousehold, householdCreationErr := testClients.user.CreateHousehold(ctx, exampleHouseholdInput)
 				requireNotNilAndNoProblems(t, createdHousehold, householdCreationErr)
 
@@ -111,7 +112,7 @@ func (s *TestSuite) TestHouseholds_Reading() {
 
 			// Create household.
 			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
+			exampleHouseholdInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(exampleHousehold)
 			createdHousehold, err := testClients.user.CreateHousehold(ctx, exampleHouseholdInput)
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
@@ -162,7 +163,7 @@ func (s *TestSuite) TestHouseholds_Updating() {
 
 			// Create household.
 			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
+			exampleHouseholdInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(exampleHousehold)
 			createdHousehold, err := testClients.user.CreateHousehold(ctx, exampleHouseholdInput)
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
@@ -207,7 +208,7 @@ func (s *TestSuite) TestHouseholds_Archiving() {
 
 			// Create household.
 			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
+			exampleHouseholdInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(exampleHousehold)
 			createdHousehold, err := testClients.user.CreateHousehold(ctx, exampleHouseholdInput)
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
@@ -233,7 +234,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
@@ -309,7 +310,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
@@ -390,7 +391,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
@@ -455,7 +456,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
@@ -527,7 +528,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
@@ -585,7 +586,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
@@ -659,7 +660,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
@@ -791,7 +792,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 

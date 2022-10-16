@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,7 +33,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 			t.Logf("created webhook %s", createdWebhook.ID)
@@ -61,7 +62,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
@@ -106,7 +107,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			for i := 0; i < 5; i++ {
 				// Create webhook.
 				exampleWebhook := fakes.BuildFakeWebhook()
-				exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+				exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 				createdWebhook, webhookCreationErr := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 				require.NoError(t, webhookCreationErr)
 
@@ -137,7 +138,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			for i := 0; i < 5; i++ {
 				// Create webhook.
 				exampleWebhook := fakes.BuildFakeWebhook()
-				exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+				exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 				createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 				require.NoError(t, err)
 

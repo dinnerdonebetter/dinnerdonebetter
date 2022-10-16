@@ -6,6 +6,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeMealPlan builds a faked meal plan.
@@ -52,56 +53,11 @@ func BuildFakeMealPlanList() *types.MealPlanList {
 // BuildFakeMealPlanUpdateRequestInput builds a faked MealPlanUpdateRequestInput from a meal plan.
 func BuildFakeMealPlanUpdateRequestInput() *types.MealPlanUpdateRequestInput {
 	mealPlan := BuildFakeMealPlan()
-	return &types.MealPlanUpdateRequestInput{
-		Notes:              &mealPlan.Notes,
-		VotingDeadline:     &mealPlan.VotingDeadline,
-		BelongsToHousehold: &mealPlan.BelongsToHousehold,
-	}
-}
-
-// BuildFakeMealPlanUpdateRequestInputFromMealPlan builds a faked MealPlanUpdateRequestInput from a meal plan.
-func BuildFakeMealPlanUpdateRequestInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanUpdateRequestInput {
-	return &types.MealPlanUpdateRequestInput{
-		Notes:              &mealPlan.Notes,
-		VotingDeadline:     &mealPlan.VotingDeadline,
-		BelongsToHousehold: &mealPlan.BelongsToHousehold,
-	}
+	return converters.ConvertMealPlanToMealPlanUpdateRequestInput(mealPlan)
 }
 
 // BuildFakeMealPlanCreationRequestInput builds a faked MealPlanCreationRequestInput.
 func BuildFakeMealPlanCreationRequestInput() *types.MealPlanCreationRequestInput {
 	mealPlan := BuildFakeMealPlan()
-	return BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan)
-}
-
-// BuildFakeMealPlanCreationRequestInputFromMealPlan builds a faked MealPlanCreationRequestInput from a meal plan.
-func BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanCreationRequestInput {
-	events := []*types.MealPlanEventCreationRequestInput{}
-	for _, evt := range mealPlan.Events {
-		events = append(events, BuildFakeMealPlanEventCreationRequestInputFromMealPlanEvent(evt))
-	}
-
-	return &types.MealPlanCreationRequestInput{
-		ID:                 mealPlan.ID,
-		Notes:              mealPlan.Notes,
-		VotingDeadline:     mealPlan.VotingDeadline,
-		Events:             events,
-		BelongsToHousehold: mealPlan.BelongsToHousehold,
-	}
-}
-
-// BuildFakeMealPlanDatabaseCreationInputFromMealPlan builds a faked MealPlanDatabaseCreationInput from a meal plan.
-func BuildFakeMealPlanDatabaseCreationInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanDatabaseCreationInput {
-	events := []*types.MealPlanEventDatabaseCreationInput{}
-	for _, event := range mealPlan.Events {
-		events = append(events, BuildFakeMealPlanEventDatabaseCreationInputFromMealPlanEvent(event))
-	}
-
-	return &types.MealPlanDatabaseCreationInput{
-		ID:                 mealPlan.ID,
-		Notes:              mealPlan.Notes,
-		VotingDeadline:     mealPlan.VotingDeadline,
-		Events:             events,
-		BelongsToHousehold: mealPlan.BelongsToHousehold,
-	}
+	return converters.ConvertMealPlanToMealPlanCreationRequestInput(mealPlan)
 }

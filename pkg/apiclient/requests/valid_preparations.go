@@ -9,6 +9,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -160,7 +161,7 @@ func (b *Builder) BuildUpdateValidPreparationRequest(ctx context.Context, validP
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := types.ValidPreparationUpdateRequestInputFromValidPreparation(validPreparation)
+	input := converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(validPreparation)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {

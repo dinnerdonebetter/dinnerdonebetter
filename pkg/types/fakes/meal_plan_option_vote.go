@@ -6,6 +6,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeMealPlanOptionVote builds a faked meal plan option vote.
@@ -49,68 +50,14 @@ func BuildFakeMealPlanOptionVoteUpdateRequestInput() *types.MealPlanOptionVoteUp
 	}
 }
 
-// BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteUpdateRequestInput from a meal plan option vote.
-func BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
-	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Rank:                    &mealPlanOptionVote.Rank,
-		Abstain:                 &mealPlanOptionVote.Abstain,
-		Notes:                   &mealPlanOptionVote.Notes,
-		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
-	}
-}
-
 // BuildFakeMealPlanOptionVoteCreationRequestInput builds a faked MealPlanOptionVoteCreationRequestInput.
 func BuildFakeMealPlanOptionVoteCreationRequestInput() *types.MealPlanOptionVoteCreationRequestInput {
 	mealPlanOptionVote := BuildFakeMealPlanOptionVote()
-	return BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(mealPlanOptionVote)
+	return converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteCreationRequestInput(mealPlanOptionVote)
 }
 
-// BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteCreationRequestInput from a meal plan option vote.
-func BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteCreationRequestInput {
-	votes := []*types.MealPlanOptionVoteCreationInput{}
-	for _, vote := range []*types.MealPlanOptionVote{mealPlanOptionVote} {
-		votes = append(votes,
-			&types.MealPlanOptionVoteCreationInput{
-				ID:                      vote.ID,
-				Rank:                    vote.Rank,
-				Abstain:                 vote.Abstain,
-				Notes:                   vote.Notes,
-				BelongsToMealPlanOption: vote.BelongsToMealPlanOption,
-				ByUser:                  vote.ByUser,
-			},
-		)
-	}
-
-	return &types.MealPlanOptionVoteCreationRequestInput{
-		Votes:  votes,
-		ByUser: mealPlanOptionVote.ByUser,
-	}
-}
-
-// BuildFakeMealPlanOptionVoteDatabaseCreationInput builds a faked MealPlanOptionVoteDatabaseCreationInput.
-func BuildFakeMealPlanOptionVoteDatabaseCreationInput() *types.MealPlanOptionVoteDatabaseCreationInput {
+// BuildFakeMealPlanOptionVoteDatabaseCreationInput builds a faked MealPlanOptionVotesDatabaseCreationInput.
+func BuildFakeMealPlanOptionVoteDatabaseCreationInput() *types.MealPlanOptionVotesDatabaseCreationInput {
 	mealPlanOptionVote := BuildFakeMealPlanOptionVote()
-	return BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(mealPlanOptionVote)
-}
-
-// BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteDatabaseCreationInput from a meal plan option vote.
-func BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteDatabaseCreationInput {
-	votes := []*types.MealPlanOptionVoteCreationInput{}
-	for _, vote := range []*types.MealPlanOptionVote{mealPlanOptionVote} {
-		votes = append(votes,
-			&types.MealPlanOptionVoteCreationInput{
-				ID:                      vote.ID,
-				Rank:                    vote.Rank,
-				Abstain:                 vote.Abstain,
-				Notes:                   vote.Notes,
-				BelongsToMealPlanOption: vote.BelongsToMealPlanOption,
-				ByUser:                  vote.ByUser,
-			},
-		)
-	}
-
-	return &types.MealPlanOptionVoteDatabaseCreationInput{
-		Votes:  votes,
-		ByUser: mealPlanOptionVote.ByUser,
-	}
+	return converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(mealPlanOptionVote)
 }

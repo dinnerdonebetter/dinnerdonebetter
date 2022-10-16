@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -285,7 +286,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(s.exampleValidIngredientPreparation)
+		exampleInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(s.exampleValidIngredientPreparation)
 
 		c := buildTestClientWithInvalidURL(t)
 
@@ -297,7 +298,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(s.exampleValidIngredientPreparation)
+		exampleInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(s.exampleValidIngredientPreparation)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateValidIngredientPreparation(s.ctx, exampleInput)

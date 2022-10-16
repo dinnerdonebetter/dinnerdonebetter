@@ -140,28 +140,6 @@ func (x *ValidPreparationInstrumentDatabaseCreationInput) ValidateWithContext(ct
 	)
 }
 
-// ValidPreparationInstrumentFromValidPreparationInstrument creates a DatabaseCreationInput from a CreationInput.
-func ValidPreparationInstrumentFromValidPreparationInstrument(input *ValidPreparationInstrument) *ValidPreparationInstrumentUpdateRequestInput {
-	x := &ValidPreparationInstrumentUpdateRequestInput{
-		Notes:              &input.Notes,
-		ValidPreparationID: &input.Preparation.ID,
-		ValidInstrumentID:  &input.Instrument.ID,
-	}
-
-	return x
-}
-
-// ValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrumentCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrumentCreationInput(input *ValidPreparationInstrumentCreationRequestInput) *ValidPreparationInstrumentDatabaseCreationInput {
-	x := &ValidPreparationInstrumentDatabaseCreationInput{
-		Notes:              input.Notes,
-		ValidPreparationID: input.ValidPreparationID,
-		ValidInstrumentID:  input.ValidInstrumentID,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*ValidPreparationInstrumentUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a ValidPreparationInstrumentUpdateRequestInput.

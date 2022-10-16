@@ -83,8 +83,8 @@ type (
 		Votes  []*MealPlanOptionVoteCreationInput `json:"votes"`
 	}
 
-	// MealPlanOptionVoteDatabaseCreationInput represents what a user could set as input for creating meal plan option votes.
-	MealPlanOptionVoteDatabaseCreationInput struct {
+	// MealPlanOptionVotesDatabaseCreationInput represents what a user could set as input for creating meal plan option votes.
+	MealPlanOptionVotesDatabaseCreationInput struct {
 		_      struct{}
 		ByUser string                             `json:"-"`
 		Votes  []*MealPlanOptionVoteCreationInput `json:"votes"`
@@ -105,7 +105,7 @@ type (
 		GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*MealPlanOptionVote, error)
 		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *QueryFilter) (*MealPlanOptionVoteList, error)
 		GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (x []*MealPlanOptionVote, err error)
-		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVoteDatabaseCreationInput) ([]*MealPlanOptionVote, error)
+		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVotesDatabaseCreationInput) ([]*MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, updated *MealPlanOptionVote) error
 		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error
 	}
@@ -147,37 +147,15 @@ func (x *MealPlanOptionVoteCreationRequestInput) ValidateWithContext(ctx context
 	)
 }
 
-var _ validation.ValidatableWithContext = (*MealPlanOptionVoteDatabaseCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*MealPlanOptionVotesDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a MealPlanOptionVoteDatabaseCreationInput.
-func (x *MealPlanOptionVoteDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a MealPlanOptionVotesDatabaseCreationInput.
+func (x *MealPlanOptionVotesDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Votes, validation.Required),
 	)
-}
-
-// MealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote creates a DatabaseCreationInput from a CreationInput.
-func MealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(input *MealPlanOptionVote) *MealPlanOptionVoteUpdateRequestInput {
-	x := &MealPlanOptionVoteUpdateRequestInput{
-		Notes:                   &input.Notes,
-		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
-		Rank:                    &input.Rank,
-		Abstain:                 &input.Abstain,
-	}
-
-	return x
-}
-
-// MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput creates a DatabaseCreationInput from a CreationInput.
-func MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(input *MealPlanOptionVoteCreationRequestInput) *MealPlanOptionVoteDatabaseCreationInput {
-	x := &MealPlanOptionVoteDatabaseCreationInput{
-		Votes:  input.Votes,
-		ByUser: input.ByUser,
-	}
-
-	return x
 }
 
 var _ validation.ValidatableWithContext = (*MealPlanOptionVoteUpdateRequestInput)(nil)

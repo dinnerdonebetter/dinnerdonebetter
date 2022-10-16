@@ -187,42 +187,6 @@ func (x *RecipeStepInstrumentDatabaseCreationInput) ValidateWithContext(ctx cont
 	)
 }
 
-// RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument creates a DatabaseCreationInput from a CreationInput.
-func RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(input *RecipeStepInstrument) *RecipeStepInstrumentUpdateRequestInput {
-	x := &RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID:        &input.Instrument.ID,
-		Notes:               &input.Notes,
-		RecipeStepProductID: input.RecipeStepProductID,
-		Name:                &input.Name,
-		ProductOfRecipeStep: &input.ProductOfRecipeStep,
-		PreferenceRank:      &input.PreferenceRank,
-		BelongsToRecipeStep: &input.BelongsToRecipeStep,
-		Optional:            &input.Optional,
-		MinimumQuantity:     &input.MinimumQuantity,
-		MaximumQuantity:     &input.MaximumQuantity,
-	}
-
-	return x
-}
-
-// RecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrumentCreationInput creates a DatabaseCreationInput from a CreationInput.
-func RecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrumentCreationInput(input *RecipeStepInstrumentCreationRequestInput) *RecipeStepInstrumentDatabaseCreationInput {
-	x := &RecipeStepInstrumentDatabaseCreationInput{
-		InstrumentID:        input.InstrumentID,
-		RecipeStepProductID: input.RecipeStepProductID,
-		Name:                input.Name,
-		ProductOfRecipeStep: input.ProductOfRecipeStep,
-		Notes:               input.Notes,
-		PreferenceRank:      input.PreferenceRank,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		Optional:            input.Optional,
-		MinimumQuantity:     input.MinimumQuantity,
-		MaximumQuantity:     input.MaximumQuantity,
-	}
-
-	return x
-}
-
 var _ validation.ValidatableWithContext = (*RecipeStepInstrumentUpdateRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeStepInstrumentUpdateRequestInput.

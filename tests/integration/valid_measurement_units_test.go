@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,7 +52,7 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 
 			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -92,7 +93,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 			var expected []*types.ValidMeasurementUnit
 			for i := 0; i < 5; i++ {
 				exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-				exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+				exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, createdValidMeasurementUnitErr)
 				t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -136,7 +137,7 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 			searchQuery := exampleValidMeasurementUnit.Name
 			for i := 0; i < 5; i++ {
 				exampleValidMeasurementUnit.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+				exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, createdValidMeasurementUnitErr)
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)

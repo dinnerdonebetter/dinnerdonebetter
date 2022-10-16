@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,7 +41,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -53,7 +54,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 
@@ -68,7 +69,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 			exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
 			exampleValidIngredientPreparation.Preparation = *createdValidPreparation
-			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
+			exampleValidIngredientPreparationInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.admin.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparation.ID)
@@ -120,7 +121,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 			for i := 0; i < 5; i++ {
 				t.Log("creating prerequisite valid preparation")
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
-				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+				exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 				createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, err)
 				t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -133,7 +134,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 
 				t.Log("creating prerequisite valid ingredient")
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
-				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 				createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, err)
 
@@ -147,7 +148,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 				exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 				exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
 				exampleValidIngredientPreparation.Preparation = *createdValidPreparation
-				exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
+				exampleValidIngredientPreparationInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation)
 				createdValidIngredientPreparation, createdValidIngredientPreparationErr := testClients.admin.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 				require.NoError(t, createdValidIngredientPreparationErr)
 
@@ -188,7 +189,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
@@ -201,7 +202,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 
@@ -216,7 +217,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 			exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
 			exampleValidIngredientPreparation.Preparation = *createdValidPreparation
-			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
+			exampleValidIngredientPreparationInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.admin.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparation.ID)

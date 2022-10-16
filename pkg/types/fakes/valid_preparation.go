@@ -4,6 +4,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeValidPreparation builds a faked valid preparation.
@@ -53,49 +54,8 @@ func BuildFakeValidPreparationUpdateRequestInput() *types.ValidPreparationUpdate
 	}
 }
 
-// BuildFakeValidPreparationUpdateRequestInputFromValidPreparation builds a faked ValidPreparationUpdateRequestInput from a valid preparation.
-func BuildFakeValidPreparationUpdateRequestInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationUpdateRequestInput {
-	return &types.ValidPreparationUpdateRequestInput{
-		Name:                     &validPreparation.Name,
-		Description:              &validPreparation.Description,
-		IconPath:                 &validPreparation.IconPath,
-		YieldsNothing:            &validPreparation.YieldsNothing,
-		RestrictToIngredients:    &validPreparation.RestrictToIngredients,
-		ZeroIngredientsAllowable: &validPreparation.ZeroIngredientsAllowable,
-		PastTense:                &validPreparation.PastTense,
-	}
-}
-
 // BuildFakeValidPreparationCreationRequestInput builds a faked ValidPreparationCreationRequestInput.
 func BuildFakeValidPreparationCreationRequestInput() *types.ValidPreparationCreationRequestInput {
 	validPreparation := BuildFakeValidPreparation()
-	return BuildFakeValidPreparationCreationRequestInputFromValidPreparation(validPreparation)
-}
-
-// BuildFakeValidPreparationCreationRequestInputFromValidPreparation builds a faked ValidPreparationCreationRequestInput from a valid preparation.
-func BuildFakeValidPreparationCreationRequestInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationCreationRequestInput {
-	return &types.ValidPreparationCreationRequestInput{
-		ID:                       validPreparation.ID,
-		Name:                     validPreparation.Name,
-		Description:              validPreparation.Description,
-		IconPath:                 validPreparation.IconPath,
-		YieldsNothing:            validPreparation.YieldsNothing,
-		RestrictToIngredients:    validPreparation.RestrictToIngredients,
-		ZeroIngredientsAllowable: validPreparation.ZeroIngredientsAllowable,
-		PastTense:                validPreparation.PastTense,
-	}
-}
-
-// BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation builds a faked ValidPreparationDatabaseCreationInput from a valid preparation.
-func BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationDatabaseCreationInput {
-	return &types.ValidPreparationDatabaseCreationInput{
-		ID:                       validPreparation.ID,
-		Name:                     validPreparation.Name,
-		Description:              validPreparation.Description,
-		IconPath:                 validPreparation.IconPath,
-		YieldsNothing:            validPreparation.YieldsNothing,
-		RestrictToIngredients:    validPreparation.RestrictToIngredients,
-		ZeroIngredientsAllowable: validPreparation.ZeroIngredientsAllowable,
-		PastTense:                validPreparation.PastTense,
-	}
+	return converters.ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparation)
 }

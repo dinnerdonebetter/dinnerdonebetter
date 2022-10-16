@@ -13,6 +13,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 const (
@@ -68,7 +69,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	input := types.HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput(providedInput)
+	input := converters.ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput(providedInput)
 
 	token, err := s.secretGenerator.GenerateBase64EncodedString(ctx, 64)
 	if err != nil {
@@ -174,7 +175,7 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	filter.AttachToLogger(logger)
 
 	// determine relevant user ID.
@@ -210,7 +211,7 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilter(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	filter.AttachToLogger(logger)
 
 	logger.Debug("fetching outbound invites for household")

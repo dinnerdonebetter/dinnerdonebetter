@@ -8,15 +8,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Masterminds/squirrel"
-	"github.com/stretchr/testify/require"
-
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -968,7 +968,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PrepTasks[i].BelongsToRecipe = exampleRecipe.ID
 		}
 
-		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1126,7 +1126,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleRecipe.PrepTasks = nil
 		exampleRecipe.ID = "1"
 
-		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
 		exampleInput.AlsoCreateMeal = true
 		exampleInput.Steps = []*types.RecipeStepDatabaseCreationInput{}
 
@@ -1202,7 +1202,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.ID = "1"
-		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1245,7 +1245,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
 			}
 		}
-		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1296,7 +1296,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			}
 		}
 
-		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1356,7 +1356,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleRecipe.ID = "1"
 		exampleRecipe.Steps = nil
 		exampleRecipe.PrepTasks = nil
-		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1399,7 +1399,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleRecipe.PrepTasks = nil
 		exampleRecipe.ID = "1"
 
-		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
 		exampleInput.AlsoCreateMeal = true
 		exampleInput.Steps = []*types.RecipeStepDatabaseCreationInput{}
 

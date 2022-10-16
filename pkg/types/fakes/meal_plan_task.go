@@ -5,6 +5,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 // BuildFakeMealPlanTask builds a faked meal plan task.
@@ -23,16 +24,7 @@ func BuildFakeMealPlanTask() *types.MealPlanTask {
 func BuildFakeMealPlanTaskCreationRequestInput() *types.MealPlanTaskCreationRequestInput {
 	x := BuildFakeMealPlanTask()
 
-	return BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask(x)
-}
-
-// BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask builds a faked meal plan task.
-func BuildFakeMealPlanTaskCreationRequestInputFromMealPlanTask(x *types.MealPlanTask) *types.MealPlanTaskCreationRequestInput {
-	return &types.MealPlanTaskCreationRequestInput{
-		Status:              x.Status,
-		StatusExplanation:   x.StatusExplanation,
-		CreationExplanation: x.CreationExplanation,
-	}
+	return converters.ConvertMealPlanTaskToMealPlanTaskCreationRequestInput(x)
 }
 
 // BuildFakeMealPlanTaskList builds a faked MealPlanTaskList.

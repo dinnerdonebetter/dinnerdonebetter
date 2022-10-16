@@ -2,6 +2,7 @@ package integration
 
 import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -109,7 +110,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 				exampleMealPlanOption.Meal.ID = createdMeal.ID
 
-				exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)
+				exampleMealPlanOptionInput := converters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(exampleMealPlanOption)
 				newlyCreatedMealPlanOption, err := testClients.user.CreateMealPlanOption(ctx, createdMealPlan.ID, exampleMealPlanOptionInput)
 				require.NoError(t, err)
 				t.Logf("meal plan option %q created", createdMealPlanOption.ID)

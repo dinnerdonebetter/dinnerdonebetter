@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -67,7 +68,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 
 			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -81,7 +82,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepProduct.MeasurementUnit = *createdValidMeasurementUnit
-			exampleRecipeStepProductInput := fakes.BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(exampleRecipeStepProduct)
+			exampleRecipeStepProductInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
 			createdRecipeStepProduct, err := testClients.user.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
 			require.NoError(t, err)
 			t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
@@ -141,7 +142,7 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 
 			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
@@ -157,7 +158,7 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 				exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepProduct.MeasurementUnit = *createdValidMeasurementUnit
-				exampleRecipeStepProductInput := fakes.BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(exampleRecipeStepProduct)
+				exampleRecipeStepProductInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
 				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.user.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
 				require.NoError(t, createdRecipeStepProductErr)
 				t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)

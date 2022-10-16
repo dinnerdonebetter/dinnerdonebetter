@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
@@ -38,8 +39,8 @@ func buildTestHelper(t *testing.T) *validPreparationsServiceHTTPRoutesTestHelper
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidPreparation = fakes.BuildFakeValidPreparation()
-	helper.exampleCreationInput = fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(helper.exampleValidPreparation)
-	helper.exampleUpdateInput = fakes.BuildFakeValidPreparationUpdateRequestInputFromValidPreparation(helper.exampleValidPreparation)
+	helper.exampleCreationInput = converters.ConvertValidPreparationToValidPreparationCreationRequestInput(helper.exampleValidPreparation)
+	helper.exampleUpdateInput = converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(helper.exampleValidPreparation)
 
 	helper.service.validPreparationIDFetcher = func(*http.Request) string {
 		return helper.exampleValidPreparation.ID

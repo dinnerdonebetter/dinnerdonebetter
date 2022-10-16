@@ -89,6 +89,12 @@ func buildConverterMap() map[string]*typescriptify.TypeScriptify {
 		Add(types.RecipeStepCreationRequestInput{}).
 		Add(types.RecipeStepUpdateRequestInput{})
 
+	recipePrepTaskConverter := typescriptify.New().
+		Add(types.RecipePrepTask{}).
+		Add(types.RecipePrepTaskList{}).
+		Add(types.RecipePrepTaskCreationRequestInput{}).
+		Add(types.RecipePrepTaskUpdateRequestInput{})
+
 	recipeStepIngredientConverter := typescriptify.New().
 		Add(types.RecipeStepIngredient{}).
 		Add(types.RecipeStepIngredientList{}).
@@ -161,6 +167,7 @@ func buildConverterMap() map[string]*typescriptify.TypeScriptify {
 		"artifacts/typescript/pagination.ts":                  queryFilterConverter,
 		"artifacts/typescript/recipes.ts":                     recipeConverter,
 		"artifacts/typescript/recipeSteps.ts":                 recipeStepConverter,
+		"artifacts/typescript/recipePrepTasks.ts":             recipePrepTaskConverter,
 		"artifacts/typescript/recipeStepIngredients.ts":       recipeStepIngredientConverter,
 		"artifacts/typescript/recipeStepInstruments.ts":       recipeStepInstrumentConverter,
 		"artifacts/typescript/recipeStepProducts.ts":          recipeStepProductConverter,

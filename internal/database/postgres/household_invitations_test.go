@@ -15,6 +15,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -365,7 +366,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 		exampleHouseholdInvitation.DestinationHousehold = types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
 		exampleHouseholdInvitation.FromUser = types.User{ID: exampleHouseholdInvitation.FromUser.ID}
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(exampleHouseholdInvitation)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -412,7 +413,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.StatusNote = ""
 		exampleHouseholdInvitation.DestinationHousehold = types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
-		exampleInput := fakes.BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(exampleHouseholdInvitation)
+		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(exampleHouseholdInvitation)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
