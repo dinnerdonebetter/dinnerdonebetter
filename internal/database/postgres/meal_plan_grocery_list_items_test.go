@@ -74,7 +74,7 @@ func TestQuerier_ScanMealPlanGroceryListItems(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, _, _, err := q.scanMealPlanGroceryListItems(ctx, mockRows, false)
+		_, err := q.scanMealPlanGroceryListItems(ctx, mockRows)
 		assert.Error(t, err)
 	})
 
@@ -89,7 +89,7 @@ func TestQuerier_ScanMealPlanGroceryListItems(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, _, _, err := q.scanMealPlanGroceryListItems(ctx, mockRows, false)
+		_, err := q.scanMealPlanGroceryListItems(ctx, mockRows)
 		assert.Error(t, err)
 	})
 }
@@ -284,75 +284,33 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList()
-		for i := range exampleMealPlanGroceryListItemList.MealPlanGroceryListItems {
-			exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].MealPlanOption = types.MealPlanOption{
-				ID:    exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].MealPlanOption.ID,
+		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList().MealPlanGroceryListItems
+		for i := range exampleMealPlanGroceryListItemList {
+			exampleMealPlanGroceryListItemList[i].MealPlanOption = types.MealPlanOption{
+				ID:    exampleMealPlanGroceryListItemList[i].MealPlanOption.ID,
 				Votes: []*types.MealPlanOptionVote{},
 			}
-			exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].Ingredient = types.ValidIngredient{
-				ID: exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].Ingredient.ID,
+			exampleMealPlanGroceryListItemList[i].Ingredient = types.ValidIngredient{
+				ID: exampleMealPlanGroceryListItemList[i].Ingredient.ID,
 			}
-			exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].MeasurementUnit = types.ValidMeasurementUnit{
-				ID: exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].MeasurementUnit.ID,
+			exampleMealPlanGroceryListItemList[i].MeasurementUnit = types.ValidMeasurementUnit{
+				ID: exampleMealPlanGroceryListItemList[i].MeasurementUnit.ID,
 			}
 		}
 
 		c, db := buildTestClient(t)
-		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, nil)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlanGroceryListItems(true, exampleMealPlanGroceryListItemList.FilteredCount, exampleMealPlanGroceryListItemList.MealPlanGroceryListItems...))
+			WillReturnRows(buildMockRowsFromMealPlanGroceryListItems(false, 0, exampleMealPlanGroceryListItemList...))
 
-		for i := range exampleMealPlanGroceryListItemList.MealPlanGroceryListItems {
-			prepareForMealPlanGroceryListItemDataHydration(t, db, exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i])
+		for i := range exampleMealPlanGroceryListItemList {
+			prepareForMealPlanGroceryListItemDataHydration(t, db, exampleMealPlanGroceryListItemList[i])
 		}
 
-		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanGroceryListItemList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		filter := (*types.QueryFilter)(nil)
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList()
-		exampleMealPlanGroceryListItemList.Page = 0
-		exampleMealPlanGroceryListItemList.Limit = 0
-
-		for i := range exampleMealPlanGroceryListItemList.MealPlanGroceryListItems {
-			exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].MealPlanOption = types.MealPlanOption{
-				ID:    exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].MealPlanOption.ID,
-				Votes: []*types.MealPlanOptionVote{},
-			}
-			exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].Ingredient = types.ValidIngredient{
-				ID: exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].Ingredient.ID,
-			}
-			exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].MeasurementUnit = types.ValidMeasurementUnit{
-				ID: exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i].MeasurementUnit.ID,
-			}
-		}
-
-		c, db := buildTestClient(t)
-		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlanGroceryListItems(true, exampleMealPlanGroceryListItemList.FilteredCount, exampleMealPlanGroceryListItemList.MealPlanGroceryListItems...))
-
-		for i := range exampleMealPlanGroceryListItemList.MealPlanGroceryListItems {
-			prepareForMealPlanGroceryListItemDataHydration(t, db, exampleMealPlanGroceryListItemList.MealPlanGroceryListItems[i])
-		}
-
-		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, filter)
+		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanGroceryListItemList, actual)
 
@@ -363,18 +321,17 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, householdOwnershipColumn, mealPlanGroceryListItemsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, nil)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, filter)
+		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -385,18 +342,17 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, householdOwnershipColumn, mealPlanGroceryListItemsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, nil)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, filter)
+		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

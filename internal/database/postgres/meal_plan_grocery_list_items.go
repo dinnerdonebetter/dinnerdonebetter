@@ -35,7 +35,7 @@ var (
 )
 
 // scanMealPlanGroceryListItem takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan grocery list struct.
-func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanGroceryListItem, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database.Scanner) (x *types.MealPlanGroceryListItem, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -65,12 +65,8 @@ func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database
 		&x.ArchivedAt,
 	}
 
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
+		return nil, observability.PrepareError(err, span, "")
 	}
 
 	if purchasedMeasurementUnitID != nil {
@@ -80,38 +76,28 @@ func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database
 	x.MinimumQuantityNeeded = float32(minQuantity / types.MealPlanGroceryListItemQuantityModifier)
 	x.MaximumQuantityNeeded = float32(maxQuantity / types.MealPlanGroceryListItemQuantityModifier)
 
-	return x, filteredCount, totalCount, nil
+	return x, nil
 }
 
 // scanMealPlanGroceryListItems takes some database rows and turns them into a slice of meal plan grocery lists.
-func (q *Querier) scanMealPlanGroceryListItems(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlanGroceryListItems []*types.MealPlanGroceryListItem, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanMealPlanGroceryListItems(ctx context.Context, rows database.ResultIterator) (mealPlanGroceryListItems []*types.MealPlanGroceryListItem, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	for rows.Next() {
-		x, fc, tc, scanErr := q.scanMealPlanGroceryListItem(ctx, rows, includeCounts)
+		x, scanErr := q.scanMealPlanGroceryListItem(ctx, rows)
 		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
+			return nil, scanErr
 		}
 
 		mealPlanGroceryListItems = append(mealPlanGroceryListItems, x)
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
+		return nil, observability.PrepareError(err, span, "handling rows")
 	}
 
-	return mealPlanGroceryListItems, filteredCount, totalCount, nil
+	return mealPlanGroceryListItems, nil
 }
 
 //go:embed queries/meal_plan_grocery_list_items/exists.sql
@@ -219,7 +205,7 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 
 	row := q.getOneRow(ctx, q.db, "mealPlanGroceryListItem", getMealPlanGroceryListItemQuery, args)
 
-	mealPlanGroceryListItem, _, _, err := q.scanMealPlanGroceryListItem(ctx, row, false)
+	mealPlanGroceryListItem, err := q.scanMealPlanGroceryListItem(ctx, row)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan grocery list item")
 	}
@@ -234,7 +220,7 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 }
 
 // GetMealPlanGroceryListItemsForMealPlan fetches a list of meal plan grocery lists from the database that meet a particular filter.
-func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.MealPlanGroceryListItemList, err error) {
+func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanGroceryListItem, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -246,33 +232,21 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	x = &types.MealPlanGroceryListItemList{}
-	logger = filter.AttachToLogger(logger)
-	tracing.AttachQueryFilterToSpan(span, filter)
+	x = []*types.MealPlanGroceryListItem{}
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
+	query, args := q.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, nil)
 
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
-	}
-
-	query, args := q.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "mealPlanGroceryListItems", query, args)
+	rows, err := q.getRows(ctx, q.db, "meal plan grocery list items", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan grocery lists list retrieval query")
 	}
 
-	if x.MealPlanGroceryListItems, x.FilteredCount, x.TotalCount, err = q.scanMealPlanGroceryListItems(ctx, rows, true); err != nil {
+	if x, err = q.scanMealPlanGroceryListItems(ctx, rows); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan grocery lists")
 	}
 
-	for i := range x.MealPlanGroceryListItems {
-		x.MealPlanGroceryListItems[i], err = q.fleshOutMealPlanGroceryListItem(ctx, x.MealPlanGroceryListItems[i])
+	for i := range x {
+		x[i], err = q.fleshOutMealPlanGroceryListItem(ctx, x[i])
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "augmenting grocery list item data")
 		}

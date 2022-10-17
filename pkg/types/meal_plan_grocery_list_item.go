@@ -94,26 +94,26 @@ type (
 
 	// MealPlanGroceryListItemUpdateRequestInput represents what a user could set as input for updating meal plan grocery list items.
 	MealPlanGroceryListItemUpdateRequestInput struct {
-		_ struct{}
-
+		_                          struct{}
+		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded"`
 		MealPlanOptionID           *string  `json:"mealPlanOptionID"`
 		ValidIngredientID          *string  `json:"validIngredientID"`
 		ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID"`
 		MinimumQuantityNeeded      *float32 `json:"minimumQuantityNeeded"`
-		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded"`
+		StatusExplanation          *string  `json:"statusExplanation"`
 		QuantityPurchased          *float32 `json:"quantityPurchased"`
 		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID"`
 		PurchasedUPC               *string  `json:"purchasedUPC"`
 		PurchasePrice              *float32 `json:"purchasePrice"`
-		StatusExplanation          *string  `json:"statusExplanation"`
 		Status                     *string  `json:"status"`
+		ID                         string   `json:"-"`
 	}
 
 	// MealPlanGroceryListItemDataManager describes a structure capable of storing meal plan grocery list items permanently.
 	MealPlanGroceryListItemDataManager interface {
 		MealPlanGroceryListItemExists(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (bool, error)
 		GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*MealPlanGroceryListItem, error)
-		GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, filter *QueryFilter) (*MealPlanGroceryListItemList, error)
+		GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*MealPlanGroceryListItem, error)
 		CreateMealPlanGroceryListItem(ctx context.Context, input *MealPlanGroceryListItemDatabaseCreationInput) (*MealPlanGroceryListItem, error)
 		UpdateMealPlanGroceryListItem(ctx context.Context, updated *MealPlanGroceryListItem) error
 		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error
@@ -121,11 +121,9 @@ type (
 
 	// MealPlanGroceryListItemDataService describes a structure capable of serving traffic related to meal plan grocery list items.
 	MealPlanGroceryListItemDataService interface {
-		SearchHandler(res http.ResponseWriter, req *http.Request)
-		ListHandler(res http.ResponseWriter, req *http.Request)
+		ListByMealPlanHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
-		RandomHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}

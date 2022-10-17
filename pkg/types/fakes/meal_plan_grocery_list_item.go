@@ -1,9 +1,10 @@
 package fakes
 
 import (
-	"time"
+	fake "github.com/brianvoe/gofakeit/v5"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
 
 func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
@@ -22,7 +23,7 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 		PurchasePrice:            nil,
 		StatusExplanation:        buildUniqueString(),
 		Status:                   "unknown",
-		CreatedAt:                time.Now(),
+		CreatedAt:                fake.Date(),
 	}
 }
 
@@ -41,4 +42,14 @@ func BuildFakeMealPlanGroceryListItemList() *types.MealPlanGroceryListItemList {
 		},
 		MealPlanGroceryListItems: examples,
 	}
+}
+
+func BuildFakeMealPlanGroceryListItemCreationRequestInput() *types.MealPlanGroceryListItemCreationRequestInput {
+	mealPlanGroceryListItem := BuildFakeMealPlanGroceryListItem()
+	return converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput(mealPlanGroceryListItem)
+}
+
+func BuildFakeMealPlanGroceryListItemUpdateRequestInput() *types.MealPlanGroceryListItemUpdateRequestInput {
+	mealPlanGroceryListItem := BuildFakeMealPlanGroceryListItem()
+	return converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(mealPlanGroceryListItem)
 }
