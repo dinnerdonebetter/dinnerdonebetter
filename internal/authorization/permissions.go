@@ -227,6 +227,15 @@ const (
 	// ArchiveMealPlanOptionsPermission is a household user permission.
 	ArchiveMealPlanOptionsPermission Permission = "archive.meal_plan_options"
 
+	// CreateMealPlanGroceryListItemsPermission is a household user permission.
+	CreateMealPlanGroceryListItemsPermission Permission = "create.meal_plan_grocery_list_items"
+	// ReadMealPlanGroceryListItemsPermission is a household user permission.
+	ReadMealPlanGroceryListItemsPermission Permission = "read.meal_plan_grocery_list_items"
+	// UpdateMealPlanGroceryListItemsPermission is a household user permission.
+	UpdateMealPlanGroceryListItemsPermission Permission = "update.meal_plan_grocery_list_items"
+	// ArchiveMealPlanGroceryListItemsPermission is a household user permission.
+	ArchiveMealPlanGroceryListItemsPermission Permission = "archive.meal_plan_grocery_list_items"
+
 	// CreateMealPlanOptionVotesPermission is a household user permission.
 	CreateMealPlanOptionVotesPermission Permission = "create.meal_plan_option_votes"
 	// ReadMealPlanOptionVotesPermission is a household user permission.
@@ -292,7 +301,9 @@ var (
 		UpdateValidIngredientMeasurementUnitsPermission.ID():  UpdateValidIngredientMeasurementUnitsPermission,
 		ArchiveValidIngredientMeasurementUnitsPermission.ID(): ArchiveValidIngredientMeasurementUnitsPermission,
 
-		CreateMealPlanTasksPermission.ID(): CreateMealPlanTasksPermission,
+		// only admins can arbitrarily create these via the API, and this is basically for integration test purposes.
+		CreateMealPlanTasksPermission.ID():            CreateMealPlanTasksPermission,
+		CreateMealPlanGroceryListItemsPermission.ID(): CreateMealPlanGroceryListItemsPermission,
 	}
 
 	// household admin permissions.
@@ -398,6 +409,10 @@ var (
 
 		ReadMealPlanOptionsPermission.ID():   ReadMealPlanOptionsPermission,
 		SearchMealPlanOptionsPermission.ID(): SearchMealPlanOptionsPermission,
+
+		ReadMealPlanGroceryListItemsPermission.ID():    ReadMealPlanGroceryListItemsPermission,
+		UpdateMealPlanGroceryListItemsPermission.ID():  UpdateMealPlanGroceryListItemsPermission,
+		ArchiveMealPlanGroceryListItemsPermission.ID(): ArchiveMealPlanGroceryListItemsPermission,
 
 		CreateMealPlanOptionVotesPermission.ID():  CreateMealPlanOptionVotesPermission,
 		ReadMealPlanOptionVotesPermission.ID():    ReadMealPlanOptionVotesPermission,

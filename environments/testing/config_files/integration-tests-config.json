@@ -167,6 +167,9 @@
 		"recipePrepTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"mealPlanGroceryListItems": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"auth": {
 			"dataChanges": "data_changes",
 			"cookies": {

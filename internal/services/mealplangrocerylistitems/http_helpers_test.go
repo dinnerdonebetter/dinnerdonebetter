@@ -1,4 +1,4 @@
-package mealPlanGroceryListItems
+package mealplangrocerylistitems
 
 import (
 	"context"

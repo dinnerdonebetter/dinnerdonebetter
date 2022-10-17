@@ -13,6 +13,7 @@ import (
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
+	mealplangrocerylistitemssservice "github.com/prixfixeco/api_server/internal/services/mealplangrocerylistitems"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -751,6 +752,36 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
 					Post("/vote", s.mealPlanOptionVotesService.CreateHandler)
+			})
+		})
+
+		// MealPlanGroceryListItems
+		mealPlanGroceryListItemPath := "grocery_list_items"
+		mealPlanGroceryListItemsRoute := path.Join(
+			mealPlanPath,
+			mealPlanIDRouteParam,
+			mealPlanGroceryListItemPath,
+		)
+		mealPlanGroceryListItemsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanGroceryListItemsRoute)
+		mealPlanGroceryListItemIDRouteParam := buildURLVarChunk(mealplangrocerylistitemssservice.MealPlanGroceryListItemIDURIParamKey, "")
+		v1Router.Route(mealPlanGroceryListItemsRouteWithPrefix, func(mealPlanGroceryListItemsRouter routing.Router) {
+			mealPlanGroceryListItemsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanGroceryListItemsPermission)).
+				Post(root, s.mealPlanGroceryListItemsService.CreateHandler)
+			mealPlanGroceryListItemsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanGroceryListItemsPermission)).
+				Get(root, s.mealPlanGroceryListItemsService.ListByMealPlanHandler)
+
+			mealPlanGroceryListItemsRouter.Route(mealPlanGroceryListItemIDRouteParam, func(singleMealPlanGroceryListItemRouter routing.Router) {
+				singleMealPlanGroceryListItemRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanGroceryListItemsPermission)).
+					Get(root, s.mealPlanGroceryListItemsService.ReadHandler)
+				singleMealPlanGroceryListItemRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanGroceryListItemsPermission)).
+					Delete(root, s.mealPlanGroceryListItemsService.ArchiveHandler)
+				singleMealPlanGroceryListItemRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanGroceryListItemsPermission)).
+					Put(root, s.mealPlanGroceryListItemsService.UpdateHandler)
 			})
 		})
 

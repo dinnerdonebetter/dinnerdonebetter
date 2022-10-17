@@ -55,6 +55,7 @@ type (
 		mealPlanEventsService                  types.MealPlanEventDataService
 		mealPlanTasksService                   types.MealPlanTaskDataService
 		recipePrepTasksService                 types.RecipePrepTaskDataService
+		mealPlanGroceryListItemsService        types.MealPlanGroceryListItemDataService
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
 		router                                 routing.Router
@@ -93,6 +94,7 @@ func ProvideHTTPServer(
 	mealPlanEventsService types.MealPlanEventDataService,
 	mealPlanTasksService types.MealPlanTaskDataService,
 	recipePrepTasksService types.RecipePrepTaskDataService,
+	mealPlanGroceryListItemsService types.MealPlanGroceryListItemDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
 	logger logging.Logger,
@@ -138,6 +140,7 @@ func ProvideHTTPServer(
 		mealPlanEventsService:                  mealPlanEventsService,
 		mealPlanTasksService:                   mealPlanTasksService,
 		recipePrepTasksService:                 recipePrepTasksService,
+		mealPlanGroceryListItemsService:        mealPlanGroceryListItemsService,
 	}
 
 	srv.setupRouter(ctx, router, metricsHandler)

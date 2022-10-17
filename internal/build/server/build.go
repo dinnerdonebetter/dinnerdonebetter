@@ -28,6 +28,7 @@ import (
 	householdinvitationssservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
+	mealplangrocerylistitems "github.com/prixfixeco/api_server/internal/services/mealplangrocerylistitems"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -104,6 +105,7 @@ func Build(
 		mealplantasks.Providers,
 		graphing.Providers,
 		recipepreptasksservice.Providers,
+		mealplangrocerylistitems.Providers,
 	)
 
 	return nil, nil

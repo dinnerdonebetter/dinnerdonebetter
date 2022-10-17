@@ -1,4 +1,4 @@
 /*
-Package mealPlanGroceryListItems provides a series of HTTP handlers for managing meal plans in a compatible database.
+Package mealplangrocerylistitems provides a series of HTTP handlers for managing meal plans in a compatible database.
 */
-package mealPlanGroceryListItems
+package mealplangrocerylistitems
