@@ -197,12 +197,12 @@ func TestQuerier_GetValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		getValidIngredientArgs := []interface{}{
 			exampleValidIngredient.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
+			WithArgs(interfaceToDriverValue(getValidIngredientArgs)...).
 			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredient))
 
 		actual, err := c.GetValidIngredient(ctx, exampleValidIngredient.ID)

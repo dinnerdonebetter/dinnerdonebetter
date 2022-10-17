@@ -6,7 +6,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput creates a ValidMeasurementUnitUpdateRequestInput from a ValidMeasurementUnit.
+// ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput creates a ValidMeasurementUnitUpdateRequestInput from a MeasurementUnit.
 func ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(input *types.ValidMeasurementUnit) *types.ValidMeasurementUnitUpdateRequestInput {
 	x := &types.ValidMeasurementUnitUpdateRequestInput{
 		Name:        &input.Name,
@@ -39,7 +39,7 @@ func ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDataba
 	return x
 }
 
-// ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput builds a ValidMeasurementUnitCreationRequestInput from a ValidMeasurementUnit.
+// ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput builds a ValidMeasurementUnitCreationRequestInput from a MeasurementUnit.
 func ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(validMeasurementUnit *types.ValidMeasurementUnit) *types.ValidMeasurementUnitCreationRequestInput {
 	return &types.ValidMeasurementUnitCreationRequestInput{
 		Name:        validMeasurementUnit.Name,
@@ -53,7 +53,7 @@ func ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(valid
 	}
 }
 
-// ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput builds a ValidMeasurementUnitDatabaseCreationInput from a ValidMeasurementUnit.
+// ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput builds a ValidMeasurementUnitDatabaseCreationInput from a MeasurementUnit.
 func ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput(validMeasurementUnit *types.ValidMeasurementUnit) *types.ValidMeasurementUnitDatabaseCreationInput {
 	return &types.ValidMeasurementUnitDatabaseCreationInput{
 		ID:          validMeasurementUnit.ID,

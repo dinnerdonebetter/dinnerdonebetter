@@ -66,7 +66,7 @@ func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreation
 	return x
 }
 
-// ConvertValidIngredientToValidIngredientCreationRequestInput builds a ValidIngredientCreationRequestInput from a ValidIngredient.
+// ConvertValidIngredientToValidIngredientCreationRequestInput builds a ValidIngredientCreationRequestInput from a Ingredient.
 func ConvertValidIngredientToValidIngredientCreationRequestInput(validIngredient *types.ValidIngredient) *types.ValidIngredientCreationRequestInput {
 	return &types.ValidIngredientCreationRequestInput{
 		ID:                                      validIngredient.ID,
@@ -96,7 +96,7 @@ func ConvertValidIngredientToValidIngredientCreationRequestInput(validIngredient
 	}
 }
 
-// ConvertValidIngredientToValidIngredientDatabaseCreationInput builds a ValidIngredientDatabaseCreationInput from a ValidIngredient.
+// ConvertValidIngredientToValidIngredientDatabaseCreationInput builds a ValidIngredientDatabaseCreationInput from a Ingredient.
 func ConvertValidIngredientToValidIngredientDatabaseCreationInput(validIngredient *types.ValidIngredient) *types.ValidIngredientDatabaseCreationInput {
 	return &types.ValidIngredientDatabaseCreationInput{
 		ID:                                      validIngredient.ID,
