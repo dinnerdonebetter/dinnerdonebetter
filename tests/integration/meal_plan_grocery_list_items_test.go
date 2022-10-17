@@ -2,10 +2,9 @@ package integration
 
 import (
 	"github.com/prixfixeco/api_server/pkg/types/converters"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -23,9 +22,9 @@ func checkMealPlanGroceryListItemEquality(t *testing.T, expected, actual *types.
 	assert.Equal(t, expected.PurchasedMeasurementUnit, actual.PurchasedMeasurementUnit, "expected PurchasedMeasurementUnit for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.PurchasedMeasurementUnit, actual.PurchasedMeasurementUnit)
 	assert.Equal(t, expected.StatusExplanation, actual.StatusExplanation, "expected StatusExplanation for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.StatusExplanation, actual.StatusExplanation)
 	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
-	assert.Equal(t, expected.MeasurementUnit, actual.MeasurementUnit, "expected MeasurementUnit for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit, actual.MeasurementUnit)
-	assert.Equal(t, expected.MealPlanOption, actual.MealPlanOption, "expected MealPlanOption for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MealPlanOption, actual.MealPlanOption)
-	assert.Equal(t, expected.Ingredient, actual.Ingredient, "expected Ingredient for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.Ingredient, actual.Ingredient)
+	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected MeasurementUnitID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID)
+	assert.Equal(t, expected.MealPlanOption.ID, actual.MealPlanOption.ID, "expected MealPlanOptionID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MealPlanOption.ID, actual.MealPlanOption.ID)
+	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected IngredientID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
 	assert.Equal(t, expected.MaximumQuantityNeeded, actual.MaximumQuantityNeeded, "expected MaximumQuantityNeeded for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MaximumQuantityNeeded, actual.MaximumQuantityNeeded)
 	assert.Equal(t, expected.MinimumQuantityNeeded, actual.MinimumQuantityNeeded, "expected MinimumQuantityNeeded for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MinimumQuantityNeeded, actual.MinimumQuantityNeeded)
 
@@ -70,9 +69,13 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
+			exampleMealPlanGroceryListItem.MealPlanOption = *createdMealPlan.Events[0].Options[0]
+			exampleMealPlanGroceryListItem.Ingredient = *createdValidIngredient
+			exampleMealPlanGroceryListItem.MeasurementUnit = *createdValidMeasurementUnit
+
 			exampleMealPlanGroceryListItemInput.MealPlanOptionID = createdMealPlan.Events[0].Options[0].ID
 			exampleMealPlanGroceryListItemInput.ValidIngredientID = createdValidIngredient.ID
-			exampleMealPlanGroceryListItemInput.ValidMeasurementUnitID = exampleValidMeasurementUnit.ID
+			exampleMealPlanGroceryListItemInput.ValidMeasurementUnitID = createdValidMeasurementUnit.ID
 
 			createdMealPlanGroceryListItem, err := testClients.admin.CreateMealPlanGroceryListItem(ctx, createdMealPlan.ID, exampleMealPlanGroceryListItemInput)
 			require.NoError(t, err)
@@ -89,6 +92,8 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 			t.Log("fetching changed meal plan task")
 			actualList, err := testClients.admin.GetMealPlanGroceryListItemsForMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, actual, err)
+
+			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 
 			assert.Len(t, actualList, 1)
 			checkMealPlanGroceryListItemEquality(t, actualList[0], actual)

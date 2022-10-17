@@ -300,10 +300,12 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 		}
 
 		c, db := buildTestClient(t)
-		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, nil)
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
+		getMealPlanGroceryListItemsForMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanGroceryListItemsForMealPlanArgs)...).
 			WillReturnRows(buildMockRowsFromMealPlanGroceryListItems(false, 0, exampleMealPlanGroceryListItemList...))
 
 		for i := range exampleMealPlanGroceryListItemList {
@@ -325,10 +327,11 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, nil)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
+		getMealPlanGroceryListItemsForMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanGroceryListItemsForMealPlanArgs)...).
 			WillReturnError(errors.New("blah"))
 
 		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID)
@@ -346,10 +349,11 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, nil)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
+		getMealPlanGroceryListItemsForMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanGroceryListItemsForMealPlanArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
 		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID)

@@ -45,9 +45,9 @@ type (
 		ID                       string                `json:"id"`
 		StatusExplanation        string                `json:"statusExplanation"`
 		Status                   string                `json:"status"`
-		MeasurementUnit          ValidMeasurementUnit  `json:"MeasurementUnit"`
+		MeasurementUnit          ValidMeasurementUnit  `json:"measurementUnit"`
 		MealPlanOption           MealPlanOption        `json:"mealPlanOption"`
-		Ingredient               ValidIngredient       `json:"Ingredient"`
+		Ingredient               ValidIngredient       `json:"ingredient"`
 		MaximumQuantityNeeded    float32               `json:"maximumQuantityNeeded"`
 		MinimumQuantityNeeded    float32               `json:"minimumQuantityNeeded"`
 	}

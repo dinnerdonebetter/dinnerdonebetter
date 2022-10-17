@@ -219,6 +219,9 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 	return mealPlanGroceryListItem, nil
 }
 
+//go:embed queries/meal_plan_grocery_list_items/get_all_for_meal_plan.sql
+var getMealPlanGroceryListItemsForMealPlanQuery string
+
 // GetMealPlanGroceryListItemsForMealPlan fetches a list of meal plan grocery lists from the database that meet a particular filter.
 func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanGroceryListItem, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -234,9 +237,10 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 
 	x = []*types.MealPlanGroceryListItem{}
 
-	query, args := q.buildListQuery(ctx, "meal_plan_grocery_list_items", nil, nil, nil, "", mealPlanGroceryListItemsTableColumns, "", false, nil)
-
-	rows, err := q.getRows(ctx, q.db, "meal plan grocery list items", query, args)
+	getMealPlanGroceryListItemsForMealPlanArgs := []interface{}{
+		mealPlanID,
+	}
+	rows, err := q.getRows(ctx, q.db, "meal plan grocery list items", getMealPlanGroceryListItemsForMealPlanQuery, getMealPlanGroceryListItemsForMealPlanArgs)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan grocery lists list retrieval query")
 	}

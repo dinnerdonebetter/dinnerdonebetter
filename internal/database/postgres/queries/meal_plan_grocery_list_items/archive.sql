@@ -1,1 +1,1 @@
-UPDATE meal_plan_grocery_list_items SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE meal_plan_grocery_list_items SET completed_at = NOW() WHERE completed_at IS NULL AND id = $1;
