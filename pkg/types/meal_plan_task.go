@@ -103,8 +103,9 @@ type (
 		CreateMealPlanTask(ctx context.Context, input *MealPlanTaskDatabaseCreationInput) (*MealPlanTask, error)
 		GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*MealPlanTask, error)
 		GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) ([]*MealPlanTask, error)
-		CreateMealPlanTasksForMealPlanOption(ctx context.Context, mealPlanOptionID string, inputs []*MealPlanTaskDatabaseCreationInput) ([]*MealPlanTask, error)
+		CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*MealPlanTaskDatabaseCreationInput) ([]*MealPlanTask, error)
 		ChangeMealPlanTaskStatus(ctx context.Context, input *MealPlanTaskStatusChangeRequestInput) error
+		MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error
 	}
 
 	// MealPlanTaskDataService describes a structure capable of serving traffic related to meal plan tasks.

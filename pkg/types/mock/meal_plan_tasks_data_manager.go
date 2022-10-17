@@ -15,6 +15,11 @@ type MealPlanTaskDataManager struct {
 	mock.Mock
 }
 
+// MarkMealPlanAsHavingTasksCreated is a mock function.
+func (m *MealPlanTaskDataManager) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error {
+	return m.Called(ctx, mealPlanID).Error(0)
+}
+
 // MealPlanTaskExists is a mock function.
 func (m *MealPlanTaskDataManager) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
 	args := m.Called(ctx, mealPlanID, mealPlanTaskID)
@@ -40,8 +45,8 @@ func (m *MealPlanTaskDataManager) GetMealPlanTasksForMealPlan(ctx context.Contex
 }
 
 // CreateMealPlanTasksForMealPlanOption is a mock function.
-func (m *MealPlanTaskDataManager) CreateMealPlanTasksForMealPlanOption(ctx context.Context, mealPlanOptionID string, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
-	args := m.Called(ctx, mealPlanOptionID, inputs)
+func (m *MealPlanTaskDataManager) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
+	args := m.Called(ctx, inputs)
 	return args.Get(0).([]*types.MealPlanTask), args.Error(1)
 }
 

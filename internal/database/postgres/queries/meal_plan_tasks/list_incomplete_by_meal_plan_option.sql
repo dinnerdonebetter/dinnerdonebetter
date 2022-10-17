@@ -7,7 +7,6 @@ SELECT
 	meal_plan_options.tiebroken,
 	meal_plan_options.meal_id,
 	meal_plan_options.notes,
-	meal_plan_options.prep_steps_created,
 	meal_plan_options.created_at,
 	meal_plan_options.last_updated_at,
 	meal_plan_options.archived_at,

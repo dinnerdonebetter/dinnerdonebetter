@@ -33,6 +33,8 @@ func buildMockRowsFromMealPlans(includeCounts bool, filteredCount uint64, mealPl
 			x.Notes,
 			x.Status,
 			x.VotingDeadline,
+			x.GroceryListInitialized,
+			x.TasksCreated,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,

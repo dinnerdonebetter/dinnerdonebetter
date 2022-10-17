@@ -229,7 +229,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		w.dataManager = mdm
 
 		expected := map[string][]*types.MealPlanTaskDatabaseCreationInput{
-			exampleFinalizedMealPlanResult.MealPlanOptionID: expectedReturnResults,
+			exampleFinalizedMealPlanResult.MealPlanID: expectedReturnResults,
 		}
 
 		actual, err := w.DetermineCreatableMealPlanTasks(ctx)
@@ -423,7 +423,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		w.analyzer = mockAnalyzer
 
 		expected := map[string][]*types.MealPlanTaskDatabaseCreationInput{
-			exampleFinalizedMealPlanResult.MealPlanOptionID: expectedReturnResults,
+			exampleFinalizedMealPlanResult.MealPlanID: expectedReturnResults,
 		}
 
 		actual, err := w.DetermineCreatableMealPlanTasks(ctx)

@@ -59,21 +59,21 @@ func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []by
 
 	logger := w.logger.Clone()
 
-	optionsAndSteps, err := w.DetermineCreatableMealPlanTasks(ctx)
+	mealPlansAndSteps, err := w.DetermineCreatableMealPlanTasks(ctx)
 	if err != nil {
 		return observability.PrepareError(err, nil, "determining creatable steps")
 	}
 
-	logger = logger.WithValue("creatable_steps_qty", len(optionsAndSteps))
+	logger = logger.WithValue("creatable_steps_qty", len(mealPlansAndSteps))
 
 	var result *multierror.Error
-	for mealPlanOptionID, steps := range optionsAndSteps {
-		l := logger.Clone().WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID).WithValue("creatable_prep_step_qty", len(steps))
+	for mealPlanID, steps := range mealPlansAndSteps {
+		l := logger.Clone().WithValue(keys.MealPlanIDKey, mealPlanID).WithValue("creatable_prep_step_qty", len(steps))
 
-		createdSteps, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, mealPlanOptionID, steps)
+		createdSteps, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, steps)
 		if creationErr != nil {
 			result = multierror.Append(result, creationErr)
-			observability.AcknowledgeError(creationErr, l, span, "creating meal plan tasks for meal plan optino")
+			observability.AcknowledgeError(creationErr, l, span, "creating meal plan tasks for meal plan option")
 		}
 
 		for _, createdStep := range createdSteps {
@@ -89,6 +89,10 @@ func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []by
 			}); publishErr != nil {
 				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
 			}
+		}
+
+		if err = w.dataManager.MarkMealPlanAsHavingTasksCreated(ctx, mealPlanID); err != nil {
+			result = multierror.Append(result, err)
 		}
 	}
 
@@ -126,8 +130,8 @@ func (w *FinalizedMealPlanDataCreator) DetermineCreatableMealPlanTasks(ctx conte
 		})
 		l.Info("fetching meal plan event")
 
-		if _, ok := inputs[result.MealPlanOptionID]; !ok {
-			inputs[result.MealPlanOptionID] = []*types.MealPlanTaskDatabaseCreationInput{}
+		if _, ok := inputs[result.MealPlanID]; !ok {
+			inputs[result.MealPlanID] = []*types.MealPlanTaskDatabaseCreationInput{}
 		}
 
 		for _, recipeID := range result.RecipeIDs {
@@ -141,7 +145,7 @@ func (w *FinalizedMealPlanDataCreator) DetermineCreatableMealPlanTasks(ctx conte
 				return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
 			}
 
-			inputs[result.MealPlanOptionID] = append(inputs[result.MealPlanOptionID], creatableSteps...)
+			inputs[result.MealPlanID] = append(inputs[result.MealPlanID], creatableSteps...)
 		}
 	}
 

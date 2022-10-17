@@ -22,13 +22,15 @@ func BuildFakeMealPlan() *types.MealPlan {
 
 	now := time.Now().Add(30 * time.Minute)
 	return &types.MealPlan{
-		ID:                 mealPlanID,
-		Notes:              buildUniqueString(),
-		Status:             types.AwaitingVotesMealPlanStatus,
-		VotingDeadline:     now,
-		CreatedAt:          fake.Date(),
-		BelongsToHousehold: fake.UUID(),
-		Events:             events,
+		ID:                     mealPlanID,
+		Notes:                  buildUniqueString(),
+		Status:                 types.AwaitingVotesMealPlanStatus,
+		VotingDeadline:         now,
+		CreatedAt:              fake.Date(),
+		BelongsToHousehold:     fake.UUID(),
+		TasksCreated:           false,
+		GroceryListInitialized: false,
+		Events:                 events,
 	}
 }
 

@@ -35,7 +35,6 @@ func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database
 			&x.MealPlanOption.TieBroken,
 			&x.MealPlanOption.Meal.ID,
 			&x.MealPlanOption.Notes,
-			&x.MealPlanOption.PrepStepsCreated,
 			&x.MealPlanOption.CreatedAt,
 			&x.MealPlanOption.LastUpdatedAt,
 			&x.MealPlanOption.ArchivedAt,
@@ -93,7 +92,6 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 			&x.MealPlanOption.TieBroken,
 			&x.MealPlanOption.Meal.ID,
 			&x.MealPlanOption.Notes,
-			&x.MealPlanOption.PrepStepsCreated,
 			&x.MealPlanOption.CreatedAt,
 			&x.MealPlanOption.LastUpdatedAt,
 			&x.MealPlanOption.ArchivedAt,
@@ -309,11 +307,11 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 	return x, nil
 }
 
-//go:embed queries/meal_plan_options/mark_as_steps_created.sql
+//go:embed queries/meal_plans/mark_as_steps_created.sql
 var markMealPlanOptionAsHavingStepsCreatedQuery string
 
 // CreateMealPlanTasksForMealPlanOption creates meal plan tasks.
-func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, mealPlanOptionID string, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
+func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -334,16 +332,6 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, meal
 		outputs = append(outputs, mealPlanTask)
 	}
 
-	// mark prep steps as created for step
-	markMealPlanOptionAsHavingStepsCreatedArgs := []interface{}{
-		mealPlanOptionID,
-	}
-
-	if err = q.performWriteQuery(ctx, tx, "create meal plan task", markMealPlanOptionAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareAndLogError(err, logger, span, "create meal plan task")
-	}
-
 	if commitErr := tx.Commit(); commitErr != nil {
 		return nil, observability.PrepareAndLogError(commitErr, logger, span, "committing transaction")
 	}
@@ -351,6 +339,33 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, meal
 	logger.Info("meal plan tasks created")
 
 	return outputs, nil
+}
+
+// MarkMealPlanAsHavingTasksCreated marks a meal plan as having all its tasks created.
+func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	// mark prep steps as created for step
+	markMealPlanOptionAsHavingStepsCreatedArgs := []interface{}{
+		mealPlanID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "mark meal plan task", markMealPlanOptionAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
+	}
+
+	logger.Info("meal plan tasks created")
+
+	return nil
 }
 
 //go:embed queries/meal_plan_tasks/change_status.sql

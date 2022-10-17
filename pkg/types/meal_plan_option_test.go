@@ -20,7 +20,6 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 			BelongsToMealPlanEvent: fake.LoremIpsumSentence(exampleQuantity),
 			MealID:                 fake.LoremIpsumSentence(exampleQuantity),
 			Notes:                  fake.LoremIpsumSentence(exampleQuantity),
-			PrepStepsCreated:       false,
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -49,7 +48,6 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 			BelongsToMealPlanEvent: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			MealID:                 stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:                  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PrepStepsCreated:       boolPointer(false),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -1,6 +1,6 @@
-UPDATE meal_plan_options
+UPDATE meal_plans
 SET
-	prep_steps_created = 'true',
+    tasks_created = 'true',
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $1;

@@ -46,7 +46,6 @@ type (
 		Votes                  []*MealPlanOptionVote `json:"votes"`
 		Chosen                 bool                  `json:"chosen"`
 		TieBroken              bool                  `json:"tieBroken"`
-		PrepStepsCreated       bool                  `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionList represents a list of meal plan options.
@@ -65,7 +64,6 @@ type (
 		AssignedCook           *string `json:"assignedCook"`
 		AssignedDishwasher     *string `json:"assignedDishwasher"`
 		BelongsToMealPlanEvent string  `json:"-"`
-		PrepStepsCreated       bool    `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionDatabaseCreationInput represents what a user could set as input for creating meal plan options.
@@ -77,7 +75,6 @@ type (
 		AssignedCook           *string `json:"assignedCook"`
 		AssignedDishwasher     *string `json:"assignedDishwasher"`
 		BelongsToMealPlanEvent string  `json:"belongsToMealPlanEvent"`
-		PrepStepsCreated       bool    `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
@@ -88,7 +85,6 @@ type (
 		AssignedCook           *string `json:"assignedCook"`
 		AssignedDishwasher     *string `json:"assignedDishwasher"`
 		BelongsToMealPlanEvent *string `json:"-"`
-		PrepStepsCreated       *bool   `json:"prepStepsCreated"`
 	}
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.
@@ -129,10 +125,6 @@ func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
 
 	if input.AssignedDishwasher != nil && input.AssignedDishwasher != x.AssignedDishwasher {
 		x.AssignedDishwasher = input.AssignedDishwasher
-	}
-
-	if input.PrepStepsCreated != nil && *input.PrepStepsCreated != x.PrepStepsCreated {
-		x.PrepStepsCreated = *input.PrepStepsCreated
 	}
 }
 

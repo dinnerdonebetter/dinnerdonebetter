@@ -37,7 +37,6 @@ func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, 
 			x.TieBroken,
 			x.Meal.ID,
 			x.Notes,
-			x.PrepStepsCreated,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -585,7 +584,6 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 			exampleMealPlanOption.AssignedDishwasher,
 			exampleMealPlanOption.Meal.ID,
 			exampleMealPlanOption.Notes,
-			exampleMealPlanOption.PrepStepsCreated,
 			exampleMealPlanOption.BelongsToMealPlanEvent,
 			exampleMealPlanOption.ID,
 		}
@@ -621,7 +619,6 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 			exampleMealPlanOption.AssignedDishwasher,
 			exampleMealPlanOption.Meal.ID,
 			exampleMealPlanOption.Notes,
-			exampleMealPlanOption.PrepStepsCreated,
 			exampleMealPlanOption.BelongsToMealPlanEvent,
 			exampleMealPlanOption.ID,
 		}
