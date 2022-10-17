@@ -49,6 +49,7 @@ var (
 			"Users",
 			"MealPlanTasks",
 			"RecipePrepTasks",
+			"MealPlanGroceryListItems",
 			"Auth",
 		),
 	)

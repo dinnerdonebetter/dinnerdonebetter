@@ -182,12 +182,12 @@ func TestQuerier_GetValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		getValidMeasurementUnitArgs := []interface{}{
 			exampleValidMeasurementUnit.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementUnitQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
+			WithArgs(interfaceToDriverValue(getValidMeasurementUnitArgs)...).
 			WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, 0, exampleValidMeasurementUnit))
 
 		actual, err := c.GetValidMeasurementUnit(ctx, exampleValidMeasurementUnit.ID)

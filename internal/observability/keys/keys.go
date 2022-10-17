@@ -145,6 +145,9 @@ const (
 	// ValidMeasurementUnitIDKey is the standard key for referring to a valid measurement unit's ID.
 	ValidMeasurementUnitIDKey = "valid_measurement_unit.id"
 
-	// MealPlanTaskIDKey is the standard key for referring to a valid measurement unit's ID.
+	// MealPlanTaskIDKey is the standard key for referring to a meal plan task's ID.
 	MealPlanTaskIDKey = "meal_plan_task.id"
+
+	// MealPlanGroceryListItemIDKey is the standard key for referring to a meal plan grocery list item's ID.
+	MealPlanGroceryListItemIDKey = "meal_plan_grocery_list_item.id"
 )

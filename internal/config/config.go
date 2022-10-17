@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/hashicorp/go-multierror"
+
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
@@ -18,6 +20,7 @@ import (
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
+	"github.com/prixfixeco/api_server/internal/services/mealplangrocerylistitems"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -102,6 +105,7 @@ type (
 		Users                           usersservice.Config                           `json:"users" mapstructure:"users" toml:"users,omitempty"`
 		MealPlanTasks                   mealplantasks.Config                          `json:"mealPlanTasks" mapstructure:"meal_plan_tasks" toml:"meal_plan_tasks,omitempty"`
 		RecipePrepTasks                 recipepreptasks.Config                        `json:"recipePrepTasks" mapstructure:"recipe_prep_tasks" toml:"recipe_prep_tasks,omitempty"`
+		MealPlanGroceryListItems        mealplangrocerylistitems.Config               `json:"mealPlanGroceryListItems" mapstructure:"meal_plan_grocery_list_items" toml:"meal_plan_grocery_list_items,omitempty"`
 		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )
@@ -118,118 +122,128 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v interface
 
 // ValidateWithContext validates a InstanceConfig struct.
 func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServices bool) error {
+	var result *multierror.Error
+
 	if err := cfg.Uploads.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Uploads portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating Uploads portion of config: %w", err), result)
 	}
 
 	if err := cfg.Routing.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Routing portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating Routing portion of config: %w", err), result)
 	}
 
 	if err := cfg.Meta.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Meta portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating Meta portion of config: %w", err), result)
 	}
 
 	if err := cfg.Encoding.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Encoding portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating Encoding portion of config: %w", err), result)
 	}
 
 	if err := cfg.CustomerData.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating CustomerData portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating CustomerData portion of config: %w", err), result)
 	}
 
 	if err := cfg.Observability.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Observability portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating Observability portion of config: %w", err), result)
 	}
 
 	if err := cfg.Database.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Database portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating Database portion of config: %w", err), result)
 	}
 
 	if err := cfg.Server.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Server portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating Server portion of config: %w", err), result)
 	}
 
 	if err := cfg.Email.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Email portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating Email portion of config: %w", err), result)
 	}
 
 	if err := cfg.FeatureFlags.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating FeatureFlags portion of config: %w", err)
+		result = multierror.Append(fmt.Errorf("error validating FeatureFlags portion of config: %w", err), result)
 	}
 
 	if validateServices {
 		if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating Auth service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating Auth service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.Webhooks.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating Webhooks service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating Webhooks service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidInstruments.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating ValidInstruments service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating ValidInstruments service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidIngredients.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating ValidIngredients service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating ValidIngredients service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating ValidPreparations service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidMeasurementUnits.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating ValidMeasurementUnits service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating ValidMeasurementUnits service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidPreparationInstruments.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating ValidPreparationInstruments service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating ValidPreparationInstruments service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidInstrumentMeasurementUnits.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating ValidInstrumentMeasurementUnits service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating ValidInstrumentMeasurementUnits service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating Recipes service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating Recipes service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating TaskSteps service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating TaskSteps service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating MealPlans service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.MealPlanEvents.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating MealPlans service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.MealPlanOptions.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating MealPlanOptions service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating MealPlanOptions service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.MealPlanOptionVotes.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.RecipePrepTasks.ValidateWithContext(ctx); err != nil {
-			return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
+			result = multierror.Append(fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err), result)
 		}
+
+		if err := cfg.Services.MealPlanGroceryListItems.ValidateWithContext(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err), result)
+		}
+	}
+
+	if result != nil {
+		return result
 	}
 
 	return nil

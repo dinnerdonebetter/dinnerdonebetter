@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	_ "embed"
-	"errors"
 	"math/rand"
 	"time"
 
@@ -183,10 +182,6 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 
 	logger := q.logger.Clone()
 
-	if mealPlanID == mealPlanEventID {
-		return nil, errors.New("WTF")
-	}
-
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
@@ -212,6 +207,36 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 	}
 
 	row := q.getOneRow(ctx, q.db, "meal plan option", getMealPlanOptionQuery, args)
+
+	mealPlanOption, _, _, err := q.scanMealPlanOption(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan option")
+	}
+
+	return mealPlanOption, nil
+}
+
+//go:embed queries/meal_plan_options/get_one_by_id.sql
+var getMealPlanOptionByIDQuery string
+
+// getMealPlanOptionByID fetches a meal plan option from the database by its ID.
+func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID string) (*types.MealPlanOption, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanOptionID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+
+	args := []interface{}{
+		mealPlanOptionID,
+	}
+
+	row := q.getOneRow(ctx, q.db, "meal plan option by ID", getMealPlanOptionByIDQuery, args)
 
 	mealPlanOption, _, _, err := q.scanMealPlanOption(ctx, row, false)
 	if err != nil {

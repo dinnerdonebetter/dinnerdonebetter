@@ -60,6 +60,8 @@ type (
 		Context                          map[string]string               `json:"context,omitempty"`
 		AttributableToUserID             string                          `json:"attributableToUserID,omitempty"`
 		AttributableToHouseholdID        string                          `json:"attributableToHouseholdID,omitempty"`
+		MealPlanGroceryListItem          *MealPlanGroceryListItem        `json:"mealPlanGroceryListItem"`
+		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID"`
 	}
 
 	choreType string
