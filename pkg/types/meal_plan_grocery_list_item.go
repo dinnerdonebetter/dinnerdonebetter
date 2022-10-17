@@ -16,6 +16,17 @@ const (
 	// MealPlanGroceryListItemQuantityModifier is what we multiply / divide by for float quantity values.
 	MealPlanGroceryListItemQuantityModifier = 100
 
+	// MealPlanGroceryListItemStatusUnknown represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusUnknown = "unknown"
+	// MealPlanGroceryListItemStatusAlreadyOwned represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusAlreadyOwned = "already owned"
+	// MealPlanGroceryListItemStatusNeeds represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusNeeds = "needs"
+	// MealPlanGroceryListItemStatusUnavailable represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusUnavailable = "unavailable"
+	// MealPlanGroceryListItemStatusAcquired represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusAcquired = "acquired"
+
 	// MealPlanGroceryListItemCreatedCustomerEventType indicates a meal plan grocery list item was created.
 	MealPlanGroceryListItemCreatedCustomerEventType CustomerEventType = "valid_preparation_created"
 	// MealPlanGroceryListItemUpdatedCustomerEventType indicates a meal plan grocery list item was updated.
@@ -117,6 +128,7 @@ type (
 		CreateMealPlanGroceryListItem(ctx context.Context, input *MealPlanGroceryListItemDatabaseCreationInput) (*MealPlanGroceryListItem, error)
 		UpdateMealPlanGroceryListItem(ctx context.Context, updated *MealPlanGroceryListItem) error
 		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error
+		CreateMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, inputs []*MealPlanGroceryListItemDatabaseCreationInput) error
 	}
 
 	// MealPlanGroceryListItemDataService describes a structure capable of serving traffic related to meal plan grocery list items.

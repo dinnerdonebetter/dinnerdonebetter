@@ -307,9 +307,6 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 	return x, nil
 }
 
-//go:embed queries/meal_plans/mark_as_steps_created.sql
-var markMealPlanOptionAsHavingStepsCreatedQuery string
-
 // CreateMealPlanTasksForMealPlanOption creates meal plan tasks.
 func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -341,6 +338,9 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inpu
 	return outputs, nil
 }
 
+//go:embed queries/meal_plans/mark_as_steps_created.sql
+var markMealPlanAsHavingStepsCreatedQuery string
+
 // MarkMealPlanAsHavingTasksCreated marks a meal plan as having all its tasks created.
 func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -359,11 +359,41 @@ func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlan
 		mealPlanID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "mark meal plan task", markMealPlanOptionAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
+	if err := q.performWriteQuery(ctx, q.db, "mark meal plan task as having tasks created", markMealPlanAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
 	}
 
 	logger.Info("meal plan tasks created")
+
+	return nil
+}
+
+//go:embed queries/meal_plans/mark_as_grocery_list_initialized.sql
+var markMealPlanAsHavingGroceryListInitialized string
+
+// MarkMealPlanAsHavingGroceryListInitialized marks a meal plan as having all its tasks created.
+func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context, mealPlanID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	// mark prep steps as created for step
+	markMealPlanOptionAsHavingStepsCreatedArgs := []interface{}{
+		mealPlanID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "mark meal plan task", markMealPlanAsHavingGroceryListInitialized, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
+	}
+
+	logger.Info("meal plan marked as grocery list initialized")
 
 	return nil
 }

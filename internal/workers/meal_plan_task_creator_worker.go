@@ -21,8 +21,8 @@ const (
 	mealPlanTaskCreationEnsurerWorkerName = "meal_plan_task_creation_ensurer"
 )
 
-// FinalizedMealPlanDataCreator ensurers meal plan tasks are created.
-type FinalizedMealPlanDataCreator struct {
+// MealPlanTaskCreatorWorker ensurers meal plan tasks are created.
+type MealPlanTaskCreatorWorker struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
 	analyzer              recipeanalysis.RecipeAnalyzer
@@ -32,7 +32,7 @@ type FinalizedMealPlanDataCreator struct {
 	customerDataCollector customerdata.Collector
 }
 
-// ProvideMealPlanTaskCreationEnsurerWorker provides a FinalizedMealPlanDataCreator.
+// ProvideMealPlanTaskCreationEnsurerWorker provides a MealPlanTaskCreatorWorker.
 func ProvideMealPlanTaskCreationEnsurerWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
@@ -40,8 +40,8 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 	postUpdatesPublisher messagequeue.Publisher,
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
-) *FinalizedMealPlanDataCreator {
-	return &FinalizedMealPlanDataCreator{
+) *MealPlanTaskCreatorWorker {
+	return &MealPlanTaskCreatorWorker{
 		logger:                logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
 		tracer:                tracing.NewTracer(tracerProvider.Tracer(mealPlanTaskCreationEnsurerWorkerName)),
 		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
@@ -53,7 +53,7 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 }
 
 // HandleMessage handles a pending write.
-func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []byte) error {
+func (w *MealPlanTaskCreatorWorker) HandleMessage(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -104,7 +104,7 @@ func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []by
 }
 
 // DetermineCreatableMealPlanTasks determines which meal plan tasks are creatable for a recipe.
-func (w *FinalizedMealPlanDataCreator) DetermineCreatableMealPlanTasks(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
+func (w *MealPlanTaskCreatorWorker) DetermineCreatableMealPlanTasks(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 

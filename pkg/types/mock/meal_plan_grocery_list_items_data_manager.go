@@ -50,3 +50,9 @@ func (m *MealPlanGroceryListItemDataManager) ArchiveMealPlanGroceryListItem(ctx 
 	returnValues := m.Called(ctx, mealPlanGroceryListItemID)
 	return returnValues.Error(0)
 }
+
+// CreateMealPlanGroceryListItemsForMealPlan is a mock function.
+func (m *MealPlanGroceryListItemDataManager) CreateMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, inputs []*types.MealPlanGroceryListItemDatabaseCreationInput) error {
+	returnValues := m.Called(ctx, mealPlanID, inputs)
+	return returnValues.Error(0)
+}

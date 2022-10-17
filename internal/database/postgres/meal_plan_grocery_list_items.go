@@ -262,8 +262,8 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 //go:embed queries/meal_plan_grocery_list_items/create.sql
 var mealPlanGroceryListItemCreationQuery string
 
-// CreateMealPlanGroceryListItem creates a meal plan grocery list in the database.
-func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemDatabaseCreationInput) (*types.MealPlanGroceryListItem, error) {
+// createMealPlanGroceryListItem creates a meal plan grocery list in the database.
+func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier database.SQLQueryExecutor, input *types.MealPlanGroceryListItemDatabaseCreationInput) (*types.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -292,7 +292,7 @@ func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *type
 	}
 
 	// create the meal plan grocery list.
-	if err := q.performWriteQuery(ctx, q.db, "meal plan grocery list creation", mealPlanGroceryListItemCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "meal plan grocery list creation", mealPlanGroceryListItemCreationQuery, args); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan grocery list creation query")
 	}
 
@@ -319,6 +319,52 @@ func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *type
 	logger.Info("meal plan grocery list created")
 
 	return x, nil
+}
+
+// CreateMealPlanGroceryListItem creates a meal plan grocery list in the database.
+func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemDatabaseCreationInput) (*types.MealPlanGroceryListItem, error) {
+	return q.createMealPlanGroceryListItem(ctx, q.db, input)
+}
+
+// CreateMealPlanGroceryListItemsForMealPlan creates a meal plan grocery list in the database.
+func (q *Querier) CreateMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, inputs []*types.MealPlanGroceryListItemDatabaseCreationInput) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if inputs == nil {
+		return ErrNilInputProvided
+	}
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	for _, input := range inputs {
+		if _, err = q.createMealPlanGroceryListItem(ctx, tx, input); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return observability.PrepareAndLogError(err, logger, span, "updating meal plan grocery list")
+		}
+	}
+
+	if err = q.MarkMealPlanAsHavingGroceryListInitialized(ctx, mealPlanID); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "marking meal plan grocery list as initialized")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
+
+	return nil
 }
 
 //go:embed queries/meal_plan_grocery_list_items/update.sql

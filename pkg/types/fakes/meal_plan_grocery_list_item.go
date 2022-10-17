@@ -22,7 +22,7 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 		PurchasedUPC:             nil,
 		PurchasePrice:            nil,
 		StatusExplanation:        buildUniqueString(),
-		Status:                   "unknown",
+		Status:                   types.MealPlanGroceryListItemStatusUnknown,
 		CreatedAt:                fake.Date(),
 	}
 }
