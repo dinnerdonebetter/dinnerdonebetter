@@ -6,7 +6,7 @@ on:
       - internal/**
       - environments/**
       - tests/**
-name: Lint go code
+name: Lint Terraform code
 jobs:
   terraform:
     runs-on: ubuntu-latest

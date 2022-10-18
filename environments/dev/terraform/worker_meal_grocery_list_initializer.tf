@@ -19,15 +19,15 @@ locals {
 }
 
 resource "google_pubsub_topic" "meal_plan_grocery_list_initializer_topic" {
-  name = "meal_plan_task_creation_work"
+  name = "meal_plan_grocery_list_initializer_work"
 }
 
-resource "google_cloud_scheduler_job" "meal_plan_task_creation" {
+resource "google_cloud_scheduler_job" "meal_plan_grocery_list_initializer" {
   project = local.project_id
   region  = local.gcp_region
   name    = "meal-plan-grocery-list-initialization-scheduler"
 
-  schedule  = "*/5 * * * *" # every five minutes
+  schedule  = "*/10 * * * *" # every ten minutes
   time_zone = "America/Chicago"
 
   pubsub_target {
