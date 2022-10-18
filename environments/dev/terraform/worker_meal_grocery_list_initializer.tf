@@ -54,7 +54,7 @@ resource "google_storage_bucket_object" "meal_plan_grocery_list_initializer_arch
 }
 
 resource "google_service_account" "meal_plan_grocery_list_initializer_user_service_account" {
-  account_id   = "meal-plan-grocery-list-initialization-worker"
+  account_id   = "mp-grocery-list-init-worker"
   display_name = "Meal Plan Grocery List Initializer"
 }
 
