@@ -61,18 +61,21 @@ func (w *MealPlanGroceryListInitializer) HandleMessage(ctx context.Context, _ []
 
 	logger := w.logger.Clone()
 
-	results, err := w.dataManager.GetFinalizedMealPlansWithUninitializedGroceryLists(ctx)
+	mealPlans, err := w.dataManager.GetFinalizedMealPlansWithUninitializedGroceryLists(ctx)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "getting finalized meal plan data")
 	}
 
-	mealPlansToGroceryListDatabaseCreationInputs := map[string][]*types.MealPlanGroceryListItemDatabaseCreationInput{}
+	var (
+		errorResult                                  *multierror.Error
+		mealPlansToGroceryListDatabaseCreationInputs = map[string][]*types.MealPlanGroceryListItemDatabaseCreationInput{}
+	)
 
-	for _, result := range results {
+	for _, mealPlan := range mealPlans {
 		inputs := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{}
-		l := logger.Clone().WithValue(keys.MealPlanIDKey, result.ID)
+		l := logger.Clone().WithValue(keys.MealPlanIDKey, mealPlan.ID)
 
-		for _, event := range result.Events {
+		for _, event := range mealPlan.Events {
 			l = l.WithValue(keys.MealPlanEventIDKey, event.ID)
 			for _, option := range event.Options {
 				if option.Chosen {
@@ -88,7 +91,7 @@ func (w *MealPlanGroceryListInitializer) HandleMessage(ctx context.Context, _ []
 										inputs[ingredient.ID] = &types.MealPlanGroceryListItemDatabaseCreationInput{
 											Status:                 types.MealPlanGroceryListItemStatusUnknown,
 											ValidMeasurementUnitID: ingredient.MeasurementUnit.ID,
-											ValidIngredientID:      ingredient.ID,
+											ValidIngredientID:      ingredient.Ingredient.ID,
 											MealPlanOptionID:       option.ID,
 											ID:                     ksuid.New().String(),
 											MinimumQuantityNeeded:  ingredient.MinimumQuantity,
@@ -115,15 +118,11 @@ func (w *MealPlanGroceryListInitializer) HandleMessage(ctx context.Context, _ []
 			dbInputs = append(dbInputs, i)
 		}
 
-		mealPlansToGroceryListDatabaseCreationInputs[result.ID] = dbInputs
-	}
-
-	var errorResult *multierror.Error
-	// now that we have a map of meal plan ID to creatable grocery list things, we can create them all in a transaction
-	for mealPlanID, itemInputs := range mealPlansToGroceryListDatabaseCreationInputs {
-		if err = w.dataManager.CreateMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID, itemInputs); err != nil {
+		if err = w.dataManager.CreateMealPlanGroceryListItemsForMealPlan(ctx, mealPlan.ID, dbInputs); err != nil {
 			errorResult = multierror.Append(errorResult, err)
 		}
+
+		mealPlansToGroceryListDatabaseCreationInputs[mealPlan.ID] = dbInputs
 	}
 
 	if errorResult == nil {

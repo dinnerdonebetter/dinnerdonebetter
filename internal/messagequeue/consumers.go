@@ -15,3 +15,25 @@ type (
 		ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (Consumer, error)
 	}
 )
+
+type noopConsumer struct{}
+
+// Consume does nothing.
+func (n *noopConsumer) Consume(_ chan bool, _ chan error) {}
+
+// NewNoopConsumer is a noop Consumer.
+func NewNoopConsumer() Consumer {
+	return &noopConsumer{}
+}
+
+type noopConsumerProvider struct{}
+
+// ProvideConsumer does nothing.
+func (n *noopConsumerProvider) ProvideConsumer(_ context.Context, _ string, _ func(context.Context, []byte) error) (Consumer, error) {
+	return NewNoopConsumer(), nil
+}
+
+// NewNoopConsumerProvider is a noop ConsumerProvider.
+func NewNoopConsumerProvider() ConsumerProvider {
+	return &noopConsumerProvider{}
+}
