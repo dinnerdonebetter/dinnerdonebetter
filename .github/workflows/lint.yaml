@@ -7,28 +7,30 @@ on:
       - tests/**
 name: Lint go code
 jobs:
- formatting:
-   runs-on: ubuntu-latest
-   strategy:
-     matrix:
-       go: [ '1.19.x' ]
-   steps:
-     - name: Install Go
-       uses: actions/setup-go@v2
-       with:
-         go-version: ${{ matrix.go }}
+  formatting:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [ '1.19.x' ]
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
 
-     - name: Checkout code
-       uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-     - name: check formatting
-       run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
+      - name: check formatting
+        run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
 
- lint:
-   strategy:
-     matrix:
-       linter-version: [ 'v1.49' ]
-   runs-on: ubuntu-latest
-   steps:
-     - uses: actions/checkout@v2
-     - run: make lint
+  golang:
+    strategy:
+    matrix:
+      linter-version: [ 'v1.49' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - run: make lint

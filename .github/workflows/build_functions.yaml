@@ -29,6 +29,7 @@ jobs:
           'meal_plan_finalizer',
           'meal_planning_prober',
           'meal_plan_task_creator',
+          'meal_plan_grocery_list_initializer',
         ]
     runs-on: ubuntu-latest
     steps:

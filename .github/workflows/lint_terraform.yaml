@@ -1,11 +1,18 @@
 on:
-  push:
-    branches:
-      - dev
-name: Deploy
+  pull_request:
+    paths:
+      - pkg/**
+      - cmd/**
+      - internal/**
+      - environments/**
+      - tests/**
+name: Lint go code
 jobs:
-  deploy:
+  terraform:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [ '1.16.x' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -13,24 +20,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.19.x'
-
-      - id: auth
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-
-      # Setup gcloud CLI
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
-
-      - name: Authorize Docker push
-        run: gcloud auth configure-docker
-
-      - name: Build Container
-        run: |
-          docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          go-version: ${{ matrix.go }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -47,6 +37,8 @@ jobs:
         working-directory: environments/dev/terraform
         id: fmt
         run: terraform fmt -check
+
+      # begin things have to be done for terraform to succeed
 
       - name: Build data changes cloud function directory
         run: ./scripts/build_cloud_function.sh data_changes
@@ -65,25 +57,9 @@ jobs:
         run: |
           cp config_files/service-config.json terraform/service-config.json
 
+      # end things have to be done for terraform to succeed
+
       - name: Terraform Validate
         working-directory: environments/dev/terraform
         id: validate
         run: terraform validate -no-color
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        # if: github.event_name == 'release'
-        working-directory: environments/dev/terraform
-
-      - name: Push Container
-        run: |
-          docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
-          docker push gcr.io/prixfixe-dev/api_server:latest
-
-      # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
-      - id: deploy-api-server
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          service: 'api-server'
-          project_id: 'prixfixe-dev'
-          image: 'gcr.io/prixfixe-dev/api_server'

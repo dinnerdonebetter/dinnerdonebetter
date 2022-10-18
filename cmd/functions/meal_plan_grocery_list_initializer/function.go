@@ -30,8 +30,8 @@ type PubSubMessage struct {
 	Data []byte `json:"data"`
 }
 
-// CreateMealPlanTasks is our cloud function entrypoint.
-func CreateMealPlanTasks(ctx context.Context, _ PubSubMessage) error {
+// InitializeGroceryListsItemsForMealPlans is our cloud function entrypoint.
+func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ PubSubMessage) error {
 	logger := zerolog.NewZerologLogger()
 	logger.SetLevel(logging.DebugLevel)
 
@@ -68,7 +68,7 @@ func CreateMealPlanTasks(ctx context.Context, _ PubSubMessage) error {
 		log.Fatal(err)
 	}
 
-	mealPlanTaskCreationEnsurerWorker := workers.ProvideMealPlanTaskCreationEnsurerWorker(
+	mealPlanGroceryListInitializationWorker := workers.ProvideMealPlanGroceryListInitializer(
 		logger,
 		dataManager,
 		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
@@ -77,7 +77,7 @@ func CreateMealPlanTasks(ctx context.Context, _ PubSubMessage) error {
 		tracerProvider,
 	)
 
-	if err = mealPlanTaskCreationEnsurerWorker.HandleMessage(ctx, nil); err != nil {
+	if err = mealPlanGroceryListInitializationWorker.HandleMessage(ctx, nil); err != nil {
 		observability.AcknowledgeError(err, logger, nil, "handling message")
 		return err
 	}
