@@ -23,7 +23,7 @@ func checkMealPlanGroceryListItemEquality(t *testing.T, expected, actual *types.
 	assert.Equal(t, expected.StatusExplanation, actual.StatusExplanation, "expected StatusExplanation for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.StatusExplanation, actual.StatusExplanation)
 	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
 	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected MeasurementUnitID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID)
-	assert.Equal(t, expected.MealPlanOption.ID, actual.MealPlanOption.ID, "expected MealPlanOptionID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MealPlanOption.ID, actual.MealPlanOption.ID)
+	assert.Equal(t, expected.BelongsToMealPlan, actual.BelongsToMealPlan, "expected BelongsToMealPlan for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.BelongsToMealPlan, actual.BelongsToMealPlan)
 	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected IngredientID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
 	assert.Equal(t, expected.MaximumQuantityNeeded, actual.MaximumQuantityNeeded, "expected MaximumQuantityNeeded for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MaximumQuantityNeeded, actual.MaximumQuantityNeeded)
 	assert.Equal(t, expected.MinimumQuantityNeeded, actual.MinimumQuantityNeeded, "expected MinimumQuantityNeeded for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MinimumQuantityNeeded, actual.MinimumQuantityNeeded)
@@ -69,11 +69,11 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			exampleMealPlanGroceryListItem.MealPlanOption = *createdMealPlan.Events[0].Options[0]
+			exampleMealPlanGroceryListItem.BelongsToMealPlan = createdMealPlan.ID
 			exampleMealPlanGroceryListItem.Ingredient = *createdValidIngredient
 			exampleMealPlanGroceryListItem.MeasurementUnit = *createdValidMeasurementUnit
 
-			exampleMealPlanGroceryListItemInput.MealPlanOptionID = createdMealPlan.Events[0].Options[0].ID
+			exampleMealPlanGroceryListItemInput.BelongsToMealPlan = createdMealPlan.ID
 			exampleMealPlanGroceryListItemInput.ValidIngredientID = createdValidIngredient.ID
 			exampleMealPlanGroceryListItemInput.ValidMeasurementUnitID = createdValidMeasurementUnit.ID
 

@@ -42,7 +42,7 @@ func (n *noopTracerProvider) Tracer(instrumentationName string, opts ...trace.Tr
 	return trace.NewNoopTracerProvider().Tracer(instrumentationName, opts...)
 }
 
-func (n *noopTracerProvider) ForceFlush(ctx context.Context) error {
+func (n *noopTracerProvider) ForceFlush(_ context.Context) error {
 	return nil
 }
 

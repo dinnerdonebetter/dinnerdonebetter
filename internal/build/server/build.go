@@ -5,6 +5,7 @@ package server
 
 import (
 	"context"
+	graphing "github.com/prixfixeco/api_server/internal/features/recipeanalysis"
 
 	"github.com/google/wire"
 
@@ -19,7 +20,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/random"
-	graphing "github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	"github.com/prixfixeco/api_server/internal/server"
 	adminservice "github.com/prixfixeco/api_server/internal/services/admin"

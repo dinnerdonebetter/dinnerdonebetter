@@ -62,6 +62,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	mealPlanID := s.mealPlanIDFetcher(req)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	input.BelongsToMealPlan = mealPlanID
 
 	mealPlanGroceryListItem, err := s.mealPlanGroceryListItemDataManager.CreateMealPlanGroceryListItem(ctx, input)
 	if err != nil {

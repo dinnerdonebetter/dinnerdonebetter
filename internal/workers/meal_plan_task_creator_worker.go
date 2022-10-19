@@ -8,12 +8,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 

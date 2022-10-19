@@ -12,11 +12,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
+	"github.com/prixfixeco/api_server/internal/features/grocerylistpreparation"
+	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/workers"
 	"github.com/prixfixeco/api_server/pkg/utils"
 )
@@ -96,6 +97,7 @@ func main() {
 		dataChangesPublisher,
 		cdp,
 		tracerProvider,
+		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)
 
 	mealPlanGroceryListInitializationConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanGroceryListInitTopic, mealPlanGroceryListInitializationWorker.HandleMessage)

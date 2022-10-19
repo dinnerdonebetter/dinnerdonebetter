@@ -335,6 +335,10 @@ issues:
     - path: internal/uploads/images/mock.go
       linters:
         - forcetypeassert
+        -
+    - path: internal/features/grocerylistpreparation/mocks.go
+      linters:
+        - forcetypeassert
 
     - path: internal/messagequeue/mock
       linters:

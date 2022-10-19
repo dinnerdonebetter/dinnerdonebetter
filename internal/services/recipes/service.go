@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	"github.com/prixfixeco/api_server/pkg/types"

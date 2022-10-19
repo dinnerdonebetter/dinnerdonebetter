@@ -3,6 +3,7 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
+	"github.com/prixfixeco/api_server/internal/features/grocerylistpreparation"
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
@@ -11,12 +12,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
+	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
@@ -75,6 +76,7 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ PubSubMessag
 		dataChangesPublisher,
 		cdp,
 		tracerProvider,
+		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)
 
 	if err = mealPlanGroceryListInitializationWorker.HandleMessage(ctx, nil); err != nil {

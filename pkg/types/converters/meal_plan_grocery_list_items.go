@@ -8,7 +8,7 @@ import (
 func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(input *types.MealPlanGroceryListItem) *types.MealPlanGroceryListItemDatabaseCreationInput {
 	x := &types.MealPlanGroceryListItemDatabaseCreationInput{
 		ID:                     input.ID,
-		MealPlanOptionID:       input.MealPlanOption.ID,
+		BelongsToMealPlan:      input.BelongsToMealPlan,
 		ValidIngredientID:      input.Ingredient.ID,
 		ValidMeasurementUnitID: input.MeasurementUnit.ID,
 		MinimumQuantityNeeded:  input.MinimumQuantityNeeded,
@@ -35,7 +35,7 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput
 		QuantityPurchased:      input.QuantityPurchased,
 		StatusExplanation:      input.StatusExplanation,
 		Status:                 input.Status,
-		MealPlanOptionID:       input.MealPlanOption.ID,
+		BelongsToMealPlan:      input.BelongsToMealPlan,
 		ValidIngredientID:      input.Ingredient.ID,
 		ValidMeasurementUnitID: input.MeasurementUnit.ID,
 		MinimumQuantityNeeded:  input.MinimumQuantityNeeded,
@@ -59,7 +59,7 @@ func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItem
 		StatusExplanation:          input.StatusExplanation,
 		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
 		ValidIngredientID:          input.ValidIngredientID,
-		MealPlanOptionID:           input.MealPlanOptionID,
+		BelongsToMealPlan:          input.BelongsToMealPlan,
 		MinimumQuantityNeeded:      input.MinimumQuantityNeeded,
 		MaximumQuantityNeeded:      input.MaximumQuantityNeeded,
 	}
@@ -73,7 +73,7 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(i
 
 	return &types.MealPlanGroceryListItemUpdateRequestInput{
 		ID:                         input.ID,
-		MealPlanOptionID:           &input.MealPlanOption.ID,
+		BelongsToMealPlan:          &input.BelongsToMealPlan,
 		ValidIngredientID:          &input.Ingredient.ID,
 		ValidMeasurementUnitID:     &input.MeasurementUnit.ID,
 		MinimumQuantityNeeded:      &input.MinimumQuantityNeeded,

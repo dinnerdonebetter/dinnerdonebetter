@@ -4,7 +4,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput creates a MealPlanOptionUpdateRequestInput from a MealPlanOption.
+// ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput creates a MealPlanOptionUpdateRequestInput from a BelongsToMealPlan.
 func ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(input *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	x := &types.MealPlanOptionUpdateRequestInput{
 		MealID:                 &input.Meal.ID,

@@ -12,7 +12,7 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 
 	return &types.MealPlanGroceryListItem{
 		ID:                       BuildFakeID(),
-		MealPlanOption:           *BuildFakeMealPlanOption(),
+		BelongsToMealPlan:        BuildFakeID(),
 		Ingredient:               *BuildFakeValidIngredient(),
 		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
 		MinimumQuantityNeeded:    float32(minQty),

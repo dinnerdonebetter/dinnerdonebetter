@@ -280,6 +280,11 @@ var (
 			Description: "grocery list item enhancements",
 			Script:      fetchMigration("00053_grocery_list_item_enhancements"),
 		},
+		{
+			Version:     54,
+			Description: "grocery item ownership change",
+			Script:      fetchMigration("00054_grocery_item_ownership_change"),
+		},
 	}
 )
 

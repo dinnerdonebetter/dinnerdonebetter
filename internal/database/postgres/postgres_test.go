@@ -24,6 +24,8 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
+var _ sqlmock.Argument = (*idMatcher)(nil)
+
 type idMatcher struct{}
 
 func (s *idMatcher) Match(v driver.Value) bool {
