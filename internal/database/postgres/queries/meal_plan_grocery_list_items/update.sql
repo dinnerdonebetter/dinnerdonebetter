@@ -1,6 +1,6 @@
 UPDATE meal_plan_grocery_list_items
 SET
-    belongs_to_meal_plan_option = $1,
+    belongs_to_meal_plan = $1,
     valid_ingredient = $2,
     valid_measurement_unit = $3,
     minimum_quantity_needed = $4,

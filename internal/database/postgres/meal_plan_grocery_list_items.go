@@ -49,7 +49,7 @@ func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.MealPlanOption.ID,
+		&x.BelongsToMealPlan,
 		&x.Ingredient.ID,
 		&x.MeasurementUnit.ID,
 		&minQuantity,
@@ -146,13 +146,6 @@ func (q *Querier) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanG
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItem.ID)
 
-	// flesh out the data
-	mpo, err := q.getMealPlanOptionByID(ctx, mealPlanGroceryListItem.MealPlanOption.ID)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching grocery list item meal plan option")
-	}
-	mealPlanGroceryListItem.MealPlanOption = *mpo
-
 	validIngredient, err := q.GetValidIngredient(ctx, mealPlanGroceryListItem.Ingredient.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching grocery list item ingredient")
@@ -203,7 +196,7 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 		mealPlanGroceryListItemID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "mealPlanGroceryListItem", getMealPlanGroceryListItemQuery, args)
+	row := q.getOneRow(ctx, q.db, "meal plan grocery list item", getMealPlanGroceryListItemQuery, args)
 
 	mealPlanGroceryListItem, err := q.scanMealPlanGroceryListItem(ctx, row)
 	if err != nil {
@@ -262,8 +255,8 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 //go:embed queries/meal_plan_grocery_list_items/create.sql
 var mealPlanGroceryListItemCreationQuery string
 
-// CreateMealPlanGroceryListItem creates a meal plan grocery list in the database.
-func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemDatabaseCreationInput) (*types.MealPlanGroceryListItem, error) {
+// createMealPlanGroceryListItem creates a meal plan grocery list in the database.
+func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier database.SQLQueryExecutor, input *types.MealPlanGroceryListItemDatabaseCreationInput) (*types.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -278,7 +271,7 @@ func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *type
 
 	args := []interface{}{
 		input.ID,
-		input.MealPlanOptionID,
+		input.BelongsToMealPlan,
 		input.ValidIngredientID,
 		input.ValidMeasurementUnitID,
 		dbSafeMinQty,
@@ -292,13 +285,13 @@ func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *type
 	}
 
 	// create the meal plan grocery list.
-	if err := q.performWriteQuery(ctx, q.db, "meal plan grocery list creation", mealPlanGroceryListItemCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "meal plan grocery list creation", mealPlanGroceryListItemCreationQuery, args); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan grocery list creation query")
 	}
 
 	x := &types.MealPlanGroceryListItem{
 		ID:                    input.ID,
-		MealPlanOption:        types.MealPlanOption{ID: input.MealPlanOptionID},
+		BelongsToMealPlan:     input.BelongsToMealPlan,
 		Ingredient:            types.ValidIngredient{ID: input.ValidIngredientID},
 		MeasurementUnit:       types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
 		MinimumQuantityNeeded: float32(dbSafeMinQty / types.MealPlanGroceryListItemQuantityModifier),
@@ -319,6 +312,52 @@ func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *type
 	logger.Info("meal plan grocery list created")
 
 	return x, nil
+}
+
+// CreateMealPlanGroceryListItem creates a meal plan grocery list in the database.
+func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemDatabaseCreationInput) (*types.MealPlanGroceryListItem, error) {
+	return q.createMealPlanGroceryListItem(ctx, q.db, input)
+}
+
+// CreateMealPlanGroceryListItemsForMealPlan creates a meal plan grocery list in the database.
+func (q *Querier) CreateMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, inputs []*types.MealPlanGroceryListItemDatabaseCreationInput) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if inputs == nil {
+		return ErrNilInputProvided
+	}
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	for _, input := range inputs {
+		if _, err = q.createMealPlanGroceryListItem(ctx, tx, input); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return observability.PrepareAndLogError(err, logger, span, "updating meal plan grocery list")
+		}
+	}
+
+	if err = q.MarkMealPlanAsHavingGroceryListInitialized(ctx, mealPlanID); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "marking meal plan grocery list as initialized")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
+
+	return nil
 }
 
 //go:embed queries/meal_plan_grocery_list_items/update.sql
@@ -345,7 +384,7 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 	dbSafeMaxQty := uint16(updated.MaximumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
 
 	args := []interface{}{
-		updated.MealPlanOption.ID,
+		updated.BelongsToMealPlan,
 		updated.Ingredient.ID,
 		updated.MeasurementUnit.ID,
 		dbSafeMinQty,

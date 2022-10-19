@@ -57,6 +57,24 @@ services:
         build:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/meal_plan_finalizer.Dockerfile'
+    meal_plan_grocery_list_initializer:
+        logging:
+            driver: none
+        container_name: meal_plan_grocery_list_initializer
+        environment:
+            TARGET_ADDRESS: 'http://api_server:8000'
+            CONFIGURATION_FILEPATH: '/etc/config'
+            JAEGER_DISABLED: 'false'
+        volumes:
+            - source: '../../../'
+              target: '/go/src/github.com/prixfixeco/api_server'
+              type: 'bind'
+            - source: '../../../environments/local/config_files/meal-plan-grocery-list-initializer-config.json'
+              target: '/etc/config'
+              type: 'bind'
+        build:
+            context: '../../../'
+            dockerfile: 'environments/testing/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile'
     meal_plan_task_creator:
         logging:
             driver: none

@@ -66,3 +66,9 @@ func (m *MealPlanDataManager) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.
 	args := m.Called(ctx)
 	return args.Get(0).([]*types.FinalizedMealPlanDatabaseResult), args.Error(1)
 }
+
+// GetFinalizedMealPlansWithUninitializedGroceryLists is a mock function.
+func (m *MealPlanDataManager) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]*types.MealPlan), args.Error(1)
+}

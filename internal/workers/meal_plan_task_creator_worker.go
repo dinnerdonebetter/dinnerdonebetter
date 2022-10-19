@@ -8,12 +8,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -21,8 +21,8 @@ const (
 	mealPlanTaskCreationEnsurerWorkerName = "meal_plan_task_creation_ensurer"
 )
 
-// FinalizedMealPlanDataCreator ensurers meal plan tasks are created.
-type FinalizedMealPlanDataCreator struct {
+// MealPlanTaskCreatorWorker ensurers meal plan tasks are created.
+type MealPlanTaskCreatorWorker struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
 	analyzer              recipeanalysis.RecipeAnalyzer
@@ -32,7 +32,7 @@ type FinalizedMealPlanDataCreator struct {
 	customerDataCollector customerdata.Collector
 }
 
-// ProvideMealPlanTaskCreationEnsurerWorker provides a FinalizedMealPlanDataCreator.
+// ProvideMealPlanTaskCreationEnsurerWorker provides a MealPlanTaskCreatorWorker.
 func ProvideMealPlanTaskCreationEnsurerWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
@@ -40,8 +40,8 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 	postUpdatesPublisher messagequeue.Publisher,
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
-) *FinalizedMealPlanDataCreator {
-	return &FinalizedMealPlanDataCreator{
+) *MealPlanTaskCreatorWorker {
+	return &MealPlanTaskCreatorWorker{
 		logger:                logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
 		tracer:                tracing.NewTracer(tracerProvider.Tracer(mealPlanTaskCreationEnsurerWorkerName)),
 		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
@@ -53,27 +53,27 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 }
 
 // HandleMessage handles a pending write.
-func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []byte) error {
+func (w *MealPlanTaskCreatorWorker) HandleMessage(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := w.logger.Clone()
 
-	optionsAndSteps, err := w.DetermineCreatableMealPlanTasks(ctx)
+	mealPlansAndSteps, err := w.DetermineCreatableMealPlanTasks(ctx)
 	if err != nil {
 		return observability.PrepareError(err, nil, "determining creatable steps")
 	}
 
-	logger = logger.WithValue("creatable_steps_qty", len(optionsAndSteps))
+	logger = logger.WithValue("creatable_steps_qty", len(mealPlansAndSteps))
 
 	var result *multierror.Error
-	for mealPlanOptionID, steps := range optionsAndSteps {
-		l := logger.Clone().WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID).WithValue("creatable_prep_step_qty", len(steps))
+	for mealPlanID, steps := range mealPlansAndSteps {
+		l := logger.Clone().WithValue(keys.MealPlanIDKey, mealPlanID).WithValue("creatable_prep_step_qty", len(steps))
 
-		createdSteps, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, mealPlanOptionID, steps)
+		createdSteps, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, steps)
 		if creationErr != nil {
 			result = multierror.Append(result, creationErr)
-			observability.AcknowledgeError(creationErr, l, span, "creating meal plan tasks for meal plan optino")
+			observability.AcknowledgeError(creationErr, l, span, "creating meal plan tasks for meal plan option")
 		}
 
 		for _, createdStep := range createdSteps {
@@ -90,6 +90,10 @@ func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []by
 				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
 			}
 		}
+
+		if err = w.dataManager.MarkMealPlanAsHavingTasksCreated(ctx, mealPlanID); err != nil {
+			result = multierror.Append(result, err)
+		}
 	}
 
 	if result == nil {
@@ -100,7 +104,7 @@ func (w *FinalizedMealPlanDataCreator) HandleMessage(ctx context.Context, _ []by
 }
 
 // DetermineCreatableMealPlanTasks determines which meal plan tasks are creatable for a recipe.
-func (w *FinalizedMealPlanDataCreator) DetermineCreatableMealPlanTasks(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
+func (w *MealPlanTaskCreatorWorker) DetermineCreatableMealPlanTasks(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -126,8 +130,8 @@ func (w *FinalizedMealPlanDataCreator) DetermineCreatableMealPlanTasks(ctx conte
 		})
 		l.Info("fetching meal plan event")
 
-		if _, ok := inputs[result.MealPlanOptionID]; !ok {
-			inputs[result.MealPlanOptionID] = []*types.MealPlanTaskDatabaseCreationInput{}
+		if _, ok := inputs[result.MealPlanID]; !ok {
+			inputs[result.MealPlanID] = []*types.MealPlanTaskDatabaseCreationInput{}
 		}
 
 		for _, recipeID := range result.RecipeIDs {
@@ -141,7 +145,7 @@ func (w *FinalizedMealPlanDataCreator) DetermineCreatableMealPlanTasks(ctx conte
 				return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
 			}
 
-			inputs[result.MealPlanOptionID] = append(inputs[result.MealPlanOptionID], creatableSteps...)
+			inputs[result.MealPlanID] = append(inputs[result.MealPlanID], creatableSteps...)
 		}
 	}
 

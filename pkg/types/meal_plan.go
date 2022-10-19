@@ -42,16 +42,18 @@ type (
 
 	// MealPlan represents a meal plan.
 	MealPlan struct {
-		_                  struct{}
-		CreatedAt          time.Time        `json:"createdAt"`
-		VotingDeadline     time.Time        `json:"votingDeadline"`
-		ArchivedAt         *time.Time       `json:"archivedAt"`
-		LastUpdatedAt      *time.Time       `json:"lastUpdatedAt"`
-		Notes              string           `json:"notes"`
-		BelongsToHousehold string           `json:"belongsToHousehold"`
-		Status             MealPlanStatus   `json:"status"`
-		ID                 string           `json:"id"`
-		Events             []*MealPlanEvent `json:"events"`
+		_                      struct{}
+		CreatedAt              time.Time        `json:"createdAt"`
+		VotingDeadline         time.Time        `json:"votingDeadline"`
+		ArchivedAt             *time.Time       `json:"archivedAt"`
+		LastUpdatedAt          *time.Time       `json:"lastUpdatedAt"`
+		Status                 MealPlanStatus   `json:"status"`
+		ID                     string           `json:"id"`
+		Notes                  string           `json:"notes"`
+		BelongsToHousehold     string           `json:"belongsToHousehold"`
+		Events                 []*MealPlanEvent `json:"events"`
+		GroceryListInitialized bool             `json:"groceryListInitialized"`
+		TasksCreated           bool             `json:"tasksCreated"`
 	}
 
 	// MealPlanList represents a list of meal plans.
@@ -109,6 +111,7 @@ type (
 		AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error)
 		GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*FinalizedMealPlanDatabaseResult, error)
 		GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*MealPlan, error)
+		GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*MealPlan, error)
 	}
 
 	// MealPlanDataService describes a structure capable of serving traffic related to meal plans.

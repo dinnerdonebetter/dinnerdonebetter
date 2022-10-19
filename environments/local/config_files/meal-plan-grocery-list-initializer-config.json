@@ -1,0 +1,197 @@
+{
+	"observability": {
+		"logging": {
+			"level": 0,
+			"provider": "zerolog"
+		},
+		"metrics": {
+			"prometheus": {
+				"runtimeMetricsCollectionInterval": 1000000000
+			},
+			"provider": "prometheus"
+		},
+		"tracing": {
+			"jaeger": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces",
+				"service_name": "prixfixe_service",
+				"spanCollectionProbability": 1
+			},
+			"provider": "jaeger"
+		}
+	},
+	"email": {
+		"sendgrid": null,
+		"provider": ""
+	},
+	"customerData": {
+		"provider": "",
+		"apiToken": ""
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"uploads": {
+		"storageConfig": {
+			"filesystem": {
+				"rootDirectory": "/avatars"
+			},
+			"bucketName": "avatars.prixfixe.dev",
+			"uploadFilenameKey": "avatar",
+			"provider": "filesystem"
+		},
+		"debug": true
+	},
+	"routing": {
+		"provider": "chi"
+	},
+	"database": {
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
+		"debug": true,
+		"logQueries": false,
+		"runMigrations": false,
+		"maxPingAttempts": 50
+	},
+	"meta": {
+		"runMode": "development",
+		"debug": true
+	},
+	"events": {
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {
+				"topicName": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		},
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {
+				"topicName": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		}
+	},
+	"featureFlags": {
+		"LaunchDarkly": null,
+		"Provider": ""
+	},
+	"server": {
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
+		"debug": true
+	},
+	"services": {
+		"validMeasurementUnits": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validInstruments": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validIngredients": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validPreparations": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanEvents": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanOptionVotes": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validIngredientPreparations": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validPreparationInstruments": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validInstrumentMeasurementUnits": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"meals": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipes": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeSteps": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepProducts": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepInstruments": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepIngredients": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlans": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanOptions": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"households": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"householdInvitations": {
+			"dataChangesTopicName": "data_changes",
+			"debug": false
+		},
+		"websockets": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"webhooks": {
+			"dataChangesTopicName": "data_changes",
+			"debug": false
+		},
+		"users": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanTasks": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipePrepTasks": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanGroceryListItems": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"auth": {
+			"dataChanges": "data_changes",
+			"cookies": {
+				"name": "prixfixecookie",
+				"domain": ".prixfixe.local",
+				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
+				"lifetime": 86400000000000
+			},
+			"paseto": {
+				"issuer": "prixfixe_service",
+				"localModeKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+				"lifetime": 60000000000
+			},
+			"debug": true,
+			"enableUserSignup": true,
+			"minimumUsernameLength": 3,
+			"minimumPasswordLength": 8
+		}
+	}
+}

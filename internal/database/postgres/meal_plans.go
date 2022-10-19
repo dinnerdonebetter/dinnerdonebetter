@@ -20,6 +20,8 @@ var (
 		"meal_plans.notes",
 		"meal_plans.status",
 		"meal_plans.voting_deadline",
+		"meal_plans.grocery_list_initialized",
+		"meal_plans.tasks_created",
 		"meal_plans.created_at",
 		"meal_plans.last_updated_at",
 		"meal_plans.archived_at",
@@ -39,6 +41,8 @@ func (q *Querier) scanMealPlan(ctx context.Context, scan database.Scanner, inclu
 		&x.Notes,
 		&x.Status,
 		&x.VotingDeadline,
+		&x.GroceryListInitialized,
+		&x.TasksCreated,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -58,7 +62,7 @@ func (q *Querier) scanMealPlan(ctx context.Context, scan database.Scanner, inclu
 
 // scanMealPlans takes some database rows and turns them into a slice of meal plans.
 func (q *Querier) scanMealPlans(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlans []*types.MealPlan, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	for rows.Next() {
@@ -477,7 +481,7 @@ var getExpiredAndUnresolvedMealPlansQuery string
 
 // GetUnfinalizedMealPlansWithExpiredVotingPeriods gets unfinalized meal plans with expired voting deadlines.
 func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
-	_, span := q.tracer.StartSpan(ctx)
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	rows, err := q.getRows(ctx, q.db, "expired and unresolved meal plan", getExpiredAndUnresolvedMealPlansQuery, nil)
@@ -506,7 +510,7 @@ var getFinalizedMealPlansQuery string
 
 // GetFinalizedMealPlanIDsForTheNextWeek gets finalized meal plans for a given duration.
 func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*types.FinalizedMealPlanDatabaseResult, error) {
-	_, span := q.tracer.StartSpan(ctx)
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	rows, err := q.getRows(ctx, q.db, "finalized meal plans", getFinalizedMealPlansQuery, nil)
@@ -549,4 +553,32 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 	}
 
 	return results, nil
+}
+
+//go:embed queries/meal_plans/get_finalized_without_grocery_list_init.sql
+var getFinalizedMealPlansWithoutGroceryListInitializationQuery string
+
+func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	rows, err := q.getRows(ctx, q.db, "expired and unresolved meal plan", getFinalizedMealPlansWithoutGroceryListInitializationQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with expired voting periods retrieval query")
+	}
+
+	mealPlans := []*types.MealPlan{}
+	for rows.Next() {
+		mp, _, _, scanErr := q.scanMealPlan(ctx, rows, false)
+		if scanErr != nil {
+			return nil, observability.PrepareError(scanErr, span, "scanning meal plan response")
+		}
+		mealPlans = append(mealPlans, mp)
+	}
+
+	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
+		return nil, observability.PrepareError(err, span, "closing rows")
+	}
+
+	return mealPlans, nil
 }

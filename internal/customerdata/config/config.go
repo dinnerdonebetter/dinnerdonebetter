@@ -40,6 +40,6 @@ func (cfg *Config) ProvideCollector(logger logging.Logger) (customerdata.Collect
 	case ProviderSegment:
 		return segment.NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), cfg.APIToken)
 	default:
-		return customerdata.NewNoopCollector()
+		return customerdata.NewNoopCollector(), nil
 	}
 }

@@ -35,7 +35,7 @@ func buildMockRowsFromMealPlanGroceryListItems(includeCounts bool, filteredCount
 
 		rowValues := []driver.Value{
 			x.ID,
-			x.MealPlanOption.ID,
+			x.BelongsToMealPlan,
 			x.Ingredient.ID,
 			x.MeasurementUnit.ID,
 			uint16(x.MinimumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier),
@@ -183,14 +183,6 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 func prepareForMealPlanGroceryListItemDataHydration(t *testing.T, db sqlmock.Sqlmock, exampleMealPlanGroceryListItem *types.MealPlanGroceryListItem) {
 	t.Helper()
 
-	getMealPlanOptionByIDArgs := []interface{}{
-		exampleMealPlanGroceryListItem.MealPlanOption.ID,
-	}
-
-	db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionByIDQuery)).
-		WithArgs(interfaceToDriverValue(getMealPlanOptionByIDArgs)...).
-		WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, &exampleMealPlanGroceryListItem.MealPlanOption))
-
 	getValidIngredientArgs := []interface{}{
 		exampleMealPlanGroceryListItem.Ingredient.ID,
 	}
@@ -217,7 +209,6 @@ func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 		ctx := context.Background()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleMealPlanGroceryListItem.MealPlanOption.Votes = []*types.MealPlanOptionVote{}
 
 		c, db := buildTestClient(t)
 
@@ -287,10 +278,6 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList().MealPlanGroceryListItems
 		for i := range exampleMealPlanGroceryListItemList {
-			exampleMealPlanGroceryListItemList[i].MealPlanOption = types.MealPlanOption{
-				ID:    exampleMealPlanGroceryListItemList[i].MealPlanOption.ID,
-				Votes: []*types.MealPlanOptionVote{},
-			}
 			exampleMealPlanGroceryListItemList[i].Ingredient = types.ValidIngredient{
 				ID: exampleMealPlanGroceryListItemList[i].Ingredient.ID,
 			}
@@ -375,9 +362,6 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 		exampleMealPlanGroceryListItem.ID = "1"
 		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
 
-		exampleMealPlanGroceryListItem.MealPlanOption = types.MealPlanOption{
-			ID: exampleMealPlanGroceryListItem.MealPlanOption.ID,
-		}
 		exampleMealPlanGroceryListItem.Ingredient = types.ValidIngredient{
 			ID: exampleMealPlanGroceryListItem.Ingredient.ID,
 		}
@@ -394,7 +378,7 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
-			exampleInput.MealPlanOptionID,
+			exampleInput.BelongsToMealPlan,
 			exampleInput.ValidIngredientID,
 			exampleInput.ValidMeasurementUnitID,
 			dbSafeMinQty,
@@ -450,7 +434,7 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
-			exampleInput.MealPlanOptionID,
+			exampleInput.BelongsToMealPlan,
 			exampleInput.ValidIngredientID,
 			exampleInput.ValidMeasurementUnitID,
 			dbSafeMinQty,
@@ -501,7 +485,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 		}
 
 		args := []interface{}{
-			exampleMealPlanGroceryListItem.MealPlanOption.ID,
+			exampleMealPlanGroceryListItem.BelongsToMealPlan,
 			exampleMealPlanGroceryListItem.Ingredient.ID,
 			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
 			dbSafeMinQty,
@@ -551,7 +535,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 		}
 
 		args := []interface{}{
-			exampleMealPlanGroceryListItem.MealPlanOption.ID,
+			exampleMealPlanGroceryListItem.BelongsToMealPlan,
 			exampleMealPlanGroceryListItem.Ingredient.ID,
 			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
 			dbSafeMinQty,

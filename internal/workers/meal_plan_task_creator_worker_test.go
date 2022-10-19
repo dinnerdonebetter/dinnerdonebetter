@@ -10,12 +10,12 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/pointers"
-	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -229,7 +229,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		w.dataManager = mdm
 
 		expected := map[string][]*types.MealPlanTaskDatabaseCreationInput{
-			exampleFinalizedMealPlanResult.MealPlanOptionID: expectedReturnResults,
+			exampleFinalizedMealPlanResult.MealPlanID: expectedReturnResults,
 		}
 
 		actual, err := w.DetermineCreatableMealPlanTasks(ctx)
@@ -423,7 +423,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		w.analyzer = mockAnalyzer
 
 		expected := map[string][]*types.MealPlanTaskDatabaseCreationInput{
-			exampleFinalizedMealPlanResult.MealPlanOptionID: expectedReturnResults,
+			exampleFinalizedMealPlanResult.MealPlanID: expectedReturnResults,
 		}
 
 		actual, err := w.DetermineCreatableMealPlanTasks(ctx)

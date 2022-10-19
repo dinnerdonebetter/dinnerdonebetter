@@ -16,6 +16,17 @@ const (
 	// MealPlanGroceryListItemQuantityModifier is what we multiply / divide by for float quantity values.
 	MealPlanGroceryListItemQuantityModifier = 100
 
+	// MealPlanGroceryListItemStatusUnknown represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusUnknown = "unknown"
+	// MealPlanGroceryListItemStatusAlreadyOwned represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusAlreadyOwned = "already owned"
+	// MealPlanGroceryListItemStatusNeeds represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusNeeds = "needs"
+	// MealPlanGroceryListItemStatusUnavailable represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusUnavailable = "unavailable"
+	// MealPlanGroceryListItemStatusAcquired represents the database-side enum member for grocery list item status.
+	MealPlanGroceryListItemStatusAcquired = "acquired"
+
 	// MealPlanGroceryListItemCreatedCustomerEventType indicates a meal plan grocery list item was created.
 	MealPlanGroceryListItemCreatedCustomerEventType CustomerEventType = "valid_preparation_created"
 	// MealPlanGroceryListItemUpdatedCustomerEventType indicates a meal plan grocery list item was updated.
@@ -46,7 +57,7 @@ type (
 		StatusExplanation        string                `json:"statusExplanation"`
 		Status                   string                `json:"status"`
 		MeasurementUnit          ValidMeasurementUnit  `json:"measurementUnit"`
-		MealPlanOption           MealPlanOption        `json:"mealPlanOption"`
+		BelongsToMealPlan        string                `json:"belongsToMealPlan"`
 		Ingredient               ValidIngredient       `json:"ingredient"`
 		MaximumQuantityNeeded    float32               `json:"maximumQuantityNeeded"`
 		MinimumQuantityNeeded    float32               `json:"minimumQuantityNeeded"`
@@ -68,7 +79,7 @@ type (
 		QuantityPurchased          *float32 `json:"quantityPurchased"`
 		StatusExplanation          string   `json:"statusExplanation"`
 		Status                     string   `json:"status"`
-		MealPlanOptionID           string   `json:"mealPlanOptionID"`
+		BelongsToMealPlan          string   `json:"belongsToMealPlan"`
 		ValidIngredientID          string   `json:"validIngredientID"`
 		ValidMeasurementUnitID     string   `json:"validMeasurementUnitID"`
 		MinimumQuantityNeeded      float32  `json:"minimumQuantityNeeded"`
@@ -86,7 +97,7 @@ type (
 		StatusExplanation          string
 		ValidMeasurementUnitID     string
 		ValidIngredientID          string
-		MealPlanOptionID           string
+		BelongsToMealPlan          string
 		ID                         string
 		MinimumQuantityNeeded      float32
 		MaximumQuantityNeeded      float32
@@ -96,7 +107,7 @@ type (
 	MealPlanGroceryListItemUpdateRequestInput struct {
 		_                          struct{}
 		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded"`
-		MealPlanOptionID           *string  `json:"mealPlanOptionID"`
+		BelongsToMealPlan          *string  `json:"belongsToMealPlan"`
 		ValidIngredientID          *string  `json:"validIngredientID"`
 		ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID"`
 		MinimumQuantityNeeded      *float32 `json:"minimumQuantityNeeded"`
@@ -117,6 +128,7 @@ type (
 		CreateMealPlanGroceryListItem(ctx context.Context, input *MealPlanGroceryListItemDatabaseCreationInput) (*MealPlanGroceryListItem, error)
 		UpdateMealPlanGroceryListItem(ctx context.Context, updated *MealPlanGroceryListItem) error
 		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error
+		CreateMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, inputs []*MealPlanGroceryListItemDatabaseCreationInput) error
 	}
 
 	// MealPlanGroceryListItemDataService describes a structure capable of serving traffic related to meal plan grocery list items.
@@ -131,8 +143,8 @@ type (
 
 // Update merges an MealPlanGroceryListItemUpdateRequestInput with a meal plan grocery list item.
 func (x *MealPlanGroceryListItem) Update(input *MealPlanGroceryListItemUpdateRequestInput) {
-	if input.MealPlanOptionID != nil && *input.MealPlanOptionID != x.MealPlanOption.ID {
-		x.MealPlanOption = MealPlanOption{ID: *input.MealPlanOptionID}
+	if input.BelongsToMealPlan != nil && *input.BelongsToMealPlan != x.BelongsToMealPlan {
+		x.BelongsToMealPlan = *input.BelongsToMealPlan
 	}
 	if input.ValidIngredientID != nil && *input.ValidIngredientID != x.Ingredient.ID {
 		x.Ingredient = ValidIngredient{ID: *input.ValidIngredientID}
@@ -177,7 +189,7 @@ func (x *MealPlanGroceryListItemCreationRequestInput) ValidateWithContext(ctx co
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MealPlanOptionID, validation.Required),
+		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityNeeded, validation.Required),
@@ -193,7 +205,7 @@ func (x *MealPlanGroceryListItemDatabaseCreationInput) ValidateWithContext(ctx c
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.MealPlanOptionID, validation.Required),
+		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityNeeded, validation.Required),
@@ -208,7 +220,7 @@ func (x *MealPlanGroceryListItemUpdateRequestInput) ValidateWithContext(ctx cont
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MealPlanOptionID, validation.Required),
+		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityNeeded, validation.Required),

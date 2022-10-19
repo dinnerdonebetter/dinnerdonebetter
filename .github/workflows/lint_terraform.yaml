@@ -1,0 +1,65 @@
+on:
+  pull_request:
+    paths:
+      - pkg/**
+      - cmd/**
+      - internal/**
+      - environments/**
+      - tests/**
+name: Lint Terraform code
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [ '1.16.x' ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.2
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        working-directory: environments/dev/terraform
+        id: fmt
+        run: terraform fmt -check
+
+      # begin things have to be done for terraform to succeed
+
+      - name: Build data changes cloud function directory
+        run: ./scripts/build_cloud_function.sh data_changes
+
+      - name: Build meal plan finalizer cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
+
+      - name: Build meal plan task creator cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_plan_task_creator
+
+      - name: Build meal plan grocery list initializer cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
+
+      - name: copy server config file
+        working-directory: environments/dev
+        run: |
+          cp config_files/service-config.json terraform/service-config.json
+
+      # end things have to be done for terraform to succeed
+
+      - name: Terraform Validate
+        working-directory: environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color

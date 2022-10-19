@@ -4,13 +4,12 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput creates a MealPlanOptionUpdateRequestInput from a MealPlanOption.
+// ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput creates a MealPlanOptionUpdateRequestInput from a BelongsToMealPlan.
 func ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(input *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	x := &types.MealPlanOptionUpdateRequestInput{
 		MealID:                 &input.Meal.ID,
 		Notes:                  &input.Notes,
 		BelongsToMealPlanEvent: &input.BelongsToMealPlanEvent,
-		PrepStepsCreated:       &input.PrepStepsCreated,
 	}
 
 	return x
@@ -22,7 +21,6 @@ func ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationIn
 		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
 		MealID:                 input.MealID,
 		Notes:                  input.Notes,
-		PrepStepsCreated:       input.PrepStepsCreated,
 	}
 
 	return x
@@ -71,7 +69,6 @@ func ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(mealPlanOption *t
 		AssignedCook:           mealPlanOption.AssignedCook,
 		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
 		BelongsToMealPlanEvent: mealPlanOption.BelongsToMealPlanEvent,
-		PrepStepsCreated:       mealPlanOption.PrepStepsCreated,
 	}
 }
 
@@ -84,6 +81,5 @@ func ConvertMealPlanOptionToMealPlanOptionDatabaseCreationInput(mealPlanOption *
 		AssignedCook:           mealPlanOption.AssignedCook,
 		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
 		BelongsToMealPlanEvent: mealPlanOption.BelongsToMealPlanEvent,
-		PrepStepsCreated:       mealPlanOption.PrepStepsCreated,
 	}
 }

@@ -172,24 +172,32 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
 	args := []interface{}{
 		mealPlanID,
 	}
 
 	rows, err := q.getRows(ctx, q.db, "meal plan events", getMealPlanEventsForMealPlanQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing meal plan events list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan events list retrieval query")
 	}
 
 	x, _, _, err = q.scanMealPlanEvents(ctx, rows, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning meal plan events")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan events")
 	}
 
 	for _, event := range x {
 		mealPlanOptions, mealPlanOptionsErr := q.getMealPlanOptionsForMealPlanEvent(ctx, mealPlanID, event.ID)
 		if mealPlanOptionsErr != nil {
-			return nil, observability.PrepareError(mealPlanOptionsErr, span, "fetching options for meal plan events")
+			return nil, observability.PrepareAndLogError(mealPlanOptionsErr, logger, span, "fetching options for meal plan events")
 		}
 
 		event.Options = mealPlanOptions

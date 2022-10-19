@@ -11,12 +11,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
+	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/recipeanalysis"
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
@@ -78,7 +78,7 @@ func CreateMealPlanTasks(ctx context.Context, _ PubSubMessage) error {
 	)
 
 	if err = mealPlanTaskCreationEnsurerWorker.HandleMessage(ctx, nil); err != nil {
-		observability.AcknowledgeError(err, logger, nil, "closing database connection")
+		observability.AcknowledgeError(err, logger, nil, "handling message")
 		return err
 	}
 
