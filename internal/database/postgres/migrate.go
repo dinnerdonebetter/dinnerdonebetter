@@ -285,6 +285,11 @@ var (
 			Description: "grocery item ownership change",
 			Script:      fetchMigration("00054_grocery_item_ownership_change"),
 		},
+		{
+			Version:     55,
+			Description: "measurement conversions",
+			Script:      fetchMigration("00055_measurement_conversions"),
+		},
 	}
 )
 

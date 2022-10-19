@@ -36,11 +36,6 @@ func BuildFakeNumber() int {
 	return fake.Number(1, math.MaxInt8-1)
 }
 
-// BuildFakeNumericID builds a fake ID.
-func BuildFakeNumericID() uint64 {
-	return uint64(fake.Uint32())
-}
-
 // BuildFakeTime builds a fake time.
 func BuildFakeTime() time.Time {
 	return fake.Date()

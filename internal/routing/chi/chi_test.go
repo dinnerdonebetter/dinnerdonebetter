@@ -3,7 +3,6 @@ package chi
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"testing"
 
 	"github.com/go-chi/chi/v5"
@@ -296,12 +295,12 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 		assert.NoError(t, err)
 		require.NotNil(t, req)
 
-		expected := fakes.BuildFakeNumericID()
+		expected := uint64(123456)
 
 		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, &chi.Context{
 			URLParams: chi.RouteParams{
 				Keys:   []string{exampleKey},
-				Values: []string{strconv.FormatUint(expected, 10)},
+				Values: []string{"123456"},
 			},
 		}))
 
