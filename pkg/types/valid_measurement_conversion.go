@@ -92,6 +92,8 @@ type (
 		CreateValidMeasurementConversion(ctx context.Context, input *ValidMeasurementConversionDatabaseCreationInput) (*ValidMeasurementConversion, error)
 		UpdateValidMeasurementConversion(ctx context.Context, updated *ValidMeasurementConversion) error
 		ArchiveValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) error
+		GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementConversion, error)
+		GetValidMeasurementConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementConversion, error)
 	}
 
 	// ValidMeasurementConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.

@@ -15,6 +15,20 @@ type ValidMeasurementConversionDataManager struct {
 	mock.Mock
 }
 
+// GetValidMeasurementConversionsFromUnit is a mock function.
+func (m *ValidMeasurementConversionDataManager) GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementConversion, error) {
+	returnValues := m.Called(ctx, validMeasurementUnitID)
+
+	return returnValues.Get(0).([]*types.ValidMeasurementConversion), returnValues.Error(1)
+}
+
+// GetValidMeasurementConversionsToUnit is a mock function.
+func (m *ValidMeasurementConversionDataManager) GetValidMeasurementConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementConversion, error) {
+	returnValues := m.Called(ctx, validMeasurementUnitID)
+
+	return returnValues.Get(0).([]*types.ValidMeasurementConversion), returnValues.Error(1)
+}
+
 // ValidMeasurementConversionExists is a mock function.
 func (m *ValidMeasurementConversionDataManager) ValidMeasurementConversionExists(ctx context.Context, validPreparationID string) (bool, error) {
 	args := m.Called(ctx, validPreparationID)

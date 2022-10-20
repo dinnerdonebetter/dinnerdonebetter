@@ -135,7 +135,7 @@ func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with invalid valid preparation ID", func(t *testing.T) {
+	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -218,7 +218,7 @@ func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with invalid valid preparation ID", func(t *testing.T) {
+	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -248,6 +248,62 @@ func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
 		actual, err := c.GetValidMeasurementConversion(ctx, exampleValidMeasurementConversion.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidMeasurementConversionsFromUnit(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+		exampleValidMeasurementConversions := fakes.BuildFakeValidMeasurementConversionList().ValidMeasurementConversions
+
+		c, db := buildTestClient(t)
+
+		getValidMeasurementConversionsFromUnitArgs := []interface{}{
+			exampleValidMeasurementUnit.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementConversionsFromUnitQuery)).
+			WithArgs(interfaceToDriverValue(getValidMeasurementConversionsFromUnitArgs)...).
+			WillReturnRows(buildMockRowsFromValidMeasurementConversions(false, 0, exampleValidMeasurementConversions...))
+
+		actual, err := c.GetValidMeasurementConversionsFromUnit(ctx, exampleValidMeasurementUnit.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidMeasurementConversions, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidMeasurementConversionsToUnit(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+		exampleValidMeasurementConversions := fakes.BuildFakeValidMeasurementConversionList().ValidMeasurementConversions
+
+		c, db := buildTestClient(t)
+
+		getValidMeasurementConversionsToUnitArgs := []interface{}{
+			exampleValidMeasurementUnit.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementConversionsToUnitQuery)).
+			WithArgs(interfaceToDriverValue(getValidMeasurementConversionsToUnitArgs)...).
+			WillReturnRows(buildMockRowsFromValidMeasurementConversions(false, 0, exampleValidMeasurementConversions...))
+
+		actual, err := c.GetValidMeasurementConversionsToUnit(ctx, exampleValidMeasurementUnit.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidMeasurementConversions, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -449,7 +505,7 @@ func TestQuerier_ArchiveValidMeasurementConversion(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with invalid valid preparation ID", func(t *testing.T) {
+	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
