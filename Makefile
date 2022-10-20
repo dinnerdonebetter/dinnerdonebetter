@@ -138,12 +138,12 @@ queries_lint:
 
 .PHONY: golang_lint
 golang_lint:
-	@docker pull golangci/golangci-lint:v1.49
+	@docker pull golangci/golangci-lint:v1.50
 	docker run \
 		--rm \
 		--volume $(PWD):$(PWD) \
 		--workdir=$(PWD) \
-		golangci/golangci-lint:v1.49 golangci-lint run --config=.golangci.yml ./...
+		golangci/golangci-lint:v1.50 golangci-lint run --config=.golangci.yml ./...
 
 .PHONY: lint
 lint: docker_lint queries_lint golang_lint # check_terraform

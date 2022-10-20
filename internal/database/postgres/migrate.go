@@ -290,6 +290,11 @@ var (
 			Description: "measurement conversions",
 			Script:      fetchMigration("00055_measurement_conversions"),
 		},
+		{
+			Version:     56,
+			Description: "recipe media",
+			Script:      fetchMigration("00056_recipe_media"),
+		},
 	}
 )
 
