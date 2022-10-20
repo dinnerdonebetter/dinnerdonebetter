@@ -94,5 +94,6 @@ type (
 		types.RecipePrepTaskDataManager
 		types.MealPlanGroceryListItemDataManager
 		types.ValidMeasurementConversionDataManager
+		types.RecipeMediaDataManager
 	}
 )

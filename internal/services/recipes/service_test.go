@@ -14,6 +14,8 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	"github.com/prixfixeco/api_server/internal/storage"
+	"github.com/prixfixeco/api_server/internal/uploads/images"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
@@ -50,10 +52,13 @@ func TestProvideRecipesService(T *testing.T) {
 			logging.NewNoopLogger(),
 			cfg,
 			&mocktypes.RecipeDataManager{},
+			&mocktypes.RecipeMediaDataManager{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
+			&storage.MockUploader{},
+			&images.MockImageUploadProcessor{},
 			tracing.NewNoopTracerProvider(),
 		)
 
@@ -77,10 +82,13 @@ func TestProvideRecipesService(T *testing.T) {
 			logging.NewNoopLogger(),
 			cfg,
 			&mocktypes.RecipeDataManager{},
+			&mocktypes.RecipeMediaDataManager{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
+			&storage.MockUploader{},
+			&images.MockImageUploadProcessor{},
 			tracing.NewNoopTracerProvider(),
 		)
 

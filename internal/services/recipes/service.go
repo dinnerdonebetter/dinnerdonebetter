@@ -12,6 +12,8 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/api_server/internal/uploads"
+	"github.com/prixfixeco/api_server/internal/uploads/images"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -26,11 +28,14 @@ type (
 	service struct {
 		logger                    logging.Logger
 		recipeDataManager         types.RecipeDataManager
+		recipeMediaDataManager    types.RecipeMediaDataManager
 		recipeAnalyzer            recipeanalysis.RecipeAnalyzer
 		recipeIDFetcher           func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
 		timeFunc                  func() time.Time
+		uploadManager             uploads.UploadManager
+		imageUploadProcessor      images.ImageUploadProcessor
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
 	}
@@ -45,10 +50,13 @@ func ProvideService(
 	logger logging.Logger,
 	cfg *Config,
 	recipeDataManager types.RecipeDataManager,
+	recipeMediaDataManager types.RecipeMediaDataManager,
 	recipeGrapher recipeanalysis.RecipeAnalyzer,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
+	uploader uploads.UploadManager,
+	imageUploadProcessor images.ImageUploadProcessor,
 	tracerProvider tracing.TracerProvider,
 ) (types.RecipeDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
@@ -61,10 +69,13 @@ func ProvideService(
 		recipeIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(RecipeIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		recipeDataManager:         recipeDataManager,
+		recipeMediaDataManager:    recipeMediaDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
 		timeFunc:                  defaultTimeFunc,
 		recipeAnalyzer:            recipeGrapher,
+		uploadManager:             uploader,
+		imageUploadProcessor:      imageUploadProcessor,
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 

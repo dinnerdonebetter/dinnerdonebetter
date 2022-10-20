@@ -153,4 +153,7 @@ const (
 
 	// ValidMeasurementConversionIDKey is the standard key for referring to a valid measurement conversion's ID.
 	ValidMeasurementConversionIDKey = "valid_measurement_conversion.id"
+
+	// RecipeMediaIDKey is the standard key for referring to a recipe media's ID.
+	RecipeMediaIDKey = "recipe_media.id"
 )

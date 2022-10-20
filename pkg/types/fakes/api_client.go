@@ -14,7 +14,7 @@ func BuildFakeAPIClient() *types.APIClient {
 		ID:            BuildFakeID(),
 		Name:          fake.Password(true, true, true, false, false, 32),
 		ClientID:      BuildFakeID(),
-		ClientSecret:  []byte(fake.Password(true, true, true, true, false, 32)),
+		ClientSecret:  []byte(BuildFakePassword()),
 		BelongsToUser: fake.UUID(),
 		CreatedAt:     fake.Date(),
 	}
@@ -54,7 +54,7 @@ func BuildFakeAPIClientCreationInput() *types.APIClientCreationRequestInput {
 	return &types.APIClientCreationRequestInput{
 		UserLoginInput: types.UserLoginInput{
 			Username:  fake.Username(),
-			Password:  fake.Password(true, true, true, true, false, 32),
+			Password:  BuildFakePassword(),
 			TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
 		},
 		Name:          client.Name,
@@ -69,7 +69,7 @@ func BuildFakeAPIClientCreationInputFromClient(client *types.APIClient) *types.A
 		ID: client.ID,
 		UserLoginInput: types.UserLoginInput{
 			Username:  fake.Username(),
-			Password:  fake.Password(true, true, true, true, false, 32),
+			Password:  BuildFakePassword(),
 			TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
 		},
 		Name:          client.Name,

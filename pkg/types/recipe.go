@@ -125,6 +125,7 @@ type (
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 		DAGHandler(res http.ResponseWriter, req *http.Request)
 		EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.Request)
+		ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
