@@ -11,8 +11,10 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"gocloud.dev/blob"
 	"gocloud.dev/blob/fileblob"
+	"gocloud.dev/blob/gcsblob"
 	"gocloud.dev/blob/memblob"
 	"gocloud.dev/blob/s3blob"
+	"gocloud.dev/gcp"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -47,6 +49,7 @@ type (
 
 		FilesystemConfig  *FilesystemConfig `json:"filesystem,omitempty" mapstructure:"filesystem" toml:"filesystem,omitempty"`
 		S3Config          *S3Config         `json:"s3,omitempty" mapstructure:"s3" toml:"s3,omitempty"`
+		GCPConfig         *GCPConfig        `json:"gcpConfig,omitempty" mapstructure:"gcp_config" toml:"gcp_config,omitempty"`
 		BucketName        string            `json:"bucketName,omitempty" mapstructure:"bucket_name" toml:"bucket_name,omitempty"`
 		UploadFilenameKey string            `json:"uploadFilenameKey,omitempty" mapstructure:"upload_filename_key" toml:"upload_filename_key,omitempty"`
 		Provider          string            `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
@@ -59,8 +62,9 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
 		validation.Field(&c.BucketName, validation.Required),
-		validation.Field(&c.Provider, validation.In(S3Provider, FilesystemProvider, MemoryProvider)),
+		validation.Field(&c.Provider, validation.In(S3Provider, FilesystemProvider, MemoryProvider, GCPCloudStorageProvider)),
 		validation.Field(&c.S3Config, validation.When(c.Provider == S3Provider, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.GCPConfig, validation.When(c.Provider == GCPCloudStorageProvider, validation.Required).Else(validation.Nil)),
 		validation.Field(&c.FilesystemConfig, validation.When(c.Provider == FilesystemProvider, validation.Required).Else(validation.Nil)),
 	)
 }
@@ -106,6 +110,20 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 			UseLegacyList: false,
 		}); err != nil {
 			return fmt.Errorf("initializing s3 bucket: %w", err)
+		}
+	case GCPCloudStorageProvider:
+		creds, credsErr := gcp.DefaultCredentials(ctx)
+		if credsErr != nil {
+			return fmt.Errorf("initializing GCP storage: %w", credsErr)
+		}
+		client, clientErr := gcp.NewHTTPClient(gcp.DefaultTransport(), creds.TokenSource)
+		if clientErr != nil {
+			return fmt.Errorf("initializing GCP storage: %w", clientErr)
+		}
+
+		u.bucket, err = gcsblob.OpenBucket(ctx, client, cfg.BucketName, nil)
+		if err != nil {
+			return fmt.Errorf("initializing GCP storage: %w", err)
 		}
 	case MemoryProvider:
 		u.bucket = memblob.OpenBucket(&memblob.Options{})

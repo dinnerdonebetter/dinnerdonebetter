@@ -3,8 +3,10 @@ package recipes
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"image/png"
 	"net/http"
+	"time"
 
 	"github.com/segmentio/ksuid"
 
@@ -477,4 +479,70 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, responseEvents)
+}
+
+// ImageUploadHandler updates a user's avatar.
+func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
+	logger.Info("about to start processing image")
+
+	img, err := s.imageUploadProcessor.Process(ctx, req, "upload")
+	if err != nil || img == nil {
+		observability.AcknowledgeError(err, logger, span, "processing provided image")
+		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)
+		return
+	}
+
+	logger.Info("processed image, saving file")
+
+	internalPath := fmt.Sprintf("%s_%d", recipeID, time.Now().Unix())
+	logger = logger.WithValue("internal_path", internalPath).WithValue("file_size", len(img.Data))
+
+	if err = s.uploadManager.SaveFile(ctx, internalPath, img.Data); err != nil {
+		observability.AcknowledgeError(err, logger, span, "saving provided image")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	input := &types.RecipeMediaDatabaseCreationInput{
+		ID:                  ksuid.New().String(),
+		BelongsToRecipe:     &recipeID,
+		BelongsToRecipeStep: nil,
+		MimeType:            img.ContentType,
+		InternalPath:        img.Filename,
+		ExternalPath:        img.Filename,
+	}
+
+	logger.Info("image uploaded to file store, saving info in database")
+
+	x, err := s.recipeMediaDataManager.CreateRecipeMedia(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "saving recipe media record")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	logger.Info("responding with upload data")
+
+	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

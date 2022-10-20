@@ -145,8 +145,9 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	recipesConfig := &servicesConfigurations.Recipes
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
+	recipeMediaDataManager := database.ProvideRecipeMediaDataService(dataManager)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
-	recipeDataService, err := recipes.ProvideService(logger, recipesConfig, recipeDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeDataService, err := recipes.ProvideService(logger, recipesConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, uploadManager, imageUploadProcessor, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

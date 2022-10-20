@@ -45,3 +45,8 @@ func BuildFakeTime() time.Time {
 func buildUniqueString() string {
 	return fake.LoremIpsumSentence(7)
 }
+
+// BuildFakePassword builds a fake password.
+func BuildFakePassword() string {
+	return fake.Password(true, true, true, true, false, 32)
+}
