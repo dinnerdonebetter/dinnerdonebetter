@@ -30,35 +30,7 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 	for _, x := range recipeStepIngredients {
 		var ingredient *types.NullableValidIngredient
 		if x.Ingredient != nil {
-			ingredient = &types.NullableValidIngredient{
-				CreatedAt:                               &x.Ingredient.CreatedAt,
-				LastUpdatedAt:                           x.Ingredient.LastUpdatedAt,
-				ArchivedAt:                              x.Ingredient.ArchivedAt,
-				ID:                                      &x.Ingredient.ID,
-				Warning:                                 &x.Ingredient.Warning,
-				Description:                             &x.Ingredient.Description,
-				IconPath:                                &x.Ingredient.IconPath,
-				PluralName:                              &x.Ingredient.PluralName,
-				StorageInstructions:                     &x.Ingredient.StorageInstructions,
-				Name:                                    &x.Ingredient.Name,
-				MaximumIdealStorageTemperatureInCelsius: x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
-				MinimumIdealStorageTemperatureInCelsius: x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
-				ContainsShellfish:                       &x.Ingredient.ContainsShellfish,
-				ContainsDairy:                           &x.Ingredient.ContainsDairy,
-				AnimalFlesh:                             &x.Ingredient.AnimalFlesh,
-				IsMeasuredVolumetrically:                &x.Ingredient.IsMeasuredVolumetrically,
-				IsLiquid:                                &x.Ingredient.IsLiquid,
-				ContainsPeanut:                          &x.Ingredient.ContainsPeanut,
-				ContainsTreeNut:                         &x.Ingredient.ContainsTreeNut,
-				ContainsEgg:                             &x.Ingredient.ContainsEgg,
-				ContainsWheat:                           &x.Ingredient.ContainsWheat,
-				ContainsSoy:                             &x.Ingredient.ContainsSoy,
-				AnimalDerived:                           &x.Ingredient.AnimalDerived,
-				RestrictToPreparations:                  &x.Ingredient.RestrictToPreparations,
-				ContainsSesame:                          &x.Ingredient.ContainsSesame,
-				ContainsFish:                            &x.Ingredient.ContainsFish,
-				ContainsGluten:                          &x.Ingredient.ContainsGluten,
-			}
+			ingredient = converters.ConvertValidIngredientToNullableValidIngredient(x.Ingredient)
 		}
 
 		rowValues := []driver.Value{

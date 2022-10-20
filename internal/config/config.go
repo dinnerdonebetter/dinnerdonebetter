@@ -37,6 +37,7 @@ import (
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	"github.com/prixfixeco/api_server/internal/services/validmeasurementconversions"
 	validmeaurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
@@ -106,6 +107,7 @@ type (
 		MealPlanTasks                   mealplantasks.Config                          `json:"mealPlanTasks" mapstructure:"meal_plan_tasks" toml:"meal_plan_tasks,omitempty"`
 		RecipePrepTasks                 recipepreptasks.Config                        `json:"recipePrepTasks" mapstructure:"recipe_prep_tasks" toml:"recipe_prep_tasks,omitempty"`
 		MealPlanGroceryListItems        mealplangrocerylistitems.Config               `json:"mealPlanGroceryListItems" mapstructure:"meal_plan_grocery_list_items" toml:"meal_plan_grocery_list_items,omitempty"`
+		ValidMeasurementConversions     validmeasurementconversions.Config            `json:"validMeasurementConversions" mapstructure:"valid_measurement_conversions" toml:"valid_measurement_conversions,omitempty"`
 		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )
@@ -206,7 +208,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating TaskSteps service portion of config: %w", err), result)
+			result = multierror.Append(fmt.Errorf("error validating RecipeSteps service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
@@ -222,7 +224,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.MealPlanEvents.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating MealPlans service portion of config: %w", err), result)
+			result = multierror.Append(fmt.Errorf("error validating MealPlanEvents service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.MealPlanOptions.ValidateWithContext(ctx); err != nil {
@@ -234,11 +236,15 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.RecipePrepTasks.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err), result)
+			result = multierror.Append(fmt.Errorf("error validating RecipePrepTasks service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.MealPlanGroceryListItems.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err), result)
+			result = multierror.Append(fmt.Errorf("error validating MealPlanGroceryListItems service portion of config: %w", err), result)
+		}
+
+		if err := cfg.Services.ValidMeasurementConversions.ValidateWithContext(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating ValidMeasurementConversions service portion of config: %w", err), result)
 		}
 	}
 

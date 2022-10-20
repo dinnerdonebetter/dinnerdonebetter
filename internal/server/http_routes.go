@@ -30,6 +30,7 @@ import (
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	validmeasurementconversionsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementconversions"
 	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
@@ -337,6 +338,28 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
+		// ValidMeasurementConversions
+		validMeasurementConversionPath := "valid_measurement_conversions"
+		validMeasurementConversionsRouteWithPrefix := fmt.Sprintf("/%s", validMeasurementConversionPath)
+		validMeasurementConversionIDRouteParam := buildURLVarChunk(validmeasurementconversionsservice.ValidMeasurementConversionIDURIParamKey, "")
+		v1Router.Route(validMeasurementConversionsRouteWithPrefix, func(validMeasurementConversionsRouter routing.Router) {
+			validMeasurementConversionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidMeasurementConversionsPermission)).
+				Post(root, s.validMeasurementConversionsService.CreateHandler)
+
+			validMeasurementConversionsRouter.Route(validMeasurementConversionIDRouteParam, func(singleValidMeasurementConversionRouter routing.Router) {
+				singleValidMeasurementConversionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementConversionsPermission)).
+					Get(root, s.validMeasurementConversionsService.ReadHandler)
+				singleValidMeasurementConversionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementConversionsPermission)).
+					Delete(root, s.validMeasurementConversionsService.ArchiveHandler)
+				singleValidMeasurementConversionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidMeasurementConversionsPermission)).
+					Put(root, s.validMeasurementConversionsService.UpdateHandler)
+			})
+		})
+
 		// ValidIngredientPreparations
 		validIngredientPreparationPath := "valid_ingredient_preparations"
 		validIngredientPreparationsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientPreparationPath)
@@ -350,8 +373,8 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				Get(root, s.validIngredientPreparationsService.ListHandler)
 
 			validIngredientPreparationsByIngredientIDRouteParam := fmt.Sprintf("/by_ingredient%s", buildURLVarChunk(validingredientpreparationsservice.ValidIngredientIDURIParamKey, ""))
-			validIngredientPreparationsRouter.Route(validIngredientPreparationsByIngredientIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
-				byValidPreparationIDRouter.
+			validIngredientPreparationsRouter.Route(validIngredientPreparationsByIngredientIDRouteParam, func(byValidIngredientIDRouter routing.Router) {
+				byValidIngredientIDRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
 					Get(root, s.validIngredientPreparationsService.SearchByIngredientHandler)
 			})

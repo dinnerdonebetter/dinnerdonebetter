@@ -93,5 +93,6 @@ type (
 		types.ValidIngredientMeasurementUnitDataManager
 		types.RecipePrepTaskDataManager
 		types.MealPlanGroceryListItemDataManager
+		types.ValidMeasurementConversionDataManager
 	}
 )

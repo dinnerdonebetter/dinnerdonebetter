@@ -163,8 +163,8 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		ctx := context.Background()
 
-		expectedGroceryListItemInputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{
-			{
+		expectedGroceryListItemInputs := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
+			onion.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
@@ -172,7 +172,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				MinimumQuantityNeeded:  200,
 				MaximumQuantityNeeded:  200,
 			},
-			{
+			carrot.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
@@ -180,7 +180,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				MinimumQuantityNeeded:  100,
 				MaximumQuantityNeeded:  100,
 			},
-			{
+			celery.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
@@ -188,7 +188,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				MinimumQuantityNeeded:  100,
 				MaximumQuantityNeeded:  100,
 			},
-			{
+			salt.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      salt.ID,
@@ -201,10 +201,12 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
 		assert.NoError(t, err)
 
+		actualMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{}
 		for i := range actual {
-			expectedGroceryListItemInputs[i].ID = actual[i].ID
+			actualMap[actual[i].ValidIngredientID] = actual[i]
+			expectedGroceryListItemInputs[actual[i].ValidIngredientID].ID = actual[i].ID
 		}
 
-		assert.Equal(t, expectedGroceryListItemInputs, actual)
+		assert.Equal(t, expectedGroceryListItemInputs, actualMap)
 	})
 }

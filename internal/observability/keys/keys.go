@@ -150,4 +150,7 @@ const (
 
 	// MealPlanGroceryListItemIDKey is the standard key for referring to a meal plan grocery list item's ID.
 	MealPlanGroceryListItemIDKey = "meal_plan_grocery_list_item.id"
+
+	// ValidMeasurementConversionIDKey is the standard key for referring to a valid measurement conversion's ID.
+	ValidMeasurementConversionIDKey = "valid_measurement_conversion.id"
 )

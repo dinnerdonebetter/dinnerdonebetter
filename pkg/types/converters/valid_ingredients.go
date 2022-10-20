@@ -125,3 +125,69 @@ func ConvertValidIngredientToValidIngredientDatabaseCreationInput(validIngredien
 		StorageInstructions:                     validIngredient.StorageInstructions,
 	}
 }
+
+// ConvertNullableValidIngredientToValidIngredient converts a NullableValidIngredient to a ValidIngredient.
+func ConvertNullableValidIngredientToValidIngredient(input *types.NullableValidIngredient) *types.ValidIngredient {
+	return &types.ValidIngredient{
+		CreatedAt:                               *input.CreatedAt,
+		LastUpdatedAt:                           input.LastUpdatedAt,
+		ArchivedAt:                              input.ArchivedAt,
+		ID:                                      *input.ID,
+		Warning:                                 *input.Warning,
+		Description:                             *input.Description,
+		IconPath:                                *input.IconPath,
+		PluralName:                              *input.PluralName,
+		StorageInstructions:                     *input.StorageInstructions,
+		Name:                                    *input.Name,
+		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
+		ContainsShellfish:                       *input.ContainsShellfish,
+		ContainsDairy:                           *input.ContainsDairy,
+		AnimalFlesh:                             *input.AnimalFlesh,
+		IsMeasuredVolumetrically:                *input.IsMeasuredVolumetrically,
+		IsLiquid:                                *input.IsLiquid,
+		ContainsPeanut:                          *input.ContainsPeanut,
+		ContainsTreeNut:                         *input.ContainsTreeNut,
+		ContainsEgg:                             *input.ContainsEgg,
+		ContainsWheat:                           *input.ContainsWheat,
+		ContainsSoy:                             *input.ContainsSoy,
+		AnimalDerived:                           *input.AnimalDerived,
+		RestrictToPreparations:                  *input.RestrictToPreparations,
+		ContainsSesame:                          *input.ContainsSesame,
+		ContainsFish:                            *input.ContainsFish,
+		ContainsGluten:                          *input.ContainsGluten,
+	}
+}
+
+// ConvertValidIngredientToNullableValidIngredient converts a NullableValidIngredient to a ValidIngredient.
+func ConvertValidIngredientToNullableValidIngredient(input *types.ValidIngredient) *types.NullableValidIngredient {
+	return &types.NullableValidIngredient{
+		CreatedAt:                               &input.CreatedAt,
+		LastUpdatedAt:                           input.LastUpdatedAt,
+		ArchivedAt:                              input.ArchivedAt,
+		ID:                                      &input.ID,
+		Warning:                                 &input.Warning,
+		Description:                             &input.Description,
+		IconPath:                                &input.IconPath,
+		PluralName:                              &input.PluralName,
+		StorageInstructions:                     &input.StorageInstructions,
+		Name:                                    &input.Name,
+		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
+		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
+		ContainsShellfish:                       &input.ContainsShellfish,
+		ContainsDairy:                           &input.ContainsDairy,
+		AnimalFlesh:                             &input.AnimalFlesh,
+		IsMeasuredVolumetrically:                &input.IsMeasuredVolumetrically,
+		IsLiquid:                                &input.IsLiquid,
+		ContainsPeanut:                          &input.ContainsPeanut,
+		ContainsTreeNut:                         &input.ContainsTreeNut,
+		ContainsEgg:                             &input.ContainsEgg,
+		ContainsWheat:                           &input.ContainsWheat,
+		ContainsSoy:                             &input.ContainsSoy,
+		AnimalDerived:                           &input.AnimalDerived,
+		RestrictToPreparations:                  &input.RestrictToPreparations,
+		ContainsSesame:                          &input.ContainsSesame,
+		ContainsFish:                            &input.ContainsFish,
+		ContainsGluten:                          &input.ContainsGluten,
+	}
+}
