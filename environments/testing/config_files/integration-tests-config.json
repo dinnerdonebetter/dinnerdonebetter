@@ -170,6 +170,9 @@
 		"mealPlanGroceryListItems": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"validMeasurementConversions": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"auth": {
 			"dataChanges": "data_changes",
 			"cookies": {

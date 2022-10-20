@@ -221,11 +221,11 @@ func (q *Querier) GetValidMeasurementConversion(ctx context.Context, validMeasur
 		validMeasurementConversionID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "validMeasurementConversion", getValidMeasurementConversionQuery, args)
+	row := q.getOneRow(ctx, q.db, "valid measurement conversion", getValidMeasurementConversionQuery, args)
 
 	validMeasurementConversion, _, _, err := q.scanValidMeasurementConversion(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validMeasurementConversion")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement conversion")
 	}
 
 	return validMeasurementConversion, nil

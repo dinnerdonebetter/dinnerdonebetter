@@ -1,7 +1,9 @@
 package integration
 
 import (
+	"context"
 	"fmt"
+	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"testing"
 
@@ -42,6 +44,22 @@ func convertValidMeasurementUnitToValidMeasurementUnitUpdateInput(x *types.Valid
 	}
 }
 
+func createValidMeasurementUnitForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidMeasurementUnit {
+	t.Log("creating valid measurement unit")
+	exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+	exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
+	createdValidMeasurementUnit, err := adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+	require.NoError(t, err)
+	t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
+	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
+	createdValidMeasurementUnit, err = adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+	requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
+	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
+	return createdValidMeasurementUnit
+}
+
 func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -50,17 +68,7 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid measurement unit")
-			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
-			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
-			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
-
-			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
-			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
-			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+			createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 
 			t.Log("changing valid measurement unit")
 			newValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()

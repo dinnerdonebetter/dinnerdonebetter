@@ -47,6 +47,7 @@ import (
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	"github.com/prixfixeco/api_server/internal/services/validmeasurementconversions"
 	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
@@ -424,6 +425,9 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			MealPlanGroceryListItems: mealplangrocerylistitems.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidMeasurementConversions: validmeasurementconversions.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -589,6 +593,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlanGroceryListItems: mealplangrocerylistitems.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidMeasurementConversions: validmeasurementconversions.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

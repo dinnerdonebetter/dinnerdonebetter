@@ -37,6 +37,7 @@ var (
 		ProvideWebhookDataManager,
 		ProvideRecipePrepTaskDataManager,
 		ProvideMealPlanGroceryListItemDataManager,
+		ProvideValidMeasurementConversionDataService,
 	)
 )
 
@@ -177,5 +178,10 @@ func ProvideRecipePrepTaskDataManager(db DataManager) types.RecipePrepTaskDataMa
 
 // ProvideMealPlanGroceryListItemDataManager is an arbitrary function for dependency injection's sake.
 func ProvideMealPlanGroceryListItemDataManager(db DataManager) types.MealPlanGroceryListItemDataManager {
+	return db
+}
+
+// ProvideValidMeasurementConversionDataService is an arbitrary function for dependency injection's sake.
+func ProvideValidMeasurementConversionDataService(db DataManager) types.ValidMeasurementConversionDataManager {
 	return db
 }

@@ -45,6 +45,7 @@ import (
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	validmeasurementconversionsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementconversions"
 	validmeasurementunits "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
@@ -106,6 +107,7 @@ func Build(
 		graphing.Providers,
 		recipepreptasksservice.Providers,
 		mealplangrocerylistitems.Providers,
+		validmeasurementconversionsservice.Providers,
 	)
 
 	return nil, nil

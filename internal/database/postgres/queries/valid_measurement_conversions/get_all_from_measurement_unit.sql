@@ -60,7 +60,7 @@ FROM valid_measurement_conversions
          LEFT JOIN valid_ingredients ON valid_measurement_conversions.only_for_ingredient = valid_ingredients.id
          JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_conversions.from_unit = valid_measurement_units_from.id
          JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_conversions.to_unit = valid_measurement_units_to.id
-WHERE valid_measurement_conversions.id = $1
-  AND valid_measurement_conversions.archived_at IS NULL
+WHERE valid_measurement_conversions.archived_at IS NULL
   AND valid_measurement_units_from.archived_at IS NULL
+  AND valid_measurement_units_from.id = $1
   AND valid_measurement_units_to.archived_at IS NULL

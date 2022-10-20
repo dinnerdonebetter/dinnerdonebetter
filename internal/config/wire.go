@@ -50,6 +50,7 @@ var (
 			"MealPlanTasks",
 			"RecipePrepTasks",
 			"MealPlanGroceryListItems",
+			"ValidMeasurementConversions",
 			"Auth",
 		),
 	)

@@ -60,8 +60,10 @@ type (
 		Context                          map[string]string               `json:"context,omitempty"`
 		AttributableToUserID             string                          `json:"attributableToUserID,omitempty"`
 		AttributableToHouseholdID        string                          `json:"attributableToHouseholdID,omitempty"`
-		MealPlanGroceryListItem          *MealPlanGroceryListItem        `json:"mealPlanGroceryListItem"`
-		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID"`
+		MealPlanGroceryListItem          *MealPlanGroceryListItem        `json:"mealPlanGroceryListItem,omitempty"`
+		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
+		ValidMeasurementConversion       *ValidMeasurementConversion     `json:"validMeasurementConversion,omitempty"`
+		ValidMeasurementConversionID     string                          `json:"validMeasurementConversionID,omitempty"`
 	}
 
 	choreType string
