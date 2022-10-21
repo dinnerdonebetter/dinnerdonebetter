@@ -275,7 +275,7 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, false, false)
 }
 
-func buildLocalDevConfig() *config.InstanceConfig {
+func buildDevConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
 		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
@@ -431,13 +431,13 @@ func buildLocalDevConfig() *config.InstanceConfig {
 }
 
 func localDevelopmentServiceConfig(ctx context.Context, filePath string) error {
-	cfg := buildLocalDevConfig()
+	cfg := buildDevConfig()
 
 	return saveConfig(ctx, filePath, cfg, true, true)
 }
 
 func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
-	cfg := buildLocalDevConfig()
+	cfg := buildDevConfig()
 
 	cfg.Database.LogQueries = false
 	cfg.Database.RunMigrations = false
