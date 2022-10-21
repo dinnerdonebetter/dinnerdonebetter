@@ -18,6 +18,12 @@ resource "google_project_iam_custom_role" "api_server_role" {
     "logging.buckets.write",
     "logging.buckets.list",
     "logging.buckets.get",
+    "storage.objects.list",
+    "storage.objects.get",
+    "storage.objects.update",
+    "storage.objects.create",
+    "storage.objects.delete",
+    "storage.objects.get",
   ]
 }
 

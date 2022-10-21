@@ -68,7 +68,7 @@ func ProvideService(
 
 	uploader, err := storage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
 	if err != nil {
-		return nil, fmt.Errorf("initializing uploader: %w", err)
+		return nil, fmt.Errorf("initializing recipe service upload manager: %w", err)
 	}
 
 	svc := &service{
