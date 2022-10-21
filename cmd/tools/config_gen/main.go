@@ -263,6 +263,32 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
 			},
+			Users: usersservice.Config{
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: storage.Config{
+						UploadFilenameKey: "avatar",
+						Provider:          storage.GCPCloudStorageProvider,
+						BucketName:        "media.prixfixe.dev",
+						GCPConfig: &storage.GCPConfig{
+							BucketName: "media.prixfixe.dev",
+						},
+					},
+				},
+			},
+			Recipes: recipesservice.Config{
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: storage.Config{
+						UploadFilenameKey: "recipe_media",
+						Provider:          storage.GCPCloudStorageProvider,
+						BucketName:        "media.prixfixe.dev",
+						GCPConfig: &storage.GCPConfig{
+							BucketName: "media.prixfixe.dev",
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -319,10 +345,10 @@ func buildDevConfig() *config.InstanceConfig {
 					Debug: true,
 					Storage: storage.Config{
 						UploadFilenameKey: "avatar",
-						Provider:          storage.GCPCloudStorageProvider,
-						BucketName:        "media.prixfixe.dev",
-						GCPConfig: &storage.GCPConfig{
-							BucketName: "media.prixfixe.dev",
+						Provider:          storage.FilesystemProvider,
+						BucketName:        "avatars",
+						FilesystemConfig: &storage.FilesystemConfig{
+							RootDirectory: "/uploads",
 						},
 					},
 				},
@@ -382,10 +408,10 @@ func buildDevConfig() *config.InstanceConfig {
 					Debug: true,
 					Storage: storage.Config{
 						UploadFilenameKey: "recipe_media",
-						Provider:          storage.GCPCloudStorageProvider,
-						BucketName:        "media.prixfixe.dev",
-						GCPConfig: &storage.GCPConfig{
-							BucketName: "media.prixfixe.dev",
+						Provider:          storage.FilesystemProvider,
+						BucketName:        "recipe_media",
+						FilesystemConfig: &storage.FilesystemConfig{
+							RootDirectory: "/uploads",
 						},
 					},
 				},

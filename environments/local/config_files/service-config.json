@@ -120,12 +120,12 @@
 			"dataChangesTopicName": "data_changes",
 			"uploads": {
 				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "media.prixfixe.dev"
+					"filesystem": {
+						"rootDirectory": "/uploads"
 					},
-					"bucketName": "media.prixfixe.dev",
+					"bucketName": "recipe_media",
 					"uploadFilenameKey": "recipe_media",
-					"provider": "gcp"
+					"provider": "filesystem"
 				},
 				"debug": true
 			}
@@ -166,12 +166,12 @@
 			"dataChangesTopicName": "data_changes",
 			"uploads": {
 				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "media.prixfixe.dev"
+					"filesystem": {
+						"rootDirectory": "/uploads"
 					},
-					"bucketName": "media.prixfixe.dev",
+					"bucketName": "avatars",
 					"uploadFilenameKey": "avatar",
-					"provider": "gcp"
+					"provider": "filesystem"
 				},
 				"debug": true
 			}

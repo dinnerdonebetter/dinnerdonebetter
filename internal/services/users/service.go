@@ -84,7 +84,7 @@ func ProvideUsersService(
 
 	uploadManager, err := storage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
 	if err != nil {
-		return nil, fmt.Errorf("initializing uploadManager: %w", err)
+		return nil, fmt.Errorf("initializing users service upload manager: %w", err)
 	}
 
 	s := &service{
