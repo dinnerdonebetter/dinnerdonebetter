@@ -1,6 +1,7 @@
 package users
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -20,8 +21,9 @@ import (
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/api_server/internal/storage"
+	"github.com/prixfixeco/api_server/internal/uploads"
 	"github.com/prixfixeco/api_server/internal/uploads/images"
-	mockuploads "github.com/prixfixeco/api_server/internal/uploads/mock"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
@@ -29,12 +31,22 @@ func buildTestService(t *testing.T) *service {
 	t.Helper()
 
 	uc := &mockmetrics.UnitCounter{}
-	cfg := &Config{}
+	cfg := &Config{
+		Uploads: uploads.Config{
+			Storage: storage.Config{
+				FilesystemConfig: &storage.FilesystemConfig{RootDirectory: t.Name()},
+				BucketName:       t.Name(),
+				Provider:         storage.FilesystemProvider,
+			},
+			Debug: false,
+		},
+	}
 
 	pp := &mockpublishers.ProducerProvider{}
 	pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	s, err := ProvideUsersService(
+		context.Background(),
 		cfg,
 		&authservice.Config{},
 		logging.NewNoopLogger(),
@@ -47,7 +59,6 @@ func buildTestService(t *testing.T) *service {
 			return uc
 		},
 		&images.MockImageUploadProcessor{},
-		&mockuploads.UploadManager{},
 		chi.NewRouteParamManager(),
 		tracing.NewNoopTracerProvider(),
 		pp,
@@ -74,12 +85,27 @@ func TestProvideUsersService(T *testing.T) {
 			UserIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := &Config{}
+		cfg := &Config{
+			Uploads: uploads.Config{
+				Storage: storage.Config{
+					FilesystemConfig: &storage.FilesystemConfig{RootDirectory: t.Name()},
+					BucketName:       t.Name(),
+					Provider:         storage.FilesystemProvider,
+				},
+				Debug: false,
+			},
+		}
+
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			cfg.Uploads.Storage.UploadFilenameKey,
+		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideUsersService(
+			context.Background(),
 			cfg,
 			&authservice.Config{},
 			logging.NewNoopLogger(),
@@ -92,7 +118,6 @@ func TestProvideUsersService(T *testing.T) {
 				return &mockmetrics.UnitCounter{}
 			},
 			&images.MockImageUploadProcessor{},
-			&mockuploads.UploadManager{},
 			rpm,
 			tracing.NewNoopTracerProvider(),
 			pp,

@@ -50,8 +50,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	"github.com/prixfixeco/api_server/internal/services/validpreparations"
 	"github.com/prixfixeco/api_server/internal/services/webhooks"
-	"github.com/prixfixeco/api_server/internal/storage"
-	"github.com/prixfixeco/api_server/internal/uploads"
 	"github.com/prixfixeco/api_server/internal/uploads/images"
 )
 
@@ -88,16 +86,9 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	imageUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
-	uploadsConfig := &cfg.Uploads
-	storageConfig := &uploadsConfig.Storage
 	routeParamManager := chi.NewRouteParamManager()
-	uploader, err := storage.NewUploadManager(ctx, logger, tracerProvider, storageConfig, routeParamManager)
-	if err != nil {
-		return nil, err
-	}
-	uploadManager := uploads.ProvideUploadManager(uploader)
 	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
-	userDataService, err := users.ProvideUsersService(usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
+	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +138,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
 	recipeMediaDataManager := database.ProvideRecipeMediaDataService(dataManager)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
-	recipeDataService, err := recipes.ProvideService(logger, recipesConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, uploadManager, imageUploadProcessor, tracerProvider)
+	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, imageUploadProcessor, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

@@ -43,7 +43,6 @@ import (
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
-	"github.com/prixfixeco/api_server/internal/uploads"
 )
 
 const (
@@ -69,7 +68,6 @@ type (
 		Email         emailconfig.Config        `json:"email" mapstructure:"email" toml:"email,omitempty"`
 		CustomerData  customerdataconfig.Config `json:"customerData" mapstructure:"customer_data" toml:"customer_data,omitempty"`
 		Encoding      encoding.Config           `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
-		Uploads       uploads.Config            `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
 		Routing       routing.Config            `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
 		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
 		Meta          MetaSettings              `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
@@ -126,10 +124,6 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v interface
 func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServices bool) error {
 	var result *multierror.Error
 
-	if err := cfg.Uploads.ValidateWithContext(ctx); err != nil {
-		result = multierror.Append(fmt.Errorf("error validating Uploads portion of config: %w", err), result)
-	}
-
 	if err := cfg.Routing.ValidateWithContext(ctx); err != nil {
 		result = multierror.Append(fmt.Errorf("error validating Routing portion of config: %w", err), result)
 	}
@@ -168,6 +162,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 	if validateServices {
 		if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating Auth service portion of config: %w", err), result)
+		}
+
+		if err := cfg.Services.Users.ValidateWithContext(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating Auth service portion of config: %w", err), result)
 		}
 

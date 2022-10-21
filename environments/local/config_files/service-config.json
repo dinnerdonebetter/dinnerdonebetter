@@ -30,17 +30,6 @@
 	"encoding": {
 		"contentType": "application/json"
 	},
-	"uploads": {
-		"storageConfig": {
-			"filesystem": {
-				"rootDirectory": "/avatars"
-			},
-			"bucketName": "avatars.prixfixe.dev",
-			"uploadFilenameKey": "avatar",
-			"provider": "filesystem"
-		},
-		"debug": true
-	},
 	"routing": {
 		"provider": "chi"
 	},
@@ -128,7 +117,18 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipes": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.prixfixe.dev"
+					},
+					"bucketName": "media.prixfixe.dev",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "gcp"
+				},
+				"debug": true
+			}
 		},
 		"recipeSteps": {
 			"dataChangesTopicName": "data_changes"
@@ -163,7 +163,18 @@
 			"debug": false
 		},
 		"users": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"gcpConfig": {
+						"bucketName": "media.prixfixe.dev"
+					},
+					"bucketName": "media.prixfixe.dev",
+					"uploadFilenameKey": "avatar",
+					"provider": "gcp"
+				},
+				"debug": true
+			}
 		},
 		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"
