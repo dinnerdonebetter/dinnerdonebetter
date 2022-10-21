@@ -1,6 +1,7 @@
 package recipes
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -15,6 +16,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 	"github.com/prixfixeco/api_server/internal/storage"
+	"github.com/prixfixeco/api_server/internal/uploads"
 	"github.com/prixfixeco/api_server/internal/uploads/images"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
@@ -42,13 +44,25 @@ func TestProvideRecipesService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
-			DataChangesTopicName: "data_changes",
+			Uploads: uploads.Config{
+				Storage: storage.Config{
+					FilesystemConfig: &storage.FilesystemConfig{RootDirectory: t.Name()},
+					BucketName:       t.Name(),
+					Provider:         storage.FilesystemProvider,
+				},
+				Debug: false,
+			},
 		}
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			cfg.Uploads.Storage.UploadFilenameKey,
+		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
+			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
 			&mocktypes.RecipeDataManager{},
@@ -57,7 +71,6 @@ func TestProvideRecipesService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
-			&storage.MockUploader{},
 			&images.MockImageUploadProcessor{},
 			tracing.NewNoopTracerProvider(),
 		)
@@ -72,13 +85,21 @@ func TestProvideRecipesService(T *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{
-			DataChangesTopicName: "data_changes",
+			Uploads: uploads.Config{
+				Storage: storage.Config{
+					FilesystemConfig: &storage.FilesystemConfig{RootDirectory: t.Name()},
+					BucketName:       t.Name(),
+					Provider:         storage.FilesystemProvider,
+				},
+				Debug: false,
+			},
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
+			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
 			&mocktypes.RecipeDataManager{},
@@ -87,7 +108,6 @@ func TestProvideRecipesService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
-			&storage.MockUploader{},
 			&images.MockImageUploadProcessor{},
 			tracing.NewNoopTracerProvider(),
 		)

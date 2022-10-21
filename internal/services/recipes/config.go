@@ -4,13 +4,16 @@ import (
 	"context"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+
+	"github.com/prixfixeco/api_server/internal/uploads"
 )
 
 // Config configures the service.
 type Config struct {
 	_ struct{}
 
-	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
+	DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
+	Uploads              uploads.Config `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -21,5 +24,6 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		ctx,
 		cfg,
 		validation.Field(&cfg.DataChangesTopicName, validation.Required),
+		validation.Field(&cfg.Uploads, validation.Required),
 	)
 }

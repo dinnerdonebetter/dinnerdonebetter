@@ -30,13 +30,6 @@
 	"encoding": {
 		"contentType": "application/json"
 	},
-	"uploads": {
-		"storageConfig": {
-			"bucketName": "avatars",
-			"provider": "memory"
-		},
-		"debug": false
-	},
 	"routing": {
 		"provider": "chi"
 	},
@@ -124,7 +117,14 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipes": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "avatars",
+					"provider": "memory"
+				},
+				"debug": false
+			}
 		},
 		"recipeSteps": {
 			"dataChangesTopicName": "data_changes"
@@ -159,7 +159,14 @@
 			"debug": false
 		},
 		"users": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "avatars",
+					"provider": "memory"
+				},
+				"debug": false
+			}
 		},
 		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"

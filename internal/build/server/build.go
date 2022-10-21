@@ -50,8 +50,6 @@ import (
 	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
-	"github.com/prixfixeco/api_server/internal/storage"
-	"github.com/prixfixeco/api_server/internal/uploads"
 	"github.com/prixfixeco/api_server/internal/uploads/images"
 )
 
@@ -74,8 +72,6 @@ func Build(
 		msgconfig.Providers,
 		server.Providers,
 		images.Providers,
-		uploads.Providers,
-		storage.Providers,
 		chi.Providers,
 		random.Providers,
 		authentication.Providers,

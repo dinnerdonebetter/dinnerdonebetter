@@ -45,7 +45,6 @@ import (
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
-	"github.com/prixfixeco/api_server/internal/uploads"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
@@ -76,7 +75,6 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				APIToken: "",
 			},
 			Encoding: encoding.Config{ContentType: "application/json"},
-			Uploads:  uploads.Config{},
 			Routing:  routing.Config{},
 			Database: dbconfig.Config{},
 			Meta:     MetaSettings{},

@@ -251,18 +251,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				},
 			},
 		},
-		Uploads: uploads.Config{
-			Debug: true,
-			Storage: storage.Config{
-				UploadFilenameKey: "avatar",
-				Provider:          "filesystem",
-				BucketName:        "avatars.prixfixe.dev",
-				S3Config:          nil,
-				FilesystemConfig: &storage.FilesystemConfig{
-					RootDirectory: "/avatars",
-				},
-			},
-		},
 		Services: config.ServicesConfigurations{
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
@@ -324,21 +312,20 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
-		Uploads: uploads.Config{
-			Debug: true,
-			Storage: storage.Config{
-				UploadFilenameKey: "avatar",
-				Provider:          "filesystem",
-				BucketName:        "avatars.prixfixe.dev",
-				S3Config:          nil,
-				FilesystemConfig: &storage.FilesystemConfig{
-					RootDirectory: "/avatars",
-				},
-			},
-		},
 		Services: config.ServicesConfigurations{
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: storage.Config{
+						UploadFilenameKey: "avatar",
+						Provider:          storage.GCPCloudStorageProvider,
+						BucketName:        "avatars.prixfixe.dev",
+						GCPConfig: &storage.GCPConfig{
+							BucketName: "avatars.prixfixe.dev",
+						},
+					},
+				},
 			},
 			Households: householdsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -391,6 +378,17 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			},
 			Recipes: recipesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: storage.Config{
+						UploadFilenameKey: "recipe_media",
+						Provider:          storage.GCPCloudStorageProvider,
+						BucketName:        "recipe_media",
+						GCPConfig: &storage.GCPConfig{
+							BucketName: "recipe_media",
+						},
+					},
+				},
 			},
 			RecipeSteps: recipestepsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -491,17 +489,17 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
-		Uploads: uploads.Config{
-			Debug: false,
-			Storage: storage.Config{
-				Provider:   "memory",
-				BucketName: "avatars",
-				S3Config:   nil,
-			},
-		},
 		Services: config.ServicesConfigurations{
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+				Uploads: uploads.Config{
+					Debug: false,
+					Storage: storage.Config{
+						Provider:   "memory",
+						BucketName: "avatars",
+						S3Config:   nil,
+					},
+				},
 			},
 			Households: householdsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -561,6 +559,14 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 			Recipes: recipesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+				Uploads: uploads.Config{
+					Debug: false,
+					Storage: storage.Config{
+						Provider:   "memory",
+						BucketName: "recipes",
+						S3Config:   nil,
+					},
+				},
 			},
 			RecipeSteps: recipestepsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,

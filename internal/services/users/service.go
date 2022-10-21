@@ -1,6 +1,7 @@
 package users
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/random"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/api_server/internal/storage"
 	"github.com/prixfixeco/api_server/internal/uploads"
 	"github.com/prixfixeco/api_server/internal/uploads/images"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -57,6 +59,7 @@ type (
 
 // ProvideUsersService builds a new UsersService.
 func ProvideUsersService(
+	ctx context.Context,
 	cfg *Config,
 	authSettings *authservice.Config,
 	logger logging.Logger,
@@ -67,7 +70,6 @@ func ProvideUsersService(
 	encoder encoding.ServerEncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
 	imageUploadProcessor images.ImageUploadProcessor,
-	uploadManager uploads.UploadManager,
 	routeParamManager routing.RouteParamManager,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
@@ -78,6 +80,11 @@ func ProvideUsersService(
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up users service data changes publisher: %w", err)
+	}
+
+	uploadManager, err := storage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
+	if err != nil {
+		return nil, fmt.Errorf("initializing uploadManager: %w", err)
 	}
 
 	s := &service{

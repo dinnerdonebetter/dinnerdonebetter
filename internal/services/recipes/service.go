@@ -1,6 +1,7 @@
 package recipes
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/api_server/internal/storage"
 	"github.com/prixfixeco/api_server/internal/uploads"
 	"github.com/prixfixeco/api_server/internal/uploads/images"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -47,6 +49,7 @@ func defaultTimeFunc() time.Time {
 
 // ProvideService builds a new RecipesService.
 func ProvideService(
+	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	recipeDataManager types.RecipeDataManager,
@@ -55,13 +58,17 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
-	uploader uploads.UploadManager,
 	imageUploadProcessor images.ImageUploadProcessor,
 	tracerProvider tracing.TracerProvider,
 ) (types.RecipeDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up recipe service data changes publisher: %w", err)
+	}
+
+	uploader, err := storage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
+	if err != nil {
+		return nil, fmt.Errorf("initializing uploader: %w", err)
 	}
 
 	svc := &service{
