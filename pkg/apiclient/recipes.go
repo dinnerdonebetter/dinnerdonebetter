@@ -2,13 +2,13 @@ package apiclient
 
 import (
 	"context"
-	"image"
-	"image/png"
-
+	"fmt"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"image"
+	"image/png"
 )
 
 // GetRecipe gets a recipe.
@@ -218,4 +218,33 @@ func (c *Client) GetMealPlanTasksForRecipe(ctx context.Context, recipeID string)
 	}
 
 	return prepSteps, nil
+}
+
+// UploadRecipeMedia uploads a new avatar.
+func (c *Client) UploadRecipeMedia(ctx context.Context, media []byte, extension, recipeID string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if recipeID == "" {
+		return buildInvalidIDError("recipe")
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	if len(media) == 0 {
+		return fmt.Errorf("%w: %d", ErrInvalidAvatarSize, len(media))
+	}
+
+	req, err := c.requestBuilder.BuildMediaUploadRequest(ctx, media, extension, recipeID)
+	if err != nil {
+		return observability.PrepareError(err, span, "building avatar upload request")
+	}
+
+	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+		return observability.PrepareError(err, span, "uploading avatar")
+	}
+
+	return nil
 }

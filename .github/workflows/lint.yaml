@@ -26,8 +26,8 @@ jobs:
 
   golang:
     strategy:
-    matrix:
-      linter-version: [ 'v1.49' ]
+      matrix:
+        linter-version: [ 'v1.49' ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
