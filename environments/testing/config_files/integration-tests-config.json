@@ -120,7 +120,7 @@
 			"dataChangesTopicName": "data_changes",
 			"uploads": {
 				"storageConfig": {
-					"bucketName": "avatars",
+					"bucketName": "recipes",
 					"provider": "memory"
 				},
 				"debug": false
