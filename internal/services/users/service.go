@@ -50,7 +50,7 @@ type (
 		userDataManager                types.UserDataManager
 		userCounter                    metrics.UnitCounter
 		secretGenerator                random.Generator
-		imageUploadProcessor           images.ImageUploadProcessor
+		imageUploadProcessor           images.MediaUploadProcessor
 		uploadManager                  uploads.UploadManager
 		userIDFetcher                  func(*http.Request) string
 		authSettings                   *authservice.Config
@@ -73,7 +73,7 @@ func ProvideUsersService(
 	authenticator authentication.Authenticator,
 	encoder encoding.ServerEncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
-	imageUploadProcessor images.ImageUploadProcessor,
+	imageUploadProcessor images.MediaUploadProcessor,
 	routeParamManager routing.RouteParamManager,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,

@@ -45,8 +45,8 @@ type (
 		Size        int
 	}
 
-	// ImageUploadProcessor process image uploads.
-	ImageUploadProcessor interface {
+	// MediaUploadProcessor processes media uploads.
+	MediaUploadProcessor interface {
 		ProcessFile(ctx context.Context, req *http.Request, filename string) (*Upload, error)
 		ProcessFiles(ctx context.Context, req *http.Request, filenamePrefix string) ([]*Upload, error)
 	}
@@ -84,11 +84,11 @@ func (i *Upload) Thumbnail(width, height uint, filename string) (*Upload, error)
 	return t.Thumbnail(i, width, height, filename)
 }
 
-// NewImageUploadProcessor provides a new ImageUploadProcessor.
-func NewImageUploadProcessor(logger logging.Logger, tracerProvider tracing.TracerProvider) ImageUploadProcessor {
+// NewImageUploadProcessor provides a new MediaUploadProcessor.
+func NewImageUploadProcessor(logger logging.Logger, tracerProvider tracing.TracerProvider) MediaUploadProcessor {
 	return &uploadProcessor{
-		logger: logging.EnsureLogger(logger).WithName("image_upload_processor"),
-		tracer: tracing.NewTracer(tracerProvider.Tracer("image_upload_processor")),
+		logger: logging.EnsureLogger(logger).WithName("media_upload_processor"),
+		tracer: tracing.NewTracer(tracerProvider.Tracer("media_upload_processor")),
 	}
 }
 

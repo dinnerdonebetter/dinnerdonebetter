@@ -239,7 +239,7 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(recipeMediaForRecipeArgs)...).
 			WillReturnRows(buildMockRowsFromRecipeMedia(exampleRecipeMediaList...))
 
-		actual, err := c.GetRecipeMediaForRecipe(ctx, exampleRecipeID)
+		actual, err := c.getRecipeMediaForRecipe(ctx, exampleRecipeID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleRecipeMediaList, actual)
 
@@ -262,7 +262,7 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(recipeMediaForRecipeArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetRecipeMediaForRecipe(ctx, exampleRecipeID)
+		actual, err := c.getRecipeMediaForRecipe(ctx, exampleRecipeID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -285,7 +285,7 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(recipeMediaForRecipeArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetRecipeMediaForRecipe(ctx, exampleRecipeID)
+		actual, err := c.getRecipeMediaForRecipe(ctx, exampleRecipeID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

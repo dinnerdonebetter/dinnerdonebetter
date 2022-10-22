@@ -206,51 +206,7 @@ func prepareMockToSuccessfullyGetMeal(t *testing.T, exampleMeal *types.Meal, db 
 		WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
 
 	for _, recipe := range exampleMeal.Recipes {
-		allIngredients := []*types.RecipeStepIngredient{}
-		allInstruments := []*types.RecipeStepInstrument{}
-		allProducts := []*types.RecipeStepProduct{}
-		for _, step := range recipe.Steps {
-			allIngredients = append(allIngredients, step.Ingredients...)
-			allInstruments = append(allInstruments, step.Instruments...)
-			allProducts = append(allProducts, step.Products...)
-		}
-
-		getRecipeArgs := []interface{}{
-			recipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
-			WithArgs(interfaceToDriverValue(getRecipeArgs)...).
-			WillReturnRows(buildMockFullRowsFromRecipe(recipe))
-
-		listRecipePrepTasksForRecipeArgs := []interface{}{
-			recipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(listRecipePrepTasksForRecipeQuery)).
-			WithArgs(interfaceToDriverValue(listRecipePrepTasksForRecipeArgs)...).
-			WillReturnRows(buildMockRowsFromRecipePrepTasks(recipe.PrepTasks...))
-
-		getRecipeStepIngredientsForRecipeArgs := []interface{}{
-			recipe.ID,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
-			WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
-			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
-
-		productsArgs := []interface{}{
-			recipe.ID,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
-			WithArgs(interfaceToDriverValue(productsArgs)...).
-			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
-
-		instrumentsArgs := []interface{}{
-			recipe.ID,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
-			WithArgs(interfaceToDriverValue(instrumentsArgs)...).
-			WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
+		prepareMockToSuccessfullyGetRecipe(t, recipe, "", db)
 	}
 }
 

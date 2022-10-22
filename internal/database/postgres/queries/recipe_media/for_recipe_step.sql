@@ -11,7 +11,7 @@ SELECT
     recipe_media.archived_at
 FROM recipe_media
 WHERE recipe_media.belongs_to_recipe = $1
-    AND recipe_media.belongs_to_recipe_step IS NULL
+    AND recipe_media.belongs_to_recipe_step = $2
     AND recipe_media.archived_at IS NULL
 GROUP BY recipe_media.id
 ORDER BY recipe_media.id

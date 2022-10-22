@@ -294,19 +294,6 @@ func TestBuilder_BuildAvatarUploadRequest(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid extension", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		avatar := buildArbitraryImage(123)
-		avatarBytes := buildPNGBytes(t, avatar)
-
-		actual, err := helper.builder.BuildAvatarUploadRequest(helper.ctx, avatarBytes, "")
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
-
 	T.Run("with invalid request builder", func(t *testing.T) {
 		t.Parallel()
 

@@ -228,8 +228,13 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
 	}
-
 	x.PrepTasks = prepTasks
+
+	recipeMedia, err := q.getRecipeMediaForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
+	}
+	x.Media = recipeMedia
 
 	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
 	if err != nil {
@@ -264,6 +269,12 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 				x.Steps[i].Instruments = append(x.Steps[i].Instruments, instrument)
 			}
 		}
+
+		recipeMedia, err = q.getRecipeMediaForRecipeStep(ctx, recipeID, step.ID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
+		}
+		x.Steps[i].Media = recipeMedia
 	}
 
 	return x, nil

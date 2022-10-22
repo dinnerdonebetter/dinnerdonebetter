@@ -29,7 +29,7 @@ var (
 	}
 )
 
-// scanPieceOfRecipeMedia takes a database Scanner (i.e. *sql.Row) and scans the result into a valid preparation struct.
+// scanPieceOfRecipeMedia takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe media struct.
 func (q *Querier) scanPieceOfRecipeMedia(ctx context.Context, scan database.Scanner) (x *types.RecipeMedia, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -56,7 +56,7 @@ func (q *Querier) scanPieceOfRecipeMedia(ctx context.Context, scan database.Scan
 	return x, nil
 }
 
-// scanRecipeMedia takes some database rows and turns them into a slice of valid preparations.
+// scanRecipeMedia takes some database rows and turns them into a slice of recipe media.
 func (q *Querier) scanRecipeMedia(ctx context.Context, rows database.ResultIterator) (recipeMedias []*types.RecipeMedia, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -80,7 +80,7 @@ func (q *Querier) scanRecipeMedia(ctx context.Context, rows database.ResultItera
 //go:embed queries/recipe_media/exists.sql
 var recipeMediaExistenceQuery string
 
-// RecipeMediaExists fetches whether a valid preparation exists from the database.
+// RecipeMediaExists fetches whether a recipe media exists from the database.
 func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -99,7 +99,7 @@ func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (
 
 	result, err := q.performBooleanQuery(ctx, q.db, recipeMediaExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "performing valid preparation existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe media existence check")
 	}
 
 	return result, nil
@@ -108,7 +108,7 @@ func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (
 //go:embed queries/recipe_media/get_one.sql
 var getRecipeMediaQuery string
 
-// GetRecipeMedia fetches a valid preparation from the database.
+// GetRecipeMedia fetches a recipe media from the database.
 func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*types.RecipeMedia, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -138,8 +138,8 @@ func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*ty
 //go:embed queries/recipe_media/for_recipe.sql
 var recipeMediaForRecipeQuery string
 
-// GetRecipeMediaForRecipe fetches a list of valid preparations from the database that meet a particular filter.
-func (q *Querier) GetRecipeMediaForRecipe(ctx context.Context, recipeID string) (x []*types.RecipeMedia, err error) {
+// getRecipeMediaForRecipe fetches a list of recipe media from the database that meet a particular filter.
+func (q *Querier) getRecipeMediaForRecipe(ctx context.Context, recipeID string) (x []*types.RecipeMedia, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -157,11 +157,50 @@ func (q *Querier) GetRecipeMediaForRecipe(ctx context.Context, recipeID string) 
 
 	rows, err := q.getRows(ctx, q.db, "recipe media", recipeMediaForRecipeQuery, recipeMediaForRecipeArgs)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe media list retrieval query")
 	}
 
 	if x, err = q.scanRecipeMedia(ctx, rows); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid preparations")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe media")
+	}
+
+	return x, nil
+}
+
+//go:embed queries/recipe_media/for_recipe_step.sql
+var recipeMediaForRecipeStepQuery string
+
+// getRecipeMediaForRecipeStep fetches a list of recipe media from the database that meet a particular filter.
+func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, recipeStepID string) (x []*types.RecipeMedia, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	if recipeStepID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+
+	recipeMediaForRecipeStepArgs := []interface{}{
+		recipeID,
+		recipeStepID,
+	}
+
+	rows, err := q.getRows(ctx, q.db, "recipe media", recipeMediaForRecipeStepQuery, recipeMediaForRecipeStepArgs)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe media list retrieval query")
+	}
+
+	if x, err = q.scanRecipeMedia(ctx, rows); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe media")
 	}
 
 	return x, nil
@@ -170,7 +209,7 @@ func (q *Querier) GetRecipeMediaForRecipe(ctx context.Context, recipeID string) 
 //go:embed queries/recipe_media/create.sql
 var recipeMediaCreationQuery string
 
-// CreateRecipeMedia creates a valid preparation in the database.
+// CreateRecipeMedia creates a recipe media in the database.
 func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMediaDatabaseCreationInput) (*types.RecipeMedia, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -191,9 +230,9 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 		input.Index,
 	}
 
-	// create the valid preparation.
-	if err := q.performWriteQuery(ctx, q.db, "valid preparation creation", recipeMediaCreationQuery, args); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparation creation query")
+	// create the recipe media.
+	if err := q.performWriteQuery(ctx, q.db, "recipe media creation", recipeMediaCreationQuery, args); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe media creation query")
 	}
 
 	x := &types.RecipeMedia{
@@ -208,7 +247,7 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 	}
 
 	tracing.AttachRecipeMediaIDToSpan(span, x.ID)
-	logger.Info("valid preparation created")
+	logger.Info("recipe media created")
 
 	return x, nil
 }
@@ -216,7 +255,7 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 //go:embed queries/recipe_media/update.sql
 var updateRecipeMediaQuery string
 
-// UpdateRecipeMedia updates a particular valid preparation.
+// UpdateRecipeMedia updates a particular recipe media.
 func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMedia) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -238,11 +277,11 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 		updated.ID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid preparation update", updateRecipeMediaQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
+	if err := q.performWriteQuery(ctx, q.db, "recipe media update", updateRecipeMediaQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe media")
 	}
 
-	logger.Info("valid preparation updated")
+	logger.Info("recipe media updated")
 
 	return nil
 }
@@ -250,7 +289,7 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 //go:embed queries/recipe_media/archive.sql
 var archiveRecipeMediaQuery string
 
-// ArchiveRecipeMedia archives a valid preparation from the database by its ID.
+// ArchiveRecipeMedia archives a recipe media from the database by its ID.
 func (q *Querier) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -267,11 +306,11 @@ func (q *Querier) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) 
 		recipeMediaID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid preparation archive", archiveRecipeMediaQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
+	if err := q.performWriteQuery(ctx, q.db, "recipe media archive", archiveRecipeMediaQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating recipe media")
 	}
 
-	logger.Info("valid preparation archived")
+	logger.Info("recipe media archived")
 
 	return nil
 }

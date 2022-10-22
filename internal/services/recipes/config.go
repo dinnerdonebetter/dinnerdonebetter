@@ -23,6 +23,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		cfg,
+		validation.Field(&cfg.PublicMediaURLPrefix, validation.Required),
 		validation.Field(&cfg.DataChangesTopicName, validation.Required),
 		validation.Field(&cfg.Uploads, validation.Required),
 	)

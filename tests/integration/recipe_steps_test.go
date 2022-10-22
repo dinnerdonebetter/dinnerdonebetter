@@ -2,6 +2,7 @@ package integration
 
 import (
 	"github.com/prixfixeco/api_server/pkg/types/converters"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,6 +44,8 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 				break
 			}
 
+			require.NotNil(t, createdRecipeStep)
+
 			t.Log("changing recipe step")
 			newRecipeStep := fakes.BuildFakeRecipeStep()
 			newRecipeStep.BelongsToRecipe = createdRecipe.ID
@@ -65,6 +68,42 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 
 			t.Log("cleaning up recipe step")
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			t.Log("cleaning up recipe")
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+		}
+	})
+}
+
+func (s *TestSuite) TestRecipeSteps_ContentUploading() {
+	s.runForEachClient("should be able to upload content for a recipe step", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+
+			var createdRecipeStep *types.RecipeStep
+			for _, step := range createdRecipe.Steps {
+				createdRecipeStep = step
+				break
+			}
+
+			require.NotNil(t, createdRecipeStep)
+
+			_, img1Bytes := testutils.BuildArbitraryImagePNGBytes(200)
+			_, img2Bytes := testutils.BuildArbitraryImagePNGBytes(250)
+			_, img3Bytes := testutils.BuildArbitraryImagePNGBytes(300)
+
+			files := map[string][]byte{
+				"image_1.png": img1Bytes,
+				"image_2.png": img2Bytes,
+				"image_3.png": img3Bytes,
+			}
+
+			require.NoError(t, testClients.user.UploadRecipeMediaForStep(ctx, files, createdRecipe.ID, createdRecipeStep.ID))
 
 			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))

@@ -24,6 +24,11 @@ func BuildFakeRecipe() *types.Recipe {
 		prepTasks[i].BelongsToRecipe = recipeID
 	}
 
+	recipeMedia := BuildFakeRecipeMediaList().RecipeMedia
+	for i := range recipeMedia {
+		recipeMedia[i].BelongsToRecipe = &recipeID
+	}
+
 	return &types.Recipe{
 		ID:                 recipeID,
 		Name:               buildUniqueString(),
@@ -35,6 +40,7 @@ func BuildFakeRecipe() *types.Recipe {
 		Steps:              steps,
 		PrepTasks:          prepTasks,
 		SealOfApproval:     false,
+		Media:              recipeMedia,
 		YieldsPortions:     fake.Uint8(),
 	}
 }

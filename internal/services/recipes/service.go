@@ -34,7 +34,7 @@ type (
 		recipeDataManager         types.RecipeDataManager
 		recipeMediaDataManager    types.RecipeMediaDataManager
 		recipeAnalyzer            recipeanalysis.RecipeAnalyzer
-		imageUploadProcessor      images.ImageUploadProcessor
+		imageUploadProcessor      images.MediaUploadProcessor
 		logger                    logging.Logger
 		dataChangesPublisher      messagequeue.Publisher
 		uploadManager             uploads.UploadManager
@@ -62,7 +62,7 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
-	imageUploadProcessor images.ImageUploadProcessor,
+	imageUploadProcessor images.MediaUploadProcessor,
 	tracerProvider tracing.TracerProvider,
 ) (types.RecipeDataService, error) {
 	if cfg == nil {

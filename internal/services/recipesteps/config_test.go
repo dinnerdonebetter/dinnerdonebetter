@@ -15,6 +15,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
+			PublicMediaURLPrefix: t.Name(),
 			DataChangesTopicName: "blah",
 		}
 

@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	// TODO: https://github.com/csweichel/bel
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 
 	"github.com/prixfixeco/api_server/pkg/types"
