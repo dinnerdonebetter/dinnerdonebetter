@@ -167,7 +167,7 @@ func (c *Client) UploadRecipeMediaForStep(ctx context.Context, files map[string]
 		return ErrNilInputProvided
 	}
 
-	req, err := c.requestBuilder.BuildMultipleRecipeMediaUploadRequest(ctx, files, recipeID)
+	req, err := c.requestBuilder.BuildMultipleRecipeMediaUploadRequestForRecipeStep(ctx, files, recipeID, recipeStepID)
 	if err != nil {
 		return observability.PrepareError(err, span, "building media upload request")
 	}
