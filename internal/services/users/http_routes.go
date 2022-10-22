@@ -684,7 +684,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	internalPath := fmt.Sprintf("avatars/%s/%s_%d.%s", user.ID, img.Filename, time.Now().Unix(), img.Extension)
+	internalPath := fmt.Sprintf("avatars/%d_%s", time.Now().Unix(), img.Filename)
 	logger = logger.WithValue("file_size", len(img.Data)).WithValue("internal_path", internalPath)
 
 	if err = s.uploadManager.SaveFile(ctx, internalPath, img.Data); err != nil {
