@@ -118,6 +118,7 @@
 		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",
+			"mediaUploadPrefix": "",
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {
@@ -164,6 +165,7 @@
 		},
 		"users": {
 			"dataChangesTopicName": "data_changes",
+			"publicMediaURLPrefix": "",
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {

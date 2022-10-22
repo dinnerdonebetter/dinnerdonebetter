@@ -118,6 +118,7 @@
 		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",
+			"mediaUploadPrefix": "",
 			"uploads": {
 				"storageConfig": {
 					"bucketName": "recipes",
@@ -160,6 +161,7 @@
 		},
 		"users": {
 			"dataChangesTopicName": "data_changes",
+			"publicMediaURLPrefix": "",
 			"uploads": {
 				"storageConfig": {
 					"bucketName": "avatars",
