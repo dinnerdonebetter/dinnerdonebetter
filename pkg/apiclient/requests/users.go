@@ -8,7 +8,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -139,19 +138,6 @@ func (b *Builder) BuildAvatarUploadRequest(ctx context.Context, avatar []byte, e
 		return nil, ErrNilInputProvided
 	}
 
-	var ct string
-
-	switch strings.ToLower(strings.TrimSpace(extension)) {
-	case "jpeg":
-		ct = "image/jpeg"
-	case "png":
-		ct = "image/png"
-	case "gif":
-		ct = "image/gif"
-	default:
-		return nil, fmt.Errorf("%s: %w", extension, ErrInvalidPhotoEncodingForUpload)
-	}
-
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -176,7 +162,6 @@ func (b *Builder) BuildAvatarUploadRequest(ctx context.Context, avatar []byte, e
 	}
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.Header.Set("X-Upload-Content-Type", ct)
 
 	return req, nil
 }

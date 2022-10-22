@@ -131,6 +131,7 @@ type (
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
+		ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

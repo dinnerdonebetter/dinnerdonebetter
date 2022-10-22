@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/prixfixeco/api_server/pkg/types/converters"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -351,6 +352,47 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 			// assert recipe equality
 			checkRecipeEquality(t, newRecipe, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
+
+			t.Log("cleaning up recipe")
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+		}
+	})
+}
+
+func (s *TestSuite) TestRecipes_ContentUploading() {
+	s.runForEachClient("should be able to upload content for a recipe", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+
+			t.Log("changing recipe")
+			newRecipe := fakes.BuildFakeRecipe()
+			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
+			assert.NoError(t, testClients.user.UpdateRecipe(ctx, createdRecipe))
+
+			t.Log("fetching changed recipe")
+			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// assert recipe equality
+			checkRecipeEquality(t, newRecipe, actual)
+			assert.NotNil(t, actual.LastUpdatedAt)
+
+			_, img1Bytes := testutils.BuildArbitraryImagePNGBytes(200)
+			_, img2Bytes := testutils.BuildArbitraryImagePNGBytes(250)
+			_, img3Bytes := testutils.BuildArbitraryImagePNGBytes(300)
+
+			files := map[string][]byte{
+				"image_1.png": img1Bytes,
+				"image_2.png": img2Bytes,
+				"image_3.png": img3Bytes,
+			}
+
+			require.NoError(t, testClients.user.UploadRecipeMedia(ctx, files, actual.ID))
 
 			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))

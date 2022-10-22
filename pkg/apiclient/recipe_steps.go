@@ -126,27 +126,54 @@ func (c *Client) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if recipeID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepRequest(ctx, recipeID, recipeStepID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step request")
+		return observability.PrepareError(err, span, "building archive recipe step request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step %s", recipeStepID)
+		return observability.PrepareError(err, span, "archiving recipe step %s", recipeStepID)
+	}
+
+	return nil
+}
+
+// UploadRecipeMediaForStep uploads a new avatar.
+func (c *Client) UploadRecipeMediaForStep(ctx context.Context, files map[string][]byte, recipeID, recipeStepID string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	if recipeStepID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+
+	if files == nil {
+		return ErrNilInputProvided
+	}
+
+	req, err := c.requestBuilder.BuildMultipleRecipeMediaUploadRequest(ctx, files, recipeID)
+	if err != nil {
+		return observability.PrepareError(err, span, "building media upload request")
+	}
+
+	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+		return observability.PrepareError(err, span, "uploading media")
 	}
 
 	return nil

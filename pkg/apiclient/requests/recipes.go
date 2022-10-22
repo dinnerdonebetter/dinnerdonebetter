@@ -250,19 +250,6 @@ func (b *Builder) BuildRecipeMediaUploadRequest(ctx context.Context, media []byt
 		return nil, ErrNilInputProvided
 	}
 
-	var ct string
-
-	switch strings.ToLower(strings.TrimSpace(extension)) {
-	case "jpeg":
-		ct = imageJPEG
-	case "png":
-		ct = imagePNG
-	case "gif":
-		ct = imageGIF
-	default:
-		return nil, fmt.Errorf("%s: %w", extension, ErrInvalidPhotoEncodingForUpload)
-	}
-
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -287,9 +274,65 @@ func (b *Builder) BuildRecipeMediaUploadRequest(ctx context.Context, media []byt
 	}
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.Header.Set("X-Upload-Content-Type", ct)
 
 	return req, nil
+}
+
+func (b *Builder) prepareUploads(ctx context.Context, files map[string][]byte) (io.Reader, string, error) {
+	_, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if files == nil {
+		return nil, "", ErrNilInputProvided
+	}
+
+	var ct string
+	for filename := range files {
+		switch strings.ToLower(strings.TrimSpace(filepath.Ext(filename))) {
+		case ".jpeg":
+			if ct == "" {
+				ct = imageJPEG
+			} else if ct != "" && ct != imageJPEG {
+				return nil, "", fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
+			}
+		case ".png":
+			if ct == "" {
+				ct = imagePNG
+			} else if ct != "" && ct != imagePNG {
+				return nil, "", fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
+			}
+		case ".gif":
+			if ct == "" {
+				ct = imageGIF
+			} else if ct != "" && ct != imageGIF {
+				return nil, "", fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
+			}
+		}
+	}
+
+	if ct == "" {
+		return nil, "", ErrInvalidPhotoEncodingForUpload
+	}
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	for filename, content := range files {
+		part, err := writer.CreateFormFile("upload", filename)
+		if err != nil {
+			return nil, "", observability.PrepareError(err, span, "creating form file")
+		}
+
+		if _, err = io.Copy(part, bytes.NewReader(content)); err != nil {
+			return nil, "", observability.PrepareError(err, span, "copying file contents to request")
+		}
+	}
+
+	if err := writer.Close(); err != nil {
+		return nil, "", observability.PrepareError(err, span, "closing media writer")
+	}
+
+	return body, writer.FormDataContentType(), nil
 }
 
 // BuildMultipleRecipeMediaUploadRequest builds an HTTP request that sets a user's avatar to the provided content.
@@ -302,54 +345,9 @@ func (b *Builder) BuildMultipleRecipeMediaUploadRequest(ctx context.Context, fil
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if files == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	var ct string
-	for filename := range files {
-		switch strings.ToLower(strings.TrimSpace(filepath.Ext(filename))) {
-		case ".jpeg":
-			if ct == "" {
-				ct = imageJPEG
-			} else if ct != "" && ct != imageJPEG {
-				return nil, fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
-			}
-		case ".png":
-			if ct == "" {
-				ct = imagePNG
-			} else if ct != "" && ct != imagePNG {
-				return nil, fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
-			}
-		case ".gif":
-			if ct == "" {
-				ct = imageGIF
-			} else if ct != "" && ct != imageGIF {
-				return nil, fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
-			}
-		}
-	}
-
-	if ct == "" {
-		return nil, ErrInvalidPhotoEncodingForUpload
-	}
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-
-	for filename, content := range files {
-		part, err := writer.CreateFormFile("upload", filename)
-		if err != nil {
-			return nil, observability.PrepareError(err, span, "creating form file")
-		}
-
-		if _, err = io.Copy(part, bytes.NewReader(content)); err != nil {
-			return nil, observability.PrepareError(err, span, "copying file contents to request")
-		}
-	}
-
-	if err := writer.Close(); err != nil {
-		return nil, observability.PrepareError(err, span, "closing media writer")
+	body, formDataContentType, err := b.prepareUploads(ctx, files)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "preparing upload request")
 	}
 
 	uri := b.BuildURL(ctx, nil, recipesBasePath, recipeID, "images")
@@ -359,8 +357,39 @@ func (b *Builder) BuildMultipleRecipeMediaUploadRequest(ctx context.Context, fil
 		return nil, observability.PrepareError(err, span, "building media upload request")
 	}
 
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.Header.Set("X-Upload-Content-Type", ct)
+	req.Header.Set("Content-Type", formDataContentType)
+
+	return req, nil
+}
+
+// BuildMultipleRecipeMediaUploadRequestForRecipeStep builds an HTTP request that sets a user's avatar to the provided content.
+func (b *Builder) BuildMultipleRecipeMediaUploadRequestForRecipeStep(ctx context.Context, files map[string][]byte, recipeID, recipeStepID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	if recipeStepID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+
+	body, formDataContentType, err := b.prepareUploads(ctx, files)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "preparing upload request")
+	}
+
+	uri := b.BuildURL(ctx, nil, recipesBasePath, recipeID, recipeStepsBasePath, recipeStepID, "images")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building media upload request")
+	}
+
+	req.Header.Set("Content-Type", formDataContentType)
 
 	return req, nil
 }
