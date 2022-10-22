@@ -259,7 +259,7 @@ func (b *Builder) BuildMediaUploadRequest(ctx context.Context, media []byte, ext
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	part, err := writer.CreateFormFile("media", fmt.Sprintf("media.%s", extension))
+	part, err := writer.CreateFormFile("upload", fmt.Sprintf("media.%s", extension))
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "creating form file")
 	}

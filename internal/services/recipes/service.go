@@ -2,6 +2,7 @@ package recipes
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -28,24 +29,27 @@ var _ types.RecipeDataService = (*service)(nil)
 type (
 	// service handles recipes.
 	service struct {
-		logger                    logging.Logger
+		tracer                    tracing.Tracer
+		encoderDecoder            encoding.ServerEncoderDecoder
 		recipeDataManager         types.RecipeDataManager
 		recipeMediaDataManager    types.RecipeMediaDataManager
 		recipeAnalyzer            recipeanalysis.RecipeAnalyzer
+		imageUploadProcessor      images.ImageUploadProcessor
+		logger                    logging.Logger
+		dataChangesPublisher      messagequeue.Publisher
+		uploadManager             uploads.UploadManager
+		timeFunc                  func() time.Time
 		recipeIDFetcher           func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		dataChangesPublisher      messagequeue.Publisher
-		timeFunc                  func() time.Time
-		uploadManager             uploads.UploadManager
-		imageUploadProcessor      images.ImageUploadProcessor
-		encoderDecoder            encoding.ServerEncoderDecoder
-		tracer                    tracing.Tracer
+		cfg                       Config
 	}
 )
 
 func defaultTimeFunc() time.Time {
 	return time.Now()
 }
+
+var errInvalidConfig = errors.New("config cannot be nil")
 
 // ProvideService builds a new RecipesService.
 func ProvideService(
@@ -61,6 +65,10 @@ func ProvideService(
 	imageUploadProcessor images.ImageUploadProcessor,
 	tracerProvider tracing.TracerProvider,
 ) (types.RecipeDataService, error) {
+	if cfg == nil {
+		return nil, errInvalidConfig
+	}
+
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up recipe service data changes publisher: %w", err)
@@ -76,6 +84,7 @@ func ProvideService(
 		recipeIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(RecipeIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		recipeDataManager:         recipeDataManager,
+		cfg:                       *cfg,
 		recipeMediaDataManager:    recipeMediaDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,

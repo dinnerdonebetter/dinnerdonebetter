@@ -40,6 +40,7 @@ type (
 	Image struct {
 		Filename    string
 		ContentType string
+		Extension   string
 		Data        []byte
 		Size        int
 	}
@@ -139,6 +140,7 @@ func (p *uploadProcessor) Process(ctx context.Context, req *http.Request, filena
 
 	i := &Image{
 		Filename:    info.Filename,
+		Extension:   filepath.Ext(filename),
 		ContentType: contentTypeFromFilename(filename),
 		Data:        bs,
 		Size:        len(bs),
