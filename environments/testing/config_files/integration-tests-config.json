@@ -129,14 +129,14 @@
 		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",
+			"dataChangesTopicName": "data_changes",
 			"uploads": {
 				"storageConfig": {
 					"bucketName": "recipes",
 					"provider": "memory"
 				},
 				"debug": false
-			},
-			"dataChangesTopicName": "data_changes"
+			}
 		},
 		"recipeStepProducts": {
 			"dataChangesTopicName": "data_changes"
