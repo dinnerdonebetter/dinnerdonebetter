@@ -270,6 +270,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 						UploadFilenameKey: "avatar",
 						Provider:          storage.GCPCloudStorageProvider,
 						BucketName:        "media.prixfixe.dev",
+						BucketPrefix:      "avatars/",
 						GCPConfig: &storage.GCPConfig{
 							BucketName: "media.prixfixe.dev",
 						},
@@ -283,6 +284,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 						UploadFilenameKey: "recipe_media",
 						Provider:          storage.GCPCloudStorageProvider,
 						BucketName:        "media.prixfixe.dev",
+						BucketPrefix:      "recipe_media/",
 						GCPConfig: &storage.GCPConfig{
 							BucketName: "media.prixfixe.dev",
 						},

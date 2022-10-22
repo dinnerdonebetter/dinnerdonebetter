@@ -50,6 +50,7 @@ type (
 		FilesystemConfig  *FilesystemConfig `json:"filesystem,omitempty" mapstructure:"filesystem" toml:"filesystem,omitempty"`
 		S3Config          *S3Config         `json:"s3,omitempty" mapstructure:"s3" toml:"s3,omitempty"`
 		GCPConfig         *GCPConfig        `json:"gcpConfig,omitempty" mapstructure:"gcp_config" toml:"gcp_config,omitempty"`
+		BucketPrefix      string            `json:"bucketPrefix,omitempty" mapstructure:"bucket_prefix" toml:"bucket_prefix,omitempty"`
 		BucketName        string            `json:"bucketName,omitempty" mapstructure:"bucket_name" toml:"bucket_name,omitempty"`
 		UploadFilenameKey string            `json:"uploadFilenameKey,omitempty" mapstructure:"upload_filename_key" toml:"upload_filename_key,omitempty"`
 		Provider          string            `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
@@ -122,7 +123,7 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 			return fmt.Errorf("initializing GCP storage: %w", clientErr)
 		}
 
-		u.bucket, err = gcsblob.OpenBucket(ctx, client, cfg.BucketName, nil)
+		u.bucket, err = gcsblob.OpenBucket(ctx, client, cfg.GCPConfig.BucketName, nil)
 		if err != nil {
 			return fmt.Errorf("initializing GCP storage: %w", err)
 		}
@@ -141,12 +142,9 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 		}
 	}
 
-	bn := cfg.BucketName
-	if !strings.HasSuffix(bn, "_") {
-		bn = fmt.Sprintf("%s_", cfg.BucketName)
+	if cfg.BucketPrefix != "" {
+		u.bucket = blob.PrefixedBucket(u.bucket, cfg.BucketPrefix)
 	}
-
-	u.bucket = blob.PrefixedBucket(u.bucket, bn)
 
 	return err
 }
