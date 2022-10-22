@@ -370,7 +370,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	logger = logger.WithValue("image_qty", len(images))
 
 	for _, img := range images {
-		internalPath := fmt.Sprintf("%s/%d_%s", recipeID, time.Now().Unix(), img.Filename)
+		internalPath := fmt.Sprintf("%s/steps/%s/%d_%s", recipeID, recipeStepID, time.Now().Unix(), img.Filename)
 		logger = logger.WithValue("internal_path", internalPath).WithValue("file_size", len(img.Data))
 
 		if err = s.uploadManager.SaveFile(ctx, internalPath, img.Data); err != nil {
