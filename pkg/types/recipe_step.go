@@ -50,6 +50,7 @@ type (
 		Instruments                   []*RecipeStepInstrument `json:"instruments"`
 		Ingredients                   []*RecipeStepIngredient `json:"ingredients"`
 		Products                      []*RecipeStepProduct    `json:"products"`
+		Media                         []*RecipeMedia          `json:"media"`
 		Index                         uint32                  `json:"index"`
 		Optional                      bool                    `json:"optional"`
 	}

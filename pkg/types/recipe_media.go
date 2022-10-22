@@ -90,7 +90,6 @@ type (
 	RecipeMediaDataManager interface {
 		RecipeMediaExists(ctx context.Context, validPreparationID string) (bool, error)
 		GetRecipeMedia(ctx context.Context, validPreparationID string) (*RecipeMedia, error)
-		GetRecipeMediaForRecipe(ctx context.Context, recipeID string) ([]*RecipeMedia, error)
 		CreateRecipeMedia(ctx context.Context, input *RecipeMediaDatabaseCreationInput) (*RecipeMedia, error)
 		UpdateRecipeMedia(ctx context.Context, updated *RecipeMedia) error
 		ArchiveRecipeMedia(ctx context.Context, validPreparationID string) error

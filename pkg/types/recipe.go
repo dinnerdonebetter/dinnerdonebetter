@@ -44,6 +44,7 @@ type (
 		CreatedByUser      string            `json:"belongsToUser"`
 		ID                 string            `json:"id"`
 		Steps              []*RecipeStep     `json:"steps"`
+		Media              []*RecipeMedia    `json:"media"`
 		PrepTasks          []*RecipePrepTask `json:"prepTasks"`
 		SealOfApproval     bool              `json:"sealOfApproval"`
 		YieldsPortions     uint8             `json:"yieldsPortions"`
