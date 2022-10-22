@@ -693,7 +693,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	user.AvatarSrc = stringPointer(internalPath)
+	user.AvatarSrc = stringPointer(fmt.Sprintf("%s/%s", s.cfg.PublicMediaURLPrefix, internalPath))
 
 	if err = s.userDataManager.UpdateUser(ctx, user); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user info")

@@ -530,7 +530,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		BelongsToRecipeStep: nil,
 		MimeType:            img.ContentType,
 		InternalPath:        internalPath,
-		ExternalPath:        internalPath,
+		ExternalPath:        fmt.Sprintf("%s/%s", s.cfg.PublicMediaURLPrefix, internalPath),
 	}
 
 	logger.Info("image uploaded to file store, saving info in database")
