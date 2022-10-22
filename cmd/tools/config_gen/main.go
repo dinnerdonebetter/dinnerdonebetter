@@ -279,7 +279,23 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				},
 			},
 			Recipes: recipesservice.Config{
-				// note, this should effectively be "https://storage.googleapis.com" + bucket name + bucket prefix
+				// note, this should effectively be "https://media.prixfixe.dev" + bucket prefix
+				PublicMediaURLPrefix: "https://media.prixfixe.dev/recipe_media",
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: storage.Config{
+						UploadFilenameKey: "recipe_media",
+						Provider:          storage.GCPCloudStorageProvider,
+						BucketName:        "media.prixfixe.dev",
+						BucketPrefix:      "recipe_media/",
+						GCPConfig: &storage.GCPConfig{
+							BucketName: "media.prixfixe.dev",
+						},
+					},
+				},
+			},
+			RecipeSteps: recipestepsservice.Config{
+				// note, this should effectively be "https://media.prixfixe.dev" + bucket prefix
 				PublicMediaURLPrefix: "https://media.prixfixe.dev/recipe_media",
 				Uploads: uploads.Config{
 					Debug: true,
@@ -409,6 +425,7 @@ func buildDevConfig() *config.InstanceConfig {
 			},
 			Recipes: recipesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+				PublicMediaURLPrefix: "https://example.website.lol",
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: storage.Config{
@@ -423,6 +440,18 @@ func buildDevConfig() *config.InstanceConfig {
 			},
 			RecipeSteps: recipestepsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+				PublicMediaURLPrefix: "https://example.website.lol",
+				Uploads: uploads.Config{
+					Debug: true,
+					Storage: storage.Config{
+						UploadFilenameKey: "recipe_media",
+						Provider:          storage.FilesystemProvider,
+						BucketName:        "recipe_media",
+						FilesystemConfig: &storage.FilesystemConfig{
+							RootDirectory: "/uploads",
+						},
+					},
+				},
 			},
 			RecipeStepProducts: recipestepproductsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -590,6 +619,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 			Recipes: recipesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+				PublicMediaURLPrefix: "https://media.example.website/lol",
 				Uploads: uploads.Config{
 					Debug: false,
 					Storage: storage.Config{
@@ -601,6 +631,15 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 			RecipeSteps: recipestepsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+				PublicMediaURLPrefix: "https://media.example.website/lol",
+				Uploads: uploads.Config{
+					Debug: false,
+					Storage: storage.Config{
+						Provider:   "memory",
+						BucketName: "recipes",
+						S3Config:   nil,
+					},
+				},
 			},
 			RecipeStepInstruments: recipestepinstrumentsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,

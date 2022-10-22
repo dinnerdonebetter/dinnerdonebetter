@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/api_server/internal/uploads"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {
@@ -15,6 +17,8 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
+			PublicMediaURLPrefix: t.Name(),
+			Uploads:              uploads.Config{},
 			DataChangesTopicName: "blah",
 		}
 

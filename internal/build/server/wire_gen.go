@@ -85,10 +85,10 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	usersConfig := &servicesConfigurations.Users
 	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
-	imageUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
+	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	routeParamManager := chi.NewRouteParamManager()
 	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
-	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
+	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, mediaUploadProcessor, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
 	if err != nil {
 		return nil, err
 	}
@@ -138,13 +138,13 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
 	recipeMediaDataManager := database.ProvideRecipeMediaDataService(dataManager)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
-	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, imageUploadProcessor, tracerProvider)
+	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	recipestepsConfig := &servicesConfigurations.RecipeSteps
 	recipeStepDataManager := database.ProvideRecipeStepDataManager(dataManager)
-	recipeStepDataService, err := recipesteps.ProvideService(logger, recipestepsConfig, recipeStepDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepDataService, err := recipesteps.ProvideService(ctx, logger, recipestepsConfig, recipeStepDataManager, recipeMediaDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, mediaUploadProcessor)
 	if err != nil {
 		return nil, err
 	}

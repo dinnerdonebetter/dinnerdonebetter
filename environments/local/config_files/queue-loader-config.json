@@ -118,7 +118,7 @@
 		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",
-			"mediaUploadPrefix": "",
+			"mediaUploadPrefix": "https://example.website.lol",
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {
@@ -132,6 +132,18 @@
 			}
 		},
 		"recipeSteps": {
+			"mediaUploadPrefix": "https://example.website.lol",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "recipe_media",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "filesystem"
+				},
+				"debug": true
+			},
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepProducts": {

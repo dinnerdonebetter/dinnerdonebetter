@@ -7,6 +7,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -229,8 +230,14 @@ func (b *Builder) BuildGetRecipeMealPlanTasksRequest(ctx context.Context, recipe
 	return req, nil
 }
 
-// BuildMediaUploadRequest builds an HTTP request that sets a user's avatar to the provided content.
-func (b *Builder) BuildMediaUploadRequest(ctx context.Context, media []byte, extension, recipeID string) (*http.Request, error) {
+const (
+	imagePNG  = "image/png"
+	imageJPEG = "image/jpeg"
+	imageGIF  = "image/gif"
+)
+
+// BuildRecipeMediaUploadRequest builds an HTTP request that sets a user's avatar to the provided content.
+func (b *Builder) BuildRecipeMediaUploadRequest(ctx context.Context, media []byte, extension, recipeID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -247,11 +254,11 @@ func (b *Builder) BuildMediaUploadRequest(ctx context.Context, media []byte, ext
 
 	switch strings.ToLower(strings.TrimSpace(extension)) {
 	case "jpeg":
-		ct = "image/jpeg"
+		ct = imageJPEG
 	case "png":
-		ct = "image/png"
+		ct = imagePNG
 	case "gif":
-		ct = "image/gif"
+		ct = imageGIF
 	default:
 		return nil, fmt.Errorf("%s: %w", extension, ErrInvalidPhotoEncodingForUpload)
 	}
@@ -269,6 +276,79 @@ func (b *Builder) BuildMediaUploadRequest(ctx context.Context, media []byte, ext
 	}
 
 	if err = writer.Close(); err != nil {
+		return nil, observability.PrepareError(err, span, "closing media writer")
+	}
+
+	uri := b.BuildURL(ctx, nil, recipesBasePath, recipeID, "images")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building media upload request")
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("X-Upload-Content-Type", ct)
+
+	return req, nil
+}
+
+// BuildMultipleRecipeMediaUploadRequest builds an HTTP request that sets a user's avatar to the provided content.
+func (b *Builder) BuildMultipleRecipeMediaUploadRequest(ctx context.Context, files map[string][]byte, recipeID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	if files == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	var ct string
+	for filename := range files {
+		switch strings.ToLower(strings.TrimSpace(filepath.Ext(filename))) {
+		case ".jpeg":
+			if ct == "" {
+				ct = imageJPEG
+			} else if ct != "" && ct != imageJPEG {
+				return nil, fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
+			}
+		case ".png":
+			if ct == "" {
+				ct = imagePNG
+			} else if ct != "" && ct != imagePNG {
+				return nil, fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
+			}
+		case ".gif":
+			if ct == "" {
+				ct = imageGIF
+			} else if ct != "" && ct != imageGIF {
+				return nil, fmt.Errorf("all file uploads must be the same type: %w", ErrInvalidPhotoEncodingForUpload)
+			}
+		}
+	}
+
+	if ct == "" {
+		return nil, ErrInvalidPhotoEncodingForUpload
+	}
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	for filename, content := range files {
+		part, err := writer.CreateFormFile("upload", filename)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "creating form file")
+		}
+
+		if _, err = io.Copy(part, bytes.NewReader(content)); err != nil {
+			return nil, observability.PrepareError(err, span, "copying file contents to request")
+		}
+	}
+
+	if err := writer.Close(); err != nil {
 		return nil, observability.PrepareError(err, span, "closing media writer")
 	}
 
