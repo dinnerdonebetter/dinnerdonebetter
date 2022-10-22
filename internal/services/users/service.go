@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -37,25 +38,28 @@ type (
 
 	// service handles our users.
 	service struct {
-		userDataManager                types.UserDataManager
+		emailer                        email.Emailer
 		householdDataManager           types.HouseholdDataManager
 		householdInvitationDataManager types.HouseholdInvitationDataManager
-		authSettings                   *authservice.Config
+		passwordResetTokenDataManager  types.PasswordResetTokenDataManager
+		tracer                         tracing.Tracer
 		authenticator                  authentication.Authenticator
 		logger                         logging.Logger
 		encoderDecoder                 encoding.ServerEncoderDecoder
-		userIDFetcher                  func(*http.Request) string
-		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
+		dataChangesPublisher           messagequeue.Publisher
+		userDataManager                types.UserDataManager
 		userCounter                    metrics.UnitCounter
 		secretGenerator                random.Generator
 		imageUploadProcessor           images.ImageUploadProcessor
 		uploadManager                  uploads.UploadManager
-		dataChangesPublisher           messagequeue.Publisher
-		tracer                         tracing.Tracer
-		passwordResetTokenDataManager  types.PasswordResetTokenDataManager
-		emailer                        email.Emailer
+		userIDFetcher                  func(*http.Request) string
+		authSettings                   *authservice.Config
+		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
+		cfg                            Config
 	}
 )
+
+var errNoConfig = errors.New("nil config provided")
 
 // ProvideUsersService builds a new UsersService.
 func ProvideUsersService(
@@ -77,6 +81,10 @@ func ProvideUsersService(
 	passwordResetTokenDataManager types.PasswordResetTokenDataManager,
 	emailer email.Emailer,
 ) (types.UserDataService, error) {
+	if cfg == nil {
+		return nil, errNoConfig
+	}
+
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up users service data changes publisher: %w", err)
@@ -88,6 +96,7 @@ func ProvideUsersService(
 	}
 
 	s := &service{
+		cfg:                            *cfg,
 		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
 		userDataManager:                userDataManager,
 		householdDataManager:           householdDataManager,

@@ -264,6 +264,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				MinimumPasswordLength: 8,
 			},
 			Users: usersservice.Config{
+				PublicMediaURLPrefix: "https://media.prixfixe.dev/avatars",
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: storage.Config{
@@ -278,6 +279,8 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				},
 			},
 			Recipes: recipesservice.Config{
+				// note, this should effectively be "https://storage.googleapis.com" + bucket name + bucket prefix
+				PublicMediaURLPrefix: "https://media.prixfixe.dev/recipe_media",
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: storage.Config{

@@ -10,9 +10,9 @@ import (
 
 // Config configures the service.
 type Config struct {
-	_ struct{}
-
+	_                    struct{}
 	DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
+	PublicMediaURLPrefix string         `json:"mediaUploadPrefix" mapstructure:"media_upload_prefix" toml:"media_upload_prefix"`
 	Uploads              uploads.Config `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
 }
 
