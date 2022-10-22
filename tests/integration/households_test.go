@@ -145,14 +145,6 @@ func (s *TestSuite) TestHouseholds_Updating_Returns404ForNonexistentHousehold() 
 	})
 }
 
-// convertHouseholdToHouseholdUpdateInput creates a householdUpdateInput struct from a household.
-func convertHouseholdToHouseholdUpdateInput(x *types.Household) *types.HouseholdUpdateRequestInput {
-	return &types.HouseholdUpdateRequestInput{
-		Name:          &x.Name,
-		BelongsToUser: x.BelongsToUser,
-	}
-}
-
 func (s *TestSuite) TestHouseholds_Updating() {
 	s.runForEachClient("should be possible to update a household", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -168,7 +160,7 @@ func (s *TestSuite) TestHouseholds_Updating() {
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
 			// Change household.
-			createdHousehold.Update(convertHouseholdToHouseholdUpdateInput(exampleHousehold))
+			createdHousehold.Update(converters.ConvertHouseholdToHouseholdUpdateRequestInput(exampleHousehold))
 			assert.NoError(t, testClients.user.UpdateHousehold(ctx, createdHousehold))
 
 			// Fetch household.

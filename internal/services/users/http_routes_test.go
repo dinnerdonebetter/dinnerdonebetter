@@ -2198,10 +2198,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		returnImage := &images.Image{}
+		returnImage := &images.Upload{}
 		ip := &images.MockImageUploadProcessor{}
 		ip.On(
-			"Process",
+			"ProcessFile",
 			testutils.ContextMatcher,
 			testutils.HTTPRequestMatcher,
 			"avatar",
@@ -2296,9 +2296,9 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		ip := &images.MockImageUploadProcessor{}
 		ip.On(
-			"Process",
+			"ProcessFile",
 			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher, "avatar").Return((*images.Image)(nil), errors.New("blah"))
+			testutils.HTTPRequestMatcher, "avatar").Return((*images.Upload)(nil), errors.New("blah"))
 		helper.service.imageUploadProcessor = ip
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -2329,10 +2329,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		returnImage := &images.Image{}
+		returnImage := &images.Upload{}
 		ip := &images.MockImageUploadProcessor{}
 		ip.On(
-			"Process",
+			"ProcessFile",
 			testutils.ContextMatcher,
 			testutils.HTTPRequestMatcher,
 			"avatar",
@@ -2381,10 +2381,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		returnImage := &images.Image{}
+		returnImage := &images.Upload{}
 		ip := &images.MockImageUploadProcessor{}
 		ip.On(
-			"Process",
+			"ProcessFile",
 			testutils.ContextMatcher,
 			testutils.HTTPRequestMatcher,
 			"avatar",

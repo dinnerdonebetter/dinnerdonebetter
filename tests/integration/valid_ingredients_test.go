@@ -43,35 +43,6 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertValidIngredientToValidIngredientUpdateInput creates an ValidIngredientUpdateRequestInput struct from a valid ingredient.
-func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient) *types.ValidIngredientUpdateRequestInput {
-	return &types.ValidIngredientUpdateRequestInput{
-		Name:                                    &x.Name,
-		Description:                             &x.Description,
-		Warning:                                 &x.Warning,
-		ContainsEgg:                             &x.ContainsEgg,
-		ContainsDairy:                           &x.ContainsDairy,
-		ContainsPeanut:                          &x.ContainsPeanut,
-		ContainsTreeNut:                         &x.ContainsTreeNut,
-		ContainsSoy:                             &x.ContainsSoy,
-		ContainsWheat:                           &x.ContainsWheat,
-		ContainsShellfish:                       &x.ContainsShellfish,
-		ContainsSesame:                          &x.ContainsSesame,
-		ContainsFish:                            &x.ContainsFish,
-		ContainsGluten:                          &x.ContainsGluten,
-		AnimalFlesh:                             &x.AnimalFlesh,
-		IsMeasuredVolumetrically:                &x.IsMeasuredVolumetrically,
-		IsLiquid:                                &x.IsLiquid,
-		IconPath:                                &x.IconPath,
-		PluralName:                              &x.PluralName,
-		AnimalDerived:                           &x.AnimalDerived,
-		RestrictToPreparations:                  &x.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: x.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: x.MaximumIdealStorageTemperatureInCelsius,
-		StorageInstructions:                     &x.StorageInstructions,
-	}
-}
-
 func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -94,7 +65,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 
 			t.Log("changing valid ingredient")
 			newValidIngredient := fakes.BuildFakeValidIngredient()
-			createdValidIngredient.Update(convertValidIngredientToValidIngredientUpdateInput(newValidIngredient))
+			createdValidIngredient.Update(converters.ConvertValidIngredientToValidIngredientUpdateRequestInput(newValidIngredient))
 			assert.NoError(t, testClients.admin.UpdateValidIngredient(ctx, createdValidIngredient))
 
 			t.Log("fetching changed valid ingredient")

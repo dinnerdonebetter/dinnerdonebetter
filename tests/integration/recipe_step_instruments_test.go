@@ -33,22 +33,6 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput creates an RecipeStepInstrumentUpdateRequestInput struct from a recipe step instrument.
-func convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(x *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
-	return &types.RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID:        &x.Instrument.ID,
-		RecipeStepProductID: x.RecipeStepProductID,
-		ProductOfRecipeStep: &x.ProductOfRecipeStep,
-		Notes:               &x.Notes,
-		PreferenceRank:      &x.PreferenceRank,
-		BelongsToRecipeStep: &x.BelongsToRecipeStep,
-		Optional:            &x.Optional,
-		MinimumQuantity:     &x.MinimumQuantity,
-		MaximumQuantity:     &x.MaximumQuantity,
-		Name:                &x.Name,
-	}
-}
-
 func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -104,7 +88,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			newRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			newRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepInstrument.Instrument = newValidInstrument
-			createdRecipeStepInstrument.Update(convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(newRecipeStepInstrument))
+			createdRecipeStepInstrument.Update(converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(newRecipeStepInstrument))
 			assert.NoError(t, testClients.user.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
 
 			t.Log("fetching changed recipe step instrument")

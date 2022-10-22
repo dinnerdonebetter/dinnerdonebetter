@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"github.com/stretchr/testify/mock"
-
-	"github.com/prixfixeco/api_server/internal/encoding"
 )
 
 var _ ImageUploadProcessor = (*MockImageUploadProcessor)(nil)
@@ -16,16 +14,15 @@ type MockImageUploadProcessor struct {
 	mock.Mock
 }
 
-// Process satisfies the ImageUploadProcessor interface.
-func (m *MockImageUploadProcessor) Process(ctx context.Context, req *http.Request, filename string) (*Image, error) {
+// ProcessFile satisfies the ImageUploadProcessor interface.
+func (m *MockImageUploadProcessor) ProcessFile(ctx context.Context, req *http.Request, filename string) (*Upload, error) {
 	args := m.Called(ctx, req, filename)
 
-	return args.Get(0).(*Image), args.Error(1)
+	return args.Get(0).(*Upload), args.Error(1)
 }
 
-// BuildAvatarUploadMiddleware satisfies the ImageUploadProcessor interface.
-func (m *MockImageUploadProcessor) BuildAvatarUploadMiddleware(next http.Handler, encoderDecoder encoding.ServerEncoderDecoder, filename string) http.Handler {
-	args := m.Called(next, encoderDecoder, filename)
+func (m *MockImageUploadProcessor) ProcessFiles(ctx context.Context, req *http.Request, filenamePrefix string) ([]*Upload, error) {
+	args := m.Called(ctx, req, filenamePrefix)
 
-	return args.Get(0).(http.Handler)
+	return args.Get(0).([]*Upload), args.Error(1)
 }

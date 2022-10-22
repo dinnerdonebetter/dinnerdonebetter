@@ -9,10 +9,13 @@ import (
 	"image"
 	"io"
 	"mime"
+	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/hashicorp/go-multierror"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -28,16 +31,13 @@ const (
 )
 
 var (
-	// ErrInvalidContentType is what we return to indicate the provided data was of the wrong type.
-	ErrInvalidContentType = errors.New("invalid content type")
-
 	// ErrInvalidImageContentType is what we return to indicate the provided image was of the wrong type.
 	ErrInvalidImageContentType = errors.New("invalid image content type")
 )
 
 type (
-	// Image is a helper struct for handling images.
-	Image struct {
+	// Upload is a helper struct for handling images.
+	Upload struct {
 		Filename    string
 		ContentType string
 		Extension   string
@@ -47,7 +47,8 @@ type (
 
 	// ImageUploadProcessor process image uploads.
 	ImageUploadProcessor interface {
-		Process(ctx context.Context, req *http.Request, filename string) (*Image, error)
+		ProcessFile(ctx context.Context, req *http.Request, filename string) (*Upload, error)
+		ProcessFiles(ctx context.Context, req *http.Request, filenamePrefix string) ([]*Upload, error)
 	}
 
 	uploadProcessor struct {
@@ -57,12 +58,12 @@ type (
 )
 
 // DataURI converts image to base64 data URI.
-func (i *Image) DataURI() string {
+func (i *Upload) DataURI() string {
 	return fmt.Sprintf("data:%s;base64,%s", i.ContentType, base64.StdEncoding.EncodeToString(i.Data))
 }
 
 // Write image to HTTP response.
-func (i *Image) Write(w http.ResponseWriter) error {
+func (i *Upload) Write(w http.ResponseWriter) error {
 	w.Header().Set(headerContentType, i.ContentType)
 	w.Header().Set("RawHTML-Length", strconv.Itoa(i.Size))
 
@@ -74,7 +75,7 @@ func (i *Image) Write(w http.ResponseWriter) error {
 }
 
 // Thumbnail creates a thumbnail from an image.
-func (i *Image) Thumbnail(width, height uint, filename string) (*Image, error) {
+func (i *Upload) Thumbnail(width, height uint, filename string) (*Upload, error) {
 	t, err := newThumbnailer(i.ContentType)
 	if err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func NewImageUploadProcessor(logger logging.Logger, tracerProvider tracing.Trace
 	}
 }
 
-// LimitFileSize limits the size of uploaded files, for use before Process.
+// LimitFileSize limits the size of uploaded files, for use before ProcessFile.
 func LimitFileSize(maxSize uint16, res http.ResponseWriter, req *http.Request) {
 	if maxSize == 0 {
 		maxSize = 4096
@@ -115,19 +116,19 @@ func contentTypeFromFilename(filename string) string {
 	}
 }
 
-func validateContentType(filename string) error {
+func isImage(filename string) bool {
 	contentType := contentTypeFromFilename(filename)
 
 	switch strings.TrimSpace(strings.ToLower(contentType)) {
 	case imagePNG, imageJPEG, imageGIF:
-		return nil
+		return true
 	default:
-		return fmt.Errorf("%w: %s", ErrInvalidContentType, contentType)
+		return false
 	}
 }
 
-// Process extracts an image from an *http.Request.
-func (p *uploadProcessor) Process(ctx context.Context, req *http.Request, filename string) (*Image, error) {
+// ProcessFile extracts an image from an *http.Request.
+func (p *uploadProcessor) ProcessFile(ctx context.Context, req *http.Request, filename string) (*Upload, error) {
 	_, span := p.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -136,20 +137,26 @@ func (p *uploadProcessor) Process(ctx context.Context, req *http.Request, filena
 		return nil, observability.PrepareError(err, span, "parsing file from request")
 	}
 
-	if contentTypeErr := validateContentType(info.Filename); contentTypeErr != nil {
-		return nil, observability.PrepareError(contentTypeErr, span, "validating the content type")
-	}
+	return p.processFile(ctx, file, info, filename)
+}
+
+// processFile extracts a single file by name from an *http.Request.
+func (p *uploadProcessor) processFile(ctx context.Context, file multipart.File, info *multipart.FileHeader, filename string) (*Upload, error) {
+	_, span := p.tracer.StartSpan(ctx)
+	defer span.End()
 
 	bs, err := io.ReadAll(file)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "reading file from request")
 	}
 
-	if _, _, err = image.Decode(bytes.NewReader(bs)); err != nil {
-		return nil, observability.PrepareError(err, span, "decoding the image data")
+	if isImage(info.Filename) {
+		if _, _, err = image.Decode(bytes.NewReader(bs)); err != nil {
+			return nil, observability.PrepareError(err, span, "decoding the image data")
+		}
 	}
 
-	i := &Image{
+	i := &Upload{
 		Filename:    info.Filename,
 		Extension:   filepath.Ext(filename),
 		ContentType: contentTypeFromFilename(filename),
@@ -158,4 +165,45 @@ func (p *uploadProcessor) Process(ctx context.Context, req *http.Request, filena
 	}
 
 	return i, nil
+}
+
+const (
+	defaultMaxMemory = 32 << 20 // 32 MB
+)
+
+// ProcessFiles extracts all the files from an *http.Request.
+func (p *uploadProcessor) ProcessFiles(ctx context.Context, req *http.Request, filenamePrefix string) ([]*Upload, error) {
+	_, span := p.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if req.MultipartForm == nil {
+		err := req.ParseMultipartForm(defaultMaxMemory)
+		if err != nil {
+			return nil, fmt.Errorf("parsing multipart form: %w", err)
+		}
+	}
+
+	var (
+		uploads = []*Upload{}
+		errs    *multierror.Error
+	)
+	if req.MultipartForm != nil && req.MultipartForm.File != nil {
+		for _, fileHeaders := range req.MultipartForm.File {
+			for i, fileHeader := range fileHeaders {
+				file, err := fileHeader.Open()
+				if err != nil {
+					errs = multierror.Append(errs, err)
+				} else {
+					upload, parseUploadErr := p.processFile(ctx, file, fileHeader, fmt.Sprintf("%s_%d", filenamePrefix, i))
+					if parseUploadErr != nil {
+						errs = multierror.Append(errs, parseUploadErr)
+					} else {
+						uploads = append(uploads, upload)
+					}
+				}
+			}
+		}
+	}
+
+	return uploads, nil
 }

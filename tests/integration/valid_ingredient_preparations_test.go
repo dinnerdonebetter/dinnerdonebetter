@@ -22,15 +22,6 @@ func checkValidIngredientPreparationEquality(t *testing.T, expected, actual *typ
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertValidIngredientPreparationToValidIngredientPreparationUpdateInput creates an ValidIngredientPreparationUpdateRequestInput struct from a valid ingredient preparation.
-func convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(x *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateRequestInput {
-	return &types.ValidIngredientPreparationUpdateRequestInput{
-		Notes:              &x.Notes,
-		ValidPreparationID: &x.Preparation.ID,
-		ValidIngredientID:  &x.Ingredient.ID,
-	}
-}
-
 func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -85,7 +76,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			newValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 			newValidIngredientPreparation.Ingredient = *createdValidIngredient
 			newValidIngredientPreparation.Preparation = *createdValidPreparation
-			createdValidIngredientPreparation.Update(convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(newValidIngredientPreparation))
+			createdValidIngredientPreparation.Update(converters.ConvertValidIngredientPreparationToValidIngredientPreparationUpdateRequestInput(newValidIngredientPreparation))
 			assert.NoError(t, testClients.admin.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
 
 			t.Log("fetching changed valid ingredient preparation")

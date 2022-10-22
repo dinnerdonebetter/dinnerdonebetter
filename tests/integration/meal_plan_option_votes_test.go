@@ -22,16 +22,6 @@ func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealP
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput creates an MealPlanOptionVoteUpdateRequestInput struct from a meal plan option vote.
-func convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(x *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
-	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Rank:                    &x.Rank,
-		Abstain:                 &x.Abstain,
-		Notes:                   &x.Notes,
-		BelongsToMealPlanOption: x.BelongsToMealPlanOption,
-	}
-}
-
 func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -67,7 +57,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 
 				t.Log("changing meal plan option vote")
 				newMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-				createdMealPlanOptionVote.Update(convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(newMealPlanOptionVote))
+				createdMealPlanOptionVote.Update(converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput(newMealPlanOptionVote))
 				assert.NoError(t, testClients.user.UpdateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOptionVote))
 
 				t.Log("fetching changed meal plan option vote")

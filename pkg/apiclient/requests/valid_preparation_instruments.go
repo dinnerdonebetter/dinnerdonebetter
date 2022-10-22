@@ -169,7 +169,7 @@ func (b *Builder) BuildUpdateValidPreparationInstrumentRequest(ctx context.Conte
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := converters.ConvertValidPreparationInstrumentToValidPreparationInstrument(validPreparationInstrument)
+	input := converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentUpdateRequestInput(validPreparationInstrument)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {

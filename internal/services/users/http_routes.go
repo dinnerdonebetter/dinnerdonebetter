@@ -677,7 +677,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	logger.Debug("retrieved user from database")
 
-	img, err := s.imageUploadProcessor.Process(ctx, req, "avatar")
+	img, err := s.imageUploadProcessor.ProcessFile(ctx, req, "avatar")
 	if err != nil || img == nil {
 		observability.AcknowledgeError(err, logger, span, "processing provided avatar upload file")
 		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)

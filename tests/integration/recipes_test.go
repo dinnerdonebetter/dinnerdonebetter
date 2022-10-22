@@ -29,18 +29,6 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertRecipeToRecipeUpdateInput creates an RecipeUpdateRequestInput struct from a recipe.
-func convertRecipeToRecipeUpdateInput(x *types.Recipe) *types.RecipeUpdateRequestInput {
-	return &types.RecipeUpdateRequestInput{
-		Name:               &x.Name,
-		Source:             &x.Source,
-		Description:        &x.Description,
-		InspiredByRecipeID: x.InspiredByRecipeID,
-		YieldsPortions:     &x.YieldsPortions,
-		SealOfApproval:     &x.SealOfApproval,
-	}
-}
-
 func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client *apiclient.Client, recipe *types.Recipe) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
 	t.Helper()
 
@@ -353,7 +341,7 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 
 			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
-			createdRecipe.Update(convertRecipeToRecipeUpdateInput(newRecipe))
+			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
 			assert.NoError(t, testClients.user.UpdateRecipe(ctx, createdRecipe))
 
 			t.Log("fetching changed recipe")

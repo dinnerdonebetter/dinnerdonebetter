@@ -28,23 +28,6 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertRecipeStepIngredientToRecipeStepIngredientUpdateInput creates an RecipeStepIngredientUpdateRequestInput struct from a recipe step ingredient.
-func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
-	return &types.RecipeStepIngredientUpdateRequestInput{
-		IngredientID:        &x.Ingredient.ID,
-		Name:                &x.Name,
-		Optional:            &x.Optional,
-		MeasurementUnitID:   &x.MeasurementUnit.ID,
-		MinimumQuantity:     &x.MinimumQuantity,
-		MaximumQuantity:     &x.MaximumQuantity,
-		QuantityNotes:       &x.QuantityNotes,
-		ProductOfRecipeStep: &x.ProductOfRecipeStep,
-		IngredientNotes:     &x.IngredientNotes,
-		RecipeStepProductID: x.RecipeStepProductID,
-		BelongsToRecipeStep: &x.BelongsToRecipeStep,
-	}
-}
-
 func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -85,7 +68,7 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			newRecipeStepIngredient.Ingredient = createdValidIngredient
 			newRecipeStepIngredient.MeasurementUnit = createdRecipeStepIngredient.MeasurementUnit
 
-			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(newRecipeStepIngredient))
+			createdRecipeStepIngredient.Update(converters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(newRecipeStepIngredient))
 
 			t.Logf("updating recipe step ingredient: %+v", createdRecipeStepIngredient)
 

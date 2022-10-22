@@ -25,16 +25,6 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertValidInstrumentToValidInstrumentUpdateInput creates an ValidInstrumentUpdateRequestInput struct from a valid instrument.
-func convertValidInstrumentToValidInstrumentUpdateInput(x *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
-	return &types.ValidInstrumentUpdateRequestInput{
-		Name:             &x.Name,
-		Description:      &x.Description,
-		IconPath:         &x.IconPath,
-		UsableForStorage: &x.UsableForStorage,
-	}
-}
-
 func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -53,7 +43,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 
 			t.Log("changing valid instrument")
 			newValidInstrument := fakes.BuildFakeValidInstrument()
-			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(newValidInstrument))
+			createdValidInstrument.Update(converters.ConvertValidInstrumentToValidInstrumentUpdateRequestInput(newValidInstrument))
 			assert.NoError(t, testClients.admin.UpdateValidInstrument(ctx, createdValidInstrument))
 
 			t.Log("fetching changed valid instrument")

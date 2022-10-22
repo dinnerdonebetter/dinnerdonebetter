@@ -4,17 +4,6 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// ConvertValidPreparationInstrumentToValidPreparationInstrument creates a ValidPreparationInstrumentUpdateRequestInput from a ValidPreparationInstrument.
-func ConvertValidPreparationInstrumentToValidPreparationInstrument(input *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentUpdateRequestInput {
-	x := &types.ValidPreparationInstrumentUpdateRequestInput{
-		Notes:              &input.Notes,
-		ValidPreparationID: &input.Preparation.ID,
-		ValidInstrumentID:  &input.Instrument.ID,
-	}
-
-	return x
-}
-
 // ConvertValidPreparationInstrumentCreationRequestInputToValidPreparationInstrumentDatabaseCreationInput creates a ValidPreparationInstrumentDatabaseCreationInput from a ValidPreparationInstrumentCreationRequestInput.
 func ConvertValidPreparationInstrumentCreationRequestInputToValidPreparationInstrumentDatabaseCreationInput(input *types.ValidPreparationInstrumentCreationRequestInput) *types.ValidPreparationInstrumentDatabaseCreationInput {
 	x := &types.ValidPreparationInstrumentDatabaseCreationInput{

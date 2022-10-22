@@ -37,7 +37,7 @@ func Test_preprocess(T *testing.T) {
 		t.Parallel()
 
 		imgBytes := buildPNGBytes(t).Bytes()
-		i := &Image{
+		i := &Upload{
 			Filename:    "whatever.png",
 			ContentType: imagePNG,
 			Data:        imgBytes,
@@ -52,7 +52,7 @@ func Test_preprocess(T *testing.T) {
 	T.Run("with invalid content", func(t *testing.T) {
 		t.Parallel()
 
-		i := &Image{
+		i := &Upload{
 			Filename:    "whatever.png",
 			ContentType: imagePNG,
 			Data:        []byte(t.Name()),
@@ -72,7 +72,7 @@ func Test_jpegThumbnailer_Thumbnail(T *testing.T) {
 		t.Parallel()
 
 		imgBytes := buildJPEGBytes(t).Bytes()
-		i := &Image{
+		i := &Upload{
 			Filename:    "whatever.png",
 			ContentType: imagePNG,
 			Data:        imgBytes,
@@ -92,7 +92,7 @@ func Test_jpegThumbnailer_Thumbnail(T *testing.T) {
 	T.Run("with invalid content", func(t *testing.T) {
 		t.Parallel()
 
-		i := &Image{
+		i := &Upload{
 			Filename:    "whatever.png",
 			ContentType: imagePNG,
 			Data:        []byte(t.Name()),
@@ -117,7 +117,7 @@ func Test_pngThumbnailer_Thumbnail(T *testing.T) {
 		t.Parallel()
 
 		imgBytes := buildPNGBytes(t).Bytes()
-		i := &Image{
+		i := &Upload{
 			Filename:    "whatever.png",
 			ContentType: imagePNG,
 			Data:        imgBytes,
@@ -137,7 +137,7 @@ func Test_pngThumbnailer_Thumbnail(T *testing.T) {
 	T.Run("with invalid content", func(t *testing.T) {
 		t.Parallel()
 
-		i := &Image{
+		i := &Upload{
 			Filename:    "whatever.png",
 			ContentType: imagePNG,
 			Data:        []byte(t.Name()),
@@ -162,7 +162,7 @@ func Test_gifThumbnailer_Thumbnail(T *testing.T) {
 		t.Parallel()
 
 		imgBytes := buildGIFBytes(t).Bytes()
-		i := &Image{
+		i := &Upload{
 			Filename:    "whatever.png",
 			ContentType: imagePNG,
 			Data:        imgBytes,
@@ -182,7 +182,7 @@ func Test_gifThumbnailer_Thumbnail(T *testing.T) {
 	T.Run("with invalid content", func(t *testing.T) {
 		t.Parallel()
 
-		i := &Image{
+		i := &Upload{
 			Filename:    "whatever.png",
 			ContentType: imagePNG,
 			Data:        []byte(t.Name()),

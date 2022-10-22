@@ -22,15 +22,6 @@ func checkValidPreparationInstrumentEquality(t *testing.T, expected, actual *typ
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertValidPreparationInstrumentToValidPreparationInstrumentUpdateInput creates an ValidPreparationInstrumentUpdateRequestInput struct from a valid preparation instrument.
-func convertValidPreparationInstrumentToValidPreparationInstrumentUpdateInput(x *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentUpdateRequestInput {
-	return &types.ValidPreparationInstrumentUpdateRequestInput{
-		Notes:              &x.Notes,
-		ValidPreparationID: &x.Preparation.ID,
-		ValidInstrumentID:  &x.Instrument.ID,
-	}
-}
-
 func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -85,7 +76,7 @@ func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 			newValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 			newValidPreparationInstrument.Instrument = *createdValidInstrument
 			newValidPreparationInstrument.Preparation = *createdValidPreparation
-			createdValidPreparationInstrument.Update(convertValidPreparationInstrumentToValidPreparationInstrumentUpdateInput(newValidPreparationInstrument))
+			createdValidPreparationInstrument.Update(converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentUpdateRequestInput(newValidPreparationInstrument))
 			assert.NoError(t, testClients.admin.UpdateValidPreparationInstrument(ctx, createdValidPreparationInstrument))
 
 			t.Log("fetching changed valid preparation instrument")

@@ -22,6 +22,7 @@ var (
 		"recipe_media.mime_type",
 		"recipe_media.internal_path",
 		"recipe_media.external_path",
+		"recipe_media.index",
 		"recipe_media.created_at",
 		"recipe_media.last_updated_at",
 		"recipe_media.archived_at",
@@ -42,6 +43,7 @@ func (q *Querier) scanPieceOfRecipeMedia(ctx context.Context, scan database.Scan
 		&x.MimeType,
 		&x.InternalPath,
 		&x.ExternalPath,
+		&x.Index,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -186,6 +188,7 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 		input.MimeType,
 		input.InternalPath,
 		input.ExternalPath,
+		input.Index,
 	}
 
 	// create the valid preparation.
@@ -200,6 +203,7 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 		MimeType:            input.MimeType,
 		InternalPath:        input.InternalPath,
 		ExternalPath:        input.ExternalPath,
+		Index:               input.Index,
 		CreatedAt:           q.currentTime(),
 	}
 
@@ -230,6 +234,7 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 		updated.MimeType,
 		updated.InternalPath,
 		updated.ExternalPath,
+		updated.Index,
 		updated.ID,
 	}
 

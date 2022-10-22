@@ -27,19 +27,6 @@ func checkValidPreparationEquality(t *testing.T, expected, actual *types.ValidPr
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertValidPreparationToValidPreparationUpdateInput creates an ValidPreparationUpdateRequestInput struct from a valid preparation.
-func convertValidPreparationToValidPreparationUpdateInput(x *types.ValidPreparation) *types.ValidPreparationUpdateRequestInput {
-	return &types.ValidPreparationUpdateRequestInput{
-		Name:                     &x.Name,
-		Description:              &x.Description,
-		IconPath:                 &x.IconPath,
-		PastTense:                &x.PastTense,
-		YieldsNothing:            &x.YieldsNothing,
-		RestrictToIngredients:    &x.RestrictToIngredients,
-		ZeroIngredientsAllowable: &x.ZeroIngredientsAllowable,
-	}
-}
-
 func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -62,7 +49,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 
 			t.Log("changing valid preparation")
 			newValidPreparation := fakes.BuildFakeValidPreparation()
-			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))
+			createdValidPreparation.Update(converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(newValidPreparation))
 			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
 
 			t.Log("fetching changed valid preparation")
