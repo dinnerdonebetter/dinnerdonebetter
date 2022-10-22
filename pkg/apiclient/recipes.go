@@ -3,12 +3,13 @@ package apiclient
 import (
 	"context"
 	"fmt"
+	"image"
+	"image/png"
+
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
-	"image"
-	"image/png"
 )
 
 // GetRecipe gets a recipe.
@@ -225,12 +226,9 @@ func (c *Client) UploadRecipeMedia(ctx context.Context, media []byte, extension,
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-
 	if recipeID == "" {
 		return buildInvalidIDError("recipe")
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if len(media) == 0 {
