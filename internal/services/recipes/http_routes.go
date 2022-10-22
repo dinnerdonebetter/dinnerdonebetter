@@ -515,7 +515,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 
 	logger.Info("processed image, saving file")
 
-	internalPath := fmt.Sprintf("%s_%d", recipeID, time.Now().Unix())
+	internalPath := fmt.Sprintf("%s/%s_%d.%s", recipeID, img.Filename, time.Now().Unix(), img.Extension)
 	logger = logger.WithValue("internal_path", internalPath).WithValue("file_size", len(img.Data))
 
 	if err = s.uploadManager.SaveFile(ctx, internalPath, img.Data); err != nil {
@@ -529,8 +529,8 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		BelongsToRecipe:     &recipeID,
 		BelongsToRecipeStep: nil,
 		MimeType:            img.ContentType,
-		InternalPath:        img.Filename,
-		ExternalPath:        img.Filename,
+		InternalPath:        internalPath,
+		ExternalPath:        internalPath,
 	}
 
 	logger.Info("image uploaded to file store, saving info in database")

@@ -116,6 +116,7 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 		if credsErr != nil {
 			return fmt.Errorf("initializing GCP storage: %w", credsErr)
 		}
+
 		client, clientErr := gcp.NewHTTPClient(gcp.DefaultTransport(), creds.TokenSource)
 		if clientErr != nil {
 			return fmt.Errorf("initializing GCP storage: %w", clientErr)

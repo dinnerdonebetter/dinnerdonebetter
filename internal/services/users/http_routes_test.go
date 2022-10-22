@@ -5,7 +5,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 	"testing"
@@ -2209,11 +2208,11 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return(returnImage, nil)
 		helper.service.imageUploadProcessor = ip
 
-		um := &mockuploads.UploadManager{}
+		um := &mockuploads.MockUploadManager{}
 		um.On(
 			"SaveFile",
 			testutils.ContextMatcher,
-			fmt.Sprintf("avatar_%s", helper.exampleUser.ID),
+			mock.AnythingOfType("string"),
 			returnImage.Data,
 		).Return(nil)
 		helper.service.uploadManager = um
@@ -2340,11 +2339,11 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return(returnImage, nil)
 		helper.service.imageUploadProcessor = ip
 
-		um := &mockuploads.UploadManager{}
+		um := &mockuploads.MockUploadManager{}
 		um.On(
 			"SaveFile",
 			testutils.ContextMatcher,
-			fmt.Sprintf("avatar_%s", helper.exampleUser.ID),
+			mock.AnythingOfType("string"),
 			returnImage.Data,
 		).Return(errors.New("blah"))
 		helper.service.uploadManager = um
@@ -2392,11 +2391,11 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return(returnImage, nil)
 		helper.service.imageUploadProcessor = ip
 
-		um := &mockuploads.UploadManager{}
+		um := &mockuploads.MockUploadManager{}
 		um.On(
 			"SaveFile",
 			testutils.ContextMatcher,
-			fmt.Sprintf("avatar_%s", helper.exampleUser.ID),
+			mock.AnythingOfType("string"),
 			returnImage.Data,
 		).Return(nil)
 		helper.service.uploadManager = um
