@@ -101,7 +101,18 @@ func LimitFileSize(maxSize uint16, res http.ResponseWriter, req *http.Request) {
 }
 
 func contentTypeFromFilename(filename string) string {
-	return mime.TypeByExtension(filepath.Ext(filename))
+	ext := filepath.Ext(filename)
+
+	switch ext {
+	case ".png":
+		return imagePNG
+	case ".jpeg":
+		return imageJPEG
+	case ".gif":
+		return imageGIF
+	default:
+		return mime.TypeByExtension(ext)
+	}
 }
 
 func validateContentType(filename string) error {
