@@ -12,6 +12,7 @@ func ConvertRecipeMediaToRecipeMediaUpdateRequestInput(input *types.RecipeMedia)
 		MimeType:            &input.MimeType,
 		InternalPath:        &input.InternalPath,
 		ExternalPath:        &input.ExternalPath,
+		Index:               &input.Index,
 	}
 
 	return x
@@ -25,6 +26,7 @@ func ConvertRecipeMediaCreationRequestInputToRecipeMediaDatabaseCreationInput(in
 		MimeType:            input.MimeType,
 		InternalPath:        input.InternalPath,
 		ExternalPath:        input.ExternalPath,
+		Index:               input.Index,
 	}
 
 	return x
@@ -38,6 +40,7 @@ func ConvertRecipeMediaToRecipeMediaCreationRequestInput(recipeMedia *types.Reci
 		MimeType:            recipeMedia.MimeType,
 		InternalPath:        recipeMedia.InternalPath,
 		ExternalPath:        recipeMedia.ExternalPath,
+		Index:               recipeMedia.Index,
 	}
 }
 
@@ -50,5 +53,6 @@ func ConvertRecipeMediaToRecipeMediaDatabaseCreationInput(recipeMedia *types.Rec
 		MimeType:            recipeMedia.MimeType,
 		InternalPath:        recipeMedia.InternalPath,
 		ExternalPath:        recipeMedia.ExternalPath,
+		Index:               recipeMedia.Index,
 	}
 }

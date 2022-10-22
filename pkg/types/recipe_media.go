@@ -41,6 +41,7 @@ type (
 		MimeType            string     `json:"mimeType"`
 		InternalPath        string     `json:"internalPath"`
 		ExternalPath        string     `json:"externalPath"`
+		Index               uint16     `json:"index"`
 	}
 
 	// RecipeMediaList represents a list of valid preparations.
@@ -58,6 +59,7 @@ type (
 		MimeType            string  `json:"mimeType"`
 		InternalPath        string  `json:"internalPath"`
 		ExternalPath        string  `json:"externalPath"`
+		Index               uint16  `json:"index"`
 	}
 
 	// RecipeMediaDatabaseCreationInput represents what a user could set as input for creating valid preparations.
@@ -69,6 +71,7 @@ type (
 		MimeType            string
 		InternalPath        string
 		ExternalPath        string
+		Index               uint16
 	}
 
 	// RecipeMediaUpdateRequestInput represents what a user could set as input for updating valid preparations.
@@ -80,6 +83,7 @@ type (
 		MimeType            *string
 		InternalPath        *string
 		ExternalPath        *string
+		Index               *uint16
 	}
 
 	// RecipeMediaDataManager describes a structure capable of storing valid preparations permanently.
@@ -125,6 +129,10 @@ func (x *RecipeMedia) Update(input *RecipeMediaUpdateRequestInput) {
 	if input.ExternalPath != nil && *input.ExternalPath != x.ExternalPath {
 		x.ExternalPath = *input.ExternalPath
 	}
+
+	if input.Index != nil && *input.Index != x.Index {
+		x.Index = *input.Index
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeMediaCreationRequestInput)(nil)
@@ -134,7 +142,7 @@ func (x *RecipeMediaCreationRequestInput) ValidateWithContext(ctx context.Contex
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		//
+		// TODO: populate this
 	)
 }
 
@@ -149,6 +157,7 @@ func (x *RecipeMediaDatabaseCreationInput) ValidateWithContext(ctx context.Conte
 		validation.Field(&x.MimeType, validation.Required),
 		validation.Field(&x.InternalPath, validation.Required),
 		validation.Field(&x.ExternalPath, validation.Required),
+		validation.Field(&x.Index, validation.Required),
 	)
 }
 
@@ -159,6 +168,6 @@ func (x *RecipeMediaUpdateRequestInput) ValidateWithContext(ctx context.Context)
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		//
+		// TODO: populate this
 	)
 }

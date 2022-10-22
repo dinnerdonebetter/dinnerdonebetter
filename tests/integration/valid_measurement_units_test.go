@@ -30,20 +30,6 @@ func checkValidMeasurementUnitEquality(t *testing.T, expected, actual *types.Val
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertValidMeasurementUnitToValidMeasurementUnitUpdateInput creates an ValidMeasurementUnitUpdateRequestInput struct from a valid measurement unit.
-func convertValidMeasurementUnitToValidMeasurementUnitUpdateInput(x *types.ValidMeasurementUnit) *types.ValidMeasurementUnitUpdateRequestInput {
-	return &types.ValidMeasurementUnitUpdateRequestInput{
-		Name:        &x.Name,
-		Description: &x.Description,
-		Volumetric:  &x.Volumetric,
-		IconPath:    &x.IconPath,
-		Universal:   &x.Universal,
-		Metric:      &x.Metric,
-		Imperial:    &x.Imperial,
-		PluralName:  &x.PluralName,
-	}
-}
-
 func createValidMeasurementUnitForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidMeasurementUnit {
 	t.Log("creating valid measurement unit")
 	exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
@@ -72,7 +58,7 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 
 			t.Log("changing valid measurement unit")
 			newValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			createdValidMeasurementUnit.Update(convertValidMeasurementUnitToValidMeasurementUnitUpdateInput(newValidMeasurementUnit))
+			createdValidMeasurementUnit.Update(converters.ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(newValidMeasurementUnit))
 			assert.NoError(t, testClients.admin.UpdateValidMeasurementUnit(ctx, createdValidMeasurementUnit))
 
 			t.Log("fetching changed valid measurement unit")

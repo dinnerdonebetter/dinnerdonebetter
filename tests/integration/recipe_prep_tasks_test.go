@@ -30,31 +30,6 @@ func checkRecipePrepTaskEquality(t *testing.T, expected, actual *types.RecipePre
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertRecipePrepTaskToRecipePrepTaskUpdateInput creates an RecipePrepTaskUpdateRequestInput struct from a recipe prep task.
-func convertRecipePrepTaskToRecipePrepTaskUpdateInput(x *types.RecipePrepTask) *types.RecipePrepTaskUpdateRequestInput {
-	updateSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
-	for _, taskStep := range x.TaskSteps {
-		updateSteps = append(updateSteps, &types.RecipePrepTaskStepUpdateRequestInput{
-			SatisfiesRecipeStep:     &taskStep.SatisfiesRecipeStep,
-			BelongsToRecipeStep:     &taskStep.BelongsToRecipeStep,
-			BelongsToRecipePrepTask: &taskStep.BelongsToRecipePrepTask,
-			ID:                      taskStep.ID,
-		})
-	}
-
-	return &types.RecipePrepTaskUpdateRequestInput{
-		Notes:                                  &x.Notes,
-		ExplicitStorageInstructions:            &x.ExplicitStorageInstructions,
-		MinimumTimeBufferBeforeRecipeInSeconds: &x.MinimumTimeBufferBeforeRecipeInSeconds,
-		MaximumTimeBufferBeforeRecipeInSeconds: &x.MaximumTimeBufferBeforeRecipeInSeconds,
-		StorageType:                            &x.StorageType,
-		MinimumStorageTemperatureInCelsius:     &x.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     &x.MaximumStorageTemperatureInCelsius,
-		BelongsToRecipe:                        &x.BelongsToRecipe,
-		TaskSteps:                              updateSteps,
-	}
-}
-
 func createRecipePrepTaskForTest(ctx context.Context, t *testing.T, adminClient, client *apiclient.Client) (*types.Recipe, *types.RecipePrepTask) {
 	_, _, createdRecipe := createRecipeForTest(ctx, t, adminClient, client, nil)
 
@@ -105,7 +80,7 @@ func (s *TestSuite) TestRecipePrepTasks_CompleteLifecycle() {
 			newRecipePrepTask.ID = actual.ID
 			newRecipePrepTask.BelongsToRecipe = createdRecipe.ID
 			newRecipePrepTask.TaskSteps = actual.TaskSteps
-			actual.Update(convertRecipePrepTaskToRecipePrepTaskUpdateInput(newRecipePrepTask))
+			actual.Update(converters.ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(newRecipePrepTask))
 			require.NoError(t, testClients.user.UpdateRecipePrepTask(ctx, actual))
 
 			t.Log("fetching changed recipe prep task")

@@ -163,7 +163,7 @@ func (b *Builder) BuildUpdateValidIngredientPreparationRequest(ctx context.Conte
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := converters.ConvertValidIngredientPreparationToValidIngredientPreparation(validIngredientPreparation)
+	input := converters.ConvertValidIngredientPreparationToValidIngredientPreparationUpdateRequestInput(validIngredientPreparation)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {

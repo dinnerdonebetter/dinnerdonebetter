@@ -25,17 +25,6 @@ func checkMealPlanEventEquality(t *testing.T, expected, actual *types.MealPlanEv
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertMealPlanEventToMealPlanEventUpdateInput creates an MealPlanEventUpdateRequestInput struct from a meal plan event.
-func convertMealPlanEventToMealPlanEventUpdateInput(x *types.MealPlanEvent) *types.MealPlanEventUpdateRequestInput {
-	return &types.MealPlanEventUpdateRequestInput{
-		Notes:             &x.Notes,
-		StartsAt:          &x.StartsAt,
-		EndsAt:            &x.EndsAt,
-		MealName:          &x.MealName,
-		BelongsToMealPlan: x.BelongsToMealPlan,
-	}
-}
-
 func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -55,7 +44,7 @@ func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
 			newMealPlanEvent := fakes.BuildFakeMealPlanEvent()
 			newMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 
-			createdMealPlanEvent.Update(convertMealPlanEventToMealPlanEventUpdateInput(newMealPlanEvent))
+			createdMealPlanEvent.Update(converters.ConvertMealPlanEventToMealPlanEventUpdateRequestInput(newMealPlanEvent))
 			assert.NoError(t, testClients.user.UpdateMealPlanEvent(ctx, createdMealPlanEvent))
 
 			t.Log("fetching changed meal plan event")

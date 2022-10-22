@@ -18,7 +18,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
-func buildMockRowsFromRecipeMedias(recipeMedia ...*types.RecipeMedia) *sqlmock.Rows {
+func buildMockRowsFromRecipeMedia(recipeMedia ...*types.RecipeMedia) *sqlmock.Rows {
 	columns := recipeMediaTableColumns
 
 	exampleRows := sqlmock.NewRows(columns)
@@ -31,6 +31,7 @@ func buildMockRowsFromRecipeMedias(recipeMedia ...*types.RecipeMedia) *sqlmock.R
 			x.MimeType,
 			x.InternalPath,
 			x.ExternalPath,
+			x.Index,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -174,7 +175,7 @@ func TestQuerier_GetRecipeMedia(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeMediaQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeMedias(exampleRecipeMedia))
+			WillReturnRows(buildMockRowsFromRecipeMedia(exampleRecipeMedia))
 
 		actual, err := c.GetRecipeMedia(ctx, exampleRecipeMedia.ID)
 		assert.NoError(t, err)
@@ -236,7 +237,7 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(recipeMediaForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(recipeMediaForRecipeArgs)...).
-			WillReturnRows(buildMockRowsFromRecipeMedias(exampleRecipeMediaList...))
+			WillReturnRows(buildMockRowsFromRecipeMedia(exampleRecipeMediaList...))
 
 		actual, err := c.GetRecipeMediaForRecipe(ctx, exampleRecipeID)
 		assert.NoError(t, err)
@@ -312,6 +313,7 @@ func TestQuerier_CreateRecipeMedia(T *testing.T) {
 			exampleInput.MimeType,
 			exampleInput.InternalPath,
 			exampleInput.ExternalPath,
+			exampleInput.Index,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeMediaCreationQuery)).
@@ -357,6 +359,7 @@ func TestQuerier_CreateRecipeMedia(T *testing.T) {
 			exampleInput.MimeType,
 			exampleInput.InternalPath,
 			exampleInput.ExternalPath,
+			exampleInput.Index,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeMediaCreationQuery)).
@@ -393,6 +396,7 @@ func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 			exampleRecipeMedia.MimeType,
 			exampleRecipeMedia.InternalPath,
 			exampleRecipeMedia.ExternalPath,
+			exampleRecipeMedia.Index,
 			exampleRecipeMedia.ID,
 		}
 
@@ -428,6 +432,7 @@ func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 			exampleRecipeMedia.MimeType,
 			exampleRecipeMedia.InternalPath,
 			exampleRecipeMedia.ExternalPath,
+			exampleRecipeMedia.Index,
 			exampleRecipeMedia.ID,
 		}
 

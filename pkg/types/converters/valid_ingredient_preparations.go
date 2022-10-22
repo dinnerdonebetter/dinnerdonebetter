@@ -4,17 +4,6 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// ConvertValidIngredientPreparationToValidIngredientPreparation creates a ValidIngredientPreparationUpdateRequestInput from a ValidIngredientPreparation.
-func ConvertValidIngredientPreparationToValidIngredientPreparation(input *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateRequestInput {
-	x := &types.ValidIngredientPreparationUpdateRequestInput{
-		Notes:              &input.Notes,
-		ValidPreparationID: &input.Preparation.ID,
-		ValidIngredientID:  &input.Ingredient.ID,
-	}
-
-	return x
-}
-
 // ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput creates a ValidIngredientPreparationDatabaseCreationInput from a ValidIngredientPreparationCreationRequestInput.
 func ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput(input *types.ValidIngredientPreparationCreationRequestInput) *types.ValidIngredientPreparationDatabaseCreationInput {
 	x := &types.ValidIngredientPreparationDatabaseCreationInput{

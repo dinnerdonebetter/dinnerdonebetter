@@ -31,23 +31,6 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertRecipeStepProductToRecipeStepProductUpdateInput creates an RecipeStepProductUpdateRequestInput struct from a recipe step product.
-func convertRecipeStepProductToRecipeStepProductUpdateInput(x *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
-	return &types.RecipeStepProductUpdateRequestInput{
-		Name:                               &x.Name,
-		Type:                               &x.Type,
-		MeasurementUnitID:                  &x.MeasurementUnit.ID,
-		MinimumQuantity:                    &x.MinimumQuantity,
-		MaximumQuantity:                    &x.MaximumQuantity,
-		QuantityNotes:                      &x.QuantityNotes,
-		Compostable:                        &x.Compostable,
-		MaximumStorageDurationInSeconds:    x.MaximumStorageDurationInSeconds,
-		MinimumStorageTemperatureInCelsius: x.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius: x.MaximumStorageTemperatureInCelsius,
-		StorageInstructions:                &x.StorageInstructions,
-	}
-}
-
 func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -98,7 +81,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			t.Log("changing recipe step product")
 			newRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			newRecipeStepProduct.MeasurementUnit = *createdValidMeasurementUnit
-			createdRecipeStepProduct.Update(convertRecipeStepProductToRecipeStepProductUpdateInput(newRecipeStepProduct))
+			createdRecipeStepProduct.Update(converters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(newRecipeStepProduct))
 
 			require.NoError(t, testClients.user.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepProduct))
 

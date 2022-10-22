@@ -86,7 +86,7 @@ func TestImage_DataURI(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		i := &Image{
+		i := &Upload{
 			Filename:    t.Name(),
 			ContentType: "things/stuff",
 			Data:        []byte(t.Name()),
@@ -106,7 +106,7 @@ func TestImage_Write(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		i := &Image{
+		i := &Upload{
 			Filename:    t.Name(),
 			ContentType: "things/stuff",
 			Data:        []byte(t.Name()),
@@ -120,7 +120,7 @@ func TestImage_Write(T *testing.T) {
 	T.Run("with write error", func(t *testing.T) {
 		t.Parallel()
 
-		i := &Image{
+		i := &Upload{
 			Filename:    t.Name(),
 			ContentType: "things/stuff",
 			Data:        []byte(t.Name()),
@@ -143,7 +143,7 @@ func TestImage_Thumbnail(T *testing.T) {
 
 		imgBytes := buildPNGBytes(t).Bytes()
 
-		i := &Image{
+		i := &Upload{
 			Filename:    t.Name(),
 			ContentType: imagePNG,
 			Data:        imgBytes,
@@ -163,7 +163,7 @@ func TestImage_Thumbnail(T *testing.T) {
 	T.Run("with invalid content type", func(t *testing.T) {
 		t.Parallel()
 
-		i := &Image{
+		i := &Upload{
 			ContentType: t.Name(),
 		}
 
@@ -202,7 +202,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 
 		req := newAvatarUploadRequest(t, "avatar.png", imgBytes)
 
-		actual, err := p.Process(ctx, req, expectedFieldName)
+		actual, err := p.ProcessFile(ctx, req, expectedFieldName)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
@@ -219,23 +219,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://tests.verygoodsoftwarenotvirus.ru", http.NoBody)
 		require.NoError(t, err)
 
-		actual, err := p.Process(ctx, req, expectedFieldName)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid content type", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		p := NewImageUploadProcessor(nil, tracing.NewNoopTracerProvider())
-		expectedFieldName := "avatar"
-
-		imgBytes := buildPNGBytes(t)
-
-		req := newAvatarUploadRequest(t, "avatar.pizza", imgBytes)
-
-		actual, err := p.Process(ctx, req, expectedFieldName)
+		actual, err := p.ProcessFile(ctx, req, expectedFieldName)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -249,7 +233,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 
 		req := newAvatarUploadRequest(t, "avatar.png", bytes.NewBufferString(""))
 
-		actual, err := p.Process(ctx, req, expectedFieldName)
+		actual, err := p.ProcessFile(ctx, req, expectedFieldName)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

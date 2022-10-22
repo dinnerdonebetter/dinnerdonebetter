@@ -24,17 +24,6 @@ func checkValidIngredientMeasurementUnitEquality(t *testing.T, expected, actual 
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateInput creates an ValidIngredientMeasurementUnitUpdateRequestInput struct from a valid ingredient measurement unit.
-func convertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateInput(x *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitUpdateRequestInput {
-	return &types.ValidIngredientMeasurementUnitUpdateRequestInput{
-		Notes:                    &x.Notes,
-		ValidMeasurementUnitID:   &x.MeasurementUnit.ID,
-		ValidIngredientID:        &x.Ingredient.ID,
-		MinimumAllowableQuantity: &x.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: &x.MaximumAllowableQuantity,
-	}
-}
-
 func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -89,7 +78,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 			newValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 			newValidIngredientMeasurementUnit.Ingredient = *createdValidIngredient
 			newValidIngredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnit
-			createdValidIngredientMeasurementUnit.Update(convertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateInput(newValidIngredientMeasurementUnit))
+			createdValidIngredientMeasurementUnit.Update(converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateRequestInput(newValidIngredientMeasurementUnit))
 			assert.NoError(t, testClients.admin.UpdateValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit))
 
 			t.Log("fetching changed valid ingredient measurement unit")

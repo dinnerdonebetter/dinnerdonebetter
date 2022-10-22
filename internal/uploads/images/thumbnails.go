@@ -17,7 +17,7 @@ const (
 )
 
 type thumbnailer interface {
-	Thumbnail(i *Image, width, height uint, filename string) (*Image, error)
+	Thumbnail(i *Upload, width, height uint, filename string) (*Upload, error)
 }
 
 // newThumbnailer provides a thumbnailer given a particular content type.
@@ -34,7 +34,7 @@ func newThumbnailer(contentType string) (thumbnailer, error) {
 	}
 }
 
-func preprocess(i *Image, width, height uint) (image.Image, error) {
+func preprocess(i *Upload, width, height uint) (image.Image, error) {
 	img, _, err := image.Decode(bytes.NewReader(i.Data))
 	if err != nil {
 		return nil, fmt.Errorf("decoding image: %w", err)
@@ -48,7 +48,7 @@ func preprocess(i *Image, width, height uint) (image.Image, error) {
 type jpegThumbnailer struct{}
 
 // Thumbnail creates a JPEG thumbnail.
-func (t *jpegThumbnailer) Thumbnail(img *Image, width, height uint, filename string) (*Image, error) {
+func (t *jpegThumbnailer) Thumbnail(img *Upload, width, height uint, filename string) (*Upload, error) {
 	thumbnail, err := preprocess(img, width, height)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (t *jpegThumbnailer) Thumbnail(img *Image, width, height uint, filename str
 
 	bs := b.Bytes()
 
-	i := &Image{
+	i := &Upload{
 		Filename:    fmt.Sprintf("%s.jpg", filename),
 		ContentType: imageJPEG,
 		Data:        bs,
@@ -74,7 +74,7 @@ func (t *jpegThumbnailer) Thumbnail(img *Image, width, height uint, filename str
 type pngThumbnailer struct{}
 
 // Thumbnail creates a PNG thumbnail.
-func (t *pngThumbnailer) Thumbnail(img *Image, width, height uint, filename string) (*Image, error) {
+func (t *pngThumbnailer) Thumbnail(img *Upload, width, height uint, filename string) (*Upload, error) {
 	thumbnail, err := preprocess(img, width, height)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (t *pngThumbnailer) Thumbnail(img *Image, width, height uint, filename stri
 
 	bs := b.Bytes()
 
-	i := &Image{
+	i := &Upload{
 		Filename:    fmt.Sprintf("%s.gif", filename),
 		ContentType: imageGIF,
 		Data:        bs,
@@ -100,7 +100,7 @@ func (t *pngThumbnailer) Thumbnail(img *Image, width, height uint, filename stri
 type gifThumbnailer struct{}
 
 // Thumbnail creates a GIF thumbnail.
-func (t *gifThumbnailer) Thumbnail(img *Image, width, height uint, filename string) (*Image, error) {
+func (t *gifThumbnailer) Thumbnail(img *Upload, width, height uint, filename string) (*Upload, error) {
 	thumbnail, err := preprocess(img, width, height)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (t *gifThumbnailer) Thumbnail(img *Image, width, height uint, filename stri
 
 	bs := b.Bytes()
 
-	i := &Image{
+	i := &Upload{
 		Filename:    fmt.Sprintf("%s.png", filename),
 		ContentType: imagePNG,
 		Data:        bs,

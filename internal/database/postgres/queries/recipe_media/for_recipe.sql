@@ -5,6 +5,7 @@ SELECT
     recipe_media.mime_type,
     recipe_media.internal_path,
     recipe_media.external_path,
+    recipe_media.index,
     recipe_media.created_at,
     recipe_media.last_updated_at,
     recipe_media.archived_at

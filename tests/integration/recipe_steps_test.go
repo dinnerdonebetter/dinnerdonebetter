@@ -27,22 +27,6 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertRecipeStepToRecipeStepUpdateInput creates an RecipeStepUpdateRequestInput struct from a recipe step.
-func convertRecipeStepToRecipeStepUpdateInput(x *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
-	return &types.RecipeStepUpdateRequestInput{
-		Index:                         &x.Index,
-		MinimumEstimatedTimeInSeconds: x.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: x.MaximumEstimatedTimeInSeconds,
-		MinimumTemperatureInCelsius:   x.MinimumTemperatureInCelsius,
-		MaximumTemperatureInCelsius:   x.MaximumTemperatureInCelsius,
-		Preparation:                   &x.Preparation,
-		Optional:                      &x.Optional,
-		Notes:                         &x.Notes,
-		ExplicitInstructions:          &x.ExplicitInstructions,
-		BelongsToRecipe:               x.BelongsToRecipe,
-	}
-}
-
 func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -66,7 +50,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 				newRecipeStep.Ingredients[j].Ingredient = createdValidIngredients[j]
 			}
 
-			updateInput := convertRecipeStepToRecipeStepUpdateInput(newRecipeStep)
+			updateInput := converters.ConvertRecipeStepToRecipeStepUpdateRequestInput(newRecipeStep)
 			updateInput.Preparation = createdValidPreparation
 			createdRecipeStep.Update(updateInput)
 			assert.NoError(t, testClients.user.UpdateRecipeStep(ctx, createdRecipeStep))

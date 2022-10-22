@@ -295,6 +295,11 @@ var (
 			Description: "recipe media",
 			Script:      fetchMigration("00056_recipe_media"),
 		},
+		{
+			Version:     57,
+			Description: "recipe media indices",
+			Script:      fetchMigration("00057_recipe_media_indices"),
+		},
 	}
 )
 

@@ -22,16 +22,6 @@ func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanO
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-// convertMealPlanOptionToMealPlanOptionUpdateInput creates an MealPlanOptionUpdateRequestInput struct from a meal plan option.
-func convertMealPlanOptionToMealPlanOptionUpdateInput(x *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
-	return &types.MealPlanOptionUpdateRequestInput{
-		MealID:             &x.Meal.ID,
-		Notes:              &x.Notes,
-		AssignedCook:       x.AssignedCook,
-		AssignedDishwasher: x.AssignedDishwasher,
-	}
-}
-
 func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -55,7 +45,7 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			newMealPlanOption.BelongsToMealPlanEvent = createdMealPlanEvent.ID
 			newMealPlanOption.AssignedCook = nil
 
-			createdMealPlanOption.Update(convertMealPlanOptionToMealPlanOptionUpdateInput(newMealPlanOption))
+			createdMealPlanOption.Update(converters.ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(newMealPlanOption))
 			require.NoError(t, testClients.user.UpdateMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption))
 
 			t.Log("fetching changed meal plan option")

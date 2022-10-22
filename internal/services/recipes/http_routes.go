@@ -506,43 +506,45 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 
 	logger.Info("about to start processing image")
 
-	img, err := s.imageUploadProcessor.Process(ctx, req, "upload")
-	if err != nil || img == nil {
+	images, err := s.imageUploadProcessor.ProcessFiles(ctx, req, "upload")
+	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "processing provided image")
 		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)
 		return
 	}
 
-	logger.Info("processed image, saving file")
+	logger = logger.WithValue("image_qty", len(images))
+	logger.Info("processed images, saving files")
 
-	internalPath := fmt.Sprintf("%s/%d_%s", recipeID, time.Now().Unix(), img.Filename)
-	logger = logger.WithValue("internal_path", internalPath).WithValue("file_size", len(img.Data))
+	for _, img := range images {
+		internalPath := fmt.Sprintf("%s/%d_%s", recipeID, time.Now().Unix(), img.Filename)
+		logger = logger.WithValue("internal_path", internalPath).WithValue("file_size", len(img.Data))
 
-	if err = s.uploadManager.SaveFile(ctx, internalPath, img.Data); err != nil {
-		observability.AcknowledgeError(err, logger, span, "saving provided image")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
+		if err = s.uploadManager.SaveFile(ctx, internalPath, img.Data); err != nil {
+			observability.AcknowledgeError(err, logger, span, "saving provided image")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			return
+		}
+
+		logger.Info("image uploaded to file store, saving info in database")
+
+		input := &types.RecipeMediaDatabaseCreationInput{
+			ID:                  ksuid.New().String(),
+			BelongsToRecipe:     &recipeID,
+			BelongsToRecipeStep: nil,
+			MimeType:            img.ContentType,
+			InternalPath:        internalPath,
+			ExternalPath:        fmt.Sprintf("%s/%s", s.cfg.PublicMediaURLPrefix, internalPath),
+		}
+
+		if _, dbWriteErr := s.recipeMediaDataManager.CreateRecipeMedia(ctx, input); dbWriteErr != nil {
+			observability.AcknowledgeError(dbWriteErr, logger, span, "saving recipe media record")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			return
+		}
+
+		logger.Info("image info saved in database")
 	}
 
-	input := &types.RecipeMediaDatabaseCreationInput{
-		ID:                  ksuid.New().String(),
-		BelongsToRecipe:     &recipeID,
-		BelongsToRecipeStep: nil,
-		MimeType:            img.ContentType,
-		InternalPath:        internalPath,
-		ExternalPath:        fmt.Sprintf("%s/%s", s.cfg.PublicMediaURLPrefix, internalPath),
-	}
-
-	logger.Info("image uploaded to file store, saving info in database")
-
-	x, err := s.recipeMediaDataManager.CreateRecipeMedia(ctx, input)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "saving recipe media record")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	logger.Info("responding with upload data")
-
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	res.WriteHeader(http.StatusCreated)
 }
