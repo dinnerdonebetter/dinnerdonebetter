@@ -516,11 +516,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			recipesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 				Get("/search", s.recipesService.SearchHandler)
-
-			// TODO: this is a demo route in testing.
-			recipesRouter.
-				Post("/images", s.recipesService.ImageUploadHandler)
-
 			recipesRouter.Route(recipeIDRouteParam, func(singleRecipeRouter routing.Router) {
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
@@ -537,6 +532,10 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipesPermission)).
 					Put(root, s.recipesService.UpdateHandler)
+
+				// TODO: this is a demo route in testing.
+				singleRecipeRouter.
+					Post("/images", s.recipesService.ImageUploadHandler)
 			})
 		})
 

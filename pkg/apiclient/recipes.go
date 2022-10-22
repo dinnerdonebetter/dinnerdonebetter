@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"fmt"
 	"image"
 	"image/png"
 
@@ -218,4 +219,30 @@ func (c *Client) GetMealPlanTasksForRecipe(ctx context.Context, recipeID string)
 	}
 
 	return prepSteps, nil
+}
+
+// UploadRecipeMedia uploads a new avatar.
+func (c *Client) UploadRecipeMedia(ctx context.Context, media []byte, extension, recipeID string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return buildInvalidIDError("recipe")
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	if len(media) == 0 {
+		return fmt.Errorf("%w: %d", ErrInvalidAvatarSize, len(media))
+	}
+
+	req, err := c.requestBuilder.BuildMediaUploadRequest(ctx, media, extension, recipeID)
+	if err != nil {
+		return observability.PrepareError(err, span, "building avatar upload request")
+	}
+
+	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+		return observability.PrepareError(err, span, "uploading avatar")
+	}
+
+	return nil
 }

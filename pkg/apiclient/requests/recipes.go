@@ -1,8 +1,13 @@
 package requests
 
 import (
+	"bytes"
 	"context"
+	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"strings"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -220,6 +225,62 @@ func (b *Builder) BuildGetRecipeMealPlanTasksRequest(ctx context.Context, recipe
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building request")
 	}
+
+	return req, nil
+}
+
+// BuildMediaUploadRequest builds an HTTP request that sets a user's avatar to the provided content.
+func (b *Builder) BuildMediaUploadRequest(ctx context.Context, media []byte, extension, recipeID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	if len(media) == 0 {
+		return nil, ErrNilInputProvided
+	}
+
+	var ct string
+
+	switch strings.ToLower(strings.TrimSpace(extension)) {
+	case "jpeg":
+		ct = "image/jpeg"
+	case "png":
+		ct = "image/png"
+	case "gif":
+		ct = "image/gif"
+	default:
+		return nil, fmt.Errorf("%s: %w", extension, ErrInvalidPhotoEncodingForUpload)
+	}
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	part, err := writer.CreateFormFile("media", fmt.Sprintf("media.%s", extension))
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "creating form file")
+	}
+
+	if _, err = io.Copy(part, bytes.NewReader(media)); err != nil {
+		return nil, observability.PrepareError(err, span, "copying file contents to request")
+	}
+
+	if err = writer.Close(); err != nil {
+		return nil, observability.PrepareError(err, span, "closing media writer")
+	}
+
+	uri := b.BuildURL(ctx, nil, recipesBasePath, recipeID, "images")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building media upload request")
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("X-Upload-Content-Type", ct)
 
 	return req, nil
 }
