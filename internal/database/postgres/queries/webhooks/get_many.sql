@@ -17,5 +17,4 @@ FROM webhook_trigger_events
  JOIN webhooks ON webhook_trigger_events.belongs_to_webhook=webhooks.id
 WHERE webhooks.archived_at IS NULL
   AND webhook_trigger_events.archived_at IS NULL
-  AND webhooks.belongs_to_household = $1
-  AND webhooks.id = $2;
+  AND webhooks.belongs_to_household = $1;

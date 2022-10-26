@@ -6,6 +6,6 @@ ENV SKIP_PASETO_TESTS=FALSE
 COPY . .
 
 # to debug a specific test:
-# ENTRYPOINT go test -parallel 1 -v -failfast github.com/prixfixeco/api_server/tests/integration -run TestIntegration/TestValidMeasurementConversions_CompleteLifecycle
+# ENTRYPOINT go test -parallel 1 -v -failfast github.com/prixfixeco/api_server/tests/integration -run TestIntegration/TestWebhooks_Reading_Returns404ForNonexistentWebhook
 
 ENTRYPOINT go test -v github.com/prixfixeco/api_server/tests/integration

@@ -23,18 +23,26 @@ type (
 	// Webhook represents a webhook listener, an endpoint to send an HTTP request to upon an event.
 	Webhook struct {
 		_                  struct{}
-		CreatedAt          time.Time  `json:"createdAt"`
-		ArchivedAt         *time.Time `json:"archivedAt"`
-		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
-		Name               string     `json:"name"`
-		URL                string     `json:"url"`
-		Method             string     `json:"method"`
-		ID                 string     `json:"id"`
-		BelongsToHousehold string     `json:"belongsToHousehold"`
-		ContentType        string     `json:"contentType"`
-		Events             []string   `json:"events"`
-		DataTypes          []string   `json:"dataTypes"`
-		Topics             []string   `json:"topics"`
+		CreatedAt          time.Time              `json:"createdAt"`
+		ArchivedAt         *time.Time             `json:"archivedAt"`
+		LastUpdatedAt      *time.Time             `json:"lastUpdatedAt"`
+		Name               string                 `json:"name"`
+		URL                string                 `json:"url"`
+		Method             string                 `json:"method"`
+		ID                 string                 `json:"id"`
+		BelongsToHousehold string                 `json:"belongsToHousehold"`
+		ContentType        string                 `json:"contentType"`
+		Events             []*WebhookTriggerEvent `json:"events"`
+	}
+
+	// WebhookTriggerEvent represents a webhook trigger event.
+	WebhookTriggerEvent struct {
+		_                struct{}
+		CreatedAt        time.Time  `json:"createdAt"`
+		ArchivedAt       *time.Time `json:"archivedAt"`
+		ID               string     `json:"id"`
+		BelongsToWebhook string     `json:"belongsToWebhook"`
+		TriggerEvent     string     `json:"event"`
 	}
 
 	// WebhookCreationRequestInput represents what a User could set as input for creating a webhook.
@@ -47,23 +55,27 @@ type (
 		Method             string   `json:"method"`
 		BelongsToHousehold string   `json:"-"`
 		Events             []string `json:"events"`
-		DataTypes          []string `json:"dataTypes"`
-		Topics             []string `json:"topics"`
 	}
 
-	// WebhookDatabaseCreationInput represents what a User could set as input for creating a webhook.
+	// WebhookDatabaseCreationInput is used for creating a webhook.
 	WebhookDatabaseCreationInput struct {
 		_ struct{}
 
-		ID                 string   `json:"id"`
-		Name               string   `json:"name"`
-		ContentType        string   `json:"contentType"`
-		URL                string   `json:"url"`
-		Method             string   `json:"method"`
-		BelongsToHousehold string   `json:"belongsToHousehold"`
-		Events             []string `json:"events"`
-		DataTypes          []string `json:"dataTypes"`
-		Topics             []string `json:"topics"`
+		ID                 string                                      `json:"id"`
+		Name               string                                      `json:"name"`
+		ContentType        string                                      `json:"contentType"`
+		URL                string                                      `json:"url"`
+		Method             string                                      `json:"method"`
+		BelongsToHousehold string                                      `json:"belongsToHousehold"`
+		Events             []*WebhookTriggerEventDatabaseCreationInput `json:"events"`
+	}
+
+	// WebhookTriggerEventDatabaseCreationInput is used for creating a webhook trigger event.
+	WebhookTriggerEventDatabaseCreationInput struct {
+		_                struct{}
+		ID               string
+		BelongsToWebhook string
+		TriggerEvent     string
 	}
 
 	// WebhookList represents a list of webhooks.
@@ -102,7 +114,6 @@ func (w *WebhookCreationRequestInput) ValidateWithContext(ctx context.Context) e
 		validation.Field(&w.Method, validation.Required, validation.In(http.MethodGet, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete)),
 		validation.Field(&w.ContentType, validation.Required, validation.In("application/json", "application/xml")),
 		validation.Field(&w.Events, validation.Required),
-		validation.Field(&w.DataTypes, validation.Required),
 	)
 }
 
@@ -117,7 +128,6 @@ func (w *WebhookDatabaseCreationInput) ValidateWithContext(ctx context.Context) 
 		validation.Field(&w.Method, validation.Required, validation.In(http.MethodGet, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete)),
 		validation.Field(&w.ContentType, validation.Required, validation.In("application/json", "application/xml")),
 		validation.Field(&w.Events, validation.Required),
-		validation.Field(&w.DataTypes, validation.Required),
 		validation.Field(&w.BelongsToHousehold, validation.Required),
 	)
 }

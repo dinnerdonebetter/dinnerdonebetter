@@ -74,7 +74,7 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 		recipePrepTaskRecipeStep := &types.RecipePrepTaskStep{}
 
 		var (
-			minimumStorageTemperatureInCelsius uint16
+			minimumStorageTemperatureInCelsius,
 			maximumStorageTemperatureInCelsius uint16
 		)
 
@@ -109,6 +109,7 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 
 		if x.ID != recipePrepTask.ID {
 			recipePrepTasks = append(recipePrepTasks, x)
+			// TODO: should this be `x = recipePrepTask`?
 			x = &types.RecipePrepTask{}
 		}
 

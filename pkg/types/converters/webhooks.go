@@ -1,50 +1,72 @@
 package converters
 
 import (
+	"github.com/segmentio/ksuid"
+
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // ConvertWebhookToWebhookCreationRequestInput builds a WebhookCreationRequestInput from a Webhook.
 func ConvertWebhookToWebhookCreationRequestInput(webhook *types.Webhook) *types.WebhookCreationRequestInput {
+	eventStrings := []string{}
+	for _, evt := range webhook.Events {
+		eventStrings = append(eventStrings, evt.TriggerEvent)
+	}
+
 	return &types.WebhookCreationRequestInput{
 		ID:                 webhook.ID,
 		Name:               webhook.Name,
 		ContentType:        webhook.ContentType,
 		URL:                webhook.URL,
 		Method:             webhook.Method,
-		Events:             webhook.Events,
-		DataTypes:          webhook.DataTypes,
-		Topics:             webhook.Topics,
+		Events:             eventStrings,
 		BelongsToHousehold: webhook.BelongsToHousehold,
 	}
 }
 
 // ConvertWebhookToWebhookDatabaseCreationInput builds a WebhookCreationRequestInput from a Webhook.
 func ConvertWebhookToWebhookDatabaseCreationInput(webhook *types.Webhook) *types.WebhookDatabaseCreationInput {
+	events := []*types.WebhookTriggerEventDatabaseCreationInput{}
+	for i := range webhook.Events {
+		events = append(events, ConvertWebhookTriggerEventToWebhookTriggerEventDatabaseCreationInput(webhook.Events[i]))
+	}
+
 	return &types.WebhookDatabaseCreationInput{
 		ID:                 webhook.ID,
 		Name:               webhook.Name,
 		ContentType:        webhook.ContentType,
 		URL:                webhook.URL,
 		Method:             webhook.Method,
-		Events:             webhook.Events,
-		DataTypes:          webhook.DataTypes,
-		Topics:             webhook.Topics,
+		Events:             events,
 		BelongsToHousehold: webhook.BelongsToHousehold,
+	}
+}
+
+// ConvertWebhookTriggerEventToWebhookTriggerEventDatabaseCreationInput builds a WebhookTriggerEventCreationRequestInput from a WebhookTriggerEvent.
+func ConvertWebhookTriggerEventToWebhookTriggerEventDatabaseCreationInput(event *types.WebhookTriggerEvent) *types.WebhookTriggerEventDatabaseCreationInput {
+	return &types.WebhookTriggerEventDatabaseCreationInput{
+		ID:               event.ID,
+		BelongsToWebhook: event.BelongsToWebhook,
+		TriggerEvent:     event.TriggerEvent,
 	}
 }
 
 // ConvertWebhookCreationRequestInputToWebhookDatabaseCreationInput creates a WebhookDatabaseCreationInput from a WebhookCreationRequestInput.
 func ConvertWebhookCreationRequestInputToWebhookDatabaseCreationInput(input *types.WebhookCreationRequestInput) *types.WebhookDatabaseCreationInput {
-	x := &types.WebhookDatabaseCreationInput{}
+	x := &types.WebhookDatabaseCreationInput{
+		Name:        input.Name,
+		ContentType: input.ContentType,
+		URL:         input.URL,
+		Method:      input.Method,
+	}
 
-	x.Name = input.Name
-	x.ContentType = input.ContentType
-	x.URL = input.URL
-	x.Method = input.Method
-	x.Events = input.Events
-	x.DataTypes = input.DataTypes
-	x.Topics = input.Topics
+	for _, evt := range input.Events {
+		x.Events = append(x.Events, &types.WebhookTriggerEventDatabaseCreationInput{
+			ID:               ksuid.New().String(),
+			BelongsToWebhook: x.ID,
+			TriggerEvent:     evt,
+		})
+	}
 
 	return x
 }
