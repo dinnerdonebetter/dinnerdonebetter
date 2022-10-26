@@ -11,18 +11,33 @@ import (
 
 // BuildFakeWebhook builds a faked Webhook.
 func BuildFakeWebhook() *types.Webhook {
+	webhookID := BuildFakeID()
+
+	fakeEvent := BuildFakeWebhookTriggerEvent()
+	fakeEvent.BelongsToWebhook = webhookID
+	events := []*types.WebhookTriggerEvent{fakeEvent}
+
 	return &types.Webhook{
-		ID:                 BuildFakeID(),
+		ID:                 webhookID,
 		Name:               fake.UUID(),
 		ContentType:        "application/json",
 		URL:                fake.URL(),
 		Method:             http.MethodPost,
-		Events:             []string{buildUniqueString()},
-		DataTypes:          []string{buildUniqueString()},
-		Topics:             []string{buildUniqueString()},
+		Events:             events,
 		CreatedAt:          fake.Date(),
 		ArchivedAt:         nil,
 		BelongsToHousehold: fake.UUID(),
+	}
+}
+
+// BuildFakeWebhookTriggerEvent builds a faked WebhookTriggerEvent.
+func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
+	return &types.WebhookTriggerEvent{
+		ID:               BuildFakeID(),
+		TriggerEvent:     string(types.WebhookCreatedCustomerEventType),
+		BelongsToWebhook: BuildFakeID(),
+		CreatedAt:        fake.Date(),
+		ArchivedAt:       nil,
 	}
 }
 

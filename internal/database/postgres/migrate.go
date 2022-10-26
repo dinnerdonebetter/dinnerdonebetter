@@ -300,6 +300,11 @@ var (
 			Description: "recipe media indices",
 			Script:      fetchMigration("00057_recipe_media_indices"),
 		},
+		{
+			Version:     58,
+			Description: "webhooks refactor",
+			Script:      fetchMigration("00058_webhooks_refactor"),
+		},
 	}
 )
 

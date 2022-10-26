@@ -34,6 +34,21 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
+
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			logJSON(t, exampleWebhook)
+			t.Log("")
+			logJSON(t, exampleWebhookInput)
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			t.Log("")
+
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 			t.Logf("created webhook %s", createdWebhook.ID)
@@ -109,7 +124,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 				exampleWebhook := fakes.BuildFakeWebhook()
 				exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 				createdWebhook, webhookCreationErr := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
-				require.NoError(t, webhookCreationErr)
+				requireNotNilAndNoProblems(t, createdWebhook, webhookCreationErr)
 
 				expected = append(expected, createdWebhook)
 			}
@@ -117,12 +132,29 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			// Assert webhook list equality.
 			actual, err := testClients.user.GetWebhooks(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(t, len(expected) <= len(actual.Webhooks))
+
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			logJSON(t, expected)
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			logJSON(t, actual.Webhooks)
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			t.Log("")
+			t.Log("")
+
+			assert.GreaterOrEqual(t, len(actual.Webhooks), len(expected))
 
 			// Clean up.
-			for _, webhook := range actual.Webhooks {
-				assert.NoError(t, testClients.user.ArchiveWebhook(ctx, webhook.ID))
-			}
+			//for _, webhook := range actual.Webhooks {
+			//	assert.NoError(t, testClients.user.ArchiveWebhook(ctx, webhook.ID))
+			//}
 		}
 	})
 

@@ -19,8 +19,6 @@ func TestWebhookCreationInput_Validate(T *testing.T) {
 			URL:         "https://blah.verygoodsoftwarenotvirus.ru",
 			Method:      http.MethodPatch,
 			Events:      []string{"more_things"},
-			DataTypes:   []string{"new_stuff"},
-			Topics:      []string{"blah-blah"},
 		}
 	}
 
@@ -66,14 +64,6 @@ func TestWebhookCreationInput_Validate(T *testing.T) {
 		t.Parallel()
 		exampleInput := buildValidWebhookCreationInput()
 		exampleInput.Events = []string{}
-
-		assert.Error(t, exampleInput.ValidateWithContext(context.Background()))
-	})
-
-	T.Run("empty data types", func(t *testing.T) {
-		t.Parallel()
-		exampleInput := buildValidWebhookCreationInput()
-		exampleInput.DataTypes = []string{}
 
 		assert.Error(t, exampleInput.ValidateWithContext(context.Background()))
 	})
