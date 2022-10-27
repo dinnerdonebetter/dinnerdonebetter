@@ -253,6 +253,19 @@ resource "google_cloud_run_service" "api_server" {
   }
 }
 
+resource "google_cloud_run_domain_mapping" "webapp_domain_mapping" {
+  location = "us-central1"
+  name     = "api.prixfixe.dev"
+
+  metadata {
+    namespace = local.project_id
+  }
+
+  spec {
+    route_name = google_cloud_run_service.api_server.name
+  }
+}
+
 resource "cloudflare_record" "api_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "api.prixfixe.dev"
@@ -261,15 +274,3 @@ resource "cloudflare_record" "api_cname_record" {
   ttl     = 1
   proxied = true
 }
-
-#data "google_dns_managed_zone" "dns_zone" {
-#  name = "dev"
-#}
-#
-#resource "google_dns_record_set" "cname" {
-#  name         = "api.${data.google_dns_managed_zone.dns_zone.dns_name}"
-#  managed_zone = data.google_dns_managed_zone.dns_zone.name
-#  type         = "CNAME"
-#  ttl          = 300
-#  rrdatas      = ["ghs.googlehosted.com"]
-#}
