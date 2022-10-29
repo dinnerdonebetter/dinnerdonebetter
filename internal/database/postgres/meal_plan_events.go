@@ -285,7 +285,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 	logger.WithValue("quantity", len(input.Options)).Info("creating options for meal plan event")
 	for _, option := range input.Options {
 		option.BelongsToMealPlanEvent = x.ID
-		opt, createErr := q.createMealPlanOption(ctx, querier, option)
+		opt, createErr := q.createMealPlanOption(ctx, querier, option, len(input.Options) == 1)
 		if createErr != nil {
 			q.rollbackTransaction(ctx, querier)
 			return nil, observability.PrepareError(createErr, span, "creating meal plan option for meal plan")

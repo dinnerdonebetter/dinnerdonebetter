@@ -512,6 +512,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 					option.MealID,
 					option.Notes,
 					option.BelongsToMealPlanEvent,
+					len(event.Options) == 1,
 				}
 
 				db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
@@ -669,6 +670,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 					option.MealID,
 					option.Notes,
 					option.BelongsToMealPlanEvent,
+					len(event.Options) == 1,
 				}
 
 				db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).

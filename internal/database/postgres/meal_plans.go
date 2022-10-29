@@ -260,10 +260,17 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan")
 	}
 
+	status := types.FinalizedMealPlanStatus
+	for _, event := range input.Events {
+		if len(event.Options) > 1 {
+			status = types.AwaitingVotesMealPlanStatus
+		}
+	}
+
 	x := &types.MealPlan{
 		ID:                 input.ID,
 		Notes:              input.Notes,
-		Status:             types.AwaitingVotesMealPlanStatus,
+		Status:             status,
 		VotingDeadline:     input.VotingDeadline,
 		BelongsToHousehold: input.BelongsToHousehold,
 		CreatedAt:          q.currentTime(),
