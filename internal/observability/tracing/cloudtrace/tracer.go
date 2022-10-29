@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"go.opentelemetry.io/otel/sdk/resource"
-
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"

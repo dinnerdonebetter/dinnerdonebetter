@@ -29,7 +29,7 @@ type (
 		ID                 string     `json:"id"`
 		BelongsToUser      string     `json:"belongsToUser"`
 		BelongsToHousehold string     `json:"belongsToHousehold"`
-		HouseholdRoles     []string   `json:"householdRole"`
+		HouseholdRoles     []string   `json:"householdRoles"`
 		DefaultHousehold   bool       `json:"defaultHousehold"`
 	}
 
@@ -42,7 +42,7 @@ type (
 		ArchivedAt         *time.Time `json:"archivedAt"`
 		ID                 string     `json:"id"`
 		BelongsToHousehold string     `json:"belongsToHousehold"`
-		HouseholdRoles     []string   `json:"householdRole"`
+		HouseholdRoles     []string   `json:"householdRoles"`
 		DefaultHousehold   bool       `json:"defaultHousehold"`
 	}
 
