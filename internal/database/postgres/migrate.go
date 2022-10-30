@@ -305,11 +305,6 @@ var (
 			Description: "webhooks refactor",
 			Script:      fetchMigration("00058_webhooks_refactor"),
 		},
-		{
-			Version:     59,
-			Description: "identifiers refactor",
-			Script:      fetchMigration("00059_identifiers_refactor"),
-		},
 	}
 )
 
