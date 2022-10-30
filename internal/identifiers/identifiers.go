@@ -16,3 +16,20 @@ func newID(useXID bool) string {
 func New() string {
 	return newID(false)
 }
+
+func parseID(x string, useXID bool) error {
+	var err error
+
+	if useXID {
+		_, err = xid.FromString(x)
+		return err
+	}
+
+	_, err = ksuid.Parse(x)
+	return err
+}
+
+// Validate validates a string ID.
+func Validate(x string) error {
+	return parseID(x, false)
+}
