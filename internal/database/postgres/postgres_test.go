@@ -12,7 +12,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/Masterminds/squirrel"
-	"github.com/segmentio/ksuid"
+	"github.com/rs/xid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -34,7 +34,7 @@ func (s *idMatcher) Match(v driver.Value) bool {
 		return false
 	}
 
-	if _, err := ksuid.Parse(x); err != nil {
+	if _, err := xid.FromString(x); err != nil {
 		return false
 	}
 

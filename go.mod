@@ -37,6 +37,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/o1egl/paseto v1.0.0
 	github.com/pquerna/otp v1.3.0
+	github.com/rs/xid v1.2.1
 	github.com/rs/zerolog v1.21.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/sendgrid/rest v2.6.5+incompatible
