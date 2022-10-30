@@ -14,5 +14,5 @@ func newID(useXID bool) string {
 
 // New produces a new string ID.
 func New() string {
-	return newID(true)
+	return newID(false)
 }
