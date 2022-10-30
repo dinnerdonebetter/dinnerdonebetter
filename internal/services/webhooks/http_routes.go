@@ -5,8 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -52,7 +51,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	input := converters.ConvertWebhookCreationRequestInputToWebhookDatabaseCreationInput(providedInput)
-	input.ID = ksuid.New().String()
+	input.ID = identifiers.New()
 	tracing.AttachWebhookIDToSpan(span, input.ID)
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 

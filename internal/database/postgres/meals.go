@@ -6,9 +6,9 @@ import (
 	_ "embed"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -360,7 +360,7 @@ func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQuer
 	tracing.AttachUserIDToSpan(span, recipeID)
 
 	args := []interface{}{
-		ksuid.New().String(),
+		identifiers.New(),
 		mealID,
 		recipeID,
 	}

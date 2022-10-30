@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -491,7 +491,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	defer span.End()
 
 	// standard registration: we need to create the household
-	householdID := ksuid.New().String()
+	householdID := identifiers.New()
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -517,7 +517,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	}
 
 	createHouseholdMembershipForNewUserArgs := []interface{}{
-		ksuid.New().String(),
+		identifiers.New(),
 		userID,
 		householdID,
 		!hasValidInvite,

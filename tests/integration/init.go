@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/prixfixeco/api_server/pkg/utils"
 	"log"
 	"net/url"
 	"os"
@@ -13,17 +12,18 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/database/postgres"
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/utils"
 )
 
 const (
@@ -37,7 +37,7 @@ var (
 	dbmanager      database.DataManager
 
 	premadeAdminUser = &types.User{
-		ID:              ksuid.New().String(),
+		ID:              identifiers.New(),
 		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 		EmailAddress:    "integration_tests@prixfixe.email",
 		Username:        "exampleUser",

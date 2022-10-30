@@ -7,8 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -55,18 +54,18 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	input := converters.ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(providedInput)
-	input.ID = ksuid.New().String()
+	input.ID = identifiers.New()
 
 	for i := range input.Ingredients {
-		input.Ingredients[i].ID = ksuid.New().String()
+		input.Ingredients[i].ID = identifiers.New()
 	}
 
 	for j := range input.Products {
-		input.Products[j].ID = ksuid.New().String()
+		input.Products[j].ID = identifiers.New()
 	}
 
 	for j := range input.Instruments {
-		input.Instruments[j].ID = ksuid.New().String()
+		input.Instruments[j].ID = identifiers.New()
 	}
 
 	// determine recipe ID.
@@ -380,7 +379,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		}
 
 		input := &types.RecipeMediaDatabaseCreationInput{
-			ID:                  ksuid.New().String(),
+			ID:                  identifiers.New(),
 			BelongsToRecipe:     &recipeID,
 			BelongsToRecipeStep: &recipeStepID,
 			MimeType:            img.ContentType,

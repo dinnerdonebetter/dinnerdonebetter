@@ -5,8 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -53,9 +52,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	input := converters.ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationInput(providedInput)
-	input.ID = ksuid.New().String()
+	input.ID = identifiers.New()
 	for i := range input.TaskSteps {
-		input.TaskSteps[i].ID = ksuid.New().String()
+		input.TaskSteps[i].ID = identifiers.New()
 		input.TaskSteps[i].BelongsToRecipePrepTask = input.ID
 	}
 

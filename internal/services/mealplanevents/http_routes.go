@@ -5,8 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -58,12 +57,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	input := converters.ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(providedInput)
-	input.ID = ksuid.New().String()
+	input.ID = identifiers.New()
 	input.BelongsToMealPlan = mealPlanID
 	tracing.AttachMealPlanEventIDToSpan(span, input.ID)
 
 	for i := range input.Options {
-		input.Options[i].ID = ksuid.New().String()
+		input.Options[i].ID = identifiers.New()
 		input.Options[i].BelongsToMealPlanEvent = input.ID
 	}
 

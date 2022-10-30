@@ -5,8 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -61,7 +60,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput(providedInput)
 	for i := range input.Votes {
-		input.Votes[i].ID = ksuid.New().String()
+		input.Votes[i].ID = identifiers.New()
 		input.Votes[i].ByUser = sessionCtxData.Requester.UserID
 		tracing.AttachMealPlanOptionVoteIDToSpan(span, input.Votes[i].ID)
 	}

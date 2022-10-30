@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -54,7 +53,7 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 										ValidMeasurementUnitID: ingredient.MeasurementUnit.ID,
 										ValidIngredientID:      ingredient.Ingredient.ID,
 										BelongsToMealPlan:      mealPlan.ID,
-										ID:                     ksuid.New().String(),
+										ID:                     identifiers.New(),
 										MinimumQuantityNeeded:  ingredient.MinimumQuantity,
 										MaximumQuantityNeeded:  ingredient.MaximumQuantity,
 									}

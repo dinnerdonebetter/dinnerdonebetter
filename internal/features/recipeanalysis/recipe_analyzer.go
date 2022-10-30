@@ -9,12 +9,12 @@ import (
 
 	"github.com/goccy/go-graphviz"
 	"github.com/heimdalr/dag"
-	"github.com/segmentio/ksuid"
 	"gonum.org/v1/gonum/graph"
 	dotencoding "gonum.org/v1/gonum/graph/encoding/dot"
 	"gonum.org/v1/gonum/graph/simple"
 	"gonum.org/v1/gonum/graph/topo"
 
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -325,7 +325,7 @@ func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.C
 		}
 
 		outputs = append(outputs, &types.MealPlanTaskDatabaseCreationInput{
-			ID:                  ksuid.New().String(),
+			ID:                  identifiers.New(),
 			CreationExplanation: explanation,
 			MealPlanOptionID:    mealPlanOptionID,
 		})
@@ -349,7 +349,7 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 			StatusExplanation:   "",
 			MealPlanOptionID:    mealPlanOptionID,
 			RecipePrepTaskID:    prepTask.ID,
-			ID:                  ksuid.New().String(),
+			ID:                  identifiers.New(),
 		})
 	}
 

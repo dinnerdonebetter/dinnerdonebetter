@@ -8,8 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -62,33 +61,33 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input.ID = ksuid.New().String()
+	input.ID = identifiers.New()
 
 	for i, step := range input.Steps {
 		// ordinarily we'd set the ID here, but it was done for us above in the converter.
 		input.Steps[i].BelongsToRecipe = input.ID
 		for j := range step.Ingredients {
-			input.Steps[i].Ingredients[j].ID = ksuid.New().String()
+			input.Steps[i].Ingredients[j].ID = identifiers.New()
 			input.Steps[i].Ingredients[j].BelongsToRecipeStep = input.Steps[i].ID
 		}
 
 		for j := range step.Instruments {
-			input.Steps[i].Instruments[j].ID = ksuid.New().String()
+			input.Steps[i].Instruments[j].ID = identifiers.New()
 			input.Steps[i].Instruments[j].BelongsToRecipeStep = input.Steps[i].ID
 		}
 
 		for j := range step.Products {
-			input.Steps[i].Products[j].ID = ksuid.New().String()
+			input.Steps[i].Products[j].ID = identifiers.New()
 			input.Steps[i].Products[j].BelongsToRecipeStep = input.Steps[i].ID
 		}
 	}
 
 	for i := range input.PrepTasks {
-		input.PrepTasks[i].ID = ksuid.New().String()
+		input.PrepTasks[i].ID = identifiers.New()
 		input.PrepTasks[i].BelongsToRecipe = input.ID
 
 		for j := range input.PrepTasks[i].TaskSteps {
-			input.PrepTasks[i].TaskSteps[j].ID = ksuid.New().String()
+			input.PrepTasks[i].TaskSteps[j].ID = identifiers.New()
 			input.PrepTasks[i].TaskSteps[j].BelongsToRecipePrepTask = input.PrepTasks[i].ID
 		}
 	}
@@ -529,7 +528,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		logger.Info("image uploaded to file store, saving info in database")
 
 		input := &types.RecipeMediaDatabaseCreationInput{
-			ID:                  ksuid.New().String(),
+			ID:                  identifiers.New(),
 			BelongsToRecipe:     &recipeID,
 			BelongsToRecipeStep: nil,
 			MimeType:            img.ContentType,

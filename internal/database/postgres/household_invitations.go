@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -583,7 +583,7 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 	}
 
 	addUserInput := &types.HouseholdUserMembershipDatabaseCreationInput{
-		ID:             ksuid.New().String(),
+		ID:             identifiers.New(),
 		Reason:         fmt.Sprintf("accepted household invitation %q", householdInvitationID),
 		HouseholdID:    invitation.DestinationHousehold.ID,
 		HouseholdRoles: []string{"household_member"},
@@ -656,7 +656,7 @@ func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.
 	logger.Debug("fetched invitation to accept for user")
 
 	createHouseholdMembershipForNewUserArgs := []interface{}{
-		ksuid.New().String(),
+		identifiers.New(),
 		input.ID,
 		input.DestinationHouseholdID,
 		true,
