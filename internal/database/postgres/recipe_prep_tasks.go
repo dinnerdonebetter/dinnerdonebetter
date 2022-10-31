@@ -25,11 +25,6 @@ func (q *Querier) scanRecipePrepTaskWithSteps(ctx context.Context, rows database
 	for rows.Next() {
 		recipePrepTaskRecipeStep := &types.RecipePrepTaskStep{}
 
-		var (
-			minimumStorageTemperatureInCelsius uint16
-			maximumStorageTemperatureInCelsius uint16
-		)
-
 		targetVars := []interface{}{
 			&x.ID,
 			&x.Notes,
@@ -37,8 +32,8 @@ func (q *Querier) scanRecipePrepTaskWithSteps(ctx context.Context, rows database
 			&x.MinimumTimeBufferBeforeRecipeInSeconds,
 			&x.MaximumTimeBufferBeforeRecipeInSeconds,
 			&x.StorageType,
-			&minimumStorageTemperatureInCelsius,
-			&maximumStorageTemperatureInCelsius,
+			&x.MinimumStorageTemperatureInCelsius,
+			&x.MaximumStorageTemperatureInCelsius,
 			&x.BelongsToRecipe,
 			&x.CreatedAt,
 			&x.LastUpdatedAt,
@@ -52,9 +47,6 @@ func (q *Querier) scanRecipePrepTaskWithSteps(ctx context.Context, rows database
 		if err = rows.Scan(targetVars...); err != nil {
 			return nil, observability.PrepareError(err, span, "scanning recipe prep task with step")
 		}
-
-		x.MinimumStorageTemperatureInCelsius = float32(minimumStorageTemperatureInCelsius / types.RecipePrepTaskStorageTemperatureModifier)
-		x.MaximumStorageTemperatureInCelsius = float32(maximumStorageTemperatureInCelsius / types.RecipePrepTaskStorageTemperatureModifier)
 
 		x.TaskSteps = append(x.TaskSteps, recipePrepTaskRecipeStep)
 	}
@@ -73,11 +65,6 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 		recipePrepTask := &types.RecipePrepTask{}
 		recipePrepTaskRecipeStep := &types.RecipePrepTaskStep{}
 
-		var (
-			minimumStorageTemperatureInCelsius,
-			maximumStorageTemperatureInCelsius uint16
-		)
-
 		targetVars := []interface{}{
 			&recipePrepTask.ID,
 			&recipePrepTask.Notes,
@@ -85,8 +72,8 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 			&recipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
 			&recipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
 			&recipePrepTask.StorageType,
-			&minimumStorageTemperatureInCelsius,
-			&maximumStorageTemperatureInCelsius,
+			&recipePrepTask.MinimumStorageTemperatureInCelsius,
+			&recipePrepTask.MaximumStorageTemperatureInCelsius,
 			&recipePrepTask.BelongsToRecipe,
 			&recipePrepTask.CreatedAt,
 			&recipePrepTask.LastUpdatedAt,
@@ -109,12 +96,8 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 
 		if x.ID != recipePrepTask.ID {
 			recipePrepTasks = append(recipePrepTasks, x)
-			// TODO: should this be `x = recipePrepTask`?
 			x = &types.RecipePrepTask{}
 		}
-
-		x.MinimumStorageTemperatureInCelsius = float32(minimumStorageTemperatureInCelsius / types.RecipePrepTaskStorageTemperatureModifier)
-		x.MaximumStorageTemperatureInCelsius = float32(maximumStorageTemperatureInCelsius / types.RecipePrepTaskStorageTemperatureModifier)
 
 		x.TaskSteps = append(x.TaskSteps, recipePrepTaskRecipeStep)
 	}
@@ -243,8 +226,8 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
 		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
 		StorageType:                            input.StorageType,
-		MinimumStorageTemperatureInCelsius:     float32(input.MinimumStorageTemperatureInCelsius / types.RecipePrepTaskStorageTemperatureModifier),
-		MaximumStorageTemperatureInCelsius:     float32(input.MaximumStorageTemperatureInCelsius / types.RecipePrepTaskStorageTemperatureModifier),
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
 		BelongsToRecipe:                        input.BelongsToRecipe,
 	}
 
@@ -397,8 +380,8 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 		updated.MinimumTimeBufferBeforeRecipeInSeconds,
 		updated.MaximumTimeBufferBeforeRecipeInSeconds,
 		updated.StorageType,
-		uint32(updated.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
-		uint32(updated.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
+		updated.MinimumStorageTemperatureInCelsius,
+		updated.MaximumStorageTemperatureInCelsius,
 		updated.BelongsToRecipe,
 		updated.ID,
 	}

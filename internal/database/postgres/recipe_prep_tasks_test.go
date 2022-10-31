@@ -39,9 +39,6 @@ func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) 
 	exampleRows := sqlmock.NewRows(columns)
 
 	for _, x := range recipePrepTasks {
-		minimumStorageTemperatureInCelsius := uint32(x.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier)
-		maximumStorageTemperatureInCelsius := uint32(x.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier)
-
 		for _, y := range x.TaskSteps {
 			rowValues := []driver.Value{
 				x.ID,
@@ -50,8 +47,8 @@ func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) 
 				x.MinimumTimeBufferBeforeRecipeInSeconds,
 				x.MaximumTimeBufferBeforeRecipeInSeconds,
 				x.StorageType,
-				minimumStorageTemperatureInCelsius,
-				maximumStorageTemperatureInCelsius,
+				x.MinimumStorageTemperatureInCelsius,
+				x.MaximumStorageTemperatureInCelsius,
 				x.BelongsToRecipe,
 				x.CreatedAt,
 				x.LastUpdatedAt,
@@ -262,8 +259,8 @@ func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 			exampleRecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
 			exampleRecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
 			exampleRecipePrepTask.StorageType,
-			uint32(exampleRecipePrepTask.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
-			uint32(exampleRecipePrepTask.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
+			exampleRecipePrepTask.MinimumStorageTemperatureInCelsius,
+			exampleRecipePrepTask.MaximumStorageTemperatureInCelsius,
 			exampleRecipePrepTask.BelongsToRecipe,
 			exampleRecipePrepTask.ID,
 		}

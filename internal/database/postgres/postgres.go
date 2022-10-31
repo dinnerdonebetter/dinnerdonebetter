@@ -103,7 +103,6 @@ func ProvideDatabaseClient(
 		c.logger.Debug("querier migrated!")
 	}
 
-	c.db.SetMaxOpenConns(5)
 	c.db.SetMaxOpenConns(7)
 
 	return c, nil

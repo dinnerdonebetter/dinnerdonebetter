@@ -305,6 +305,11 @@ var (
 			Description: "webhooks refactor",
 			Script:      fetchMigration("00058_webhooks_refactor"),
 		},
+		{
+			Version:     59,
+			Description: "double precision conversion",
+			Script:      fetchMigration("00059_double_precision_conversion"),
+		},
 	}
 )
 

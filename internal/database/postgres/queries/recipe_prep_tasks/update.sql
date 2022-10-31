@@ -4,8 +4,9 @@ UPDATE recipe_prep_tasks SET
      minimum_time_buffer_before_recipe_in_seconds = $3,
      maximum_time_buffer_before_recipe_in_seconds = $4,
      storage_type = $5,
-     minimum_storage_temperature_in_celsius = $6,
-     maximum_storage_temperature_in_celsius = $7,
+     minimum_storage_temperature_in_celsius = ($6 * 100)::integer,
+     maximum_storage_temperature_in_celsius = ($7 * 100)::integer,
      belongs_to_recipe = $8,
      last_updated_at = NOW()
-WHERE archived_at IS NULL AND id = $9;
+WHERE archived_at IS NULL
+    AND id = $9;
