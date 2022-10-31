@@ -33,8 +33,8 @@ func BuildFakeID() string {
 	return identifiers.New()
 }
 
-func BuildFakeNumber() int {
-	return fake.Number(1, math.MaxInt8-1)
+func BuildFakeNumber() float32 {
+	return float32(fake.Number(1, math.MaxInt16-1) / 100)
 }
 
 // BuildFakeTime builds a fake time.

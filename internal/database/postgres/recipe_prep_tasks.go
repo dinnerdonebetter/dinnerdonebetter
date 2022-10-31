@@ -26,8 +26,8 @@ func (q *Querier) scanRecipePrepTaskWithSteps(ctx context.Context, rows database
 		recipePrepTaskRecipeStep := &types.RecipePrepTaskStep{}
 
 		var (
-			minimumStorageTemperatureInCelsius uint16
-			maximumStorageTemperatureInCelsius uint16
+			minimumStorageTemperatureInCelsius,
+			maximumStorageTemperatureInCelsius uint32
 		)
 
 		targetVars := []interface{}{
@@ -75,7 +75,7 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 
 		var (
 			minimumStorageTemperatureInCelsius,
-			maximumStorageTemperatureInCelsius uint16
+			maximumStorageTemperatureInCelsius uint32
 		)
 
 		targetVars := []interface{}{
