@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/prixfixeco/api_server/pkg/utils"
 	"net/http"
 	"testing"
 	"time"
@@ -21,17 +20,14 @@ import (
 	"github.com/prixfixeco/api_server/pkg/apiclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	"github.com/prixfixeco/api_server/pkg/utils"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
-
-func stringPointer(s string) *string {
-	return &s
-}
 
 func logJSON(t *testing.T, x interface{}) {
 	t.Helper()
 
-	rawBytes, err := json.MarshalIndent(x, "", "")
+	rawBytes, err := json.Marshal(x)
 	require.NoError(t, err)
 
 	t.Log(string(rawBytes))

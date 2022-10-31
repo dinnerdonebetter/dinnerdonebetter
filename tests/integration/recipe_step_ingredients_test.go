@@ -36,7 +36,14 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{exampleRecipe.Steps[0]}
+			exampleRecipe.Steps[0].Instruments = []*types.RecipeStepInstrument{exampleRecipe.Steps[0].Instruments[0]}
+			exampleRecipe.Steps[0].Ingredients = []*types.RecipeStepIngredient{exampleRecipe.Steps[0].Ingredients[0]}
+			exampleRecipe.Steps[0].Products = []*types.RecipeStepProduct{exampleRecipe.Steps[0].Products[0]}
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, exampleRecipe)
+
+			require.NotEmpty(t, createdRecipe.Steps)
 
 			firstStep := createdRecipe.Steps[0]
 			createdRecipeStepID := firstStep.ID
@@ -69,8 +76,6 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			newRecipeStepIngredient.MeasurementUnit = createdRecipeStepIngredient.MeasurementUnit
 
 			createdRecipeStepIngredient.Update(converters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(newRecipeStepIngredient))
-
-			t.Logf("updating recipe step ingredient: %+v", createdRecipeStepIngredient)
 
 			require.NoError(t, testClients.user.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
 
@@ -127,7 +132,12 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 			t.Log("creating recipe step ingredients")
 			var expected []*types.RecipeStepIngredient
 			for i := 0; i < 5; i++ {
-				x, _, _ := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+				exampleRecipe := fakes.BuildFakeRecipe()
+				exampleRecipe.Steps = []*types.RecipeStep{exampleRecipe.Steps[0]}
+				exampleRecipe.Steps[0].Instruments = []*types.RecipeStepInstrument{exampleRecipe.Steps[0].Instruments[0]}
+				exampleRecipe.Steps[0].Ingredients = []*types.RecipeStepIngredient{exampleRecipe.Steps[0].Ingredients[0]}
+				exampleRecipe.Steps[0].Products = []*types.RecipeStepProduct{exampleRecipe.Steps[0].Products[0]}
+				x, _, _ := createRecipeForTest(ctx, t, testClients.admin, testClients.user, exampleRecipe)
 
 				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID

@@ -42,27 +42,13 @@ func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
 			exampleValidMeasurementConversion.To = *createdValidMeasurementUnit2
 			exampleValidMeasurementConversionInput := converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(exampleValidMeasurementConversion)
 
-			logJSON(t, exampleValidMeasurementConversionInput)
-
 			createdValidMeasurementConversion, err := testClients.admin.CreateValidMeasurementConversion(ctx, exampleValidMeasurementConversionInput)
 			require.NoError(t, err)
 			t.Logf("valid measurement conversion %q created", createdValidMeasurementConversion.ID)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
-			logJSON(t, exampleValidMeasurementConversion)
-			logJSON(t, createdValidMeasurementConversion)
-
-			t.Log(exampleValidMeasurementConversion.From.ID)
-			t.Log(createdValidMeasurementConversion.From.ID)
-
 			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
-
-			logJSON(t, exampleValidMeasurementConversion)
-			logJSON(t, createdValidMeasurementConversion)
-
-			t.Log(exampleValidMeasurementConversion.From.ID)
-			t.Log(createdValidMeasurementConversion.From.ID)
 
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 

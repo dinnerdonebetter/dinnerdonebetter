@@ -1,5 +1,5 @@
--- ALTER TABLE recipe_step_ingredients ALTER COLUMN minimum_quantity_value TYPE INTEGER;
--- ALTER TABLE recipe_step_ingredients ALTER COLUMN maximum_quantity_value TYPE INTEGER;
+ALTER TABLE recipe_step_ingredients ALTER COLUMN minimum_quantity_value TYPE INTEGER;
+ALTER TABLE recipe_step_ingredients ALTER COLUMN maximum_quantity_value TYPE INTEGER;
 -- ALTER TABLE recipe_step_products ALTER COLUMN minimum_quantity_value TYPE INTEGER;
 -- ALTER TABLE recipe_step_products ALTER COLUMN maximum_quantity_value TYPE INTEGER;
 -- ALTER TABLE recipe_step_products ALTER COLUMN minimum_storage_temperature_in_celsius TYPE INTEGER;

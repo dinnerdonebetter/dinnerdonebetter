@@ -250,11 +250,9 @@ func (q *Querier) RecipeStepIngredientExists(ctx context.Context, recipeID, reci
 	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
 
 	args := []interface{}{
+		recipeID,
 		recipeStepID,
 		recipeStepIngredientID,
-		recipeID,
-		recipeStepID,
-		recipeID,
 	}
 
 	result, err := q.performBooleanQuery(ctx, q.db, recipeStepIngredientExistenceQuery, args)

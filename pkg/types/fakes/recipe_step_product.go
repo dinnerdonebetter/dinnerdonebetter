@@ -10,12 +10,14 @@ import (
 
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
+	minQty := BuildFakeNumber()
+
 	return &types.RecipeStepProduct{
 		ID:                                 BuildFakeID(),
 		Name:                               buildUniqueString(),
 		Type:                               types.RecipeStepProductIngredientType,
-		MinimumQuantity:                    fake.Float32(),
-		MaximumQuantity:                    fake.Float32(),
+		MinimumQuantity:                    float32(minQty),
+		MaximumQuantity:                    float32(minQty + 1),
 		QuantityNotes:                      buildUniqueString(),
 		MeasurementUnit:                    *BuildFakeValidMeasurementUnit(),
 		CreatedAt:                          fake.Date(),

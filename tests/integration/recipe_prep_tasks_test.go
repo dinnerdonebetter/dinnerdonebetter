@@ -53,28 +53,8 @@ func createRecipePrepTaskForTest(ctx context.Context, t *testing.T, adminClient,
 
 	exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-	t.Log("")
-	t.Log("")
-	t.Log("")
-	t.Log("")
-	t.Log("")
-	logJSON(t, exampleInput)
-	t.Log("")
-	t.Log("")
-	t.Log("")
-
 	createdRecipePrepTask, err := client.CreateRecipePrepTask(ctx, exampleInput)
 	requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
-
-	t.Log("")
-	t.Log("")
-	t.Log("")
-	logJSON(t, createdRecipePrepTask)
-	t.Log("")
-	t.Log("")
-	t.Log("")
-	t.Log("")
-	t.Log("")
 
 	t.Log("fetching changed recipe prep task")
 	actual, err := client.GetRecipePrepTask(ctx, createdRecipe.ID, createdRecipePrepTask.ID)

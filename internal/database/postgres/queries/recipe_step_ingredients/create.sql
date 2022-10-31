@@ -11,4 +11,4 @@ INSERT INTO recipe_step_ingredients (
 	recipe_step_product_id,
 	ingredient_notes,
 	belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
+) VALUES ($1,$2,$3,$4,$5,($6 * 100)::integer,($7 * 100)::integer,$8,$9,$10,$11,$12);
