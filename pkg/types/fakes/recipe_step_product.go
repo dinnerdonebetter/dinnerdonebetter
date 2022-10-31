@@ -11,6 +11,7 @@ import (
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 	minQty := BuildFakeNumber()
+	minStorageTemp := BuildFakeNumber()
 
 	return &types.RecipeStepProduct{
 		ID:                                 BuildFakeID(),
@@ -24,8 +25,8 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		BelongsToRecipeStep:                fake.UUID(),
 		Compostable:                        fake.Bool(),
 		MaximumStorageDurationInSeconds:    pointers.Uint32Pointer(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius: pointers.Float32Pointer(fake.Float32()),
-		MaximumStorageTemperatureInCelsius: pointers.Float32Pointer(fake.Float32()),
+		MinimumStorageTemperatureInCelsius: pointers.Float32Pointer(float32(minStorageTemp)),
+		MaximumStorageTemperatureInCelsius: pointers.Float32Pointer(float32(minStorageTemp + 1)),
 		StorageInstructions:                buildUniqueString(),
 	}
 }
