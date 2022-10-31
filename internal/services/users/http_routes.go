@@ -15,12 +15,12 @@ import (
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
 	"github.com/pquerna/otp/totp"
-	"github.com/segmentio/ksuid"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -196,7 +196,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	input := &types.UserDatabaseCreationInput{
-		ID:              ksuid.New().String(),
+		ID:              identifiers.New(),
 		Username:        registrationInput.Username,
 		EmailAddress:    registrationInput.EmailAddress,
 		HashedPassword:  hp,
@@ -815,7 +815,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 	}
 
 	dbInput := &types.PasswordResetTokenDatabaseCreationInput{
-		ID:            ksuid.New().String(),
+		ID:            identifiers.New(),
 		Token:         token,
 		BelongsToUser: u.ID,
 		ExpiresAt:     time.Now().Add(30 * time.Minute),

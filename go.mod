@@ -24,7 +24,7 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/google/wire v0.5.0
 	github.com/gorilla/securecookie v1.1.1
-	github.com/gorilla/websocket v1.4.2
+	github.com/gorilla/websocket v1.5.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/heimdalr/dag v1.2.1
@@ -37,12 +37,13 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/o1egl/paseto v1.0.0
 	github.com/pquerna/otp v1.3.0
+	github.com/rs/xid v1.2.1
 	github.com/rs/zerolog v1.21.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/sendgrid/rest v2.6.5+incompatible
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/stripe/stripe-go/v72 v72.72.0
 	github.com/tkrajina/typescriptify-golang-structs v0.1.7
 	github.com/unrolled/secure v1.0.8
@@ -58,8 +59,8 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v0.26.0
 	go.opentelemetry.io/otel/trace v1.3.0
 	gocloud.dev v0.23.0
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
-	golang.org/x/tools v0.1.9
+	golang.org/x/net v0.0.0-20220722155237-a158d28d115b
+	golang.org/x/tools v0.1.12
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/genproto v0.0.0-20220207185906-7721543eae58
 	gopkg.in/launchdarkly/go-sdk-common.v2 v2.5.1
@@ -117,9 +118,9 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/otel/internal/metric v0.26.0 // indirect
 	golang.org/x/image v0.0.0-20220302094943-723b81ca9867 // indirect
-	golang.org/x/mod v0.5.1 // indirect
+	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/api v0.68.0 // indirect
@@ -143,6 +144,6 @@ require (
 	github.com/smartystreets/goconvey v1.7.2 // indirect
 	github.com/xtgo/uuid v0.0.0-20140804021211-a0b114877d4c // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
-	golang.org/x/sys v0.0.0-20220317061510-51cd9980dadf // indirect
+	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

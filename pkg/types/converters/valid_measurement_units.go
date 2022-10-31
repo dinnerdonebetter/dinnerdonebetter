@@ -1,8 +1,7 @@
 package converters
 
 import (
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -25,7 +24,7 @@ func ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(input *
 // ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDatabaseCreationInput creates a ValidMeasurementUnitDatabaseCreationInput from a ValidMeasurementUnitCreationRequestInput.
 func ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDatabaseCreationInput(input *types.ValidMeasurementUnitCreationRequestInput) *types.ValidMeasurementUnitDatabaseCreationInput {
 	x := &types.ValidMeasurementUnitDatabaseCreationInput{
-		ID:          ksuid.New().String(),
+		ID:          identifiers.New(),
 		Name:        input.Name,
 		Description: input.Description,
 		Volumetric:  input.Volumetric,

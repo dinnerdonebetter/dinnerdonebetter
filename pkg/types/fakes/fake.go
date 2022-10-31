@@ -6,7 +6,8 @@ import (
 	"time"
 
 	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/segmentio/ksuid"
+
+	"github.com/prixfixeco/api_server/internal/identifiers"
 )
 
 func init() {
@@ -29,7 +30,7 @@ func BuildFakeSQLQuery() (query string, args []interface{}) {
 
 // BuildFakeID builds a fake ID.
 func BuildFakeID() string {
-	return ksuid.New().String()
+	return identifiers.New()
 }
 
 func BuildFakeNumber() int {

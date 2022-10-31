@@ -503,6 +503,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			exampleInput.MealID,
 			exampleInput.Notes,
 			exampleInput.BelongsToMealPlanEvent,
+			false,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
@@ -549,6 +550,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			exampleInput.MealID,
 			exampleInput.Notes,
 			exampleInput.BelongsToMealPlanEvent,
+			false,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).

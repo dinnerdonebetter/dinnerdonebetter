@@ -1,8 +1,7 @@
 package converters
 
 import (
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -57,7 +56,7 @@ func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *type
 	}
 
 	// we need to set this here or later converters will fail
-	x.ID = ksuid.New().String()
+	x.ID = identifiers.New()
 
 	return x
 }

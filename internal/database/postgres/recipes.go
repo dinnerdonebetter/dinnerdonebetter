@@ -6,9 +6,9 @@ import (
 	_ "embed"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -463,7 +463,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 
 	if input.AlsoCreateMeal {
 		_, mealCreateErr := q.createMeal(ctx, tx, &types.MealDatabaseCreationInput{
-			ID:            ksuid.New().String(),
+			ID:            identifiers.New(),
 			Name:          x.Name,
 			Description:   x.Description,
 			CreatedByUser: x.CreatedByUser,

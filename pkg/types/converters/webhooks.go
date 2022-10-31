@@ -1,8 +1,7 @@
 package converters
 
 import (
-	"github.com/segmentio/ksuid"
-
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -62,7 +61,7 @@ func ConvertWebhookCreationRequestInputToWebhookDatabaseCreationInput(input *typ
 
 	for _, evt := range input.Events {
 		x.Events = append(x.Events, &types.WebhookTriggerEventDatabaseCreationInput{
-			ID:               ksuid.New().String(),
+			ID:               identifiers.New(),
 			BelongsToWebhook: x.ID,
 			TriggerEvent:     evt,
 		})

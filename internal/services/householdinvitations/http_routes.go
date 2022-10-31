@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/segmentio/ksuid"
-
 	"github.com/prixfixeco/api_server/internal/email"
+	"github.com/prixfixeco/api_server/internal/identifiers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -58,7 +57,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	providedInput.ID = ksuid.New().String()
+	providedInput.ID = identifiers.New()
 	providedInput.DestinationHouseholdID = householdID
 	providedInput.FromUser = requester
 	providedInput.ToEmail = strings.TrimSpace(strings.ToLower(providedInput.ToEmail))

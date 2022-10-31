@@ -240,11 +240,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsPermission)).
 					Get(root, s.validInstrumentsService.ReadHandler)
 				singleValidInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidInstrumentsPermission)).
-					Delete(root, s.validInstrumentsService.ArchiveHandler)
-				singleValidInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidInstrumentsPermission)).
 					Put(root, s.validInstrumentsService.UpdateHandler)
+				singleValidInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidInstrumentsPermission)).
+					Delete(root, s.validInstrumentsService.ArchiveHandler)
 			})
 		})
 
@@ -271,11 +271,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
 					Get(root, s.validIngredientsService.ReadHandler)
 				singleValidIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientsPermission)).
-					Delete(root, s.validIngredientsService.ArchiveHandler)
-				singleValidIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientsPermission)).
 					Put(root, s.validIngredientsService.UpdateHandler)
+				singleValidIngredientRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientsPermission)).
+					Delete(root, s.validIngredientsService.ArchiveHandler)
 			})
 		})
 
@@ -302,11 +302,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
 					Get(root, s.validPreparationsService.ReadHandler)
 				singleValidPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationsPermission)).
-					Delete(root, s.validPreparationsService.ArchiveHandler)
-				singleValidPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationsPermission)).
 					Put(root, s.validPreparationsService.UpdateHandler)
+				singleValidPreparationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationsPermission)).
+					Delete(root, s.validPreparationsService.ArchiveHandler)
 			})
 		})
 
@@ -330,11 +330,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementUnitsPermission)).
 					Get(root, s.validMeasurementUnitsService.ReadHandler)
 				singleValidMeasurementUnitRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementUnitsPermission)).
-					Delete(root, s.validMeasurementUnitsService.ArchiveHandler)
-				singleValidMeasurementUnitRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidMeasurementUnitsPermission)).
 					Put(root, s.validMeasurementUnitsService.UpdateHandler)
+				singleValidMeasurementUnitRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementUnitsPermission)).
+					Delete(root, s.validMeasurementUnitsService.ArchiveHandler)
 			})
 		})
 
@@ -352,11 +352,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementConversionsPermission)).
 					Get(root, s.validMeasurementConversionsService.ReadHandler)
 				singleValidMeasurementConversionRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementConversionsPermission)).
-					Delete(root, s.validMeasurementConversionsService.ArchiveHandler)
-				singleValidMeasurementConversionRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidMeasurementConversionsPermission)).
 					Put(root, s.validMeasurementConversionsService.UpdateHandler)
+				singleValidMeasurementConversionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementConversionsPermission)).
+					Delete(root, s.validMeasurementConversionsService.ArchiveHandler)
 			})
 		})
 
@@ -391,11 +391,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
 					Get(root, s.validIngredientPreparationsService.ReadHandler)
 				singleValidIngredientPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientPreparationsPermission)).
-					Delete(root, s.validIngredientPreparationsService.ArchiveHandler)
-				singleValidIngredientPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientPreparationsPermission)).
 					Put(root, s.validIngredientPreparationsService.UpdateHandler)
+				singleValidIngredientPreparationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientPreparationsPermission)).
+					Delete(root, s.validIngredientPreparationsService.ArchiveHandler)
 			})
 		})
 
@@ -430,11 +430,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
 					Get(root, s.validPreparationInstrumentsService.ReadHandler)
 				singleValidPreparationInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationInstrumentsPermission)).
-					Delete(root, s.validPreparationInstrumentsService.ArchiveHandler)
-				singleValidPreparationInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationInstrumentsPermission)).
 					Put(root, s.validPreparationInstrumentsService.UpdateHandler)
+				singleValidPreparationInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationInstrumentsPermission)).
+					Delete(root, s.validPreparationInstrumentsService.ArchiveHandler)
 			})
 		})
 
@@ -469,11 +469,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientMeasurementUnitsPermission)).
 					Get(root, s.validIngredientMeasurementUnitsService.ReadHandler)
 				singleValidIngredientMeasurementUnitRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientMeasurementUnitsPermission)).
-					Delete(root, s.validIngredientMeasurementUnitsService.ArchiveHandler)
-				singleValidIngredientMeasurementUnitRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientMeasurementUnitsPermission)).
 					Put(root, s.validIngredientMeasurementUnitsService.UpdateHandler)
+				singleValidIngredientMeasurementUnitRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientMeasurementUnitsPermission)).
+					Delete(root, s.validIngredientMeasurementUnitsService.ArchiveHandler)
 			})
 		})
 
@@ -527,15 +527,15 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 					Get("/prep_steps", s.recipesService.EstimatedPrepStepsHandler)
 				singleRecipeRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipesPermission)).
-					Delete(root, s.recipesService.ArchiveHandler)
-				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipesPermission)).
 					Put(root, s.recipesService.UpdateHandler)
 
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipesPermission)).
 					Post("/images", s.recipesService.ImageUploadHandler)
+				singleRecipeRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipesPermission)).
+					Delete(root, s.recipesService.ArchiveHandler)
 			})
 		})
 
@@ -561,11 +561,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipePrepTasksPermission)).
 					Get(root, s.recipePrepTasksService.ReadHandler)
 				singleRecipeStepRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipePrepTasksPermission)).
-					Delete(root, s.recipePrepTasksService.ArchiveHandler)
-				singleRecipeStepRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipePrepTasksPermission)).
 					Put(root, s.recipePrepTasksService.UpdateHandler)
+				singleRecipeStepRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipePrepTasksPermission)).
+					Delete(root, s.recipePrepTasksService.ArchiveHandler)
 			})
 		})
 
@@ -588,17 +588,17 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 
 			recipeStepsRouter.Route(recipeStepIDRouteParam, func(singleRecipeStepRouter routing.Router) {
 				singleRecipeStepRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepsPermission)).
+					Post("/images", s.recipeStepsService.ImageUploadHandler)
+				singleRecipeStepRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepsPermission)).
 					Get(root, s.recipeStepsService.ReadHandler)
-				singleRecipeStepRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepsPermission)).
-					Delete(root, s.recipeStepsService.ArchiveHandler)
 				singleRecipeStepRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepsPermission)).
 					Put(root, s.recipeStepsService.UpdateHandler)
 				singleRecipeStepRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepsPermission)).
-					Post("/images", s.recipeStepsService.ImageUploadHandler)
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepsPermission)).
+					Delete(root, s.recipeStepsService.ArchiveHandler)
 			})
 		})
 
@@ -626,11 +626,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepInstrumentsPermission)).
 					Get(root, s.recipeStepInstrumentsService.ReadHandler)
 				singleRecipeStepInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepInstrumentsPermission)).
-					Delete(root, s.recipeStepInstrumentsService.ArchiveHandler)
-				singleRecipeStepInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepInstrumentsPermission)).
 					Put(root, s.recipeStepInstrumentsService.UpdateHandler)
+				singleRecipeStepInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepInstrumentsPermission)).
+					Delete(root, s.recipeStepInstrumentsService.ArchiveHandler)
 			})
 		})
 
@@ -658,11 +658,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepIngredientsPermission)).
 					Get(root, s.recipeStepIngredientsService.ReadHandler)
 				singleRecipeStepIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepIngredientsPermission)).
-					Delete(root, s.recipeStepIngredientsService.ArchiveHandler)
-				singleRecipeStepIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepIngredientsPermission)).
 					Put(root, s.recipeStepIngredientsService.UpdateHandler)
+				singleRecipeStepIngredientRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepIngredientsPermission)).
+					Delete(root, s.recipeStepIngredientsService.ArchiveHandler)
 			})
 		})
 
@@ -690,11 +690,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepProductsPermission)).
 					Get(root, s.recipeStepProductsService.ReadHandler)
 				singleRecipeStepProductRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepProductsPermission)).
-					Delete(root, s.recipeStepProductsService.ArchiveHandler)
-				singleRecipeStepProductRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepProductsPermission)).
 					Put(root, s.recipeStepProductsService.UpdateHandler)
+				singleRecipeStepProductRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepProductsPermission)).
+					Delete(root, s.recipeStepProductsService.ArchiveHandler)
 			})
 		})
 
@@ -715,11 +715,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlansPermission)).
 					Get(root, s.mealPlansService.ReadHandler)
 				singleMealPlanRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlansPermission)).
-					Delete(root, s.mealPlansService.ArchiveHandler)
-				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlansPermission)).
 					Put(root, s.mealPlansService.UpdateHandler)
+				singleMealPlanRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlansPermission)).
+					Delete(root, s.mealPlansService.ArchiveHandler)
 			})
 		})
 
@@ -773,14 +773,14 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanEventsPermission)).
 					Get(root, s.mealPlanEventsService.ReadHandler)
 				singleMealPlanEventRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanEventsPermission)).
-					Delete(root, s.mealPlanEventsService.ArchiveHandler)
-				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanEventsPermission)).
 					Put(root, s.mealPlanEventsService.UpdateHandler)
 				singleMealPlanEventRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
 					Post("/vote", s.mealPlanOptionVotesService.CreateHandler)
+				singleMealPlanEventRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanEventsPermission)).
+					Delete(root, s.mealPlanEventsService.ArchiveHandler)
 			})
 		})
 
@@ -806,11 +806,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanGroceryListItemsPermission)).
 					Get(root, s.mealPlanGroceryListItemsService.ReadHandler)
 				singleMealPlanGroceryListItemRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanGroceryListItemsPermission)).
-					Delete(root, s.mealPlanGroceryListItemsService.ArchiveHandler)
-				singleMealPlanGroceryListItemRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanGroceryListItemsPermission)).
 					Put(root, s.mealPlanGroceryListItemsService.UpdateHandler)
+				singleMealPlanGroceryListItemRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanGroceryListItemsPermission)).
+					Delete(root, s.mealPlanGroceryListItemsService.ArchiveHandler)
 			})
 		})
 
@@ -838,11 +838,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionsPermission)).
 					Get(root, s.mealPlanOptionsService.ReadHandler)
 				singleMealPlanOptionRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionsPermission)).
-					Delete(root, s.mealPlanOptionsService.ArchiveHandler)
-				singleMealPlanOptionRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanOptionsPermission)).
 					Put(root, s.mealPlanOptionsService.UpdateHandler)
+				singleMealPlanOptionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionsPermission)).
+					Delete(root, s.mealPlanOptionsService.ArchiveHandler)
 			})
 		})
 
@@ -869,11 +869,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionVotesPermission)).
 					Get(root, s.mealPlanOptionVotesService.ReadHandler)
 				singleMealPlanOptionVoteRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionVotesPermission)).
-					Delete(root, s.mealPlanOptionVotesService.ArchiveHandler)
-				singleMealPlanOptionVoteRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanOptionVotesPermission)).
 					Put(root, s.mealPlanOptionVotesService.UpdateHandler)
+				singleMealPlanOptionVoteRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionVotesPermission)).
+					Delete(root, s.mealPlanOptionVotesService.ArchiveHandler)
 			})
 		})
 	})

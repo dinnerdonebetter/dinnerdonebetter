@@ -352,7 +352,7 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 var mealPlanOptionCreationQuery string
 
 // createMealPlanOption creates a meal plan option in the database.
-func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
+func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput, markAsChosen bool) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -370,6 +370,7 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 		input.MealID,
 		input.Notes,
 		input.BelongsToMealPlanEvent,
+		markAsChosen,
 	}
 
 	// create the meal plan option.
@@ -395,7 +396,7 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 
 // CreateMealPlanOption creates a meal plan option in the database.
 func (q *Querier) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
-	return q.createMealPlanOption(ctx, q.db, input)
+	return q.createMealPlanOption(ctx, q.db, input, false)
 }
 
 //go:embed queries/meal_plan_options/update.sql
