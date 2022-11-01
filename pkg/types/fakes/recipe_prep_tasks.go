@@ -28,10 +28,10 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 			types.RecipePrepTaskStorageTypeWireRack,
 		}),
 		TaskSteps:                              recipePrepTaskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer) + 1,
+		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer),
+		MaximumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer + 1),
 		MinimumStorageTemperatureInCelsius:     float32(minStorageTemp),
-		MaximumStorageTemperatureInCelsius:     float32(minTimeBuffer),
-		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minStorageTemp) + 1,
+		MaximumStorageTemperatureInCelsius:     float32(minStorageTemp + 1),
 		BelongsToRecipe:                        BuildFakeID(),
 		CreatedAt:                              fake.Date(),
 		LastUpdatedAt:                          nil,
@@ -90,13 +90,15 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 		BelongsToRecipe:                        BuildFakeID(),
 		TaskSteps:                              taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer) + 1,
+		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer),
 		MinimumStorageTemperatureInCelsius:     float32(minStorageTemp),
-		MaximumStorageTemperatureInCelsius:     float32(minTimeBuffer),
-		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minStorageTemp) + 1,
+		MaximumStorageTemperatureInCelsius:     float32(minStorageTemp + 1),
 	}
 }
 
 func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequestInput {
+	minTemp := BuildFakeNumber()
+
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
 	for i := 0; i < exampleQuantity; i++ {
 		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepUpdateRequestInput())
@@ -107,15 +109,17 @@ func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequ
 		ExplicitStorageInstructions:            pointers.StringPointer(buildUniqueString()),
 		StorageType:                            pointers.StringPointer(types.RecipePrepTaskStorageTypeUncovered),
 		BelongsToRecipe:                        pointers.StringPointer(BuildFakeID()),
-		TaskSteps:                              taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: pointers.Uint32Pointer(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius:     pointers.Float32Pointer(fake.Float32()),
-		MaximumStorageTemperatureInCelsius:     pointers.Float32Pointer(fake.Float32()),
+		MinimumStorageTemperatureInCelsius:     pointers.Float32Pointer(float32(minTemp)),
+		MaximumStorageTemperatureInCelsius:     pointers.Float32Pointer(float32(minTemp + 1)),
 		MinimumTimeBufferBeforeRecipeInSeconds: pointers.Uint32Pointer(fake.Uint32()),
+		TaskSteps:                              taskSteps,
 	}
 }
 
 func BuildFakeRecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *types.RecipePrepTask) *types.RecipePrepTaskUpdateRequestInput {
+	minTemp := BuildFakeNumber()
+
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
 	for _, x := range input.TaskSteps {
 		taskSteps = append(taskSteps, converters.ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(x))
@@ -128,8 +132,8 @@ func BuildFakeRecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *types.Re
 		BelongsToRecipe:                        pointers.StringPointer(BuildFakeID()),
 		TaskSteps:                              taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: pointers.Uint32Pointer(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius:     pointers.Float32Pointer(fake.Float32()),
-		MaximumStorageTemperatureInCelsius:     pointers.Float32Pointer(fake.Float32()),
+		MinimumStorageTemperatureInCelsius:     pointers.Float32Pointer(float32(minTemp)),
+		MaximumStorageTemperatureInCelsius:     pointers.Float32Pointer(float32(minTemp + 1)),
 		MinimumTimeBufferBeforeRecipeInSeconds: pointers.Uint32Pointer(fake.Uint32()),
 	}
 }

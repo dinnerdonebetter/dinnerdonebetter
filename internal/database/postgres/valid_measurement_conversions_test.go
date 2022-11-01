@@ -93,7 +93,7 @@ func buildMockRowsFromValidMeasurementConversions(includeCounts bool, filteredCo
 			&ingredient.ArchivedAt,
 
 			// rest of the valid measurement conversion
-			int64(x.Modifier * float32(types.ValidMeasurementConversionQuantityModifier)),
+			x.Modifier,
 			x.Notes,
 			x.CreatedAt,
 			x.LastUpdatedAt,
@@ -327,14 +327,12 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		dbSafeModifier := int64(exampleInput.Modifier * types.ValidMeasurementConversionQuantityModifier)
-
 		validMeasurementConversionCreationArgs := []interface{}{
 			exampleInput.ID,
 			exampleInput.From,
 			exampleInput.To,
 			exampleInput.ForIngredient,
-			dbSafeModifier,
+			exampleInput.Modifier,
 			exampleInput.Notes,
 		}
 
@@ -374,14 +372,12 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		dbSafeModifier := int64(exampleInput.Modifier * types.ValidMeasurementConversionQuantityModifier)
-
 		validMeasurementConversionCreationArgs := []interface{}{
 			exampleInput.ID,
 			exampleInput.From,
 			exampleInput.To,
 			exampleInput.ForIngredient,
-			dbSafeModifier,
+			exampleInput.Modifier,
 			exampleInput.Notes,
 		}
 
@@ -413,8 +409,6 @@ func TestQuerier_UpdateValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		dbSafeModifier := int64(exampleValidMeasurementConversion.Modifier * types.ValidMeasurementConversionQuantityModifier)
-
 		var ingredientID *string
 		if exampleValidMeasurementConversion.OnlyForIngredient != nil {
 			ingredientID = &exampleValidMeasurementConversion.OnlyForIngredient.ID
@@ -424,7 +418,7 @@ func TestQuerier_UpdateValidMeasurementConversion(T *testing.T) {
 			exampleValidMeasurementConversion.From.ID,
 			exampleValidMeasurementConversion.To.ID,
 			ingredientID,
-			dbSafeModifier,
+			exampleValidMeasurementConversion.Modifier,
 			exampleValidMeasurementConversion.Notes,
 			exampleValidMeasurementConversion.ID,
 		}
@@ -455,8 +449,6 @@ func TestQuerier_UpdateValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		dbSafeModifier := int64(exampleValidMeasurementConversion.Modifier * types.ValidMeasurementConversionQuantityModifier)
-
 		var ingredientID *string
 		if exampleValidMeasurementConversion.OnlyForIngredient != nil {
 			ingredientID = &exampleValidMeasurementConversion.OnlyForIngredient.ID
@@ -466,7 +458,7 @@ func TestQuerier_UpdateValidMeasurementConversion(T *testing.T) {
 			exampleValidMeasurementConversion.From.ID,
 			exampleValidMeasurementConversion.To.ID,
 			ingredientID,
-			dbSafeModifier,
+			exampleValidMeasurementConversion.Modifier,
 			exampleValidMeasurementConversion.Notes,
 			exampleValidMeasurementConversion.ID,
 		}

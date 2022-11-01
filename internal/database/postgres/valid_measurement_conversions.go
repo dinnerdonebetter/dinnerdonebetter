@@ -85,7 +85,6 @@ func (q *Querier) scanValidMeasurementConversion(ctx context.Context, scan datab
 	x = &types.ValidMeasurementConversion{}
 	var (
 		ingredient = &types.NullableValidIngredient{}
-		modifier   int64
 	)
 
 	targetVars := []interface{}{
@@ -149,7 +148,7 @@ func (q *Querier) scanValidMeasurementConversion(ctx context.Context, scan datab
 		&ingredient.ArchivedAt,
 
 		// rest of the valid measurement conversion
-		&modifier,
+		&x.Modifier,
 		&x.Notes,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -163,8 +162,6 @@ func (q *Querier) scanValidMeasurementConversion(ctx context.Context, scan datab
 	if ingredient.ID != nil {
 		x.OnlyForIngredient = converters.ConvertNullableValidIngredientToValidIngredient(ingredient)
 	}
-
-	x.Modifier = float32(modifier) / float32(types.ValidMeasurementConversionQuantityModifier)
 
 	return x, nil
 }
@@ -328,14 +325,12 @@ func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *t
 
 	logger := q.logger.WithValue(keys.ValidMeasurementConversionIDKey, input.ID)
 
-	dbSafeModifier := int64(input.Modifier * types.ValidMeasurementConversionQuantityModifier)
-
 	args := []interface{}{
 		input.ID,
 		input.From,
 		input.To,
 		input.ForIngredient,
-		dbSafeModifier,
+		input.Modifier,
 		input.Notes,
 	}
 
@@ -348,7 +343,7 @@ func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *t
 		ID:        input.ID,
 		From:      types.ValidMeasurementUnit{ID: input.From},
 		To:        types.ValidMeasurementUnit{ID: input.To},
-		Modifier:  float32(dbSafeModifier / types.ValidMeasurementConversionQuantityModifier),
+		Modifier:  input.Modifier,
 		Notes:     input.Notes,
 		CreatedAt: q.currentTime(),
 	}
@@ -378,8 +373,6 @@ func (q *Querier) UpdateValidMeasurementConversion(ctx context.Context, updated 
 	logger := q.logger.WithValue(keys.ValidMeasurementConversionIDKey, updated.ID)
 	tracing.AttachValidMeasurementConversionIDToSpan(span, updated.ID)
 
-	dbSafeModifier := int64(updated.Modifier * types.ValidMeasurementConversionQuantityModifier)
-
 	var ingredientID *string
 	if updated.OnlyForIngredient != nil {
 		ingredientID = &updated.OnlyForIngredient.ID
@@ -389,7 +382,7 @@ func (q *Querier) UpdateValidMeasurementConversion(ctx context.Context, updated 
 		updated.From.ID,
 		updated.To.ID,
 		ingredientID,
-		dbSafeModifier,
+		updated.Modifier,
 		updated.Notes,
 		updated.ID,
 	}

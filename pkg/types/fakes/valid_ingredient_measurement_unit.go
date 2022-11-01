@@ -9,13 +9,15 @@ import (
 
 // BuildFakeValidIngredientMeasurementUnit builds a faked valid ingredient measurement unit.
 func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurementUnit {
+	minQty := BuildFakeNumber()
+
 	return &types.ValidIngredientMeasurementUnit{
 		ID:                       BuildFakeID(),
 		Notes:                    buildUniqueString(),
 		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
 		Ingredient:               *BuildFakeValidIngredient(),
-		MinimumAllowableQuantity: fake.Float32(),
-		MaximumAllowableQuantity: fake.Float32(),
+		MinimumAllowableQuantity: float32(minQty),
+		MaximumAllowableQuantity: float32(minQty + 1),
 		CreatedAt:                fake.Date(),
 	}
 }

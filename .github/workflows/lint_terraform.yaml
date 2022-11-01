@@ -1,11 +1,7 @@
 on:
   pull_request:
     paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
-      - environments/**
-      - tests/**
+      - environments/terraform/dev
 name: Lint Terraform code
 jobs:
   terraform:

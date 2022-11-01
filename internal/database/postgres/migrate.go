@@ -305,6 +305,11 @@ var (
 			Description: "webhooks refactor",
 			Script:      fetchMigration("00058_webhooks_refactor"),
 		},
+		{
+			Version:     59,
+			Description: "floats refactor",
+			Script:      fetchMigration("00059_floats_refactor"),
+		},
 	}
 )
 

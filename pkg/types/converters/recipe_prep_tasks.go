@@ -51,8 +51,8 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 		BelongsToRecipe:                        input.BelongsToRecipe,
 		TaskSteps:                              taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     uint32(input.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
-		MaximumStorageTemperatureInCelsius:     uint32(input.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
 		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
 	}
 
@@ -81,8 +81,8 @@ func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDataba
 		BelongsToRecipe:                        input.BelongsToRecipe,
 		TaskSteps:                              taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     uint32(input.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
-		MaximumStorageTemperatureInCelsius:     uint32(input.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
 		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
 	}
 
@@ -104,8 +104,8 @@ func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *types.Rec
 		TaskSteps:                              taskSteps,
 		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
 		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
-		MinimumStorageTemperatureInCelsius:     uint32(input.MinimumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
-		MaximumStorageTemperatureInCelsius:     uint32(input.MaximumStorageTemperatureInCelsius * types.RecipePrepTaskStorageTemperatureModifier),
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
 		BelongsToRecipe:                        input.BelongsToRecipe,
 	}
 }

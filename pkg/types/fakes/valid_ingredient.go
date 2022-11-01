@@ -3,6 +3,7 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
@@ -32,8 +33,8 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		PluralName:                              buildUniqueString(),
 		AnimalDerived:                           fake.Bool(),
 		RestrictToPreparations:                  fake.Bool(),
-		MinimumIdealStorageTemperatureInCelsius: func(f float32) *float32 { return &f }(fake.Float32()),
-		MaximumIdealStorageTemperatureInCelsius: func(f float32) *float32 { return &f }(fake.Float32()),
+		MinimumIdealStorageTemperatureInCelsius: pointers.Float32Pointer(float32(BuildFakeNumber())),
+		MaximumIdealStorageTemperatureInCelsius: pointers.Float32Pointer(float32(BuildFakeNumber())),
 		StorageInstructions:                     buildUniqueString(),
 	}
 }

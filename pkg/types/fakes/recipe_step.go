@@ -3,6 +3,7 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/converters"
 )
@@ -10,6 +11,8 @@ import (
 // BuildFakeRecipeStep builds a faked recipe step.
 func BuildFakeRecipeStep() *types.RecipeStep {
 	recipeStepID := BuildFakeID()
+
+	minTemp := BuildFakeNumber()
 
 	var ingredients []*types.RecipeStepIngredient
 	for i := 0; i < exampleQuantity; i++ {
@@ -38,8 +41,8 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		Preparation:                   *BuildFakeValidPreparation(),
 		MinimumEstimatedTimeInSeconds: func(x uint32) *uint32 { return &x }(fake.Uint32()),
 		MaximumEstimatedTimeInSeconds: func(x uint32) *uint32 { return &x }(fake.Uint32()),
-		MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
-		MaximumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
+		MinimumTemperatureInCelsius:   pointers.Float32Pointer(float32(minTemp)),
+		MaximumTemperatureInCelsius:   pointers.Float32Pointer(float32(minTemp + 1)),
 		Notes:                         buildUniqueString(),
 		Products:                      products,
 		Optional:                      false,
