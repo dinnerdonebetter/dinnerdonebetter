@@ -35,20 +35,6 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			logJSON(t, exampleWebhook)
-			t.Log("")
-			logJSON(t, exampleWebhookInput)
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			t.Log("")
-
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 			t.Logf("created webhook %s", createdWebhook.ID)
@@ -132,22 +118,6 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			// Assert webhook list equality.
 			actual, err := testClients.user.GetWebhooks(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
-
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			logJSON(t, expected)
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			logJSON(t, actual.Webhooks)
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			t.Log("")
-			t.Log("")
 
 			assert.GreaterOrEqual(t, len(actual.Webhooks), len(expected))
 

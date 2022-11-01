@@ -14,7 +14,7 @@ func BuildFakeValidMeasurementConversion() *types.ValidMeasurementConversion {
 		From:              *BuildFakeValidMeasurementUnit(),
 		To:                *BuildFakeValidMeasurementUnit(),
 		OnlyForIngredient: nil,
-		Modifier:          BuildFakeNumber(),
+		Modifier:          float32(BuildFakeNumber()),
 		Notes:             buildUniqueString(),
 		CreatedAt:         fake.Date(),
 	}

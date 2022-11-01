@@ -10,20 +10,23 @@ import (
 
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
+	minQty := BuildFakeNumber()
+	storageTemp := BuildFakeNumber()
+
 	return &types.RecipeStepProduct{
 		ID:                                 BuildFakeID(),
 		Name:                               buildUniqueString(),
 		Type:                               types.RecipeStepProductIngredientType,
-		MinimumQuantity:                    fake.Float32(),
-		MaximumQuantity:                    fake.Float32(),
+		MinimumQuantity:                    float32(minQty),
+		MaximumQuantity:                    float32(minQty + 1),
 		QuantityNotes:                      buildUniqueString(),
 		MeasurementUnit:                    *BuildFakeValidMeasurementUnit(),
 		CreatedAt:                          fake.Date(),
 		BelongsToRecipeStep:                fake.UUID(),
 		Compostable:                        fake.Bool(),
 		MaximumStorageDurationInSeconds:    pointers.Uint32Pointer(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius: pointers.Float32Pointer(fake.Float32()),
-		MaximumStorageTemperatureInCelsius: pointers.Float32Pointer(fake.Float32()),
+		MinimumStorageTemperatureInCelsius: pointers.Float32Pointer(float32(storageTemp)),
+		MaximumStorageTemperatureInCelsius: pointers.Float32Pointer(float32(storageTemp + 1)),
 		StorageInstructions:                buildUniqueString(),
 	}
 }

@@ -38,8 +38,8 @@ func buildMockRowsFromMealPlanGroceryListItems(includeCounts bool, filteredCount
 			x.BelongsToMealPlan,
 			x.Ingredient.ID,
 			x.MeasurementUnit.ID,
-			uint16(x.MinimumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier),
-			uint16(x.MaximumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier),
+			x.MinimumQuantityNeeded,
+			x.MaximumQuantityNeeded,
 			x.QuantityPurchased,
 			purchasedMeasurementUnitID,
 			x.PurchasedUPC,
@@ -371,18 +371,13 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		dbSafeMinQty := uint16(exampleInput.MinimumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-		dbSafeMaxQty := uint16(exampleInput.MaximumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-		exampleMealPlanGroceryListItem.MinimumQuantityNeeded = float32(dbSafeMinQty / types.MealPlanGroceryListItemQuantityModifier)
-		exampleMealPlanGroceryListItem.MaximumQuantityNeeded = float32(dbSafeMaxQty / types.MealPlanGroceryListItemQuantityModifier)
-
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.BelongsToMealPlan,
 			exampleInput.ValidIngredientID,
 			exampleInput.ValidMeasurementUnitID,
-			dbSafeMinQty,
-			dbSafeMaxQty,
+			exampleInput.MinimumQuantityNeeded,
+			exampleInput.MaximumQuantityNeeded,
 			exampleInput.QuantityPurchased,
 			exampleInput.PurchasedMeasurementUnitID,
 			exampleInput.PurchasedUPC,
@@ -427,18 +422,13 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		dbSafeMinQty := uint16(exampleInput.MinimumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-		dbSafeMaxQty := uint16(exampleInput.MaximumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-		exampleMealPlanGroceryListItem.MinimumQuantityNeeded = float32(dbSafeMinQty / types.MealPlanGroceryListItemQuantityModifier)
-		exampleMealPlanGroceryListItem.MaximumQuantityNeeded = float32(dbSafeMaxQty / types.MealPlanGroceryListItemQuantityModifier)
-
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.BelongsToMealPlan,
 			exampleInput.ValidIngredientID,
 			exampleInput.ValidMeasurementUnitID,
-			dbSafeMinQty,
-			dbSafeMaxQty,
+			exampleInput.MinimumQuantityNeeded,
+			exampleInput.MaximumQuantityNeeded,
 			exampleInput.QuantityPurchased,
 			exampleInput.PurchasedMeasurementUnitID,
 			exampleInput.PurchasedUPC,
@@ -475,10 +465,6 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		dbSafeMinQty := uint16(exampleMealPlanGroceryListItem.MinimumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-		dbSafeMaxQty := uint16(exampleMealPlanGroceryListItem.MaximumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-		exampleMealPlanGroceryListItem.MinimumQuantityNeeded = float32(dbSafeMinQty / types.MealPlanGroceryListItemQuantityModifier)
-		exampleMealPlanGroceryListItem.MaximumQuantityNeeded = float32(dbSafeMaxQty / types.MealPlanGroceryListItemQuantityModifier)
 		var purchasedMeasurementUnitID *string
 		if exampleMealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
 			purchasedMeasurementUnitID = &exampleMealPlanGroceryListItem.PurchasedMeasurementUnit.ID
@@ -488,8 +474,8 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 			exampleMealPlanGroceryListItem.BelongsToMealPlan,
 			exampleMealPlanGroceryListItem.Ingredient.ID,
 			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-			dbSafeMinQty,
-			dbSafeMaxQty,
+			exampleMealPlanGroceryListItem.MinimumQuantityNeeded,
+			exampleMealPlanGroceryListItem.MaximumQuantityNeeded,
 			exampleMealPlanGroceryListItem.QuantityPurchased,
 			purchasedMeasurementUnitID,
 			exampleMealPlanGroceryListItem.PurchasedUPC,
@@ -525,10 +511,6 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		dbSafeMinQty := uint16(exampleMealPlanGroceryListItem.MinimumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-		dbSafeMaxQty := uint16(exampleMealPlanGroceryListItem.MaximumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-		exampleMealPlanGroceryListItem.MinimumQuantityNeeded = float32(dbSafeMinQty / types.MealPlanGroceryListItemQuantityModifier)
-		exampleMealPlanGroceryListItem.MaximumQuantityNeeded = float32(dbSafeMaxQty / types.MealPlanGroceryListItemQuantityModifier)
 		var purchasedMeasurementUnitID *string
 		if exampleMealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
 			purchasedMeasurementUnitID = &exampleMealPlanGroceryListItem.PurchasedMeasurementUnit.ID
@@ -538,8 +520,8 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 			exampleMealPlanGroceryListItem.BelongsToMealPlan,
 			exampleMealPlanGroceryListItem.Ingredient.ID,
 			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-			dbSafeMinQty,
-			dbSafeMaxQty,
+			exampleMealPlanGroceryListItem.MinimumQuantityNeeded,
+			exampleMealPlanGroceryListItem.MaximumQuantityNeeded,
 			exampleMealPlanGroceryListItem.QuantityPurchased,
 			purchasedMeasurementUnitID,
 			exampleMealPlanGroceryListItem.PurchasedUPC,

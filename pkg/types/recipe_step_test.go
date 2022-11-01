@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/api_server/internal/pointers"
 )
 
 func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput {
@@ -14,7 +16,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
 		MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
 		MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
-		MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
+		MinimumTemperatureInCelsius:   pointers.Float32Pointer(float32(123.45)),
 		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 		ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
 		Products: []*RecipeStepProductCreationRequestInput{
@@ -69,7 +71,7 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 			PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
 			MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
 			MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
-			MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
+			MinimumTemperatureInCelsius:   pointers.Float32Pointer(float32(123.45)),
 			Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 			ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
 			Products: []*RecipeStepProductCreationRequestInput{
@@ -108,7 +110,7 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 			Preparation:                   &ValidPreparation{},
 			MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
 			MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
-			MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
+			MinimumTemperatureInCelsius:   pointers.Float32Pointer(float32(123.45)),
 			Notes:                         stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			ExplicitInstructions:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}

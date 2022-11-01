@@ -13,9 +13,6 @@ const (
 	// MealPlanGroceryListItemDataType indicates an event is related to a meal plan grocery list item.
 	MealPlanGroceryListItemDataType dataType = "valid_preparation"
 
-	// MealPlanGroceryListItemQuantityModifier is what we multiply / divide by for float quantity values.
-	MealPlanGroceryListItemQuantityModifier = 100
-
 	// MealPlanGroceryListItemStatusUnknown represents the database-side enum member for grocery list item status.
 	MealPlanGroceryListItemStatusUnknown = "unknown"
 	// MealPlanGroceryListItemStatusAlreadyOwned represents the database-side enum member for grocery list item status.

@@ -43,8 +43,6 @@ func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database
 
 	var (
 		purchasedMeasurementUnitID *string
-		minQuantity                uint16
-		maxQuantity                uint16
 	)
 
 	targetVars := []interface{}{
@@ -52,8 +50,8 @@ func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database
 		&x.BelongsToMealPlan,
 		&x.Ingredient.ID,
 		&x.MeasurementUnit.ID,
-		&minQuantity,
-		&maxQuantity,
+		&x.MinimumQuantityNeeded,
+		&x.MaximumQuantityNeeded,
 		&x.QuantityPurchased,
 		&purchasedMeasurementUnitID,
 		&x.PurchasedUPC,
@@ -72,9 +70,6 @@ func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database
 	if purchasedMeasurementUnitID != nil {
 		x.PurchasedMeasurementUnit = &types.ValidMeasurementUnit{ID: *purchasedMeasurementUnitID}
 	}
-
-	x.MinimumQuantityNeeded = float32(minQuantity / types.MealPlanGroceryListItemQuantityModifier)
-	x.MaximumQuantityNeeded = float32(maxQuantity / types.MealPlanGroceryListItemQuantityModifier)
 
 	return x, nil
 }
@@ -266,16 +261,13 @@ func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier dat
 
 	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, input.ID)
 
-	dbSafeMinQty := uint16(input.MinimumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-	dbSafeMaxQty := uint16(input.MaximumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-
 	args := []interface{}{
 		input.ID,
 		input.BelongsToMealPlan,
 		input.ValidIngredientID,
 		input.ValidMeasurementUnitID,
-		dbSafeMinQty,
-		dbSafeMaxQty,
+		input.MinimumQuantityNeeded,
+		input.MaximumQuantityNeeded,
 		input.QuantityPurchased,
 		input.PurchasedMeasurementUnitID,
 		input.PurchasedUPC,
@@ -294,8 +286,8 @@ func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier dat
 		BelongsToMealPlan:     input.BelongsToMealPlan,
 		Ingredient:            types.ValidIngredient{ID: input.ValidIngredientID},
 		MeasurementUnit:       types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
-		MinimumQuantityNeeded: float32(dbSafeMinQty / types.MealPlanGroceryListItemQuantityModifier),
-		MaximumQuantityNeeded: float32(dbSafeMaxQty / types.MealPlanGroceryListItemQuantityModifier),
+		MinimumQuantityNeeded: input.MinimumQuantityNeeded,
+		MaximumQuantityNeeded: input.MaximumQuantityNeeded,
 		QuantityPurchased:     input.QuantityPurchased,
 		PurchasedUPC:          input.PurchasedUPC,
 		PurchasePrice:         input.PurchasePrice,
@@ -380,15 +372,12 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 		purchasedMeasurementUnitID = &updated.PurchasedMeasurementUnit.ID
 	}
 
-	dbSafeMinQty := uint16(updated.MinimumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-	dbSafeMaxQty := uint16(updated.MaximumQuantityNeeded * types.MealPlanGroceryListItemQuantityModifier)
-
 	args := []interface{}{
 		updated.BelongsToMealPlan,
 		updated.Ingredient.ID,
 		updated.MeasurementUnit.ID,
-		dbSafeMinQty,
-		dbSafeMaxQty,
+		updated.MinimumQuantityNeeded,
+		updated.MaximumQuantityNeeded,
 		updated.QuantityPurchased,
 		purchasedMeasurementUnitID,
 		updated.PurchasedUPC,

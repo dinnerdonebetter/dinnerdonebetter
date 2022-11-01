@@ -24,10 +24,6 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-func stringPointer(s string) *string {
-	return &s
-}
-
 func logJSON(t *testing.T, x interface{}) {
 	t.Helper()
 

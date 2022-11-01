@@ -39,9 +39,9 @@ type (
 		MaximumEstimatedTimeInSeconds *uint32                 `json:"maximumEstimatedTimeInSeconds"`
 		LastUpdatedAt                 *time.Time              `json:"lastUpdatedAt"`
 		ArchivedAt                    *time.Time              `json:"archivedAt"`
-		MinimumTemperatureInCelsius   *uint16                 `json:"minimumTemperatureInCelsius"`
+		MinimumTemperatureInCelsius   *float32                `json:"minimumTemperatureInCelsius"`
 		MinimumEstimatedTimeInSeconds *uint32                 `json:"minimumEstimatedTimeInSeconds"`
-		MaximumTemperatureInCelsius   *uint16                 `json:"maximumTemperatureInCelsius"`
+		MaximumTemperatureInCelsius   *float32                `json:"maximumTemperatureInCelsius"`
 		Notes                         string                  `json:"notes"`
 		BelongsToRecipe               string                  `json:"belongsToRecipe"`
 		ExplicitInstructions          string                  `json:"explicitInstructions"`
@@ -66,8 +66,8 @@ type (
 	RecipeStepCreationRequestInput struct {
 		_                             struct{}
 		MinimumEstimatedTimeInSeconds *uint32                                     `json:"minimumEstimatedTimeInSeconds"`
-		MaximumTemperatureInCelsius   *uint16                                     `json:"maximumTemperatureInCelsius"`
-		MinimumTemperatureInCelsius   *uint16                                     `json:"minimumTemperatureInCelsius"`
+		MaximumTemperatureInCelsius   *float32                                    `json:"maximumTemperatureInCelsius"`
+		MinimumTemperatureInCelsius   *float32                                    `json:"minimumTemperatureInCelsius"`
 		MaximumEstimatedTimeInSeconds *uint32                                     `json:"maximumEstimatedTimeInSeconds"`
 		BelongsToRecipe               string                                      `json:"-"`
 		Notes                         string                                      `json:"notes"`
@@ -85,8 +85,8 @@ type (
 	RecipeStepDatabaseCreationInput struct {
 		_                             struct{}
 		MinimumEstimatedTimeInSeconds *uint32                                      `json:"minimumEstimatedTimeInSeconds"`
-		MaximumTemperatureInCelsius   *uint16                                      `json:"maximumTemperatureInCelsius"`
-		MinimumTemperatureInCelsius   *uint16                                      `json:"minimumTemperatureInCelsius"`
+		MaximumTemperatureInCelsius   *float32                                     `json:"maximumTemperatureInCelsius"`
+		MinimumTemperatureInCelsius   *float32                                     `json:"minimumTemperatureInCelsius"`
 		MaximumEstimatedTimeInSeconds *uint32                                      `json:"maximumEstimatedTimeInSeconds"`
 		PreparationID                 string                                       `json:"preparationID"`
 		ID                            string                                       `json:"id"`
@@ -103,8 +103,8 @@ type (
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
 		_                             struct{}
-		MinimumTemperatureInCelsius   *uint16           `json:"minimumTemperatureInCelsius"`
-		MaximumTemperatureInCelsius   *uint16           `json:"maximumTemperatureInCelsius"`
+		MinimumTemperatureInCelsius   *float32          `json:"minimumTemperatureInCelsius"`
+		MaximumTemperatureInCelsius   *float32          `json:"maximumTemperatureInCelsius"`
 		Notes                         *string           `json:"notes"`
 		Preparation                   *ValidPreparation `json:"preparation"`
 		Index                         *uint32           `json:"index"`
