@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"sync"
 	"time"
 
@@ -34,15 +35,16 @@ var _ database.DataManager = (*Querier)(nil)
 
 // Querier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type Querier struct {
-	tracer        tracing.Tracer
-	sqlBuilder    squirrel.StatementBuilderType
-	logger        logging.Logger
-	timeFunc      func() time.Time
-	config        *dbconfig.Config
-	db            *sql.DB
-	connectionURL string
-	migrateOnce   sync.Once
-	logQueries    bool
+	tracer           tracing.Tracer
+	sqlBuilder       squirrel.StatementBuilderType
+	logger           logging.Logger
+	timeFunc         func() time.Time
+	config           *dbconfig.Config
+	db               *sql.DB
+	generatedQuerier *generated.Queries
+	connectionURL    string
+	migrateOnce      sync.Once
+	logQueries       bool
 }
 
 var instrumentedDriverRegistration sync.Once
@@ -78,15 +80,18 @@ func ProvideDatabaseClient(
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
 
+	db.SetMaxOpenConns(7)
+
 	c := &Querier{
-		db:            db,
-		config:        cfg,
-		tracer:        tracer,
-		logQueries:    cfg.LogQueries,
-		timeFunc:      defaultTimeFunc,
-		connectionURL: string(cfg.ConnectionDetails),
-		logger:        logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:    squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:               db,
+		generatedQuerier: generated.New(db),
+		config:           cfg,
+		tracer:           tracer,
+		logQueries:       cfg.LogQueries,
+		timeFunc:         defaultTimeFunc,
+		connectionURL:    string(cfg.ConnectionDetails),
+		logger:           logging.EnsureLogger(logger).WithName("querier"),
+		sqlBuilder:       squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
 	if cfg.Debug {
@@ -102,9 +107,6 @@ func ProvideDatabaseClient(
 
 		c.logger.Debug("querier migrated!")
 	}
-
-	c.db.SetMaxOpenConns(5)
-	c.db.SetMaxOpenConns(7)
 
 	return c, nil
 }

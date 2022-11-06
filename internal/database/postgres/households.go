@@ -356,9 +356,6 @@ func (q *Querier) GetHouseholdsForAdmin(ctx context.Context, userID string, filt
 //go:embed queries/households/create.sql
 var householdCreationQuery string
 
-//go:embed queries/households/add_to_household_during_creation.sql
-var addUserToHouseholdDuringCreationQuery string
-
 // CreateHousehold creates a household in the database.
 func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -417,7 +414,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		strings.Join(addInput.HouseholdRoles, householdMemberRolesSeparator),
 	}
 
-	if err = q.performWriteQuery(ctx, tx, "household user membership creation", addUserToHouseholdDuringCreationQuery, addUserToHouseholdArgs); err != nil {
+	if err = q.performWriteQuery(ctx, tx, "household user membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household membership creation query")
 	}

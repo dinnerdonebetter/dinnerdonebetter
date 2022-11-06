@@ -13,6 +13,7 @@ TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 LOCAL_ADDRESS                 := api.prixfixe.local
 DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.15.0
+GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 
 ## non-PHONY folders/files
 
@@ -135,6 +136,12 @@ docker_lint:
 .PHONY: queries_lint
 queries_lint:
 	$(SQL_GENERATOR) compile
+
+.PHONY: queries_gen
+queries_gen: queries_lint
+	rm -rf $(GENERATED_QUERIES_DIR)
+	$(SQL_GENERATOR) generate
+	goimports -w $(GENERATED_QUERIES_DIR)
 
 .PHONY: golang_lint
 golang_lint:

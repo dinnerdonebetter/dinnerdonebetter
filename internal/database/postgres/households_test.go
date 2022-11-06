@@ -605,7 +605,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			strings.Join([]string{authorization.HouseholdAdminRole.String()}, householdMemberRolesSeparator),
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdDuringCreationQuery)).
+		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
@@ -733,7 +733,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			strings.Join([]string{authorization.HouseholdAdminRole.String()}, householdMemberRolesSeparator),
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdDuringCreationQuery)).
+		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
 			WillReturnError(errors.New("blah"))
 
@@ -784,7 +784,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			strings.Join([]string{authorization.HouseholdAdminRole.String()}, householdMemberRolesSeparator),
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdDuringCreationQuery)).
+		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 

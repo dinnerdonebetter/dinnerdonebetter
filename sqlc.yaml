@@ -2,18 +2,18 @@ version: "2"
 sql:
   - schema: "internal/database/postgres/migrations"
     queries:
-      - "internal/database/postgres/queries/password_reset_tokens"
+      - "internal/database/postgres/queriez"
     engine: "postgresql"
-    strict_function_checks: true
+    # strict_function_checks: true
     gen:
       go:
         package: "generated"
         sql_package: "database/sql"
         out: "internal/database/postgres/generated"
-        output_files_suffix: ""
+        output_files_suffix: "_generated"
         emit_interface: true
         emit_exported_queries: true
-        emit_empty_slices: false
+        emit_empty_slices: true
         emit_params_struct_pointers: true
         emit_result_struct_pointers: true
         emit_exact_table_names: true
