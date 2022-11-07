@@ -13,7 +13,7 @@ const ArchiveValidPreparationInstrument = `-- name: ArchiveValidPreparationInstr
 UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidPreparationInstrument(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, ArchiveValidPreparationInstrument, id)
+func (q *Queries) ArchiveValidPreparationInstrument(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, ArchiveValidPreparationInstrument, id)
 	return err
 }

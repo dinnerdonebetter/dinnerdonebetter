@@ -14,12 +14,12 @@ UPDATE households SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs
 `
 
 type TransferHouseholdOwnershipParams struct {
-	BelongsToUser   string
-	BelongsToUser_2 string
-	ID              string
+	BelongsToUser   string `db:"belongs_to_user"`
+	BelongsToUser_2 string `db:"belongs_to_user_2"`
+	ID              string `db:"id"`
 }
 
-func (q *Queries) TransferHouseholdOwnership(ctx context.Context, arg *TransferHouseholdOwnershipParams) error {
-	_, err := q.db.ExecContext(ctx, TransferHouseholdOwnership, arg.BelongsToUser, arg.BelongsToUser_2, arg.ID)
+func (q *Queries) TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *TransferHouseholdOwnershipParams) error {
+	_, err := db.ExecContext(ctx, TransferHouseholdOwnership, arg.BelongsToUser, arg.BelongsToUser_2, arg.ID)
 	return err
 }

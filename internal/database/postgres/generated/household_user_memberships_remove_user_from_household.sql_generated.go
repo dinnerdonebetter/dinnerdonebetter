@@ -19,11 +19,11 @@ WHERE household_user_memberships.archived_at IS NULL
 `
 
 type RemoveUserFromHouseholdParams struct {
-	BelongsToHousehold string
-	BelongsToUser      string
+	BelongsToHousehold string `db:"belongs_to_household"`
+	BelongsToUser      string `db:"belongs_to_user"`
 }
 
-func (q *Queries) RemoveUserFromHousehold(ctx context.Context, arg *RemoveUserFromHouseholdParams) error {
-	_, err := q.db.ExecContext(ctx, RemoveUserFromHousehold, arg.BelongsToHousehold, arg.BelongsToUser)
+func (q *Queries) RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error {
+	_, err := db.ExecContext(ctx, RemoveUserFromHousehold, arg.BelongsToHousehold, arg.BelongsToUser)
 	return err
 }

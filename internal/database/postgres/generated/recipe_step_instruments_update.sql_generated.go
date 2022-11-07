@@ -28,21 +28,21 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepInstrumentParams struct {
-	InstrumentID        sql.NullString
-	RecipeStepProductID sql.NullString
-	Name                string
-	ProductOfRecipeStep bool
-	Notes               string
-	PreferenceRank      int32
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
-	BelongsToRecipeStep string
-	ID                  string
+	Name                string         `db:"name"`
+	BelongsToRecipeStep string         `db:"belongs_to_recipe_step"`
+	Notes               string         `db:"notes"`
+	ID                  string         `db:"id"`
+	InstrumentID        sql.NullString `db:"instrument_id"`
+	RecipeStepProductID sql.NullString `db:"recipe_step_product_id"`
+	PreferenceRank      int32          `db:"preference_rank"`
+	MinimumQuantity     int32          `db:"minimum_quantity"`
+	MaximumQuantity     int32          `db:"maximum_quantity"`
+	Optional            bool           `db:"optional"`
+	ProductOfRecipeStep bool           `db:"product_of_recipe_step"`
 }
 
-func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, arg *UpdateRecipeStepInstrumentParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateRecipeStepInstrument,
+func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) error {
+	_, err := db.ExecContext(ctx, UpdateRecipeStepInstrument,
 		arg.InstrumentID,
 		arg.RecipeStepProductID,
 		arg.Name,

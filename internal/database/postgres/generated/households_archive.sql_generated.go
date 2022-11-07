@@ -14,11 +14,11 @@ UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archive
 `
 
 type ArchiveHouseholdParams struct {
-	BelongsToUser string
-	ID            string
+	BelongsToUser string `db:"belongs_to_user"`
+	ID            string `db:"id"`
 }
 
-func (q *Queries) ArchiveHousehold(ctx context.Context, arg *ArchiveHouseholdParams) error {
-	_, err := q.db.ExecContext(ctx, ArchiveHousehold, arg.BelongsToUser, arg.ID)
+func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHouseholdParams) error {
+	_, err := db.ExecContext(ctx, ArchiveHousehold, arg.BelongsToUser, arg.ID)
 	return err
 }

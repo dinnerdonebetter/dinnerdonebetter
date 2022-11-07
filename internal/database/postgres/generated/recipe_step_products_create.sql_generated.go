@@ -17,23 +17,23 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 `
 
 type CreateRecipeStepProductParams struct {
-	ID                                 string
-	Name                               string
-	Type                               RecipeStepProductType
-	MeasurementUnit                    sql.NullString
-	MinimumQuantityValue               string
-	MaximumQuantityValue               string
-	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
-	BelongsToRecipeStep                string
+	QuantityNotes                      string                `db:"quantity_notes"`
+	Name                               string                `db:"name"`
+	Type                               RecipeStepProductType `db:"type"`
+	StorageInstructions                string                `db:"storage_instructions"`
+	MinimumQuantityValue               string                `db:"minimum_quantity_value"`
+	MaximumQuantityValue               string                `db:"maximum_quantity_value"`
+	ID                                 string                `db:"id"`
+	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
+	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
+	MeasurementUnit                    sql.NullString        `db:"measurement_unit"`
+	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
+	Compostable                        bool                  `db:"compostable"`
 }
 
-func (q *Queries) CreateRecipeStepProduct(ctx context.Context, arg *CreateRecipeStepProductParams) error {
-	_, err := q.db.ExecContext(ctx, CreateRecipeStepProduct,
+func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *CreateRecipeStepProductParams) error {
+	_, err := db.ExecContext(ctx, CreateRecipeStepProduct,
 		arg.ID,
 		arg.Name,
 		arg.Type,

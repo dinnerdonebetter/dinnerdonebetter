@@ -15,15 +15,15 @@ VALUES ($1,$2,$3,$4,$5)
 `
 
 type CreateHouseholdUserMembershipForNewUserParams struct {
-	ID                 string
-	BelongsToUser      string
-	BelongsToHousehold string
-	DefaultHousehold   bool
-	HouseholdRoles     string
+	ID                 string `db:"id"`
+	BelongsToUser      string `db:"belongs_to_user"`
+	BelongsToHousehold string `db:"belongs_to_household"`
+	HouseholdRoles     string `db:"household_roles"`
+	DefaultHousehold   bool   `db:"default_household"`
 }
 
-func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, arg *CreateHouseholdUserMembershipForNewUserParams) error {
-	_, err := q.db.ExecContext(ctx, CreateHouseholdUserMembershipForNewUser,
+func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateHouseholdUserMembershipForNewUserParams) error {
+	_, err := db.ExecContext(ctx, CreateHouseholdUserMembershipForNewUser,
 		arg.ID,
 		arg.BelongsToUser,
 		arg.BelongsToHousehold,

@@ -55,45 +55,45 @@ WHERE recipe_step_products.archived_at IS NULL
 `
 
 type GetRecipeStepProductParams struct {
-	BelongsToRecipeStep string
-	ID                  string
-	BelongsToRecipe     string
-	ID_2                string
-	ID_3                string
+	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
+	ID                  string `db:"id"`
+	BelongsToRecipe     string `db:"belongs_to_recipe"`
+	ID_2                string `db:"id_2"`
+	ID_3                string `db:"id_3"`
 }
 
 type GetRecipeStepProductRow struct {
-	ID                                 string
-	Name                               string
-	Type                               RecipeStepProductType
-	ID_2                               string
-	Name_2                             string
-	Description                        string
-	Volumetric                         sql.NullBool
-	IconPath                           string
-	Universal                          bool
-	Metric                             bool
-	Imperial                           bool
-	PluralName                         string
-	CreatedAt                          time.Time
-	LastUpdatedAt                      sql.NullTime
-	ArchivedAt                         sql.NullTime
-	MinimumQuantityValue               string
-	MaximumQuantityValue               string
-	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
-	CreatedAt_2                        time.Time
-	LastUpdatedAt_2                    sql.NullTime
-	ArchivedAt_2                       sql.NullTime
-	BelongsToRecipeStep                string
+	CreatedAt                          time.Time             `db:"created_at"`
+	CreatedAt_2                        time.Time             `db:"created_at_2"`
+	ArchivedAt_2                       sql.NullTime          `db:"archived_at_2"`
+	ArchivedAt                         sql.NullTime          `db:"archived_at"`
+	LastUpdatedAt                      sql.NullTime          `db:"last_updated_at"`
+	LastUpdatedAt_2                    sql.NullTime          `db:"last_updated_at_2"`
+	QuantityNotes                      string                `db:"quantity_notes"`
+	IconPath                           string                `db:"icon_path"`
+	Description                        string                `db:"description"`
+	Name_2                             string                `db:"name_2"`
+	StorageInstructions                string                `db:"storage_instructions"`
+	PluralName                         string                `db:"plural_name"`
+	ID_2                               string                `db:"id_2"`
+	Type                               RecipeStepProductType `db:"type"`
+	Name                               string                `db:"name"`
+	MinimumQuantityValue               string                `db:"minimum_quantity_value"`
+	MaximumQuantityValue               string                `db:"maximum_quantity_value"`
+	ID                                 string                `db:"id"`
+	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
+	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
+	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
+	Volumetric                         sql.NullBool          `db:"volumetric"`
+	Compostable                        bool                  `db:"compostable"`
+	Imperial                           bool                  `db:"imperial"`
+	Metric                             bool                  `db:"metric"`
+	Universal                          bool                  `db:"universal"`
 }
 
-func (q *Queries) GetRecipeStepProduct(ctx context.Context, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
-	row := q.db.QueryRowContext(ctx, GetRecipeStepProduct,
+func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
+	row := db.QueryRowContext(ctx, GetRecipeStepProduct,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,

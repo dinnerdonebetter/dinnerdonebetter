@@ -168,6 +168,12 @@ func (m *MockQueryExecutor) ExecContext(ctx context.Context, query string, query
 	return args.Get(0).(sql.Result), args.Error(1)
 }
 
+// PrepareContext is a mock function.
+func (m *MockQueryExecutor) PrepareContext(ctx context.Context, query string) (*sql.Stmt, error) {
+	args := m.Called(ctx, query)
+	return args.Get(0).(*sql.Stmt), args.Error(1)
+}
+
 // QueryContext is a mock function.
 func (m *MockQueryExecutor) QueryContext(ctx context.Context, query string, queryArgs ...interface{}) (*sql.Rows, error) {
 	args := m.Called(ctx, query, queryArgs)
@@ -179,3 +185,10 @@ func (m *MockQueryExecutor) QueryRowContext(ctx context.Context, query string, q
 	args := m.Called(ctx, query, queryArgs)
 	return args.Get(0).(*sql.Row)
 }
+
+// SQLQueryExecutorMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
+// safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
+// a SQLQueryExecutor.
+var SQLQueryExecutorMatcher interface{} = mock.MatchedBy(func(SQLQueryExecutor) bool {
+	return true
+})

@@ -45,34 +45,34 @@ WHERE recipe_steps.archived_at IS NULL
 `
 
 type GetRecipeStepByIDRow struct {
-	ID                            string
-	Index                         int32
-	ID_2                          string
-	Name                          string
-	Description                   string
-	IconPath                      string
-	YieldsNothing                 bool
-	RestrictToIngredients         bool
-	ZeroIngredientsAllowable      bool
-	PastTense                     string
-	CreatedAt                     time.Time
-	LastUpdatedAt                 sql.NullTime
-	ArchivedAt                    sql.NullTime
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumTemperatureInCelsius   sql.NullString
-	MaximumTemperatureInCelsius   sql.NullString
-	Notes                         string
-	ExplicitInstructions          string
-	Optional                      bool
-	CreatedAt_2                   time.Time
-	LastUpdatedAt_2               sql.NullTime
-	ArchivedAt_2                  sql.NullTime
-	BelongsToRecipe               string
+	CreatedAt                     time.Time      `db:"created_at"`
+	CreatedAt_2                   time.Time      `db:"created_at_2"`
+	LastUpdatedAt_2               sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_2                  sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt                 sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt                    sql.NullTime   `db:"archived_at"`
+	IconPath                      string         `db:"icon_path"`
+	Description                   string         `db:"description"`
+	ExplicitInstructions          string         `db:"explicit_instructions"`
+	PastTense                     string         `db:"past_tense"`
+	Name                          string         `db:"name"`
+	ID_2                          string         `db:"id_2"`
+	Notes                         string         `db:"notes"`
+	ID                            string         `db:"id"`
+	BelongsToRecipe               string         `db:"belongs_to_recipe"`
+	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
+	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
+	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
+	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
+	Index                         int32          `db:"index"`
+	ZeroIngredientsAllowable      bool           `db:"zero_ingredients_allowable"`
+	Optional                      bool           `db:"optional"`
+	RestrictToIngredients         bool           `db:"restrict_to_ingredients"`
+	YieldsNothing                 bool           `db:"yields_nothing"`
 }
 
-func (q *Queries) GetRecipeStepByID(ctx context.Context, id string) (*GetRecipeStepByIDRow, error) {
-	row := q.db.QueryRowContext(ctx, GetRecipeStepByID, id)
+func (q *Queries) GetRecipeStepByID(ctx context.Context, db DBTX, id string) (*GetRecipeStepByIDRow, error) {
+	row := db.QueryRowContext(ctx, GetRecipeStepByID, id)
 	var i GetRecipeStepByIDRow
 	err := row.Scan(
 		&i.ID,

@@ -15,12 +15,12 @@ UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan_event = $1 AND id = 
 `
 
 type FinalizeMealPlanOptionParams struct {
-	BelongsToMealPlanEvent sql.NullString
-	ID                     string
-	Tiebroken              bool
+	ID                     string         `db:"id"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	Tiebroken              bool           `db:"tiebroken"`
 }
 
-func (q *Queries) FinalizeMealPlanOption(ctx context.Context, arg *FinalizeMealPlanOptionParams) error {
-	_, err := q.db.ExecContext(ctx, FinalizeMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID, arg.Tiebroken)
+func (q *Queries) FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error {
+	_, err := db.ExecContext(ctx, FinalizeMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID, arg.Tiebroken)
 	return err
 }

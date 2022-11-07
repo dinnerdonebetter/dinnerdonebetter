@@ -15,15 +15,15 @@ INSERT INTO api_clients (id,name,client_id,secret_key,belongs_to_user) VALUES ($
 `
 
 type CreateAPIClientParams struct {
-	ID            string
-	Name          sql.NullString
-	ClientID      string
-	SecretKey     []byte
-	BelongsToUser string
+	ID            string         `db:"id"`
+	ClientID      string         `db:"client_id"`
+	BelongsToUser string         `db:"belongs_to_user"`
+	Name          sql.NullString `db:"name"`
+	SecretKey     []byte         `db:"secret_key"`
 }
 
-func (q *Queries) CreateAPIClient(ctx context.Context, arg *CreateAPIClientParams) error {
-	_, err := q.db.ExecContext(ctx, CreateAPIClient,
+func (q *Queries) CreateAPIClient(ctx context.Context, db DBTX, arg *CreateAPIClientParams) error {
+	_, err := db.ExecContext(ctx, CreateAPIClient,
 		arg.ID,
 		arg.Name,
 		arg.ClientID,

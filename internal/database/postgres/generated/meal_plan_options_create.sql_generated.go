@@ -15,17 +15,17 @@ INSERT INTO meal_plan_options (id,assigned_cook,assigned_dishwasher,meal_id,note
 `
 
 type CreateMealPlanOptionParams struct {
-	ID                     string
-	AssignedCook           sql.NullString
-	AssignedDishwasher     sql.NullString
-	MealID                 string
-	Notes                  string
-	BelongsToMealPlanEvent sql.NullString
-	Chosen                 bool
+	ID                     string         `db:"id"`
+	AssignedCook           sql.NullString `db:"assigned_cook"`
+	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
+	MealID                 string         `db:"meal_id"`
+	Notes                  string         `db:"notes"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	Chosen                 bool           `db:"chosen"`
 }
 
-func (q *Queries) CreateMealPlanOption(ctx context.Context, arg *CreateMealPlanOptionParams) error {
-	_, err := q.db.ExecContext(ctx, CreateMealPlanOption,
+func (q *Queries) CreateMealPlanOption(ctx context.Context, db DBTX, arg *CreateMealPlanOptionParams) error {
+	_, err := db.ExecContext(ctx, CreateMealPlanOption,
 		arg.ID,
 		arg.AssignedCook,
 		arg.AssignedDishwasher,

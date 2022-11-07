@@ -13,7 +13,7 @@ const ArchiveRecipePrepTask = `-- name: ArchiveRecipePrepTask :exec
 UPDATE recipe_prep_tasks SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveRecipePrepTask(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, ArchiveRecipePrepTask, id)
+func (q *Queries) ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, ArchiveRecipePrepTask, id)
 	return err
 }

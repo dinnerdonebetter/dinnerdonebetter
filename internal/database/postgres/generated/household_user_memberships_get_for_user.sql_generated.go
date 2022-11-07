@@ -28,18 +28,18 @@ WHERE household_user_memberships.archived_at IS NULL
 `
 
 type GetHouseholdUserMembershipsForUserRow struct {
-	ID                 string
-	BelongsToUser      string
-	BelongsToHousehold string
-	HouseholdRoles     string
-	DefaultHousehold   bool
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
+	CreatedAt          time.Time    `db:"created_at"`
+	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
+	ArchivedAt         sql.NullTime `db:"archived_at"`
+	BelongsToHousehold string       `db:"belongs_to_household"`
+	HouseholdRoles     string       `db:"household_roles"`
+	ID                 string       `db:"id"`
+	BelongsToUser      string       `db:"belongs_to_user"`
+	DefaultHousehold   bool         `db:"default_household"`
 }
 
-func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetHouseholdUserMembershipsForUser, belongsToUser)
+func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error) {
+	rows, err := db.QueryContext(ctx, GetHouseholdUserMembershipsForUser, belongsToUser)
 	if err != nil {
 		return nil, err
 	}

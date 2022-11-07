@@ -30,21 +30,21 @@ WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetRandomValidPreparationRow struct {
-	ID                       string
-	Name                     string
-	Description              string
-	IconPath                 string
-	YieldsNothing            bool
-	RestrictToIngredients    bool
-	ZeroIngredientsAllowable bool
-	PastTense                string
-	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
-	ArchivedAt               sql.NullTime
+	CreatedAt                time.Time    `db:"created_at"`
+	LastUpdatedAt            sql.NullTime `db:"last_updated_at"`
+	ArchivedAt               sql.NullTime `db:"archived_at"`
+	ID                       string       `db:"id"`
+	Name                     string       `db:"name"`
+	PastTense                string       `db:"past_tense"`
+	Description              string       `db:"description"`
+	IconPath                 string       `db:"icon_path"`
+	RestrictToIngredients    bool         `db:"restrict_to_ingredients"`
+	ZeroIngredientsAllowable bool         `db:"zero_ingredients_allowable"`
+	YieldsNothing            bool         `db:"yields_nothing"`
 }
 
-func (q *Queries) GetRandomValidPreparation(ctx context.Context) (*GetRandomValidPreparationRow, error) {
-	row := q.db.QueryRowContext(ctx, GetRandomValidPreparation)
+func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetRandomValidPreparationRow, error) {
+	row := db.QueryRowContext(ctx, GetRandomValidPreparation)
 	var i GetRandomValidPreparationRow
 	err := row.Scan(
 		&i.ID,

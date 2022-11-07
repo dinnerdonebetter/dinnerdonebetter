@@ -14,14 +14,14 @@ INSERT INTO valid_ingredient_preparations (id,notes,valid_preparation_id,valid_i
 `
 
 type CreateValidIngredientPreparationParams struct {
-	ID                 string
-	Notes              string
-	ValidPreparationID string
-	ValidIngredientID  string
+	ID                 string `db:"id"`
+	Notes              string `db:"notes"`
+	ValidPreparationID string `db:"valid_preparation_id"`
+	ValidIngredientID  string `db:"valid_ingredient_id"`
 }
 
-func (q *Queries) CreateValidIngredientPreparation(ctx context.Context, arg *CreateValidIngredientPreparationParams) error {
-	_, err := q.db.ExecContext(ctx, CreateValidIngredientPreparation,
+func (q *Queries) CreateValidIngredientPreparation(ctx context.Context, db DBTX, arg *CreateValidIngredientPreparationParams) error {
+	_, err := db.ExecContext(ctx, CreateValidIngredientPreparation,
 		arg.ID,
 		arg.Notes,
 		arg.ValidPreparationID,

@@ -18,12 +18,12 @@ WHERE household_user_memberships.belongs_to_user = $1
 `
 
 type GetDefaultHouseholdIDForUserParams struct {
-	BelongsToUser    string
-	DefaultHousehold bool
+	BelongsToUser    string `db:"belongs_to_user"`
+	DefaultHousehold bool   `db:"default_household"`
 }
 
-func (q *Queries) GetDefaultHouseholdIDForUser(ctx context.Context, arg *GetDefaultHouseholdIDForUserParams) (string, error) {
-	row := q.db.QueryRowContext(ctx, GetDefaultHouseholdIDForUser, arg.BelongsToUser, arg.DefaultHousehold)
+func (q *Queries) GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, arg *GetDefaultHouseholdIDForUserParams) (string, error) {
+	row := db.QueryRowContext(ctx, GetDefaultHouseholdIDForUser, arg.BelongsToUser, arg.DefaultHousehold)
 	var id string
 	err := row.Scan(&id)
 	return id, err

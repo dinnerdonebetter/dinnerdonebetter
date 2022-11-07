@@ -14,15 +14,15 @@ SELECT EXISTS ( SELECT recipe_step_products.id FROM recipe_step_products JOIN re
 `
 
 type RecipeStepProductExistsParams struct {
-	BelongsToRecipeStep string
-	ID                  string
-	BelongsToRecipe     string
-	ID_2                string
-	ID_3                string
+	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
+	ID                  string `db:"id"`
+	BelongsToRecipe     string `db:"belongs_to_recipe"`
+	ID_2                string `db:"id_2"`
+	ID_3                string `db:"id_3"`
 }
 
-func (q *Queries) RecipeStepProductExists(ctx context.Context, arg *RecipeStepProductExistsParams) error {
-	_, err := q.db.ExecContext(ctx, RecipeStepProductExists,
+func (q *Queries) RecipeStepProductExists(ctx context.Context, db DBTX, arg *RecipeStepProductExistsParams) error {
+	_, err := db.ExecContext(ctx, RecipeStepProductExists,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"sync"
 	"time"
 
@@ -17,6 +16,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -41,7 +41,7 @@ type Querier struct {
 	timeFunc         func() time.Time
 	config           *dbconfig.Config
 	db               *sql.DB
-	generatedQuerier *generated.Queries
+	generatedQuerier generated.Querier
 	connectionURL    string
 	migrateOnce      sync.Once
 	logQueries       bool
@@ -84,7 +84,7 @@ func ProvideDatabaseClient(
 
 	c := &Querier{
 		db:               db,
-		generatedQuerier: generated.New(db),
+		generatedQuerier: generated.New(),
 		config:           cfg,
 		tracer:           tracer,
 		logQueries:       cfg.LogQueries,

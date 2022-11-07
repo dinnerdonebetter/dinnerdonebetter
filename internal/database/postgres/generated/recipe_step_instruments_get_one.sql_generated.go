@@ -50,40 +50,40 @@ WHERE recipe_step_instruments.archived_at IS NULL
 `
 
 type GetRecipeStepInstrumentParams struct {
-	BelongsToRecipeStep string
-	ID                  string
-	BelongsToRecipe     string
-	ID_2                string
-	ID_3                string
+	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
+	ID                  string `db:"id"`
+	BelongsToRecipe     string `db:"belongs_to_recipe"`
+	ID_2                string `db:"id_2"`
+	ID_3                string `db:"id_3"`
 }
 
 type GetRecipeStepInstrumentRow struct {
-	ID                  string
-	ID_2                string
-	Name                string
-	PluralName          string
-	Description         string
-	IconPath            string
-	UsableForStorage    bool
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
-	RecipeStepProductID sql.NullString
-	Name_2              string
-	ProductOfRecipeStep bool
-	Notes               string
-	PreferenceRank      int32
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
-	CreatedAt_2         time.Time
-	LastUpdatedAt_2     sql.NullTime
-	ArchivedAt_2        sql.NullTime
-	BelongsToRecipeStep string
+	CreatedAt_2         time.Time      `db:"created_at_2"`
+	CreatedAt           time.Time      `db:"created_at"`
+	LastUpdatedAt_2     sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt          sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt       sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt_2        sql.NullTime   `db:"archived_at_2"`
+	IconPath            string         `db:"icon_path"`
+	Description         string         `db:"description"`
+	PluralName          string         `db:"plural_name"`
+	Name                string         `db:"name"`
+	ID_2                string         `db:"id_2"`
+	Name_2              string         `db:"name_2"`
+	Notes               string         `db:"notes"`
+	ID                  string         `db:"id"`
+	BelongsToRecipeStep string         `db:"belongs_to_recipe_step"`
+	RecipeStepProductID sql.NullString `db:"recipe_step_product_id"`
+	PreferenceRank      int32          `db:"preference_rank"`
+	MinimumQuantity     int32          `db:"minimum_quantity"`
+	MaximumQuantity     int32          `db:"maximum_quantity"`
+	ProductOfRecipeStep bool           `db:"product_of_recipe_step"`
+	UsableForStorage    bool           `db:"usable_for_storage"`
+	Optional            bool           `db:"optional"`
 }
 
-func (q *Queries) GetRecipeStepInstrument(ctx context.Context, arg *GetRecipeStepInstrumentParams) error {
-	_, err := q.db.ExecContext(ctx, GetRecipeStepInstrument,
+func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) error {
+	_, err := db.ExecContext(ctx, GetRecipeStepInstrument,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,

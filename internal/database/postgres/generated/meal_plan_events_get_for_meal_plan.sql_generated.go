@@ -25,8 +25,8 @@ WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.belongs_to_meal_plan = $1
 `
 
-func (q *Queries) GetMealPlanEventsForMealPlan(ctx context.Context, belongsToMealPlan string) ([]*MealPlanEvents, error) {
-	rows, err := q.db.QueryContext(ctx, GetMealPlanEventsForMealPlan, belongsToMealPlan)
+func (q *Queries) GetMealPlanEventsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*MealPlanEvents, error) {
+	rows, err := db.QueryContext(ctx, GetMealPlanEventsForMealPlan, belongsToMealPlan)
 	if err != nil {
 		return nil, err
 	}

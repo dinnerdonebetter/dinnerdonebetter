@@ -40,34 +40,34 @@ WHERE archived_at IS NULL AND id = $24
 `
 
 type UpdateValidIngredientParams struct {
-	Name                                    string
-	Description                             string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IsLiquid                                sql.NullBool
-	IconPath                                string
-	AnimalDerived                           bool
-	PluralName                              string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	ID                                      string
+	Name                                    string         `db:"name"`
+	Description                             string         `db:"description"`
+	Warning                                 string         `db:"warning"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	PluralName                              string         `db:"plural_name"`
+	IconPath                                string         `db:"icon_path"`
+	ID                                      string         `db:"id"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	Volumetric                              bool           `db:"volumetric"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
 }
 
-func (q *Queries) UpdateValidIngredient(ctx context.Context, arg *UpdateValidIngredientParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateValidIngredient,
+func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) error {
+	_, err := db.ExecContext(ctx, UpdateValidIngredient,
 		arg.Name,
 		arg.Description,
 		arg.Warning,

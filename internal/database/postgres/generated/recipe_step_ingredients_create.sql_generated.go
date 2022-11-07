@@ -28,22 +28,22 @@ INSERT INTO recipe_step_ingredients (
 `
 
 type CreateRecipeStepIngredientParams struct {
-	ID                   string
-	Name                 string
-	Optional             bool
-	IngredientID         sql.NullString
-	MeasurementUnit      sql.NullString
-	MinimumQuantityValue string
-	MaximumQuantityValue string
-	QuantityNotes        string
-	ProductOfRecipeStep  bool
-	RecipeStepProductID  sql.NullString
-	IngredientNotes      string
-	BelongsToRecipeStep  string
+	ID                   string         `db:"id"`
+	Name                 string         `db:"name"`
+	IngredientNotes      string         `db:"ingredient_notes"`
+	MinimumQuantityValue string         `db:"minimum_quantity_value"`
+	MaximumQuantityValue string         `db:"maximum_quantity_value"`
+	QuantityNotes        string         `db:"quantity_notes"`
+	BelongsToRecipeStep  string         `db:"belongs_to_recipe_step"`
+	IngredientID         sql.NullString `db:"ingredient_id"`
+	RecipeStepProductID  sql.NullString `db:"recipe_step_product_id"`
+	MeasurementUnit      sql.NullString `db:"measurement_unit"`
+	Optional             bool           `db:"optional"`
+	ProductOfRecipeStep  bool           `db:"product_of_recipe_step"`
 }
 
-func (q *Queries) CreateRecipeStepIngredient(ctx context.Context, arg *CreateRecipeStepIngredientParams) error {
-	_, err := q.db.ExecContext(ctx, CreateRecipeStepIngredient,
+func (q *Queries) CreateRecipeStepIngredient(ctx context.Context, db DBTX, arg *CreateRecipeStepIngredientParams) error {
+	_, err := db.ExecContext(ctx, CreateRecipeStepIngredient,
 		arg.ID,
 		arg.Name,
 		arg.Optional,

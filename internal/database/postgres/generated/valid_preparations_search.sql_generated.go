@@ -31,21 +31,21 @@ LIMIT 50
 `
 
 type SearchForValidPreparationsRow struct {
-	ID                       string
-	Name                     string
-	Description              string
-	IconPath                 string
-	YieldsNothing            bool
-	RestrictToIngredients    bool
-	ZeroIngredientsAllowable bool
-	PastTense                string
-	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
-	ArchivedAt               sql.NullTime
+	CreatedAt                time.Time    `db:"created_at"`
+	LastUpdatedAt            sql.NullTime `db:"last_updated_at"`
+	ArchivedAt               sql.NullTime `db:"archived_at"`
+	ID                       string       `db:"id"`
+	Name                     string       `db:"name"`
+	PastTense                string       `db:"past_tense"`
+	Description              string       `db:"description"`
+	IconPath                 string       `db:"icon_path"`
+	RestrictToIngredients    bool         `db:"restrict_to_ingredients"`
+	ZeroIngredientsAllowable bool         `db:"zero_ingredients_allowable"`
+	YieldsNothing            bool         `db:"yields_nothing"`
 }
 
-func (q *Queries) SearchForValidPreparations(ctx context.Context, name string) ([]*SearchForValidPreparationsRow, error) {
-	rows, err := q.db.QueryContext(ctx, SearchForValidPreparations, name)
+func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, name string) ([]*SearchForValidPreparationsRow, error) {
+	rows, err := db.QueryContext(ctx, SearchForValidPreparations, name)
 	if err != nil {
 		return nil, err
 	}

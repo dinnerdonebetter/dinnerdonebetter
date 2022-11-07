@@ -81,66 +81,66 @@ WHERE valid_measurement_conversions.archived_at IS NULL
 `
 
 type GetValidMeasurementConversionsFromMeasurementUnitRow struct {
-	ID                                      string
-	ID_2                                    string
-	Name                                    string
-	Description                             string
-	Volumetric                              sql.NullBool
-	IconPath                                string
-	Universal                               bool
-	Metric                                  bool
-	Imperial                                bool
-	PluralName                              string
-	CreatedAt                               time.Time
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	ID_3                                    string
-	Name_2                                  string
-	Description_2                           string
-	Volumetric_2                            sql.NullBool
-	IconPath_2                              string
-	Universal_2                             bool
-	Metric_2                                bool
-	Imperial_2                              bool
-	PluralName_2                            string
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	ID_4                                    string
-	Name_3                                  string
-	Description_3                           string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric_3                            bool
-	IsLiquid                                sql.NullBool
-	IconPath_3                              string
-	AnimalDerived                           bool
-	PluralName_3                            string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	CreatedAt_3                             time.Time
-	LastUpdatedAt_3                         sql.NullTime
-	ArchivedAt_3                            sql.NullTime
-	Modifier                                string
-	Notes                                   string
-	CreatedAt_4                             time.Time
-	LastUpdatedAt_4                         sql.NullTime
-	ArchivedAt_4                            sql.NullTime
+	CreatedAt_4                             time.Time      `db:"created_at_4"`
+	CreatedAt_3                             time.Time      `db:"created_at_3"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	ArchivedAt_4                            sql.NullTime   `db:"archived_at_4"`
+	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	LastUpdatedAt_4                         sql.NullTime   `db:"last_updated_at_4"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	IconPath_3                              string         `db:"icon_path_3"`
+	ID_3                                    string         `db:"id_3"`
+	Modifier                                string         `db:"modifier"`
+	Description_2                           string         `db:"description_2"`
+	PluralName                              string         `db:"plural_name"`
+	IconPath_2                              string         `db:"icon_path_2"`
+	Notes                                   string         `db:"notes"`
+	ID                                      string         `db:"id"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	PluralName_2                            string         `db:"plural_name_2"`
+	IconPath                                string         `db:"icon_path"`
+	Description                             string         `db:"description"`
+	Name                                    string         `db:"name"`
+	ID_4                                    string         `db:"id_4"`
+	Name_3                                  string         `db:"name_3"`
+	Description_3                           string         `db:"description_3"`
+	ID_2                                    string         `db:"id_2"`
+	PluralName_3                            string         `db:"plural_name_3"`
+	Warning                                 string         `db:"warning"`
+	Name_2                                  string         `db:"name_2"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	Volumetric                              sql.NullBool   `db:"volumetric"`
+	Volumetric_2                            sql.NullBool   `db:"volumetric_2"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	Volumetric_3                            bool           `db:"volumetric_3"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	Imperial_2                              bool           `db:"imperial_2"`
+	Metric_2                                bool           `db:"metric_2"`
+	Universal_2                             bool           `db:"universal_2"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	Metric                                  bool           `db:"metric"`
+	Imperial                                bool           `db:"imperial"`
+	Universal                               bool           `db:"universal"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
 }
 
-func (q *Queries) GetValidMeasurementConversionsFromMeasurementUnit(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, GetValidMeasurementConversionsFromMeasurementUnit, id)
+func (q *Queries) GetValidMeasurementConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, GetValidMeasurementConversionsFromMeasurementUnit, id)
 	return err
 }

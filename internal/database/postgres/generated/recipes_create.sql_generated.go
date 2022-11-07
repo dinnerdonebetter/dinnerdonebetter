@@ -15,18 +15,18 @@ INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,yields_por
 `
 
 type CreateRecipeParams struct {
-	ID                 string
-	Name               string
-	Source             string
-	Description        string
-	InspiredByRecipeID sql.NullString
-	YieldsPortions     int32
-	SealOfApproval     bool
-	CreatedByUser      string
+	ID                 string         `db:"id"`
+	Name               string         `db:"name"`
+	Source             string         `db:"source"`
+	Description        string         `db:"description"`
+	CreatedByUser      string         `db:"created_by_user"`
+	InspiredByRecipeID sql.NullString `db:"inspired_by_recipe_id"`
+	YieldsPortions     int32          `db:"yields_portions"`
+	SealOfApproval     bool           `db:"seal_of_approval"`
 }
 
-func (q *Queries) CreateRecipe(ctx context.Context, arg *CreateRecipeParams) error {
-	_, err := q.db.ExecContext(ctx, CreateRecipe,
+func (q *Queries) CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipeParams) error {
+	_, err := db.ExecContext(ctx, CreateRecipe,
 		arg.ID,
 		arg.Name,
 		arg.Source,

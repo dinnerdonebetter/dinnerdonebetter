@@ -23,16 +23,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateHouseholdParams struct {
-	Name          string
-	ContactEmail  string
-	ContactPhone  string
-	TimeZone      TimeZone
-	BelongsToUser string
-	ID            string
+	Name          string   `db:"name"`
+	ContactEmail  string   `db:"contact_email"`
+	ContactPhone  string   `db:"contact_phone"`
+	TimeZone      TimeZone `db:"time_zone"`
+	BelongsToUser string   `db:"belongs_to_user"`
+	ID            string   `db:"id"`
 }
 
-func (q *Queries) UpdateHousehold(ctx context.Context, arg *UpdateHouseholdParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateHousehold,
+func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) error {
+	_, err := db.ExecContext(ctx, UpdateHousehold,
 		arg.Name,
 		arg.ContactEmail,
 		arg.ContactPhone,

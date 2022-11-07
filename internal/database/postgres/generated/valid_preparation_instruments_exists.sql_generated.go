@@ -13,7 +13,7 @@ const ValidPreparationInstrumentExists = `-- name: ValidPreparationInstrumentExi
 SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = $1 )
 `
 
-func (q *Queries) ValidPreparationInstrumentExists(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, ValidPreparationInstrumentExists, id)
+func (q *Queries) ValidPreparationInstrumentExists(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, ValidPreparationInstrumentExists, id)
 	return err
 }

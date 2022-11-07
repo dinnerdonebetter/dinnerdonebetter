@@ -25,18 +25,18 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserParams struct {
-	Username                  string
-	HashedPassword            string
-	AvatarSrc                 sql.NullString
-	TwoFactorSecret           string
-	TwoFactorSecretVerifiedAt sql.NullTime
-	BirthDay                  sql.NullInt16
-	BirthMonth                sql.NullInt16
-	ID                        string
+	TwoFactorSecretVerifiedAt sql.NullTime   `db:"two_factor_secret_verified_at"`
+	Username                  string         `db:"username"`
+	HashedPassword            string         `db:"hashed_password"`
+	TwoFactorSecret           string         `db:"two_factor_secret"`
+	ID                        string         `db:"id"`
+	AvatarSrc                 sql.NullString `db:"avatar_src"`
+	BirthDay                  sql.NullInt16  `db:"birth_day"`
+	BirthMonth                sql.NullInt16  `db:"birth_month"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg *UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateUser,
+func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) error {
+	_, err := db.ExecContext(ctx, UpdateUser,
 		arg.Username,
 		arg.HashedPassword,
 		arg.AvatarSrc,

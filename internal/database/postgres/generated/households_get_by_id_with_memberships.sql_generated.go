@@ -57,45 +57,45 @@ WHERE households.archived_at IS NULL
 `
 
 type GetHouseholdByIDWithMembershipsRow struct {
-	ID                           string
-	Name                         string
-	BillingStatus                string
-	ContactEmail                 string
-	ContactPhone                 string
-	PaymentProcessorCustomerID   string
-	SubscriptionPlanID           sql.NullString
-	TimeZone                     TimeZone
-	CreatedAt                    time.Time
-	LastUpdatedAt                sql.NullTime
-	ArchivedAt                   sql.NullTime
-	BelongsToUser                string
-	ID_2                         string
-	Username                     string
-	EmailAddress                 string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
-	PasswordLastChangedAt        sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	ServiceRoles                 string
-	UserAccountStatus            string
-	UserAccountStatusExplanation string
-	BirthDay                     sql.NullInt16
-	BirthMonth                   sql.NullInt16
-	CreatedAt_2                  time.Time
-	LastUpdatedAt_2              sql.NullTime
-	ArchivedAt_2                 sql.NullTime
-	ID_3                         string
-	BelongsToUser_2              string
-	BelongsToHousehold           string
-	HouseholdRoles               string
-	DefaultHousehold             bool
-	CreatedAt_3                  time.Time
-	LastUpdatedAt_3              sql.NullTime
-	ArchivedAt_3                 sql.NullTime
+	CreatedAt_3                  time.Time      `db:"created_at_3"`
+	CreatedAt_2                  time.Time      `db:"created_at_2"`
+	CreatedAt                    time.Time      `db:"created_at"`
+	ArchivedAt                   sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt_3              sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_2                 sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2              sql.NullTime   `db:"last_updated_at_2"`
+	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
+	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
+	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt_3                 sql.NullTime   `db:"archived_at_3"`
+	BelongsToUser_2              string         `db:"belongs_to_user_2"`
+	ID_2                         string         `db:"id_2"`
+	Username                     string         `db:"username"`
+	EmailAddress                 string         `db:"email_address"`
+	Name                         string         `db:"name"`
+	BillingStatus                string         `db:"billing_status"`
+	TimeZone                     TimeZone       `db:"time_zone"`
+	HouseholdRoles               string         `db:"household_roles"`
+	ServiceRoles                 string         `db:"service_roles"`
+	UserAccountStatus            string         `db:"user_account_status"`
+	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
+	BelongsToHousehold           string         `db:"belongs_to_household"`
+	BelongsToUser                string         `db:"belongs_to_user"`
+	PaymentProcessorCustomerID   string         `db:"payment_processor_customer_id"`
+	ContactPhone                 string         `db:"contact_phone"`
+	ContactEmail                 string         `db:"contact_email"`
+	ID_3                         string         `db:"id_3"`
+	ID                           string         `db:"id"`
+	SubscriptionPlanID           sql.NullString `db:"subscription_plan_id"`
+	AvatarSrc                    sql.NullString `db:"avatar_src"`
+	BirthDay                     sql.NullInt16  `db:"birth_day"`
+	BirthMonth                   sql.NullInt16  `db:"birth_month"`
+	DefaultHousehold             bool           `db:"default_household"`
+	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
-func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, id string) ([]*GetHouseholdByIDWithMembershipsRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetHouseholdByIDWithMemberships, id)
+func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetHouseholdByIDWithMembershipsRow, error) {
+	rows, err := db.QueryContext(ctx, GetHouseholdByIDWithMemberships, id)
 	if err != nil {
 		return nil, err
 	}

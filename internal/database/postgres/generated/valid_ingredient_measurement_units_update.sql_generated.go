@@ -23,16 +23,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidIngredientMeasurementUnitParams struct {
-	Notes                    string
-	ValidMeasurementUnitID   string
-	ValidIngredientID        string
-	MinimumAllowableQuantity string
-	MaximumAllowableQuantity string
-	ID                       string
+	Notes                    string `db:"notes"`
+	ValidMeasurementUnitID   string `db:"valid_measurement_unit_id"`
+	ValidIngredientID        string `db:"valid_ingredient_id"`
+	MinimumAllowableQuantity string `db:"minimum_allowable_quantity"`
+	MaximumAllowableQuantity string `db:"maximum_allowable_quantity"`
+	ID                       string `db:"id"`
 }
 
-func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, arg *UpdateValidIngredientMeasurementUnitParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateValidIngredientMeasurementUnit,
+func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) error {
+	_, err := db.ExecContext(ctx, UpdateValidIngredientMeasurementUnit,
 		arg.Notes,
 		arg.ValidMeasurementUnitID,
 		arg.ValidIngredientID,

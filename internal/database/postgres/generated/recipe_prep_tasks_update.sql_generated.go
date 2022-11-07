@@ -25,19 +25,19 @@ WHERE archived_at IS NULL AND id = $9
 `
 
 type UpdateRecipePrepTaskParams struct {
-	Notes                                  string
-	ExplicitStorageInstructions            string
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	StorageType                            NullStorageContainerType
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
-	BelongsToRecipe                        string
-	ID                                     string
+	Notes                                  string                   `db:"notes"`
+	ExplicitStorageInstructions            string                   `db:"explicit_storage_instructions"`
+	ID                                     string                   `db:"id"`
+	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
+	StorageType                            NullStorageContainerType `db:"storage_type"`
+	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
+	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
 }
 
-func (q *Queries) UpdateRecipePrepTask(ctx context.Context, arg *UpdateRecipePrepTaskParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateRecipePrepTask,
+func (q *Queries) UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) error {
+	_, err := db.ExecContext(ctx, UpdateRecipePrepTask,
 		arg.Notes,
 		arg.ExplicitStorageInstructions,
 		arg.MinimumTimeBufferBeforeRecipeInSeconds,

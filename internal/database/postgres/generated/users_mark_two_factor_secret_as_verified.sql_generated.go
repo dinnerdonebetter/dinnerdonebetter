@@ -18,11 +18,11 @@ WHERE archived_at IS NULL
 `
 
 type MarkUserTwoFactorSecretAsVerifiedParams struct {
-	UserAccountStatus string
-	ID                string
+	UserAccountStatus string `db:"user_account_status"`
+	ID                string `db:"id"`
 }
 
-func (q *Queries) MarkUserTwoFactorSecretAsVerified(ctx context.Context, arg *MarkUserTwoFactorSecretAsVerifiedParams) error {
-	_, err := q.db.ExecContext(ctx, MarkUserTwoFactorSecretAsVerified, arg.UserAccountStatus, arg.ID)
+func (q *Queries) MarkUserTwoFactorSecretAsVerified(ctx context.Context, db DBTX, arg *MarkUserTwoFactorSecretAsVerifiedParams) error {
+	_, err := db.ExecContext(ctx, MarkUserTwoFactorSecretAsVerified, arg.UserAccountStatus, arg.ID)
 	return err
 }

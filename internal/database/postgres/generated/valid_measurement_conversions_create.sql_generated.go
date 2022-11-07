@@ -16,16 +16,16 @@ VALUES ($1,$2,$3,$4,$5,$6)
 `
 
 type CreateValidMeasurementConversionParams struct {
-	ID                string
-	FromUnit          string
-	ToUnit            string
-	OnlyForIngredient sql.NullString
-	Modifier          string
-	Notes             string
+	ID                string         `db:"id"`
+	FromUnit          string         `db:"from_unit"`
+	ToUnit            string         `db:"to_unit"`
+	Modifier          string         `db:"modifier"`
+	Notes             string         `db:"notes"`
+	OnlyForIngredient sql.NullString `db:"only_for_ingredient"`
 }
 
-func (q *Queries) CreateValidMeasurementConversion(ctx context.Context, arg *CreateValidMeasurementConversionParams) error {
-	_, err := q.db.ExecContext(ctx, CreateValidMeasurementConversion,
+func (q *Queries) CreateValidMeasurementConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementConversionParams) error {
+	_, err := db.ExecContext(ctx, CreateValidMeasurementConversion,
 		arg.ID,
 		arg.FromUnit,
 		arg.ToUnit,

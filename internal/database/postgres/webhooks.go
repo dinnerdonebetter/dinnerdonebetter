@@ -6,6 +6,7 @@ import (
 	_ "embed"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -274,9 +275,6 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	return x, nil
 }
 
-//go:embed queries/webhooks/create.sql
-var createWebhookQuery string
-
 // CreateWebhook creates a webhook in a database.
 func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -289,25 +287,21 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 	tracing.AttachHouseholdIDToSpan(span, input.BelongsToHousehold)
 	logger := q.logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
 
-	logger.Debug("CreateWebhook invoked")
-
-	args := []interface{}{
-		input.ID,
-		input.Name,
-		input.ContentType,
-		input.URL,
-		input.Method,
-		input.BelongsToHousehold,
-	}
-
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.performWriteQuery(ctx, tx, "webhook creation", createWebhookQuery, args); err != nil {
+	if err = q.generatedQuerier.CreateWebhook(ctx, tx, &generated.CreateWebhookParams{
+		ID:                 input.ID,
+		Name:               input.Name,
+		ContentType:        input.ContentType,
+		Url:                input.URL,
+		Method:             input.Method,
+		BelongsToHousehold: input.BelongsToHousehold,
+	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook trigger event")
 	}
 
 	x := &types.Webhook{
@@ -324,13 +318,21 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 		evt := input.Events[i]
 		evt.BelongsToWebhook = input.ID
 
-		e, webhookTriggerEventCreationErr := q.createWebhookTriggerEvent(ctx, tx, evt)
-		if webhookTriggerEventCreationErr != nil {
-			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareAndLogError(webhookTriggerEventCreationErr, logger, span, "performing webhook creation query")
+		err = q.generatedQuerier.CreateWebhookTriggerEvent(ctx, tx, &generated.CreateWebhookTriggerEventParams{
+			ID:               evt.ID,
+			TriggerEvent:     generated.WebhookEvent(evt.TriggerEvent),
+			BelongsToWebhook: evt.BelongsToWebhook,
+		})
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook trigger event")
 		}
 
-		x.Events = append(x.Events, e)
+		x.Events = append(x.Events, &types.WebhookTriggerEvent{
+			ID:               evt.ID,
+			TriggerEvent:     evt.TriggerEvent,
+			BelongsToWebhook: evt.BelongsToWebhook,
+			CreatedAt:        q.currentTime(),
+		})
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -339,47 +341,10 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 
 	tracing.AttachWebhookIDToSpan(span, x.ID)
 
-	return x, nil
-}
-
-//go:embed queries/webhook_trigger_events/create.sql
-var createWebhookTriggerEventQuery string
-
-// createWebhookTriggerEvent creates a webhook trigger event in a database.
-func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if input == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	tracing.AttachWebhookIDToSpan(span, input.BelongsToWebhook)
-
-	createWebhookTriggerEventArgs := []interface{}{
-		input.ID,
-		input.TriggerEvent,
-		input.BelongsToWebhook,
-	}
-
-	if err := q.performWriteQuery(ctx, querier, "webhook trigger event creation", createWebhookTriggerEventQuery, createWebhookTriggerEventArgs); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook trigger event creation query")
-	}
-
-	x := &types.WebhookTriggerEvent{
-		ID:               input.ID,
-		TriggerEvent:     input.TriggerEvent,
-		BelongsToWebhook: input.BelongsToWebhook,
-		CreatedAt:        q.currentTime(),
-	}
+	logger.Debug("webhook created")
 
 	return x, nil
 }
-
-//go:embed queries/webhooks/archive.sql
-var archiveWebhookQuery string
 
 // ArchiveWebhook archives a webhook from the database.
 func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
@@ -398,9 +363,10 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 		keys.HouseholdIDKey: householdID,
 	})
 
-	args := []interface{}{householdID, webhookID}
-
-	if err := q.performWriteQuery(ctx, q.db, "webhook archive", archiveWebhookQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveWebhook(ctx, q.db, &generated.ArchiveWebhookParams{
+		ID:                 webhookID,
+		BelongsToHousehold: householdID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}
 

@@ -35,29 +35,29 @@ WHERE meal_plan_grocery_list_items.completed_at IS NULL
 `
 
 type GetMealPlanGroceryListItemParams struct {
-	BelongsToMealPlan string
-	ID                string
+	BelongsToMealPlan string `db:"belongs_to_meal_plan"`
+	ID                string `db:"id"`
 }
 
 type GetMealPlanGroceryListItemRow struct {
-	ID                       sql.NullString
-	BelongsToMealPlan        sql.NullString
-	ValidIngredient          sql.NullString
-	ValidMeasurementUnit     sql.NullString
-	MinimumQuantityNeeded    sql.NullString
-	MaximumQuantityNeeded    sql.NullString
-	QuantityPurchased        sql.NullString
-	PurchasedMeasurementUnit sql.NullString
-	PurchasedUpc             sql.NullString
-	PurchasePrice            sql.NullString
-	StatusExplanation        sql.NullString
-	Status                   NullGroceryListItemStatus
-	CreatedAt                sql.NullTime
-	LastUpdatedAt            sql.NullTime
-	CompletedAt              sql.NullTime
+	CompletedAt              sql.NullTime              `db:"completed_at"`
+	LastUpdatedAt            sql.NullTime              `db:"last_updated_at"`
+	CreatedAt                sql.NullTime              `db:"created_at"`
+	PurchasedMeasurementUnit sql.NullString            `db:"purchased_measurement_unit"`
+	MinimumQuantityNeeded    sql.NullString            `db:"minimum_quantity_needed"`
+	MaximumQuantityNeeded    sql.NullString            `db:"maximum_quantity_needed"`
+	QuantityPurchased        sql.NullString            `db:"quantity_purchased"`
+	ValidMeasurementUnit     sql.NullString            `db:"valid_measurement_unit"`
+	PurchasedUpc             sql.NullString            `db:"purchased_upc"`
+	PurchasePrice            sql.NullString            `db:"purchase_price"`
+	StatusExplanation        sql.NullString            `db:"status_explanation"`
+	Status                   NullGroceryListItemStatus `db:"status"`
+	ValidIngredient          sql.NullString            `db:"valid_ingredient"`
+	BelongsToMealPlan        sql.NullString            `db:"belongs_to_meal_plan"`
+	ID                       sql.NullString            `db:"id"`
 }
 
-func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, arg *GetMealPlanGroceryListItemParams) error {
-	_, err := q.db.ExecContext(ctx, GetMealPlanGroceryListItem, arg.BelongsToMealPlan, arg.ID)
+func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemParams) error {
+	_, err := db.ExecContext(ctx, GetMealPlanGroceryListItem, arg.BelongsToMealPlan, arg.ID)
 	return err
 }

@@ -13,9 +13,11 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/converters"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func buildMockRowsFromWebhooks(includeCounts bool, filteredCount uint64, webhooks ...*types.Webhook) *sqlmock.Rows {
@@ -447,35 +449,36 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 		exampleInput := converters.ConvertWebhookToWebhookDatabaseCreationInput(exampleWebhook)
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, db, _ := buildNewTestClient(t)
+		mockGQ := &mockGeneratedQuerier{}
 
 		db.ExpectBegin()
 
-		createWebhookArgs := []interface{}{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.ContentType,
-			exampleInput.URL,
-			exampleInput.Method,
-			exampleInput.BelongsToHousehold,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createWebhookQuery)).
-			WithArgs(interfaceToDriverValue(createWebhookArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
+		mockGQ.On(
+			"CreateWebhook",
+			testutils.ContextMatcher,
+			database.SQLQueryExecutorMatcher,
+			&generated.CreateWebhookParams{
+				ID:                 exampleInput.ID,
+				Name:               exampleInput.Name,
+				ContentType:        exampleInput.ContentType,
+				Url:                exampleInput.URL,
+				Method:             exampleInput.Method,
+				BelongsToHousehold: exampleInput.BelongsToHousehold,
+			}).Return(nil)
 
 		for _, evt := range exampleInput.Events {
-			createWebhookTriggerEventArgs := []interface{}{
-				evt.ID,
-				evt.TriggerEvent,
-				evt.BelongsToWebhook,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(createWebhookTriggerEventQuery)).
-				WithArgs(interfaceToDriverValue(createWebhookTriggerEventArgs)...).
-				WillReturnResult(newArbitraryDatabaseResult())
+			mockGQ.On("CreateWebhookTriggerEvent",
+				testutils.ContextMatcher,
+				database.SQLQueryExecutorMatcher,
+				&generated.CreateWebhookTriggerEventParams{
+					ID:               evt.ID,
+					TriggerEvent:     generated.WebhookEvent(evt.TriggerEvent),
+					BelongsToWebhook: evt.BelongsToWebhook,
+				}).Return(nil)
 		}
 
+		c.generatedQuerier = mockGQ
 		db.ExpectCommit()
 
 		c.timeFunc = func() time.Time {
@@ -510,22 +513,22 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 		exampleInput := converters.ConvertWebhookToWebhookDatabaseCreationInput(exampleWebhook)
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.ContentType,
-			exampleInput.URL,
-			exampleInput.Method,
-			exampleInput.BelongsToHousehold,
-		}
+		c, db, mockGQ := buildNewTestClient(t)
 
 		db.ExpectBegin()
 
-		db.ExpectExec(formatQueryForSQLMock(createWebhookQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		mockGQ.On(
+			"CreateWebhook",
+			testutils.ContextMatcher,
+			database.SQLQueryExecutorMatcher,
+			&generated.CreateWebhookParams{
+				ID:                 exampleInput.ID,
+				Name:               exampleInput.Name,
+				ContentType:        exampleInput.ContentType,
+				Url:                exampleInput.URL,
+				Method:             exampleInput.Method,
+				BelongsToHousehold: exampleInput.BelongsToHousehold,
+			}).Return(errors.New("blah"))
 
 		db.ExpectRollback()
 
@@ -551,18 +554,20 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		exampleWebhookID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _, mockGQ := buildNewTestClient(t)
 
-		args := []interface{}{exampleHouseholdID, exampleWebhookID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveWebhookQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
+		mockGQ.On("ArchiveWebhook",
+			testutils.ContextMatcher,
+			database.SQLQueryExecutorMatcher,
+			&generated.ArchiveWebhookParams{
+				ID:                 exampleWebhookID,
+				BelongsToHousehold: exampleHouseholdID,
+			}).Return(nil)
 
 		actual := c.ArchiveWebhook(ctx, exampleWebhookID, exampleHouseholdID)
 		assert.NoError(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGQ)
 	})
 
 	T.Run("with invalid webhook ID", func(t *testing.T) {
@@ -594,16 +599,18 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		exampleWebhookID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _, mockGQ := buildNewTestClient(t)
 
-		args := []interface{}{exampleHouseholdID, exampleWebhookID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveWebhookQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
+		mockGQ.On("ArchiveWebhook",
+			testutils.ContextMatcher,
+			database.SQLQueryExecutorMatcher,
+			&generated.ArchiveWebhookParams{
+				ID:                 exampleWebhookID,
+				BelongsToHousehold: exampleHouseholdID,
+			}).Return(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhookID, exampleHouseholdID))
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, mockGQ)
 	})
 }

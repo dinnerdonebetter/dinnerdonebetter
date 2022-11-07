@@ -46,36 +46,36 @@ AND valid_ingredients.id = $1
 `
 
 type GetValidIngredientRow struct {
-	ID                                      string
-	Name                                    string
-	Description                             string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IsLiquid                                sql.NullBool
-	IconPath                                string
-	AnimalDerived                           bool
-	PluralName                              string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	CreatedAt                               time.Time
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
+	CreatedAt                               time.Time      `db:"created_at"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	Name                                    string         `db:"name"`
+	Description                             string         `db:"description"`
+	Warning                                 string         `db:"warning"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	PluralName                              string         `db:"plural_name"`
+	IconPath                                string         `db:"icon_path"`
+	ID                                      string         `db:"id"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	Volumetric                              bool           `db:"volumetric"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
 }
 
-func (q *Queries) GetValidIngredient(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, GetValidIngredient, id)
+func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, GetValidIngredient, id)
 	return err
 }

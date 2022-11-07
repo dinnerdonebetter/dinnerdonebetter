@@ -18,16 +18,16 @@ VALUES
 `
 
 type CreateMealPlanEventParams struct {
-	ID                string
-	Notes             string
-	StartsAt          time.Time
-	EndsAt            time.Time
-	MealName          MealName
-	BelongsToMealPlan string
+	ID                string    `db:"id"`
+	Notes             string    `db:"notes"`
+	StartsAt          time.Time `db:"starts_at"`
+	EndsAt            time.Time `db:"ends_at"`
+	MealName          MealName  `db:"meal_name"`
+	BelongsToMealPlan string    `db:"belongs_to_meal_plan"`
 }
 
-func (q *Queries) CreateMealPlanEvent(ctx context.Context, arg *CreateMealPlanEventParams) error {
-	_, err := q.db.ExecContext(ctx, CreateMealPlanEvent,
+func (q *Queries) CreateMealPlanEvent(ctx context.Context, db DBTX, arg *CreateMealPlanEventParams) error {
+	_, err := db.ExecContext(ctx, CreateMealPlanEvent,
 		arg.ID,
 		arg.Notes,
 		arg.StartsAt,

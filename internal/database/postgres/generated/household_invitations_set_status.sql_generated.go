@@ -20,12 +20,12 @@ WHERE archived_at IS NULL
 `
 
 type SetHouseholdInvitationStatusParams struct {
-	Status     InvitationState
-	StatusNote string
-	ID         string
+	Status     InvitationState `db:"status"`
+	StatusNote string          `db:"status_note"`
+	ID         string          `db:"id"`
 }
 
-func (q *Queries) SetHouseholdInvitationStatus(ctx context.Context, arg *SetHouseholdInvitationStatusParams) error {
-	_, err := q.db.ExecContext(ctx, SetHouseholdInvitationStatus, arg.Status, arg.StatusNote, arg.ID)
+func (q *Queries) SetHouseholdInvitationStatus(ctx context.Context, db DBTX, arg *SetHouseholdInvitationStatusParams) error {
+	_, err := db.ExecContext(ctx, SetHouseholdInvitationStatus, arg.Status, arg.StatusNote, arg.ID)
 	return err
 }

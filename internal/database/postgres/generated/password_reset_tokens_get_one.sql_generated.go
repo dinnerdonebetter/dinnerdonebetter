@@ -24,7 +24,7 @@ WHERE password_reset_tokens.redeemed_at IS NULL
 	AND password_reset_tokens.token = $1
 `
 
-func (q *Queries) GetPasswordResetToken(ctx context.Context, token string) error {
-	_, err := q.db.ExecContext(ctx, GetPasswordResetToken, token)
+func (q *Queries) GetPasswordResetToken(ctx context.Context, db DBTX, token string) error {
+	_, err := db.ExecContext(ctx, GetPasswordResetToken, token)
 	return err
 }

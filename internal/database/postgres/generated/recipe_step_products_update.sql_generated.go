@@ -31,23 +31,23 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepProductParams struct {
-	Name                               string
-	Type                               RecipeStepProductType
-	MeasurementUnit                    sql.NullString
-	MinimumQuantityValue               string
-	MaximumQuantityValue               string
-	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
-	BelongsToRecipeStep                string
-	ID                                 string
+	StorageInstructions                string                `db:"storage_instructions"`
+	Type                               RecipeStepProductType `db:"type"`
+	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	MinimumQuantityValue               string                `db:"minimum_quantity_value"`
+	MaximumQuantityValue               string                `db:"maximum_quantity_value"`
+	QuantityNotes                      string                `db:"quantity_notes"`
+	Name                               string                `db:"name"`
+	ID                                 string                `db:"id"`
+	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
+	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
+	MeasurementUnit                    sql.NullString        `db:"measurement_unit"`
+	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
+	Compostable                        bool                  `db:"compostable"`
 }
 
-func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, arg *UpdateRecipeStepProductParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateRecipeStepProduct,
+func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) error {
+	_, err := db.ExecContext(ctx, UpdateRecipeStepProduct,
 		arg.Name,
 		arg.Type,
 		arg.MeasurementUnit,

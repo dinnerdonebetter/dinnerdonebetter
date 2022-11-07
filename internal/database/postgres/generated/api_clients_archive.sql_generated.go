@@ -18,11 +18,11 @@ WHERE archived_at IS NULL
 `
 
 type ArchiveAPIClientParams struct {
-	BelongsToUser string
-	ID            string
+	BelongsToUser string `db:"belongs_to_user"`
+	ID            string `db:"id"`
 }
 
-func (q *Queries) ArchiveAPIClient(ctx context.Context, arg *ArchiveAPIClientParams) error {
-	_, err := q.db.ExecContext(ctx, ArchiveAPIClient, arg.BelongsToUser, arg.ID)
+func (q *Queries) ArchiveAPIClient(ctx context.Context, db DBTX, arg *ArchiveAPIClientParams) error {
+	_, err := db.ExecContext(ctx, ArchiveAPIClient, arg.BelongsToUser, arg.ID)
 	return err
 }

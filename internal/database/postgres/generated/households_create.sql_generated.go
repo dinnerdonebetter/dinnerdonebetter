@@ -14,17 +14,17 @@ INSERT INTO households (id,name,billing_status,contact_email,contact_phone,time_
 `
 
 type CreateHouseholdParams struct {
-	ID            string
-	Name          string
-	BillingStatus string
-	ContactEmail  string
-	ContactPhone  string
-	TimeZone      TimeZone
-	BelongsToUser string
+	ID            string   `db:"id"`
+	Name          string   `db:"name"`
+	BillingStatus string   `db:"billing_status"`
+	ContactEmail  string   `db:"contact_email"`
+	ContactPhone  string   `db:"contact_phone"`
+	TimeZone      TimeZone `db:"time_zone"`
+	BelongsToUser string   `db:"belongs_to_user"`
 }
 
-func (q *Queries) CreateHousehold(ctx context.Context, arg *CreateHouseholdParams) error {
-	_, err := q.db.ExecContext(ctx, CreateHousehold,
+func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error {
+	_, err := db.ExecContext(ctx, CreateHousehold,
 		arg.ID,
 		arg.Name,
 		arg.BillingStatus,

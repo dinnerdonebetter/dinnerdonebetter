@@ -24,16 +24,16 @@ VALUES
 `
 
 type CreateWebhookParams struct {
-	ID                 string
-	Name               string
-	ContentType        string
-	Url                string
-	Method             string
-	BelongsToHousehold string
+	ID                 string `db:"id"`
+	Name               string `db:"name"`
+	ContentType        string `db:"content_type"`
+	Url                string `db:"url"`
+	Method             string `db:"method"`
+	BelongsToHousehold string `db:"belongs_to_household"`
 }
 
-func (q *Queries) CreateWebhook(ctx context.Context, arg *CreateWebhookParams) error {
-	_, err := q.db.ExecContext(ctx, CreateWebhook,
+func (q *Queries) CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhookParams) error {
+	_, err := db.ExecContext(ctx, CreateWebhook,
 		arg.ID,
 		arg.Name,
 		arg.ContentType,

@@ -31,21 +31,21 @@ WHERE valid_measurement_units.archived_at IS NULL
 `
 
 type GetValidMeasurementUnitRow struct {
-	ID            string
-	Name          string
-	Description   string
-	Volumetric    sql.NullBool
-	IconPath      string
-	Universal     bool
-	Metric        bool
-	Imperial      bool
-	PluralName    string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
+	CreatedAt     time.Time    `db:"created_at"`
+	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
+	ArchivedAt    sql.NullTime `db:"archived_at"`
+	ID            string       `db:"id"`
+	Name          string       `db:"name"`
+	Description   string       `db:"description"`
+	PluralName    string       `db:"plural_name"`
+	IconPath      string       `db:"icon_path"`
+	Volumetric    sql.NullBool `db:"volumetric"`
+	Metric        bool         `db:"metric"`
+	Imperial      bool         `db:"imperial"`
+	Universal     bool         `db:"universal"`
 }
 
-func (q *Queries) GetValidMeasurementUnit(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, GetValidMeasurementUnit, id)
+func (q *Queries) GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, GetValidMeasurementUnit, id)
 	return err
 }

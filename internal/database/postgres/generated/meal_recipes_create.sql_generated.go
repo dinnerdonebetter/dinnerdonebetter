@@ -14,12 +14,12 @@ INSERT INTO meal_recipes (id,meal_id,recipe_id) VALUES ($1,$2,$3)
 `
 
 type CreateMealRecipeParams struct {
-	ID       string
-	MealID   string
-	RecipeID string
+	ID       string `db:"id"`
+	MealID   string `db:"meal_id"`
+	RecipeID string `db:"recipe_id"`
 }
 
-func (q *Queries) CreateMealRecipe(ctx context.Context, arg *CreateMealRecipeParams) error {
-	_, err := q.db.ExecContext(ctx, CreateMealRecipe, arg.ID, arg.MealID, arg.RecipeID)
+func (q *Queries) CreateMealRecipe(ctx context.Context, db DBTX, arg *CreateMealRecipeParams) error {
+	_, err := db.ExecContext(ctx, CreateMealRecipe, arg.ID, arg.MealID, arg.RecipeID)
 	return err
 }

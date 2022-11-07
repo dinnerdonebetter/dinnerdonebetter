@@ -28,18 +28,18 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 type GetRandomValidInstrumentRow struct {
-	ID               string
-	Name             string
-	PluralName       string
-	Description      string
-	IconPath         string
-	UsableForStorage bool
-	CreatedAt        time.Time
-	LastUpdatedAt    sql.NullTime
-	ArchivedAt       sql.NullTime
+	CreatedAt        time.Time    `db:"created_at"`
+	LastUpdatedAt    sql.NullTime `db:"last_updated_at"`
+	ArchivedAt       sql.NullTime `db:"archived_at"`
+	Description      string       `db:"description"`
+	IconPath         string       `db:"icon_path"`
+	ID               string       `db:"id"`
+	Name             string       `db:"name"`
+	PluralName       string       `db:"plural_name"`
+	UsableForStorage bool         `db:"usable_for_storage"`
 }
 
-func (q *Queries) GetRandomValidInstrument(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, GetRandomValidInstrument)
+func (q *Queries) GetRandomValidInstrument(ctx context.Context, db DBTX) error {
+	_, err := db.ExecContext(ctx, GetRandomValidInstrument)
 	return err
 }

@@ -120,6 +120,26 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
 }
 
+func buildNewTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper, *mockGeneratedQuerier) {
+	t.Helper()
+
+	mockQuerier := &mockGeneratedQuerier{}
+	fakeDB, sqlMock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
+	require.NoError(t, err)
+
+	c := &Querier{
+		db:               fakeDB,
+		generatedQuerier: mockQuerier,
+		logQueries:       true,
+		logger:           logging.NewNoopLogger(),
+		timeFunc:         defaultTimeFunc,
+		tracer:           tracing.NewTracerForTest("test"),
+		sqlBuilder:       squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+	}
+
+	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}, mockQuerier
+}
+
 func buildErroneousMockRow() *sqlmock.Rows {
 	exampleRows := sqlmock.NewRows([]string{"columns", "don't", "match", "lol"}).AddRow(
 		"doesn't",

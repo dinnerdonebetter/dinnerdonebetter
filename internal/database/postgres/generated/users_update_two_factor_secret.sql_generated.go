@@ -19,12 +19,12 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserTwoFactorSecretParams struct {
-	TwoFactorSecretVerifiedAt sql.NullTime
-	TwoFactorSecret           string
-	ID                        string
+	TwoFactorSecretVerifiedAt sql.NullTime `db:"two_factor_secret_verified_at"`
+	TwoFactorSecret           string       `db:"two_factor_secret"`
+	ID                        string       `db:"id"`
 }
 
-func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, arg *UpdateUserTwoFactorSecretParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateUserTwoFactorSecret, arg.TwoFactorSecretVerifiedAt, arg.TwoFactorSecret, arg.ID)
+func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) error {
+	_, err := db.ExecContext(ctx, UpdateUserTwoFactorSecret, arg.TwoFactorSecretVerifiedAt, arg.TwoFactorSecret, arg.ID)
 	return err
 }

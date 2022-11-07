@@ -39,14 +39,14 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 `
 
 type GetMealPlanOptionVoteParams struct {
-	BelongsToMealPlanOption string
-	ID                      string
-	BelongsToMealPlanEvent  sql.NullString
-	BelongsToMealPlan       string
+	BelongsToMealPlanOption string         `db:"belongs_to_meal_plan_option"`
+	ID                      string         `db:"id"`
+	BelongsToMealPlan       string         `db:"belongs_to_meal_plan"`
+	BelongsToMealPlanEvent  sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
-func (q *Queries) GetMealPlanOptionVote(ctx context.Context, arg *GetMealPlanOptionVoteParams) error {
-	_, err := q.db.ExecContext(ctx, GetMealPlanOptionVote,
+func (q *Queries) GetMealPlanOptionVote(ctx context.Context, db DBTX, arg *GetMealPlanOptionVoteParams) error {
+	_, err := db.ExecContext(ctx, GetMealPlanOptionVote,
 		arg.BelongsToMealPlanOption,
 		arg.ID,
 		arg.BelongsToMealPlanEvent,

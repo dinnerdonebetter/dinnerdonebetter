@@ -29,19 +29,19 @@ WHERE recipe_media.archived_at IS NULL
 `
 
 type GetRecipeMediaRow struct {
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	Index               int32
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
+	CreatedAt           time.Time      `db:"created_at"`
+	LastUpdatedAt       sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt          sql.NullTime   `db:"archived_at"`
+	ID                  string         `db:"id"`
+	InternalPath        string         `db:"internal_path"`
+	ExternalPath        string         `db:"external_path"`
+	MimeType            string         `db:"mime_type"`
+	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
+	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
+	Index               int32          `db:"index"`
 }
 
-func (q *Queries) GetRecipeMedia(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, GetRecipeMedia, id)
+func (q *Queries) GetRecipeMedia(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, GetRecipeMedia, id)
 	return err
 }

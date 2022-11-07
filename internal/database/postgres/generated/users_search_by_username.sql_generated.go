@@ -37,27 +37,27 @@ AND users.two_factor_secret_verified_at IS NOT NULL
 `
 
 type SearchForUserByUsernameRow struct {
-	ID                           string
-	Username                     string
-	EmailAddress                 string
-	AvatarSrc                    sql.NullString
-	HashedPassword               string
-	RequiresPasswordChange       bool
-	PasswordLastChangedAt        sql.NullTime
-	TwoFactorSecret              string
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	ServiceRoles                 string
-	UserAccountStatus            string
-	UserAccountStatusExplanation string
-	BirthDay                     sql.NullInt16
-	BirthMonth                   sql.NullInt16
-	CreatedAt                    time.Time
-	LastUpdatedAt                sql.NullTime
-	ArchivedAt                   sql.NullTime
+	CreatedAt                    time.Time      `db:"created_at"`
+	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
+	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
+	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
+	ArchivedAt                   sql.NullTime   `db:"archived_at"`
+	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
+	HashedPassword               string         `db:"hashed_password"`
+	TwoFactorSecret              string         `db:"two_factor_secret"`
+	EmailAddress                 string         `db:"email_address"`
+	ServiceRoles                 string         `db:"service_roles"`
+	UserAccountStatus            string         `db:"user_account_status"`
+	Username                     string         `db:"username"`
+	ID                           string         `db:"id"`
+	AvatarSrc                    sql.NullString `db:"avatar_src"`
+	BirthDay                     sql.NullInt16  `db:"birth_day"`
+	BirthMonth                   sql.NullInt16  `db:"birth_month"`
+	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
-func (q *Queries) SearchForUserByUsername(ctx context.Context, username string) ([]*SearchForUserByUsernameRow, error) {
-	rows, err := q.db.QueryContext(ctx, SearchForUserByUsername, username)
+func (q *Queries) SearchForUserByUsername(ctx context.Context, db DBTX, username string) ([]*SearchForUserByUsernameRow, error) {
+	rows, err := db.QueryContext(ctx, SearchForUserByUsername, username)
 	if err != nil {
 		return nil, err
 	}

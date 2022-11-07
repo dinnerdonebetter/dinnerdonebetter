@@ -20,11 +20,11 @@ SELECT EXISTS (
 `
 
 type WebhookExistsParams struct {
-	BelongsToHousehold string
-	ID                 string
+	BelongsToHousehold string `db:"belongs_to_household"`
+	ID                 string `db:"id"`
 }
 
-func (q *Queries) WebhookExists(ctx context.Context, arg *WebhookExistsParams) error {
-	_, err := q.db.ExecContext(ctx, WebhookExists, arg.BelongsToHousehold, arg.ID)
+func (q *Queries) WebhookExists(ctx context.Context, db DBTX, arg *WebhookExistsParams) error {
+	_, err := db.ExecContext(ctx, WebhookExists, arg.BelongsToHousehold, arg.ID)
 	return err
 }

@@ -379,11 +379,11 @@ issues:
       linters:
         - revive
 
-    - path: cmd/config_gen
+    - path: cmd/gen_configs
       linters:
         - gomnd
 
-    - path: cmd/config_gen/main.go
+    - path: cmd/gen_configs/main.go
       linters:
         - gosec
         - lll

@@ -27,18 +27,18 @@ WHERE api_clients.archived_at IS NULL
 `
 
 type GetAPIClientByClientIDRow struct {
-	ID            string
-	Name          sql.NullString
-	ClientID      string
-	SecretKey     []byte
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	BelongsToUser string
+	CreatedAt     time.Time      `db:"created_at"`
+	ArchivedAt    sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
+	BelongsToUser string         `db:"belongs_to_user"`
+	ClientID      string         `db:"client_id"`
+	ID            string         `db:"id"`
+	SecretKey     []byte         `db:"secret_key"`
+	Name          sql.NullString `db:"name"`
 }
 
-func (q *Queries) GetAPIClientByClientID(ctx context.Context, clientID string) (*GetAPIClientByClientIDRow, error) {
-	row := q.db.QueryRowContext(ctx, GetAPIClientByClientID, clientID)
+func (q *Queries) GetAPIClientByClientID(ctx context.Context, db DBTX, clientID string) (*GetAPIClientByClientIDRow, error) {
+	row := db.QueryRowContext(ctx, GetAPIClientByClientID, clientID)
 	var i GetAPIClientByClientIDRow
 	err := row.Scan(
 		&i.ID,

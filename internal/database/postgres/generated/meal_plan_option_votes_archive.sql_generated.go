@@ -14,11 +14,11 @@ UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL 
 `
 
 type ArchiveMealPlanOptionVoteParams struct {
-	BelongsToMealPlanOption string
-	ID                      string
+	BelongsToMealPlanOption string `db:"belongs_to_meal_plan_option"`
+	ID                      string `db:"id"`
 }
 
-func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, arg *ArchiveMealPlanOptionVoteParams) error {
-	_, err := q.db.ExecContext(ctx, ArchiveMealPlanOptionVote, arg.BelongsToMealPlanOption, arg.ID)
+func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) error {
+	_, err := db.ExecContext(ctx, ArchiveMealPlanOptionVote, arg.BelongsToMealPlanOption, arg.ID)
 	return err
 }

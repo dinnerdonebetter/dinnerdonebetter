@@ -14,14 +14,14 @@ UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, 
 `
 
 type UpdateValidPreparationInstrumentParams struct {
-	Notes              string
-	ValidPreparationID string
-	ValidInstrumentID  string
-	ID                 string
+	Notes              string `db:"notes"`
+	ValidPreparationID string `db:"valid_preparation_id"`
+	ValidInstrumentID  string `db:"valid_instrument_id"`
+	ID                 string `db:"id"`
 }
 
-func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, arg *UpdateValidPreparationInstrumentParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateValidPreparationInstrument,
+func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, db DBTX, arg *UpdateValidPreparationInstrumentParams) error {
+	_, err := db.ExecContext(ctx, UpdateValidPreparationInstrument,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidInstrumentID,

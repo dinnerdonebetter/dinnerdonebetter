@@ -25,18 +25,18 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidPreparationParams struct {
-	Name                     string
-	Description              string
-	IconPath                 string
-	YieldsNothing            bool
-	RestrictToIngredients    bool
-	ZeroIngredientsAllowable bool
-	PastTense                string
-	ID                       string
+	Name                     string `db:"name"`
+	Description              string `db:"description"`
+	IconPath                 string `db:"icon_path"`
+	PastTense                string `db:"past_tense"`
+	ID                       string `db:"id"`
+	YieldsNothing            bool   `db:"yields_nothing"`
+	RestrictToIngredients    bool   `db:"restrict_to_ingredients"`
+	ZeroIngredientsAllowable bool   `db:"zero_ingredients_allowable"`
 }
 
-func (q *Queries) UpdateValidPreparation(ctx context.Context, arg *UpdateValidPreparationParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateValidPreparation,
+func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) error {
+	_, err := db.ExecContext(ctx, UpdateValidPreparation,
 		arg.Name,
 		arg.Description,
 		arg.IconPath,

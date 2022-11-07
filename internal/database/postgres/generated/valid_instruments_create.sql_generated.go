@@ -14,16 +14,16 @@ INSERT INTO valid_instruments (id,name,plural_name,description,icon_path,usable_
 `
 
 type CreateValidInstrumentParams struct {
-	ID               string
-	Name             string
-	PluralName       string
-	Description      string
-	IconPath         string
-	UsableForStorage bool
+	ID               string `db:"id"`
+	Name             string `db:"name"`
+	PluralName       string `db:"plural_name"`
+	Description      string `db:"description"`
+	IconPath         string `db:"icon_path"`
+	UsableForStorage bool   `db:"usable_for_storage"`
 }
 
-func (q *Queries) CreateValidInstrument(ctx context.Context, arg *CreateValidInstrumentParams) error {
-	_, err := q.db.ExecContext(ctx, CreateValidInstrument,
+func (q *Queries) CreateValidInstrument(ctx context.Context, db DBTX, arg *CreateValidInstrumentParams) error {
+	_, err := db.ExecContext(ctx, CreateValidInstrument,
 		arg.ID,
 		arg.Name,
 		arg.PluralName,

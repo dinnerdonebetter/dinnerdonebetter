@@ -28,17 +28,17 @@ WHERE meals.archived_at IS NULL
 `
 
 type GetMealRow struct {
-	ID            sql.NullString
-	Name          sql.NullString
-	Description   sql.NullString
-	CreatedAt     sql.NullTime
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	CreatedByUser sql.NullString
-	RecipeID      sql.NullString
+	ID            sql.NullString `db:"id"`
+	Name          sql.NullString `db:"name"`
+	Description   sql.NullString `db:"description"`
+	CreatedAt     sql.NullTime   `db:"created_at"`
+	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt    sql.NullTime   `db:"archived_at"`
+	CreatedByUser sql.NullString `db:"created_by_user"`
+	RecipeID      sql.NullString `db:"recipe_id"`
 }
 
-func (q *Queries) GetMeal(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, GetMeal, id)
+func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, GetMeal, id)
 	return err
 }

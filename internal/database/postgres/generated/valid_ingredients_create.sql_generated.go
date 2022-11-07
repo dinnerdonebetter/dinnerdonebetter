@@ -41,34 +41,34 @@ INSERT INTO valid_ingredients
 `
 
 type CreateValidIngredientParams struct {
-	ID                                      string
-	Name                                    string
-	Description                             string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IsLiquid                                sql.NullBool
-	IconPath                                string
-	AnimalDerived                           bool
-	PluralName                              string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
+	ID                                      string         `db:"id"`
+	Name                                    string         `db:"name"`
+	Description                             string         `db:"description"`
+	Warning                                 string         `db:"warning"`
+	PluralName                              string         `db:"plural_name"`
+	IconPath                                string         `db:"icon_path"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	Volumetric                              bool           `db:"volumetric"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsFish                            bool           `db:"contains_fish"`
 }
 
-func (q *Queries) CreateValidIngredient(ctx context.Context, arg *CreateValidIngredientParams) error {
-	_, err := q.db.ExecContext(ctx, CreateValidIngredient,
+func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientParams) error {
+	_, err := db.ExecContext(ctx, CreateValidIngredient,
 		arg.ID,
 		arg.Name,
 		arg.Description,

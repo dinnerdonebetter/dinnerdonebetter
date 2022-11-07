@@ -66,52 +66,52 @@ AND meal_plan_tasks.completed_at IS NULL
 `
 
 type ListIncompleteMealPlanTaskByMealPlanOptionRow struct {
-	ID                            string
-	ID_2                          string
-	AssignedCook                  sql.NullString
-	AssignedDishwasher            sql.NullString
-	Chosen                        bool
-	Tiebroken                     bool
-	MealID                        string
-	Notes                         string
-	CreatedAt                     time.Time
-	LastUpdatedAt                 sql.NullTime
-	ArchivedAt                    sql.NullTime
-	BelongsToMealPlanEvent        sql.NullString
-	ID_3                          string
-	Index                         int32
-	ID_4                          string
-	Name                          string
-	Description                   string
-	IconPath                      string
-	YieldsNothing                 bool
-	RestrictToIngredients         bool
-	ZeroIngredientsAllowable      bool
-	PastTense                     string
-	CreatedAt_2                   time.Time
-	LastUpdatedAt_2               sql.NullTime
-	ArchivedAt_2                  sql.NullTime
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumTemperatureInCelsius   sql.NullString
-	MaximumTemperatureInCelsius   sql.NullString
-	Notes_2                       string
-	ExplicitInstructions          string
-	Optional                      bool
-	CreatedAt_3                   time.Time
-	LastUpdatedAt_3               sql.NullTime
-	ArchivedAt_3                  sql.NullTime
-	BelongsToRecipe               string
-	AssignedToUser                sql.NullString
-	Status                        PrepStepStatus
-	StatusExplanation             string
-	CreationExplanation           string
-	CreatedAt_4                   time.Time
-	CompletedAt                   sql.NullTime
+	CreatedAt_3                   time.Time      `db:"created_at_3"`
+	CreatedAt_4                   time.Time      `db:"created_at_4"`
+	CreatedAt_2                   time.Time      `db:"created_at_2"`
+	CreatedAt                     time.Time      `db:"created_at"`
+	ArchivedAt_2                  sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2               sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt                    sql.NullTime   `db:"archived_at"`
+	CompletedAt                   sql.NullTime   `db:"completed_at"`
+	LastUpdatedAt_3               sql.NullTime   `db:"last_updated_at_3"`
+	LastUpdatedAt                 sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt_3                  sql.NullTime   `db:"archived_at_3"`
+	Notes_2                       string         `db:"notes_2"`
+	ID_3                          string         `db:"id_3"`
+	BelongsToRecipe               string         `db:"belongs_to_recipe"`
+	ID_4                          string         `db:"id_4"`
+	Name                          string         `db:"name"`
+	Description                   string         `db:"description"`
+	IconPath                      string         `db:"icon_path"`
+	Status                        PrepStepStatus `db:"status"`
+	Notes                         string         `db:"notes"`
+	MealID                        string         `db:"meal_id"`
+	PastTense                     string         `db:"past_tense"`
+	StatusExplanation             string         `db:"status_explanation"`
+	CreationExplanation           string         `db:"creation_explanation"`
+	ID_2                          string         `db:"id_2"`
+	ExplicitInstructions          string         `db:"explicit_instructions"`
+	ID                            string         `db:"id"`
+	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
+	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
+	AssignedCook                  sql.NullString `db:"assigned_cook"`
+	AssignedDishwasher            sql.NullString `db:"assigned_dishwasher"`
+	BelongsToMealPlanEvent        sql.NullString `db:"belongs_to_meal_plan_event"`
+	AssignedToUser                sql.NullString `db:"assigned_to_user"`
+	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
+	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
+	Index                         int32          `db:"index"`
+	Optional                      bool           `db:"optional"`
+	Tiebroken                     bool           `db:"tiebroken"`
+	Chosen                        bool           `db:"chosen"`
+	RestrictToIngredients         bool           `db:"restrict_to_ingredients"`
+	ZeroIngredientsAllowable      bool           `db:"zero_ingredients_allowable"`
+	YieldsNothing                 bool           `db:"yields_nothing"`
 }
 
-func (q *Queries) ListIncompleteMealPlanTaskByMealPlanOption(ctx context.Context, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTaskByMealPlanOptionRow, error) {
-	rows, err := q.db.QueryContext(ctx, ListIncompleteMealPlanTaskByMealPlanOption, belongsToMealPlanOption)
+func (q *Queries) ListIncompleteMealPlanTaskByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTaskByMealPlanOptionRow, error) {
+	rows, err := db.QueryContext(ctx, ListIncompleteMealPlanTaskByMealPlanOption, belongsToMealPlanOption)
 	if err != nil {
 		return nil, err
 	}

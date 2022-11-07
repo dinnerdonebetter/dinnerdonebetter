@@ -13,7 +13,7 @@ const ValidMeasurementConversionExists = `-- name: ValidMeasurementConversionExi
 SELECT EXISTS ( SELECT valid_measurement_conversions.id FROM valid_measurement_conversions WHERE valid_measurement_conversions.archived_at IS NULL AND valid_measurement_conversions.id = $1 )
 `
 
-func (q *Queries) ValidMeasurementConversionExists(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, ValidMeasurementConversionExists, id)
+func (q *Queries) ValidMeasurementConversionExists(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, ValidMeasurementConversionExists, id)
 	return err
 }

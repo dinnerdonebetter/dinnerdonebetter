@@ -28,21 +28,21 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepParams struct {
-	Index                         int32
-	PreparationID                 string
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumTemperatureInCelsius   sql.NullString
-	MaximumTemperatureInCelsius   sql.NullString
-	Notes                         string
-	ExplicitInstructions          string
-	Optional                      bool
-	BelongsToRecipe               string
-	ID                            string
+	Notes                         string         `db:"notes"`
+	PreparationID                 string         `db:"preparation_id"`
+	BelongsToRecipe               string         `db:"belongs_to_recipe"`
+	ID                            string         `db:"id"`
+	ExplicitInstructions          string         `db:"explicit_instructions"`
+	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
+	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
+	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
+	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
+	Index                         int32          `db:"index"`
+	Optional                      bool           `db:"optional"`
 }
 
-func (q *Queries) UpdateRecipeStep(ctx context.Context, arg *UpdateRecipeStepParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateRecipeStep,
+func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) error {
+	_, err := db.ExecContext(ctx, UpdateRecipeStep,
 		arg.Index,
 		arg.PreparationID,
 		arg.MinimumEstimatedTimeInSeconds,

@@ -32,14 +32,14 @@ ORDER BY meal_plans.id
 `
 
 type GetFinalizedMealPlansForPlanningRow struct {
-	MealPlanID       sql.NullString
-	MealPlanOptionID sql.NullString
-	MealID           sql.NullString
-	MealPlanEventID  sql.NullString
-	RecipeID         sql.NullString
+	MealPlanID       sql.NullString `db:"meal_plan_id"`
+	MealPlanOptionID sql.NullString `db:"meal_plan_option_id"`
+	MealID           sql.NullString `db:"meal_id"`
+	MealPlanEventID  sql.NullString `db:"meal_plan_event_id"`
+	RecipeID         sql.NullString `db:"recipe_id"`
 }
 
-func (q *Queries) GetFinalizedMealPlansForPlanning(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, GetFinalizedMealPlansForPlanning)
+func (q *Queries) GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) error {
+	_, err := db.ExecContext(ctx, GetFinalizedMealPlansForPlanning)
 	return err
 }

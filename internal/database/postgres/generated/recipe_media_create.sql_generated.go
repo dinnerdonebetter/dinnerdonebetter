@@ -16,17 +16,17 @@ INSERT INTO recipe_media (id,belongs_to_recipe,belongs_to_recipe_step,mime_type,
 `
 
 type CreateRecipeMediaParams struct {
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	Index               int32
+	ID                  string         `db:"id"`
+	MimeType            string         `db:"mime_type"`
+	InternalPath        string         `db:"internal_path"`
+	ExternalPath        string         `db:"external_path"`
+	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
+	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
+	Index               int32          `db:"index"`
 }
 
-func (q *Queries) CreateRecipeMedia(ctx context.Context, arg *CreateRecipeMediaParams) error {
-	_, err := q.db.ExecContext(ctx, CreateRecipeMedia,
+func (q *Queries) CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRecipeMediaParams) error {
+	_, err := db.ExecContext(ctx, CreateRecipeMedia,
 		arg.ID,
 		arg.BelongsToRecipe,
 		arg.BelongsToRecipeStep,

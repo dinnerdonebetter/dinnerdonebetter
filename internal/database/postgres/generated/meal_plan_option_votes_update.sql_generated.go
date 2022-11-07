@@ -14,16 +14,16 @@ UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user =
 `
 
 type UpdateMealPlanOptionVoteParams struct {
-	Rank                    int32
-	Abstain                 bool
-	Notes                   string
-	ByUser                  string
-	BelongsToMealPlanOption string
-	ID                      string
+	Notes                   string `db:"notes"`
+	ByUser                  string `db:"by_user"`
+	BelongsToMealPlanOption string `db:"belongs_to_meal_plan_option"`
+	ID                      string `db:"id"`
+	Rank                    int32  `db:"rank"`
+	Abstain                 bool   `db:"abstain"`
 }
 
-func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, arg *UpdateMealPlanOptionVoteParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateMealPlanOptionVote,
+func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) error {
+	_, err := db.ExecContext(ctx, UpdateMealPlanOptionVote,
 		arg.Rank,
 		arg.Abstain,
 		arg.Notes,

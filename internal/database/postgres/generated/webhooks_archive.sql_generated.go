@@ -19,11 +19,11 @@ WHERE archived_at IS NULL
 `
 
 type ArchiveWebhookParams struct {
-	BelongsToHousehold string
-	ID                 string
+	BelongsToHousehold string `db:"belongs_to_household"`
+	ID                 string `db:"id"`
 }
 
-func (q *Queries) ArchiveWebhook(ctx context.Context, arg *ArchiveWebhookParams) error {
-	_, err := q.db.ExecContext(ctx, ArchiveWebhook, arg.BelongsToHousehold, arg.ID)
+func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) error {
+	_, err := db.ExecContext(ctx, ArchiveWebhook, arg.BelongsToHousehold, arg.ID)
 	return err
 }

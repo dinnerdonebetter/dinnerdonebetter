@@ -14,12 +14,12 @@ INSERT INTO password_reset_tokens (id,token,expires_at,belongs_to_user) VALUES (
 `
 
 type CreatePasswordResetTokenParams struct {
-	ID            string
-	Token         string
-	BelongsToUser string
+	ID            string `db:"id"`
+	Token         string `db:"token"`
+	BelongsToUser string `db:"belongs_to_user"`
 }
 
-func (q *Queries) CreatePasswordResetToken(ctx context.Context, arg *CreatePasswordResetTokenParams) error {
-	_, err := q.db.ExecContext(ctx, CreatePasswordResetToken, arg.ID, arg.Token, arg.BelongsToUser)
+func (q *Queries) CreatePasswordResetToken(ctx context.Context, db DBTX, arg *CreatePasswordResetTokenParams) error {
+	_, err := db.ExecContext(ctx, CreatePasswordResetToken, arg.ID, arg.Token, arg.BelongsToUser)
 	return err
 }

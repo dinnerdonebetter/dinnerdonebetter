@@ -15,17 +15,17 @@ INSERT INTO household_invitations (id,from_user,to_user,note,to_email,token,dest
 `
 
 type CreateHouseholdInvitationParams struct {
-	ID                   string
-	FromUser             string
-	ToUser               sql.NullString
-	Note                 string
-	ToEmail              string
-	Token                string
-	DestinationHousehold string
+	ID                   string         `db:"id"`
+	FromUser             string         `db:"from_user"`
+	Note                 string         `db:"note"`
+	ToEmail              string         `db:"to_email"`
+	Token                string         `db:"token"`
+	DestinationHousehold string         `db:"destination_household"`
+	ToUser               sql.NullString `db:"to_user"`
 }
 
-func (q *Queries) CreateHouseholdInvitation(ctx context.Context, arg *CreateHouseholdInvitationParams) error {
-	_, err := q.db.ExecContext(ctx, CreateHouseholdInvitation,
+func (q *Queries) CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *CreateHouseholdInvitationParams) error {
+	_, err := db.ExecContext(ctx, CreateHouseholdInvitation,
 		arg.ID,
 		arg.FromUser,
 		arg.ToUser,

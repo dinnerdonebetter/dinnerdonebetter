@@ -32,25 +32,25 @@ ORDER BY recipe_media.id
 `
 
 type GetRecipeMediaForRecipeStepParams struct {
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
+	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
+	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
 }
 
 type GetRecipeMediaForRecipeStepRow struct {
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	Index               int32
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
+	CreatedAt           time.Time      `db:"created_at"`
+	LastUpdatedAt       sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt          sql.NullTime   `db:"archived_at"`
+	ID                  string         `db:"id"`
+	InternalPath        string         `db:"internal_path"`
+	ExternalPath        string         `db:"external_path"`
+	MimeType            string         `db:"mime_type"`
+	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
+	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
+	Index               int32          `db:"index"`
 }
 
-func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetRecipeMediaForRecipeStep, arg.BelongsToRecipe, arg.BelongsToRecipeStep)
+func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error) {
+	rows, err := db.QueryContext(ctx, GetRecipeMediaForRecipeStep, arg.BelongsToRecipe, arg.BelongsToRecipeStep)
 	if err != nil {
 		return nil, err
 	}

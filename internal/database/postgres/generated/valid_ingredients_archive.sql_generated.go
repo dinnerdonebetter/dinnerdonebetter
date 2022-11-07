@@ -13,7 +13,7 @@ const ArchiveValidIngredient = `-- name: ArchiveValidIngredient :exec
 UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidIngredient(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, ArchiveValidIngredient, id)
+func (q *Queries) ArchiveValidIngredient(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, ArchiveValidIngredient, id)
 	return err
 }

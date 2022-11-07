@@ -14,11 +14,11 @@ UPDATE recipe_step_instruments SET archived_at = NOW() WHERE archived_at IS NULL
 `
 
 type ArchiveRecipeStepInstrumentParams struct {
-	BelongsToRecipeStep string
-	ID                  string
+	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
+	ID                  string `db:"id"`
 }
 
-func (q *Queries) ArchiveRecipeStepInstrument(ctx context.Context, arg *ArchiveRecipeStepInstrumentParams) error {
-	_, err := q.db.ExecContext(ctx, ArchiveRecipeStepInstrument, arg.BelongsToRecipeStep, arg.ID)
+func (q *Queries) ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg *ArchiveRecipeStepInstrumentParams) error {
+	_, err := db.ExecContext(ctx, ArchiveRecipeStepInstrument, arg.BelongsToRecipeStep, arg.ID)
 	return err
 }

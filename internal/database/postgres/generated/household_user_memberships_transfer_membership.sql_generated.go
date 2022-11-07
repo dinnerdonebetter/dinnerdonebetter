@@ -14,12 +14,12 @@ UPDATE household_user_memberships SET belongs_to_user = $1 WHERE archived_at IS 
 `
 
 type TransferHouseholdUserMembershipToNewUserParams struct {
-	BelongsToUser      string
-	BelongsToHousehold string
-	BelongsToUser_2    string
+	BelongsToUser      string `db:"belongs_to_user"`
+	BelongsToHousehold string `db:"belongs_to_household"`
+	BelongsToUser_2    string `db:"belongs_to_user_2"`
 }
 
-func (q *Queries) TransferHouseholdUserMembershipToNewUser(ctx context.Context, arg *TransferHouseholdUserMembershipToNewUserParams) error {
-	_, err := q.db.ExecContext(ctx, TransferHouseholdUserMembershipToNewUser, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
+func (q *Queries) TransferHouseholdUserMembershipToNewUser(ctx context.Context, db DBTX, arg *TransferHouseholdUserMembershipToNewUserParams) error {
+	_, err := db.ExecContext(ctx, TransferHouseholdUserMembershipToNewUser, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
 	return err
 }

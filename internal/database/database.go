@@ -37,6 +37,7 @@ type (
 	// SQLQueryExecutor is a subset interface for sql.{DB|Tx} objects.
 	SQLQueryExecutor interface {
 		ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+		PrepareContext(context.Context, string) (*sql.Stmt, error)
 		QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
 		QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
 	}

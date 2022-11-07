@@ -14,11 +14,11 @@ UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id
 `
 
 type ArchiveMealPlanEventParams struct {
-	ID                string
-	BelongsToMealPlan string
+	ID                string `db:"id"`
+	BelongsToMealPlan string `db:"belongs_to_meal_plan"`
 }
 
-func (q *Queries) ArchiveMealPlanEvent(ctx context.Context, arg *ArchiveMealPlanEventParams) error {
-	_, err := q.db.ExecContext(ctx, ArchiveMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
+func (q *Queries) ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) error {
+	_, err := db.ExecContext(ctx, ArchiveMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
 	return err
 }

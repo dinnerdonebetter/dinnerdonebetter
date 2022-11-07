@@ -15,20 +15,20 @@ INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,a
 `
 
 type CreateUserParams struct {
-	ID                string
-	Username          string
-	EmailAddress      string
-	HashedPassword    string
-	TwoFactorSecret   string
-	AvatarSrc         sql.NullString
-	UserAccountStatus string
-	BirthDay          sql.NullInt16
-	BirthMonth        sql.NullInt16
-	ServiceRoles      string
+	ID                string         `db:"id"`
+	Username          string         `db:"username"`
+	EmailAddress      string         `db:"email_address"`
+	HashedPassword    string         `db:"hashed_password"`
+	TwoFactorSecret   string         `db:"two_factor_secret"`
+	UserAccountStatus string         `db:"user_account_status"`
+	ServiceRoles      string         `db:"service_roles"`
+	AvatarSrc         sql.NullString `db:"avatar_src"`
+	BirthDay          sql.NullInt16  `db:"birth_day"`
+	BirthMonth        sql.NullInt16  `db:"birth_month"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg *CreateUserParams) error {
-	_, err := q.db.ExecContext(ctx, CreateUser,
+func (q *Queries) CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error {
+	_, err := db.ExecContext(ctx, CreateUser,
 		arg.ID,
 		arg.Username,
 		arg.EmailAddress,

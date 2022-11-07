@@ -14,14 +14,14 @@ INSERT INTO valid_preparation_instruments (id,notes,valid_preparation_id,valid_i
 `
 
 type CreateValidPreparationInstrumentParams struct {
-	ID                 string
-	Notes              string
-	ValidPreparationID string
-	ValidInstrumentID  string
+	ID                 string `db:"id"`
+	Notes              string `db:"notes"`
+	ValidPreparationID string `db:"valid_preparation_id"`
+	ValidInstrumentID  string `db:"valid_instrument_id"`
 }
 
-func (q *Queries) CreateValidPreparationInstrument(ctx context.Context, arg *CreateValidPreparationInstrumentParams) error {
-	_, err := q.db.ExecContext(ctx, CreateValidPreparationInstrument,
+func (q *Queries) CreateValidPreparationInstrument(ctx context.Context, db DBTX, arg *CreateValidPreparationInstrumentParams) error {
+	_, err := db.ExecContext(ctx, CreateValidPreparationInstrument,
 		arg.ID,
 		arg.Notes,
 		arg.ValidPreparationID,

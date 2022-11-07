@@ -48,34 +48,34 @@ WHERE
 `
 
 type GetValidPreparationInstrumentRow struct {
-	ID                       string
-	Notes                    string
-	ID_2                     string
-	Name                     string
-	Description              string
-	IconPath                 string
-	YieldsNothing            bool
-	RestrictToIngredients    bool
-	ZeroIngredientsAllowable bool
-	PastTense                string
-	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
-	ArchivedAt               sql.NullTime
-	ID_3                     string
-	Name_2                   string
-	PluralName               string
-	Description_2            string
-	IconPath_2               string
-	UsableForStorage         bool
-	CreatedAt_2              time.Time
-	LastUpdatedAt_2          sql.NullTime
-	ArchivedAt_2             sql.NullTime
-	CreatedAt_3              time.Time
-	LastUpdatedAt_3          sql.NullTime
-	ArchivedAt_3             sql.NullTime
+	CreatedAt                time.Time    `db:"created_at"`
+	CreatedAt_3              time.Time    `db:"created_at_3"`
+	CreatedAt_2              time.Time    `db:"created_at_2"`
+	LastUpdatedAt_3          sql.NullTime `db:"last_updated_at_3"`
+	ArchivedAt_2             sql.NullTime `db:"archived_at_2"`
+	LastUpdatedAt_2          sql.NullTime `db:"last_updated_at_2"`
+	ArchivedAt               sql.NullTime `db:"archived_at"`
+	LastUpdatedAt            sql.NullTime `db:"last_updated_at"`
+	ArchivedAt_3             sql.NullTime `db:"archived_at_3"`
+	IconPath                 string       `db:"icon_path"`
+	Notes                    string       `db:"notes"`
+	ID_2                     string       `db:"id_2"`
+	Name                     string       `db:"name"`
+	ID_3                     string       `db:"id_3"`
+	Name_2                   string       `db:"name_2"`
+	PluralName               string       `db:"plural_name"`
+	Description_2            string       `db:"description_2"`
+	IconPath_2               string       `db:"icon_path_2"`
+	Description              string       `db:"description"`
+	PastTense                string       `db:"past_tense"`
+	ID                       string       `db:"id"`
+	UsableForStorage         bool         `db:"usable_for_storage"`
+	YieldsNothing            bool         `db:"yields_nothing"`
+	RestrictToIngredients    bool         `db:"restrict_to_ingredients"`
+	ZeroIngredientsAllowable bool         `db:"zero_ingredients_allowable"`
 }
 
-func (q *Queries) GetValidPreparationInstrument(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, GetValidPreparationInstrument, id)
+func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, GetValidPreparationInstrument, id)
 	return err
 }

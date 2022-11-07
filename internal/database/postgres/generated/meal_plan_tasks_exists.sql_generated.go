@@ -24,11 +24,11 @@ SELECT EXISTS (
 `
 
 type MealPlanTaskExistsParams struct {
-	ID   string
-	ID_2 string
+	ID   string `db:"id"`
+	ID_2 string `db:"id_2"`
 }
 
-func (q *Queries) MealPlanTaskExists(ctx context.Context, arg *MealPlanTaskExistsParams) error {
-	_, err := q.db.ExecContext(ctx, MealPlanTaskExists, arg.ID, arg.ID_2)
+func (q *Queries) MealPlanTaskExists(ctx context.Context, db DBTX, arg *MealPlanTaskExistsParams) error {
+	_, err := db.ExecContext(ctx, MealPlanTaskExists, arg.ID, arg.ID_2)
 	return err
 }

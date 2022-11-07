@@ -25,16 +25,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeMediaParams struct {
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	Index               int32
+	MimeType            string         `db:"mime_type"`
+	InternalPath        string         `db:"internal_path"`
+	ExternalPath        string         `db:"external_path"`
+	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
+	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
+	Index               int32          `db:"index"`
 }
 
-func (q *Queries) UpdateRecipeMedia(ctx context.Context, arg *UpdateRecipeMediaParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateRecipeMedia,
+func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) error {
+	_, err := db.ExecContext(ctx, UpdateRecipeMedia,
 		arg.BelongsToRecipe,
 		arg.BelongsToRecipeStep,
 		arg.MimeType,

@@ -15,15 +15,15 @@ UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, last_update
 `
 
 type UpdateMealPlanParams struct {
-	Notes              string
-	Status             MealPlanStatus
-	VotingDeadline     time.Time
-	BelongsToHousehold string
-	ID                 string
+	Notes              string         `db:"notes"`
+	Status             MealPlanStatus `db:"status"`
+	VotingDeadline     time.Time      `db:"voting_deadline"`
+	BelongsToHousehold string         `db:"belongs_to_household"`
+	ID                 string         `db:"id"`
 }
 
-func (q *Queries) UpdateMealPlan(ctx context.Context, arg *UpdateMealPlanParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateMealPlan,
+func (q *Queries) UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) error {
+	_, err := db.ExecContext(ctx, UpdateMealPlan,
 		arg.Notes,
 		arg.Status,
 		arg.VotingDeadline,

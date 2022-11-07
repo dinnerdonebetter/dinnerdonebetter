@@ -14,14 +14,14 @@ INSERT INTO meals (id,name,description,created_by_user) VALUES ($1,$2,$3,$4)
 `
 
 type CreateMealParams struct {
-	ID            string
-	Name          string
-	Description   string
-	CreatedByUser string
+	ID            string `db:"id"`
+	Name          string `db:"name"`
+	Description   string `db:"description"`
+	CreatedByUser string `db:"created_by_user"`
 }
 
-func (q *Queries) CreateMeal(ctx context.Context, arg *CreateMealParams) error {
-	_, err := q.db.ExecContext(ctx, CreateMeal,
+func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error {
+	_, err := db.ExecContext(ctx, CreateMeal,
 		arg.ID,
 		arg.Name,
 		arg.Description,

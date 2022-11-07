@@ -14,16 +14,16 @@ INSERT INTO meal_plan_option_votes (id,rank,abstain,notes,by_user,belongs_to_mea
 `
 
 type CreateMealPlanOptionVoteParams struct {
-	ID                      string
-	Rank                    int32
-	Abstain                 bool
-	Notes                   string
-	ByUser                  string
-	BelongsToMealPlanOption string
+	ID                      string `db:"id"`
+	Notes                   string `db:"notes"`
+	ByUser                  string `db:"by_user"`
+	BelongsToMealPlanOption string `db:"belongs_to_meal_plan_option"`
+	Rank                    int32  `db:"rank"`
+	Abstain                 bool   `db:"abstain"`
 }
 
-func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, arg *CreateMealPlanOptionVoteParams) error {
-	_, err := q.db.ExecContext(ctx, CreateMealPlanOptionVote,
+func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error {
+	_, err := db.ExecContext(ctx, CreateMealPlanOptionVote,
 		arg.ID,
 		arg.Rank,
 		arg.Abstain,

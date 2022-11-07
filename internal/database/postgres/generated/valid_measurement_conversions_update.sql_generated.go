@@ -24,16 +24,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidMeasurementConversionParams struct {
-	FromUnit          string
-	ToUnit            string
-	OnlyForIngredient sql.NullString
-	Modifier          string
-	Notes             string
-	ID                string
+	FromUnit          string         `db:"from_unit"`
+	ToUnit            string         `db:"to_unit"`
+	Modifier          string         `db:"modifier"`
+	Notes             string         `db:"notes"`
+	ID                string         `db:"id"`
+	OnlyForIngredient sql.NullString `db:"only_for_ingredient"`
 }
 
-func (q *Queries) UpdateValidMeasurementConversion(ctx context.Context, arg *UpdateValidMeasurementConversionParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateValidMeasurementConversion,
+func (q *Queries) UpdateValidMeasurementConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementConversionParams) error {
+	_, err := db.ExecContext(ctx, UpdateValidMeasurementConversion,
 		arg.FromUnit,
 		arg.ToUnit,
 		arg.OnlyForIngredient,

@@ -27,11 +27,11 @@ WHERE meal_plan_events.archived_at IS NULL
 `
 
 type GetMealPlanEventParams struct {
-	ID                string
-	BelongsToMealPlan string
+	ID                string `db:"id"`
+	BelongsToMealPlan string `db:"belongs_to_meal_plan"`
 }
 
-func (q *Queries) GetMealPlanEvent(ctx context.Context, arg *GetMealPlanEventParams) error {
-	_, err := q.db.ExecContext(ctx, GetMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
+func (q *Queries) GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanEventParams) error {
+	_, err := db.ExecContext(ctx, GetMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
 	return err
 }

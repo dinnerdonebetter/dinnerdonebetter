@@ -57,28 +57,28 @@ ORDER BY
 `
 
 type GetValidInstrumentsParams struct {
-	CreatedAfter  sql.NullTime
-	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
-	UpdatedBefore sql.NullTime
-	Limit         sql.NullInt32
+	CreatedAfter  sql.NullTime  `db:"created_after"`
+	CreatedBefore sql.NullTime  `db:"created_before"`
+	UpdatedAfter  sql.NullTime  `db:"updated_after"`
+	UpdatedBefore sql.NullTime  `db:"updated_before"`
+	Limit         sql.NullInt32 `db:"limit"`
 }
 
 type GetValidInstrumentsRow struct {
-	ID            string
-	Name          string
-	PluralName    string
-	Description   string
-	IconPath      string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	FilteredCount int64
-	TotalCount    int64
+	ID            string       `db:"id"`
+	Name          string       `db:"name"`
+	PluralName    string       `db:"plural_name"`
+	Description   string       `db:"description"`
+	IconPath      string       `db:"icon_path"`
+	CreatedAt     time.Time    `db:"created_at"`
+	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
+	ArchivedAt    sql.NullTime `db:"archived_at"`
+	FilteredCount int64        `db:"filtered_count"`
+	TotalCount    int64        `db:"total_count"`
 }
 
-func (q *Queries) GetValidInstruments(ctx context.Context, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetValidInstruments,
+func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
+	rows, err := db.QueryContext(ctx, GetValidInstruments,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedAfter,

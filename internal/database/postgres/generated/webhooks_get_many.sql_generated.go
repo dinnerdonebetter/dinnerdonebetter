@@ -35,23 +35,23 @@ WHERE webhooks.archived_at IS NULL
 `
 
 type GetWebhooksRow struct {
-	ID                 string
-	Name               string
-	ContentType        string
-	Url                string
-	Method             string
-	ID_2               string
-	TriggerEvent       WebhookEvent
-	BelongsToWebhook   string
-	CreatedAt          time.Time
-	ArchivedAt         sql.NullTime
-	CreatedAt_2        time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt_2       sql.NullTime
-	BelongsToHousehold string
+	ID                 string       `db:"id"`
+	Name               string       `db:"name"`
+	ContentType        string       `db:"content_type"`
+	Url                string       `db:"url"`
+	Method             string       `db:"method"`
+	ID_2               string       `db:"id_2"`
+	TriggerEvent       WebhookEvent `db:"trigger_event"`
+	BelongsToWebhook   string       `db:"belongs_to_webhook"`
+	CreatedAt          time.Time    `db:"created_at"`
+	ArchivedAt         sql.NullTime `db:"archived_at"`
+	CreatedAt_2        time.Time    `db:"created_at_2"`
+	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
+	ArchivedAt_2       sql.NullTime `db:"archived_at_2"`
+	BelongsToHousehold string       `db:"belongs_to_household"`
 }
 
-func (q *Queries) GetWebhooks(ctx context.Context, belongsToHousehold string) error {
-	_, err := q.db.ExecContext(ctx, GetWebhooks, belongsToHousehold)
+func (q *Queries) GetWebhooks(ctx context.Context, db DBTX, belongsToHousehold string) error {
+	_, err := db.ExecContext(ctx, GetWebhooks, belongsToHousehold)
 	return err
 }

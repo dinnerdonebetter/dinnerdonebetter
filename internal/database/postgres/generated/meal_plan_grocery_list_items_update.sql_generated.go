@@ -30,22 +30,22 @@ WHERE completed_at IS NULL
 `
 
 type UpdateMealPlanGroceryListItemParams struct {
-	BelongsToMealPlan        string
-	ValidIngredient          string
-	ValidMeasurementUnit     string
-	MinimumQuantityNeeded    string
-	MaximumQuantityNeeded    string
-	QuantityPurchased        sql.NullString
-	PurchasedMeasurementUnit sql.NullString
-	PurchasedUpc             sql.NullString
-	PurchasePrice            sql.NullString
-	StatusExplanation        string
-	Status                   GroceryListItemStatus
-	ID                       string
+	BelongsToMealPlan        string                `db:"belongs_to_meal_plan"`
+	ValidIngredient          string                `db:"valid_ingredient"`
+	ValidMeasurementUnit     string                `db:"valid_measurement_unit"`
+	MinimumQuantityNeeded    string                `db:"minimum_quantity_needed"`
+	MaximumQuantityNeeded    string                `db:"maximum_quantity_needed"`
+	ID                       string                `db:"id"`
+	StatusExplanation        string                `db:"status_explanation"`
+	Status                   GroceryListItemStatus `db:"status"`
+	PurchasedMeasurementUnit sql.NullString        `db:"purchased_measurement_unit"`
+	PurchasedUpc             sql.NullString        `db:"purchased_upc"`
+	PurchasePrice            sql.NullString        `db:"purchase_price"`
+	QuantityPurchased        sql.NullString        `db:"quantity_purchased"`
 }
 
-func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, arg *UpdateMealPlanGroceryListItemParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateMealPlanGroceryListItem,
+func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) error {
+	_, err := db.ExecContext(ctx, UpdateMealPlanGroceryListItem,
 		arg.BelongsToMealPlan,
 		arg.ValidIngredient,
 		arg.ValidMeasurementUnit,

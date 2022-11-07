@@ -34,7 +34,11 @@ setup: $(ARTIFACTS_DIR) revendor rewire configs
 
 .PHONY: configs
 configs:
-	go run cmd/tools/config_gen/main.go
+	go run github.com/prixfixeco/api_server/cmd/tools/gen_configs
+
+.PHONY: queries
+queries:
+	go run github.com/prixfixeco/api_server/cmd/tools/gen_queries
 
 ## prerequisites
 
@@ -142,6 +146,8 @@ queries_gen: queries_lint
 	rm -rf $(GENERATED_QUERIES_DIR)
 	$(SQL_GENERATOR) generate
 	goimports -w $(GENERATED_QUERIES_DIR)
+	fieldalignment -fix ./...
+	fieldalignment -fix ./...
 
 .PHONY: golang_lint
 golang_lint:

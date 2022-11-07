@@ -24,16 +24,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanOptionParams struct {
-	AssignedCook           sql.NullString
-	AssignedDishwasher     sql.NullString
-	MealID                 string
-	Notes                  string
-	BelongsToMealPlanEvent sql.NullString
-	ID                     string
+	MealID                 string         `db:"meal_id"`
+	Notes                  string         `db:"notes"`
+	ID                     string         `db:"id"`
+	AssignedCook           sql.NullString `db:"assigned_cook"`
+	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
-func (q *Queries) UpdateMealPlanOption(ctx context.Context, arg *UpdateMealPlanOptionParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateMealPlanOption,
+func (q *Queries) UpdateMealPlanOption(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionParams) error {
+	_, err := db.ExecContext(ctx, UpdateMealPlanOption,
 		arg.AssignedCook,
 		arg.AssignedDishwasher,
 		arg.MealID,

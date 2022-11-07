@@ -52,37 +52,37 @@ WHERE recipe_step_products.archived_at IS NULL
 `
 
 type GetRecipeStepProductsForRecipeRow struct {
-	ID                                 string
-	Name                               string
-	Type                               RecipeStepProductType
-	ID_2                               sql.NullString
-	Name_2                             sql.NullString
-	Description                        sql.NullString
-	Volumetric                         sql.NullBool
-	IconPath                           sql.NullString
-	Universal                          sql.NullBool
-	Metric                             sql.NullBool
-	Imperial                           sql.NullBool
-	PluralName                         sql.NullString
-	CreatedAt                          sql.NullTime
-	LastUpdatedAt                      sql.NullTime
-	ArchivedAt                         sql.NullTime
-	MinimumQuantityValue               string
-	MaximumQuantityValue               string
-	QuantityNotes                      string
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
-	CreatedAt_2                        time.Time
-	LastUpdatedAt_2                    sql.NullTime
-	ArchivedAt_2                       sql.NullTime
-	BelongsToRecipeStep                string
+	CreatedAt_2                        time.Time             `db:"created_at_2"`
+	CreatedAt                          sql.NullTime          `db:"created_at"`
+	ArchivedAt_2                       sql.NullTime          `db:"archived_at_2"`
+	LastUpdatedAt_2                    sql.NullTime          `db:"last_updated_at_2"`
+	ArchivedAt                         sql.NullTime          `db:"archived_at"`
+	LastUpdatedAt                      sql.NullTime          `db:"last_updated_at"`
+	Name                               string                `db:"name"`
+	Type                               RecipeStepProductType `db:"type"`
+	StorageInstructions                string                `db:"storage_instructions"`
+	QuantityNotes                      string                `db:"quantity_notes"`
+	MaximumQuantityValue               string                `db:"maximum_quantity_value"`
+	MinimumQuantityValue               string                `db:"minimum_quantity_value"`
+	ID                                 string                `db:"id"`
+	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	ID_2                               sql.NullString        `db:"id_2"`
+	Name_2                             sql.NullString        `db:"name_2"`
+	Description                        sql.NullString        `db:"description"`
+	IconPath                           sql.NullString        `db:"icon_path"`
+	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
+	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
+	PluralName                         sql.NullString        `db:"plural_name"`
+	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
+	Volumetric                         sql.NullBool          `db:"volumetric"`
+	Universal                          sql.NullBool          `db:"universal"`
+	Metric                             sql.NullBool          `db:"metric"`
+	Imperial                           sql.NullBool          `db:"imperial"`
+	Compostable                        bool                  `db:"compostable"`
 }
 
-func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, belongsToRecipe string) ([]*GetRecipeStepProductsForRecipeRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetRecipeStepProductsForRecipe, belongsToRecipe)
+func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepProductsForRecipeRow, error) {
+	rows, err := db.QueryContext(ctx, GetRecipeStepProductsForRecipe, belongsToRecipe)
 	if err != nil {
 		return nil, err
 	}

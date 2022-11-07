@@ -14,11 +14,11 @@ UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_
 `
 
 type ArchiveRecipeParams struct {
-	CreatedByUser string
-	ID            string
+	CreatedByUser string `db:"created_by_user"`
+	ID            string `db:"id"`
 }
 
-func (q *Queries) ArchiveRecipe(ctx context.Context, arg *ArchiveRecipeParams) error {
-	_, err := q.db.ExecContext(ctx, ArchiveRecipe, arg.CreatedByUser, arg.ID)
+func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) error {
+	_, err := db.ExecContext(ctx, ArchiveRecipe, arg.CreatedByUser, arg.ID)
 	return err
 }

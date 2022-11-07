@@ -17,12 +17,12 @@ WHERE archived_at IS NULL
 `
 
 type MarkHouseholdUserMembershipAsDefaultForUserParams struct {
-	BelongsToUser      string
-	BelongsToHousehold string
-	BelongsToUser_2    string
+	BelongsToUser      string `db:"belongs_to_user"`
+	BelongsToHousehold string `db:"belongs_to_household"`
+	BelongsToUser_2    string `db:"belongs_to_user_2"`
 }
 
-func (q *Queries) MarkHouseholdUserMembershipAsDefaultForUser(ctx context.Context, arg *MarkHouseholdUserMembershipAsDefaultForUserParams) error {
-	_, err := q.db.ExecContext(ctx, MarkHouseholdUserMembershipAsDefaultForUser, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
+func (q *Queries) MarkHouseholdUserMembershipAsDefaultForUser(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsDefaultForUserParams) error {
+	_, err := db.ExecContext(ctx, MarkHouseholdUserMembershipAsDefaultForUser, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
 	return err
 }

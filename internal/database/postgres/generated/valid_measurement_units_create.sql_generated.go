@@ -17,19 +17,19 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 `
 
 type CreateValidMeasurementUnitParams struct {
-	ID          string
-	Name        string
-	Description string
-	Volumetric  sql.NullBool
-	IconPath    string
-	Universal   bool
-	Metric      bool
-	Imperial    bool
-	PluralName  string
+	ID          string       `db:"id"`
+	Name        string       `db:"name"`
+	Description string       `db:"description"`
+	IconPath    string       `db:"icon_path"`
+	PluralName  string       `db:"plural_name"`
+	Volumetric  sql.NullBool `db:"volumetric"`
+	Universal   bool         `db:"universal"`
+	Metric      bool         `db:"metric"`
+	Imperial    bool         `db:"imperial"`
 }
 
-func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, arg *CreateValidMeasurementUnitParams) error {
-	_, err := q.db.ExecContext(ctx, CreateValidMeasurementUnit,
+func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitParams) error {
+	_, err := db.ExecContext(ctx, CreateValidMeasurementUnit,
 		arg.ID,
 		arg.Name,
 		arg.Description,

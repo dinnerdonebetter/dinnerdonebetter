@@ -16,17 +16,17 @@ VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
 type CreateMealPlanTaskParams struct {
-	ID                      string
-	Status                  PrepStepStatus
-	StatusExplanation       string
-	CreationExplanation     string
-	BelongsToMealPlanOption string
-	BelongsToRecipePrepTask string
-	AssignedToUser          sql.NullString
+	ID                      string         `db:"id"`
+	Status                  PrepStepStatus `db:"status"`
+	StatusExplanation       string         `db:"status_explanation"`
+	CreationExplanation     string         `db:"creation_explanation"`
+	BelongsToMealPlanOption string         `db:"belongs_to_meal_plan_option"`
+	BelongsToRecipePrepTask string         `db:"belongs_to_recipe_prep_task"`
+	AssignedToUser          sql.NullString `db:"assigned_to_user"`
 }
 
-func (q *Queries) CreateMealPlanTask(ctx context.Context, arg *CreateMealPlanTaskParams) error {
-	_, err := q.db.ExecContext(ctx, CreateMealPlanTask,
+func (q *Queries) CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMealPlanTaskParams) error {
+	_, err := db.ExecContext(ctx, CreateMealPlanTask,
 		arg.ID,
 		arg.Status,
 		arg.StatusExplanation,

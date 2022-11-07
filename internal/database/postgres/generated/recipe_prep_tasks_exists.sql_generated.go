@@ -23,11 +23,11 @@ SELECT EXISTS (
 `
 
 type RecipePrepTaskExistsParams struct {
-	BelongsToRecipe string
-	ID              string
+	BelongsToRecipe string `db:"belongs_to_recipe"`
+	ID              string `db:"id"`
 }
 
-func (q *Queries) RecipePrepTaskExists(ctx context.Context, arg *RecipePrepTaskExistsParams) error {
-	_, err := q.db.ExecContext(ctx, RecipePrepTaskExists, arg.BelongsToRecipe, arg.ID)
+func (q *Queries) RecipePrepTaskExists(ctx context.Context, db DBTX, arg *RecipePrepTaskExistsParams) error {
+	_, err := db.ExecContext(ctx, RecipePrepTaskExists, arg.BelongsToRecipe, arg.ID)
 	return err
 }

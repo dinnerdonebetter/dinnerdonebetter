@@ -17,22 +17,22 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
 `
 
 type CreateMealPlanGroceryListItemParams struct {
-	ID                       string
-	BelongsToMealPlan        string
-	ValidIngredient          string
-	ValidMeasurementUnit     string
-	MinimumQuantityNeeded    string
-	MaximumQuantityNeeded    string
-	QuantityPurchased        sql.NullString
-	PurchasedMeasurementUnit sql.NullString
-	PurchasedUpc             sql.NullString
-	PurchasePrice            sql.NullString
-	StatusExplanation        string
-	Status                   GroceryListItemStatus
+	ID                       string                `db:"id"`
+	BelongsToMealPlan        string                `db:"belongs_to_meal_plan"`
+	ValidIngredient          string                `db:"valid_ingredient"`
+	ValidMeasurementUnit     string                `db:"valid_measurement_unit"`
+	MinimumQuantityNeeded    string                `db:"minimum_quantity_needed"`
+	MaximumQuantityNeeded    string                `db:"maximum_quantity_needed"`
+	StatusExplanation        string                `db:"status_explanation"`
+	Status                   GroceryListItemStatus `db:"status"`
+	QuantityPurchased        sql.NullString        `db:"quantity_purchased"`
+	PurchasedMeasurementUnit sql.NullString        `db:"purchased_measurement_unit"`
+	PurchasedUpc             sql.NullString        `db:"purchased_upc"`
+	PurchasePrice            sql.NullString        `db:"purchase_price"`
 }
 
-func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, arg *CreateMealPlanGroceryListItemParams) error {
-	_, err := q.db.ExecContext(ctx, CreateMealPlanGroceryListItem,
+func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *CreateMealPlanGroceryListItemParams) error {
+	_, err := db.ExecContext(ctx, CreateMealPlanGroceryListItem,
 		arg.ID,
 		arg.BelongsToMealPlan,
 		arg.ValidIngredient,

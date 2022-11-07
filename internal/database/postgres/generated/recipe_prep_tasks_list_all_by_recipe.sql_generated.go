@@ -40,26 +40,26 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 `
 
 type GetRecipePrepTasksForRecipeRow struct {
-	ID                                     sql.NullString
-	Notes                                  sql.NullString
-	ExplicitStorageInstructions            sql.NullString
-	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	StorageType                            NullStorageContainerType
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
-	BelongsToRecipe                        sql.NullString
-	CreatedAt                              sql.NullTime
-	LastUpdatedAt                          sql.NullTime
-	ArchivedAt                             sql.NullTime
-	ID_2                                   sql.NullString
-	BelongsToRecipeStep                    sql.NullString
-	BelongsToRecipePrepTask                sql.NullString
-	SatisfiesRecipeStep                    sql.NullBool
+	CreatedAt                              sql.NullTime             `db:"created_at"`
+	ArchivedAt                             sql.NullTime             `db:"archived_at"`
+	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
+	ID                                     sql.NullString           `db:"id"`
+	BelongsToRecipeStep                    sql.NullString           `db:"belongs_to_recipe_step"`
+	StorageType                            NullStorageContainerType `db:"storage_type"`
+	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
+	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
+	BelongsToRecipe                        sql.NullString           `db:"belongs_to_recipe"`
+	BelongsToRecipePrepTask                sql.NullString           `db:"belongs_to_recipe_prep_task"`
+	ExplicitStorageInstructions            sql.NullString           `db:"explicit_storage_instructions"`
+	Notes                                  sql.NullString           `db:"notes"`
+	ID_2                                   sql.NullString           `db:"id_2"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"minimum_time_buffer_before_recipe_in_seconds"`
+	SatisfiesRecipeStep                    sql.NullBool             `db:"satisfies_recipe_step"`
 }
 
-func (q *Queries) GetRecipePrepTasksForRecipe(ctx context.Context, id string) ([]*GetRecipePrepTasksForRecipeRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetRecipePrepTasksForRecipe, id)
+func (q *Queries) GetRecipePrepTasksForRecipe(ctx context.Context, db DBTX, id string) ([]*GetRecipePrepTasksForRecipeRow, error) {
+	rows, err := db.QueryContext(ctx, GetRecipePrepTasksForRecipe, id)
 	if err != nil {
 		return nil, err
 	}

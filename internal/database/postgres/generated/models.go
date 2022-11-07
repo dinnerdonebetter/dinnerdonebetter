@@ -68,16 +68,6 @@ func (e GroceryListItemStatus) Valid() bool {
 	return false
 }
 
-func AllGroceryListItemStatusValues() []GroceryListItemStatus {
-	return []GroceryListItemStatus{
-		GroceryListItemStatusUnknown,
-		GroceryListItemStatusAlreadyowned,
-		GroceryListItemStatusNeeds,
-		GroceryListItemStatusUnavailable,
-		GroceryListItemStatusAcquired,
-	}
-}
-
 type InvitationState string
 
 const (
@@ -131,15 +121,6 @@ func (e InvitationState) Valid() bool {
 		return true
 	}
 	return false
-}
-
-func AllInvitationStateValues() []InvitationState {
-	return []InvitationState{
-		InvitationStatePending,
-		InvitationStateCancelled,
-		InvitationStateAccepted,
-		InvitationStateRejected,
-	}
 }
 
 type MealName string
@@ -201,17 +182,6 @@ func (e MealName) Valid() bool {
 	return false
 }
 
-func AllMealNameValues() []MealName {
-	return []MealName{
-		MealNameBreakfast,
-		MealNameSecondBreakfast,
-		MealNameBrunch,
-		MealNameLunch,
-		MealNameSupper,
-		MealNameDinner,
-	}
-}
-
 type MealPlanStatus string
 
 const (
@@ -261,13 +231,6 @@ func (e MealPlanStatus) Valid() bool {
 		return true
 	}
 	return false
-}
-
-func AllMealPlanStatusValues() []MealPlanStatus {
-	return []MealPlanStatus{
-		MealPlanStatusAwaitingVotes,
-		MealPlanStatusFinalized,
-	}
 }
 
 type PrepStepStatus string
@@ -327,16 +290,6 @@ func (e PrepStepStatus) Valid() bool {
 	return false
 }
 
-func AllPrepStepStatusValues() []PrepStepStatus {
-	return []PrepStepStatus{
-		PrepStepStatusUnfinished,
-		PrepStepStatusPostponed,
-		PrepStepStatusIgnored,
-		PrepStepStatusCanceled,
-		PrepStepStatusFinished,
-	}
-}
-
 type RecipeStepProductType string
 
 const (
@@ -386,13 +339,6 @@ func (e RecipeStepProductType) Valid() bool {
 		return true
 	}
 	return false
-}
-
-func AllRecipeStepProductTypeValues() []RecipeStepProductType {
-	return []RecipeStepProductType{
-		RecipeStepProductTypeIngredient,
-		RecipeStepProductTypeInstrument,
-	}
 }
 
 type StorageContainerType string
@@ -448,15 +394,6 @@ func (e StorageContainerType) Valid() bool {
 		return true
 	}
 	return false
-}
-
-func AllStorageContainerTypeValues() []StorageContainerType {
-	return []StorageContainerType{
-		StorageContainerTypeUncovered,
-		StorageContainerTypeCovered,
-		StorageContainerTypeOnawirerack,
-		StorageContainerTypeInanairtightcontainer,
-	}
 }
 
 type TimeZone string
@@ -516,16 +453,6 @@ func (e TimeZone) Valid() bool {
 	return false
 }
 
-func AllTimeZoneValues() []TimeZone {
-	return []TimeZone{
-		TimeZoneUTC,
-		TimeZoneUSPacific,
-		TimeZoneUSMountain,
-		TimeZoneUSCentral,
-		TimeZoneUSEastern,
-	}
-}
-
 type WebhookEvent string
 
 const (
@@ -579,457 +506,449 @@ func (e WebhookEvent) Valid() bool {
 	return false
 }
 
-func AllWebhookEventValues() []WebhookEvent {
-	return []WebhookEvent{
-		WebhookEventWebhookCreated,
-		WebhookEventWebhookUpdated,
-		WebhookEventWebhookArchived,
-	}
-}
-
 type ApiClients struct {
-	ID               string
-	Name             sql.NullString
-	ClientID         string
-	SecretKey        []byte
-	Permissions      int64
-	AdminPermissions int64
-	CreatedAt        time.Time
-	LastUpdatedAt    sql.NullTime
-	ArchivedAt       sql.NullTime
-	BelongsToUser    string
+	CreatedAt        time.Time      `db:"created_at"`
+	LastUpdatedAt    sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt       sql.NullTime   `db:"archived_at"`
+	BelongsToUser    string         `db:"belongs_to_user"`
+	ID               string         `db:"id"`
+	ClientID         string         `db:"client_id"`
+	Name             sql.NullString `db:"name"`
+	SecretKey        []byte         `db:"secret_key"`
+	Permissions      int64          `db:"permissions"`
+	AdminPermissions int64          `db:"admin_permissions"`
 }
 
 type HouseholdInvitations struct {
-	ID                   string
-	DestinationHousehold string
-	ToEmail              string
-	ToUser               sql.NullString
-	FromUser             string
-	Status               InvitationState
-	Note                 string
-	StatusNote           string
-	Token                string
-	CreatedAt            time.Time
-	LastUpdatedAt        sql.NullTime
-	ArchivedAt           sql.NullTime
+	CreatedAt            time.Time       `db:"created_at"`
+	LastUpdatedAt        sql.NullTime    `db:"last_updated_at"`
+	ArchivedAt           sql.NullTime    `db:"archived_at"`
+	ID                   string          `db:"id"`
+	DestinationHousehold string          `db:"destination_household"`
+	ToEmail              string          `db:"to_email"`
+	Note                 string          `db:"note"`
+	StatusNote           string          `db:"status_note"`
+	Token                string          `db:"token"`
+	FromUser             string          `db:"from_user"`
+	Status               InvitationState `db:"status"`
+	ToUser               sql.NullString  `db:"to_user"`
 }
 
 type HouseholdUserMemberships struct {
-	ID                 string
-	BelongsToHousehold string
-	BelongsToUser      string
-	DefaultHousehold   bool
-	HouseholdRoles     string
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
+	CreatedAt          time.Time    `db:"created_at"`
+	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
+	ArchivedAt         sql.NullTime `db:"archived_at"`
+	BelongsToUser      string       `db:"belongs_to_user"`
+	HouseholdRoles     string       `db:"household_roles"`
+	ID                 string       `db:"id"`
+	BelongsToHousehold string       `db:"belongs_to_household"`
+	DefaultHousehold   bool         `db:"default_household"`
 }
 
 type Households struct {
-	ID                         string
-	Name                       string
-	BillingStatus              string
-	ContactEmail               string
-	ContactPhone               string
-	PaymentProcessorCustomerID string
-	SubscriptionPlanID         sql.NullString
-	CreatedAt                  time.Time
-	LastUpdatedAt              sql.NullTime
-	ArchivedAt                 sql.NullTime
-	BelongsToUser              string
-	TimeZone                   TimeZone
+	CreatedAt                  time.Time      `db:"created_at"`
+	LastUpdatedAt              sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt                 sql.NullTime   `db:"archived_at"`
+	ID                         string         `db:"id"`
+	ContactPhone               string         `db:"contact_phone"`
+	PaymentProcessorCustomerID string         `db:"payment_processor_customer_id"`
+	Name                       string         `db:"name"`
+	BillingStatus              string         `db:"billing_status"`
+	ContactEmail               string         `db:"contact_email"`
+	BelongsToUser              string         `db:"belongs_to_user"`
+	TimeZone                   TimeZone       `db:"time_zone"`
+	SubscriptionPlanID         sql.NullString `db:"subscription_plan_id"`
 }
 
 type MealPlanEvents struct {
-	ID                string
-	Notes             string
-	StartsAt          time.Time
-	EndsAt            time.Time
-	MealName          MealName
-	BelongsToMealPlan string
-	CreatedAt         time.Time
-	LastUpdatedAt     sql.NullTime
-	ArchivedAt        sql.NullTime
+	ID                string       `db:"id"`
+	Notes             string       `db:"notes"`
+	StartsAt          time.Time    `db:"starts_at"`
+	EndsAt            time.Time    `db:"ends_at"`
+	MealName          MealName     `db:"meal_name"`
+	BelongsToMealPlan string       `db:"belongs_to_meal_plan"`
+	CreatedAt         time.Time    `db:"created_at"`
+	LastUpdatedAt     sql.NullTime `db:"last_updated_at"`
+	ArchivedAt        sql.NullTime `db:"archived_at"`
 }
 
 type MealPlanGroceryListItems struct {
-	ID                       string
-	ValidIngredient          string
-	ValidMeasurementUnit     string
-	MinimumQuantityNeeded    string
-	MaximumQuantityNeeded    string
-	QuantityPurchased        sql.NullString
-	PurchasedMeasurementUnit sql.NullString
-	PurchasedUpc             sql.NullString
-	PurchasePrice            sql.NullString
-	StatusExplanation        string
-	Status                   GroceryListItemStatus
-	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
-	CompletedAt              sql.NullTime
-	BelongsToMealPlan        string
+	CreatedAt                time.Time             `db:"created_at"`
+	CompletedAt              sql.NullTime          `db:"completed_at"`
+	LastUpdatedAt            sql.NullTime          `db:"last_updated_at"`
+	BelongsToMealPlan        string                `db:"belongs_to_meal_plan"`
+	MaximumQuantityNeeded    string                `db:"maximum_quantity_needed"`
+	MinimumQuantityNeeded    string                `db:"minimum_quantity_needed"`
+	ValidMeasurementUnit     string                `db:"valid_measurement_unit"`
+	ID                       string                `db:"id"`
+	ValidIngredient          string                `db:"valid_ingredient"`
+	StatusExplanation        string                `db:"status_explanation"`
+	Status                   GroceryListItemStatus `db:"status"`
+	PurchasePrice            sql.NullString        `db:"purchase_price"`
+	PurchasedMeasurementUnit sql.NullString        `db:"purchased_measurement_unit"`
+	QuantityPurchased        sql.NullString        `db:"quantity_purchased"`
+	PurchasedUpc             sql.NullString        `db:"purchased_upc"`
 }
 
 type MealPlanOptionVotes struct {
-	ID                      string
-	Rank                    int32
-	Abstain                 bool
-	Notes                   string
-	ByUser                  string
-	CreatedAt               time.Time
-	LastUpdatedAt           sql.NullTime
-	ArchivedAt              sql.NullTime
-	BelongsToMealPlanOption string
+	CreatedAt               time.Time    `db:"created_at"`
+	LastUpdatedAt           sql.NullTime `db:"last_updated_at"`
+	ArchivedAt              sql.NullTime `db:"archived_at"`
+	BelongsToMealPlanOption string       `db:"belongs_to_meal_plan_option"`
+	Notes                   string       `db:"notes"`
+	ByUser                  string       `db:"by_user"`
+	ID                      string       `db:"id"`
+	Rank                    int32        `db:"rank"`
+	Abstain                 bool         `db:"abstain"`
 }
 
 type MealPlanOptions struct {
-	ID                     string
-	MealID                 string
-	Notes                  string
-	Chosen                 bool
-	Tiebroken              bool
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
-	AssignedCook           sql.NullString
-	AssignedDishwasher     sql.NullString
-	BelongsToMealPlanEvent sql.NullString
+	CreatedAt              time.Time      `db:"created_at"`
+	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt             sql.NullTime   `db:"archived_at"`
+	Notes                  string         `db:"notes"`
+	ID                     string         `db:"id"`
+	MealID                 string         `db:"meal_id"`
+	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	AssignedCook           sql.NullString `db:"assigned_cook"`
+	Chosen                 bool           `db:"chosen"`
+	Tiebroken              bool           `db:"tiebroken"`
 }
 
 type MealPlanTasks struct {
-	ID                      string
-	BelongsToMealPlanOption string
-	BelongsToRecipePrepTask string
-	CreationExplanation     string
-	StatusExplanation       string
-	Status                  PrepStepStatus
-	CreatedAt               time.Time
-	LastUpdatedAt           sql.NullTime
-	AssignedToUser          sql.NullString
-	CompletedAt             sql.NullTime
+	CreatedAt               time.Time      `db:"created_at"`
+	LastUpdatedAt           sql.NullTime   `db:"last_updated_at"`
+	CompletedAt             sql.NullTime   `db:"completed_at"`
+	BelongsToRecipePrepTask string         `db:"belongs_to_recipe_prep_task"`
+	StatusExplanation       string         `db:"status_explanation"`
+	Status                  PrepStepStatus `db:"status"`
+	ID                      string         `db:"id"`
+	BelongsToMealPlanOption string         `db:"belongs_to_meal_plan_option"`
+	CreationExplanation     string         `db:"creation_explanation"`
+	AssignedToUser          sql.NullString `db:"assigned_to_user"`
 }
 
 type MealPlans struct {
-	ID                     string
-	Notes                  string
-	Status                 MealPlanStatus
-	VotingDeadline         time.Time
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
-	BelongsToHousehold     string
-	GroceryListInitialized bool
-	TasksCreated           bool
+	ID                     string         `db:"id"`
+	Notes                  string         `db:"notes"`
+	Status                 MealPlanStatus `db:"status"`
+	VotingDeadline         time.Time      `db:"voting_deadline"`
+	CreatedAt              time.Time      `db:"created_at"`
+	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt             sql.NullTime   `db:"archived_at"`
+	BelongsToHousehold     string         `db:"belongs_to_household"`
+	GroceryListInitialized bool           `db:"grocery_list_initialized"`
+	TasksCreated           bool           `db:"tasks_created"`
 }
 
 type MealRecipes struct {
-	ID            string
-	MealID        string
-	RecipeID      string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
+	ID            string       `db:"id"`
+	MealID        string       `db:"meal_id"`
+	RecipeID      string       `db:"recipe_id"`
+	CreatedAt     time.Time    `db:"created_at"`
+	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
+	ArchivedAt    sql.NullTime `db:"archived_at"`
 }
 
 type Meals struct {
-	ID            string
-	Name          string
-	Description   string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	CreatedByUser string
+	ID            string       `db:"id"`
+	Name          string       `db:"name"`
+	Description   string       `db:"description"`
+	CreatedAt     time.Time    `db:"created_at"`
+	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
+	ArchivedAt    sql.NullTime `db:"archived_at"`
+	CreatedByUser string       `db:"created_by_user"`
 }
 
 type PasswordResetTokens struct {
-	ID            string
-	Token         string
-	ExpiresAt     time.Time
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	RedeemedAt    sql.NullTime
-	BelongsToUser string
+	ID            string       `db:"id"`
+	Token         string       `db:"token"`
+	ExpiresAt     time.Time    `db:"expires_at"`
+	CreatedAt     time.Time    `db:"created_at"`
+	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
+	RedeemedAt    sql.NullTime `db:"redeemed_at"`
+	BelongsToUser string       `db:"belongs_to_user"`
 }
 
 type RecipeMedia struct {
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
-	Index               int32
+	CreatedAt           time.Time      `db:"created_at"`
+	LastUpdatedAt       sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt          sql.NullTime   `db:"archived_at"`
+	MimeType            string         `db:"mime_type"`
+	InternalPath        string         `db:"internal_path"`
+	ExternalPath        string         `db:"external_path"`
+	ID                  string         `db:"id"`
+	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
+	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
+	Index               int32          `db:"index"`
 }
 
 type RecipePrepTaskSteps struct {
-	ID                      string
-	SatisfiesRecipeStep     bool
-	BelongsToRecipeStep     string
-	BelongsToRecipePrepTask string
+	ID                      string `db:"id"`
+	BelongsToRecipeStep     string `db:"belongs_to_recipe_step"`
+	BelongsToRecipePrepTask string `db:"belongs_to_recipe_prep_task"`
+	SatisfiesRecipeStep     bool   `db:"satisfies_recipe_step"`
 }
 
 type RecipePrepTasks struct {
-	ID                                     string
-	Notes                                  string
-	ExplicitStorageInstructions            string
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	StorageType                            NullStorageContainerType
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
-	BelongsToRecipe                        string
-	CreatedAt                              time.Time
-	LastUpdatedAt                          sql.NullTime
-	ArchivedAt                             sql.NullTime
+	CreatedAt                              time.Time                `db:"created_at"`
+	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
+	ArchivedAt                             sql.NullTime             `db:"archived_at"`
+	ID                                     string                   `db:"id"`
+	Notes                                  string                   `db:"notes"`
+	ExplicitStorageInstructions            string                   `db:"explicit_storage_instructions"`
+	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
+	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
+	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
+	StorageType                            NullStorageContainerType `db:"storage_type"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
 }
 
 type RecipeStepIngredients struct {
-	ID                   string
-	IngredientID         sql.NullString
-	MinimumQuantityValue string
-	QuantityNotes        string
-	ProductOfRecipeStep  bool
-	IngredientNotes      string
-	CreatedAt            time.Time
-	LastUpdatedAt        sql.NullTime
-	ArchivedAt           sql.NullTime
-	BelongsToRecipeStep  string
-	Name                 string
-	RecipeStepProductID  sql.NullString
-	MaximumQuantityValue string
-	MeasurementUnit      sql.NullString
-	Optional             bool
+	CreatedAt            time.Time      `db:"created_at"`
+	LastUpdatedAt        sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt           sql.NullTime   `db:"archived_at"`
+	QuantityNotes        string         `db:"quantity_notes"`
+	Name                 string         `db:"name"`
+	IngredientNotes      string         `db:"ingredient_notes"`
+	BelongsToRecipeStep  string         `db:"belongs_to_recipe_step"`
+	MaximumQuantityValue string         `db:"maximum_quantity_value"`
+	MinimumQuantityValue string         `db:"minimum_quantity_value"`
+	ID                   string         `db:"id"`
+	RecipeStepProductID  sql.NullString `db:"recipe_step_product_id"`
+	IngredientID         sql.NullString `db:"ingredient_id"`
+	MeasurementUnit      sql.NullString `db:"measurement_unit"`
+	ProductOfRecipeStep  bool           `db:"product_of_recipe_step"`
+	Optional             bool           `db:"optional"`
 }
 
 type RecipeStepInstruments struct {
-	ID                  string
-	InstrumentID        sql.NullString
-	Notes               string
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
-	BelongsToRecipeStep string
-	PreferenceRank      int32
-	RecipeStepProductID sql.NullString
-	ProductOfRecipeStep bool
-	Name                string
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
+	CreatedAt           time.Time      `db:"created_at"`
+	LastUpdatedAt       sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt          sql.NullTime   `db:"archived_at"`
+	Name                string         `db:"name"`
+	ID                  string         `db:"id"`
+	Notes               string         `db:"notes"`
+	BelongsToRecipeStep string         `db:"belongs_to_recipe_step"`
+	InstrumentID        sql.NullString `db:"instrument_id"`
+	RecipeStepProductID sql.NullString `db:"recipe_step_product_id"`
+	PreferenceRank      int32          `db:"preference_rank"`
+	MinimumQuantity     int32          `db:"minimum_quantity"`
+	MaximumQuantity     int32          `db:"maximum_quantity"`
+	Optional            bool           `db:"optional"`
+	ProductOfRecipeStep bool           `db:"product_of_recipe_step"`
 }
 
 type RecipeStepProducts struct {
-	ID                                 string
-	Name                               string
-	CreatedAt                          time.Time
-	LastUpdatedAt                      sql.NullTime
-	ArchivedAt                         sql.NullTime
-	BelongsToRecipeStep                string
-	QuantityNotes                      string
-	MinimumQuantityValue               string
-	MaximumQuantityValue               string
-	MeasurementUnit                    sql.NullString
-	Type                               RecipeStepProductType
-	Compostable                        bool
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                string
+	CreatedAt                          time.Time             `db:"created_at"`
+	LastUpdatedAt                      sql.NullTime          `db:"last_updated_at"`
+	ArchivedAt                         sql.NullTime          `db:"archived_at"`
+	Type                               RecipeStepProductType `db:"type"`
+	Name                               string                `db:"name"`
+	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	QuantityNotes                      string                `db:"quantity_notes"`
+	MinimumQuantityValue               string                `db:"minimum_quantity_value"`
+	MaximumQuantityValue               string                `db:"maximum_quantity_value"`
+	ID                                 string                `db:"id"`
+	StorageInstructions                string                `db:"storage_instructions"`
+	MeasurementUnit                    sql.NullString        `db:"measurement_unit"`
+	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
+	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
+	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
+	Compostable                        bool                  `db:"compostable"`
 }
 
 type RecipeSteps struct {
-	ID                            string
-	Index                         int32
-	PreparationID                 string
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumTemperatureInCelsius   sql.NullString
-	Notes                         string
-	CreatedAt                     time.Time
-	LastUpdatedAt                 sql.NullTime
-	ArchivedAt                    sql.NullTime
-	BelongsToRecipe               string
-	Optional                      bool
-	MaximumTemperatureInCelsius   sql.NullString
-	ExplicitInstructions          string
+	CreatedAt                     time.Time      `db:"created_at"`
+	ArchivedAt                    sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                 sql.NullTime   `db:"last_updated_at"`
+	Notes                         string         `db:"notes"`
+	BelongsToRecipe               string         `db:"belongs_to_recipe"`
+	PreparationID                 string         `db:"preparation_id"`
+	ID                            string         `db:"id"`
+	ExplicitInstructions          string         `db:"explicit_instructions"`
+	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
+	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
+	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
+	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
+	Index                         int32          `db:"index"`
+	Optional                      bool           `db:"optional"`
 }
 
 type Recipes struct {
-	ID                 string
-	Name               string
-	Source             string
-	Description        string
-	InspiredByRecipeID sql.NullString
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
-	CreatedByUser      string
-	YieldsPortions     int32
-	SealOfApproval     bool
+	CreatedAt          time.Time      `db:"created_at"`
+	LastUpdatedAt      sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt         sql.NullTime   `db:"archived_at"`
+	Source             string         `db:"source"`
+	Description        string         `db:"description"`
+	ID                 string         `db:"id"`
+	Name               string         `db:"name"`
+	CreatedByUser      string         `db:"created_by_user"`
+	InspiredByRecipeID sql.NullString `db:"inspired_by_recipe_id"`
+	YieldsPortions     int32          `db:"yields_portions"`
+	SealOfApproval     bool           `db:"seal_of_approval"`
 }
 
 type Sessions struct {
-	Token     string
-	Data      []byte
-	Expiry    time.Time
-	CreatedOn int64
+	Expiry    time.Time `db:"expiry"`
+	Token     string    `db:"token"`
+	Data      []byte    `db:"data"`
+	CreatedOn int64     `db:"created_on"`
 }
 
 type Users struct {
-	ID                           string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	EmailAddress                 string
-	HashedPassword               string
-	PasswordLastChangedAt        sql.NullTime
-	RequiresPasswordChange       bool
-	TwoFactorSecret              string
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	ServiceRoles                 string
-	UserAccountStatus            string
-	UserAccountStatusExplanation string
-	CreatedAt                    time.Time
-	LastUpdatedAt                sql.NullTime
-	ArchivedAt                   sql.NullTime
-	BirthDay                     sql.NullInt16
-	BirthMonth                   sql.NullInt16
+	CreatedAt                    time.Time      `db:"created_at"`
+	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
+	ArchivedAt                   sql.NullTime   `db:"archived_at"`
+	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
+	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
+	ID                           string         `db:"id"`
+	HashedPassword               string         `db:"hashed_password"`
+	TwoFactorSecret              string         `db:"two_factor_secret"`
+	EmailAddress                 string         `db:"email_address"`
+	ServiceRoles                 string         `db:"service_roles"`
+	UserAccountStatus            string         `db:"user_account_status"`
+	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
+	Username                     string         `db:"username"`
+	AvatarSrc                    sql.NullString `db:"avatar_src"`
+	BirthDay                     sql.NullInt16  `db:"birth_day"`
+	BirthMonth                   sql.NullInt16  `db:"birth_month"`
+	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
 type ValidIngredientMeasurementUnits struct {
-	ID                       string
-	Notes                    string
-	ValidIngredientID        string
-	ValidMeasurementUnitID   string
-	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
-	ArchivedAt               sql.NullTime
-	MinimumAllowableQuantity string
-	MaximumAllowableQuantity string
+	ID                       string       `db:"id"`
+	Notes                    string       `db:"notes"`
+	ValidIngredientID        string       `db:"valid_ingredient_id"`
+	ValidMeasurementUnitID   string       `db:"valid_measurement_unit_id"`
+	CreatedAt                time.Time    `db:"created_at"`
+	LastUpdatedAt            sql.NullTime `db:"last_updated_at"`
+	ArchivedAt               sql.NullTime `db:"archived_at"`
+	MinimumAllowableQuantity string       `db:"minimum_allowable_quantity"`
+	MaximumAllowableQuantity string       `db:"maximum_allowable_quantity"`
 }
 
 type ValidIngredientPreparations struct {
-	ID                 string
-	Notes              string
-	ValidPreparationID string
-	ValidIngredientID  string
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
+	ID                 string       `db:"id"`
+	Notes              string       `db:"notes"`
+	ValidPreparationID string       `db:"valid_preparation_id"`
+	ValidIngredientID  string       `db:"valid_ingredient_id"`
+	CreatedAt          time.Time    `db:"created_at"`
+	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
+	ArchivedAt         sql.NullTime `db:"archived_at"`
 }
 
 type ValidIngredients struct {
-	ID                                      string
-	Name                                    string
-	Description                             string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IconPath                                string
-	CreatedAt                               time.Time
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	PluralName                              string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
+	CreatedAt                               time.Time      `db:"created_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	Description                             string         `db:"description"`
+	Warning                                 string         `db:"warning"`
+	PluralName                              string         `db:"plural_name"`
+	ID                                      string         `db:"id"`
+	Name                                    string         `db:"name"`
+	IconPath                                string         `db:"icon_path"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	Volumetric                              bool           `db:"volumetric"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
 }
 
 type ValidInstruments struct {
-	ID               string
-	Name             string
-	Description      string
-	IconPath         string
-	CreatedAt        time.Time
-	LastUpdatedAt    sql.NullTime
-	ArchivedAt       sql.NullTime
-	PluralName       string
-	UsableForStorage bool
+	ID               string       `db:"id"`
+	Name             string       `db:"name"`
+	Description      string       `db:"description"`
+	IconPath         string       `db:"icon_path"`
+	CreatedAt        time.Time    `db:"created_at"`
+	LastUpdatedAt    sql.NullTime `db:"last_updated_at"`
+	ArchivedAt       sql.NullTime `db:"archived_at"`
+	PluralName       string       `db:"plural_name"`
+	UsableForStorage bool         `db:"usable_for_storage"`
 }
 
 type ValidMeasurementConversions struct {
-	ID                string
-	FromUnit          string
-	ToUnit            string
-	OnlyForIngredient sql.NullString
-	Modifier          string
-	Notes             string
-	CreatedAt         time.Time
-	LastUpdatedAt     sql.NullTime
-	ArchivedAt        sql.NullTime
+	CreatedAt         time.Time      `db:"created_at"`
+	LastUpdatedAt     sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt        sql.NullTime   `db:"archived_at"`
+	Modifier          string         `db:"modifier"`
+	Notes             string         `db:"notes"`
+	ID                string         `db:"id"`
+	FromUnit          string         `db:"from_unit"`
+	ToUnit            string         `db:"to_unit"`
+	OnlyForIngredient sql.NullString `db:"only_for_ingredient"`
 }
 
 type ValidMeasurementUnits struct {
-	ID            string
-	Name          string
-	Description   string
-	IconPath      string
-	Volumetric    sql.NullBool
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	Universal     bool
-	Metric        bool
-	Imperial      bool
-	PluralName    string
+	CreatedAt     time.Time    `db:"created_at"`
+	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
+	ArchivedAt    sql.NullTime `db:"archived_at"`
+	Description   string       `db:"description"`
+	IconPath      string       `db:"icon_path"`
+	ID            string       `db:"id"`
+	Name          string       `db:"name"`
+	PluralName    string       `db:"plural_name"`
+	Volumetric    sql.NullBool `db:"volumetric"`
+	Universal     bool         `db:"universal"`
+	Metric        bool         `db:"metric"`
+	Imperial      bool         `db:"imperial"`
 }
 
 type ValidPreparationInstruments struct {
-	ID                 string
-	Notes              string
-	ValidPreparationID string
-	ValidInstrumentID  string
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
+	ID                 string       `db:"id"`
+	Notes              string       `db:"notes"`
+	ValidPreparationID string       `db:"valid_preparation_id"`
+	ValidInstrumentID  string       `db:"valid_instrument_id"`
+	CreatedAt          time.Time    `db:"created_at"`
+	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
+	ArchivedAt         sql.NullTime `db:"archived_at"`
 }
 
 type ValidPreparations struct {
-	ID                       string
-	Name                     string
-	Description              string
-	IconPath                 string
-	CreatedAt                time.Time
-	LastUpdatedAt            sql.NullTime
-	ArchivedAt               sql.NullTime
-	YieldsNothing            bool
-	RestrictToIngredients    bool
-	ZeroIngredientsAllowable bool
-	PastTense                string
+	CreatedAt                time.Time    `db:"created_at"`
+	ArchivedAt               sql.NullTime `db:"archived_at"`
+	LastUpdatedAt            sql.NullTime `db:"last_updated_at"`
+	Name                     string       `db:"name"`
+	Description              string       `db:"description"`
+	IconPath                 string       `db:"icon_path"`
+	ID                       string       `db:"id"`
+	PastTense                string       `db:"past_tense"`
+	YieldsNothing            bool         `db:"yields_nothing"`
+	RestrictToIngredients    bool         `db:"restrict_to_ingredients"`
+	ZeroIngredientsAllowable bool         `db:"zero_ingredients_allowable"`
 }
 
 type WebhookTriggerEvents struct {
-	ID               string
-	TriggerEvent     WebhookEvent
-	BelongsToWebhook string
-	CreatedAt        time.Time
-	ArchivedAt       sql.NullTime
+	ID               string       `db:"id"`
+	TriggerEvent     WebhookEvent `db:"trigger_event"`
+	BelongsToWebhook string       `db:"belongs_to_webhook"`
+	CreatedAt        time.Time    `db:"created_at"`
+	ArchivedAt       sql.NullTime `db:"archived_at"`
 }
 
 type Webhooks struct {
-	ID                 string
-	Name               string
-	ContentType        string
-	Url                string
-	Method             string
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
-	BelongsToHousehold string
+	ID                 string       `db:"id"`
+	Name               string       `db:"name"`
+	ContentType        string       `db:"content_type"`
+	Url                string       `db:"url"`
+	Method             string       `db:"method"`
+	CreatedAt          time.Time    `db:"created_at"`
+	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
+	ArchivedAt         sql.NullTime `db:"archived_at"`
+	BelongsToHousehold string       `db:"belongs_to_household"`
 }

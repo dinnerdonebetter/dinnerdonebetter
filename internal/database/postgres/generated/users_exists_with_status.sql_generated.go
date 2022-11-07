@@ -14,13 +14,13 @@ SELECT EXISTS ( SELECT users.id FROM users WHERE users.archived_at IS NULL AND u
 `
 
 type UserExistsWithStatusParams struct {
-	ID                  string
-	UserAccountStatus   string
-	UserAccountStatus_2 string
+	ID                  string `db:"id"`
+	UserAccountStatus   string `db:"user_account_status"`
+	UserAccountStatus_2 string `db:"user_account_status_2"`
 }
 
-func (q *Queries) UserExistsWithStatus(ctx context.Context, arg *UserExistsWithStatusParams) (bool, error) {
-	row := q.db.QueryRowContext(ctx, UserExistsWithStatus, arg.ID, arg.UserAccountStatus, arg.UserAccountStatus_2)
+func (q *Queries) UserExistsWithStatus(ctx context.Context, db DBTX, arg *UserExistsWithStatusParams) (bool, error) {
+	row := db.QueryRowContext(ctx, UserExistsWithStatus, arg.ID, arg.UserAccountStatus, arg.UserAccountStatus_2)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

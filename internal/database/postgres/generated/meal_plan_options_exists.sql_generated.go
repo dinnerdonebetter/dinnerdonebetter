@@ -31,12 +31,12 @@ SELECT EXISTS (
 `
 
 type MealPlanOptionExistsParams struct {
-	BelongsToMealPlan      string
-	BelongsToMealPlanEvent sql.NullString
-	ID                     string
+	BelongsToMealPlan      string         `db:"belongs_to_meal_plan"`
+	ID                     string         `db:"id"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
-func (q *Queries) MealPlanOptionExists(ctx context.Context, arg *MealPlanOptionExistsParams) error {
-	_, err := q.db.ExecContext(ctx, MealPlanOptionExists, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.ID)
+func (q *Queries) MealPlanOptionExists(ctx context.Context, db DBTX, arg *MealPlanOptionExistsParams) error {
+	_, err := db.ExecContext(ctx, MealPlanOptionExists, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.ID)
 	return err
 }

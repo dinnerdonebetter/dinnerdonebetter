@@ -13,7 +13,7 @@ const ArchiveValidInstrument = `-- name: ArchiveValidInstrument :exec
 UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidInstrument(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, ArchiveValidInstrument, id)
+func (q *Queries) ArchiveValidInstrument(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, ArchiveValidInstrument, id)
 	return err
 }

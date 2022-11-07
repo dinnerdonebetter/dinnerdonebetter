@@ -15,15 +15,15 @@ INSERT INTO meal_plans (id,notes,status,voting_deadline,belongs_to_household) VA
 `
 
 type CreateMealPlanParams struct {
-	ID                 string
-	Notes              string
-	Status             MealPlanStatus
-	VotingDeadline     time.Time
-	BelongsToHousehold string
+	ID                 string         `db:"id"`
+	Notes              string         `db:"notes"`
+	Status             MealPlanStatus `db:"status"`
+	VotingDeadline     time.Time      `db:"voting_deadline"`
+	BelongsToHousehold string         `db:"belongs_to_household"`
 }
 
-func (q *Queries) CreateMealPlan(ctx context.Context, arg *CreateMealPlanParams) error {
-	_, err := q.db.ExecContext(ctx, CreateMealPlan,
+func (q *Queries) CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPlanParams) error {
+	_, err := db.ExecContext(ctx, CreateMealPlan,
 		arg.ID,
 		arg.Notes,
 		arg.Status,

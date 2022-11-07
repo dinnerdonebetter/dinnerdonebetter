@@ -15,18 +15,18 @@ UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_
 `
 
 type UpdateRecipeParams struct {
-	Name               string
-	Source             string
-	Description        string
-	InspiredByRecipeID sql.NullString
-	YieldsPortions     int32
-	SealOfApproval     bool
-	CreatedByUser      string
-	ID                 string
+	Name               string         `db:"name"`
+	Source             string         `db:"source"`
+	Description        string         `db:"description"`
+	CreatedByUser      string         `db:"created_by_user"`
+	ID                 string         `db:"id"`
+	InspiredByRecipeID sql.NullString `db:"inspired_by_recipe_id"`
+	YieldsPortions     int32          `db:"yields_portions"`
+	SealOfApproval     bool           `db:"seal_of_approval"`
 }
 
-func (q *Queries) UpdateRecipe(ctx context.Context, arg *UpdateRecipeParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateRecipe,
+func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) error {
+	_, err := db.ExecContext(ctx, UpdateRecipe,
 		arg.Name,
 		arg.Source,
 		arg.Description,

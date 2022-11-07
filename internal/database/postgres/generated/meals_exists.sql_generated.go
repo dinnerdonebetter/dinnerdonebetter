@@ -13,7 +13,7 @@ const MealExists = `-- name: MealExists :exec
 SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = $1 )
 `
 
-func (q *Queries) MealExists(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, MealExists, id)
+func (q *Queries) MealExists(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, MealExists, id)
 	return err
 }

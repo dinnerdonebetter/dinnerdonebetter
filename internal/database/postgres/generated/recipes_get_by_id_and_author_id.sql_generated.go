@@ -57,50 +57,50 @@ ORDER BY recipe_steps.index
 `
 
 type GetRecipeByIDAndAuthorParams struct {
-	ID            string
-	CreatedByUser string
+	ID            string `db:"id"`
+	CreatedByUser string `db:"created_by_user"`
 }
 
 type GetRecipeByIDAndAuthorRow struct {
-	ID                            sql.NullString
-	Name                          sql.NullString
-	Source                        sql.NullString
-	Description                   sql.NullString
-	InspiredByRecipeID            sql.NullString
-	YieldsPortions                sql.NullInt32
-	SealOfApproval                sql.NullBool
-	CreatedAt                     sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	ArchivedAt                    sql.NullTime
-	CreatedByUser                 sql.NullString
-	ID_2                          sql.NullString
-	Index                         sql.NullInt32
-	ID_3                          sql.NullString
-	Name_2                        sql.NullString
-	Description_2                 sql.NullString
-	IconPath                      sql.NullString
-	YieldsNothing                 sql.NullBool
-	RestrictToIngredients         sql.NullBool
-	ZeroIngredientsAllowable      sql.NullBool
-	PastTense                     sql.NullString
-	CreatedAt_2                   sql.NullTime
-	LastUpdatedAt_2               sql.NullTime
-	ArchivedAt_2                  sql.NullTime
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumTemperatureInCelsius   sql.NullString
-	MaximumTemperatureInCelsius   sql.NullString
-	Notes                         sql.NullString
-	ExplicitInstructions          sql.NullString
-	Optional                      sql.NullBool
-	CreatedAt_3                   sql.NullTime
-	LastUpdatedAt_3               sql.NullTime
-	ArchivedAt_3                  sql.NullTime
-	BelongsToRecipe               sql.NullString
+	ArchivedAt                    sql.NullTime   `db:"archived_at"`
+	ArchivedAt_2                  sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2               sql.NullTime   `db:"last_updated_at_2"`
+	CreatedAt_2                   sql.NullTime   `db:"created_at_2"`
+	CreatedAt_3                   sql.NullTime   `db:"created_at_3"`
+	ArchivedAt_3                  sql.NullTime   `db:"archived_at_3"`
+	LastUpdatedAt_3               sql.NullTime   `db:"last_updated_at_3"`
+	CreatedAt                     sql.NullTime   `db:"created_at"`
+	LastUpdatedAt                 sql.NullTime   `db:"last_updated_at"`
+	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
+	CreatedByUser                 sql.NullString `db:"created_by_user"`
+	ID_2                          sql.NullString `db:"id_2"`
+	InspiredByRecipeID            sql.NullString `db:"inspired_by_recipe_id"`
+	ID_3                          sql.NullString `db:"id_3"`
+	Name_2                        sql.NullString `db:"name_2"`
+	Description_2                 sql.NullString `db:"description_2"`
+	IconPath                      sql.NullString `db:"icon_path"`
+	ID                            sql.NullString `db:"id"`
+	ExplicitInstructions          sql.NullString `db:"explicit_instructions"`
+	Notes                         sql.NullString `db:"notes"`
+	PastTense                     sql.NullString `db:"past_tense"`
+	Description                   sql.NullString `db:"description"`
+	Source                        sql.NullString `db:"source"`
+	Name                          sql.NullString `db:"name"`
+	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
+	BelongsToRecipe               sql.NullString `db:"belongs_to_recipe"`
+	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
+	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
+	Index                         sql.NullInt32  `db:"index"`
+	YieldsPortions                sql.NullInt32  `db:"yields_portions"`
+	ZeroIngredientsAllowable      sql.NullBool   `db:"zero_ingredients_allowable"`
+	RestrictToIngredients         sql.NullBool   `db:"restrict_to_ingredients"`
+	Optional                      sql.NullBool   `db:"optional"`
+	SealOfApproval                sql.NullBool   `db:"seal_of_approval"`
+	YieldsNothing                 sql.NullBool   `db:"yields_nothing"`
 }
 
-func (q *Queries) GetRecipeByIDAndAuthor(ctx context.Context, arg *GetRecipeByIDAndAuthorParams) ([]*GetRecipeByIDAndAuthorRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetRecipeByIDAndAuthor, arg.ID, arg.CreatedByUser)
+func (q *Queries) GetRecipeByIDAndAuthor(ctx context.Context, db DBTX, arg *GetRecipeByIDAndAuthorParams) ([]*GetRecipeByIDAndAuthorRow, error) {
+	rows, err := db.QueryContext(ctx, GetRecipeByIDAndAuthor, arg.ID, arg.CreatedByUser)
 	if err != nil {
 		return nil, err
 	}

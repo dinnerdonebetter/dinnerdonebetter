@@ -32,20 +32,20 @@ ORDER BY meal_plans.id
 `
 
 type GetExpiredAndUnresolvedMealPlansRow struct {
-	ID                     string
-	Notes                  string
-	Status                 MealPlanStatus
-	VotingDeadline         time.Time
-	GroceryListInitialized bool
-	TasksCreated           bool
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
-	BelongsToHousehold     string
+	CreatedAt              time.Time      `db:"created_at"`
+	VotingDeadline         time.Time      `db:"voting_deadline"`
+	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt             sql.NullTime   `db:"archived_at"`
+	ID                     string         `db:"id"`
+	Notes                  string         `db:"notes"`
+	Status                 MealPlanStatus `db:"status"`
+	BelongsToHousehold     string         `db:"belongs_to_household"`
+	GroceryListInitialized bool           `db:"grocery_list_initialized"`
+	TasksCreated           bool           `db:"tasks_created"`
 }
 
-func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context) ([]*GetExpiredAndUnresolvedMealPlansRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetExpiredAndUnresolvedMealPlans)
+func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error) {
+	rows, err := db.QueryContext(ctx, GetExpiredAndUnresolvedMealPlans)
 	if err != nil {
 		return nil, err
 	}

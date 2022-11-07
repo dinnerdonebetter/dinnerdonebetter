@@ -83,62 +83,62 @@ ORDER BY
 `
 
 type GetRecipeStepIngredientForRecipeRow struct {
-	ID                                      string
-	Name                                    string
-	Optional                                bool
-	ID_2                                    string
-	Name_2                                  string
-	Description                             string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IsLiquid                                sql.NullBool
-	IconPath                                string
-	AnimalDerived                           bool
-	PluralName                              string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	CreatedAt                               time.Time
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	ID_3                                    string
-	Name_3                                  string
-	Description_2                           string
-	Volumetric_2                            sql.NullBool
-	IconPath_2                              string
-	Universal                               bool
-	Metric                                  bool
-	Imperial                                bool
-	PluralName_2                            string
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	MinimumQuantityValue                    string
-	MaximumQuantityValue                    string
-	QuantityNotes                           string
-	ProductOfRecipeStep                     bool
-	RecipeStepProductID                     sql.NullString
-	IngredientNotes                         string
-	CreatedAt_3                             time.Time
-	LastUpdatedAt_3                         sql.NullTime
-	ArchivedAt_3                            sql.NullTime
-	BelongsToRecipeStep                     string
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
+	CreatedAt_3                             time.Time      `db:"created_at_3"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	MinimumQuantityValue                    string         `db:"minimum_quantity_value"`
+	IngredientNotes                         string         `db:"ingredient_notes"`
+	QuantityNotes                           string         `db:"quantity_notes"`
+	MaximumQuantityValue                    string         `db:"maximum_quantity_value"`
+	Warning                                 string         `db:"warning"`
+	Description                             string         `db:"description"`
+	Name_2                                  string         `db:"name_2"`
+	PluralName_2                            string         `db:"plural_name_2"`
+	IconPath_2                              string         `db:"icon_path_2"`
+	Description_2                           string         `db:"description_2"`
+	Name_3                                  string         `db:"name_3"`
+	IconPath                                string         `db:"icon_path"`
+	ID_3                                    string         `db:"id_3"`
+	PluralName                              string         `db:"plural_name"`
+	ID_2                                    string         `db:"id_2"`
+	Name                                    string         `db:"name"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	ID                                      string         `db:"id"`
+	BelongsToRecipeStep                     string         `db:"belongs_to_recipe_step"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	RecipeStepProductID                     sql.NullString `db:"recipe_step_product_id"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	Volumetric_2                            sql.NullBool   `db:"volumetric_2"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	Universal                               bool           `db:"universal"`
+	Metric                                  bool           `db:"metric"`
+	Imperial                                bool           `db:"imperial"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	Volumetric                              bool           `db:"volumetric"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	Optional                                bool           `db:"optional"`
+	ProductOfRecipeStep                     bool           `db:"product_of_recipe_step"`
 }
 
-func (q *Queries) GetRecipeStepIngredientForRecipe(ctx context.Context, id string) ([]*GetRecipeStepIngredientForRecipeRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetRecipeStepIngredientForRecipe, id)
+func (q *Queries) GetRecipeStepIngredientForRecipe(ctx context.Context, db DBTX, id string) ([]*GetRecipeStepIngredientForRecipeRow, error) {
+	rows, err := db.QueryContext(ctx, GetRecipeStepIngredientForRecipe, id)
 	if err != nil {
 		return nil, err
 	}

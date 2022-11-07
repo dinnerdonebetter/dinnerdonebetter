@@ -13,7 +13,7 @@ const RecipeMediaExists = `-- name: RecipeMediaExists :exec
 SELECT EXISTS ( SELECT recipe_media.id FROM recipe_media WHERE recipe_media.archived_at IS NULL AND recipe_media.id = $1 )
 `
 
-func (q *Queries) RecipeMediaExists(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, RecipeMediaExists, id)
+func (q *Queries) RecipeMediaExists(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, RecipeMediaExists, id)
 	return err
 }

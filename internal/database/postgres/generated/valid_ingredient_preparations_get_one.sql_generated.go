@@ -64,52 +64,52 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 `
 
 type GetValidIngredientPreparationRow struct {
-	ID                                      string
-	Notes                                   string
-	ID_2                                    string
-	Name                                    string
-	Description                             string
-	IconPath                                string
-	YieldsNothing                           bool
-	RestrictToIngredients                   bool
-	ZeroIngredientsAllowable                bool
-	PastTense                               string
-	CreatedAt                               time.Time
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	ID_3                                    string
-	Name_2                                  string
-	Description_2                           string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IsLiquid                                sql.NullBool
-	IconPath_2                              string
-	AnimalDerived                           bool
-	PluralName                              string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	CreatedAt_3                             time.Time
-	LastUpdatedAt_3                         sql.NullTime
-	ArchivedAt_3                            sql.NullTime
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	CreatedAt_3                             time.Time      `db:"created_at_3"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	PastTense                               string         `db:"past_tense"`
+	ID                                      string         `db:"id"`
+	Description                             string         `db:"description"`
+	Name                                    string         `db:"name"`
+	ID_3                                    string         `db:"id_3"`
+	Name_2                                  string         `db:"name_2"`
+	Description_2                           string         `db:"description_2"`
+	Warning                                 string         `db:"warning"`
+	ID_2                                    string         `db:"id_2"`
+	Notes                                   string         `db:"notes"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	PluralName                              string         `db:"plural_name"`
+	IconPath_2                              string         `db:"icon_path_2"`
+	IconPath                                string         `db:"icon_path"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	Volumetric                              bool           `db:"volumetric"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	ZeroIngredientsAllowable                bool           `db:"zero_ingredients_allowable"`
+	RestrictToIngredients                   bool           `db:"restrict_to_ingredients"`
+	YieldsNothing                           bool           `db:"yields_nothing"`
+	ContainsSoy                             bool           `db:"contains_soy"`
 }
 
-func (q *Queries) GetValidIngredientPreparation(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, GetValidIngredientPreparation, id)
+func (q *Queries) GetValidIngredientPreparation(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, GetValidIngredientPreparation, id)
 	return err
 }

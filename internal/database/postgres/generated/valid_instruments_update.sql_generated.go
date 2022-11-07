@@ -23,16 +23,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidInstrumentParams struct {
-	Name             string
-	PluralName       string
-	Description      string
-	IconPath         string
-	UsableForStorage bool
-	ID               string
+	Name             string `db:"name"`
+	PluralName       string `db:"plural_name"`
+	Description      string `db:"description"`
+	IconPath         string `db:"icon_path"`
+	ID               string `db:"id"`
+	UsableForStorage bool   `db:"usable_for_storage"`
 }
 
-func (q *Queries) UpdateValidInstrument(ctx context.Context, arg *UpdateValidInstrumentParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateValidInstrument,
+func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) error {
+	_, err := db.ExecContext(ctx, UpdateValidInstrument,
 		arg.Name,
 		arg.PluralName,
 		arg.Description,

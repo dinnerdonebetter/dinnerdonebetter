@@ -17,21 +17,21 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
 `
 
 type CreateRecipeStepInstrumentParams struct {
-	ID                  string
-	InstrumentID        sql.NullString
-	RecipeStepProductID sql.NullString
-	Name                string
-	ProductOfRecipeStep bool
-	Notes               string
-	PreferenceRank      int32
-	Optional            bool
-	MinimumQuantity     int32
-	MaximumQuantity     int32
-	BelongsToRecipeStep string
+	ID                  string         `db:"id"`
+	Name                string         `db:"name"`
+	BelongsToRecipeStep string         `db:"belongs_to_recipe_step"`
+	Notes               string         `db:"notes"`
+	InstrumentID        sql.NullString `db:"instrument_id"`
+	RecipeStepProductID sql.NullString `db:"recipe_step_product_id"`
+	PreferenceRank      int32          `db:"preference_rank"`
+	MinimumQuantity     int32          `db:"minimum_quantity"`
+	MaximumQuantity     int32          `db:"maximum_quantity"`
+	Optional            bool           `db:"optional"`
+	ProductOfRecipeStep bool           `db:"product_of_recipe_step"`
 }
 
-func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, arg *CreateRecipeStepInstrumentParams) error {
-	_, err := q.db.ExecContext(ctx, CreateRecipeStepInstrument,
+func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *CreateRecipeStepInstrumentParams) error {
+	_, err := db.ExecContext(ctx, CreateRecipeStepInstrument,
 		arg.ID,
 		arg.InstrumentID,
 		arg.RecipeStepProductID,

@@ -45,33 +45,33 @@ WHERE
 `
 
 type GetMealPlanOptionsForMealPlanEventParams struct {
-	BelongsToMealPlanEvent sql.NullString
-	BelongsToMealPlan      string
+	BelongsToMealPlan      string         `db:"belongs_to_meal_plan"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
 type GetMealPlanOptionsForMealPlanEventRow struct {
-	ID                     string
-	AssignedCook           sql.NullString
-	AssignedDishwasher     sql.NullString
-	Chosen                 bool
-	Tiebroken              bool
-	MealID                 string
-	Notes                  string
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
-	BelongsToMealPlanEvent sql.NullString
-	ID_2                   string
-	Name                   string
-	Description            string
-	CreatedAt_2            time.Time
-	LastUpdatedAt_2        sql.NullTime
-	ArchivedAt_2           sql.NullTime
-	CreatedByUser          string
+	CreatedAt              time.Time      `db:"created_at"`
+	CreatedAt_2            time.Time      `db:"created_at_2"`
+	LastUpdatedAt_2        sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_2           sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt             sql.NullTime   `db:"archived_at"`
+	ID_2                   string         `db:"id_2"`
+	Description            string         `db:"description"`
+	MealID                 string         `db:"meal_id"`
+	Notes                  string         `db:"notes"`
+	Name                   string         `db:"name"`
+	ID                     string         `db:"id"`
+	CreatedByUser          string         `db:"created_by_user"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
+	AssignedCook           sql.NullString `db:"assigned_cook"`
+	Tiebroken              bool           `db:"tiebroken"`
+	Chosen                 bool           `db:"chosen"`
 }
 
-func (q *Queries) GetMealPlanOptionsForMealPlanEvent(ctx context.Context, arg *GetMealPlanOptionsForMealPlanEventParams) ([]*GetMealPlanOptionsForMealPlanEventRow, error) {
-	rows, err := q.db.QueryContext(ctx, GetMealPlanOptionsForMealPlanEvent, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlan)
+func (q *Queries) GetMealPlanOptionsForMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanOptionsForMealPlanEventParams) ([]*GetMealPlanOptionsForMealPlanEventRow, error) {
+	rows, err := db.QueryContext(ctx, GetMealPlanOptionsForMealPlanEvent, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlan)
 	if err != nil {
 		return nil, err
 	}

@@ -19,11 +19,11 @@ WHERE archived_at IS NULL
 `
 
 type AttachHouseholdInvitationsToUserParams struct {
-	ToUser sql.NullString
-	Lower  string
+	Lower  string         `db:"lower"`
+	ToUser sql.NullString `db:"to_user"`
 }
 
-func (q *Queries) AttachHouseholdInvitationsToUser(ctx context.Context, arg *AttachHouseholdInvitationsToUserParams) error {
-	_, err := q.db.ExecContext(ctx, AttachHouseholdInvitationsToUser, arg.ToUser, arg.Lower)
+func (q *Queries) AttachHouseholdInvitationsToUser(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserParams) error {
+	_, err := db.ExecContext(ctx, AttachHouseholdInvitationsToUser, arg.ToUser, arg.Lower)
 	return err
 }

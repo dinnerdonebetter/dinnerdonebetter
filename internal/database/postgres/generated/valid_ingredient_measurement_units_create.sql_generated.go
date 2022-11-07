@@ -16,16 +16,16 @@ VALUES ($1,$2,$3,$4,$5,$6)
 `
 
 type CreateValidIngredientMeasurementUnitParams struct {
-	ID                       string
-	Notes                    string
-	ValidMeasurementUnitID   string
-	ValidIngredientID        string
-	MinimumAllowableQuantity string
-	MaximumAllowableQuantity string
+	ID                       string `db:"id"`
+	Notes                    string `db:"notes"`
+	ValidMeasurementUnitID   string `db:"valid_measurement_unit_id"`
+	ValidIngredientID        string `db:"valid_ingredient_id"`
+	MinimumAllowableQuantity string `db:"minimum_allowable_quantity"`
+	MaximumAllowableQuantity string `db:"maximum_allowable_quantity"`
 }
 
-func (q *Queries) CreateValidIngredientMeasurementUnit(ctx context.Context, arg *CreateValidIngredientMeasurementUnitParams) error {
-	_, err := q.db.ExecContext(ctx, CreateValidIngredientMeasurementUnit,
+func (q *Queries) CreateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidIngredientMeasurementUnitParams) error {
+	_, err := db.ExecContext(ctx, CreateValidIngredientMeasurementUnit,
 		arg.ID,
 		arg.Notes,
 		arg.ValidMeasurementUnitID,

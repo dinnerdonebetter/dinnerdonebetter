@@ -14,14 +14,14 @@ UPDATE valid_ingredient_preparations SET notes = $1, valid_preparation_id = $2, 
 `
 
 type UpdateValidIngredientPreparationParams struct {
-	Notes              string
-	ValidPreparationID string
-	ValidIngredientID  string
-	ID                 string
+	Notes              string `db:"notes"`
+	ValidPreparationID string `db:"valid_preparation_id"`
+	ValidIngredientID  string `db:"valid_ingredient_id"`
+	ID                 string `db:"id"`
 }
 
-func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, arg *UpdateValidIngredientPreparationParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateValidIngredientPreparation,
+func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, db DBTX, arg *UpdateValidIngredientPreparationParams) error {
+	_, err := db.ExecContext(ctx, UpdateValidIngredientPreparation,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidIngredientID,

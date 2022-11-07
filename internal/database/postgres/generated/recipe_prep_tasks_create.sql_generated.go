@@ -16,19 +16,19 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 `
 
 type CreateRecipePrepTaskParams struct {
-	ID                                     string
-	Notes                                  string
-	ExplicitStorageInstructions            string
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	StorageType                            NullStorageContainerType
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
-	BelongsToRecipe                        string
+	ID                                     string                   `db:"id"`
+	Notes                                  string                   `db:"notes"`
+	ExplicitStorageInstructions            string                   `db:"explicit_storage_instructions"`
+	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
+	StorageType                            NullStorageContainerType `db:"storage_type"`
+	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
+	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
 }
 
-func (q *Queries) CreateRecipePrepTask(ctx context.Context, arg *CreateRecipePrepTaskParams) error {
-	_, err := q.db.ExecContext(ctx, CreateRecipePrepTask,
+func (q *Queries) CreateRecipePrepTask(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskParams) error {
+	_, err := db.ExecContext(ctx, CreateRecipePrepTask,
 		arg.ID,
 		arg.Notes,
 		arg.ExplicitStorageInstructions,

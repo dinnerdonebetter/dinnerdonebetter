@@ -25,19 +25,19 @@ WHERE archived_at IS NULL AND id = $9
 `
 
 type UpdateValidMeasurementUnitParams struct {
-	Name        string
-	Description string
-	Volumetric  sql.NullBool
-	IconPath    string
-	Universal   bool
-	Metric      bool
-	Imperial    bool
-	PluralName  string
-	ID          string
+	Name        string       `db:"name"`
+	Description string       `db:"description"`
+	ID          string       `db:"id"`
+	IconPath    string       `db:"icon_path"`
+	PluralName  string       `db:"plural_name"`
+	Volumetric  sql.NullBool `db:"volumetric"`
+	Universal   bool         `db:"universal"`
+	Metric      bool         `db:"metric"`
+	Imperial    bool         `db:"imperial"`
 }
 
-func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, arg *UpdateValidMeasurementUnitParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateValidMeasurementUnit,
+func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) error {
+	_, err := db.ExecContext(ctx, UpdateValidMeasurementUnit,
 		arg.Name,
 		arg.Description,
 		arg.Volumetric,

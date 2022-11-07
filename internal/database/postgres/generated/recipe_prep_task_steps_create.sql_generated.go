@@ -15,14 +15,14 @@ VALUES ($1,$2,$3,$4)
 `
 
 type CreateRecipePrepTaskStepParams struct {
-	ID                      string
-	BelongsToRecipePrepTask string
-	BelongsToRecipeStep     string
-	SatisfiesRecipeStep     bool
+	ID                      string `db:"id"`
+	BelongsToRecipePrepTask string `db:"belongs_to_recipe_prep_task"`
+	BelongsToRecipeStep     string `db:"belongs_to_recipe_step"`
+	SatisfiesRecipeStep     bool   `db:"satisfies_recipe_step"`
 }
 
-func (q *Queries) CreateRecipePrepTaskStep(ctx context.Context, arg *CreateRecipePrepTaskStepParams) error {
-	_, err := q.db.ExecContext(ctx, CreateRecipePrepTaskStep,
+func (q *Queries) CreateRecipePrepTaskStep(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskStepParams) error {
+	_, err := db.ExecContext(ctx, CreateRecipePrepTaskStep,
 		arg.ID,
 		arg.BelongsToRecipePrepTask,
 		arg.BelongsToRecipeStep,

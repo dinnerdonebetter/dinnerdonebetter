@@ -67,55 +67,55 @@ WHERE valid_ingredient_measurement_units.archived_at IS NULL
 `
 
 type GetValidIngredientMeasurementUnitRow struct {
-	ID                                      string
-	Notes                                   string
-	ID_2                                    string
-	Name                                    string
-	Description                             string
-	Volumetric                              sql.NullBool
-	IconPath                                string
-	Universal                               bool
-	Metric                                  bool
-	Imperial                                bool
-	PluralName                              string
-	CreatedAt                               time.Time
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	ID_3                                    string
-	Name_2                                  string
-	Description_2                           string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric_2                            bool
-	IsLiquid                                sql.NullBool
-	IconPath_2                              string
-	AnimalDerived                           bool
-	PluralName_2                            string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	MinimumAllowableQuantity                string
-	MaximumAllowableQuantity                string
-	CreatedAt_3                             time.Time
-	LastUpdatedAt_3                         sql.NullTime
-	ArchivedAt_3                            sql.NullTime
+	CreatedAt_3                             time.Time      `db:"created_at_3"`
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	MaximumAllowableQuantity                string         `db:"maximum_allowable_quantity"`
+	MinimumAllowableQuantity                string         `db:"minimum_allowable_quantity"`
+	IconPath                                string         `db:"icon_path"`
+	ID                                      string         `db:"id"`
+	Description                             string         `db:"description"`
+	ID_3                                    string         `db:"id_3"`
+	Name_2                                  string         `db:"name_2"`
+	Description_2                           string         `db:"description_2"`
+	Warning                                 string         `db:"warning"`
+	Name                                    string         `db:"name"`
+	ID_2                                    string         `db:"id_2"`
+	Notes                                   string         `db:"notes"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	PluralName_2                            string         `db:"plural_name_2"`
+	IconPath_2                              string         `db:"icon_path_2"`
+	PluralName                              string         `db:"plural_name"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	Volumetric                              sql.NullBool   `db:"volumetric"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	Volumetric_2                            bool           `db:"volumetric_2"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	Imperial                                bool           `db:"imperial"`
+	Metric                                  bool           `db:"metric"`
+	Universal                               bool           `db:"universal"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
 }
 
-func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, GetValidIngredientMeasurementUnit, id)
+func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, GetValidIngredientMeasurementUnit, id)
 	return err
 }

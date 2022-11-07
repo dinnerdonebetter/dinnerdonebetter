@@ -23,16 +23,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanEventParams struct {
-	Notes             string
-	StartsAt          time.Time
-	EndsAt            time.Time
-	MealName          MealName
-	BelongsToMealPlan string
-	ID                string
+	Notes             string    `db:"notes"`
+	StartsAt          time.Time `db:"starts_at"`
+	EndsAt            time.Time `db:"ends_at"`
+	MealName          MealName  `db:"meal_name"`
+	BelongsToMealPlan string    `db:"belongs_to_meal_plan"`
+	ID                string    `db:"id"`
 }
 
-func (q *Queries) UpdateMealPlanEvent(ctx context.Context, arg *UpdateMealPlanEventParams) error {
-	_, err := q.db.ExecContext(ctx, UpdateMealPlanEvent,
+func (q *Queries) UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) error {
+	_, err := db.ExecContext(ctx, UpdateMealPlanEvent,
 		arg.Notes,
 		arg.StartsAt,
 		arg.EndsAt,

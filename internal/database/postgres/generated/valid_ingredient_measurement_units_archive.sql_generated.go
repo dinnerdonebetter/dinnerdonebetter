@@ -13,7 +13,7 @@ const ArchiveValidIngredientMeasurementUnit = `-- name: ArchiveValidIngredientMe
 UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, ArchiveValidIngredientMeasurementUnit, id)
+func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, ArchiveValidIngredientMeasurementUnit, id)
 	return err
 }
