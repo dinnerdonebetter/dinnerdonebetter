@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	_ "embed"
+	"errors"
 
-	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -15,85 +15,7 @@ import (
 
 var (
 	_ types.WebhookDataManager = (*Querier)(nil)
-
-	// webhooksTableColumns are the columns for the webhooks table.
-	webhooksTableColumns = []string{
-		"webhooks.id",
-		"webhooks.name",
-		"webhooks.content_type",
-		"webhooks.url",
-		"webhooks.method",
-		"webhook_trigger_events.id",
-		"webhook_trigger_events.trigger_event",
-		"webhook_trigger_events.belongs_to_webhook",
-		"webhook_trigger_events.created_at",
-		"webhook_trigger_events.archived_at",
-		"webhooks.created_at",
-		"webhooks.last_updated_at",
-		"webhooks.archived_at",
-		"webhooks.belongs_to_household",
-	}
 )
-
-// scanWebhookWithEvents is a consistent way to turn a *sql.Row into a webhook struct.
-func (q *Querier) scanWebhook(ctx context.Context, rows database.ResultIterator) (webhook *types.Webhook, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	webhook = &types.Webhook{}
-	var (
-		lastUpdatedAt,
-		archivedAt sql.NullTime
-	)
-
-	for rows.Next() {
-		webhookTriggerEvent := &types.WebhookTriggerEvent{}
-
-		targetVars := []interface{}{
-			&webhook.ID,
-			&webhook.Name,
-			&webhook.ContentType,
-			&webhook.URL,
-			&webhook.Method,
-			&webhookTriggerEvent.ID,
-			&webhookTriggerEvent.TriggerEvent,
-			&webhookTriggerEvent.BelongsToWebhook,
-			&webhookTriggerEvent.CreatedAt,
-			&webhookTriggerEvent.ArchivedAt,
-			&webhook.CreatedAt,
-			&lastUpdatedAt,
-			&archivedAt,
-			&webhook.BelongsToHousehold,
-		}
-
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning webhook")
-		}
-
-		webhook.Events = append(webhook.Events, webhookTriggerEvent)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, observability.PrepareError(err, span, "fetching webhook from database")
-	}
-
-	if webhook.ID == "" {
-		return nil, sql.ErrNoRows
-	}
-
-	if lastUpdatedAt.Valid {
-		webhook.LastUpdatedAt = &lastUpdatedAt.Time
-	}
-
-	if archivedAt.Valid {
-		webhook.ArchivedAt = &archivedAt.Time
-	}
-
-	return webhook, nil
-}
-
-//go:embed queries/webhooks/exists.sql
-var webhookExistenceQuery string
 
 // WebhookExists fetches whether a webhook exists from the database.
 func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
@@ -114,21 +36,68 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
-		householdID,
-		webhookID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, webhookExistenceQuery, args)
+	result, err := q.generatedQuerier.WebhookExists(ctx, q.db, &generated.WebhookExistsParams{
+		BelongsToHousehold: householdID,
+		ID:                 webhookID,
+	})
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
 		return false, observability.PrepareAndLogError(err, logger, span, "performing webhook existence check")
 	}
 
 	return result, nil
 }
 
-//go:embed queries/webhooks/get_one.sql
-var getWebhookQuery string
+// convertWebhookRow is a consistent way to turn a *sql.Row into a webhook struct.
+func (q *Querier) convertWebhookRow(ctx context.Context, rows []*generated.GetWebhookRow) (webhook *types.Webhook, err error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	for _, row := range rows {
+		if webhook == nil {
+			webhook = &types.Webhook{
+				CreatedAt:          row.CreatedAt,
+				Name:               row.Name,
+				URL:                row.Url,
+				Method:             row.Method,
+				ID:                 row.ID,
+				BelongsToHousehold: row.BelongsToHousehold,
+				ContentType:        row.ContentType,
+				Events:             nil,
+			}
+
+			if row.LastUpdatedAt.Valid {
+				webhook.LastUpdatedAt = &row.LastUpdatedAt.Time
+			}
+
+			if row.ArchivedAt.Valid {
+				webhook.ArchivedAt = &row.ArchivedAt.Time
+			}
+		}
+
+		webhookTriggerEvent := &types.WebhookTriggerEvent{
+			CreatedAt:        row.CreatedAt_2,
+			ArchivedAt:       nil,
+			ID:               row.ID_2,
+			BelongsToWebhook: row.BelongsToWebhook,
+			TriggerEvent:     string(row.TriggerEvent),
+		}
+
+		if row.ArchivedAt_2.Valid {
+			webhookTriggerEvent.ArchivedAt = &row.ArchivedAt_2.Time
+		}
+
+		webhook.Events = append(webhook.Events, webhookTriggerEvent)
+	}
+
+	if webhook.ID == "" {
+		return nil, sql.ErrNoRows
+	}
+
+	return webhook, nil
+}
 
 // GetWebhook fetches a webhook from the database.
 func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
@@ -150,17 +119,15 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 
-	args := []interface{}{
-		householdID,
-		webhookID,
-	}
-
-	rows, err := q.getRows(ctx, q.db, "webhook", getWebhookQuery, args)
+	row, err := q.generatedQuerier.GetWebhook(ctx, q.db, &generated.GetWebhookParams{
+		BelongsToHousehold: householdID,
+		ID:                 webhookID,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook")
 	}
 
-	webhook, err := q.scanWebhook(ctx, rows)
+	webhook, err := q.convertWebhookRow(ctx, row)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning webhook")
 	}

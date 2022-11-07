@@ -134,7 +134,7 @@ type Querier interface {
 	GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) error
 	GetValidPreparation(ctx context.Context, db DBTX, id string) error
 	GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) error
-	GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) (*GetWebhookRow, error)
+	GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) ([]*GetWebhookRow, error)
 	GetWebhookTriggerEventsForWebhook(ctx context.Context, db DBTX, id string) ([]*WebhookTriggerEvents, error)
 	GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksParams) ([]*GetWebhooksRow, error)
 	HouseholdInvitationExists(ctx context.Context, db DBTX, id string) error
@@ -203,7 +203,7 @@ type Querier interface {
 	ValidMeasurementUnitExists(ctx context.Context, db DBTX, id string) error
 	ValidPreparationExists(ctx context.Context, db DBTX, id string) error
 	ValidPreparationInstrumentExists(ctx context.Context, db DBTX, id string) error
-	WebhookExists(ctx context.Context, db DBTX, arg *WebhookExistsParams) error
+	WebhookExists(ctx context.Context, db DBTX, arg *WebhookExistsParams) (bool, error)
 }
 
 var _ Querier = (*Queries)(nil)

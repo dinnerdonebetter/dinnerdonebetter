@@ -1,4 +1,4 @@
--- name: WebhookExists :exec
+-- name: WebhookExists :one
 SELECT EXISTS (
     SELECT webhooks.id
     FROM webhooks

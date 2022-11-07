@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const WebhookExists = `-- name: WebhookExists :exec
+const WebhookExists = `-- name: WebhookExists :one
 SELECT EXISTS (
     SELECT webhooks.id
     FROM webhooks
@@ -24,7 +24,9 @@ type WebhookExistsParams struct {
 	ID                 string `db:"id"`
 }
 
-func (q *Queries) WebhookExists(ctx context.Context, db DBTX, arg *WebhookExistsParams) error {
-	_, err := db.ExecContext(ctx, WebhookExists, arg.BelongsToHousehold, arg.ID)
-	return err
+func (q *Queries) WebhookExists(ctx context.Context, db DBTX, arg *WebhookExistsParams) (bool, error) {
+	row := db.QueryRowContext(ctx, WebhookExists, arg.BelongsToHousehold, arg.ID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
 }
