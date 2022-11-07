@@ -29,9 +29,9 @@ SELECT
 	 WHERE
 		valid_instruments.archived_at IS NULL
 	 AND valid_instruments.created_at > COALESCE($1, 0)
-	 AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '9999 years'))
+	 AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
 	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE($3, 0))
-	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '9999 years')))
+	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 	) as filtered_count,
 	(
 	 SELECT
@@ -46,9 +46,9 @@ FROM
 WHERE
 	valid_instruments.archived_at IS NULL
 	AND valid_instruments.created_at > COALESCE($1, 0)
-	AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '9999 years'))
+	AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
 	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE($3, 0))
-	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '9999 years')))
+	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 GROUP BY
 	valid_instruments.id
 ORDER BY

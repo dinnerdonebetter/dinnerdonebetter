@@ -523,6 +523,12 @@ func (m *mockGeneratedQuerier) GetWebhooks(ctx context.Context, db generated.DBT
 	return rv.Get(0).([]*generated.GetWebhooksRow), rv.Error(1)
 }
 
+func (m *mockGeneratedQuerier) GetWebhookTriggerEventsForWebhook(ctx context.Context, db generated.DBTX, id string) ([]*generated.WebhookTriggerEvents, error) {
+	rv := m.Called(ctx, db, id)
+
+	return rv.Get(0).([]*generated.WebhookTriggerEvents), rv.Error(1)
+}
+
 func (m *mockGeneratedQuerier) HouseholdInvitationExists(ctx context.Context, db generated.DBTX, id string) error {
 	return m.Called(ctx, db, id).Error(0)
 }

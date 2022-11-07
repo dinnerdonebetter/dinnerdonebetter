@@ -98,39 +98,6 @@ func buildErroneousMockRowsFromWebhooks(includeCounts bool, filteredCount uint64
 	return exampleRows
 }
 
-func TestQuerier_scanWebhooks(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-		mockRows := &database.MockResultIterator{}
-
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, err := q.scanWebhooks(ctx, mockRows)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-		mockRows := &database.MockResultIterator{}
-
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, err := q.scanWebhooks(ctx, mockRows)
-		assert.Error(t, err)
-	})
-}
-
 func TestQuerier_WebhookExists(T *testing.T) {
 	T.Parallel()
 
@@ -327,25 +294,58 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _, mockGQ := buildNewTestClient(t)
 
-		getWebhooksForHouseholdArgs := []interface{}{
-			exampleHouseholdID,
+		filterArgs := filter.ToDatabaseArgs()
+
+		generatedResponse := []*generated.GetWebhooksRow{}
+		for i := range exampleWebhookList.Webhooks {
+			for j := range exampleWebhookList.Webhooks[i].Events {
+				wr := &generated.GetWebhooksRow{
+					ID:                 exampleWebhookList.Webhooks[i].ID,
+					Name:               exampleWebhookList.Webhooks[i].Name,
+					ContentType:        exampleWebhookList.Webhooks[i].ContentType,
+					Url:                exampleWebhookList.Webhooks[i].URL,
+					Method:             exampleWebhookList.Webhooks[i].Method,
+					CreatedAt:          exampleWebhookList.Webhooks[i].CreatedAt,
+					BelongsToHousehold: exampleWebhookList.Webhooks[i].BelongsToHousehold,
+					ID_2:               exampleWebhookList.Webhooks[i].Events[j].ID,
+					CreatedAt_2:        exampleWebhookList.Webhooks[i].Events[j].CreatedAt,
+					BelongsToWebhook:   exampleWebhookList.Webhooks[i].Events[j].BelongsToWebhook,
+					TriggerEvent:       generated.WebhookEvent(exampleWebhookList.Webhooks[i].Events[j].TriggerEvent),
+					FilteredCount:      0,
+					TotalCount:         0,
+				}
+
+				if exampleWebhookList.Webhooks[i].LastUpdatedAt != nil {
+					wr.LastUpdatedAt = sql.NullTime{Time: *exampleWebhookList.Webhooks[i].LastUpdatedAt}
+				}
+				if exampleWebhookList.Webhooks[i].ArchivedAt != nil {
+					wr.ArchivedAt = sql.NullTime{Time: *exampleWebhookList.Webhooks[i].ArchivedAt}
+				}
+				if exampleWebhookList.Webhooks[i].Events[j].ArchivedAt != nil {
+					wr.ArchivedAt_2 = sql.NullTime{Time: *exampleWebhookList.Webhooks[i].Events[j].ArchivedAt}
+				}
+
+				generatedResponse = append(generatedResponse, wr)
+			}
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
-			WillReturnRows(buildMockRowsFromWebhooks(
-				false,
-				exampleWebhookList.FilteredCount,
-				exampleWebhookList.Webhooks...,
-			))
+		mockGQ.On(
+			"GetWebhooks",
+			testutils.ContextMatcher,
+			database.SQLQueryExecutorMatcher,
+			&generated.GetWebhooksParams{
+				BelongsToHousehold: exampleHouseholdID,
+				CreatedAfter:       filterArgs.CreatedAfter,
+				CreatedBefore:      filterArgs.CreatedBefore,
+				UpdatedAfter:       filterArgs.UpdatedAfter,
+				UpdatedBefore:      filterArgs.UpdatedBefore,
+			}).Return(generatedResponse, nil)
 
 		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleWebhookList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
@@ -356,25 +356,58 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		filter := (*types.QueryFilter)(nil)
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _, mockGQ := buildNewTestClient(t)
 
-		getWebhooksForHouseholdArgs := []interface{}{
-			exampleHouseholdID,
+		filterArgs := types.DefaultQueryFilter().ToDatabaseArgs()
+
+		generatedResponse := []*generated.GetWebhooksRow{}
+		for i := range exampleWebhookList.Webhooks {
+			for j := range exampleWebhookList.Webhooks[i].Events {
+				wr := &generated.GetWebhooksRow{
+					ID:                 exampleWebhookList.Webhooks[i].ID,
+					Name:               exampleWebhookList.Webhooks[i].Name,
+					ContentType:        exampleWebhookList.Webhooks[i].ContentType,
+					Url:                exampleWebhookList.Webhooks[i].URL,
+					Method:             exampleWebhookList.Webhooks[i].Method,
+					CreatedAt:          exampleWebhookList.Webhooks[i].CreatedAt,
+					BelongsToHousehold: exampleWebhookList.Webhooks[i].BelongsToHousehold,
+					ID_2:               exampleWebhookList.Webhooks[i].Events[j].ID,
+					CreatedAt_2:        exampleWebhookList.Webhooks[i].Events[j].CreatedAt,
+					BelongsToWebhook:   exampleWebhookList.Webhooks[i].Events[j].BelongsToWebhook,
+					TriggerEvent:       generated.WebhookEvent(exampleWebhookList.Webhooks[i].Events[j].TriggerEvent),
+					FilteredCount:      0,
+					TotalCount:         0,
+				}
+
+				if exampleWebhookList.Webhooks[i].LastUpdatedAt != nil {
+					wr.LastUpdatedAt = sql.NullTime{Time: *exampleWebhookList.Webhooks[i].LastUpdatedAt}
+				}
+				if exampleWebhookList.Webhooks[i].ArchivedAt != nil {
+					wr.ArchivedAt = sql.NullTime{Time: *exampleWebhookList.Webhooks[i].ArchivedAt}
+				}
+				if exampleWebhookList.Webhooks[i].Events[j].ArchivedAt != nil {
+					wr.ArchivedAt_2 = sql.NullTime{Time: *exampleWebhookList.Webhooks[i].Events[j].ArchivedAt}
+				}
+
+				generatedResponse = append(generatedResponse, wr)
+			}
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
-			WillReturnRows(buildMockRowsFromWebhooks(
-				false,
-				exampleWebhookList.FilteredCount,
-				exampleWebhookList.Webhooks...,
-			))
+		mockGQ.On(
+			"GetWebhooks",
+			testutils.ContextMatcher,
+			database.SQLQueryExecutorMatcher,
+			&generated.GetWebhooksParams{
+				BelongsToHousehold: exampleHouseholdID,
+				CreatedAfter:       filterArgs.CreatedAfter,
+				CreatedBefore:      filterArgs.CreatedBefore,
+				UpdatedAfter:       filterArgs.UpdatedAfter,
+				UpdatedBefore:      filterArgs.UpdatedBefore,
+			}).Return(generatedResponse, nil)
 
 		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleWebhookList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 
 	T.Run("with invalid household ID", func(t *testing.T) {
@@ -392,47 +425,28 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
-		filter := types.DefaultQueryFilter()
-
 		ctx := context.Background()
-		c, db := buildTestClient(t)
 
-		getWebhooksForHouseholdArgs := []interface{}{
-			exampleHouseholdID,
-		}
+		c, _, mockGQ := buildNewTestClient(t)
 
-		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
-			WillReturnError(errors.New("blah"))
+		filter := types.DefaultQueryFilter()
+		filterArgs := filter.ToDatabaseArgs()
+
+		mockGQ.On(
+			"GetWebhooks",
+			testutils.ContextMatcher,
+			database.SQLQueryExecutorMatcher,
+			&generated.GetWebhooksParams{
+				BelongsToHousehold: exampleHouseholdID,
+				CreatedAfter:       filterArgs.CreatedAfter,
+				CreatedBefore:      filterArgs.CreatedBefore,
+				UpdatedAfter:       filterArgs.UpdatedAfter,
+				UpdatedBefore:      filterArgs.UpdatedBefore,
+			}).Return([]*generated.GetWebhooksRow(nil), errors.New("blah"))
 
 		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with erroneous database response", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		getWebhooksForHouseholdArgs := []interface{}{
-			exampleHouseholdID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

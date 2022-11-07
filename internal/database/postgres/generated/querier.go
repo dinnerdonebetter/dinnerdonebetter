@@ -135,6 +135,7 @@ type Querier interface {
 	GetValidPreparation(ctx context.Context, db DBTX, id string) error
 	GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) error
 	GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) (*GetWebhookRow, error)
+	GetWebhookTriggerEventsForWebhook(ctx context.Context, db DBTX, id string) ([]*WebhookTriggerEvents, error)
 	GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksParams) ([]*GetWebhooksRow, error)
 	HouseholdInvitationExists(ctx context.Context, db DBTX, id string) error
 	ListIncompleteMealPlanTaskByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTaskByMealPlanOptionRow, error)

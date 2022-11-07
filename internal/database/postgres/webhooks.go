@@ -92,78 +92,6 @@ func (q *Querier) scanWebhook(ctx context.Context, rows database.ResultIterator)
 	return webhook, nil
 }
 
-// scanWebhooks provides a consistent way to turn sql rows into a slice of webhooks.
-func (q *Querier) scanWebhooks(ctx context.Context, rows database.ResultIterator) (webhooks []*types.Webhook, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x := &types.Webhook{}
-	for rows.Next() {
-		webhook := &types.Webhook{}
-		webhookTriggerEvent := &types.WebhookTriggerEvent{}
-
-		var (
-			lastUpdatedAt,
-			archivedAt sql.NullTime
-		)
-
-		targetVars := []interface{}{
-			&webhook.ID,
-			&webhook.Name,
-			&webhook.ContentType,
-			&webhook.URL,
-			&webhook.Method,
-			&webhookTriggerEvent.ID,
-			&webhookTriggerEvent.TriggerEvent,
-			&webhookTriggerEvent.BelongsToWebhook,
-			&webhookTriggerEvent.CreatedAt,
-			&webhookTriggerEvent.ArchivedAt,
-			&webhook.CreatedAt,
-			&lastUpdatedAt,
-			&archivedAt,
-			&webhook.BelongsToHousehold,
-		}
-
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning webhook")
-		}
-
-		if lastUpdatedAt.Valid {
-			webhook.LastUpdatedAt = &lastUpdatedAt.Time
-		}
-		if archivedAt.Valid {
-			webhook.ArchivedAt = &archivedAt.Time
-		}
-
-		if x.ID == "" {
-			events := x.Events
-			x = webhook
-			x.Events = events
-		}
-
-		if x.ID != webhook.ID {
-			webhooks = append(webhooks, x)
-			x = webhook
-		}
-
-		x.Events = append(x.Events, webhookTriggerEvent)
-	}
-
-	if x.ID != "" {
-		webhooks = append(webhooks, x)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, observability.PrepareError(err, span, "fetching webhook from database")
-	}
-
-	if len(webhooks) == 0 {
-		return nil, sql.ErrNoRows
-	}
-
-	return webhooks, nil
-}
-
 //go:embed queries/webhooks/exists.sql
 var webhookExistenceQuery string
 
@@ -240,13 +168,75 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	return webhook, nil
 }
 
-//go:embed queries/webhooks/get_many.sql
-var getWebhooksForHouseholdQuery string
+// convertWebhookRows provides a consistent way to turn sql rows into a slice of webhooks.
+func (q *Querier) convertWebhookRows(ctx context.Context, rows []*generated.GetWebhooksRow) (webhooks []*types.Webhook, err error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	x := &types.Webhook{}
+	for _, row := range rows {
+		webhook := &types.Webhook{
+			CreatedAt:          row.CreatedAt,
+			Name:               row.Name,
+			URL:                row.Url,
+			Method:             row.Method,
+			ID:                 row.ID,
+			BelongsToHousehold: row.BelongsToHousehold,
+			ContentType:        row.ContentType,
+		}
+
+		if row.LastUpdatedAt.Valid {
+			webhook.LastUpdatedAt = &row.LastUpdatedAt.Time
+		}
+
+		if row.ArchivedAt.Valid {
+			webhook.ArchivedAt = &row.ArchivedAt.Time
+		}
+
+		webhookTriggerEvent := &types.WebhookTriggerEvent{
+			CreatedAt:        row.CreatedAt_2,
+			ID:               row.ID_2,
+			BelongsToWebhook: row.BelongsToWebhook,
+			TriggerEvent:     string(row.TriggerEvent),
+		}
+
+		if row.ArchivedAt_2.Valid {
+			webhookTriggerEvent.ArchivedAt = &row.ArchivedAt_2.Time
+		}
+
+		if x.ID == "" {
+			events := x.Events
+			x = webhook
+			x.Events = events
+		}
+
+		if x.ID != webhook.ID {
+			webhooks = append(webhooks, x)
+			x = webhook
+		}
+
+		x.Events = append(x.Events, webhookTriggerEvent)
+	}
+
+	if x.ID != "" {
+		webhooks = append(webhooks, x)
+	}
+
+	if len(webhooks) == 0 {
+		return nil, sql.ErrNoRows
+	}
+
+	return webhooks, nil
+}
 
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
 func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 
 	logger := q.logger.Clone()
 
@@ -258,18 +248,23 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
+	filterArgs := filter.ToDatabaseArgs()
 	x := &types.WebhookList{}
-	args := []interface{}{
-		householdID,
-	}
 
-	rows, err := q.getRows(ctx, q.db, "webhooks", getWebhooksForHouseholdQuery, args)
+	rows, err := q.generatedQuerier.GetWebhooks(ctx, q.db, &generated.GetWebhooksParams{
+		BelongsToHousehold: householdID,
+		CreatedAfter:       filterArgs.CreatedAfter,
+		CreatedBefore:      filterArgs.CreatedBefore,
+		UpdatedAfter:       filterArgs.UpdatedAfter,
+		UpdatedBefore:      filterArgs.UpdatedBefore,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
 	}
 
-	if x.Webhooks, err = q.scanWebhooks(ctx, rows); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning database response")
+	x.Webhooks, err = q.convertWebhookRows(ctx, rows)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "converting response from database")
 	}
 
 	return x, nil

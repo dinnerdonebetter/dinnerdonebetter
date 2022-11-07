@@ -18,6 +18,11 @@ SELECT
     webhooks.content_type,
     webhooks.url,
     webhooks.method,
+    webhook_trigger_events.id,
+    webhook_trigger_events.trigger_event,
+    webhook_trigger_events.belongs_to_webhook,
+    webhook_trigger_events.created_at,
+    webhook_trigger_events.archived_at,
     webhooks.created_at,
     webhooks.last_updated_at,
     webhooks.archived_at,
@@ -26,11 +31,11 @@ SELECT
     SELECT COUNT(webhooks.id)
      FROM webhooks
      WHERE webhooks.archived_at IS NULL
-       AND webhooks.created_at > COALESCE($2, 0)
-       AND webhooks.created_at < COALESCE($3, (SELECT NOW() + interval '9999 years'))
-       AND (webhooks.last_updated_at IS NULL OR webhooks.last_updated_at > COALESCE($4, 0))
-       AND (webhoks.last_updated_at IS NULL OR
-            webhooks.last_updated_at < COALESCE($5, (SELECT NOW() + interval '9999 years')))
+       AND webhooks.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+       AND webhooks.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+       AND (webhooks.last_updated_at IS NULL OR webhooks.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
+       AND (webhooks.last_updated_at IS NULL OR
+            webhooks.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
         SELECT
@@ -40,10 +45,11 @@ SELECT
         WHERE
             webhooks.archived_at IS NULL
     ) as total_count
-FROM webhooks
+FROM  webhook_trigger_events
+    JOIN webhooks ON webhook_trigger_events.belongs_to_webhook=webhooks.id
 WHERE webhooks.archived_at IS NULL
-  AND webhook_trigger_events.archived_at IS NULL
-  AND webhooks.belongs_to_household = $1
+    AND webhook_trigger_events.archived_at IS NULL
+    AND webhooks.belongs_to_household = $1
 `
 
 type GetWebhooksParams struct {
@@ -60,9 +66,14 @@ type GetWebhooksRow struct {
 	ContentType        string       `db:"content_type"`
 	Url                string       `db:"url"`
 	Method             string       `db:"method"`
+	ID_2               string       `db:"id_2"`
+	TriggerEvent       WebhookEvent `db:"trigger_event"`
+	BelongsToWebhook   string       `db:"belongs_to_webhook"`
 	CreatedAt          time.Time    `db:"created_at"`
-	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
 	ArchivedAt         sql.NullTime `db:"archived_at"`
+	CreatedAt_2        time.Time    `db:"created_at_2"`
+	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
+	ArchivedAt_2       sql.NullTime `db:"archived_at_2"`
 	BelongsToHousehold string       `db:"belongs_to_household"`
 	FilteredCount      int64        `db:"filtered_count"`
 	TotalCount         int64        `db:"total_count"`
@@ -89,9 +100,14 @@ func (q *Queries) GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksPara
 			&i.ContentType,
 			&i.Url,
 			&i.Method,
+			&i.ID_2,
+			&i.TriggerEvent,
+			&i.BelongsToWebhook,
 			&i.CreatedAt,
-			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.CreatedAt_2,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt_2,
 			&i.BelongsToHousehold,
 			&i.FilteredCount,
 			&i.TotalCount,
