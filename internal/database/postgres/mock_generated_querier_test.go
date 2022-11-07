@@ -9,6 +9,8 @@ import (
 	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 )
 
+var _ generated.Querier = (*mockGeneratedQuerier)(nil)
+
 type mockGeneratedQuerier struct {
 	mock.Mock
 }
@@ -509,12 +511,16 @@ func (m *mockGeneratedQuerier) GetValidPreparationInstrument(ctx context.Context
 	return m.Called(ctx, db, id).Error(0)
 }
 
-func (m *mockGeneratedQuerier) GetWebhook(ctx context.Context, db generated.DBTX, arg *generated.GetWebhookParams) error {
-	return m.Called(ctx, db, arg).Error(0)
+func (m *mockGeneratedQuerier) GetWebhook(ctx context.Context, db generated.DBTX, arg *generated.GetWebhookParams) (*generated.GetWebhookRow, error) {
+	rv := m.Called(ctx, db, arg)
+
+	return rv.Get(0).(*generated.GetWebhookRow), rv.Error(1)
 }
 
-func (m *mockGeneratedQuerier) GetWebhooks(ctx context.Context, db generated.DBTX, belongsToHousehold string) error {
-	return m.Called(ctx, db, belongsToHousehold).Error(0)
+func (m *mockGeneratedQuerier) GetWebhooks(ctx context.Context, db generated.DBTX, arg *generated.GetWebhooksParams) ([]*generated.GetWebhooksRow, error) {
+	rv := m.Called(ctx, db, arg)
+
+	return rv.Get(0).([]*generated.GetWebhooksRow), rv.Error(1)
 }
 
 func (m *mockGeneratedQuerier) HouseholdInvitationExists(ctx context.Context, db generated.DBTX, id string) error {

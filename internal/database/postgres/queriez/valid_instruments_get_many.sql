@@ -16,9 +16,9 @@ SELECT
 	 WHERE
 		valid_instruments.archived_at IS NULL
 	 AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
-	 AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
+	 AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT NOW() + interval '9999 years'))
 	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
-	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
+	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT NOW() + interval '9999 years')))
 	) as filtered_count,
 	(
 	 SELECT
@@ -33,9 +33,9 @@ FROM
 WHERE
 	valid_instruments.archived_at IS NULL
 	AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
-	AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
+	AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT NOW() + interval '9999 years'))
 	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
-	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
+	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT NOW() + interval '9999 years')))
 GROUP BY
 	valid_instruments.id
 ORDER BY

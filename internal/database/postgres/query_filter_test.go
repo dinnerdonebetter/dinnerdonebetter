@@ -8,6 +8,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -26,10 +27,10 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		qf := &types.QueryFilter{
 			Page:          func(x uint64) *uint64 { return &x }(100),
 			Limit:         func(x uint8) *uint8 { return &x }(50),
-			CreatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
-			CreatedBefore: func(x uint64) *uint64 { return &x }(123456789),
-			UpdatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
-			UpdatedBefore: func(x uint64) *uint64 { return &x }(123456789),
+			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
 			SortBy:        types.SortDescending,
 		}
 
@@ -77,10 +78,10 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		qf := &types.QueryFilter{
 			Limit:         func(x uint8) *uint8 { return &x }(20),
 			Page:          func(x uint64) *uint64 { return &x }(6),
-			CreatedAfter:  func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
-			CreatedBefore: func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
-			UpdatedAfter:  func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
-			UpdatedBefore: func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
+			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
 		}
 
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 AND stuff.created_at > $2 AND stuff.created_at < $3 AND stuff.last_updated_at > $4 AND stuff.last_updated_at < $5 LIMIT 20 OFFSET 100"
@@ -120,10 +121,10 @@ func TestQueryFilter_ApplyFilterToSubCountQueryBuilder(T *testing.T) {
 		qf := &types.QueryFilter{
 			Page:          func(x uint64) *uint64 { return &x }(100),
 			Limit:         func(x uint8) *uint8 { return &x }(50),
-			CreatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
-			CreatedBefore: func(x uint64) *uint64 { return &x }(123456789),
-			UpdatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
-			UpdatedBefore: func(x uint64) *uint64 { return &x }(123456789),
+			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
 			SortBy:        types.SortDescending,
 		}
 

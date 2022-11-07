@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetWebhook = `-- name: GetWebhook :exec
+const GetWebhook = `-- name: GetWebhook :one
 SELECT
     webhooks.id,
     webhooks.name,
@@ -28,11 +28,11 @@ SELECT
     webhooks.archived_at,
     webhooks.belongs_to_household
 FROM webhook_trigger_events
- JOIN webhooks ON webhook_trigger_events.belongs_to_webhook=webhooks.id
+    JOIN webhooks ON webhook_trigger_events.belongs_to_webhook=webhooks.id
 WHERE webhooks.archived_at IS NULL
-  AND webhook_trigger_events.archived_at IS NULL
-  AND webhooks.belongs_to_household = $1
-  AND webhooks.id = $2
+    AND webhook_trigger_events.archived_at IS NULL
+    AND webhooks.belongs_to_household = $1
+    AND webhooks.id = $2
 `
 
 type GetWebhookParams struct {
@@ -57,7 +57,24 @@ type GetWebhookRow struct {
 	BelongsToHousehold string       `db:"belongs_to_household"`
 }
 
-func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) error {
-	_, err := db.ExecContext(ctx, GetWebhook, arg.BelongsToHousehold, arg.ID)
-	return err
+func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) (*GetWebhookRow, error) {
+	row := db.QueryRowContext(ctx, GetWebhook, arg.BelongsToHousehold, arg.ID)
+	var i GetWebhookRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.ContentType,
+		&i.Url,
+		&i.Method,
+		&i.ID_2,
+		&i.TriggerEvent,
+		&i.BelongsToWebhook,
+		&i.CreatedAt,
+		&i.ArchivedAt,
+		&i.CreatedAt_2,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt_2,
+		&i.BelongsToHousehold,
+	)
+	return &i, err
 }

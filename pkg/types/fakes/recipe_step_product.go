@@ -24,9 +24,9 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		CreatedAt:                          fake.Date(),
 		BelongsToRecipeStep:                fake.UUID(),
 		Compostable:                        fake.Bool(),
-		MaximumStorageDurationInSeconds:    pointers.Uint32Pointer(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius: pointers.Float32Pointer(float32(storageTemp)),
-		MaximumStorageTemperatureInCelsius: pointers.Float32Pointer(float32(storageTemp + 1)),
+		MaximumStorageDurationInSeconds:    pointers.Uint32(fake.Uint32()),
+		MinimumStorageTemperatureInCelsius: pointers.Float32(float32(storageTemp)),
+		MaximumStorageTemperatureInCelsius: pointers.Float32(float32(storageTemp + 1)),
 		StorageInstructions:                buildUniqueString(),
 	}
 }

@@ -1,11 +1,13 @@
 package types
 
 import (
+	"database/sql"
 	"math"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -35,14 +37,14 @@ const (
 type QueryFilter struct {
 	_ struct{}
 
-	SortBy          *string `json:"sortBy"`
-	Page            *uint64 `json:"page"`
-	CreatedAfter    *uint64 `json:"createdBefore,omitempty"`
-	CreatedBefore   *uint64 `json:"createdAfter,omitempty"`
-	UpdatedAfter    *uint64 `json:"updatedBefore,omitempty"`
-	UpdatedBefore   *uint64 `json:"updatedAfter,omitempty"`
-	Limit           *uint8  `json:"limit"`
-	IncludeArchived *bool   `json:"includeArchived,omitempty"`
+	SortBy          *string    `json:"sortBy"`
+	Page            *uint64    `json:"page"`
+	CreatedAfter    *time.Time `json:"createdBefore,omitempty"`
+	CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
+	UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
+	UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
+	Limit           *uint8     `json:"limit"`
+	IncludeArchived *bool      `json:"includeArchived,omitempty"`
 }
 
 // DefaultQueryFilter builds the default query filter.
@@ -52,6 +54,40 @@ func DefaultQueryFilter() *QueryFilter {
 		Limit:  func(x uint8) *uint8 { return &x }(DefaultLimit),
 		SortBy: SortAscending,
 	}
+}
+
+type QueryFilterDatabaseArgs struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+}
+
+func (qf *QueryFilter) ToDatabaseArgs() QueryFilterDatabaseArgs {
+	args := QueryFilterDatabaseArgs{
+		CreatedAfter:  sql.NullTime{},
+		CreatedBefore: sql.NullTime{},
+		UpdatedAfter:  sql.NullTime{},
+		UpdatedBefore: sql.NullTime{},
+	}
+
+	if qf.CreatedAfter != nil {
+		args.CreatedAfter = sql.NullTime{Time: *qf.CreatedAfter}
+	}
+
+	if qf.CreatedBefore != nil {
+		args.CreatedBefore = sql.NullTime{Time: *qf.CreatedBefore}
+	}
+
+	if qf.UpdatedAfter != nil {
+		args.UpdatedAfter = sql.NullTime{Time: *qf.UpdatedAfter}
+	}
+
+	if qf.UpdatedAfter != nil {
+		args.UpdatedAfter = sql.NullTime{Time: *qf.UpdatedAfter}
+	}
+
+	return args
 }
 
 // AttachToLogger attaches a QueryFilter's values to a logging.Logger.
@@ -103,20 +139,20 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 		qf.Limit = uint8Pointer(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
 	}
 
-	if i, err := strconv.ParseUint(params.Get(createdBeforeQueryKey), 10, 64); err == nil {
-		qf.CreatedBefore = uint64Pointer(uint64(math.Max(float64(i), 0)))
+	if t, err := time.Parse(time.RFC3339, params.Get(createdBeforeQueryKey)); err == nil {
+		qf.CreatedBefore = &t
 	}
 
-	if i, err := strconv.ParseUint(params.Get(createdAfterQueryKey), 10, 64); err == nil {
-		qf.CreatedAfter = uint64Pointer(uint64(math.Max(float64(i), 0)))
+	if t, err := time.Parse(time.RFC3339, params.Get(createdAfterQueryKey)); err == nil {
+		qf.CreatedAfter = &t
 	}
 
-	if i, err := strconv.ParseUint(params.Get(updatedBeforeQueryKey), 10, 64); err == nil {
-		qf.UpdatedBefore = uint64Pointer(uint64(math.Max(float64(i), 0)))
+	if t, err := time.Parse(time.RFC3339, params.Get(updatedBeforeQueryKey)); err == nil {
+		qf.UpdatedBefore = &t
 	}
 
-	if i, err := strconv.ParseUint(params.Get(updatedAfterQueryKey), 10, 64); err == nil {
-		qf.UpdatedAfter = uint64Pointer(uint64(math.Max(float64(i), 0)))
+	if t, err := time.Parse(time.RFC3339, params.Get(updatedAfterQueryKey)); err == nil {
+		qf.UpdatedAfter = &t
 	}
 
 	if i, err := strconv.ParseBool(params.Get(includeArchivedQueryKey)); err == nil {
@@ -167,19 +203,19 @@ func (qf *QueryFilter) ToValues() url.Values {
 	}
 
 	if qf.CreatedBefore != nil {
-		v.Set(createdBeforeQueryKey, strconv.FormatUint(*qf.CreatedBefore, 10))
+		v.Set(createdBeforeQueryKey, qf.CreatedBefore.Format(time.RFC3339))
 	}
 
 	if qf.CreatedAfter != nil {
-		v.Set(createdAfterQueryKey, strconv.FormatUint(*qf.CreatedAfter, 10))
+		v.Set(createdAfterQueryKey, qf.CreatedAfter.Format(time.RFC3339))
 	}
 
 	if qf.UpdatedBefore != nil {
-		v.Set(updatedBeforeQueryKey, strconv.FormatUint(*qf.UpdatedBefore, 10))
+		v.Set(updatedBeforeQueryKey, qf.UpdatedBefore.Format(time.RFC3339))
 	}
 
 	if qf.UpdatedAfter != nil {
-		v.Set(updatedAfterQueryKey, strconv.FormatUint(*qf.UpdatedAfter, 10))
+		v.Set(updatedAfterQueryKey, qf.UpdatedAfter.Format(time.RFC3339))
 	}
 
 	if qf.IncludeArchived != nil {

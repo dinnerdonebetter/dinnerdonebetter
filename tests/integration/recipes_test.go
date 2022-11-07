@@ -654,7 +654,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			t.Log("creating prerequisite valid ingredient")
 			chickenBreastBase := fakes.BuildFakeValidIngredient()
 			chickenBreastInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(chickenBreastBase)
-			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Float32Pointer(2.5)
+			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Float32(2.5)
 			chickenBreast, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, chickenBreastInput)
 			require.NoError(t, createdValidIngredientErr)
 
