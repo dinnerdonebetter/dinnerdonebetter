@@ -36,10 +36,6 @@ setup: $(ARTIFACTS_DIR) revendor rewire configs
 configs:
 	go run github.com/prixfixeco/api_server/cmd/tools/gen_configs
 
-.PHONY: queries
-queries:
-	go run github.com/prixfixeco/api_server/cmd/tools/gen_queries
-
 ## prerequisites
 
 # not a bad idea to do this either:
@@ -140,14 +136,6 @@ docker_lint:
 .PHONY: queries_lint
 queries_lint:
 	$(SQL_GENERATOR) compile
-
-.PHONY: queries_gen
-queries_gen: queries queries_lint
-	rm -rf $(GENERATED_QUERIES_DIR)
-	$(SQL_GENERATOR) generate
-	goimports -w $(GENERATED_QUERIES_DIR)
-	- fieldalignment -fix ./...
-	fieldalignment -fix ./...
 
 .PHONY: golang_lint
 golang_lint:

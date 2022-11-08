@@ -13,4 +13,4 @@ SET
     status = $11,
 	last_updated_at = NOW()
 WHERE completed_at IS NULL
-	AND id = $12,
+	AND id = $12;

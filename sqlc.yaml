@@ -2,7 +2,39 @@ version: "2"
 sql:
   - schema: "internal/database/postgres/migrations"
     queries:
-      - "internal/database/postgres/queriez"
+      - "internal/database/postgres/queries/admin"
+      - "internal/database/postgres/queries/meal_recipes"
+      - "internal/database/postgres/queries/users"
+      - "internal/database/postgres/queries/api_clients"
+      - "internal/database/postgres/queries/meals"
+      - "internal/database/postgres/queries/valid_ingredient_measurement_units"
+      - "internal/database/postgres/queries/household_invitations"
+      - "internal/database/postgres/queries/password_reset_tokens"
+      - "internal/database/postgres/queries/valid_ingredient_preparations"
+      - "internal/database/postgres/queries/households"
+      - "internal/database/postgres/queries/recipe_media"
+      - "internal/database/postgres/queries/valid_ingredients"
+      - "internal/database/postgres/queries/household_user_memberships"
+      - "internal/database/postgres/queries/recipe_prep_tasks"
+      - "internal/database/postgres/queries/valid_instruments"
+      - "internal/database/postgres/queries/meal_plan_events"
+      - "internal/database/postgres/queries/recipe_prep_task_steps"
+      - "internal/database/postgres/queries/valid_measurement_conversions"
+      - "internal/database/postgres/queries/meal_plan_grocery_list_items"
+      - "internal/database/postgres/queries/recipes"
+      - "internal/database/postgres/queries/valid_measurement_units"
+      - "internal/database/postgres/queries/meal_plan_options"
+      - "internal/database/postgres/queries/recipe_step_ingredients"
+      - "internal/database/postgres/queries/valid_preparation_instruments"
+      - "internal/database/postgres/queries/meal_plan_option_votes"
+      - "internal/database/postgres/queries/recipe_step_instruments"
+      - "internal/database/postgres/queries/valid_preparations"
+      - "internal/database/postgres/queries/meal_plans"
+      - "internal/database/postgres/queries/recipe_step_products"
+      - "internal/database/postgres/queries/webhooks"
+      - "internal/database/postgres/queries/meal_plan_tasks"
+      - "internal/database/postgres/queries/recipe_steps"
+      - "internal/database/postgres/queries/webhook_trigger_events"
     engine: "postgresql"
     # strict_function_checks: true
     gen:
@@ -12,7 +44,7 @@ sql:
         out: "internal/database/postgres/generated"
         output_files_suffix: "_generated"
         emit_db_tags: true
-        emit_prepared_queries: true
+        emit_prepared_queries: false
         emit_interface: true
         emit_exact_table_names: true
         emit_empty_slices: true
@@ -20,8 +52,6 @@ sql:
         emit_json_tags: false
         emit_result_struct_pointers: true
         emit_params_struct_pointers: true
-        emit_methods_with_db_argument: false
+        emit_methods_with_db_argument: true
         emit_enum_valid_method: true
         emit_all_enum_values: false
-        rename:
-          Url: "URL"
