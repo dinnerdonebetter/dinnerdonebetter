@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"strings"
 	"testing"
 	"time"
 
@@ -42,7 +41,7 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.PasswordLastChangedAt,
 			user.TwoFactorSecret,
 			user.TwoFactorSecretVerifiedAt,
-			strings.Join(user.ServiceRoles, serviceRolesSeparator),
+			user.ServiceRole,
 			user.AccountStatus,
 			user.AccountStatusExplanation,
 			user.BirthDay,

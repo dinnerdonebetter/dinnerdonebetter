@@ -11,6 +11,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/pointers"
 )
 
 const (
@@ -50,8 +51,8 @@ type QueryFilter struct {
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
-		Page:   func(x uint64) *uint64 { return &x }(1),
-		Limit:  func(x uint8) *uint8 { return &x }(DefaultLimit),
+		Page:   pointers.Uint64(1),
+		Limit:  pointers.Uint8(DefaultLimit),
 		SortBy: SortAscending,
 	}
 }

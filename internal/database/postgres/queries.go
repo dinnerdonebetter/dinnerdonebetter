@@ -15,7 +15,6 @@ import (
 )
 
 const (
-	commaSeparator           = ","
 	columnCountQueryTemplate = `COUNT(%s.id)`
 	userOwnershipColumn      = "belongs_to_user"
 	householdOwnershipColumn = "belongs_to_household"

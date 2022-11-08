@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
-	"strings"
 
 	"github.com/Masterminds/squirrel"
 
@@ -68,11 +67,6 @@ func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, incl
 	household = &types.Household{Members: []*types.HouseholdUserMembershipWithUser{}}
 	membership = &types.HouseholdUserMembershipWithUser{BelongsToUser: &types.User{}}
 
-	var (
-		rawHouseholdRoles,
-		rawServiceRoles string
-	)
-
 	targetVars := []interface{}{
 		&household.ID,
 		&household.Name,
@@ -93,7 +87,7 @@ func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, incl
 		&membership.BelongsToUser.RequiresPasswordChange,
 		&membership.BelongsToUser.PasswordLastChangedAt,
 		&membership.BelongsToUser.TwoFactorSecretVerifiedAt,
-		&rawServiceRoles,
+		&membership.BelongsToUser.ServiceRole,
 		&membership.BelongsToUser.AccountStatus,
 		&membership.BelongsToUser.AccountStatusExplanation,
 		&membership.BelongsToUser.BirthDay,
@@ -104,7 +98,7 @@ func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, incl
 		&membership.ID,
 		&membership.BelongsToUser.ID,
 		&membership.BelongsToHousehold,
-		&rawHouseholdRoles,
+		&membership.HouseholdRole,
 		&membership.DefaultHousehold,
 		&membership.CreatedAt,
 		&membership.LastUpdatedAt,
@@ -118,9 +112,6 @@ func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, incl
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, nil, 0, 0, observability.PrepareError(err, span, "fetching memberships from database")
 	}
-
-	membership.HouseholdRoles = strings.Split(rawHouseholdRoles, householdMemberRolesSeparator)
-	membership.BelongsToUser.ServiceRoles = strings.Split(rawServiceRoles, serviceRolesSeparator)
 
 	return household, membership, filteredCount, totalCount, nil
 }
@@ -401,17 +392,17 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 	}
 
 	addInput := &types.HouseholdUserMembershipCreationRequestInput{
-		ID:             identifiers.New(),
-		UserID:         input.BelongsToUser,
-		HouseholdID:    household.ID,
-		HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
+		ID:            identifiers.New(),
+		UserID:        input.BelongsToUser,
+		HouseholdID:   household.ID,
+		HouseholdRole: authorization.HouseholdAdminRole.String(),
 	}
 
 	addUserToHouseholdArgs := []interface{}{
 		addInput.ID,
 		addInput.UserID,
 		addInput.HouseholdID,
-		strings.Join(addInput.HouseholdRoles, householdMemberRolesSeparator),
+		addInput.HouseholdRole,
 	}
 
 	if err = q.performWriteQuery(ctx, tx, "household user membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {

@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/Masterminds/squirrel"
 
@@ -80,10 +79,6 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 		DestinationHousehold: types.Household{},
 	}
 
-	var (
-		rawServiceRoles string
-	)
-
 	targetVars := []interface{}{
 		&householdInvitation.ID,
 		&householdInvitation.DestinationHousehold.ID,
@@ -109,7 +104,7 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 		&householdInvitation.FromUser.PasswordLastChangedAt,
 		&householdInvitation.FromUser.TwoFactorSecret,
 		&householdInvitation.FromUser.TwoFactorSecretVerifiedAt,
-		&rawServiceRoles,
+		&householdInvitation.FromUser.ServiceRole,
 		&householdInvitation.FromUser.AccountStatus,
 		&householdInvitation.FromUser.AccountStatusExplanation,
 		&householdInvitation.FromUser.BirthDay,
@@ -133,8 +128,6 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, span, "scanning household invitation")
 	}
-
-	householdInvitation.FromUser.ServiceRoles = strings.Split(rawServiceRoles, serviceRolesSeparator)
 
 	return householdInvitation, filteredCount, totalCount, nil
 }
@@ -583,10 +576,10 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 	}
 
 	addUserInput := &types.HouseholdUserMembershipDatabaseCreationInput{
-		ID:             identifiers.New(),
-		Reason:         fmt.Sprintf("accepted household invitation %q", householdInvitationID),
-		HouseholdID:    invitation.DestinationHousehold.ID,
-		HouseholdRoles: []string{"household_member"},
+		ID:            identifiers.New(),
+		Reason:        fmt.Sprintf("accepted household invitation %q", householdInvitationID),
+		HouseholdID:   invitation.DestinationHousehold.ID,
+		HouseholdRole: "household_member",
 	}
 	if invitation.ToUser != nil {
 		addUserInput.UserID = *invitation.ToUser

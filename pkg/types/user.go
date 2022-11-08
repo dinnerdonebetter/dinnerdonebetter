@@ -54,7 +54,7 @@ type (
 		AccountStatus             userAccountStatus `json:"accountStatus"`
 		Username                  string            `json:"username"`
 		EmailAddress              string            `json:"emailAddress"`
-		ServiceRoles              []string          `json:"serviceRoles"`
+		ServiceRole               string            `json:"serviceRoles"`
 		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}
 

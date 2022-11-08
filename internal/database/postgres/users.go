@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/lib/pq"
 
@@ -44,21 +43,14 @@ var (
 	}
 )
 
-const (
-	serviceRolesSeparator = commaSeparator
-)
-
 // scanUser provides a consistent way to scan something like a *sql.Row into a Requester struct.
 func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCounts bool) (user *types.User, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	user = &types.User{
-		ServiceRoles: []string{},
-	}
+	user = &types.User{}
 
 	var (
-		rawRoles                  string
 		passwordLastChangedAt     sql.NullTime
 		twoFactorSecretVerifiedAt sql.NullTime
 	)
@@ -73,7 +65,7 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 		&passwordLastChangedAt,
 		&user.TwoFactorSecret,
 		&twoFactorSecretVerifiedAt,
-		&rawRoles,
+		&user.ServiceRole,
 		&user.AccountStatus,
 		&user.AccountStatusExplanation,
 		&user.BirthDay,
@@ -89,10 +81,6 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, span, "scanning user")
-	}
-
-	if roles := strings.Split(rawRoles, serviceRolesSeparator); len(roles) > 0 {
-		user.ServiceRoles = roles
 	}
 
 	if passwordLastChangedAt.Valid {
@@ -431,7 +419,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		TwoFactorSecret: input.TwoFactorSecret,
 		BirthMonth:      input.BirthMonth,
 		BirthDay:        input.BirthDay,
-		ServiceRoles:    []string{authorization.ServiceUserRole.String()},
+		ServiceRole:     authorization.ServiceUserRole.String(),
 		CreatedAt:       q.currentTime(),
 	}
 	logger = logger.WithValue(keys.UserIDKey, user.ID)

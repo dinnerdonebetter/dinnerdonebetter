@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"strings"
 	"testing"
 	"time"
 
@@ -54,7 +53,7 @@ func buildMockRowsFromHouseholdInvitations(includeCounts bool, filteredCount uin
 			w.FromUser.PasswordLastChangedAt,
 			w.FromUser.TwoFactorSecret,
 			w.FromUser.TwoFactorSecretVerifiedAt,
-			strings.Join(w.FromUser.ServiceRoles, serviceRolesSeparator),
+			w.FromUser.ServiceRole,
 			w.FromUser.AccountStatus,
 			w.FromUser.AccountStatusExplanation,
 			w.FromUser.BirthDay,
@@ -737,7 +736,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
 			exampleHouseholdInvitation.DestinationHousehold.ID,
-			strings.Join([]string{"household_member"}, householdMemberRolesSeparator),
+			"household_member",
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
@@ -892,7 +891,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
 			exampleHouseholdInvitation.DestinationHousehold.ID,
-			strings.Join([]string{"household_member"}, householdMemberRolesSeparator),
+			"household_member",
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
@@ -939,7 +938,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
 			exampleHouseholdInvitation.DestinationHousehold.ID,
-			strings.Join([]string{"household_member"}, householdMemberRolesSeparator),
+			"household_member",
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).

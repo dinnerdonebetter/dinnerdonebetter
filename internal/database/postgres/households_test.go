@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql/driver"
 	"errors"
-	"strings"
 	"testing"
 	"time"
 
@@ -50,7 +49,7 @@ func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, house
 				&y.BelongsToUser.RequiresPasswordChange,
 				&y.BelongsToUser.PasswordLastChangedAt,
 				&y.BelongsToUser.TwoFactorSecretVerifiedAt,
-				strings.Join(y.BelongsToUser.ServiceRoles, serviceRolesSeparator),
+				y.BelongsToUser.ServiceRole,
 				&y.BelongsToUser.AccountStatus,
 				&y.BelongsToUser.AccountStatusExplanation,
 				&y.BelongsToUser.BirthDay,
@@ -61,7 +60,7 @@ func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, house
 				y.ID,
 				y.BelongsToUser.ID,
 				y.BelongsToHousehold,
-				strings.Join(y.HouseholdRoles, householdMemberRolesSeparator),
+				y.HouseholdRole,
 				y.DefaultHousehold,
 				y.CreatedAt,
 				x.LastUpdatedAt,
@@ -602,7 +601,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			&idMatcher{},
 			exampleInput.BelongsToUser,
 			&idMatcher{},
-			strings.Join([]string{authorization.HouseholdAdminRole.String()}, householdMemberRolesSeparator),
+			authorization.HouseholdAdminRole.String(),
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
@@ -730,7 +729,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			&idMatcher{},
 			exampleInput.BelongsToUser,
 			&idMatcher{},
-			strings.Join([]string{authorization.HouseholdAdminRole.String()}, householdMemberRolesSeparator),
+			authorization.HouseholdAdminRole.String(),
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
@@ -781,7 +780,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			&idMatcher{},
 			exampleInput.BelongsToUser,
 			&idMatcher{},
-			strings.Join([]string{authorization.HouseholdAdminRole.String()}, householdMemberRolesSeparator),
+			authorization.HouseholdAdminRole.String(),
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).

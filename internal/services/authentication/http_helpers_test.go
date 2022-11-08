@@ -63,7 +63,7 @@ func (helper *authServiceHTTPRoutesTestHelper) setContextFetcher(t *testing.T) {
 			UserID:                   helper.exampleUser.ID,
 			AccountStatus:            helper.exampleUser.AccountStatus,
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
 		ActiveHouseholdID:    helper.exampleHousehold.ID,
 		HouseholdPermissions: helper.examplePermCheckers,
@@ -91,8 +91,8 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 
 	helper.examplePerms = map[string]*types.UserHouseholdMembershipInfo{
 		helper.exampleHousehold.ID: {
-			HouseholdName:  helper.exampleHousehold.Name,
-			HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
+			HouseholdName: helper.exampleHousehold.Name,
+			HouseholdRole: authorization.HouseholdMemberRole.String(),
 		},
 	}
 	helper.examplePermCheckers = map[string]authorization.HouseholdRolePermissionsChecker{

@@ -43,9 +43,9 @@ type (
 	UserHouseholdMembershipInfo struct {
 		_ struct{}
 
-		HouseholdName  string   `json:"name"`
-		HouseholdID    string   `json:"householdID"`
-		HouseholdRoles []string `json:"-"`
+		HouseholdName string `json:"name"`
+		HouseholdID   string `json:"householdID"`
+		HouseholdRole string `json:"-"`
 	}
 
 	// SessionContextData represents what we encode in our passwords cookies.

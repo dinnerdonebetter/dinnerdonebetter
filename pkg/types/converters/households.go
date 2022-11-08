@@ -57,10 +57,10 @@ func ConvertHouseholdToHouseholdDatabaseCreationInput(household *types.Household
 // ConvertHouseholdUserMembershipCreationRequestInputToHouseholdUserMembershipDatabaseCreationInput builds a HouseholdUserMembershipDatabaseCreationInput from a HouseholdUserMembershipCreationRequestInput.
 func ConvertHouseholdUserMembershipCreationRequestInputToHouseholdUserMembershipDatabaseCreationInput(input *types.HouseholdUserMembershipCreationRequestInput) *types.HouseholdUserMembershipDatabaseCreationInput {
 	return &types.HouseholdUserMembershipDatabaseCreationInput{
-		ID:             input.ID,
-		Reason:         input.Reason,
-		UserID:         input.UserID,
-		HouseholdID:    input.HouseholdID,
-		HouseholdRoles: input.HouseholdRoles,
+		ID:            input.ID,
+		Reason:        input.Reason,
+		UserID:        input.UserID,
+		HouseholdID:   input.HouseholdID,
+		HouseholdRole: input.HouseholdRole,
 	}
 }

@@ -163,10 +163,10 @@ func TestExtractQueryFilter(T *testing.T) {
 		expected := &QueryFilter{
 			Page:          func(x uint64) *uint64 { return &x }(100),
 			Limit:         func(x uint8) *uint8 { return &x }(MaxLimit),
-			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
-			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedAfter:  pointers.Time(time.Now().UTC().Truncate(time.Second)),
+			CreatedBefore: pointers.Time(time.Now().UTC().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Time(time.Now().UTC().Truncate(time.Second)),
+			UpdatedBefore: pointers.Time(time.Now().UTC().Truncate(time.Second)),
 			SortBy:        SortDescending,
 		}
 		exampleInput := url.Values{

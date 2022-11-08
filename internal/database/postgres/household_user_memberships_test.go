@@ -5,7 +5,6 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -26,7 +25,7 @@ func buildMockRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types.Ho
 			&x.ID,
 			&x.BelongsToUser.ID,
 			&x.BelongsToHousehold,
-			strings.Join(x.HouseholdRoles, householdMemberRolesSeparator),
+			x.HouseholdRole,
 			&x.DefaultHousehold,
 			&x.CreatedAt,
 			&x.LastUpdatedAt,
@@ -48,7 +47,7 @@ func buildInvalidRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types
 			&x.ID,
 			&x.BelongsToUser.ID,
 			&x.BelongsToHousehold,
-			strings.Join(x.HouseholdRoles, householdMemberRolesSeparator),
+			x.HouseholdRole,
 			&x.DefaultHousehold,
 			&x.CreatedAt,
 			&x.LastUpdatedAt,
@@ -107,15 +106,15 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 		examplePermsMap := map[string]*types.UserHouseholdMembershipInfo{}
 		for _, membership := range exampleHousehold.Members {
 			examplePermsMap[membership.BelongsToHousehold] = &types.UserHouseholdMembershipInfo{
-				HouseholdName:  exampleHousehold.Name,
-				HouseholdID:    membership.BelongsToHousehold,
-				HouseholdRoles: membership.HouseholdRoles,
+				HouseholdName: exampleHousehold.Name,
+				HouseholdID:   membership.BelongsToHousehold,
+				HouseholdRole: membership.HouseholdRole,
 			}
 		}
 
 		exampleHouseholdPermissionsMap := map[string]authorization.HouseholdRolePermissionsChecker{}
 		for _, membership := range exampleHousehold.Members {
-			exampleHouseholdPermissionsMap[membership.BelongsToHousehold] = authorization.NewHouseholdRolePermissionChecker(membership.HouseholdRoles...)
+			exampleHouseholdPermissionsMap[membership.BelongsToHousehold] = authorization.NewHouseholdRolePermissionChecker(membership.HouseholdRole)
 		}
 
 		c, db := buildTestClient(t)
@@ -141,7 +140,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 				UserID:                   exampleUser.ID,
 				AccountStatus:            exampleUser.AccountStatus,
 				AccountStatusExplanation: exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(exampleUser.ServiceRole),
 			},
 			HouseholdPermissions: exampleHouseholdPermissionsMap,
 			ActiveHouseholdID:    expectedActiveHouseholdID,
@@ -173,9 +172,9 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 		examplePermsMap := map[string]*types.UserHouseholdMembershipInfo{}
 		for _, membership := range exampleHousehold.Members {
 			examplePermsMap[membership.BelongsToHousehold] = &types.UserHouseholdMembershipInfo{
-				HouseholdName:  exampleHousehold.Name,
-				HouseholdID:    membership.BelongsToHousehold,
-				HouseholdRoles: membership.HouseholdRoles,
+				HouseholdName: exampleHousehold.Name,
+				HouseholdID:   membership.BelongsToHousehold,
+				HouseholdRole: membership.HouseholdRole,
 			}
 		}
 
@@ -203,15 +202,15 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 		examplePermsMap := map[string]*types.UserHouseholdMembershipInfo{}
 		for _, membership := range exampleHousehold.Members {
 			examplePermsMap[membership.BelongsToHousehold] = &types.UserHouseholdMembershipInfo{
-				HouseholdName:  exampleHousehold.Name,
-				HouseholdID:    membership.BelongsToHousehold,
-				HouseholdRoles: membership.HouseholdRoles,
+				HouseholdName: exampleHousehold.Name,
+				HouseholdID:   membership.BelongsToHousehold,
+				HouseholdRole: membership.HouseholdRole,
 			}
 		}
 
 		exampleHouseholdPermissionsMap := map[string]authorization.HouseholdRolePermissionsChecker{}
 		for _, membership := range exampleHousehold.Members {
-			exampleHouseholdPermissionsMap[membership.BelongsToHousehold] = authorization.NewHouseholdRolePermissionChecker(membership.HouseholdRoles...)
+			exampleHouseholdPermissionsMap[membership.BelongsToHousehold] = authorization.NewHouseholdRolePermissionChecker(membership.HouseholdRole)
 		}
 
 		c, db := buildTestClient(t)
@@ -243,15 +242,15 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 		examplePermsMap := map[string]*types.UserHouseholdMembershipInfo{}
 		for _, membership := range exampleHousehold.Members {
 			examplePermsMap[membership.BelongsToHousehold] = &types.UserHouseholdMembershipInfo{
-				HouseholdName:  exampleHousehold.Name,
-				HouseholdID:    membership.BelongsToHousehold,
-				HouseholdRoles: membership.HouseholdRoles,
+				HouseholdName: exampleHousehold.Name,
+				HouseholdID:   membership.BelongsToHousehold,
+				HouseholdRole: membership.HouseholdRole,
 			}
 		}
 
 		exampleHouseholdPermissionsMap := map[string]authorization.HouseholdRolePermissionsChecker{}
 		for _, membership := range exampleHousehold.Members {
-			exampleHouseholdPermissionsMap[membership.BelongsToHousehold] = authorization.NewHouseholdRolePermissionChecker(membership.HouseholdRoles...)
+			exampleHouseholdPermissionsMap[membership.BelongsToHousehold] = authorization.NewHouseholdRolePermissionChecker(membership.HouseholdRole)
 		}
 
 		c, db := buildTestClient(t)
@@ -492,7 +491,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		fakeArgs := []interface{}{
-			strings.Join(exampleInput.NewRoles, householdMemberRolesSeparator),
+			exampleInput.NewRole,
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -539,7 +538,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		fakeArgs := []interface{}{
-			strings.Join(exampleInput.NewRoles, householdMemberRolesSeparator),
+			exampleInput.NewRole,
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -741,7 +740,7 @@ func TestSQLQuerier_addUserToHousehold(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.UserID,
 			exampleInput.HouseholdID,
-			strings.Join(exampleInput.HouseholdRoles, householdMemberRolesSeparator),
+			exampleInput.HouseholdRole,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).

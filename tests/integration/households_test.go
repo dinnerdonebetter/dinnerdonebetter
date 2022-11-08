@@ -720,8 +720,8 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// grant all permissions
 			for i := 0; i < userCount; i++ {
 				input := &types.ModifyUserPermissionsInput{
-					Reason:   t.Name(),
-					NewRoles: []string{authorization.HouseholdAdminRole.String()},
+					Reason:  t.Name(),
+					NewRole: authorization.HouseholdAdminRole.String(),
 				}
 				require.NoError(t, testClients.user.ModifyMemberPermissions(ctx, household.ID, users[i].ID, input))
 			}
