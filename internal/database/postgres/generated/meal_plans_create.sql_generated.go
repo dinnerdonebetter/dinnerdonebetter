@@ -22,8 +22,8 @@ type CreateMealPlanParams struct {
 	BelongsToHousehold string         `db:"belongs_to_household"`
 }
 
-func (q *Queries) CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPlanParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlan,
+func (q *Queries) CreateMealPlan(ctx context.Context, arg *CreateMealPlanParams) error {
+	_, err := q.exec(ctx, q.createMealPlanStmt, CreateMealPlan,
 		arg.ID,
 		arg.Notes,
 		arg.Status,

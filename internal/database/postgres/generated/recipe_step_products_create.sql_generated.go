@@ -32,8 +32,8 @@ type CreateRecipeStepProductParams struct {
 	Compostable                        bool                  `db:"compostable"`
 }
 
-func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *CreateRecipeStepProductParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStepProduct,
+func (q *Queries) CreateRecipeStepProduct(ctx context.Context, arg *CreateRecipeStepProductParams) error {
+	_, err := q.exec(ctx, q.createRecipeStepProductStmt, CreateRecipeStepProduct,
 		arg.ID,
 		arg.Name,
 		arg.Type,

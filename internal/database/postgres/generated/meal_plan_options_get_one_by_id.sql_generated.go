@@ -60,8 +60,8 @@ type GetMealPlanOptionByIDRow struct {
 	Chosen                 bool           `db:"chosen"`
 }
 
-func (q *Queries) GetMealPlanOptionByID(ctx context.Context, db DBTX, id string) (*GetMealPlanOptionByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetMealPlanOptionByID, id)
+func (q *Queries) GetMealPlanOptionByID(ctx context.Context, id string) (*GetMealPlanOptionByIDRow, error) {
+	row := q.queryRow(ctx, q.getMealPlanOptionByIDStmt, GetMealPlanOptionByID, id)
 	var i GetMealPlanOptionByIDRow
 	err := row.Scan(
 		&i.ID,

@@ -18,7 +18,7 @@ type ArchiveRecipeStepParams struct {
 	ID              string `db:"id"`
 }
 
-func (q *Queries) ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRecipeStepParams) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeStep, arg.BelongsToRecipe, arg.ID)
+func (q *Queries) ArchiveRecipeStep(ctx context.Context, arg *ArchiveRecipeStepParams) error {
+	_, err := q.exec(ctx, q.archiveRecipeStepStmt, ArchiveRecipeStep, arg.BelongsToRecipe, arg.ID)
 	return err
 }

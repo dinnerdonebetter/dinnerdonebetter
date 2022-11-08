@@ -18,7 +18,7 @@ type ArchiveHouseholdParams struct {
 	ID            string `db:"id"`
 }
 
-func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHouseholdParams) error {
-	_, err := db.ExecContext(ctx, ArchiveHousehold, arg.BelongsToUser, arg.ID)
+func (q *Queries) ArchiveHousehold(ctx context.Context, arg *ArchiveHouseholdParams) error {
+	_, err := q.exec(ctx, q.archiveHouseholdStmt, ArchiveHousehold, arg.BelongsToUser, arg.ID)
 	return err
 }

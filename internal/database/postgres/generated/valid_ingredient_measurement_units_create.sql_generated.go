@@ -24,8 +24,8 @@ type CreateValidIngredientMeasurementUnitParams struct {
 	MaximumAllowableQuantity string `db:"maximum_allowable_quantity"`
 }
 
-func (q *Queries) CreateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidIngredientMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredientMeasurementUnit,
+func (q *Queries) CreateValidIngredientMeasurementUnit(ctx context.Context, arg *CreateValidIngredientMeasurementUnitParams) error {
+	_, err := q.exec(ctx, q.createValidIngredientMeasurementUnitStmt, CreateValidIngredientMeasurementUnit,
 		arg.ID,
 		arg.Notes,
 		arg.ValidMeasurementUnitID,

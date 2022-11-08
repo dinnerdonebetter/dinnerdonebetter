@@ -55,8 +55,8 @@ type GetMealPlanGroceryListItemsForMealPlanRow struct {
 	ID                       sql.NullString            `db:"id"`
 }
 
-func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {
-	rows, err := db.QueryContext(ctx, GetMealPlanGroceryListItemsForMealPlan, belongsToMealPlan)
+func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, belongsToMealPlan string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {
+	rows, err := q.query(ctx, q.getMealPlanGroceryListItemsForMealPlanStmt, GetMealPlanGroceryListItemsForMealPlan, belongsToMealPlan)
 	if err != nil {
 		return nil, err
 	}

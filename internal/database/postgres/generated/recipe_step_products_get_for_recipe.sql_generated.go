@@ -81,8 +81,8 @@ type GetRecipeStepProductsForRecipeRow struct {
 	Compostable                        bool                  `db:"compostable"`
 }
 
-func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepProductsForRecipeRow, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeStepProductsForRecipe, belongsToRecipe)
+func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, belongsToRecipe string) ([]*GetRecipeStepProductsForRecipeRow, error) {
+	rows, err := q.query(ctx, q.getRecipeStepProductsForRecipeStmt, GetRecipeStepProductsForRecipe, belongsToRecipe)
 	if err != nil {
 		return nil, err
 	}

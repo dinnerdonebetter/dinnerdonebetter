@@ -31,7 +31,7 @@ type GetMealPlanEventParams struct {
 	BelongsToMealPlan string `db:"belongs_to_meal_plan"`
 }
 
-func (q *Queries) GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanEventParams) error {
-	_, err := db.ExecContext(ctx, GetMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
+func (q *Queries) GetMealPlanEvent(ctx context.Context, arg *GetMealPlanEventParams) error {
+	_, err := q.exec(ctx, q.getMealPlanEventStmt, GetMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
 	return err
 }

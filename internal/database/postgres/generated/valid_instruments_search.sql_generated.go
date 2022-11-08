@@ -39,7 +39,7 @@ type SearchForValidInstrumentsRow struct {
 	UsableForStorage bool         `db:"usable_for_storage"`
 }
 
-func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, name string) error {
-	_, err := db.ExecContext(ctx, SearchForValidInstruments, name)
+func (q *Queries) SearchForValidInstruments(ctx context.Context, name string) error {
+	_, err := q.exec(ctx, q.searchForValidInstrumentsStmt, SearchForValidInstruments, name)
 	return err
 }

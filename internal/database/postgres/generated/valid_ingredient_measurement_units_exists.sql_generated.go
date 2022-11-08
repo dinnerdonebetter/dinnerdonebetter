@@ -13,7 +13,7 @@ const ValidIngredientMeasurementUnitExists = `-- name: ValidIngredientMeasuremen
 SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL AND valid_ingredient_measurement_units.id = $1 )
 `
 
-func (q *Queries) ValidIngredientMeasurementUnitExists(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ValidIngredientMeasurementUnitExists, id)
+func (q *Queries) ValidIngredientMeasurementUnitExists(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.validIngredientMeasurementUnitExistsStmt, ValidIngredientMeasurementUnitExists, id)
 	return err
 }

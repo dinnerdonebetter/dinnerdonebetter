@@ -35,8 +35,8 @@ type UpdateValidPreparationParams struct {
 	ZeroIngredientsAllowable bool   `db:"zero_ingredients_allowable"`
 }
 
-func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidPreparation,
+func (q *Queries) UpdateValidPreparation(ctx context.Context, arg *UpdateValidPreparationParams) error {
+	_, err := q.exec(ctx, q.updateValidPreparationStmt, UpdateValidPreparation,
 		arg.Name,
 		arg.Description,
 		arg.IconPath,

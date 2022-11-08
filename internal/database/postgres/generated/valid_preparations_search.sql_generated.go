@@ -44,8 +44,8 @@ type SearchForValidPreparationsRow struct {
 	YieldsNothing            bool         `db:"yields_nothing"`
 }
 
-func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, name string) ([]*SearchForValidPreparationsRow, error) {
-	rows, err := db.QueryContext(ctx, SearchForValidPreparations, name)
+func (q *Queries) SearchForValidPreparations(ctx context.Context, name string) ([]*SearchForValidPreparationsRow, error) {
+	rows, err := q.query(ctx, q.searchForValidPreparationsStmt, SearchForValidPreparations, name)
 	if err != nil {
 		return nil, err
 	}

@@ -140,8 +140,8 @@ type GetValidMeasurementConversionsToMeasurementUnitRow struct {
 	ContainsPeanut                          bool           `db:"contains_peanut"`
 }
 
-func (q *Queries) GetValidMeasurementConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetValidMeasurementConversionsToMeasurementUnitRow, error) {
-	rows, err := db.QueryContext(ctx, GetValidMeasurementConversionsToMeasurementUnit, id)
+func (q *Queries) GetValidMeasurementConversionsToMeasurementUnit(ctx context.Context, id string) ([]*GetValidMeasurementConversionsToMeasurementUnitRow, error) {
+	rows, err := q.query(ctx, q.getValidMeasurementConversionsToMeasurementUnitStmt, GetValidMeasurementConversionsToMeasurementUnit, id)
 	if err != nil {
 		return nil, err
 	}

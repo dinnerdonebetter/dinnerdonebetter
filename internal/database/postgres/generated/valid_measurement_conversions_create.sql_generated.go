@@ -24,8 +24,8 @@ type CreateValidMeasurementConversionParams struct {
 	OnlyForIngredient sql.NullString `db:"only_for_ingredient"`
 }
 
-func (q *Queries) CreateValidMeasurementConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementConversionParams) error {
-	_, err := db.ExecContext(ctx, CreateValidMeasurementConversion,
+func (q *Queries) CreateValidMeasurementConversion(ctx context.Context, arg *CreateValidMeasurementConversionParams) error {
+	_, err := q.exec(ctx, q.createValidMeasurementConversionStmt, CreateValidMeasurementConversion,
 		arg.ID,
 		arg.FromUnit,
 		arg.ToUnit,

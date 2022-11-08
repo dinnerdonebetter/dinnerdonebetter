@@ -21,8 +21,8 @@ type CreateRecipePrepTaskStepParams struct {
 	SatisfiesRecipeStep     bool   `db:"satisfies_recipe_step"`
 }
 
-func (q *Queries) CreateRecipePrepTaskStep(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskStepParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipePrepTaskStep,
+func (q *Queries) CreateRecipePrepTaskStep(ctx context.Context, arg *CreateRecipePrepTaskStepParams) error {
+	_, err := q.exec(ctx, q.createRecipePrepTaskStepStmt, CreateRecipePrepTaskStep,
 		arg.ID,
 		arg.BelongsToRecipePrepTask,
 		arg.BelongsToRecipeStep,

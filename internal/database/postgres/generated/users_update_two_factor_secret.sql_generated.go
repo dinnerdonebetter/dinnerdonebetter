@@ -24,7 +24,7 @@ type UpdateUserTwoFactorSecretParams struct {
 	ID                        string       `db:"id"`
 }
 
-func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) error {
-	_, err := db.ExecContext(ctx, UpdateUserTwoFactorSecret, arg.TwoFactorSecretVerifiedAt, arg.TwoFactorSecret, arg.ID)
+func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, arg *UpdateUserTwoFactorSecretParams) error {
+	_, err := q.exec(ctx, q.updateUserTwoFactorSecretStmt, UpdateUserTwoFactorSecret, arg.TwoFactorSecretVerifiedAt, arg.TwoFactorSecret, arg.ID)
 	return err
 }

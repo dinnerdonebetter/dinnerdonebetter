@@ -55,8 +55,8 @@ type GetUserByEmailAddressRow struct {
 	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
-func (q *Queries) GetUserByEmailAddress(ctx context.Context, db DBTX, emailAddress string) (*GetUserByEmailAddressRow, error) {
-	row := db.QueryRowContext(ctx, GetUserByEmailAddress, emailAddress)
+func (q *Queries) GetUserByEmailAddress(ctx context.Context, emailAddress string) (*GetUserByEmailAddressRow, error) {
+	row := q.queryRow(ctx, q.getUserByEmailAddressStmt, GetUserByEmailAddress, emailAddress)
 	var i GetUserByEmailAddressRow
 	err := row.Scan(
 		&i.ID,

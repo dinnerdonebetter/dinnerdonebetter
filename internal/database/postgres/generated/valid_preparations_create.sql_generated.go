@@ -24,8 +24,8 @@ type CreateValidPreparationParams struct {
 	ZeroIngredientsAllowable bool   `db:"zero_ingredients_allowable"`
 }
 
-func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *CreateValidPreparationParams) error {
-	_, err := db.ExecContext(ctx, CreateValidPreparation,
+func (q *Queries) CreateValidPreparation(ctx context.Context, arg *CreateValidPreparationParams) error {
+	_, err := q.exec(ctx, q.createValidPreparationStmt, CreateValidPreparation,
 		arg.ID,
 		arg.Name,
 		arg.Description,

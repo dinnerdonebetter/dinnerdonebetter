@@ -19,7 +19,7 @@ type TransferHouseholdOwnershipParams struct {
 	ID              string `db:"id"`
 }
 
-func (q *Queries) TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *TransferHouseholdOwnershipParams) error {
-	_, err := db.ExecContext(ctx, TransferHouseholdOwnership, arg.BelongsToUser, arg.BelongsToUser_2, arg.ID)
+func (q *Queries) TransferHouseholdOwnership(ctx context.Context, arg *TransferHouseholdOwnershipParams) error {
+	_, err := q.exec(ctx, q.transferHouseholdOwnershipStmt, TransferHouseholdOwnership, arg.BelongsToUser, arg.BelongsToUser_2, arg.ID)
 	return err
 }

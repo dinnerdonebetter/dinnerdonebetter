@@ -44,8 +44,8 @@ type UpdateMealPlanGroceryListItemParams struct {
 	QuantityPurchased        sql.NullString        `db:"quantity_purchased"`
 }
 
-func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlanGroceryListItem,
+func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, arg *UpdateMealPlanGroceryListItemParams) error {
+	_, err := q.exec(ctx, q.updateMealPlanGroceryListItemStmt, UpdateMealPlanGroceryListItem,
 		arg.BelongsToMealPlan,
 		arg.ValidIngredient,
 		arg.ValidMeasurementUnit,

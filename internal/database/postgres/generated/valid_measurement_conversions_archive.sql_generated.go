@@ -13,7 +13,7 @@ const ArchiveValidMeasurementConversion = `-- name: ArchiveValidMeasurementConve
 UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidMeasurementConversion(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidMeasurementConversion, id)
+func (q *Queries) ArchiveValidMeasurementConversion(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.archiveValidMeasurementConversionStmt, ArchiveValidMeasurementConversion, id)
 	return err
 }

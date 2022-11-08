@@ -20,8 +20,8 @@ type CreateValidIngredientPreparationParams struct {
 	ValidIngredientID  string `db:"valid_ingredient_id"`
 }
 
-func (q *Queries) CreateValidIngredientPreparation(ctx context.Context, db DBTX, arg *CreateValidIngredientPreparationParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredientPreparation,
+func (q *Queries) CreateValidIngredientPreparation(ctx context.Context, arg *CreateValidIngredientPreparationParams) error {
+	_, err := q.exec(ctx, q.createValidIngredientPreparationStmt, CreateValidIngredientPreparation,
 		arg.ID,
 		arg.Notes,
 		arg.ValidPreparationID,

@@ -56,8 +56,8 @@ type GetUserWithVerifiedTwoFactorSecretRow struct {
 	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
-func (q *Queries) GetUserWithVerifiedTwoFactorSecret(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorSecretRow, error) {
-	row := db.QueryRowContext(ctx, GetUserWithVerifiedTwoFactorSecret, id)
+func (q *Queries) GetUserWithVerifiedTwoFactorSecret(ctx context.Context, id string) (*GetUserWithVerifiedTwoFactorSecretRow, error) {
+	row := q.queryRow(ctx, q.getUserWithVerifiedTwoFactorSecretStmt, GetUserWithVerifiedTwoFactorSecret, id)
 	var i GetUserWithVerifiedTwoFactorSecretRow
 	err := row.Scan(
 		&i.ID,

@@ -47,7 +47,7 @@ type GetMealPlanRow struct {
 	TasksCreated           bool           `db:"tasks_created"`
 }
 
-func (q *Queries) GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) error {
-	_, err := db.ExecContext(ctx, GetMealPlan, arg.ID, arg.BelongsToHousehold)
+func (q *Queries) GetMealPlan(ctx context.Context, arg *GetMealPlanParams) error {
+	_, err := q.exec(ctx, q.getMealPlanStmt, GetMealPlan, arg.ID, arg.BelongsToHousehold)
 	return err
 }

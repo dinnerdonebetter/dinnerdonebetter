@@ -22,8 +22,8 @@ type UpdateMealPlanParams struct {
 	ID                 string         `db:"id"`
 }
 
-func (q *Queries) UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlan,
+func (q *Queries) UpdateMealPlan(ctx context.Context, arg *UpdateMealPlanParams) error {
+	_, err := q.exec(ctx, q.updateMealPlanStmt, UpdateMealPlan,
 		arg.Notes,
 		arg.Status,
 		arg.VotingDeadline,

@@ -18,7 +18,7 @@ WHERE archived_at IS NULL
 	AND id = $1
 `
 
-func (q *Queries) MarkMealPlanTasksAsCreated(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, MarkMealPlanTasksAsCreated, id)
+func (q *Queries) MarkMealPlanTasksAsCreated(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.markMealPlanTasksAsCreatedStmt, MarkMealPlanTasksAsCreated, id)
 	return err
 }

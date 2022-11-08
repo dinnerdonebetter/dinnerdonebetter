@@ -25,8 +25,8 @@ type CreateRecipeMediaParams struct {
 	Index               int32          `db:"index"`
 }
 
-func (q *Queries) CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRecipeMediaParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeMedia,
+func (q *Queries) CreateRecipeMedia(ctx context.Context, arg *CreateRecipeMediaParams) error {
+	_, err := q.exec(ctx, q.createRecipeMediaStmt, CreateRecipeMedia,
 		arg.ID,
 		arg.BelongsToRecipe,
 		arg.BelongsToRecipeStep,

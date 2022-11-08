@@ -70,8 +70,8 @@ type GetMealPlanOptionsForMealPlanEventRow struct {
 	Chosen                 bool           `db:"chosen"`
 }
 
-func (q *Queries) GetMealPlanOptionsForMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanOptionsForMealPlanEventParams) ([]*GetMealPlanOptionsForMealPlanEventRow, error) {
-	rows, err := db.QueryContext(ctx, GetMealPlanOptionsForMealPlanEvent, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlan)
+func (q *Queries) GetMealPlanOptionsForMealPlanEvent(ctx context.Context, arg *GetMealPlanOptionsForMealPlanEventParams) ([]*GetMealPlanOptionsForMealPlanEventRow, error) {
+	rows, err := q.query(ctx, q.getMealPlanOptionsForMealPlanEventStmt, GetMealPlanOptionsForMealPlanEvent, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlan)
 	if err != nil {
 		return nil, err
 	}

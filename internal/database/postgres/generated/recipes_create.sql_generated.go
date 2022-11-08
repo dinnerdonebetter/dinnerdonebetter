@@ -25,8 +25,8 @@ type CreateRecipeParams struct {
 	SealOfApproval     bool           `db:"seal_of_approval"`
 }
 
-func (q *Queries) CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipeParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipe,
+func (q *Queries) CreateRecipe(ctx context.Context, arg *CreateRecipeParams) error {
+	_, err := q.exec(ctx, q.createRecipeStmt, CreateRecipe,
 		arg.ID,
 		arg.Name,
 		arg.Source,

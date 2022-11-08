@@ -67,8 +67,8 @@ type CreateValidIngredientParams struct {
 	ContainsFish                            bool           `db:"contains_fish"`
 }
 
-func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredient,
+func (q *Queries) CreateValidIngredient(ctx context.Context, arg *CreateValidIngredientParams) error {
+	_, err := q.exec(ctx, q.createValidIngredientStmt, CreateValidIngredient,
 		arg.ID,
 		arg.Name,
 		arg.Description,

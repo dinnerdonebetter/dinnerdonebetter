@@ -16,7 +16,7 @@ WHERE archived_at IS NULL
 	AND belongs_to_user = $1
 `
 
-func (q *Queries) ArchiveHouseholdUserMembershipForUser(ctx context.Context, db DBTX, belongsToUser string) error {
-	_, err := db.ExecContext(ctx, ArchiveHouseholdUserMembershipForUser, belongsToUser)
+func (q *Queries) ArchiveHouseholdUserMembershipForUser(ctx context.Context, belongsToUser string) error {
+	_, err := q.exec(ctx, q.archiveHouseholdUserMembershipForUserStmt, ArchiveHouseholdUserMembershipForUser, belongsToUser)
 	return err
 }

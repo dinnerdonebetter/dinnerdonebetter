@@ -36,8 +36,8 @@ type UpdateValidMeasurementUnitParams struct {
 	Imperial    bool         `db:"imperial"`
 }
 
-func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidMeasurementUnit,
+func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, arg *UpdateValidMeasurementUnitParams) error {
+	_, err := q.exec(ctx, q.updateValidMeasurementUnitStmt, UpdateValidMeasurementUnit,
 		arg.Name,
 		arg.Description,
 		arg.Volumetric,

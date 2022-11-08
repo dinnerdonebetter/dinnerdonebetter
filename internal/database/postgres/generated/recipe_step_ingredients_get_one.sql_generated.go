@@ -143,8 +143,8 @@ type GetRecipeStepIngredientRow struct {
 	ProductOfRecipeStep                     bool           `db:"product_of_recipe_step"`
 }
 
-func (q *Queries) GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientParams) error {
-	_, err := db.ExecContext(ctx, GetRecipeStepIngredient,
+func (q *Queries) GetRecipeStepIngredient(ctx context.Context, arg *GetRecipeStepIngredientParams) error {
+	_, err := q.exec(ctx, q.getRecipeStepIngredientStmt, GetRecipeStepIngredient,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,

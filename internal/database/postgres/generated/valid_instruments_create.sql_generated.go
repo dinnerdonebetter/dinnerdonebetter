@@ -22,8 +22,8 @@ type CreateValidInstrumentParams struct {
 	UsableForStorage bool   `db:"usable_for_storage"`
 }
 
-func (q *Queries) CreateValidInstrument(ctx context.Context, db DBTX, arg *CreateValidInstrumentParams) error {
-	_, err := db.ExecContext(ctx, CreateValidInstrument,
+func (q *Queries) CreateValidInstrument(ctx context.Context, arg *CreateValidInstrumentParams) error {
+	_, err := q.exec(ctx, q.createValidInstrumentStmt, CreateValidInstrument,
 		arg.ID,
 		arg.Name,
 		arg.PluralName,

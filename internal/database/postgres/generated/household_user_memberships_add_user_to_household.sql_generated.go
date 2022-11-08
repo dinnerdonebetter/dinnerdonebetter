@@ -21,8 +21,8 @@ type CreateHouseholdUserMembershipParams struct {
 	HouseholdRoles     string `db:"household_roles"`
 }
 
-func (q *Queries) CreateHouseholdUserMembership(ctx context.Context, db DBTX, arg *CreateHouseholdUserMembershipParams) error {
-	_, err := db.ExecContext(ctx, CreateHouseholdUserMembership,
+func (q *Queries) CreateHouseholdUserMembership(ctx context.Context, arg *CreateHouseholdUserMembershipParams) error {
+	_, err := q.exec(ctx, q.createHouseholdUserMembershipStmt, CreateHouseholdUserMembership,
 		arg.ID,
 		arg.BelongsToUser,
 		arg.BelongsToHousehold,

@@ -35,8 +35,8 @@ type UpdateUserParams struct {
 	BirthMonth                sql.NullInt16  `db:"birth_month"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) error {
-	_, err := db.ExecContext(ctx, UpdateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg *UpdateUserParams) error {
+	_, err := q.exec(ctx, q.updateUserStmt, UpdateUser,
 		arg.Username,
 		arg.HashedPassword,
 		arg.AvatarSrc,

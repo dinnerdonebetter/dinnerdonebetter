@@ -92,8 +92,8 @@ type GetRecipeStepProductRow struct {
 	Universal                          bool                  `db:"universal"`
 }
 
-func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
-	row := db.QueryRowContext(ctx, GetRecipeStepProduct,
+func (q *Queries) GetRecipeStepProduct(ctx context.Context, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
+	row := q.queryRow(ctx, q.getRecipeStepProductStmt, GetRecipeStepProduct,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,

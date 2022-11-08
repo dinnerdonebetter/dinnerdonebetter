@@ -20,8 +20,8 @@ type UpdateValidPreparationInstrumentParams struct {
 	ID                 string `db:"id"`
 }
 
-func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, db DBTX, arg *UpdateValidPreparationInstrumentParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidPreparationInstrument,
+func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, arg *UpdateValidPreparationInstrumentParams) error {
+	_, err := q.exec(ctx, q.updateValidPreparationInstrumentStmt, UpdateValidPreparationInstrument,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidInstrumentID,

@@ -93,8 +93,8 @@ type GetRecipeByIDRow struct {
 	YieldsNothing                 sql.NullBool   `db:"yields_nothing"`
 }
 
-func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, id string) ([]*GetRecipeByIDRow, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeByID, id)
+func (q *Queries) GetRecipeByID(ctx context.Context, id string) ([]*GetRecipeByIDRow, error) {
+	rows, err := q.query(ctx, q.getRecipeByIDStmt, GetRecipeByID, id)
 	if err != nil {
 		return nil, err
 	}

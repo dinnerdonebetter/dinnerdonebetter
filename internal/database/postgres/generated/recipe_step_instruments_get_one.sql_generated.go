@@ -82,8 +82,8 @@ type GetRecipeStepInstrumentRow struct {
 	Optional            bool           `db:"optional"`
 }
 
-func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) error {
-	_, err := db.ExecContext(ctx, GetRecipeStepInstrument,
+func (q *Queries) GetRecipeStepInstrument(ctx context.Context, arg *GetRecipeStepInstrumentParams) error {
+	_, err := q.exec(ctx, q.getRecipeStepInstrumentStmt, GetRecipeStepInstrument,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,

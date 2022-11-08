@@ -22,8 +22,8 @@ type GetDefaultHouseholdIDForUserParams struct {
 	DefaultHousehold bool   `db:"default_household"`
 }
 
-func (q *Queries) GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, arg *GetDefaultHouseholdIDForUserParams) (string, error) {
-	row := db.QueryRowContext(ctx, GetDefaultHouseholdIDForUser, arg.BelongsToUser, arg.DefaultHousehold)
+func (q *Queries) GetDefaultHouseholdIDForUser(ctx context.Context, arg *GetDefaultHouseholdIDForUserParams) (string, error) {
+	row := q.queryRow(ctx, q.getDefaultHouseholdIDForUserStmt, GetDefaultHouseholdIDForUser, arg.BelongsToUser, arg.DefaultHousehold)
 	var id string
 	err := row.Scan(&id)
 	return id, err

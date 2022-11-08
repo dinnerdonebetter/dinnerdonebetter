@@ -19,7 +19,7 @@ type CreatePasswordResetTokenParams struct {
 	BelongsToUser string `db:"belongs_to_user"`
 }
 
-func (q *Queries) CreatePasswordResetToken(ctx context.Context, db DBTX, arg *CreatePasswordResetTokenParams) error {
-	_, err := db.ExecContext(ctx, CreatePasswordResetToken, arg.ID, arg.Token, arg.BelongsToUser)
+func (q *Queries) CreatePasswordResetToken(ctx context.Context, arg *CreatePasswordResetTokenParams) error {
+	_, err := q.exec(ctx, q.createPasswordResetTokenStmt, CreatePasswordResetToken, arg.ID, arg.Token, arg.BelongsToUser)
 	return err
 }

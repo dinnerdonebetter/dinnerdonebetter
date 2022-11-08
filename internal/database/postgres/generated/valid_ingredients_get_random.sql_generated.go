@@ -75,7 +75,7 @@ type GetRandomValidIngredientRow struct {
 	ContainsGluten                          bool           `db:"contains_gluten"`
 }
 
-func (q *Queries) GetRandomValidIngredient(ctx context.Context, db DBTX) error {
-	_, err := db.ExecContext(ctx, GetRandomValidIngredient)
+func (q *Queries) GetRandomValidIngredient(ctx context.Context) error {
+	_, err := q.exec(ctx, q.getRandomValidIngredientStmt, GetRandomValidIngredient)
 	return err
 }

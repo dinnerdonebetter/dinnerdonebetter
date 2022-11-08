@@ -57,7 +57,7 @@ type GetMealPlanGroceryListItemRow struct {
 	ID                       sql.NullString            `db:"id"`
 }
 
-func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemParams) error {
-	_, err := db.ExecContext(ctx, GetMealPlanGroceryListItem, arg.BelongsToMealPlan, arg.ID)
+func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, arg *GetMealPlanGroceryListItemParams) error {
+	_, err := q.exec(ctx, q.getMealPlanGroceryListItemStmt, GetMealPlanGroceryListItem, arg.BelongsToMealPlan, arg.ID)
 	return err
 }

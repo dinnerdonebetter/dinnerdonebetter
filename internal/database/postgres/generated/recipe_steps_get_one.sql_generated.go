@@ -79,8 +79,8 @@ type GetRecipeStepRow struct {
 	YieldsNothing                 bool           `db:"yields_nothing"`
 }
 
-func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error) {
-	row := db.QueryRowContext(ctx, GetRecipeStep, arg.BelongsToRecipe, arg.ID)
+func (q *Queries) GetRecipeStep(ctx context.Context, arg *GetRecipeStepParams) (*GetRecipeStepRow, error) {
+	row := q.queryRow(ctx, q.getRecipeStepStmt, GetRecipeStep, arg.BelongsToRecipe, arg.ID)
 	var i GetRecipeStepRow
 	err := row.Scan(
 		&i.ID,

@@ -15,10 +15,10 @@ SELECT
 		valid_instruments
 	 WHERE
 		valid_instruments.archived_at IS NULL
-	 AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
-	 AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
-	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
-	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
+	 AND valid_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	 AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+	 AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 	) as filtered_count,
 	(
 	 SELECT
@@ -32,12 +32,12 @@ FROM
 	valid_instruments
 WHERE
 	valid_instruments.archived_at IS NULL
-	AND valid_instruments.created_at > COALESCE(sqlc.narg('created_after'), 0)
-	AND valid_instruments.created_at < COALESCE(sqlc.narg('created_before'), (SELECT ~(1::bigint<<63)))
-	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE(sqlc.narg('updated_after'), 0))
-	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE(sqlc.narg('updated_before'), (SELECT ~(1::bigint<<63))))
+	AND valid_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+	AND (valid_instruments.last_updated_at IS NULL OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 GROUP BY
 	valid_instruments.id
 ORDER BY
 	valid_instruments.id
-	LIMIT sqlc.narg('limit');
+	LIMIT $5;

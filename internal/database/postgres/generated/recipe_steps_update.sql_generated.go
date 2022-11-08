@@ -41,8 +41,8 @@ type UpdateRecipeStepParams struct {
 	Optional                      bool           `db:"optional"`
 }
 
-func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeStep,
+func (q *Queries) UpdateRecipeStep(ctx context.Context, arg *UpdateRecipeStepParams) error {
+	_, err := q.exec(ctx, q.updateRecipeStepStmt, UpdateRecipeStep,
 		arg.Index,
 		arg.PreparationID,
 		arg.MinimumEstimatedTimeInSeconds,

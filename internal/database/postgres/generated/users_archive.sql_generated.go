@@ -16,7 +16,7 @@ WHERE archived_at IS NULL
 	AND id = $1
 `
 
-func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveUser, id)
+func (q *Queries) ArchiveUser(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.archiveUserStmt, ArchiveUser, id)
 	return err
 }

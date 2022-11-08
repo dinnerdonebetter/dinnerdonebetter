@@ -24,8 +24,8 @@ type WebhookExistsParams struct {
 	ID                 string `db:"id"`
 }
 
-func (q *Queries) WebhookExists(ctx context.Context, db DBTX, arg *WebhookExistsParams) (bool, error) {
-	row := db.QueryRowContext(ctx, WebhookExists, arg.BelongsToHousehold, arg.ID)
+func (q *Queries) WebhookExists(ctx context.Context, arg *WebhookExistsParams) (bool, error) {
+	row := q.queryRow(ctx, q.webhookExistsStmt, WebhookExists, arg.BelongsToHousehold, arg.ID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

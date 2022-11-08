@@ -27,7 +27,7 @@ type RecipePrepTaskExistsParams struct {
 	ID              string `db:"id"`
 }
 
-func (q *Queries) RecipePrepTaskExists(ctx context.Context, db DBTX, arg *RecipePrepTaskExistsParams) error {
-	_, err := db.ExecContext(ctx, RecipePrepTaskExists, arg.BelongsToRecipe, arg.ID)
+func (q *Queries) RecipePrepTaskExists(ctx context.Context, arg *RecipePrepTaskExistsParams) error {
+	_, err := q.exec(ctx, q.recipePrepTaskExistsStmt, RecipePrepTaskExists, arg.BelongsToRecipe, arg.ID)
 	return err
 }

@@ -79,8 +79,8 @@ type GetWebhooksRow struct {
 	TotalCount         int64        `db:"total_count"`
 }
 
-func (q *Queries) GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksParams) ([]*GetWebhooksRow, error) {
-	rows, err := db.QueryContext(ctx, GetWebhooks,
+func (q *Queries) GetWebhooks(ctx context.Context, arg *GetWebhooksParams) ([]*GetWebhooksRow, error) {
+	rows, err := q.query(ctx, q.getWebhooksStmt, GetWebhooks,
 		arg.BelongsToHousehold,
 		arg.CreatedAfter,
 		arg.CreatedBefore,

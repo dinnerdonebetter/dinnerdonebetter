@@ -32,8 +32,8 @@ type UpdateMealPlanOptionParams struct {
 	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
-func (q *Queries) UpdateMealPlanOption(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlanOption,
+func (q *Queries) UpdateMealPlanOption(ctx context.Context, arg *UpdateMealPlanOptionParams) error {
+	_, err := q.exec(ctx, q.updateMealPlanOptionStmt, UpdateMealPlanOption,
 		arg.AssignedCook,
 		arg.AssignedDishwasher,
 		arg.MealID,

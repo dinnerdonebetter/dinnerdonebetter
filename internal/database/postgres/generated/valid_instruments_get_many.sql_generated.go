@@ -77,8 +77,8 @@ type GetValidInstrumentsRow struct {
 	TotalCount    int64        `db:"total_count"`
 }
 
-func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
-	rows, err := db.QueryContext(ctx, GetValidInstruments,
+func (q *Queries) GetValidInstruments(ctx context.Context, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
+	rows, err := q.query(ctx, q.getValidInstrumentsStmt, GetValidInstruments,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedAfter,

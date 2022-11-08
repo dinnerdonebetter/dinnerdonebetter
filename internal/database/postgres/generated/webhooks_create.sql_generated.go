@@ -32,8 +32,8 @@ type CreateWebhookParams struct {
 	BelongsToHousehold string `db:"belongs_to_household"`
 }
 
-func (q *Queries) CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhookParams) error {
-	_, err := db.ExecContext(ctx, CreateWebhook,
+func (q *Queries) CreateWebhook(ctx context.Context, arg *CreateWebhookParams) error {
+	_, err := q.exec(ctx, q.createWebhookStmt, CreateWebhook,
 		arg.ID,
 		arg.Name,
 		arg.ContentType,

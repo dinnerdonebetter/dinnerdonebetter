@@ -37,8 +37,8 @@ type GetAPIClientByClientIDRow struct {
 	Name          sql.NullString `db:"name"`
 }
 
-func (q *Queries) GetAPIClientByClientID(ctx context.Context, db DBTX, clientID string) (*GetAPIClientByClientIDRow, error) {
-	row := db.QueryRowContext(ctx, GetAPIClientByClientID, clientID)
+func (q *Queries) GetAPIClientByClientID(ctx context.Context, clientID string) (*GetAPIClientByClientIDRow, error) {
+	row := q.queryRow(ctx, q.getAPIClientByClientIDStmt, GetAPIClientByClientID, clientID)
 	var i GetAPIClientByClientIDRow
 	err := row.Scan(
 		&i.ID,

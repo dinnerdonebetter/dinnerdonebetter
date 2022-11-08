@@ -20,7 +20,7 @@ type FinalizeMealPlanOptionParams struct {
 	Tiebroken              bool           `db:"tiebroken"`
 }
 
-func (q *Queries) FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, FinalizeMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID, arg.Tiebroken)
+func (q *Queries) FinalizeMealPlanOption(ctx context.Context, arg *FinalizeMealPlanOptionParams) error {
+	_, err := q.exec(ctx, q.finalizeMealPlanOptionStmt, FinalizeMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID, arg.Tiebroken)
 	return err
 }

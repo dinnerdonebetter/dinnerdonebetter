@@ -22,7 +22,7 @@ type MarkHouseholdUserMembershipAsDefaultForUserParams struct {
 	BelongsToUser_2    string `db:"belongs_to_user_2"`
 }
 
-func (q *Queries) MarkHouseholdUserMembershipAsDefaultForUser(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsDefaultForUserParams) error {
-	_, err := db.ExecContext(ctx, MarkHouseholdUserMembershipAsDefaultForUser, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
+func (q *Queries) MarkHouseholdUserMembershipAsDefaultForUser(ctx context.Context, arg *MarkHouseholdUserMembershipAsDefaultForUserParams) error {
+	_, err := q.exec(ctx, q.markHouseholdUserMembershipAsDefaultForUserStmt, MarkHouseholdUserMembershipAsDefaultForUser, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
 	return err
 }

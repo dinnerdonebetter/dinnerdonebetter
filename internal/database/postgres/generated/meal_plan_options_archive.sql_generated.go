@@ -26,7 +26,7 @@ type ArchiveMealPlanOptionParams struct {
 	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
-func (q *Queries) ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID)
+func (q *Queries) ArchiveMealPlanOption(ctx context.Context, arg *ArchiveMealPlanOptionParams) error {
+	_, err := q.exec(ctx, q.archiveMealPlanOptionStmt, ArchiveMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID)
 	return err
 }

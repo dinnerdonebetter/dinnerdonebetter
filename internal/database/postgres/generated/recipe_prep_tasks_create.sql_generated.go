@@ -27,8 +27,8 @@ type CreateRecipePrepTaskParams struct {
 	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
 }
 
-func (q *Queries) CreateRecipePrepTask(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipePrepTask,
+func (q *Queries) CreateRecipePrepTask(ctx context.Context, arg *CreateRecipePrepTaskParams) error {
+	_, err := q.exec(ctx, q.createRecipePrepTaskStmt, CreateRecipePrepTask,
 		arg.ID,
 		arg.Notes,
 		arg.ExplicitStorageInstructions,

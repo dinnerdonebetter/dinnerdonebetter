@@ -71,8 +71,8 @@ type GetRecipeStepInstrumentsForRecipeRow struct {
 	Optional            bool           `db:"optional"`
 }
 
-func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepInstrumentsForRecipeRow, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeStepInstrumentsForRecipe, belongsToRecipe)
+func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, belongsToRecipe string) ([]*GetRecipeStepInstrumentsForRecipeRow, error) {
+	rows, err := q.query(ctx, q.getRecipeStepInstrumentsForRecipeStmt, GetRecipeStepInstrumentsForRecipe, belongsToRecipe)
 	if err != nil {
 		return nil, err
 	}

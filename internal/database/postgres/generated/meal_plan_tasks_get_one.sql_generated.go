@@ -100,7 +100,7 @@ type GetMealPlanTaskRow struct {
 	SatisfiesRecipeStep                    bool                     `db:"satisfies_recipe_step"`
 }
 
-func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetMealPlanTask, id)
+func (q *Queries) GetMealPlanTask(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getMealPlanTaskStmt, GetMealPlanTask, id)
 	return err
 }

@@ -25,8 +25,8 @@ type CreateMealPlanTaskParams struct {
 	AssignedToUser          sql.NullString `db:"assigned_to_user"`
 }
 
-func (q *Queries) CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMealPlanTaskParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanTask,
+func (q *Queries) CreateMealPlanTask(ctx context.Context, arg *CreateMealPlanTaskParams) error {
+	_, err := q.exec(ctx, q.createMealPlanTaskStmt, CreateMealPlanTask,
 		arg.ID,
 		arg.Status,
 		arg.StatusExplanation,

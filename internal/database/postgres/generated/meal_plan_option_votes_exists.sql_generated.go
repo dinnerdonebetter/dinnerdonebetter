@@ -39,8 +39,8 @@ type MealPlanOptionVoteExistsParams struct {
 	BelongsToMealPlanEvent  sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
-func (q *Queries) MealPlanOptionVoteExists(ctx context.Context, db DBTX, arg *MealPlanOptionVoteExistsParams) error {
-	_, err := db.ExecContext(ctx, MealPlanOptionVoteExists,
+func (q *Queries) MealPlanOptionVoteExists(ctx context.Context, arg *MealPlanOptionVoteExistsParams) error {
+	_, err := q.exec(ctx, q.mealPlanOptionVoteExistsStmt, MealPlanOptionVoteExists,
 		arg.BelongsToMealPlanOption,
 		arg.ID,
 		arg.BelongsToMealPlanEvent,

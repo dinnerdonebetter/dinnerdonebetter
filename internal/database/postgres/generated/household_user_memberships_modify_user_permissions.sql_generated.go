@@ -19,7 +19,7 @@ type ModifyHouseholdUserMembershipPermissionsParams struct {
 	BelongsToUser      string `db:"belongs_to_user"`
 }
 
-func (q *Queries) ModifyHouseholdUserMembershipPermissions(ctx context.Context, db DBTX, arg *ModifyHouseholdUserMembershipPermissionsParams) error {
-	_, err := db.ExecContext(ctx, ModifyHouseholdUserMembershipPermissions, arg.HouseholdRoles, arg.BelongsToHousehold, arg.BelongsToUser)
+func (q *Queries) ModifyHouseholdUserMembershipPermissions(ctx context.Context, arg *ModifyHouseholdUserMembershipPermissionsParams) error {
+	_, err := q.exec(ctx, q.modifyHouseholdUserMembershipPermissionsStmt, ModifyHouseholdUserMembershipPermissions, arg.HouseholdRoles, arg.BelongsToHousehold, arg.BelongsToUser)
 	return err
 }

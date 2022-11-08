@@ -140,7 +140,7 @@ type GetValidMeasurementConversionRow struct {
 	ContainsPeanut                          bool           `db:"contains_peanut"`
 }
 
-func (q *Queries) GetValidMeasurementConversion(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetValidMeasurementConversion, id)
+func (q *Queries) GetValidMeasurementConversion(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getValidMeasurementConversionStmt, GetValidMeasurementConversion, id)
 	return err
 }

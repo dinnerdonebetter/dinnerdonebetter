@@ -109,7 +109,7 @@ type GetValidIngredientPreparationRow struct {
 	ContainsSoy                             bool           `db:"contains_soy"`
 }
 
-func (q *Queries) GetValidIngredientPreparation(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetValidIngredientPreparation, id)
+func (q *Queries) GetValidIngredientPreparation(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getValidIngredientPreparationStmt, GetValidIngredientPreparation, id)
 	return err
 }

@@ -41,8 +41,8 @@ type UpdateRecipeStepInstrumentParams struct {
 	ProductOfRecipeStep bool           `db:"product_of_recipe_step"`
 }
 
-func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeStepInstrument,
+func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, arg *UpdateRecipeStepInstrumentParams) error {
+	_, err := q.exec(ctx, q.updateRecipeStepInstrumentStmt, UpdateRecipeStepInstrument,
 		arg.InstrumentID,
 		arg.RecipeStepProductID,
 		arg.Name,

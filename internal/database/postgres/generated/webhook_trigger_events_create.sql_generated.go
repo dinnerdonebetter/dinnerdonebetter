@@ -23,7 +23,7 @@ type CreateWebhookTriggerEventParams struct {
 	BelongsToWebhook string       `db:"belongs_to_webhook"`
 }
 
-func (q *Queries) CreateWebhookTriggerEvent(ctx context.Context, db DBTX, arg *CreateWebhookTriggerEventParams) error {
-	_, err := db.ExecContext(ctx, CreateWebhookTriggerEvent, arg.ID, arg.TriggerEvent, arg.BelongsToWebhook)
+func (q *Queries) CreateWebhookTriggerEvent(ctx context.Context, arg *CreateWebhookTriggerEventParams) error {
+	_, err := q.exec(ctx, q.createWebhookTriggerEventStmt, CreateWebhookTriggerEvent, arg.ID, arg.TriggerEvent, arg.BelongsToWebhook)
 	return err
 }

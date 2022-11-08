@@ -33,8 +33,8 @@ type UpdateRecipeMediaParams struct {
 	Index               int32          `db:"index"`
 }
 
-func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeMedia,
+func (q *Queries) UpdateRecipeMedia(ctx context.Context, arg *UpdateRecipeMediaParams) error {
+	_, err := q.exec(ctx, q.updateRecipeMediaStmt, UpdateRecipeMedia,
 		arg.BelongsToRecipe,
 		arg.BelongsToRecipeStep,
 		arg.MimeType,

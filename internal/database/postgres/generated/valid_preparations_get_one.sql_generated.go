@@ -43,7 +43,7 @@ type GetValidPreparationRow struct {
 	YieldsNothing            bool         `db:"yields_nothing"`
 }
 
-func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetValidPreparation, id)
+func (q *Queries) GetValidPreparation(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getValidPreparationStmt, GetValidPreparation, id)
 	return err
 }

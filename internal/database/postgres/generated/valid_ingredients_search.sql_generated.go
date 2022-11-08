@@ -76,7 +76,7 @@ type SearchForValidIngredientRow struct {
 	ContainsGluten                          bool           `db:"contains_gluten"`
 }
 
-func (q *Queries) SearchForValidIngredient(ctx context.Context, db DBTX, name string) error {
-	_, err := db.ExecContext(ctx, SearchForValidIngredient, name)
+func (q *Queries) SearchForValidIngredient(ctx context.Context, name string) error {
+	_, err := q.exec(ctx, q.searchForValidIngredientStmt, SearchForValidIngredient, name)
 	return err
 }

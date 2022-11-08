@@ -24,8 +24,8 @@ WHERE webhook_trigger_events.archived_at IS NULL
     AND webhook_trigger_events.belongs_to_webhook = $1
 `
 
-func (q *Queries) GetWebhookTriggerEventsForWebhook(ctx context.Context, db DBTX, id string) ([]*WebhookTriggerEvents, error) {
-	rows, err := db.QueryContext(ctx, GetWebhookTriggerEventsForWebhook, id)
+func (q *Queries) GetWebhookTriggerEventsForWebhook(ctx context.Context, id string) ([]*WebhookTriggerEvents, error) {
+	rows, err := q.query(ctx, q.getWebhookTriggerEventsForWebhookStmt, GetWebhookTriggerEventsForWebhook, id)
 	if err != nil {
 		return nil, err
 	}

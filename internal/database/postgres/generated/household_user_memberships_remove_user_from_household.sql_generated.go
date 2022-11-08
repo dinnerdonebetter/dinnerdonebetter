@@ -23,7 +23,7 @@ type RemoveUserFromHouseholdParams struct {
 	BelongsToUser      string `db:"belongs_to_user"`
 }
 
-func (q *Queries) RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error {
-	_, err := db.ExecContext(ctx, RemoveUserFromHousehold, arg.BelongsToHousehold, arg.BelongsToUser)
+func (q *Queries) RemoveUserFromHousehold(ctx context.Context, arg *RemoveUserFromHouseholdParams) error {
+	_, err := q.exec(ctx, q.removeUserFromHouseholdStmt, RemoveUserFromHousehold, arg.BelongsToHousehold, arg.BelongsToUser)
 	return err
 }

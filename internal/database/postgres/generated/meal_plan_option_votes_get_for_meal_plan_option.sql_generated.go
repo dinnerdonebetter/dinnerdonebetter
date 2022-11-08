@@ -43,8 +43,8 @@ type GetMealPlanOptionVotesForMealPlanOptionParams struct {
 	BelongsToMealPlanEvent  sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
-func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesForMealPlanOptionParams) ([]*MealPlanOptionVotes, error) {
-	rows, err := db.QueryContext(ctx, GetMealPlanOptionVotesForMealPlanOption, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlanOption)
+func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, arg *GetMealPlanOptionVotesForMealPlanOptionParams) ([]*MealPlanOptionVotes, error) {
+	rows, err := q.query(ctx, q.getMealPlanOptionVotesForMealPlanOptionStmt, GetMealPlanOptionVotesForMealPlanOption, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlanOption)
 	if err != nil {
 		return nil, err
 	}

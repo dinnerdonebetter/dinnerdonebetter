@@ -66,8 +66,8 @@ type UpdateValidIngredientParams struct {
 	ContainsGluten                          bool           `db:"contains_gluten"`
 }
 
-func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredient,
+func (q *Queries) UpdateValidIngredient(ctx context.Context, arg *UpdateValidIngredientParams) error {
+	_, err := q.exec(ctx, q.updateValidIngredientStmt, UpdateValidIngredient,
 		arg.Name,
 		arg.Description,
 		arg.Warning,

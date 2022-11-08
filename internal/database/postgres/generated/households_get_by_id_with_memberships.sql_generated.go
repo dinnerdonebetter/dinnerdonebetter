@@ -94,8 +94,8 @@ type GetHouseholdByIDWithMembershipsRow struct {
 	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
-func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetHouseholdByIDWithMembershipsRow, error) {
-	rows, err := db.QueryContext(ctx, GetHouseholdByIDWithMemberships, id)
+func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, id string) ([]*GetHouseholdByIDWithMembershipsRow, error) {
+	rows, err := q.query(ctx, q.getHouseholdByIDWithMembershipsStmt, GetHouseholdByIDWithMemberships, id)
 	if err != nil {
 		return nil, err
 	}

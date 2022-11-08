@@ -107,8 +107,8 @@ type GetHouseholdInvitationByEmailAndTokenRow struct {
 	RequiresPasswordChange       bool            `db:"requires_password_change"`
 }
 
-func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error) {
-	row := db.QueryRowContext(ctx, GetHouseholdInvitationByEmailAndToken, arg.Lower, arg.Token)
+func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error) {
+	row := q.queryRow(ctx, q.getHouseholdInvitationByEmailAndTokenStmt, GetHouseholdInvitationByEmailAndToken, arg.Lower, arg.Token)
 	var i GetHouseholdInvitationByEmailAndTokenRow
 	err := row.Scan(
 		&i.ID,

@@ -13,7 +13,7 @@ const ArchiveMealPlanGroceryListItem = `-- name: ArchiveMealPlanGroceryListItem 
 UPDATE meal_plan_grocery_list_items SET completed_at = NOW() WHERE completed_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlanGroceryListItem, id)
+func (q *Queries) ArchiveMealPlanGroceryListItem(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.archiveMealPlanGroceryListItemStmt, ArchiveMealPlanGroceryListItem, id)
 	return err
 }

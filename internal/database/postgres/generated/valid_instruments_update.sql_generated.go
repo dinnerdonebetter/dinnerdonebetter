@@ -31,8 +31,8 @@ type UpdateValidInstrumentParams struct {
 	UsableForStorage bool   `db:"usable_for_storage"`
 }
 
-func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidInstrument,
+func (q *Queries) UpdateValidInstrument(ctx context.Context, arg *UpdateValidInstrumentParams) error {
+	_, err := q.exec(ctx, q.updateValidInstrumentStmt, UpdateValidInstrument,
 		arg.Name,
 		arg.PluralName,
 		arg.Description,

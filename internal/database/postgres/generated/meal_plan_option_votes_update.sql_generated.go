@@ -22,8 +22,8 @@ type UpdateMealPlanOptionVoteParams struct {
 	Abstain                 bool   `db:"abstain"`
 }
 
-func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlanOptionVote,
+func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, arg *UpdateMealPlanOptionVoteParams) error {
+	_, err := q.exec(ctx, q.updateMealPlanOptionVoteStmt, UpdateMealPlanOptionVote,
 		arg.Rank,
 		arg.Abstain,
 		arg.Notes,

@@ -55,8 +55,8 @@ type GetUserByIDRow struct {
 	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
-func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUserByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetUserByID, id)
+func (q *Queries) GetUserByID(ctx context.Context, id string) (*GetUserByIDRow, error) {
+	row := q.queryRow(ctx, q.getUserByIDStmt, GetUserByID, id)
 	var i GetUserByIDRow
 	err := row.Scan(
 		&i.ID,

@@ -18,7 +18,7 @@ WHERE archived_at IS NULL
 	AND id = $1
 `
 
-func (q *Queries) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, MarkMealPlanAsHavingGroceryListInitialized, id)
+func (q *Queries) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.markMealPlanAsHavingGroceryListInitializedStmt, MarkMealPlanAsHavingGroceryListInitialized, id)
 	return err
 }

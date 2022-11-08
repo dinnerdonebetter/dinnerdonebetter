@@ -75,7 +75,7 @@ type GetValidPreparationInstrumentRow struct {
 	ZeroIngredientsAllowable bool         `db:"zero_ingredients_allowable"`
 }
 
-func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetValidPreparationInstrument, id)
+func (q *Queries) GetValidPreparationInstrument(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getValidPreparationInstrumentStmt, GetValidPreparationInstrument, id)
 	return err
 }

@@ -30,8 +30,8 @@ type CreateRecipeStepParams struct {
 	Optional                      bool           `db:"optional"`
 }
 
-func (q *Queries) CreateRecipeStep(ctx context.Context, db DBTX, arg *CreateRecipeStepParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStep,
+func (q *Queries) CreateRecipeStep(ctx context.Context, arg *CreateRecipeStepParams) error {
+	_, err := q.exec(ctx, q.createRecipeStepStmt, CreateRecipeStep,
 		arg.ID,
 		arg.Index,
 		arg.PreparationID,

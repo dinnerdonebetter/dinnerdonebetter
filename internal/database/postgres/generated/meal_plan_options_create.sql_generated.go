@@ -24,8 +24,8 @@ type CreateMealPlanOptionParams struct {
 	Chosen                 bool           `db:"chosen"`
 }
 
-func (q *Queries) CreateMealPlanOption(ctx context.Context, db DBTX, arg *CreateMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanOption,
+func (q *Queries) CreateMealPlanOption(ctx context.Context, arg *CreateMealPlanOptionParams) error {
+	_, err := q.exec(ctx, q.createMealPlanOptionStmt, CreateMealPlanOption,
 		arg.ID,
 		arg.AssignedCook,
 		arg.AssignedDishwasher,

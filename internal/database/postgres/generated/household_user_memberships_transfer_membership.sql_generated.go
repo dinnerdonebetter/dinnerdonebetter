@@ -19,7 +19,7 @@ type TransferHouseholdUserMembershipToNewUserParams struct {
 	BelongsToUser_2    string `db:"belongs_to_user_2"`
 }
 
-func (q *Queries) TransferHouseholdUserMembershipToNewUser(ctx context.Context, db DBTX, arg *TransferHouseholdUserMembershipToNewUserParams) error {
-	_, err := db.ExecContext(ctx, TransferHouseholdUserMembershipToNewUser, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
+func (q *Queries) TransferHouseholdUserMembershipToNewUser(ctx context.Context, arg *TransferHouseholdUserMembershipToNewUserParams) error {
+	_, err := q.exec(ctx, q.transferHouseholdUserMembershipToNewUserStmt, TransferHouseholdUserMembershipToNewUser, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
 	return err
 }

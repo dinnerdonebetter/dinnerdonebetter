@@ -25,8 +25,8 @@ type UpdateRecipeParams struct {
 	SealOfApproval     bool           `db:"seal_of_approval"`
 }
 
-func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipe,
+func (q *Queries) UpdateRecipe(ctx context.Context, arg *UpdateRecipeParams) error {
+	_, err := q.exec(ctx, q.updateRecipeStmt, UpdateRecipe,
 		arg.Name,
 		arg.Source,
 		arg.Description,

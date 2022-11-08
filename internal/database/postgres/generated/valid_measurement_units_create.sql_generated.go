@@ -28,8 +28,8 @@ type CreateValidMeasurementUnitParams struct {
 	Imperial    bool         `db:"imperial"`
 }
 
-func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, CreateValidMeasurementUnit,
+func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, arg *CreateValidMeasurementUnitParams) error {
+	_, err := q.exec(ctx, q.createValidMeasurementUnitStmt, CreateValidMeasurementUnit,
 		arg.ID,
 		arg.Name,
 		arg.Description,

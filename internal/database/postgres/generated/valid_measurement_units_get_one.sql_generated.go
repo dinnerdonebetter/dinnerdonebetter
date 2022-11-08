@@ -45,7 +45,7 @@ type GetValidMeasurementUnitRow struct {
 	Universal     bool         `db:"universal"`
 }
 
-func (q *Queries) GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetValidMeasurementUnit, id)
+func (q *Queries) GetValidMeasurementUnit(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getValidMeasurementUnitStmt, GetValidMeasurementUnit, id)
 	return err
 }

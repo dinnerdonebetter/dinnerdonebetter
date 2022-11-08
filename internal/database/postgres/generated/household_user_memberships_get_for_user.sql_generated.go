@@ -38,8 +38,8 @@ type GetHouseholdUserMembershipsForUserRow struct {
 	DefaultHousehold   bool         `db:"default_household"`
 }
 
-func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error) {
-	rows, err := db.QueryContext(ctx, GetHouseholdUserMembershipsForUser, belongsToUser)
+func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error) {
+	rows, err := q.query(ctx, q.getHouseholdUserMembershipsForUserStmt, GetHouseholdUserMembershipsForUser, belongsToUser)
 	if err != nil {
 		return nil, err
 	}

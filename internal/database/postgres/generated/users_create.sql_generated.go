@@ -27,8 +27,8 @@ type CreateUserParams struct {
 	BirthMonth        sql.NullInt16  `db:"birth_month"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error {
-	_, err := db.ExecContext(ctx, CreateUser,
+func (q *Queries) CreateUser(ctx context.Context, arg *CreateUserParams) error {
+	_, err := q.exec(ctx, q.createUserStmt, CreateUser,
 		arg.ID,
 		arg.Username,
 		arg.EmailAddress,

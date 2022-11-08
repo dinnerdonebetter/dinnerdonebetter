@@ -56,8 +56,8 @@ type SearchForUserByUsernameRow struct {
 	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
-func (q *Queries) SearchForUserByUsername(ctx context.Context, db DBTX, username string) ([]*SearchForUserByUsernameRow, error) {
-	rows, err := db.QueryContext(ctx, SearchForUserByUsername, username)
+func (q *Queries) SearchForUserByUsername(ctx context.Context, username string) ([]*SearchForUserByUsernameRow, error) {
+	rows, err := q.query(ctx, q.searchForUserByUsernameStmt, SearchForUserByUsername, username)
 	if err != nil {
 		return nil, err
 	}

@@ -22,7 +22,7 @@ type ArchiveAPIClientParams struct {
 	ID            string `db:"id"`
 }
 
-func (q *Queries) ArchiveAPIClient(ctx context.Context, db DBTX, arg *ArchiveAPIClientParams) error {
-	_, err := db.ExecContext(ctx, ArchiveAPIClient, arg.BelongsToUser, arg.ID)
+func (q *Queries) ArchiveAPIClient(ctx context.Context, arg *ArchiveAPIClientParams) error {
+	_, err := q.exec(ctx, q.archiveAPIClientStmt, ArchiveAPIClient, arg.BelongsToUser, arg.ID)
 	return err
 }

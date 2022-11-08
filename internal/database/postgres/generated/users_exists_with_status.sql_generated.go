@@ -19,8 +19,8 @@ type UserExistsWithStatusParams struct {
 	UserAccountStatus_2 string `db:"user_account_status_2"`
 }
 
-func (q *Queries) UserExistsWithStatus(ctx context.Context, db DBTX, arg *UserExistsWithStatusParams) (bool, error) {
-	row := db.QueryRowContext(ctx, UserExistsWithStatus, arg.ID, arg.UserAccountStatus, arg.UserAccountStatus_2)
+func (q *Queries) UserExistsWithStatus(ctx context.Context, arg *UserExistsWithStatusParams) (bool, error) {
+	row := q.queryRow(ctx, q.userExistsWithStatusStmt, UserExistsWithStatus, arg.ID, arg.UserAccountStatus, arg.UserAccountStatus_2)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

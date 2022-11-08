@@ -49,8 +49,8 @@ type GetRecipeMediaForRecipeStepRow struct {
 	Index               int32          `db:"index"`
 }
 
-func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeMediaForRecipeStep, arg.BelongsToRecipe, arg.BelongsToRecipeStep)
+func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error) {
+	rows, err := q.query(ctx, q.getRecipeMediaForRecipeStepStmt, GetRecipeMediaForRecipeStep, arg.BelongsToRecipe, arg.BelongsToRecipeStep)
 	if err != nil {
 		return nil, err
 	}

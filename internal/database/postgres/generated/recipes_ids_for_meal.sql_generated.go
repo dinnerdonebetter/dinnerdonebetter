@@ -25,8 +25,8 @@ ORDER BY
 	recipes.id
 `
 
-func (q *Queries) GetRecipeIDsForMeal(ctx context.Context, db DBTX, id string) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeIDsForMeal, id)
+func (q *Queries) GetRecipeIDsForMeal(ctx context.Context, id string) ([]string, error) {
+	rows, err := q.query(ctx, q.getRecipeIDsForMealStmt, GetRecipeIDsForMeal, id)
 	if err != nil {
 		return nil, err
 	}

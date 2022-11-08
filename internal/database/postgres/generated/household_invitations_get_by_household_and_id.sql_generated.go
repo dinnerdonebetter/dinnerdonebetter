@@ -107,8 +107,8 @@ type GetHouseholdInvitationByHouseholdAndIDRow struct {
 	RequiresPasswordChange       bool            `db:"requires_password_change"`
 }
 
-func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error) {
-	row := db.QueryRowContext(ctx, GetHouseholdInvitationByHouseholdAndID, arg.DestinationHousehold, arg.ID)
+func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error) {
+	row := q.queryRow(ctx, q.getHouseholdInvitationByHouseholdAndIDStmt, GetHouseholdInvitationByHouseholdAndID, arg.DestinationHousehold, arg.ID)
 	var i GetHouseholdInvitationByHouseholdAndIDRow
 	err := row.Scan(
 		&i.ID,

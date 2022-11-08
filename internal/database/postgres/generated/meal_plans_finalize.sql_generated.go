@@ -18,7 +18,7 @@ type FinalizeMealPlanParams struct {
 	ID     string         `db:"id"`
 }
 
-func (q *Queries) FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMealPlanParams) error {
-	_, err := db.ExecContext(ctx, FinalizeMealPlan, arg.Status, arg.ID)
+func (q *Queries) FinalizeMealPlan(ctx context.Context, arg *FinalizeMealPlanParams) error {
+	_, err := q.exec(ctx, q.finalizeMealPlanStmt, FinalizeMealPlan, arg.Status, arg.ID)
 	return err
 }

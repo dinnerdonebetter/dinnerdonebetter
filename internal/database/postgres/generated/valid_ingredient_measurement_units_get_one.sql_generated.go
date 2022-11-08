@@ -115,7 +115,7 @@ type GetValidIngredientMeasurementUnitRow struct {
 	ContainsWheat                           bool           `db:"contains_wheat"`
 }
 
-func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetValidIngredientMeasurementUnit, id)
+func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getValidIngredientMeasurementUnitStmt, GetValidIngredientMeasurementUnit, id)
 	return err
 }

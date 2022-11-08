@@ -21,8 +21,8 @@ type RecipeStepInstrumentExistsParams struct {
 	ID_3                string `db:"id_3"`
 }
 
-func (q *Queries) RecipeStepInstrumentExists(ctx context.Context, db DBTX, arg *RecipeStepInstrumentExistsParams) error {
-	_, err := db.ExecContext(ctx, RecipeStepInstrumentExists,
+func (q *Queries) RecipeStepInstrumentExists(ctx context.Context, arg *RecipeStepInstrumentExistsParams) error {
+	_, err := q.exec(ctx, q.recipeStepInstrumentExistsStmt, RecipeStepInstrumentExists,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,

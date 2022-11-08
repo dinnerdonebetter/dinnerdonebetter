@@ -25,7 +25,7 @@ type UpdateUserPasswordParams struct {
 	RequiresPasswordChange bool   `db:"requires_password_change"`
 }
 
-func (q *Queries) UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) error {
-	_, err := db.ExecContext(ctx, UpdateUserPassword, arg.HashedPassword, arg.RequiresPasswordChange, arg.ID)
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg *UpdateUserPasswordParams) error {
+	_, err := q.exec(ctx, q.updateUserPasswordStmt, UpdateUserPassword, arg.HashedPassword, arg.RequiresPasswordChange, arg.ID)
 	return err
 }

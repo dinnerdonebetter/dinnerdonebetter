@@ -46,8 +46,8 @@ type SearchForValidMeasurementUnitsRow struct {
 	Universal     bool         `db:"universal"`
 }
 
-func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, name string) ([]*SearchForValidMeasurementUnitsRow, error) {
-	rows, err := db.QueryContext(ctx, SearchForValidMeasurementUnits, name)
+func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, name string) ([]*SearchForValidMeasurementUnitsRow, error) {
+	rows, err := q.query(ctx, q.searchForValidMeasurementUnitsStmt, SearchForValidMeasurementUnits, name)
 	if err != nil {
 		return nil, err
 	}

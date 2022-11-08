@@ -43,8 +43,8 @@ type GetRandomValidPreparationRow struct {
 	YieldsNothing            bool         `db:"yields_nothing"`
 }
 
-func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetRandomValidPreparationRow, error) {
-	row := db.QueryRowContext(ctx, GetRandomValidPreparation)
+func (q *Queries) GetRandomValidPreparation(ctx context.Context) (*GetRandomValidPreparationRow, error) {
+	row := q.queryRow(ctx, q.getRandomValidPreparationStmt, GetRandomValidPreparation)
 	var i GetRandomValidPreparationRow
 	err := row.Scan(
 		&i.ID,

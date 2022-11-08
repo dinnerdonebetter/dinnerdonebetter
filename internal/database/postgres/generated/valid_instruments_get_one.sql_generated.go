@@ -39,7 +39,7 @@ type GetValidInstrumentRow struct {
 	UsableForStorage bool         `db:"usable_for_storage"`
 }
 
-func (q *Queries) GetValidInstrument(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetValidInstrument, id)
+func (q *Queries) GetValidInstrument(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getValidInstrumentStmt, GetValidInstrument, id)
 	return err
 }

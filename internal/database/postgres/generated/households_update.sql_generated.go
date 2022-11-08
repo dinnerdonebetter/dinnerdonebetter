@@ -31,8 +31,8 @@ type UpdateHouseholdParams struct {
 	ID            string   `db:"id"`
 }
 
-func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) error {
-	_, err := db.ExecContext(ctx, UpdateHousehold,
+func (q *Queries) UpdateHousehold(ctx context.Context, arg *UpdateHouseholdParams) error {
+	_, err := q.exec(ctx, q.updateHouseholdStmt, UpdateHousehold,
 		arg.Name,
 		arg.ContactEmail,
 		arg.ContactPhone,

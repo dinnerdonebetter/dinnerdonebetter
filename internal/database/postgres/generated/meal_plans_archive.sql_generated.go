@@ -18,7 +18,7 @@ type ArchiveMealPlanParams struct {
 	ID                 string `db:"id"`
 }
 
-func (q *Queries) ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlan, arg.BelongsToHousehold, arg.ID)
+func (q *Queries) ArchiveMealPlan(ctx context.Context, arg *ArchiveMealPlanParams) error {
+	_, err := q.exec(ctx, q.archiveMealPlanStmt, ArchiveMealPlan, arg.BelongsToHousehold, arg.ID)
 	return err
 }

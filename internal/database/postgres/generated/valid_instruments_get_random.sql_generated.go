@@ -39,7 +39,7 @@ type GetRandomValidInstrumentRow struct {
 	UsableForStorage bool         `db:"usable_for_storage"`
 }
 
-func (q *Queries) GetRandomValidInstrument(ctx context.Context, db DBTX) error {
-	_, err := db.ExecContext(ctx, GetRandomValidInstrument)
+func (q *Queries) GetRandomValidInstrument(ctx context.Context) error {
+	_, err := q.exec(ctx, q.getRandomValidInstrumentStmt, GetRandomValidInstrument)
 	return err
 }

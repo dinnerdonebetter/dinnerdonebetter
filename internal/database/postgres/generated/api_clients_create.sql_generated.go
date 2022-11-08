@@ -22,8 +22,8 @@ type CreateAPIClientParams struct {
 	SecretKey     []byte         `db:"secret_key"`
 }
 
-func (q *Queries) CreateAPIClient(ctx context.Context, db DBTX, arg *CreateAPIClientParams) error {
-	_, err := db.ExecContext(ctx, CreateAPIClient,
+func (q *Queries) CreateAPIClient(ctx context.Context, arg *CreateAPIClientParams) error {
+	_, err := q.exec(ctx, q.createAPIClientStmt, CreateAPIClient,
 		arg.ID,
 		arg.Name,
 		arg.ClientID,

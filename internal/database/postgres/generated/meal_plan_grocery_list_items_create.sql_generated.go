@@ -31,8 +31,8 @@ type CreateMealPlanGroceryListItemParams struct {
 	PurchasePrice            sql.NullString        `db:"purchase_price"`
 }
 
-func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *CreateMealPlanGroceryListItemParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanGroceryListItem,
+func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, arg *CreateMealPlanGroceryListItemParams) error {
+	_, err := q.exec(ctx, q.createMealPlanGroceryListItemStmt, CreateMealPlanGroceryListItem,
 		arg.ID,
 		arg.BelongsToMealPlan,
 		arg.ValidIngredient,

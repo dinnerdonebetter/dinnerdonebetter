@@ -11,12 +11,9 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
-	"github.com/lib/pq"
-	"github.com/luna-duclos/instrumentedsql"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/postgres/generated"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -35,19 +32,16 @@ var _ database.DataManager = (*Querier)(nil)
 
 // Querier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type Querier struct {
-	tracer           tracing.Tracer
-	sqlBuilder       squirrel.StatementBuilderType
-	logger           logging.Logger
-	timeFunc         func() time.Time
-	config           *dbconfig.Config
-	db               *sql.DB
-	generatedQuerier generated.Querier
-	connectionURL    string
-	migrateOnce      sync.Once
-	logQueries       bool
+	tracer        tracing.Tracer
+	sqlBuilder    squirrel.StatementBuilderType
+	logger        logging.Logger
+	timeFunc      func() time.Time
+	config        *dbconfig.Config
+	db            *sql.DB
+	connectionURL string
+	migrateOnce   sync.Once
+	logQueries    bool
 }
-
-var instrumentedDriverRegistration sync.Once
 
 // ProvideDatabaseClient provides a new DataManager client.
 func ProvideDatabaseClient(
@@ -61,37 +55,24 @@ func ProvideDatabaseClient(
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	const driverName = "instrumented-postgres"
-
-	instrumentedDriverRegistration.Do(func() {
-		sql.Register(
-			driverName,
-			instrumentedsql.WrapDriver(
-				&pq.Driver{},
-				instrumentedsql.WithOmitArgs(),
-				instrumentedsql.WithTracer(tracing.NewInstrumentedSQLTracer(tracerProvider, "postgres_connection")),
-				instrumentedsql.WithLogger(tracing.NewInstrumentedSQLLogger(logger)),
-			),
-		)
-	})
-
-	db, err := sql.Open(driverName, string(cfg.ConnectionDetails))
+	db, err := sql.Open("postgres", string(cfg.ConnectionDetails))
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
 
+	db.SetMaxIdleConns(5)
 	db.SetMaxOpenConns(7)
+	db.SetConnMaxLifetime(1800 * time.Second)
 
 	c := &Querier{
-		db:               db,
-		generatedQuerier: generated.New(),
-		config:           cfg,
-		tracer:           tracer,
-		logQueries:       cfg.LogQueries,
-		timeFunc:         defaultTimeFunc,
-		connectionURL:    string(cfg.ConnectionDetails),
-		logger:           logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:       squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:            db,
+		config:        cfg,
+		tracer:        tracer,
+		logQueries:    cfg.LogQueries,
+		timeFunc:      defaultTimeFunc,
+		connectionURL: string(cfg.ConnectionDetails),
+		logger:        logging.EnsureLogger(logger).WithName("querier"),
+		sqlBuilder:    squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
 	if cfg.Debug {
@@ -111,12 +92,12 @@ func ProvideDatabaseClient(
 	return c, nil
 }
 
-// DB provides the scs Store for MySQL.
+// DB provides the database object.
 func (q *Querier) DB() *sql.DB {
 	return q.db
 }
 
-// ProvideSessionStore provides the scs Store for MySQL.
+// ProvideSessionStore provides the scs Store for Postgres.
 func (q *Querier) ProvideSessionStore() scs.Store {
 	return postgresstore.New(q.db)
 }

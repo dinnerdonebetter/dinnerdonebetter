@@ -18,7 +18,7 @@ type ArchiveMealPlanOptionVoteParams struct {
 	ID                      string `db:"id"`
 }
 
-func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlanOptionVote, arg.BelongsToMealPlanOption, arg.ID)
+func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, arg *ArchiveMealPlanOptionVoteParams) error {
+	_, err := q.exec(ctx, q.archiveMealPlanOptionVoteStmt, ArchiveMealPlanOptionVote, arg.BelongsToMealPlanOption, arg.ID)
 	return err
 }

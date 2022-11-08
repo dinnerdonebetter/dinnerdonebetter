@@ -13,7 +13,7 @@ const ValidInstrumentExists = `-- name: ValidInstrumentExists :exec
 SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = $1 )
 `
 
-func (q *Queries) ValidInstrumentExists(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ValidInstrumentExists, id)
+func (q *Queries) ValidInstrumentExists(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.validInstrumentExistsStmt, ValidInstrumentExists, id)
 	return err
 }

@@ -38,7 +38,7 @@ type GetMealRow struct {
 	RecipeID      sql.NullString `db:"recipe_id"`
 }
 
-func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetMeal, id)
+func (q *Queries) GetMeal(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getMealStmt, GetMeal, id)
 	return err
 }

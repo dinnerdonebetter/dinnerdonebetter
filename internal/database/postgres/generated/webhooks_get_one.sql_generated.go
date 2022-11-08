@@ -57,8 +57,8 @@ type GetWebhookRow struct {
 	BelongsToHousehold string       `db:"belongs_to_household"`
 }
 
-func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) ([]*GetWebhookRow, error) {
-	rows, err := db.QueryContext(ctx, GetWebhook, arg.BelongsToHousehold, arg.ID)
+func (q *Queries) GetWebhook(ctx context.Context, arg *GetWebhookParams) ([]*GetWebhookRow, error) {
+	rows, err := q.query(ctx, q.getWebhookStmt, GetWebhook, arg.BelongsToHousehold, arg.ID)
 	if err != nil {
 		return nil, err
 	}

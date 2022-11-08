@@ -110,8 +110,8 @@ type ListIncompleteMealPlanTaskByMealPlanOptionRow struct {
 	YieldsNothing                 bool           `db:"yields_nothing"`
 }
 
-func (q *Queries) ListIncompleteMealPlanTaskByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTaskByMealPlanOptionRow, error) {
-	rows, err := db.QueryContext(ctx, ListIncompleteMealPlanTaskByMealPlanOption, belongsToMealPlanOption)
+func (q *Queries) ListIncompleteMealPlanTaskByMealPlanOption(ctx context.Context, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTaskByMealPlanOptionRow, error) {
+	rows, err := q.query(ctx, q.listIncompleteMealPlanTaskByMealPlanOptionStmt, ListIncompleteMealPlanTaskByMealPlanOption, belongsToMealPlanOption)
 	if err != nil {
 		return nil, err
 	}

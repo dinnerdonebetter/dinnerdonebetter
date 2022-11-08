@@ -54,7 +54,7 @@ type GetRecipePrepTaskRow struct {
 	SatisfiesRecipeStep                    sql.NullBool             `db:"satisfies_recipe_step"`
 }
 
-func (q *Queries) GetRecipePrepTask(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetRecipePrepTask, id)
+func (q *Queries) GetRecipePrepTask(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getRecipePrepTaskStmt, GetRecipePrepTask, id)
 	return err
 }

@@ -24,8 +24,8 @@ type CreateHouseholdInvitationParams struct {
 	ToUser               sql.NullString `db:"to_user"`
 }
 
-func (q *Queries) CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *CreateHouseholdInvitationParams) error {
-	_, err := db.ExecContext(ctx, CreateHouseholdInvitation,
+func (q *Queries) CreateHouseholdInvitation(ctx context.Context, arg *CreateHouseholdInvitationParams) error {
+	_, err := q.exec(ctx, q.createHouseholdInvitationStmt, CreateHouseholdInvitation,
 		arg.ID,
 		arg.FromUser,
 		arg.ToUser,

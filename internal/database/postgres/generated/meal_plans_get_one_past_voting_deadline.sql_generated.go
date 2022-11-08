@@ -49,8 +49,8 @@ type GetMealPlanPastVotingDeadlineRow struct {
 	TasksCreated           bool           `db:"tasks_created"`
 }
 
-func (q *Queries) GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error) {
-	row := db.QueryRowContext(ctx, GetMealPlanPastVotingDeadline, arg.ID, arg.BelongsToHousehold)
+func (q *Queries) GetMealPlanPastVotingDeadline(ctx context.Context, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error) {
+	row := q.queryRow(ctx, q.getMealPlanPastVotingDeadlineStmt, GetMealPlanPastVotingDeadline, arg.ID, arg.BelongsToHousehold)
 	var i GetMealPlanPastVotingDeadlineRow
 	err := row.Scan(
 		&i.ID,

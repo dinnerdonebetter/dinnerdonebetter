@@ -99,8 +99,8 @@ type GetRecipeByIDAndAuthorRow struct {
 	YieldsNothing                 sql.NullBool   `db:"yields_nothing"`
 }
 
-func (q *Queries) GetRecipeByIDAndAuthor(ctx context.Context, db DBTX, arg *GetRecipeByIDAndAuthorParams) ([]*GetRecipeByIDAndAuthorRow, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeByIDAndAuthor, arg.ID, arg.CreatedByUser)
+func (q *Queries) GetRecipeByIDAndAuthor(ctx context.Context, arg *GetRecipeByIDAndAuthorParams) ([]*GetRecipeByIDAndAuthorRow, error) {
+	rows, err := q.query(ctx, q.getRecipeByIDAndAuthorStmt, GetRecipeByIDAndAuthor, arg.ID, arg.CreatedByUser)
 	if err != nil {
 		return nil, err
 	}

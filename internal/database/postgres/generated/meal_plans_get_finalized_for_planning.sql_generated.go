@@ -39,7 +39,7 @@ type GetFinalizedMealPlansForPlanningRow struct {
 	RecipeID         sql.NullString `db:"recipe_id"`
 }
 
-func (q *Queries) GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) error {
-	_, err := db.ExecContext(ctx, GetFinalizedMealPlansForPlanning)
+func (q *Queries) GetFinalizedMealPlansForPlanning(ctx context.Context) error {
+	_, err := q.exec(ctx, q.getFinalizedMealPlansForPlanningStmt, GetFinalizedMealPlansForPlanning)
 	return err
 }

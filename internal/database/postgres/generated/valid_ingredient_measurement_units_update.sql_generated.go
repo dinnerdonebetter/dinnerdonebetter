@@ -31,8 +31,8 @@ type UpdateValidIngredientMeasurementUnitParams struct {
 	ID                       string `db:"id"`
 }
 
-func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientMeasurementUnit,
+func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, arg *UpdateValidIngredientMeasurementUnitParams) error {
+	_, err := q.exec(ctx, q.updateValidIngredientMeasurementUnitStmt, UpdateValidIngredientMeasurementUnit,
 		arg.Notes,
 		arg.ValidMeasurementUnitID,
 		arg.ValidIngredientID,

@@ -22,8 +22,8 @@ type CreateMealPlanOptionVoteParams struct {
 	Abstain                 bool   `db:"abstain"`
 }
 
-func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanOptionVote,
+func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, arg *CreateMealPlanOptionVoteParams) error {
+	_, err := q.exec(ctx, q.createMealPlanOptionVoteStmt, CreateMealPlanOptionVote,
 		arg.ID,
 		arg.Rank,
 		arg.Abstain,

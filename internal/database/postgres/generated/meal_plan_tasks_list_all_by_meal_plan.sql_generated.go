@@ -100,8 +100,8 @@ type ListMealPlanTasksForMealPlanRow struct {
 	SatisfiesRecipeStep                    bool                     `db:"satisfies_recipe_step"`
 }
 
-func (q *Queries) ListMealPlanTasksForMealPlan(ctx context.Context, db DBTX, id string) ([]*ListMealPlanTasksForMealPlanRow, error) {
-	rows, err := db.QueryContext(ctx, ListMealPlanTasksForMealPlan, id)
+func (q *Queries) ListMealPlanTasksForMealPlan(ctx context.Context, id string) ([]*ListMealPlanTasksForMealPlanRow, error) {
+	rows, err := q.query(ctx, q.listMealPlanTasksForMealPlanStmt, ListMealPlanTasksForMealPlan, id)
 	if err != nil {
 		return nil, err
 	}

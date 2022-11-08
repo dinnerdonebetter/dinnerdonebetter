@@ -20,8 +20,8 @@ type CreateMealParams struct {
 	CreatedByUser string `db:"created_by_user"`
 }
 
-func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error {
-	_, err := db.ExecContext(ctx, CreateMeal,
+func (q *Queries) CreateMeal(ctx context.Context, arg *CreateMealParams) error {
+	_, err := q.exec(ctx, q.createMealStmt, CreateMeal,
 		arg.ID,
 		arg.Name,
 		arg.Description,

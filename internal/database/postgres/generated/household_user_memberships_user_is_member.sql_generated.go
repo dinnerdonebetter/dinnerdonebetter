@@ -24,8 +24,8 @@ type UserIsMemberOfHouseholdParams struct {
 	BelongsToUser      string `db:"belongs_to_user"`
 }
 
-func (q *Queries) UserIsMemberOfHousehold(ctx context.Context, db DBTX, arg *UserIsMemberOfHouseholdParams) (bool, error) {
-	row := db.QueryRowContext(ctx, UserIsMemberOfHousehold, arg.BelongsToHousehold, arg.BelongsToUser)
+func (q *Queries) UserIsMemberOfHousehold(ctx context.Context, arg *UserIsMemberOfHouseholdParams) (bool, error) {
+	row := q.queryRow(ctx, q.userIsMemberOfHouseholdStmt, UserIsMemberOfHousehold, arg.BelongsToHousehold, arg.BelongsToUser)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

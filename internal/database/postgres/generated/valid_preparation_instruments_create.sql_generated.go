@@ -20,8 +20,8 @@ type CreateValidPreparationInstrumentParams struct {
 	ValidInstrumentID  string `db:"valid_instrument_id"`
 }
 
-func (q *Queries) CreateValidPreparationInstrument(ctx context.Context, db DBTX, arg *CreateValidPreparationInstrumentParams) error {
-	_, err := db.ExecContext(ctx, CreateValidPreparationInstrument,
+func (q *Queries) CreateValidPreparationInstrument(ctx context.Context, arg *CreateValidPreparationInstrumentParams) error {
+	_, err := q.exec(ctx, q.createValidPreparationInstrumentStmt, CreateValidPreparationInstrument,
 		arg.ID,
 		arg.Notes,
 		arg.ValidPreparationID,

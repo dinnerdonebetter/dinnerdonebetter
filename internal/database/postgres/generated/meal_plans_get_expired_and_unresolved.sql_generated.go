@@ -44,8 +44,8 @@ type GetExpiredAndUnresolvedMealPlansRow struct {
 	TasksCreated           bool           `db:"tasks_created"`
 }
 
-func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error) {
-	rows, err := db.QueryContext(ctx, GetExpiredAndUnresolvedMealPlans)
+func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context) ([]*GetExpiredAndUnresolvedMealPlansRow, error) {
+	rows, err := q.query(ctx, q.getExpiredAndUnresolvedMealPlansStmt, GetExpiredAndUnresolvedMealPlans)
 	if err != nil {
 		return nil, err
 	}

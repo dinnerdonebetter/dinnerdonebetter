@@ -22,8 +22,8 @@ type CreateHouseholdUserMembershipForNewUserParams struct {
 	DefaultHousehold   bool   `db:"default_household"`
 }
 
-func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateHouseholdUserMembershipForNewUserParams) error {
-	_, err := db.ExecContext(ctx, CreateHouseholdUserMembershipForNewUser,
+func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, arg *CreateHouseholdUserMembershipForNewUserParams) error {
+	_, err := q.exec(ctx, q.createHouseholdUserMembershipForNewUserStmt, CreateHouseholdUserMembershipForNewUser,
 		arg.ID,
 		arg.BelongsToUser,
 		arg.BelongsToHousehold,

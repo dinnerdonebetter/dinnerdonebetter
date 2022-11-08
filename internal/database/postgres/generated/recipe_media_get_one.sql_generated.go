@@ -41,7 +41,7 @@ type GetRecipeMediaRow struct {
 	Index               int32          `db:"index"`
 }
 
-func (q *Queries) GetRecipeMedia(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, GetRecipeMedia, id)
+func (q *Queries) GetRecipeMedia(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.getRecipeMediaStmt, GetRecipeMedia, id)
 	return err
 }

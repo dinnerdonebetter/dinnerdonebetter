@@ -23,8 +23,8 @@ type CreateHouseholdParams struct {
 	BelongsToUser string   `db:"belongs_to_user"`
 }
 
-func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error {
-	_, err := db.ExecContext(ctx, CreateHousehold,
+func (q *Queries) CreateHousehold(ctx context.Context, arg *CreateHouseholdParams) error {
+	_, err := q.exec(ctx, q.createHouseholdStmt, CreateHousehold,
 		arg.ID,
 		arg.Name,
 		arg.BillingStatus,

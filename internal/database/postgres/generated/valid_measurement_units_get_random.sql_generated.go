@@ -45,8 +45,8 @@ type GetRandomValidMeasurementUnitRow struct {
 	Universal     bool         `db:"universal"`
 }
 
-func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error) {
-	row := db.QueryRowContext(ctx, GetRandomValidMeasurementUnit)
+func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context) (*GetRandomValidMeasurementUnitRow, error) {
+	row := q.queryRow(ctx, q.getRandomValidMeasurementUnitStmt, GetRandomValidMeasurementUnit)
 	var i GetRandomValidMeasurementUnitRow
 	err := row.Scan(
 		&i.ID,

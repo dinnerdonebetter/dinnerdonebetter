@@ -44,8 +44,8 @@ type GetFinalizedMealPlansWithoutInitializedGroceryListsRow struct {
 	TasksCreated           bool           `db:"tasks_created"`
 }
 
-func (q *Queries) GetFinalizedMealPlansWithoutInitializedGroceryLists(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansWithoutInitializedGroceryListsRow, error) {
-	rows, err := db.QueryContext(ctx, GetFinalizedMealPlansWithoutInitializedGroceryLists)
+func (q *Queries) GetFinalizedMealPlansWithoutInitializedGroceryLists(ctx context.Context) ([]*GetFinalizedMealPlansWithoutInitializedGroceryListsRow, error) {
+	rows, err := q.query(ctx, q.getFinalizedMealPlansWithoutInitializedGroceryListsStmt, GetFinalizedMealPlansWithoutInitializedGroceryLists)
 	if err != nil {
 		return nil, err
 	}

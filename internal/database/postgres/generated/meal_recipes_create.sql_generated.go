@@ -19,7 +19,7 @@ type CreateMealRecipeParams struct {
 	RecipeID string `db:"recipe_id"`
 }
 
-func (q *Queries) CreateMealRecipe(ctx context.Context, db DBTX, arg *CreateMealRecipeParams) error {
-	_, err := db.ExecContext(ctx, CreateMealRecipe, arg.ID, arg.MealID, arg.RecipeID)
+func (q *Queries) CreateMealRecipe(ctx context.Context, arg *CreateMealRecipeParams) error {
+	_, err := q.exec(ctx, q.createMealRecipeStmt, CreateMealRecipe, arg.ID, arg.MealID, arg.RecipeID)
 	return err
 }

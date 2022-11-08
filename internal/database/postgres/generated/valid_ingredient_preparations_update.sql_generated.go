@@ -20,8 +20,8 @@ type UpdateValidIngredientPreparationParams struct {
 	ID                 string `db:"id"`
 }
 
-func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, db DBTX, arg *UpdateValidIngredientPreparationParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientPreparation,
+func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, arg *UpdateValidIngredientPreparationParams) error {
+	_, err := q.exec(ctx, q.updateValidIngredientPreparationStmt, UpdateValidIngredientPreparation,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidIngredientID,
