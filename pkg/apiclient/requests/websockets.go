@@ -3,7 +3,7 @@ package requests
 import (
 	"context"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 const (

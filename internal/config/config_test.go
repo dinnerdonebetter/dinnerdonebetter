@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/metrics/config"
-	server "github.com/prixfixeco/api_server/internal/server"
-	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/backend/internal/database"
+	dbconfig "github.com/prixfixeco/backend/internal/database/config"
+	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/metrics/config"
+	server "github.com/prixfixeco/backend/internal/server"
+	authservice "github.com/prixfixeco/backend/internal/services/authentication"
 )
 
 func TestServerConfig_EncodeToFile(T *testing.T) {

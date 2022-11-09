@@ -4,7 +4,7 @@ ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
 GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.18-stretch go
 GO_FORMAT                     := gofmt -s -w
-THIS                          := github.com/prixfixeco/api_server
+THIS                          := github.com/prixfixeco/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
 ENVIRONMENTS_DIR              := environments
@@ -34,7 +34,7 @@ setup: $(ARTIFACTS_DIR) revendor rewire configs
 
 .PHONY: configs
 configs:
-	go run github.com/prixfixeco/api_server/cmd/tools/gen_configs
+	go run github.com/prixfixeco/backend/cmd/tools/gen_configs
 
 ## prerequisites
 
@@ -249,7 +249,7 @@ db_init: initialize_database
 
 .PHONY: initialize_database
 initialize_database:
-	go run github.com/prixfixeco/api_server/cmd/tools/db_initializer
+	go run github.com/prixfixeco/backend/cmd/tools/db_initializer
 
 ## misc
 

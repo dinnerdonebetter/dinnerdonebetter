@@ -5,7 +5,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"github.com/prixfixeco/api_server/internal/uploads"
+	"github.com/prixfixeco/backend/internal/uploads"
 )
 
 type (

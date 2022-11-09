@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prixfixeco/api_server/internal/storage"
+	"github.com/prixfixeco/backend/internal/storage"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

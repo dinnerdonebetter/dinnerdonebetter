@@ -8,11 +8,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/postgres"
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/database"
+	dbconfig "github.com/prixfixeco/backend/internal/database/config"
+	"github.com/prixfixeco/backend/internal/database/postgres"
+	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 
 	_ "github.com/lib/pq"
 	flag "github.com/spf13/pflag"

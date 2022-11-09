@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/api_server/internal/uploads"
+	"github.com/prixfixeco/backend/internal/uploads"
 )
 
 var _ uploads.UploadManager = (*MockUploadManager)(nil)

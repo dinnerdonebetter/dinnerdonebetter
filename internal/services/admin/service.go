@@ -5,13 +5,13 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 
-	"github.com/prixfixeco/api_server/internal/authentication"
-	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/routing"
-	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/authentication"
+	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/routing"
+	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 const (

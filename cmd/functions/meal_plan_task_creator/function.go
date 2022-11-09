@@ -8,16 +8,16 @@ import (
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"go.opentelemetry.io/otel"
 
-	"github.com/prixfixeco/api_server/internal/config"
-	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	"github.com/prixfixeco/api_server/internal/database/postgres"
-	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
-	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/workers"
+	"github.com/prixfixeco/backend/internal/config"
+	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
+	"github.com/prixfixeco/backend/internal/database/postgres"
+	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
+	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/workers"
 )
 
 const (

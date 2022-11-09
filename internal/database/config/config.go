@@ -7,8 +7,8 @@ import (
 	"github.com/alexedwards/scs/v2"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/backend/internal/database"
+	authservice "github.com/prixfixeco/backend/internal/services/authentication"
 )
 
 type (

@@ -11,9 +11,9 @@ import (
 	"gocloud.dev/secrets"
 	"gocloud.dev/secrets/localsecrets"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/random"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/random"
 )
 
 type example struct {

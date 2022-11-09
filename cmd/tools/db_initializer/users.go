@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/identifiers"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/identifiers"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 const (

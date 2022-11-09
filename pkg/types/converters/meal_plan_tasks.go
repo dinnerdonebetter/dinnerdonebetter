@@ -1,7 +1,7 @@
 package converters
 
 import (
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.

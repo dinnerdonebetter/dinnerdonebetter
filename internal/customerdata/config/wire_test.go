@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 func TestProvideCollector(T *testing.T) {

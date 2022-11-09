@@ -5,7 +5,7 @@ import (
 	"embed"
 	"fmt"
 
-	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/backend/internal/database"
 
 	"github.com/GuiaBolso/darwin"
 )

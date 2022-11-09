@@ -1,6 +1,6 @@
 package converters
 
-import "github.com/prixfixeco/api_server/pkg/types"
+import "github.com/prixfixeco/backend/pkg/types"
 
 // ConvertValidInstrumentToValidInstrumentUpdateRequestInput creates a ValidInstrumentUpdateRequestInput from a ValidInstrument.
 func ConvertValidInstrumentToValidInstrumentUpdateRequestInput(input *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {

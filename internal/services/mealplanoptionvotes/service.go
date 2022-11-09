@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/routing"
-	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
-	mealplaneventsservice "github.com/prixfixeco/api_server/internal/services/mealplanevents"
-	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
-	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/messagequeue"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/routing"
+	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+	mealplaneventsservice "github.com/prixfixeco/backend/internal/services/mealplanevents"
+	mealplanoptionsservice "github.com/prixfixeco/backend/internal/services/mealplanoptions"
+	mealplansservice "github.com/prixfixeco/backend/internal/services/mealplans"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 const (

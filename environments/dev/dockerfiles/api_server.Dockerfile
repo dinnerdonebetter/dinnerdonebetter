@@ -1,11 +1,11 @@
 # build stage
 FROM golang:1.19-buster AS build-stage
 
-WORKDIR /go/src/github.com/prixfixeco/api_server
+WORKDIR /go/src/github.com/prixfixeco/backend
 
 COPY . .
 
-RUN go build -trimpath -o /server github.com/prixfixeco/api_server/cmd/server
+RUN go build -trimpath -o /server github.com/prixfixeco/backend/cmd/server
 
 # final stage
 FROM debian:stretch

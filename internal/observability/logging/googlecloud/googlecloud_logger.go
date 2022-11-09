@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/keys"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 
 	gcplogging "cloud.google.com/go/logging"
 	"go.opentelemetry.io/otel/trace"

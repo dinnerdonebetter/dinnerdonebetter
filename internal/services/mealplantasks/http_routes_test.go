@@ -11,13 +11,13 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
+	"github.com/prixfixeco/backend/internal/database"
+	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
+	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func TestMealPlanTasksService_ReadHandler(T *testing.T) {

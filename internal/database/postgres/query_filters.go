@@ -5,7 +5,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // applyFilterToQueryBuilder applies the query filter to a query builder.

@@ -5,9 +5,9 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	loggingcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-	metricscfg "github.com/prixfixeco/api_server/internal/observability/metrics/config"
-	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
+	loggingcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
+	metricscfg "github.com/prixfixeco/backend/internal/observability/metrics/config"
+	tracingcfg "github.com/prixfixeco/backend/internal/observability/tracing/config"
 )
 
 type (

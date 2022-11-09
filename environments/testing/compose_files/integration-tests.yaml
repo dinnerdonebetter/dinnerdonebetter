@@ -31,7 +31,7 @@ services:
             JAEGER_DISABLED: 'false'
         volumes:
             - source: '../../../'
-              target: '/go/src/github.com/prixfixeco/api_server'
+              target: '/go/src/github.com/prixfixeco/backend'
               type: 'bind'
             - source: '../../../environments/local/config_files/queue-loader-config.json'
               target: '/etc/config'
@@ -49,7 +49,7 @@ services:
             JAEGER_DISABLED: 'false'
         volumes:
             - source: '../../../'
-              target: '/go/src/github.com/prixfixeco/api_server'
+              target: '/go/src/github.com/prixfixeco/backend'
               type: 'bind'
             - source: '../../../environments/local/config_files/meal-plan-finalizer-config.json'
               target: '/etc/config'
@@ -67,7 +67,7 @@ services:
             JAEGER_DISABLED: 'false'
         volumes:
             - source: '../../../'
-              target: '/go/src/github.com/prixfixeco/api_server'
+              target: '/go/src/github.com/prixfixeco/backend'
               type: 'bind'
             - source: '../../../environments/local/config_files/meal-plan-grocery-list-initializer-config.json'
               target: '/etc/config'
@@ -85,7 +85,7 @@ services:
             JAEGER_DISABLED: 'false'
         volumes:
             - source: '../../../'
-              target: '/go/src/github.com/prixfixeco/api_server'
+              target: '/go/src/github.com/prixfixeco/backend'
               type: 'bind'
             - source: '../../../environments/local/config_files/meal-plan-task-creator-config.json'
               target: '/etc/config'

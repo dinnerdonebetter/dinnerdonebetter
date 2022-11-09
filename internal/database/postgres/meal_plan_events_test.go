@@ -5,7 +5,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 func buildMockRowsFromMealPlanEvents(includeCounts bool, filteredCount uint64, mealPlans ...*types.MealPlanEvent) *sqlmock.Rows {

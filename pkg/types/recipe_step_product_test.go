@@ -7,7 +7,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prixfixeco/api_server/internal/pointers"
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {

@@ -3,7 +3,7 @@ package uploads
 import (
 	"github.com/google/wire"
 
-	"github.com/prixfixeco/api_server/internal/storage"
+	"github.com/prixfixeco/backend/internal/storage"
 )
 
 var (

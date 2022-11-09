@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/backend/internal/encoding"
 )
 
 var _ encoding.ServerEncoderDecoder = (*EncoderDecoder)(nil)

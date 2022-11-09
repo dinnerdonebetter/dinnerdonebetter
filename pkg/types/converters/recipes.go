@@ -1,6 +1,6 @@
 package converters
 
-import "github.com/prixfixeco/api_server/pkg/types"
+import "github.com/prixfixeco/backend/pkg/types"
 
 // ConvertRecipeToRecipeUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeUpdateRequestInput {

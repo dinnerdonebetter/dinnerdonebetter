@@ -7,7 +7,7 @@ import (
 
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	"github.com/prixfixeco/backend/internal/observability/metrics"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"go.opentelemetry.io/otel/exporters/prometheus"
@@ -20,7 +20,7 @@ import (
 	processor "go.opentelemetry.io/otel/sdk/metric/processor/basic"
 	selector "go.opentelemetry.io/otel/sdk/metric/selector/simple"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 const (

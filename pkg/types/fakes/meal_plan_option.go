@@ -3,8 +3,8 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/converters"
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 )
 
 // BuildFakeMealPlanOption builds a faked meal plan option.

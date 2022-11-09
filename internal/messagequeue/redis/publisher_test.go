@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	testutils "github.com/prixfixeco/api_server/tests/utils"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 type mockMessagePublisher struct {

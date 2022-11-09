@@ -1,6 +1,6 @@
 package converters
 
-import "github.com/prixfixeco/api_server/pkg/types"
+import "github.com/prixfixeco/backend/pkg/types"
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput creates a RecipeStepInstrumentUpdateRequestInput from a RecipeStepInstrument.
 func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {

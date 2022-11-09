@@ -12,9 +12,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func Test_setSignatureForRequest(T *testing.T) {

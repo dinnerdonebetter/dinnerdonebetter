@@ -7,7 +7,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/mock"
 
-	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
+	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 )
 
 var _ DataManager = (*MockDatabase)(nil)

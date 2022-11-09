@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/email/sendgrid"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/email/sendgrid"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

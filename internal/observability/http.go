@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 // HTTPClient returns a new *http.Client.

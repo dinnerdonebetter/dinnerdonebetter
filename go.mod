@@ -1,4 +1,4 @@
-module github.com/prixfixeco/api_server
+module github.com/prixfixeco/backend
 
 go 1.19
 

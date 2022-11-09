@@ -8,12 +8,12 @@ import (
 
 	flag "github.com/spf13/pflag"
 
-	"github.com/prixfixeco/api_server/internal/email"
-	"github.com/prixfixeco/api_server/internal/email/sendgrid"
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/email"
+	"github.com/prixfixeco/backend/internal/email/sendgrid"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 var (

@@ -3,8 +3,8 @@ package config
 import (
 	"github.com/google/wire"
 
-	"github.com/prixfixeco/api_server/internal/customerdata"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/customerdata"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 var (
