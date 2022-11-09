@@ -28,14 +28,14 @@ type adminServiceHTTPRoutesTestHelper struct {
 }
 
 func (helper *adminServiceHTTPRoutesTestHelper) neuterAdminUser() {
-	helper.exampleUser.ServiceRoles = []string{authorization.ServiceUserRole.String()}
+	helper.exampleUser.ServiceRole = authorization.ServiceUserRole.String()
 	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
 		return &types.SessionContextData{
 			Requester: types.RequesterInfo{
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID: helper.exampleHousehold.ID,
 			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
@@ -57,7 +57,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	require.NoError(t, err)
 
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
+	helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleInput = fakes.BuildFakeUserAccountStatusUpdateInput()
@@ -72,7 +72,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 			UserID:                   helper.exampleUser.ID,
 			AccountStatus:            helper.exampleUser.AccountStatus,
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
 		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{

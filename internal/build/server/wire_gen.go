@@ -8,6 +8,7 @@ package server
 
 import (
 	"context"
+
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"

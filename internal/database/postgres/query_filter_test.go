@@ -8,6 +8,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -24,12 +25,12 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Page:          func(x uint64) *uint64 { return &x }(100),
-			Limit:         func(x uint8) *uint8 { return &x }(50),
-			CreatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
-			CreatedBefore: func(x uint64) *uint64 { return &x }(123456789),
-			UpdatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
-			UpdatedBefore: func(x uint64) *uint64 { return &x }(123456789),
+			Page:          pointers.Uint16(100),
+			Limit:         pointers.Uint8(50),
+			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
 			SortBy:        types.SortDescending,
 		}
 
@@ -58,8 +59,8 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Limit: func(x uint8) *uint8 { return &x }(15),
-			Page:  func(x uint64) *uint64 { return &x }(2),
+			Limit: pointers.Uint8(15),
+			Page:  pointers.Uint16(2),
 		}
 
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 LIMIT 15 OFFSET 15"
@@ -75,12 +76,12 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Limit:         func(x uint8) *uint8 { return &x }(20),
-			Page:          func(x uint64) *uint64 { return &x }(6),
-			CreatedAfter:  func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
-			CreatedBefore: func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
-			UpdatedAfter:  func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
-			UpdatedBefore: func(x uint64) *uint64 { return &x }(uint64(time.Now().Unix())),
+			Limit:         pointers.Uint8(20),
+			Page:          pointers.Uint16(6),
+			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
 		}
 
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 AND stuff.created_at > $2 AND stuff.created_at < $3 AND stuff.last_updated_at > $4 AND stuff.last_updated_at < $5 LIMIT 20 OFFSET 100"
@@ -96,8 +97,8 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Limit: func(x uint8) *uint8 { return &x }(0),
-			Page:  func(x uint64) *uint64 { return &x }(1),
+			Limit: pointers.Uint8(0),
+			Page:  pointers.Uint16(1),
 		}
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 LIMIT 250"
 		x := applyFilterToQueryBuilder(qf, exampleTableName, baseQueryBuilder)
@@ -118,12 +119,12 @@ func TestQueryFilter_ApplyFilterToSubCountQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Page:          func(x uint64) *uint64 { return &x }(100),
-			Limit:         func(x uint8) *uint8 { return &x }(50),
-			CreatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
-			CreatedBefore: func(x uint64) *uint64 { return &x }(123456789),
-			UpdatedAfter:  func(x uint64) *uint64 { return &x }(123456789),
-			UpdatedBefore: func(x uint64) *uint64 { return &x }(123456789),
+			Page:          pointers.Uint16(100),
+			Limit:         pointers.Uint8(50),
+			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
 			SortBy:        types.SortDescending,
 		}
 

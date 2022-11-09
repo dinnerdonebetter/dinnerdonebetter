@@ -178,7 +178,7 @@ func TestAuthenticationService_UserAttributionMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -287,7 +287,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -330,7 +330,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -388,7 +388,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -415,7 +415,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
+		helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 		helper.setContextFetcher(t)
 
 		sessionCtxData := &types.SessionContextData{
@@ -423,7 +423,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -450,7 +450,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
+		helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 		helper.setContextFetcher(t)
 
 		helper.service.sessionContextDataFetcher = func(request *http.Request) (*types.SessionContextData, error) {
@@ -467,7 +467,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
+		helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 		helper.setContextFetcher(t)
 
 		sessionCtxData := &types.SessionContextData{
@@ -496,7 +496,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceRoles = []string{authorization.ServiceUserRole.String()}
+		helper.exampleUser.ServiceRole = authorization.ServiceUserRole.String()
 		helper.setContextFetcher(t)
 
 		sessionCtxData := &types.SessionContextData{
@@ -531,7 +531,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
+		helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 		helper.setContextFetcher(t)
 
 		sessionCtxData := &types.SessionContextData{
@@ -539,7 +539,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -566,7 +566,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
+		helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		sessionCtxData := &types.SessionContextData{
@@ -574,7 +574,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -600,7 +600,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,

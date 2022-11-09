@@ -26,7 +26,7 @@ func BuildFakeUser() *types.User {
 		AccountStatus:             types.GoodStandingUserAccountStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedAt: &fakeDate,
-		ServiceRoles:              []string{authorization.ServiceUserRole.String()},
+		ServiceRole:               authorization.ServiceUserRole.String(),
 		CreatedAt:                 fake.Date(),
 	}
 }

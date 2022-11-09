@@ -49,8 +49,8 @@ func TestModifyUserPermissionsInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &ModifyUserPermissionsInput{
-			NewRoles: []string{authorization.HouseholdMemberRole.String()},
-			Reason:   t.Name(),
+			NewRole: authorization.HouseholdMemberRole.String(),
+			Reason:  t.Name(),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

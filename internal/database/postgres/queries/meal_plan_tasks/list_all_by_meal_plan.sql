@@ -27,8 +27,6 @@ SELECT
     recipe_prep_task_steps.belongs_to_recipe_step,
     recipe_prep_task_steps.belongs_to_recipe_prep_task,
     recipe_prep_task_steps.satisfies_recipe_step,
-    meal_plan_tasks.cannot_complete_before,
-    meal_plan_tasks.cannot_complete_after,
     meal_plan_tasks.created_at,
     meal_plan_tasks.completed_at,
     meal_plan_tasks.status,
@@ -41,6 +39,7 @@ FROM meal_plan_tasks
     FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
     FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
     JOIN recipe_prep_tasks ON meal_plan_tasks.belongs_to_recipe_prep_task=recipe_prep_tasks.id
+    JOIN recipe_prep_task_steps ON recipe_prep_task_steps.belongs_to_recipe_prep_task=recipe_prep_tasks.id
     JOIN recipe_steps ON recipe_prep_task_steps.belongs_to_recipe_step=recipe_steps.id
 WHERE meal_plan_options.archived_at IS NULL
     AND meal_plan_events.archived_at IS NULL

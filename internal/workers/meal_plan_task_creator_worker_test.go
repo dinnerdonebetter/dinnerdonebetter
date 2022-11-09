@@ -146,7 +146,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							RecipeStepProductID: nil,
 							Ingredient: &types.ValidIngredient{
 								MaximumIdealStorageTemperatureInCelsius: nil,
-								MinimumIdealStorageTemperatureInCelsius: pointers.Float32Pointer(2.5),
+								MinimumIdealStorageTemperatureInCelsius: pointers.Float32(2.5),
 								PluralName:                              "chicken breasts",
 								StorageInstructions:                     "keep frozen",
 								Name:                                    "chicken breast",
@@ -325,7 +325,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							MeasurementUnit: types.ValidMeasurementUnit{
 								Name: "gram", PluralName: "gram",
 							},
-							MaximumStorageDurationInSeconds: pointers.Uint32Pointer(259200),
+							MaximumStorageDurationInSeconds: pointers.Uint32(259200),
 							MaximumQuantity:                 0,
 							MinimumQuantity:                 0,
 							Compostable:                     false,
@@ -344,7 +344,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 					Preparation:                   types.ValidPreparation{Name: "sautee"},
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: pointers.StringPointer(recipeStep2ID),
+							RecipeStepProductID: pointers.String(recipeStep2ID),
 							Ingredient:          nil,
 							Name:                "massaged kale",
 							ID:                  fakes.BuildFakeID(),

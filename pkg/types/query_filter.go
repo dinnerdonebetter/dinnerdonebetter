@@ -6,9 +6,11 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/pointers"
 )
 
 const (
@@ -35,21 +37,21 @@ const (
 type QueryFilter struct {
 	_ struct{}
 
-	SortBy          *string `json:"sortBy"`
-	Page            *uint64 `json:"page"`
-	CreatedAfter    *uint64 `json:"createdBefore,omitempty"`
-	CreatedBefore   *uint64 `json:"createdAfter,omitempty"`
-	UpdatedAfter    *uint64 `json:"updatedBefore,omitempty"`
-	UpdatedBefore   *uint64 `json:"updatedAfter,omitempty"`
-	Limit           *uint8  `json:"limit"`
-	IncludeArchived *bool   `json:"includeArchived,omitempty"`
+	SortBy          *string    `json:"sortBy"`
+	Page            *uint16    `json:"page"`
+	CreatedAfter    *time.Time `json:"createdBefore,omitempty"`
+	CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
+	UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
+	UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
+	Limit           *uint8     `json:"limit"`
+	IncludeArchived *bool      `json:"includeArchived,omitempty"`
 }
 
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
-		Page:   func(x uint64) *uint64 { return &x }(1),
-		Limit:  func(x uint8) *uint8 { return &x }(DefaultLimit),
+		Page:   pointers.Uint16(1),
+		Limit:  pointers.Uint8(DefaultLimit),
 		SortBy: SortAscending,
 	}
 }
@@ -96,27 +98,27 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 // FromParams overrides the core QueryFilter values with values retrieved from url.Params.
 func (qf *QueryFilter) FromParams(params url.Values) {
 	if i, err := strconv.ParseUint(params.Get(pageQueryKey), 10, 64); err == nil {
-		qf.Page = uint64Pointer(uint64(math.Max(float64(i), 1)))
+		qf.Page = pointers.Uint16(uint16(math.Max(float64(i), 1)))
 	}
 
 	if i, err := strconv.ParseUint(params.Get(LimitQueryKey), 10, 64); err == nil {
 		qf.Limit = uint8Pointer(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
 	}
 
-	if i, err := strconv.ParseUint(params.Get(createdBeforeQueryKey), 10, 64); err == nil {
-		qf.CreatedBefore = uint64Pointer(uint64(math.Max(float64(i), 0)))
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(createdBeforeQueryKey)); err == nil {
+		qf.CreatedBefore = &t
 	}
 
-	if i, err := strconv.ParseUint(params.Get(createdAfterQueryKey), 10, 64); err == nil {
-		qf.CreatedAfter = uint64Pointer(uint64(math.Max(float64(i), 0)))
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(createdAfterQueryKey)); err == nil {
+		qf.CreatedAfter = &t
 	}
 
-	if i, err := strconv.ParseUint(params.Get(updatedBeforeQueryKey), 10, 64); err == nil {
-		qf.UpdatedBefore = uint64Pointer(uint64(math.Max(float64(i), 0)))
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(updatedBeforeQueryKey)); err == nil {
+		qf.UpdatedBefore = &t
 	}
 
-	if i, err := strconv.ParseUint(params.Get(updatedAfterQueryKey), 10, 64); err == nil {
-		qf.UpdatedAfter = uint64Pointer(uint64(math.Max(float64(i), 0)))
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(updatedAfterQueryKey)); err == nil {
+		qf.UpdatedAfter = &t
 	}
 
 	if i, err := strconv.ParseBool(params.Get(includeArchivedQueryKey)); err == nil {
@@ -132,16 +134,16 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 }
 
 // SetPage sets the current page with certain constraints.
-func (qf *QueryFilter) SetPage(page *uint64) {
+func (qf *QueryFilter) SetPage(page *uint16) {
 	if page != nil {
-		qf.Page = uint64Pointer(uint64(math.Max(1, float64(*page))))
+		qf.Page = pointers.Uint16(uint16(math.Max(1, float64(*page))))
 	}
 }
 
-// QueryPage calculates a query page from the current filter values.
-func (qf *QueryFilter) QueryPage() uint64 {
+// QueryOffset calculates a query page from the current filter values.
+func (qf *QueryFilter) QueryOffset() uint16 {
 	if qf.Limit != nil && qf.Page != nil {
-		return uint64(*qf.Limit) * (*qf.Page - 1)
+		return uint16(*qf.Limit) * (*qf.Page - 1)
 	}
 	return 0
 }
@@ -155,7 +157,7 @@ func (qf *QueryFilter) ToValues() url.Values {
 	v := url.Values{}
 
 	if qf.Page != nil {
-		v.Set(pageQueryKey, strconv.FormatUint(*qf.Page, 10))
+		v.Set(pageQueryKey, strconv.FormatUint(uint64(*qf.Page), 10))
 	}
 
 	if qf.Limit != nil {
@@ -167,19 +169,19 @@ func (qf *QueryFilter) ToValues() url.Values {
 	}
 
 	if qf.CreatedBefore != nil {
-		v.Set(createdBeforeQueryKey, strconv.FormatUint(*qf.CreatedBefore, 10))
+		v.Set(createdBeforeQueryKey, qf.CreatedBefore.Format(time.RFC3339Nano))
 	}
 
 	if qf.CreatedAfter != nil {
-		v.Set(createdAfterQueryKey, strconv.FormatUint(*qf.CreatedAfter, 10))
+		v.Set(createdAfterQueryKey, qf.CreatedAfter.Format(time.RFC3339Nano))
 	}
 
 	if qf.UpdatedBefore != nil {
-		v.Set(updatedBeforeQueryKey, strconv.FormatUint(*qf.UpdatedBefore, 10))
+		v.Set(updatedBeforeQueryKey, qf.UpdatedBefore.Format(time.RFC3339Nano))
 	}
 
 	if qf.UpdatedAfter != nil {
-		v.Set(updatedAfterQueryKey, strconv.FormatUint(*qf.UpdatedAfter, 10))
+		v.Set(updatedAfterQueryKey, qf.UpdatedAfter.Format(time.RFC3339Nano))
 	}
 
 	if qf.IncludeArchived != nil {
@@ -189,6 +191,25 @@ func (qf *QueryFilter) ToValues() url.Values {
 	return v
 }
 
+// ToPagination returns a Pagination from a QueryFilter.
+func (qf *QueryFilter) ToPagination() Pagination {
+	if qf == nil {
+		return DefaultQueryFilter().ToPagination()
+	}
+
+	x := Pagination{}
+
+	if qf.Page != nil {
+		x.Page = *qf.Page
+	}
+
+	if qf.Limit != nil {
+		x.Limit = *qf.Limit
+	}
+
+	return x
+}
+
 // ExtractQueryFilterFromRequest can extract a QueryFilter from a request.
 func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 	qf := &QueryFilter{}
@@ -196,7 +217,7 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 
 	if qf.Page != nil {
 		if *qf.Page == 0 {
-			qf.Page = uint64Pointer(1)
+			qf.Page = pointers.Uint16(1)
 		}
 	}
 

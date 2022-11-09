@@ -13,10 +13,10 @@ import (
 // BuildFakeHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
 func BuildFakeHouseholdUserMembershipCreationRequestInput() *types.HouseholdUserMembershipCreationRequestInput {
 	return &types.HouseholdUserMembershipCreationRequestInput{
-		Reason:         fake.Sentence(10),
-		UserID:         BuildFakeID(),
-		HouseholdID:    BuildFakeID(),
-		HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
+		Reason:        fake.Sentence(10),
+		UserID:        BuildFakeID(),
+		HouseholdID:   BuildFakeID(),
+		HouseholdRole: authorization.HouseholdMemberRole.String(),
 	}
 }
 
@@ -30,8 +30,8 @@ func BuildFakeHouseholdUserMembershipDatabaseCreationInput() *types.HouseholdUse
 // BuildFakeUserPermissionModificationInput builds a faked ModifyUserPermissionsInput.
 func BuildFakeUserPermissionModificationInput() *types.ModifyUserPermissionsInput {
 	return &types.ModifyUserPermissionsInput{
-		Reason:   fake.Sentence(10),
-		NewRoles: []string{authorization.HouseholdMemberRole.String()},
+		Reason:  fake.Sentence(10),
+		NewRole: authorization.HouseholdMemberRole.String(),
 	}
 }
 

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	_ "embed"
 	"errors"
-	"strings"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
@@ -36,28 +35,18 @@ var (
 	}
 )
 
-const (
-	householdMemberRolesSeparator = commaSeparator
-)
-
 // scanHouseholdUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into a householdUserMembership struct.
 func (q *Querier) scanHouseholdUserMembership(ctx context.Context, scan database.Scanner) (x *types.HouseholdUserMembership, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.HouseholdUserMembership{
-		HouseholdRoles: []string{},
-	}
-
-	var (
-		rawHouseholdRoles string
-	)
+	x = &types.HouseholdUserMembership{}
 
 	targetVars := []interface{}{
 		&x.ID,
 		&x.BelongsToUser,
 		&x.BelongsToHousehold,
-		&rawHouseholdRoles,
+		&x.HouseholdRole,
 		&x.DefaultHousehold,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -68,19 +57,15 @@ func (q *Querier) scanHouseholdUserMembership(ctx context.Context, scan database
 		return nil, observability.PrepareError(err, span, "scanning household user memberships")
 	}
 
-	if roles := strings.Split(rawHouseholdRoles, householdMemberRolesSeparator); len(roles) > 0 {
-		x.HouseholdRoles = roles
-	}
-
 	return x, nil
 }
 
 // scanHouseholdUserMemberships takes some database rows and turns them into a slice of memberships.
-func (q *Querier) scanHouseholdUserMemberships(ctx context.Context, rows database.ResultIterator) (defaultHousehold string, householdRolesMap map[string][]string, err error) {
+func (q *Querier) scanHouseholdUserMemberships(ctx context.Context, rows database.ResultIterator) (defaultHousehold string, householdRolesMap map[string]string, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	householdRolesMap = map[string][]string{}
+	householdRolesMap = map[string]string{}
 
 	for rows.Next() {
 		x, scanErr := q.scanHouseholdUserMembership(ctx, rows)
@@ -92,7 +77,7 @@ func (q *Querier) scanHouseholdUserMemberships(ctx context.Context, rows databas
 			defaultHousehold = x.BelongsToHousehold
 		}
 
-		householdRolesMap[x.BelongsToHousehold] = x.HouseholdRoles
+		householdRolesMap[x.BelongsToHousehold] = x.HouseholdRole
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
@@ -136,7 +121,7 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 
 	actualHouseholdRolesMap := map[string]authorization.HouseholdRolePermissionsChecker{}
 	for householdID, roles := range householdRolesMap {
-		actualHouseholdRolesMap[householdID] = authorization.NewHouseholdRolePermissionChecker(roles...)
+		actualHouseholdRolesMap[householdID] = authorization.NewHouseholdRolePermissionChecker(roles)
 	}
 
 	sessionCtxData := &types.SessionContextData{
@@ -146,7 +131,7 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 			UserID:                   user.ID,
 			AccountStatus:            user.AccountStatus,
 			AccountStatusExplanation: user.AccountStatusExplanation,
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker(user.ServiceRoles...),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(user.ServiceRole),
 		},
 		HouseholdPermissions: actualHouseholdRolesMap,
 		ActiveHouseholdID:    defaultHouseholdID,
@@ -267,14 +252,14 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 	logger := q.logger.WithValues(map[string]interface{}{
 		keys.HouseholdIDKey: householdID,
 		keys.UserIDKey:      userID,
-		"new_roles":         input.NewRoles,
+		"new_roles":         input.NewRole,
 	})
 
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	args := []interface{}{
-		strings.Join(input.NewRoles, householdMemberRolesSeparator),
+		input.NewRole,
 		householdID,
 		userID,
 	}
@@ -380,7 +365,7 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 		input.ID,
 		input.UserID,
 		input.HouseholdID,
-		strings.Join(input.HouseholdRoles, householdMemberRolesSeparator),
+		input.HouseholdRole,
 	}
 
 	// create the membership.

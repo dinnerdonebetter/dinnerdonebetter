@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/identifiers"
@@ -239,7 +238,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	admins := []*types.HouseholdUserMembershipWithUser{}
 	plainUsers := []*types.HouseholdUserMembershipWithUser{}
 	for _, member := range household.Members {
-		if strings.Contains(strings.Join(member.HouseholdRoles, ", "), authorization.HouseholdAdminRole.String()) {
+		if member.HouseholdRole == authorization.HouseholdAdminRole.String() {
 			admins = append(admins, member)
 		} else {
 			plainUsers = append(plainUsers, member)

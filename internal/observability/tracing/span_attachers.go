@@ -28,6 +28,13 @@ func AttachUint8ToSpan(span trace.Span, attachmentKey string, id uint8) {
 	}
 }
 
+// AttachUint16ToSpan attaches a uint16 to a span.
+func AttachUint16ToSpan(span trace.Span, attachmentKey string, id uint16) {
+	if span != nil {
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+	}
+}
+
 // AttachUint64ToSpan attaches a uint64 to a span.
 func AttachUint64ToSpan(span trace.Span, attachmentKey string, id uint64) {
 	if span != nil {
@@ -54,6 +61,13 @@ func AttachSliceOfStringsToSpan(span trace.Span, key string, slice []string) {
 	span.SetAttributes(attribute.StringSlice(key, slice))
 }
 
+// AttachTimeToSpan attaches a uint64 to a span.
+func AttachTimeToSpan(span trace.Span, attachmentKey string, t time.Time) {
+	if span != nil {
+		span.SetAttributes(attribute.String(attachmentKey, t.Format(time.RFC3339Nano)))
+	}
+}
+
 // AttachToSpan allows a user to attach any value to a span.
 func AttachToSpan(span trace.Span, key string, val interface{}) {
 	if span != nil {
@@ -62,9 +76,9 @@ func AttachToSpan(span trace.Span, key string, val interface{}) {
 }
 
 // AttachFilterDataToSpan provides a consistent way to attach a filter's info to a span.
-func AttachFilterDataToSpan(span trace.Span, page *uint64, limit *uint8, sortBy *string) {
+func AttachFilterDataToSpan(span trace.Span, page *uint16, limit *uint8, sortBy *string) {
 	if page != nil {
-		AttachUint64ToSpan(span, keys.FilterPageKey, *page)
+		AttachUint16ToSpan(span, keys.FilterPageKey, *page)
 	}
 
 	if limit != nil {
@@ -214,23 +228,23 @@ func AttachQueryFilterToSpan(span trace.Span, filter *types.QueryFilter) {
 		}
 
 		if filter.Page != nil {
-			AttachUint64ToSpan(span, keys.FilterPageKey, *filter.Page)
+			AttachUint16ToSpan(span, keys.FilterPageKey, *filter.Page)
 		}
 
 		if filter.CreatedAfter != nil {
-			AttachUint64ToSpan(span, keys.FilterCreatedAfterKey, *filter.CreatedAfter)
+			AttachTimeToSpan(span, keys.FilterCreatedAfterKey, *filter.CreatedAfter)
 		}
 
 		if filter.CreatedBefore != nil {
-			AttachUint64ToSpan(span, keys.FilterCreatedBeforeKey, *filter.CreatedBefore)
+			AttachTimeToSpan(span, keys.FilterCreatedBeforeKey, *filter.CreatedBefore)
 		}
 
 		if filter.UpdatedAfter != nil {
-			AttachUint64ToSpan(span, keys.FilterUpdatedAfterKey, *filter.UpdatedAfter)
+			AttachTimeToSpan(span, keys.FilterUpdatedAfterKey, *filter.UpdatedAfter)
 		}
 
 		if filter.UpdatedBefore != nil {
-			AttachUint64ToSpan(span, keys.FilterUpdatedBeforeKey, *filter.UpdatedBefore)
+			AttachTimeToSpan(span, keys.FilterUpdatedBeforeKey, *filter.UpdatedBefore)
 		}
 
 		if filter.SortBy != nil {

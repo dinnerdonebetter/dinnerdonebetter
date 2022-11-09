@@ -1590,7 +1590,7 @@ func TestAuthenticationService_CycleSecretHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
+		helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
 		helper.setContextFetcher(t)
 
 		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
@@ -1664,7 +1664,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -1761,7 +1761,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,

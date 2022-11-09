@@ -33,8 +33,8 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		PluralName:                              buildUniqueString(),
 		AnimalDerived:                           fake.Bool(),
 		RestrictToPreparations:                  fake.Bool(),
-		MinimumIdealStorageTemperatureInCelsius: pointers.Float32Pointer(float32(BuildFakeNumber())),
-		MaximumIdealStorageTemperatureInCelsius: pointers.Float32Pointer(float32(BuildFakeNumber())),
+		MinimumIdealStorageTemperatureInCelsius: pointers.Float32(float32(BuildFakeNumber())),
+		MaximumIdealStorageTemperatureInCelsius: pointers.Float32(float32(BuildFakeNumber())),
 		StorageInstructions:                     buildUniqueString(),
 	}
 }

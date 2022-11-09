@@ -1,36 +1,50 @@
 package pointers
 
-// StringPointer returns a pointer to a string.
-func StringPointer(s string) *string {
-	return &s
-}
+import (
+	"time"
+)
 
-// Uint8Pointer returns a pointer to the provided uint32.
-func Uint8Pointer(x uint8) *uint8 {
+// String returns a pointer to a string.
+func String(x string) *string {
 	return &x
 }
 
-// Uint32Pointer returns a pointer to a uint32.
-func Uint32Pointer(s uint32) *uint32 {
-	return &s
-}
-
-// Uint64Pointer returns a pointer to the provided uint64.
-func Uint64Pointer(x uint64) *uint64 {
+// Uint8 returns a pointer to the provided uint32.
+func Uint8(x uint8) *uint8 {
 	return &x
 }
 
-// BoolPointer returns a pointer to the provided bool.
-func BoolPointer(x bool) *bool {
+// Uint16 returns a pointer to a uint16.
+func Uint16(x uint16) *uint16 {
 	return &x
 }
 
-// Float32Pointer returns a pointer to the provided float32.
-func Float32Pointer(s float32) *float32 {
-	return &s
+// Uint32 returns a pointer to a uint32.
+func Uint32(x uint32) *uint32 {
+	return &x
 }
 
-// Float64Pointer returns a pointer to the provided float64.
-func Float64Pointer(s float64) *float64 {
-	return &s
+// Uint64 returns a pointer to the provided uint64.
+func Uint64(x uint64) *uint64 {
+	return &x
+}
+
+// Bool returns a pointer to the provided bool.
+func Bool(x bool) *bool {
+	return &x
+}
+
+// Float32 returns a pointer to the provided float32.
+func Float32(x float32) *float32 {
+	return &x
+}
+
+// Float64 returns a pointer to the provided float64.
+func Float64(x float64) *float64 {
+	return &x
+}
+
+// Time returns a pointer to the provided float64.
+func Time(x time.Time) *time.Time {
+	return &x
 }

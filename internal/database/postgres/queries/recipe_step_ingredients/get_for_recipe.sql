@@ -65,4 +65,4 @@ GROUP BY
 	valid_measurement_units.id,
 	valid_ingredients.id
 ORDER BY
-	recipe_step_ingredients.id
+	recipe_step_ingredients.id;

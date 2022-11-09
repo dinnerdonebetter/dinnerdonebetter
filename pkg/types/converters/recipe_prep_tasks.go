@@ -172,9 +172,9 @@ func ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInp
 func ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepUpdateRequestInput {
 	return &types.RecipePrepTaskStepUpdateRequestInput{
 		ID:                      input.ID,
-		BelongsToRecipeStep:     pointers.StringPointer(input.BelongsToRecipeStep),
-		BelongsToRecipePrepTask: pointers.StringPointer(input.BelongsToRecipePrepTask),
-		SatisfiesRecipeStep:     pointers.BoolPointer(input.SatisfiesRecipeStep),
+		BelongsToRecipeStep:     pointers.String(input.BelongsToRecipeStep),
+		BelongsToRecipePrepTask: pointers.String(input.BelongsToRecipePrepTask),
+		SatisfiesRecipeStep:     pointers.Bool(input.SatisfiesRecipeStep),
 	}
 }
 

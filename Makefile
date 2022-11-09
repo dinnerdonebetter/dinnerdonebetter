@@ -13,6 +13,7 @@ TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 LOCAL_ADDRESS                 := api.prixfixe.local
 DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.15.0
+GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 
 ## non-PHONY folders/files
 
@@ -33,7 +34,7 @@ setup: $(ARTIFACTS_DIR) revendor rewire configs
 
 .PHONY: configs
 configs:
-	go run cmd/tools/config_gen/main.go
+	go run github.com/prixfixeco/api_server/cmd/tools/gen_configs
 
 ## prerequisites
 

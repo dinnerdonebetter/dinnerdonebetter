@@ -11,8 +11,6 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
-	"github.com/lib/pq"
-	"github.com/luna-duclos/instrumentedsql"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -45,8 +43,6 @@ type Querier struct {
 	logQueries    bool
 }
 
-var instrumentedDriverRegistration sync.Once
-
 // ProvideDatabaseClient provides a new DataManager client.
 func ProvideDatabaseClient(
 	ctx context.Context,
@@ -59,24 +55,14 @@ func ProvideDatabaseClient(
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	const driverName = "instrumented-postgres"
-
-	instrumentedDriverRegistration.Do(func() {
-		sql.Register(
-			driverName,
-			instrumentedsql.WrapDriver(
-				&pq.Driver{},
-				instrumentedsql.WithOmitArgs(),
-				instrumentedsql.WithTracer(tracing.NewInstrumentedSQLTracer(tracerProvider, "postgres_connection")),
-				instrumentedsql.WithLogger(tracing.NewInstrumentedSQLLogger(logger)),
-			),
-		)
-	})
-
-	db, err := sql.Open(driverName, string(cfg.ConnectionDetails))
+	db, err := sql.Open("postgres", string(cfg.ConnectionDetails))
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
+
+	db.SetMaxIdleConns(5)
+	db.SetMaxOpenConns(7)
+	db.SetConnMaxLifetime(1800 * time.Second)
 
 	c := &Querier{
 		db:            db,
@@ -103,18 +89,15 @@ func ProvideDatabaseClient(
 		c.logger.Debug("querier migrated!")
 	}
 
-	c.db.SetMaxOpenConns(5)
-	c.db.SetMaxOpenConns(7)
-
 	return c, nil
 }
 
-// DB provides the scs Store for MySQL.
+// DB provides the database object.
 func (q *Querier) DB() *sql.DB {
 	return q.db
 }
 
-// ProvideSessionStore provides the scs Store for MySQL.
+// ProvideSessionStore provides the scs Store for Postgres.
 func (q *Querier) ProvideSessionStore() scs.Store {
 	return postgresstore.New(q.db)
 }

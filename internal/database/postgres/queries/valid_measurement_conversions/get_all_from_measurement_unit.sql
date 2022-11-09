@@ -63,4 +63,4 @@ FROM valid_measurement_conversions
 WHERE valid_measurement_conversions.archived_at IS NULL
   AND valid_measurement_units_from.archived_at IS NULL
   AND valid_measurement_units_from.id = $1
-  AND valid_measurement_units_to.archived_at IS NULL
+  AND valid_measurement_units_to.archived_at IS NULL;

@@ -1,4 +1,4 @@
-UPDATE valid_preparations
+UPDATE recipe_media
 SET
     belongs_to_recipe = $1,
     belongs_to_recipe_step = $2,

@@ -14,7 +14,7 @@ func TestBoolPointer(T *testing.T) {
 		t.Parallel()
 
 		expected := false
-		actual := BoolPointer(expected)
+		actual := Bool(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)
@@ -28,7 +28,7 @@ func TestFloat32Pointer(T *testing.T) {
 		t.Parallel()
 
 		var expected float32 = 123.0
-		actual := Float32Pointer(expected)
+		actual := Float32(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)
@@ -42,7 +42,7 @@ func TestFloat64Pointer(T *testing.T) {
 		t.Parallel()
 
 		var expected float64 = 123
-		actual := Float64Pointer(expected)
+		actual := Float64(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)
@@ -56,7 +56,7 @@ func TestStringPointer(T *testing.T) {
 		t.Parallel()
 
 		expected := t.Name()
-		actual := StringPointer(expected)
+		actual := String(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)
@@ -70,7 +70,7 @@ func TestUint32Pointer(T *testing.T) {
 		t.Parallel()
 
 		var expected uint32 = 123
-		actual := Uint32Pointer(expected)
+		actual := Uint32(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)
@@ -84,7 +84,7 @@ func TestUint64Pointer(T *testing.T) {
 		t.Parallel()
 
 		var expected uint64 = 123
-		actual := Uint64Pointer(expected)
+		actual := Uint64(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)
@@ -98,7 +98,7 @@ func TestUint8Pointer(T *testing.T) {
 		t.Parallel()
 
 		var expected uint8 = 123
-		actual := Uint8Pointer(expected)
+		actual := Uint8(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)

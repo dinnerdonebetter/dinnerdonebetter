@@ -21,4 +21,4 @@ WHERE meal_plan_grocery_list_items.completed_at IS NULL
   AND meal_plans.archived_at IS NULL
   AND meal_plans.id = $1
 GROUP BY meal_plan_grocery_list_items.id
-ORDER BY meal_plan_grocery_list_items.id
+ORDER BY meal_plan_grocery_list_items.id;

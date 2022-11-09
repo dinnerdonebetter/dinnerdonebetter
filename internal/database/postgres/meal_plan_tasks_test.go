@@ -21,7 +21,7 @@ func TestQuerier_ChangeMealPlanTaskStatus(T *testing.T) {
 
 		exampleInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
 		// so we trigger setting the time function
-		exampleInput.Status = pointers.StringPointer(types.MealPlanTaskStatusFinished)
+		exampleInput.Status = pointers.String(types.MealPlanTaskStatusFinished)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

@@ -18,6 +18,26 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
+var (
+	// webhooksTableColumns are the columns for the webhooks table.
+	webhooksTableColumns = []string{
+		"webhooks.id",
+		"webhooks.name",
+		"webhooks.content_type",
+		"webhooks.url",
+		"webhooks.method",
+		"webhook_trigger_events.id",
+		"webhook_trigger_events.trigger_event",
+		"webhook_trigger_events.belongs_to_webhook",
+		"webhook_trigger_events.created_at",
+		"webhook_trigger_events.archived_at",
+		"webhooks.created_at",
+		"webhooks.last_updated_at",
+		"webhooks.archived_at",
+		"webhooks.belongs_to_household",
+	}
+)
+
 func buildMockRowsFromWebhooks(includeCounts bool, filteredCount uint64, webhooks ...*types.Webhook) *sqlmock.Rows {
 	columns := webhooksTableColumns
 
@@ -109,7 +129,7 @@ func TestQuerier_scanWebhooks(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, err := q.scanWebhooks(ctx, mockRows)
+		_, _, _, err := q.scanWebhooks(ctx, mockRows, false)
 		assert.Error(t, err)
 	})
 
@@ -124,7 +144,7 @@ func TestQuerier_scanWebhooks(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, err := q.scanWebhooks(ctx, mockRows)
+		_, _, _, err := q.scanWebhooks(ctx, mockRows, false)
 		assert.Error(t, err)
 	})
 }
@@ -321,7 +341,6 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		t.Parallel()
 
 		exampleWebhookList := fakes.BuildFakeWebhookList()
-		exampleWebhookList.Pagination = types.Pagination{}
 		filter := types.DefaultQueryFilter()
 
 		ctx := context.Background()
@@ -329,12 +348,17 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 
 		getWebhooksForHouseholdArgs := []interface{}{
 			exampleHouseholdID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			filter.QueryOffset(),
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
 			WillReturnRows(buildMockRowsFromWebhooks(
-				false,
+				true,
 				exampleWebhookList.FilteredCount,
 				exampleWebhookList.Webhooks...,
 			))
@@ -350,25 +374,29 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		t.Parallel()
 
 		exampleWebhookList := fakes.BuildFakeWebhookList()
-		exampleWebhookList.Pagination = types.Pagination{}
-		filter := (*types.QueryFilter)(nil)
+		filter := types.DefaultQueryFilter()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		getWebhooksForHouseholdArgs := []interface{}{
 			exampleHouseholdID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			filter.QueryOffset(),
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
 			WillReturnRows(buildMockRowsFromWebhooks(
-				false,
+				true,
 				exampleWebhookList.FilteredCount,
 				exampleWebhookList.Webhooks...,
 			))
 
-		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
+		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleWebhookList, actual)
 
@@ -397,6 +425,11 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 
 		getWebhooksForHouseholdArgs := []interface{}{
 			exampleHouseholdID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			filter.QueryOffset(),
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
@@ -420,6 +453,11 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 
 		getWebhooksForHouseholdArgs := []interface{}{
 			exampleHouseholdID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			filter.QueryOffset(),
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).

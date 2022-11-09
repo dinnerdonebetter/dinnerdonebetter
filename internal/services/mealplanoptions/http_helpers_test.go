@@ -66,7 +66,7 @@ func buildTestHelper(t *testing.T) *mealPlanOptionsServiceHTTPRoutesTestHelper {
 			UserID:                   helper.exampleUser.ID,
 			AccountStatus:            helper.exampleUser.AccountStatus,
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
 		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{

@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/pointers"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -93,7 +94,7 @@ func TestAttachFilterToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachFilterDataToSpan(span, func(x uint64) *uint64 { return &x }(1), func(x uint8) *uint8 { return &x }(2), func(x string) *string { return &x }(t.Name()))
+		AttachFilterDataToSpan(span, pointers.Uint16(1), pointers.Uint8(2), pointers.String(t.Name()))
 	})
 }
 

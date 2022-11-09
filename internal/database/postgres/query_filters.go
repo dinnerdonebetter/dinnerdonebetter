@@ -16,8 +16,8 @@ func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBui
 
 	qf.SetPage(qf.Page)
 
-	if qp := qf.QueryPage(); qp > 0 {
-		queryBuilder = queryBuilder.Offset(qp)
+	if qp := qf.QueryOffset(); qp > 0 {
+		queryBuilder = queryBuilder.Offset(uint64(qp))
 	}
 
 	if qf.Limit != nil && *qf.Limit != 0 {
@@ -26,19 +26,19 @@ func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBui
 		queryBuilder = queryBuilder.Limit(types.MaxLimit)
 	}
 
-	if qf.CreatedAfter != nil && *qf.CreatedAfter > 0 {
+	if qf.CreatedAfter != nil {
 		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "created_at"): qf.CreatedAfter})
 	}
 
-	if qf.CreatedBefore != nil && *qf.CreatedBefore > 0 {
+	if qf.CreatedBefore != nil {
 		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "created_at"): qf.CreatedBefore})
 	}
 
-	if qf.UpdatedAfter != nil && *qf.UpdatedAfter > 0 {
+	if qf.UpdatedAfter != nil {
 		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "last_updated_at"): qf.UpdatedAfter})
 	}
 
-	if qf.UpdatedBefore != nil && *qf.UpdatedBefore > 0 {
+	if qf.UpdatedBefore != nil {
 		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "last_updated_at"): qf.UpdatedBefore})
 	}
 
@@ -51,19 +51,19 @@ func applyFilterToSubCountQueryBuilder(qf *types.QueryFilter, tableName string, 
 		return queryBuilder
 	}
 
-	if qf.CreatedAfter != nil && *qf.CreatedAfter > 0 {
+	if qf.CreatedAfter != nil {
 		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "created_at"): qf.CreatedAfter})
 	}
 
-	if qf.CreatedBefore != nil && *qf.CreatedBefore > 0 {
+	if qf.CreatedBefore != nil {
 		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "created_at"): qf.CreatedBefore})
 	}
 
-	if qf.UpdatedAfter != nil && *qf.UpdatedAfter > 0 {
+	if qf.UpdatedAfter != nil {
 		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, "last_updated_at"): qf.UpdatedAfter})
 	}
 
-	if qf.UpdatedBefore != nil && *qf.UpdatedBefore > 0 {
+	if qf.UpdatedBefore != nil {
 		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, "last_updated_at"): qf.UpdatedBefore})
 	}
 

@@ -125,7 +125,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							RecipeStepProductID: nil,
 							Ingredient: &types.ValidIngredient{
 								MaximumIdealStorageTemperatureInCelsius: nil,
-								MinimumIdealStorageTemperatureInCelsius: pointers.Float32Pointer(2.5),
+								MinimumIdealStorageTemperatureInCelsius: pointers.Float32(2.5),
 								PluralName:                              "chicken breasts",
 								StorageInstructions:                     "keep frozen",
 								Name:                                    "chicken breast",
