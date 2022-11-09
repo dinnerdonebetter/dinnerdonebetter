@@ -1,7 +1,6 @@
 module github.com/prixfixeco/backend/cmd/functions/meal_plan_finalizer
 
-// these have to be at 1.16 per Cloud Functions requirements: https://cloud.google.com/functions/docs/concepts/exec#runtimes
-go 1.16
+go 1.19
 
 replace github.com/prixfixeco/backend => ../../../
 

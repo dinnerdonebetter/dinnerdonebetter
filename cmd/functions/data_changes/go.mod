@@ -1,6 +1,5 @@
 module github.com/prixfixeco/backend/cmd/functions/data_changes
 
-// these have to be at 1.16 per Cloud Functions requirements: https://cloud.google.com/functions/docs/concepts/exec#runtimes
 go 1.19
 
 replace github.com/prixfixeco/backend => ../../../
