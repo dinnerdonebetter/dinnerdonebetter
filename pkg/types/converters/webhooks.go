@@ -1,8 +1,8 @@
 package converters
 
 import (
-	"github.com/prixfixeco/api_server/internal/identifiers"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/identifiers"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // ConvertWebhookToWebhookCreationRequestInput builds a WebhookCreationRequestInput from a Webhook.

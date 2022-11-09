@@ -8,8 +8,8 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prixfixeco/api_server/internal/pointers"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/pointers"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {

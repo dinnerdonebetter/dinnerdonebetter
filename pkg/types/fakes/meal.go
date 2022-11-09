@@ -3,7 +3,7 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // BuildFakeMeal builds a faked recipe.

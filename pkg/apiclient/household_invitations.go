@@ -3,9 +3,9 @@ package apiclient
 import (
 	"context"
 
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/keys"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // GetHouseholdInvitation retrieves a household invitation.

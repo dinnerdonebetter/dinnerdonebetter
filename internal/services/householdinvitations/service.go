@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/prixfixeco/api_server/internal/email"
+	"github.com/prixfixeco/backend/internal/email"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue"
+	"github.com/prixfixeco/backend/internal/messagequeue"
 
-	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/random"
-	"github.com/prixfixeco/api_server/internal/routing"
-	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
-	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/random"
+	"github.com/prixfixeco/backend/internal/routing"
+	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+	householdsservice "github.com/prixfixeco/backend/internal/services/households"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 const (

@@ -8,9 +8,9 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"github.com/prixfixeco/api_server/internal/authorization"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/authorization"
+	"github.com/prixfixeco/backend/internal/observability/keys"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 const (

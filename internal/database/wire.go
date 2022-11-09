@@ -3,7 +3,7 @@ package database
 import (
 	"github.com/google/wire"
 
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 var (

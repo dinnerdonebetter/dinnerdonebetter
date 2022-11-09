@@ -6,7 +6,7 @@ import (
 	// TODO: https://github.com/csweichel/bel
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 func writeFile(filename, content string) error {

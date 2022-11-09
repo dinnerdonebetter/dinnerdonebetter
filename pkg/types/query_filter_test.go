@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/pointers"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestQueryFilter_AttachToLogger(T *testing.T) {

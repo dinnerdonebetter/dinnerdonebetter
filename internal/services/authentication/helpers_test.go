@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/authentication"
-	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
-	"github.com/prixfixeco/api_server/pkg/types"
-	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
+	"github.com/prixfixeco/backend/internal/authentication"
+	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
+	"github.com/prixfixeco/backend/pkg/types"
+	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func TestAuthenticationService_getUserIDFromCookie(T *testing.T) {

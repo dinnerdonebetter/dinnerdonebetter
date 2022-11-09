@@ -11,16 +11,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/config"
-	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	"github.com/prixfixeco/api_server/internal/database/postgres"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
-	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-	"github.com/prixfixeco/api_server/internal/workers"
-	"github.com/prixfixeco/api_server/pkg/utils"
+	"github.com/prixfixeco/backend/internal/config"
+	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
+	"github.com/prixfixeco/backend/internal/database/postgres"
+	emailconfig "github.com/prixfixeco/backend/internal/email/config"
+	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
+	"github.com/prixfixeco/backend/internal/messagequeue/redis"
+	"github.com/prixfixeco/backend/internal/observability/keys"
+	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
+	"github.com/prixfixeco/backend/internal/workers"
+	"github.com/prixfixeco/backend/pkg/utils"
 )
 
 const (

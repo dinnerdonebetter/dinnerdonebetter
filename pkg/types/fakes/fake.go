@@ -7,7 +7,7 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 
-	"github.com/prixfixeco/api_server/internal/identifiers"
+	"github.com/prixfixeco/backend/internal/identifiers"
 )
 
 func init() {

@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/routing"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/routing"
 )
 
 func TestBuildLoggingMiddleware(T *testing.T) {

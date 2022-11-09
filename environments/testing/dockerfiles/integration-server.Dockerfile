@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM golang:1.19-buster AS build-stage
 
-WORKDIR /go/src/github.com/prixfixeco/api_server
+WORKDIR /go/src/github.com/prixfixeco/backend
 
 RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
@@ -12,7 +12,7 @@ COPY vendor vendor
 COPY go.mod go.mod
 COPY go.sum go.sum
 
-RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /prixfixe github.com/prixfixeco/api_server/cmd/server
+RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /prixfixe github.com/prixfixeco/backend/cmd/server
 
 # final stage
 FROM debian:stretch

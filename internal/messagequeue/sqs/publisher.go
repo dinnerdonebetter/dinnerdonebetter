@@ -6,17 +6,17 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue"
+	"github.com/prixfixeco/backend/internal/messagequeue"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 
-	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 type (

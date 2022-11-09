@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 func TestNewInstrumentedSQLTracer(T *testing.T) {

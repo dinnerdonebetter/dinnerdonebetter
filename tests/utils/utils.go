@@ -14,9 +14,9 @@ import (
 
 	"github.com/pquerna/otp/totp"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/apiclient"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/apiclient"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 var (

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/random"
+	"github.com/prixfixeco/backend/internal/random"
 )
 
 func buildExampleKey(ctx context.Context, t *testing.T) string {

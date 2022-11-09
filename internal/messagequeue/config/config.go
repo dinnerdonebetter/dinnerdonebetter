@@ -8,12 +8,12 @@ import (
 
 	ps "cloud.google.com/go/pubsub"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-	"github.com/prixfixeco/api_server/internal/messagequeue/pubsub"
-	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
-	"github.com/prixfixeco/api_server/internal/messagequeue/sqs"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/messagequeue"
+	"github.com/prixfixeco/backend/internal/messagequeue/pubsub"
+	"github.com/prixfixeco/backend/internal/messagequeue/redis"
+	"github.com/prixfixeco/backend/internal/messagequeue/sqs"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 const (

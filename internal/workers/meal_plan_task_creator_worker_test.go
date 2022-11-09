@@ -8,17 +8,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/api_server/internal/customerdata"
-	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/features/recipeanalysis"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/pointers"
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
+	"github.com/prixfixeco/backend/internal/customerdata"
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/pointers"
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func TestProvideMealPlanTaskCreationEnsurerWorker(T *testing.T) {

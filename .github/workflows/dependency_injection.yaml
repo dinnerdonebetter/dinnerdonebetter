@@ -24,4 +24,4 @@ jobs:
        run: go install github.com/google/wire/cmd/wire@latest
 
      - name: Test dependency injection
-       run: wire gen github.com/prixfixeco/api_server/internal/build/server
+       run: wire gen github.com/prixfixeco/backend/internal/build/server

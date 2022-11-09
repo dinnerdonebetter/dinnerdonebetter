@@ -9,19 +9,19 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 
-	"github.com/prixfixeco/api_server/internal/config"
-	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/database/postgres"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/workers"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/config"
+	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/database/postgres"
+	emailconfig "github.com/prixfixeco/backend/internal/email/config"
+	"github.com/prixfixeco/backend/internal/messagequeue"
+	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/workers"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 const (

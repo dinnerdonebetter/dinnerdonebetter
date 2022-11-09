@@ -3,8 +3,8 @@ package converters
 import (
 	"fmt"
 
-	"github.com/prixfixeco/api_server/internal/pointers"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/pointers"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput creates a RecipePrepTaskUpdateRequestInput from a RecipePrepTask.

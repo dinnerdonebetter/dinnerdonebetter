@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

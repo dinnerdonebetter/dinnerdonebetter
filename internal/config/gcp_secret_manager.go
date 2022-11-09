@@ -12,8 +12,8 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 )
 
 const (

@@ -6,10 +6,10 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/apiclient/requests"
+	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/apiclient/requests"
 )
 
 type option func(*Client) error

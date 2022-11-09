@@ -15,12 +15,12 @@ import (
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
-	"github.com/prixfixeco/api_server/internal/build/server"
-	"github.com/prixfixeco/api_server/internal/config"
-	"github.com/prixfixeco/api_server/internal/database/postgres"
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/build/server"
+	"github.com/prixfixeco/backend/internal/config"
+	"github.com/prixfixeco/backend/internal/database/postgres"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 const (

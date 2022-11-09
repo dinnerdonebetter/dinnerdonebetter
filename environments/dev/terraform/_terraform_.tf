@@ -1,11 +1,11 @@
 terraform {
-  required_version = "~> 1.1.2"
+  required_version = "~> 1.3.4"
 
   backend "remote" {
     organization = "prixfixe"
 
     workspaces {
-      name = "dev-API"
+      name = "prixfixe-backend-dev"
     }
   }
   required_providers {

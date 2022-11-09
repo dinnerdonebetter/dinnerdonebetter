@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	testutils "github.com/prixfixeco/api_server/tests/utils"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 type mockMessagePublisher struct {

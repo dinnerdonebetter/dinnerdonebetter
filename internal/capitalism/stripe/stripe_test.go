@@ -14,11 +14,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/capitalism"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
+	"github.com/prixfixeco/backend/internal/capitalism"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

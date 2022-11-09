@@ -7,8 +7,8 @@ import (
 	memstore "github.com/alexedwards/scs/v2/memstore"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/backend/internal/database"
+	authservice "github.com/prixfixeco/backend/internal/services/authentication"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

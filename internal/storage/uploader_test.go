@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	mockrouting "github.com/prixfixeco/backend/internal/routing/mock"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

@@ -10,12 +10,12 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/messagequeue"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 const (

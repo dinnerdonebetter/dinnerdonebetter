@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/wire"
 
-	"github.com/prixfixeco/api_server/internal/email"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/email"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 var (

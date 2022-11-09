@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/keys"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 func (c *Client) fetchAuthTokenForAPIClient(ctx context.Context, httpClient *http.Client, clientID string, secretKey []byte) (string, error) {

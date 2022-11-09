@@ -8,14 +8,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
-	"github.com/prixfixeco/api_server/internal/email"
-	"github.com/prixfixeco/api_server/internal/encoding"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/random"
-	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
+	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
+	"github.com/prixfixeco/backend/internal/email"
+	"github.com/prixfixeco/backend/internal/encoding"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/random"
+	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 )
 
 func buildTestService(t *testing.T) *service {

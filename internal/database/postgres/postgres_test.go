@@ -16,12 +16,12 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/identifiers"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/database/config"
+	"github.com/prixfixeco/backend/internal/identifiers"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 var _ sqlmock.Argument = (*idMatcher)(nil)

@@ -2,17 +2,17 @@ package integration
 
 import (
 	"context"
-	"github.com/prixfixeco/api_server/pkg/apiclient"
-	"github.com/prixfixeco/api_server/pkg/types/converters"
+	"github.com/prixfixeco/backend/pkg/apiclient"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 func checkRecipePrepTaskEquality(t *testing.T, expected, actual *types.RecipePrepTask) {

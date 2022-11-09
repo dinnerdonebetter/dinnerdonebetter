@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 type testingType struct {

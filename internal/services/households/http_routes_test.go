@@ -9,21 +9,21 @@ import (
 	"net/url"
 	"testing"
 
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/encoding"
-	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
-	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
+	"github.com/prixfixeco/backend/internal/encoding"
+	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
+	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func TestHouseholdsService_ListHandler(T *testing.T) {

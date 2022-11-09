@@ -3,9 +3,9 @@ package config
 import (
 	"context"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/logging/googlecloud"
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/googlecloud"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 )
 
 const (

@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
-	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
-	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
+	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	mockrouting "github.com/prixfixeco/backend/internal/routing/mock"
+	mealplansservice "github.com/prixfixeco/backend/internal/services/mealplans"
+	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 )
 
 func buildTestService() *service {

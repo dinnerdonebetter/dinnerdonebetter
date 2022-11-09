@@ -5,7 +5,7 @@ import (
 
 	"go.opentelemetry.io/otel/metric"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 var _ UnitCounter = (*unitCounter)(nil)

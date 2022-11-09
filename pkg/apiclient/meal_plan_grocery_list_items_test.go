@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/converters"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func TestMealPlanGroceryListItems(t *testing.T) {

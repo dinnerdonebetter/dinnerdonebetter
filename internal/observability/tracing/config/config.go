@@ -7,10 +7,10 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/observability/tracing/cloudtrace"
-	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/observability/tracing/cloudtrace"
+	"github.com/prixfixeco/backend/internal/observability/tracing/jaeger"
 )
 
 const (

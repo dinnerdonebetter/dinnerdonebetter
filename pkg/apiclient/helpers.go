@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // errorFromResponse returns library errors according to a response's status code.

@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/prixfixeco/api_server/internal/identifiers"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/identifiers"
+	"github.com/prixfixeco/backend/internal/observability/keys"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // GroceryListCreator creates meal plan grocery lists for a given meal plan.

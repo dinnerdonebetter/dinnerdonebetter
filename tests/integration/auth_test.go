@@ -14,10 +14,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func (s *TestSuite) TestLogin() {

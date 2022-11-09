@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func TestBuilder_BuildGetMealPlanGroceryListItemRequest(T *testing.T) {

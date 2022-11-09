@@ -9,8 +9,8 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/pquerna/otp/totp"
 
-	"github.com/prixfixeco/api_server/internal/authorization"
-	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/backend/internal/authorization"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // BuildFakeUser builds a faked User.
