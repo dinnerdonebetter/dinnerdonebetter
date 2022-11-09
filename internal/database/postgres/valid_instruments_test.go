@@ -94,7 +94,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.ID,
 		}
 
@@ -129,7 +129,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.ID,
 		}
 
@@ -152,7 +152,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.ID,
 		}
 
@@ -179,7 +179,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.ID,
 		}
 
@@ -213,7 +213,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.ID,
 		}
 
@@ -240,7 +240,7 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		args := []any{}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRandomValidInstrumentQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -259,7 +259,7 @@ func TestQuerier_GetRandomValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		args := []any{}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRandomValidInstrumentQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -286,7 +286,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -318,7 +318,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -339,7 +339,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -368,7 +368,7 @@ func TestQuerier_SearchForValidInstrumentsForPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -400,7 +400,7 @@ func TestQuerier_SearchForValidInstrumentsForPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -421,7 +421,7 @@ func TestQuerier_SearchForValidInstrumentsForPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -542,7 +542,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.PluralName,
@@ -587,7 +587,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.PluralName,
@@ -624,7 +624,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.Name,
 			exampleValidInstrument.PluralName,
 			exampleValidInstrument.Description,
@@ -659,7 +659,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.Name,
 			exampleValidInstrument.PluralName,
 			exampleValidInstrument.Description,
@@ -689,7 +689,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.ID,
 		}
 
@@ -719,7 +719,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidInstrument.ID,
 		}
 

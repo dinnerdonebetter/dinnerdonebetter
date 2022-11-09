@@ -51,7 +51,7 @@ func (c *CustomerDataCollector) Close() error {
 }
 
 // AddUser upsert's a user's identity.
-func (c *CustomerDataCollector) AddUser(ctx context.Context, userID string, properties map[string]interface{}) error {
+func (c *CustomerDataCollector) AddUser(ctx context.Context, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -70,7 +70,7 @@ func (c *CustomerDataCollector) AddUser(ctx context.Context, userID string, prop
 }
 
 // EventOccurred associates events with a user.
-func (c *CustomerDataCollector) EventOccurred(ctx context.Context, event types.CustomerEventType, userID string, properties map[string]interface{}) error {
+func (c *CustomerDataCollector) EventOccurred(ctx context.Context, event types.CustomerEventType, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 

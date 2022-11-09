@@ -24,7 +24,7 @@ import (
 	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
-func logJSON(t *testing.T, x interface{}) {
+func logJSON(t *testing.T, x any) {
 	t.Helper()
 
 	rawBytes, err := json.MarshalIndent(x, "", "")
@@ -33,7 +33,7 @@ func logJSON(t *testing.T, x interface{}) {
 	t.Log(string(rawBytes))
 }
 
-func requireNotNilAndNoProblems(t *testing.T, i interface{}, err error) {
+func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
 	t.Helper()
 
 	require.NoError(t, err)

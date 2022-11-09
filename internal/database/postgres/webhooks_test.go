@@ -161,7 +161,7 @@ func TestQuerier_WebhookExists(T *testing.T) {
 		exampleWebhookID := fakes.BuildFakeID()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleWebhookID,
 		}
@@ -216,7 +216,7 @@ func TestQuerier_WebhookExists(T *testing.T) {
 		exampleWebhookID := fakes.BuildFakeID()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleWebhookID,
 		}
@@ -241,7 +241,7 @@ func TestQuerier_WebhookExists(T *testing.T) {
 		exampleWebhookID := fakes.BuildFakeID()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleWebhookID,
 		}
@@ -270,7 +270,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleHouseholdID, exampleWebhook.ID}
+		args := []any{exampleHouseholdID, exampleWebhook.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getWebhookQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -318,7 +318,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleHouseholdID, exampleWebhook.ID}
+		args := []any{exampleHouseholdID, exampleWebhook.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getWebhookQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -346,7 +346,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getWebhooksForHouseholdArgs := []interface{}{
+		getWebhooksForHouseholdArgs := []any{
 			exampleHouseholdID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -379,7 +379,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getWebhooksForHouseholdArgs := []interface{}{
+		getWebhooksForHouseholdArgs := []any{
 			exampleHouseholdID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -423,7 +423,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getWebhooksForHouseholdArgs := []interface{}{
+		getWebhooksForHouseholdArgs := []any{
 			exampleHouseholdID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -451,7 +451,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getWebhooksForHouseholdArgs := []interface{}{
+		getWebhooksForHouseholdArgs := []any{
 			exampleHouseholdID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -489,7 +489,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 
 		db.ExpectBegin()
 
-		createWebhookArgs := []interface{}{
+		createWebhookArgs := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.ContentType,
@@ -503,7 +503,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		for _, evt := range exampleInput.Events {
-			createWebhookTriggerEventArgs := []interface{}{
+			createWebhookTriggerEventArgs := []any{
 				evt.ID,
 				evt.TriggerEvent,
 				evt.BelongsToWebhook,
@@ -550,7 +550,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.ContentType,
@@ -591,7 +591,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleHouseholdID, exampleWebhookID}
+		args := []any{exampleHouseholdID, exampleWebhookID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveWebhookQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -634,7 +634,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleHouseholdID, exampleWebhookID}
+		args := []any{exampleHouseholdID, exampleWebhookID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveWebhookQuery)).
 			WithArgs(interfaceToDriverValue(args)...).

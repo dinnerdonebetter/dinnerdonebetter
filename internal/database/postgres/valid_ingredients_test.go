@@ -112,7 +112,7 @@ func TestQuerier_ValidIngredientExists(T *testing.T) {
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredient.ID,
 		}
 
@@ -147,7 +147,7 @@ func TestQuerier_ValidIngredientExists(T *testing.T) {
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredient.ID,
 		}
 
@@ -170,7 +170,7 @@ func TestQuerier_ValidIngredientExists(T *testing.T) {
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredient.ID,
 		}
 
@@ -197,7 +197,7 @@ func TestQuerier_GetValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getValidIngredientArgs := []interface{}{
+		getValidIngredientArgs := []any{
 			exampleValidIngredient.ID,
 		}
 
@@ -231,7 +231,7 @@ func TestQuerier_GetValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredient.ID,
 		}
 
@@ -258,7 +258,7 @@ func TestQuerier_GetRandomValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		args := []any{}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRandomValidIngredientQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -277,7 +277,7 @@ func TestQuerier_GetRandomValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		args := []any{}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRandomValidIngredientQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -304,7 +304,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -336,7 +336,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -357,7 +357,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -386,7 +386,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -418,7 +418,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -439,7 +439,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -560,7 +560,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Description,
@@ -623,7 +623,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Description,
@@ -678,7 +678,7 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredient.Name,
 			exampleValidIngredient.Description,
 			exampleValidIngredient.Warning,
@@ -731,7 +731,7 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredient.Name,
 			exampleValidIngredient.Description,
 			exampleValidIngredient.Warning,
@@ -779,7 +779,7 @@ func TestQuerier_ArchiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredient.ID,
 		}
 
@@ -809,7 +809,7 @@ func TestQuerier_ArchiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredient.ID,
 		}
 

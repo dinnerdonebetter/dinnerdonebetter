@@ -87,7 +87,7 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*Ou
 		Note:         householdInvitation.Note,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]interface{}{}).Parse(outgoingInviteTemplate))
+	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(outgoingInviteTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
@@ -133,7 +133,7 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 		Token:     passwordResetToken.Token,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]interface{}{}).Parse(passwordResetTemplate))
+	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(passwordResetTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
@@ -179,7 +179,7 @@ func BuildUsernameReminderEmail(toEmail, username string) (*OutboundEmailMessage
 		Username:  username,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]interface{}{}).Parse(usernameReminderTemplate))
+	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(usernameReminderTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
@@ -223,7 +223,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundEmailMessage
 		WebAppURL: envAddr,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]interface{}{}).Parse(passwordResetTokenRedeemedTemplate))
+	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(passwordResetTokenRedeemedTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)

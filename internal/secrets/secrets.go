@@ -24,8 +24,8 @@ var (
 type (
 	// SecretManager manages secrets.
 	SecretManager interface {
-		Encrypt(ctx context.Context, value interface{}) (string, error)
-		Decrypt(ctx context.Context, content string, v interface{}) error
+		Encrypt(ctx context.Context, value any) (string, error)
+		Decrypt(ctx context.Context, content string, v any) error
 	}
 
 	secretManager struct {
@@ -54,7 +54,7 @@ func ProvideSecretManager(logger logging.Logger, tracerProvider tracing.TracerPr
 //  1. JSON encodes a given value
 //  2. encrypts that encoded data
 //  3. base64 URL encodes that encrypted data
-func (sm *secretManager) Encrypt(ctx context.Context, value interface{}) (string, error) {
+func (sm *secretManager) Encrypt(ctx context.Context, value any) (string, error) {
 	ctx, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -78,7 +78,7 @@ func (sm *secretManager) Encrypt(ctx context.Context, value interface{}) (string
 //  1. base64 URL decodes the provided data
 //  2. decrypts that encoded data
 //  3. JSON decodes that decrypted data into the target variable.
-func (sm *secretManager) Decrypt(ctx context.Context, content string, v interface{}) error {
+func (sm *secretManager) Decrypt(ctx context.Context, content string, v any) error {
 	ctx, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 

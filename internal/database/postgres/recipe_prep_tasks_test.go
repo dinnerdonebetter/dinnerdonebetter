@@ -77,7 +77,7 @@ func TestQuerier_RecipePrepTaskExists(T *testing.T) {
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipe.ID,
 			exampleRecipePrepTask.ID,
 		}
@@ -106,7 +106,7 @@ func TestQuerier_GetRecipePrepTask(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipePrepTask.ID,
 		}
 
@@ -134,7 +134,7 @@ func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		createRecipePrepTaskQueryArgs := []interface{}{
+		createRecipePrepTaskQueryArgs := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			exampleInput.ExplicitStorageInstructions,
@@ -157,7 +157,7 @@ func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 		}
 
 		for _, taskStep := range exampleInput.TaskSteps {
-			createRecipePrepTaskStepArgs := []interface{}{
+			createRecipePrepTaskStepArgs := []any{
 				taskStep.ID,
 				taskStep.BelongsToRecipePrepTask,
 				taskStep.BelongsToRecipeStep,
@@ -191,7 +191,7 @@ func TestQuerier_createRecipePrepTaskStep(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.BelongsToRecipePrepTask,
 			exampleInput.BelongsToRecipeStep,
@@ -226,7 +226,7 @@ func TestQuerier_GetRecipePrepTasksForRecipe(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		listRecipePrepTasksForRecipeArgs := []interface{}{
+		listRecipePrepTasksForRecipeArgs := []any{
 			exampleRecipe.ID,
 		}
 
@@ -253,7 +253,7 @@ func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipePrepTask.Notes,
 			exampleRecipePrepTask.ExplicitStorageInstructions,
 			exampleRecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -287,7 +287,7 @@ func TestQuerier_ArchiveRecipePrepTask(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipePrepTask.ID,
 		}
 

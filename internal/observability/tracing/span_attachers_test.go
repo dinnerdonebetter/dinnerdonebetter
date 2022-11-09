@@ -180,7 +180,7 @@ func TestAttachDatabaseQueryToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachDatabaseQueryToSpan(span, "description", "query", []interface{}{"blah"})
+		AttachDatabaseQueryToSpan(span, "description", "query", []any{"blah"})
 	})
 }
 

@@ -26,7 +26,7 @@ type idContainer struct {
 }
 
 // Index implements our IndexManager interface.
-func (sm *indexManager) Index(ctx context.Context, id string, value interface{}) error {
+func (sm *indexManager) Index(ctx context.Context, id string, value any) error {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -96,7 +96,7 @@ type esHit struct {
 	ID         string          `json:"_id"`
 	Source     json.RawMessage `json:"_source"`
 	Highlights json.RawMessage `json:"highlight"`
-	Sort       []interface{}   `json:"sort"`
+	Sort       []any           `json:"sort"`
 }
 
 type esResponse struct {
@@ -166,7 +166,7 @@ func (sm *indexManager) search(ctx context.Context, byField, query, householdID 
 	}
 
 	if res.IsError() {
-		var e map[string]interface{}
+		var e map[string]any
 		if err = json.NewDecoder(res.Body).Decode(&e); err != nil {
 			return nil, observability.PrepareError(err, span, "invalid response from elasticsearch")
 		}

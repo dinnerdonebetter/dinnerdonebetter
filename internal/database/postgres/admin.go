@@ -23,7 +23,7 @@ func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, in
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []interface{}{
+	args := []any{
 		input.NewStatus,
 		input.Reason,
 		input.TargetUserID,

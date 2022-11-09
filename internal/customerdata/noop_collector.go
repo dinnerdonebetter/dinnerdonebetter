@@ -24,11 +24,11 @@ func (c *noopCollector) Close() error {
 }
 
 // AddUser does nothing.
-func (c *noopCollector) AddUser(context.Context, string, map[string]interface{}) error {
+func (c *noopCollector) AddUser(context.Context, string, map[string]any) error {
 	return nil
 }
 
 // EventOccurred does nothing.
-func (c *noopCollector) EventOccurred(context.Context, types.CustomerEventType, string, map[string]interface{}) error {
+func (c *noopCollector) EventOccurred(context.Context, types.CustomerEventType, string, map[string]any) error {
 	return nil
 }

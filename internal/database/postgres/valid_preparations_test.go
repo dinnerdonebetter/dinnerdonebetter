@@ -95,7 +95,7 @@ func TestQuerier_ValidPreparationExists(T *testing.T) {
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.ID,
 		}
 
@@ -129,7 +129,7 @@ func TestQuerier_ValidPreparationExists(T *testing.T) {
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.ID,
 		}
 
@@ -151,7 +151,7 @@ func TestQuerier_ValidPreparationExists(T *testing.T) {
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.ID,
 		}
 
@@ -178,7 +178,7 @@ func TestQuerier_GetValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.ID,
 		}
 
@@ -212,7 +212,7 @@ func TestQuerier_GetValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.ID,
 		}
 
@@ -239,7 +239,7 @@ func TestQuerier_GetRandomValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		args := []any{}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRandomValidPreparationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -258,7 +258,7 @@ func TestQuerier_GetRandomValidPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		args := []any{}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRandomValidPreparationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -285,7 +285,7 @@ func TestQuerier_SearchForValidPreparations(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -317,7 +317,7 @@ func TestQuerier_SearchForValidPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -338,7 +338,7 @@ func TestQuerier_SearchForValidPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -459,7 +459,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Description,
@@ -506,7 +506,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Description,
@@ -545,7 +545,7 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.Name,
 			exampleValidPreparation.Description,
 			exampleValidPreparation.IconPath,
@@ -582,7 +582,7 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.Name,
 			exampleValidPreparation.Description,
 			exampleValidPreparation.IconPath,
@@ -614,7 +614,7 @@ func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.ID,
 		}
 
@@ -644,7 +644,7 @@ func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparation.ID,
 		}
 

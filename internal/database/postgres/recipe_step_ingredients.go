@@ -92,7 +92,7 @@ func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Sc
 
 	ingredient := &types.NullableValidIngredient{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Optional,
@@ -249,7 +249,7 @@ func (q *Querier) RecipeStepIngredientExists(ctx context.Context, recipeID, reci
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepIngredientID,
 		recipeID,
@@ -293,7 +293,7 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepIngredientID,
 		recipeID,
@@ -327,7 +327,7 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 	}
 
@@ -402,7 +402,7 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		return nil, ErrNilInputProvided
 	}
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.Optional,
@@ -466,7 +466,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 	logger := q.logger.WithValue(keys.RecipeStepIngredientIDKey, updated.ID)
 	tracing.AttachRecipeStepIngredientIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Ingredient.ID,
 		updated.Name,
 		updated.Optional,
@@ -512,7 +512,7 @@ func (q *Querier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID,
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepIngredientID,
 	}

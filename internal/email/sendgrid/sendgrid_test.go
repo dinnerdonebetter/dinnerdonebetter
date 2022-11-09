@@ -134,6 +134,6 @@ func TestSendGridEmailer_sendDynamicTemplateEmail(T *testing.T) {
 
 		request := sendgrid.GetRequest(c.config.APIToken, "/v3/mail/send", ts.URL)
 
-		require.NoError(t, c.sendDynamicTemplateEmail(ctx, to, from, t.Name(), map[string]interface{}{"things": "stuff"}, request))
+		require.NoError(t, c.sendDynamicTemplateEmail(ctx, to, from, t.Name(), map[string]any{"things": "stuff"}, request))
 	})
 }

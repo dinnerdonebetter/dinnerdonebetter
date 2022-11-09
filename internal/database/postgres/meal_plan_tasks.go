@@ -26,7 +26,7 @@ func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database
 	for rows.Next() {
 		recipePrepTaskStep := &types.RecipePrepTaskStep{}
 
-		targetVars := []interface{}{
+		targetVars := []any{
 			&x.ID,
 			&x.MealPlanOption.ID,
 			&x.MealPlanOption.AssignedCook,
@@ -83,7 +83,7 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 	x := &types.MealPlanTask{}
 
 	for rows.Next() {
-		targetVars := []interface{}{
+		targetVars := []any{
 			&x.ID,
 			&x.MealPlanOption.ID,
 			&x.MealPlanOption.AssignedCook,
@@ -144,7 +144,7 @@ func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTa
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachMealPlanTaskIDToSpan(span, mealPlanTaskID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 		mealPlanTaskID,
 	}
@@ -175,7 +175,7 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachMealPlanTaskIDToSpan(span, mealPlanTaskID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanTaskID,
 	}
 
@@ -209,7 +209,7 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 	}
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		types.MealPlanTaskStatusUnfinished,
 		input.StatusExplanation,
@@ -288,7 +288,7 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 	}
 
@@ -355,7 +355,7 @@ func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlan
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	// mark prep steps as created for step
-	markMealPlanOptionAsHavingStepsCreatedArgs := []interface{}{
+	markMealPlanOptionAsHavingStepsCreatedArgs := []any{
 		mealPlanID,
 	}
 
@@ -385,7 +385,7 @@ func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	// mark prep steps as created for step
-	markMealPlanOptionAsHavingStepsCreatedArgs := []interface{}{
+	markMealPlanOptionAsHavingStepsCreatedArgs := []any{
 		mealPlanID,
 	}
 
@@ -420,7 +420,7 @@ func (q *Querier) ChangeMealPlanTaskStatus(ctx context.Context, input *types.Mea
 		settledAt = &t
 	}
 
-	changeMealPlanTaskStatusArgs := []interface{}{
+	changeMealPlanTaskStatusArgs := []any{
 		input.ID,
 		input.Status,
 		input.StatusExplanation,

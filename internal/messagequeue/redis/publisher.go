@@ -25,7 +25,7 @@ var (
 
 type (
 	messagePublisher interface {
-		Publish(ctx context.Context, channel string, message interface{}) *redis.IntCmd
+		Publish(ctx context.Context, channel string, message any) *redis.IntCmd
 	}
 
 	redisPublisher struct {
@@ -37,7 +37,7 @@ type (
 	}
 )
 
-func (r *redisPublisher) Publish(ctx context.Context, data interface{}) error {
+func (r *redisPublisher) Publish(ctx context.Context, data any) error {
 	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -38,7 +38,7 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 		webhookID,
 	}
@@ -65,7 +65,7 @@ func (q *Querier) scanWebhook(ctx context.Context, rows database.ResultIterator)
 	for rows.Next() {
 		webhookTriggerEvent := &types.WebhookTriggerEvent{}
 
-		targetVars := []interface{}{
+		targetVars := []any{
 			&webhook.ID,
 			&webhook.Name,
 			&webhook.ContentType,
@@ -131,7 +131,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 		webhookID,
 	}
@@ -164,7 +164,7 @@ func (q *Querier) scanWebhooks(ctx context.Context, rows database.ResultIterator
 			archivedAt sql.NullTime
 		)
 
-		targetVars := []interface{}{
+		targetVars := []any{
 			&webhook.ID,
 			&webhook.Name,
 			&webhook.ContentType,
@@ -251,7 +251,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 		Pagination: filter.ToPagination(),
 	}
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 		filter.CreatedAfter,
 		filter.CreatedBefore,
@@ -289,7 +289,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 
 	logger.Debug("CreateWebhook invoked")
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.ContentType,
@@ -356,7 +356,7 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 
 	tracing.AttachWebhookIDToSpan(span, input.BelongsToWebhook)
 
-	createWebhookTriggerEventArgs := []interface{}{
+	createWebhookTriggerEventArgs := []any{
 		input.ID,
 		input.TriggerEvent,
 		input.BelongsToWebhook,
@@ -391,12 +391,12 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.WebhookIDKey:   webhookID,
 		keys.HouseholdIDKey: householdID,
 	})
 
-	args := []interface{}{householdID, webhookID}
+	args := []any{householdID, webhookID}
 
 	if err := q.performWriteQuery(ctx, q.db, "webhook archive", archiveWebhookQuery, args); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")

@@ -16,7 +16,7 @@ type IndexManager struct {
 }
 
 // Index implements our interface.
-func (m *IndexManager) Index(ctx context.Context, id string, value interface{}) error {
+func (m *IndexManager) Index(ctx context.Context, id string, value any) error {
 	args := m.Called(ctx, id, value)
 	return args.Error(0)
 }

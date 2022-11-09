@@ -19,7 +19,7 @@ type mockBackend struct {
 	anticipatedReturns [][]byte
 }
 
-func (m *mockBackend) AnticipateCall(t *testing.T, v interface{}) {
+func (m *mockBackend) AnticipateCall(t *testing.T, v any) {
 	t.Helper()
 
 	b, err := json.Marshal(v)

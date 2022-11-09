@@ -59,7 +59,7 @@ func (q *Querier) scanRecipeStep(ctx context.Context, scan database.Scanner, inc
 
 	x = &types.RecipeStep{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Index,
 		&x.Preparation.ID,
@@ -150,7 +150,7 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 		recipeStepID,
 	}
@@ -185,7 +185,7 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 		recipeStepID,
 	}
@@ -216,7 +216,7 @@ func (q *Querier) getRecipeStepByID(ctx context.Context, querier database.SQLQue
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 	}
 
@@ -283,7 +283,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		return nil, ErrNilInputProvided
 	}
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Index,
 		input.PreparationID,
@@ -372,7 +372,7 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 	logger := q.logger.WithValue(keys.RecipeStepIDKey, updated.ID)
 	tracing.AttachRecipeStepIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Index,
 		updated.Preparation.ID,
 		updated.MinimumEstimatedTimeInSeconds,
@@ -417,7 +417,7 @@ func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID 
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 		recipeStepID,
 	}

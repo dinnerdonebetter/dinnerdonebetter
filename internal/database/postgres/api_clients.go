@@ -35,7 +35,7 @@ func (q *Querier) scanAPIClient(ctx context.Context, scan database.Scanner, incl
 
 	client = &types.APIClient{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&client.ID,
 		&client.Name,
 		&client.ClientID,
@@ -102,7 +102,7 @@ func (q *Querier) GetAPIClientByClientID(ctx context.Context, clientID string) (
 
 	tracing.AttachAPIClientClientIDToSpan(span, clientID)
 
-	args := []interface{}{clientID}
+	args := []any{clientID}
 
 	row := q.getOneRow(ctx, q.db, "API client", getAPIClientByClientIDQuery, args)
 
@@ -133,7 +133,7 @@ func (q *Querier) GetAPIClientByDatabaseID(ctx context.Context, clientID, userID
 	tracing.AttachAPIClientDatabaseIDToSpan(span, clientID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []interface{}{userID, clientID}
+	args := []any{userID, clientID}
 
 	row := q.getOneRow(ctx, q.db, "API client", getAPIClientByDatabaseIDQuery, args)
 
@@ -202,12 +202,12 @@ func (q *Querier) CreateAPIClient(ctx context.Context, input *types.APIClientCre
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.APIClientClientIDKey: input.ClientID,
 		keys.UserIDKey:            input.BelongsToUser,
 	})
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.ClientID,
@@ -250,12 +250,12 @@ func (q *Querier) ArchiveAPIClient(ctx context.Context, clientID, userID string)
 	tracing.AttachHouseholdIDToSpan(span, userID)
 	tracing.AttachAPIClientDatabaseIDToSpan(span, clientID)
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.APIClientDatabaseIDKey: clientID,
 		keys.UserIDKey:              userID,
 	})
 
-	args := []interface{}{userID, clientID}
+	args := []any{userID, clientID}
 
 	if err := q.performWriteQuery(ctx, q.db, "API client archive", archiveAPIClientQuery, args); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving API client")

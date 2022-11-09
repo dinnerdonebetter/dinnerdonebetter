@@ -28,7 +28,7 @@ func TestQuerier_UpdateUserAccountStatus(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.NewStatus,
 			exampleInput.Reason,
 			exampleInput.TargetUserID,
@@ -56,7 +56,7 @@ func TestQuerier_UpdateUserAccountStatus(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.NewStatus,
 			exampleInput.Reason,
 			exampleInput.TargetUserID,

@@ -92,7 +92,7 @@ func TestQuerier_GetAPIClientByClientID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleAPIClient.ClientID}
+		args := []any{exampleAPIClient.ClientID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAPIClientByClientIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -124,7 +124,7 @@ func TestQuerier_GetAPIClientByClientID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleAPIClient.ClientID}
+		args := []any{exampleAPIClient.ClientID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAPIClientByClientIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -146,7 +146,7 @@ func TestQuerier_GetAPIClientByClientID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleAPIClient.ClientID}
+		args := []any{exampleAPIClient.ClientID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAPIClientByClientIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -172,7 +172,7 @@ func TestQuerier_GetAPIClientByDatabaseID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUserID, exampleAPIClient.ID}
+		args := []any{exampleUserID, exampleAPIClient.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAPIClientByDatabaseIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -220,7 +220,7 @@ func TestQuerier_GetAPIClientByDatabaseID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUserID, exampleAPIClientID}
+		args := []any{exampleUserID, exampleAPIClientID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAPIClientByDatabaseIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -243,7 +243,7 @@ func TestQuerier_GetAPIClientByDatabaseID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUserID, exampleAPIClientID}
+		args := []any{exampleUserID, exampleAPIClientID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAPIClientByDatabaseIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -398,7 +398,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.ClientID,
@@ -456,7 +456,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.ClientID,
@@ -492,7 +492,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUserID, exampleAPIClientID}
+		args := []any{exampleUserID, exampleAPIClientID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveAPIClientQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -534,7 +534,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUserID, exampleAPIClientID}
+		args := []any{exampleUserID, exampleAPIClientID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveAPIClientQuery)).
 			WithArgs(interfaceToDriverValue(args)...).

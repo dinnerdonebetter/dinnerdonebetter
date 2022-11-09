@@ -97,7 +97,7 @@ func TestQuerier_ValidMeasurementUnitExists(T *testing.T) {
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
@@ -132,7 +132,7 @@ func TestQuerier_ValidMeasurementUnitExists(T *testing.T) {
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
@@ -155,7 +155,7 @@ func TestQuerier_ValidMeasurementUnitExists(T *testing.T) {
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
@@ -182,7 +182,7 @@ func TestQuerier_GetValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getValidMeasurementUnitArgs := []interface{}{
+		getValidMeasurementUnitArgs := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
@@ -216,7 +216,7 @@ func TestQuerier_GetValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
@@ -243,7 +243,7 @@ func TestQuerier_GetRandomValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		args := []any{}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRandomValidMeasurementUnitQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -262,7 +262,7 @@ func TestQuerier_GetRandomValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{}
+		args := []any{}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRandomValidMeasurementUnitQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -289,7 +289,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -321,7 +321,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -342,7 +342,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleQuery),
 		}
 
@@ -463,7 +463,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Description,
@@ -511,7 +511,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Description,
@@ -551,7 +551,7 @@ func TestQuerier_UpdateValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementUnit.Name,
 			exampleValidMeasurementUnit.Description,
 			exampleValidMeasurementUnit.Volumetric,
@@ -589,7 +589,7 @@ func TestQuerier_UpdateValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementUnit.Name,
 			exampleValidMeasurementUnit.Description,
 			exampleValidMeasurementUnit.Volumetric,
@@ -622,7 +622,7 @@ func TestQuerier_ArchiveValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
@@ -652,7 +652,7 @@ func TestQuerier_ArchiveValidMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 

@@ -25,7 +25,7 @@ func (q *Querier) scanRecipePrepTaskWithSteps(ctx context.Context, rows database
 	for rows.Next() {
 		recipePrepTaskRecipeStep := &types.RecipePrepTaskStep{}
 
-		targetVars := []interface{}{
+		targetVars := []any{
 			&x.ID,
 			&x.Notes,
 			&x.ExplicitStorageInstructions,
@@ -65,7 +65,7 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 		recipePrepTask := &types.RecipePrepTask{}
 		recipePrepTaskRecipeStep := &types.RecipePrepTaskStep{}
 
-		targetVars := []interface{}{
+		targetVars := []any{
 			&recipePrepTask.ID,
 			&recipePrepTask.Notes,
 			&recipePrepTask.ExplicitStorageInstructions,
@@ -130,7 +130,7 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrep
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 		recipePrepTaskID,
 	}
@@ -167,7 +167,7 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
-	args := []interface{}{
+	args := []any{
 		recipePrepTaskID,
 	}
 
@@ -201,7 +201,7 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Notes,
 		input.ExplicitStorageInstructions,
@@ -294,7 +294,7 @@ func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.BelongsToRecipePrepTask,
 		input.BelongsToRecipeStep,
@@ -336,7 +336,7 @@ func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID stri
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 	}
 
@@ -375,7 +375,7 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, updated.ID)
 
-	updateRecipePrepStepTaskArgs := []interface{}{
+	updateRecipePrepStepTaskArgs := []any{
 		updated.Notes,
 		updated.ExplicitStorageInstructions,
 		updated.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -418,7 +418,7 @@ func (q *Querier) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePre
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
-	args := []interface{}{
+	args := []any{
 		recipePrepTaskID,
 	}
 

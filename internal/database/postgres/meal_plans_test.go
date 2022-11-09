@@ -96,7 +96,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlan.ID,
 		}
 
@@ -146,7 +146,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlan.ID,
 		}
 
@@ -170,7 +170,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlan.ID,
 		}
 
@@ -193,7 +193,7 @@ func prepareMockToSuccessfullyGetMealPlan(t *testing.T, exampleMealPlan *types.M
 		exampleMealPlan = fakes.BuildFakeMealPlan()
 	}
 
-	args := []interface{}{
+	args := []any{
 		exampleMealPlan.ID,
 		householdID,
 	}
@@ -207,7 +207,7 @@ func prepareMockToSuccessfullyGetMealPlan(t *testing.T, exampleMealPlan *types.M
 		WithArgs(interfaceToDriverValue(args)...).
 		WillReturnRows(buildMockRowsFromMealPlans(false, 0, exampleMealPlan))
 
-	getMealPlanEventForMealPlanArgs := []interface{}{
+	getMealPlanEventForMealPlanArgs := []any{
 		exampleMealPlan.ID,
 	}
 
@@ -216,7 +216,7 @@ func prepareMockToSuccessfullyGetMealPlan(t *testing.T, exampleMealPlan *types.M
 		WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, exampleMealPlan.Events...))
 
 	for _, evt := range exampleMealPlan.Events {
-		getMealPlanOptionsForMealPlanEventsArgs := []interface{}{
+		getMealPlanOptionsForMealPlanEventsArgs := []any{
 			evt.ID,
 			exampleMealPlan.ID,
 		}
@@ -226,7 +226,7 @@ func prepareMockToSuccessfullyGetMealPlan(t *testing.T, exampleMealPlan *types.M
 			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
 
 		for _, opt := range evt.Options {
-			getMealPlanOptionVotesForMealPlanOptionArgs := []interface{}{
+			getMealPlanOptionVotesForMealPlanOptionArgs := []any{
 				exampleMealPlan.ID,
 				evt.ID,
 				opt.ID,
@@ -299,7 +299,7 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlan.ID,
 			exampleHouseholdID,
 		}
@@ -324,7 +324,7 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlan.ID,
 			exampleHouseholdID,
 		}
@@ -478,7 +478,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			types.AwaitingVotesMealPlanStatus,
@@ -491,7 +491,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		for _, event := range exampleInput.Events {
-			mealPlanEventCreationArgs := []interface{}{
+			mealPlanEventCreationArgs := []any{
 				event.ID,
 				event.Notes,
 				event.StartsAt,
@@ -505,7 +505,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 				WillReturnResult(newArbitraryDatabaseResult())
 
 			for _, option := range event.Options {
-				mealPlanOptionCreationArgs := []interface{}{
+				mealPlanOptionCreationArgs := []any{
 					option.ID,
 					option.AssignedCook,
 					option.AssignedDishwasher,
@@ -584,7 +584,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			types.AwaitingVotesMealPlanStatus,
@@ -636,7 +636,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			types.AwaitingVotesMealPlanStatus,
@@ -649,7 +649,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		for _, event := range exampleInput.Events {
-			mealPlanEventCreationArgs := []interface{}{
+			mealPlanEventCreationArgs := []any{
 				event.ID,
 				event.Notes,
 				event.StartsAt,
@@ -663,7 +663,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 				WillReturnResult(newArbitraryDatabaseResult())
 
 			for _, option := range event.Options {
-				mealPlanOptionCreationArgs := []interface{}{
+				mealPlanOptionCreationArgs := []any{
 					option.ID,
 					option.AssignedCook,
 					option.AssignedDishwasher,
@@ -704,7 +704,7 @@ func TestQuerier_UpdateMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlan.Notes,
 			exampleMealPlan.Status,
 			exampleMealPlan.VotingDeadline,
@@ -738,7 +738,7 @@ func TestQuerier_UpdateMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlan.Notes,
 			exampleMealPlan.Status,
 			exampleMealPlan.VotingDeadline,
@@ -768,7 +768,7 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleAccountID,
 			exampleMealPlan.ID,
 		}
@@ -813,7 +813,7 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleAccountID,
 			exampleMealPlan.ID,
 		}
@@ -959,7 +959,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getHouseholdByIDArgs := []interface{}{
+		getHouseholdByIDArgs := []any{
 			exampleHousehold.ID,
 		}
 
@@ -974,7 +974,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		for _, event := range exampleMealPlan.Events {
 			winner, tiebroken, _ := c.decideOptionWinner(ctx, event.Options)
 
-			finalizeMealPlanOptionsArgs := []interface{}{
+			finalizeMealPlanOptionsArgs := []any{
 				event.ID,
 				winner,
 				tiebroken,
@@ -985,7 +985,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 				WillReturnResult(newArbitraryDatabaseResult())
 		}
 
-		finalizeOptionsArgs := []interface{}{
+		finalizeOptionsArgs := []any{
 			types.FinalizedMealPlanStatus,
 			exampleMealPlan.ID,
 		}
@@ -1108,7 +1108,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getHouseholdByIDArgs := []interface{}{
+		getHouseholdByIDArgs := []any{
 			exampleHousehold.ID,
 		}
 
@@ -1124,7 +1124,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 			if len(event.Options) > 0 {
 				winner, tiebroken, chosen := c.decideOptionWinner(ctx, event.Options)
 				if chosen {
-					finalizeMealPlanOptionsArgs := []interface{}{
+					finalizeMealPlanOptionsArgs := []any{
 						event.ID,
 						winner,
 						tiebroken,

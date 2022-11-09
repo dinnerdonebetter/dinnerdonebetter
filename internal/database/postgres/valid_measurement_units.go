@@ -43,7 +43,7 @@ func (q *Querier) scanValidMeasurementUnit(ctx context.Context, scan database.Sc
 
 	x = &types.ValidMeasurementUnit{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Description,
@@ -116,7 +116,7 @@ func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasureme
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	args := []interface{}{
+	args := []any{
 		validMeasurementUnitID,
 	}
 
@@ -144,7 +144,7 @@ func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementU
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	args := []interface{}{
+	args := []any{
 		validMeasurementUnitID,
 	}
 
@@ -166,7 +166,7 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	args := []interface{}{}
+	args := []any{}
 
 	row := q.getOneRow(ctx, q.db, "valid measurement unit", getRandomValidMeasurementUnitQuery, args)
 
@@ -194,7 +194,7 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, query)
 
-	args := []interface{}{
+	args := []any{
 		wrapQueryForILIKE(query),
 	}
 
@@ -260,7 +260,7 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.Description,
@@ -311,7 +311,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, updated.ID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Name,
 		updated.Description,
 		updated.Volumetric,
@@ -348,7 +348,7 @@ func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurem
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	args := []interface{}{
+	args := []any{
 		validMeasurementUnitID,
 	}
 

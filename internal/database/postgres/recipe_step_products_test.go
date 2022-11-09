@@ -114,7 +114,7 @@ func TestQuerier_RecipeStepProductExists(T *testing.T) {
 		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepProduct.ID,
 			exampleRecipeID,
@@ -188,7 +188,7 @@ func TestQuerier_RecipeStepProductExists(T *testing.T) {
 		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepProduct.ID,
 			exampleRecipeID,
@@ -217,7 +217,7 @@ func TestQuerier_RecipeStepProductExists(T *testing.T) {
 		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepProduct.ID,
 			exampleRecipeID,
@@ -250,7 +250,7 @@ func TestQuerier_GetRecipeStepProduct(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepProduct.ID,
 			exampleRecipeID,
@@ -321,7 +321,7 @@ func TestQuerier_GetRecipeStepProduct(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepProduct.ID,
 			exampleRecipeID,
@@ -353,7 +353,7 @@ func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
@@ -388,7 +388,7 @@ func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
@@ -410,7 +410,7 @@ func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
@@ -567,7 +567,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Type,
@@ -619,7 +619,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Type,
@@ -663,7 +663,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepProduct.Name,
 			exampleRecipeStepProduct.Type,
 			exampleRecipeStepProduct.MeasurementUnit.ID,
@@ -705,7 +705,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepProduct.Name,
 			exampleRecipeStepProduct.Type,
 			exampleRecipeStepProduct.MeasurementUnit.ID,
@@ -743,7 +743,7 @@ func TestQuerier_ArchiveRecipeStepProduct(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepProduct.ID,
 		}
@@ -788,7 +788,7 @@ func TestQuerier_ArchiveRecipeStepProduct(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepProduct.ID,
 		}

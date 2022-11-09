@@ -18,17 +18,17 @@ func (m *ClientEncoder) ContentType() string {
 }
 
 // Unmarshal satisfies the ClientEncoder interface.
-func (m *ClientEncoder) Unmarshal(ctx context.Context, data []byte, v interface{}) error {
+func (m *ClientEncoder) Unmarshal(ctx context.Context, data []byte, v any) error {
 	return m.Called(ctx, data, v).Error(0)
 }
 
 // Encode satisfies the ClientEncoder interface.
-func (m *ClientEncoder) Encode(ctx context.Context, dest io.Writer, v interface{}) error {
+func (m *ClientEncoder) Encode(ctx context.Context, dest io.Writer, v any) error {
 	return m.Called(ctx, dest, v).Error(0)
 }
 
 // EncodeReader satisfies the ClientEncoder interface.
-func (m *ClientEncoder) EncodeReader(ctx context.Context, data interface{}) (io.Reader, error) {
+func (m *ClientEncoder) EncodeReader(ctx context.Context, data any) (io.Reader, error) {
 	returnValues := m.Called(ctx, data)
 
 	return returnValues.Get(0).(io.Reader), returnValues.Error(1)

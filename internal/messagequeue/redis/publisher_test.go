@@ -21,7 +21,7 @@ type mockMessagePublisher struct {
 	mock.Mock
 }
 
-func (m *mockMessagePublisher) Publish(ctx context.Context, channel string, message interface{}) *redis.IntCmd {
+func (m *mockMessagePublisher) Publish(ctx context.Context, channel string, message any) *redis.IntCmd {
 	return m.Called(ctx, channel, message).Get(0).(*redis.IntCmd)
 }
 

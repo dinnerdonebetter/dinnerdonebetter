@@ -106,7 +106,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanID,
 			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
@@ -162,7 +162,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanID,
 			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
@@ -189,7 +189,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanID,
 			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
@@ -221,7 +221,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanID,
 			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
@@ -275,7 +275,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanID,
 			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
@@ -305,7 +305,7 @@ func TestQuerier_getMealPlanOptionByID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getMealPlanOptionByIDArgs := []interface{}{
+		getMealPlanOptionByIDArgs := []any{
 			exampleMealPlanOption.ID,
 		}
 
@@ -339,7 +339,7 @@ func TestQuerier_getMealPlanOptionByID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOption.ID,
 		}
 
@@ -496,7 +496,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		mealPlanOptionCreationArgs := []interface{}{
+		mealPlanOptionCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.AssignedCook,
 			exampleInput.AssignedDishwasher,
@@ -543,7 +543,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.AssignedCook,
 			exampleInput.AssignedDishwasher,
@@ -581,7 +581,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOption.AssignedCook,
 			exampleMealPlanOption.AssignedDishwasher,
 			exampleMealPlanOption.Meal.ID,
@@ -616,7 +616,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOption.AssignedCook,
 			exampleMealPlanOption.AssignedDishwasher,
 			exampleMealPlanOption.Meal.ID,
@@ -648,7 +648,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
 		}
@@ -695,7 +695,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanEventID,
 			exampleMealPlanOption.ID,
 		}
@@ -1065,7 +1065,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)
 
-		getHouseholdArgs := []interface{}{
+		getHouseholdArgs := []any{
 			exampleHousehold.ID,
 		}
 
@@ -1073,7 +1073,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		finalizeMealPlanOptionsArgs := []interface{}{
+		finalizeMealPlanOptionsArgs := []any{
 			exampleMealPlan.Events[0].ID,
 			optionA,
 			false,
@@ -1178,7 +1178,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)
 
-		getHouseholdArgs := []interface{}{
+		getHouseholdArgs := []any{
 			exampleHousehold.ID,
 		}
 

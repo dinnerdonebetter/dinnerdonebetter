@@ -45,7 +45,7 @@ func (q *Querier) scanMealPlanGroceryListItem(ctx context.Context, scan database
 		purchasedMeasurementUnitID *string
 	)
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.BelongsToMealPlan,
 		&x.Ingredient.ID,
@@ -117,7 +117,7 @@ func (q *Querier) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID,
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanGroceryListItemID,
 	}
 
@@ -186,7 +186,7 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 		mealPlanGroceryListItemID,
 	}
@@ -225,7 +225,7 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 
 	x = []*types.MealPlanGroceryListItem{}
 
-	getMealPlanGroceryListItemsForMealPlanArgs := []interface{}{
+	getMealPlanGroceryListItemsForMealPlanArgs := []any{
 		mealPlanID,
 	}
 	rows, err := q.getRows(ctx, q.db, "meal plan grocery list items", getMealPlanGroceryListItemsForMealPlanQuery, getMealPlanGroceryListItemsForMealPlanArgs)
@@ -261,7 +261,7 @@ func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier dat
 
 	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.BelongsToMealPlan,
 		input.ValidIngredientID,
@@ -372,7 +372,7 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 		purchasedMeasurementUnitID = &updated.PurchasedMeasurementUnit.ID
 	}
 
-	args := []interface{}{
+	args := []any{
 		updated.BelongsToMealPlan,
 		updated.Ingredient.ID,
 		updated.MeasurementUnit.ID,
@@ -412,7 +412,7 @@ func (q *Querier) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGr
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanGroceryListItemID,
 	}
 

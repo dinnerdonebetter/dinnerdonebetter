@@ -97,7 +97,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
 			exampleMealPlanEventID,
@@ -174,7 +174,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
 			exampleMealPlanEventID,
@@ -203,7 +203,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
 			exampleMealPlanEventID,
@@ -236,7 +236,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
 			exampleMealPlanEventID,
@@ -310,7 +310,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
 			exampleMealPlanEventID,
@@ -479,7 +479,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		db.ExpectBegin()
 
 		for _, vote := range exampleInput.Votes {
-			args := []interface{}{
+			args := []any{
 				vote.ID,
 				vote.Rank,
 				vote.Abstain,
@@ -551,7 +551,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		db.ExpectBegin()
 
 		for _, vote := range exampleInput.Votes {
-			args := []interface{}{
+			args := []any{
 				vote.ID,
 				vote.Rank,
 				vote.Abstain,
@@ -592,7 +592,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		db.ExpectBegin()
 
 		for _, vote := range exampleInput.Votes {
-			args := []interface{}{
+			args := []any{
 				vote.ID,
 				vote.Rank,
 				vote.Abstain,
@@ -631,7 +631,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionVote.Rank,
 			exampleMealPlanOptionVote.Abstain,
 			exampleMealPlanOptionVote.Notes,
@@ -666,7 +666,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionVote.Rank,
 			exampleMealPlanOptionVote.Abstain,
 			exampleMealPlanOptionVote.Notes,
@@ -699,7 +699,7 @@ func TestQuerier_ArchiveMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
 		}
@@ -750,7 +750,7 @@ func TestQuerier_ArchiveMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanOptionID,
 			exampleMealPlanOptionVote.ID,
 		}

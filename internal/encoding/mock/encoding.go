@@ -22,22 +22,22 @@ type EncoderDecoder struct {
 }
 
 // MustEncode satisfies our EncoderDecoder interface.
-func (m *EncoderDecoder) MustEncode(ctx context.Context, v interface{}) []byte {
+func (m *EncoderDecoder) MustEncode(ctx context.Context, v any) []byte {
 	return m.Called(ctx, v).Get(0).([]byte)
 }
 
 // MustEncodeJSON satisfies our EncoderDecoder interface.
-func (m *EncoderDecoder) MustEncodeJSON(ctx context.Context, v interface{}) []byte {
+func (m *EncoderDecoder) MustEncodeJSON(ctx context.Context, v any) []byte {
 	return m.Called(ctx, v).Get(0).([]byte)
 }
 
 // RespondWithData satisfies our EncoderDecoder interface.
-func (m *EncoderDecoder) RespondWithData(ctx context.Context, res http.ResponseWriter, val interface{}) {
+func (m *EncoderDecoder) RespondWithData(ctx context.Context, res http.ResponseWriter, val any) {
 	m.Called(ctx, res, val)
 }
 
 // EncodeResponseWithStatus satisfies our EncoderDecoder interface.
-func (m *EncoderDecoder) EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, val interface{}, statusCode int) {
+func (m *EncoderDecoder) EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, val any, statusCode int) {
 	m.Called(ctx, res, val, statusCode)
 	res.WriteHeader(statusCode)
 }
@@ -79,11 +79,11 @@ func (m *EncoderDecoder) EncodeInvalidPermissionsResponse(ctx context.Context, r
 }
 
 // DecodeRequest satisfies our EncoderDecoder interface.
-func (m *EncoderDecoder) DecodeRequest(ctx context.Context, req *http.Request, v interface{}) error {
+func (m *EncoderDecoder) DecodeRequest(ctx context.Context, req *http.Request, v any) error {
 	return m.Called(ctx, req, v).Error(0)
 }
 
 // DecodeBytes satisfies our EncoderDecoder interface.
-func (m *EncoderDecoder) DecodeBytes(ctx context.Context, data []byte, v interface{}) error {
+func (m *EncoderDecoder) DecodeBytes(ctx context.Context, data []byte, v any) error {
 	return m.Called(ctx, data, v).Error(0)
 }

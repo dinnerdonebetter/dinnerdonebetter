@@ -40,7 +40,7 @@ func (q *Querier) scanMealPlanEvent(ctx context.Context, scan database.Scanner, 
 
 	x = &types.MealPlanEvent{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Notes,
 		&x.StartsAt,
@@ -116,7 +116,7 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanEventID,
 	}
 
@@ -150,7 +150,7 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEven
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanEventID,
 		mealPlanID,
 	}
@@ -180,7 +180,7 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 	}
 
@@ -257,7 +257,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 
 	logger := q.logger.WithValue(keys.MealPlanEventIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Notes,
 		input.StartsAt,
@@ -340,7 +340,7 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 	logger := q.logger.WithValue(keys.MealPlanEventIDKey, updated.ID)
 	tracing.AttachMealPlanEventIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Notes,
 		updated.StartsAt,
 		updated.EndsAt,
@@ -380,7 +380,7 @@ func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlan
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanEventID,
 		mealPlanID,
 	}

@@ -87,7 +87,7 @@ func (q *Querier) scanValidMeasurementConversion(ctx context.Context, scan datab
 		ingredient = &types.NullableValidIngredient{}
 	)
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 
 		// first valid measurement join
@@ -203,7 +203,7 @@ func (q *Querier) ValidMeasurementConversionExists(ctx context.Context, validMea
 	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
 	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
 
-	args := []interface{}{
+	args := []any{
 		validMeasurementConversionID,
 	}
 
@@ -231,7 +231,7 @@ func (q *Querier) GetValidMeasurementConversion(ctx context.Context, validMeasur
 	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
 	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
 
-	args := []interface{}{
+	args := []any{
 		validMeasurementConversionID,
 	}
 
@@ -261,7 +261,7 @@ func (q *Querier) GetValidMeasurementConversionsFromUnit(ctx context.Context, va
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	getValidMeasurementConversionsFromUnitArgs := []interface{}{
+	getValidMeasurementConversionsFromUnitArgs := []any{
 		validMeasurementUnitID,
 	}
 
@@ -294,7 +294,7 @@ func (q *Querier) GetValidMeasurementConversionsToUnit(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	getValidMeasurementConversionsToUnitArgs := []interface{}{
+	getValidMeasurementConversionsToUnitArgs := []any{
 		validMeasurementUnitID,
 	}
 
@@ -325,7 +325,7 @@ func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *t
 
 	logger := q.logger.WithValue(keys.ValidMeasurementConversionIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.From,
 		input.To,
@@ -378,7 +378,7 @@ func (q *Querier) UpdateValidMeasurementConversion(ctx context.Context, updated 
 		ingredientID = &updated.OnlyForIngredient.ID
 	}
 
-	args := []interface{}{
+	args := []any{
 		updated.From.ID,
 		updated.To.ID,
 		ingredientID,
@@ -412,7 +412,7 @@ func (q *Querier) ArchiveValidMeasurementConversion(ctx context.Context, validMe
 	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
 	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
 
-	args := []interface{}{
+	args := []any{
 		validMeasurementConversionID,
 	}
 

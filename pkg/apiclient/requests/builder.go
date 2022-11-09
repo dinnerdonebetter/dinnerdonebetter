@@ -181,7 +181,7 @@ func (b *Builder) BuildHealthCheckRequest(ctx context.Context) (*http.Request, e
 }
 
 // buildDataRequest builds an HTTP request for a given method, url, and body data.
-func (b *Builder) buildDataRequest(ctx context.Context, method, uri string, in interface{}) (*http.Request, error) {
+func (b *Builder) buildDataRequest(ctx context.Context, method, uri string, in any) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -120,7 +120,7 @@ func TestQuerier_MealExists(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMeal.ID,
 		}
 
@@ -155,7 +155,7 @@ func TestQuerier_MealExists(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMeal.ID,
 		}
 
@@ -178,7 +178,7 @@ func TestQuerier_MealExists(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMeal.ID,
 		}
 
@@ -197,7 +197,7 @@ func TestQuerier_MealExists(T *testing.T) {
 func prepareMockToSuccessfullyGetMeal(t *testing.T, exampleMeal *types.Meal, db *sqlmockExpecterWrapper) {
 	t.Helper()
 
-	getMealArgs := []interface{}{
+	getMealArgs := []any{
 		exampleMeal.ID,
 	}
 
@@ -255,7 +255,7 @@ func TestQuerier_GetMeal(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getMealArgs := []interface{}{
+		getMealArgs := []any{
 			exampleMeal.ID,
 		}
 
@@ -278,7 +278,7 @@ func TestQuerier_GetMeal(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getMealArgs := []interface{}{
+		getMealArgs := []any{
 			exampleMeal.ID,
 		}
 
@@ -301,7 +301,7 @@ func TestQuerier_GetMeal(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getMealArgs := []interface{}{
+		getMealArgs := []any{
 			exampleMeal.ID,
 		}
 
@@ -309,7 +309,7 @@ func TestQuerier_GetMeal(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealArgs)...).
 			WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
 
-		getRecipeArgs := []interface{}{
+		getRecipeArgs := []any{
 			exampleMeal.Recipes[0].ID,
 		}
 
@@ -524,7 +524,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		db.ExpectBegin()
 
-		mealCreationArgs := []interface{}{
+		mealCreationArgs := []any{
 			exampleMeal.ID,
 			exampleMeal.Name,
 			exampleMeal.Description,
@@ -536,7 +536,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		for _, recipeID := range exampleInput.Recipes {
-			mealRecipeCreationArgs := []interface{}{
+			mealRecipeCreationArgs := []any{
 				&idMatcher{},
 				exampleMeal.ID,
 				recipeID,
@@ -606,7 +606,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		db.ExpectBegin()
 
-		mealCreationArgs := []interface{}{
+		mealCreationArgs := []any{
 			exampleMeal.ID,
 			exampleMeal.Name,
 			exampleMeal.Description,
@@ -639,7 +639,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		db.ExpectBegin()
 
-		mealCreationArgs := []interface{}{
+		mealCreationArgs := []any{
 			exampleMeal.ID,
 			exampleMeal.Name,
 			exampleMeal.Description,
@@ -650,7 +650,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			WithArgs(interfaceToDriverValue(mealCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		mealRecipeCreationArgs := []interface{}{
+		mealRecipeCreationArgs := []any{
 			&idMatcher{},
 			exampleMeal.ID,
 			exampleInput.Recipes[0],
@@ -686,7 +686,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		db.ExpectBegin()
 
-		mealCreationArgs := []interface{}{
+		mealCreationArgs := []any{
 			exampleMeal.ID,
 			exampleMeal.Name,
 			exampleMeal.Description,
@@ -698,7 +698,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		for _, recipeID := range exampleInput.Recipes {
-			mealRecipeCreationArgs := []interface{}{
+			mealRecipeCreationArgs := []any{
 				&idMatcher{},
 				exampleMeal.ID,
 				recipeID,
@@ -735,7 +735,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		mealRecipeCreationArgs := []interface{}{
+		mealRecipeCreationArgs := []any{
 			&idMatcher{},
 			exampleMeal.ID,
 			exampleRecipe.ID,
@@ -792,7 +792,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		mealRecipeCreationArgs := []interface{}{
+		mealRecipeCreationArgs := []any{
 			&idMatcher{},
 			exampleMeal.ID,
 			exampleRecipe.ID,
@@ -825,7 +825,7 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleMeal.ID,
 		}
@@ -870,7 +870,7 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleMeal.ID,
 		}

@@ -23,11 +23,11 @@ func (m *MockCollector) Close() error {
 }
 
 // AddUser is a mock function.
-func (m *MockCollector) AddUser(ctx context.Context, userID string, properties map[string]interface{}) error {
+func (m *MockCollector) AddUser(ctx context.Context, userID string, properties map[string]any) error {
 	return m.Called(ctx, userID, properties).Error(0)
 }
 
 // EventOccurred is a mock function.
-func (m *MockCollector) EventOccurred(ctx context.Context, event types.CustomerEventType, userID string, properties map[string]interface{}) error {
+func (m *MockCollector) EventOccurred(ctx context.Context, event types.CustomerEventType, userID string, properties map[string]any) error {
 	return m.Called(ctx, event, userID, properties).Error(0)
 }

@@ -123,7 +123,7 @@ func TestQuerier_HouseholdInvitationExists(T *testing.T) {
 		exampleHouseholdInvitationID := fakes.BuildFakeID()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdInvitationID,
 		}
 
@@ -158,7 +158,7 @@ func TestQuerier_HouseholdInvitationExists(T *testing.T) {
 		exampleHouseholdInvitationID := fakes.BuildFakeID()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdInvitationID,
 		}
 
@@ -180,7 +180,7 @@ func TestQuerier_HouseholdInvitationExists(T *testing.T) {
 		exampleHouseholdInvitationID := fakes.BuildFakeID()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdInvitationID,
 		}
 
@@ -209,7 +209,7 @@ func TestQuerier_GetHouseholdInvitationByTokenAndID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleHouseholdID, exampleHouseholdInvitation.ID}
+		args := []any{exampleHouseholdID, exampleHouseholdInvitation.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByTokenAndIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -262,7 +262,7 @@ func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleHouseholdID, exampleHouseholdInvitation.ID}
+		args := []any{exampleHouseholdID, exampleHouseholdInvitation.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByHouseholdAndIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -314,7 +314,7 @@ func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleHouseholdInvitation.ToEmail, exampleHouseholdInvitation.Token}
+		args := []any{exampleHouseholdInvitation.ToEmail, exampleHouseholdInvitation.Token}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByEmailAndTokenQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -370,7 +370,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.FromUser,
 			exampleInput.ToUser,
@@ -417,7 +417,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.FromUser,
 			exampleInput.ToUser,
@@ -454,7 +454,7 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsFromUserQuery(T *testing.
 		filter := types.DefaultQueryFilter()
 
 		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_email, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.time_zone, households.created_at, households.last_updated_at, households.archived_at, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, users.id, users.username, users.email_address, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_at, users.two_factor_secret, users.two_factor_secret_verified_at, users.service_roles, users.user_account_status, users.user_account_status_explanation, users.birth_day, users.birth_month, users.created_at, users.last_updated_at, users.archived_at, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_at, household_invitations.last_updated_at, household_invitations.archived_at, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.from_user = $1 AND household_invitations.status = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.from_user = $3 AND household_invitations.status = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.from_user = $5 AND household_invitations.status = $6 LIMIT 20"
-		expectedArgs := []interface{}{
+		expectedArgs := []any{
 			userID,
 			types.PendingHouseholdInvitationStatus,
 			userID,
@@ -539,7 +539,7 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsForUserQuery(T *testing.T
 		filter := types.DefaultQueryFilter()
 
 		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_email, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.time_zone, households.created_at, households.last_updated_at, households.archived_at, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, users.id, users.username, users.email_address, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_at, users.two_factor_secret, users.two_factor_secret_verified_at, users.service_roles, users.user_account_status, users.user_account_status_explanation, users.birth_day, users.birth_month, users.created_at, users.last_updated_at, users.archived_at, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_at, household_invitations.last_updated_at, household_invitations.archived_at, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.status = $1 AND household_invitations.to_user = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.status = $3 AND household_invitations.to_user = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.status = $5 AND household_invitations.to_user = $6 LIMIT 20"
-		expectedArgs := []interface{}{
+		expectedArgs := []any{
 			types.PendingHouseholdInvitationStatus,
 			userID,
 			types.PendingHouseholdInvitationStatus,
@@ -620,7 +620,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdInvitation.Status,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -656,7 +656,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdInvitation.Status,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -684,7 +684,7 @@ func TestSQLQuerier_CancelHouseholdInvitation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			types.CancelledHouseholdInvitationStatus,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -714,7 +714,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			types.AcceptedHouseholdInvitationStatus,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -724,7 +724,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		invitationLookupArgs := []interface{}{
+		invitationLookupArgs := []any{
 			exampleHouseholdInvitation.Token,
 			exampleHouseholdInvitation.ID,
 		}
@@ -732,7 +732,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(invitationLookupArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
 
-		addUserToHouseholdArgs := []interface{}{
+		addUserToHouseholdArgs := []any{
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
 			exampleHouseholdInvitation.DestinationHousehold.ID,
@@ -805,7 +805,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			types.AcceptedHouseholdInvitationStatus,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -833,7 +833,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			types.AcceptedHouseholdInvitationStatus,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -843,7 +843,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		invitationLookupArgs := []interface{}{
+		invitationLookupArgs := []any{
 			exampleHouseholdInvitation.Token,
 			exampleHouseholdInvitation.ID,
 		}
@@ -869,7 +869,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			types.AcceptedHouseholdInvitationStatus,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -879,7 +879,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		invitationLookupArgs := []interface{}{
+		invitationLookupArgs := []any{
 			exampleHouseholdInvitation.Token,
 			exampleHouseholdInvitation.ID,
 		}
@@ -887,7 +887,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(invitationLookupArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
 
-		addUserToHouseholdArgs := []interface{}{
+		addUserToHouseholdArgs := []any{
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
 			exampleHouseholdInvitation.DestinationHousehold.ID,
@@ -916,7 +916,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			types.AcceptedHouseholdInvitationStatus,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -926,7 +926,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		invitationLookupArgs := []interface{}{
+		invitationLookupArgs := []any{
 			exampleHouseholdInvitation.Token,
 			exampleHouseholdInvitation.ID,
 		}
@@ -934,7 +934,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(invitationLookupArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
 
-		addUserToHouseholdArgs := []interface{}{
+		addUserToHouseholdArgs := []any{
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
 			exampleHouseholdInvitation.DestinationHousehold.ID,
@@ -965,7 +965,7 @@ func TestSQLQuerier_RejectHouseholdInvitation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			types.RejectedHouseholdInvitationStatus,
 			exampleHouseholdInvitation.Note,
 			exampleHouseholdInvitation.ID,
@@ -993,7 +993,7 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleUser.ID,
 			exampleUser.EmailAddress,
 		}

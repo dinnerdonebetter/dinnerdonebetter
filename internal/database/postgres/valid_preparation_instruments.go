@@ -59,7 +59,7 @@ func (q *Querier) scanValidPreparationInstrument(ctx context.Context, scan datab
 
 	x = &types.ValidPreparationInstrument{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Notes,
 		&x.Preparation.ID,
@@ -142,7 +142,7 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 	}
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		validPreparationInstrumentID,
 	}
 
@@ -167,7 +167,7 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 	}
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		validPreparationInstrumentID,
 	}
 
@@ -224,7 +224,7 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 	return x, nil
 }
 
-func (q *Querier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -244,7 +244,7 @@ func (q *Querier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx co
 	return query, args
 }
 
-func (q *Querier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
 	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
 }
 
@@ -290,7 +290,7 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 	return x, nil
 }
 
-func (q *Querier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
 	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_instrument_id", limit, ids)
 }
 
@@ -350,7 +350,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Notes,
 		input.ValidPreparationID,
@@ -391,7 +391,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, updated.ID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Notes,
 		updated.Preparation.ID,
 		updated.Instrument.ID,
@@ -421,7 +421,7 @@ func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPr
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		validPreparationInstrumentID,
 	}
 

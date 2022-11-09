@@ -62,7 +62,7 @@ func TestCustomerDataCollector_AddUser(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		exampleUserID := fakes.BuildFakeID()
-		properties := map[string]interface{}{
+		properties := map[string]any{
 			"test.name": t.Name(),
 		}
 
@@ -83,7 +83,7 @@ func TestCustomerDataCollector_EventOccurred(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		exampleUserID := fakes.BuildFakeID()
-		properties := map[string]interface{}{
+		properties := map[string]any{
 			"test.name": t.Name(),
 		}
 

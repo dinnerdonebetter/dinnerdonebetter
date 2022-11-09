@@ -29,17 +29,17 @@ var (
 type (
 	// ServerEncoderDecoder is an interface that allows for multiple implementations of HTTP response formats.
 	ServerEncoderDecoder interface {
-		RespondWithData(ctx context.Context, res http.ResponseWriter, val interface{})
-		EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, val interface{}, statusCode int)
+		RespondWithData(ctx context.Context, res http.ResponseWriter, val any)
+		EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, val any, statusCode int)
 		EncodeErrorResponse(ctx context.Context, res http.ResponseWriter, msg string, statusCode int)
 		EncodeInvalidInputResponse(ctx context.Context, res http.ResponseWriter)
 		EncodeNotFoundResponse(ctx context.Context, res http.ResponseWriter)
 		EncodeUnspecifiedInternalServerErrorResponse(ctx context.Context, res http.ResponseWriter)
 		EncodeUnauthorizedResponse(ctx context.Context, res http.ResponseWriter)
 		EncodeInvalidPermissionsResponse(ctx context.Context, res http.ResponseWriter)
-		DecodeRequest(ctx context.Context, req *http.Request, dest interface{}) error
-		MustEncode(ctx context.Context, v interface{}) []byte
-		MustEncodeJSON(ctx context.Context, v interface{}) []byte
+		DecodeRequest(ctx context.Context, req *http.Request, dest any) error
+		MustEncode(ctx context.Context, v any) []byte
+		MustEncodeJSON(ctx context.Context, v any) []byte
 	}
 
 	// serverEncoderDecoder is our concrete implementation of EncoderDecoder.
@@ -51,16 +51,16 @@ type (
 	}
 
 	encoder interface {
-		Encode(interface{}) error
+		Encode(any) error
 	}
 
 	decoder interface {
-		Decode(v interface{}) error
+		Decode(v any) error
 	}
 )
 
 // encodeResponse encodes responses.
-func (e *serverEncoderDecoder) encodeResponse(ctx context.Context, res http.ResponseWriter, v interface{}, statusCode int) {
+func (e *serverEncoderDecoder) encodeResponse(ctx context.Context, res http.ResponseWriter, v any, statusCode int) {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -154,7 +154,7 @@ func (e *serverEncoderDecoder) EncodeInvalidPermissionsResponse(ctx context.Cont
 	e.EncodeErrorResponse(ctx, res, "invalid permissions", http.StatusForbidden)
 }
 
-func (e *serverEncoderDecoder) MustEncodeJSON(ctx context.Context, v interface{}) []byte {
+func (e *serverEncoderDecoder) MustEncodeJSON(ctx context.Context, v any) []byte {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -167,7 +167,7 @@ func (e *serverEncoderDecoder) MustEncodeJSON(ctx context.Context, v interface{}
 }
 
 // MustEncode encodes data or else.
-func (e *serverEncoderDecoder) MustEncode(ctx context.Context, v interface{}) []byte {
+func (e *serverEncoderDecoder) MustEncode(ctx context.Context, v any) []byte {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -191,7 +191,7 @@ func (e *serverEncoderDecoder) MustEncode(ctx context.Context, v interface{}) []
 }
 
 // RespondWithData encodes successful responses with data.
-func (e *serverEncoderDecoder) RespondWithData(ctx context.Context, res http.ResponseWriter, v interface{}) {
+func (e *serverEncoderDecoder) RespondWithData(ctx context.Context, res http.ResponseWriter, v any) {
 	ctx, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -199,7 +199,7 @@ func (e *serverEncoderDecoder) RespondWithData(ctx context.Context, res http.Res
 }
 
 // EncodeResponseWithStatus encodes responses and writes the provided status to the response.
-func (e *serverEncoderDecoder) EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, v interface{}, statusCode int) {
+func (e *serverEncoderDecoder) EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, v any, statusCode int) {
 	ctx, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -207,7 +207,7 @@ func (e *serverEncoderDecoder) EncodeResponseWithStatus(ctx context.Context, res
 }
 
 // DecodeRequest decodes request bodies into values.
-func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Request, v interface{}) error {
+func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Request, v any) error {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 

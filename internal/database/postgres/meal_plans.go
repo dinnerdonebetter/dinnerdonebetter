@@ -36,7 +36,7 @@ func (q *Querier) scanMealPlan(ctx context.Context, scan database.Scanner, inclu
 
 	x = &types.MealPlan{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Notes,
 		&x.Status,
@@ -113,7 +113,7 @@ func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID st
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 	}
 
@@ -150,7 +150,7 @@ func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID strin
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 		householdID,
 	}
@@ -241,7 +241,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 
 	logger := q.logger.WithValue(keys.MealPlanIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Notes,
 		types.AwaitingVotesMealPlanStatus,
@@ -313,7 +313,7 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 	tracing.AttachMealPlanIDToSpan(span, updated.ID)
 	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 
-	args := []interface{}{
+	args := []any{
 		updated.Notes,
 		updated.Status,
 		updated.VotingDeadline,
@@ -352,7 +352,7 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 		mealPlanID,
 	}
@@ -445,7 +445,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 
 		winner, tiebroken, chosen := q.decideOptionWinner(ctx, event.Options)
 		if chosen {
-			args := []interface{}{
+			args := []any{
 				event.ID,
 				winner,
 				tiebroken,
@@ -463,7 +463,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	}
 
 	if allOptionsChosen {
-		args := []interface{}{
+		args := []any{
 			types.FinalizedMealPlanStatus,
 			mealPlanID,
 		}

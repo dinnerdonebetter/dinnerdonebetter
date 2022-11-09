@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -111,7 +112,11 @@ type (
 )
 
 // EncodeToFile renders your config to a file given your favorite encoder.
-func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v interface{}) ([]byte, error)) error {
+func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v any) ([]byte, error)) error {
+	if cfg == nil {
+		return errors.New("nil config")
+	}
+
 	byteSlice, err := marshaller(*cfg)
 	if err != nil {
 		return err

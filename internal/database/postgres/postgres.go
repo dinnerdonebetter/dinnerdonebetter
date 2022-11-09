@@ -172,7 +172,7 @@ func (q *Querier) rollbackTransaction(ctx context.Context, tx database.SQLQueryE
 	q.logger.Debug("transaction rolled back")
 }
 
-func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) *sql.Row {
+func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) *sql.Row {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -194,7 +194,7 @@ func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecut
 	return row
 }
 
-func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) (*sql.Rows, error) {
+func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) (*sql.Rows, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -223,7 +223,7 @@ func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor
 	return rows, nil
 }
 
-func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQueryExecutor, query string, args []interface{}) (bool, error) {
+func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQueryExecutor, query string, args []any) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -248,7 +248,7 @@ func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQ
 	return exists, nil
 }
 
-func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) error {
+func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

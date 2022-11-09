@@ -33,7 +33,7 @@ type (
 	}
 )
 
-func (r *sqsPublisher) Publish(ctx context.Context, data interface{}) error {
+func (r *sqsPublisher) Publish(ctx context.Context, data any) error {
 	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 

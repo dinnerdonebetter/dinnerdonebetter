@@ -32,7 +32,7 @@ func errorFromResponse(res *http.Response) error {
 }
 
 // argIsNotPointer checks an argument and returns whether it is a pointer.
-func argIsNotPointer(i interface{}) (bool, error) {
+func argIsNotPointer(i any) (bool, error) {
 	if i == nil || reflect.TypeOf(i).Kind() != reflect.Ptr {
 		return true, ErrArgumentIsNotPointer
 	}
@@ -41,7 +41,7 @@ func argIsNotPointer(i interface{}) (bool, error) {
 }
 
 // argIsNotNil checks an argument and returns whether it is nil.
-func argIsNotNil(i interface{}) (bool, error) {
+func argIsNotNil(i any) (bool, error) {
 	if i == nil {
 		return true, ErrNilInputProvided
 	}
@@ -51,7 +51,7 @@ func argIsNotNil(i interface{}) (bool, error) {
 
 // argIsNotPointerOrNil does what it says on the tin. This function is primarily useful for detecting
 // if a destination value is valid before decoding an HTTP response, for instance.
-func argIsNotPointerOrNil(i interface{}) error {
+func argIsNotPointerOrNil(i any) error {
 	if nn, err := argIsNotNil(i); nn || err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func argIsNotPointerOrNil(i interface{}) error {
 
 // unmarshalBody takes an HTTP response and JSON decodes its body into a destination value. The error returned here
 // should only ever be received in testing, and should never be encountered by an end-user.
-func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest interface{}) error {
+func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -144,7 +144,7 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepIngredient.ID,
 			exampleRecipeID,
@@ -218,7 +218,7 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepIngredient.ID,
 			exampleRecipeID,
@@ -247,7 +247,7 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepIngredient.ID,
 			exampleRecipeID,
@@ -280,7 +280,7 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepIngredient.ID,
 			exampleRecipeID,
@@ -351,7 +351,7 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepIngredient.ID,
 			exampleRecipeID,
@@ -383,7 +383,7 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getRecipeStepIngredientsForRecipeArgs := []interface{}{
+		getRecipeStepIngredientsForRecipeArgs := []any{
 			exampleRecipeID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
@@ -418,7 +418,7 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		getRecipeStepIngredientsForRecipeArgs := []interface{}{
+		getRecipeStepIngredientsForRecipeArgs := []any{
 			exampleRecipeID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
@@ -572,7 +572,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Optional,
@@ -623,7 +623,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Optional,
@@ -670,7 +670,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		recipeStepIngredientCreationArgs := []interface{}{
+		recipeStepIngredientCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Optional,
@@ -713,7 +713,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepIngredient.Ingredient.ID,
 			exampleRecipeStepIngredient.Name,
 			exampleRecipeStepIngredient.Optional,
@@ -755,7 +755,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepIngredient.Ingredient.ID,
 			exampleRecipeStepIngredient.Name,
 			exampleRecipeStepIngredient.Optional,
@@ -792,7 +792,7 @@ func TestQuerier_ArchiveRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepIngredient.ID,
 		}
@@ -837,7 +837,7 @@ func TestQuerier_ArchiveRecipeStepIngredient(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepIngredient.ID,
 		}

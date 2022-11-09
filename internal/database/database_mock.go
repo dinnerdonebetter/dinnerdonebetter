@@ -119,7 +119,7 @@ type MockResultIterator struct {
 }
 
 // Scan satisfies the ResultIterator interface.
-func (m *MockResultIterator) Scan(dest ...interface{}) error {
+func (m *MockResultIterator) Scan(dest ...any) error {
 	return m.Called(dest...).Error(0)
 }
 
@@ -163,7 +163,7 @@ type MockQueryExecutor struct {
 }
 
 // ExecContext is a mock function.
-func (m *MockQueryExecutor) ExecContext(ctx context.Context, query string, queryArgs ...interface{}) (sql.Result, error) {
+func (m *MockQueryExecutor) ExecContext(ctx context.Context, query string, queryArgs ...any) (sql.Result, error) {
 	args := m.Called(ctx, query, queryArgs)
 	return args.Get(0).(sql.Result), args.Error(1)
 }
@@ -175,13 +175,13 @@ func (m *MockQueryExecutor) PrepareContext(ctx context.Context, query string) (*
 }
 
 // QueryContext is a mock function.
-func (m *MockQueryExecutor) QueryContext(ctx context.Context, query string, queryArgs ...interface{}) (*sql.Rows, error) {
+func (m *MockQueryExecutor) QueryContext(ctx context.Context, query string, queryArgs ...any) (*sql.Rows, error) {
 	args := m.Called(ctx, query, queryArgs)
 	return args.Get(0).(*sql.Rows), args.Error(1)
 }
 
 // QueryRowContext is a mock function.
-func (m *MockQueryExecutor) QueryRowContext(ctx context.Context, query string, queryArgs ...interface{}) *sql.Row {
+func (m *MockQueryExecutor) QueryRowContext(ctx context.Context, query string, queryArgs ...any) *sql.Row {
 	args := m.Called(ctx, query, queryArgs)
 	return args.Get(0).(*sql.Row)
 }
@@ -189,6 +189,6 @@ func (m *MockQueryExecutor) QueryRowContext(ctx context.Context, query string, q
 // SQLQueryExecutorMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
 // safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
 // a SQLQueryExecutor.
-var SQLQueryExecutorMatcher interface{} = mock.MatchedBy(func(SQLQueryExecutor) bool {
+var SQLQueryExecutorMatcher any = mock.MatchedBy(func(SQLQueryExecutor) bool {
 	return true
 })

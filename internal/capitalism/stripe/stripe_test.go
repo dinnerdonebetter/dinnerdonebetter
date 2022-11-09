@@ -152,10 +152,10 @@ func Test_stripePaymentManager_HandleSubscriptionEventWebhook(T *testing.T) {
 				Account: "whatever",
 				Created: time.Now().Unix(),
 				Data: &stripe.EventData{
-					Object: map[string]interface{}{
+					Object: map[string]any{
 						"things": "stuff",
 					},
-					PreviousAttributes: map[string]interface{}{
+					PreviousAttributes: map[string]any{
 						"things": "stuff",
 					},
 				},
@@ -192,10 +192,10 @@ func Test_stripePaymentManager_HandleSubscriptionEventWebhook(T *testing.T) {
 			Account: "whatever",
 			Created: time.Now().Unix(),
 			Data: &stripe.EventData{
-				Object: map[string]interface{}{
+				Object: map[string]any{
 					"things": "stuff",
 				},
-				PreviousAttributes: map[string]interface{}{
+				PreviousAttributes: map[string]any{
 					"things": "stuff",
 				},
 			},

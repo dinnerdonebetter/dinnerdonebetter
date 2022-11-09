@@ -65,11 +65,11 @@ type requestSpec struct {
 	path              string
 	method            string
 	query             string
-	pathArgs          []interface{}
+	pathArgs          []any
 	bodyShouldBeEmpty bool
 }
 
-func newRequestSpec(bodyShouldBeEmpty bool, method, query, path string, pathArgs ...interface{}) *requestSpec {
+func newRequestSpec(bodyShouldBeEmpty bool, method, query, path string, pathArgs ...any) *requestSpec {
 	return &requestSpec{
 		path:              path,
 		pathArgs:          pathArgs,

@@ -49,7 +49,7 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 
 	logger = logger.WithValue("event_type", changeMessage.EventType)
 
-	eventContext := map[string]interface{}{
+	eventContext := map[string]any{
 		keys.HouseholdIDKey: changeMessage.AttributableToHouseholdID,
 		keys.UserIDKey:      changeMessage.AttributableToUserID,
 	}

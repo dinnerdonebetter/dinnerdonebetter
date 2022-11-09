@@ -31,7 +31,7 @@ func TestQuerier_ChangeMealPlanTaskStatus(T *testing.T) {
 			return exampleTime
 		}
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Status,
 			exampleInput.StatusExplanation,

@@ -42,7 +42,7 @@ func (q *Querier) scanHouseholdUserMembership(ctx context.Context, scan database
 
 	x = &types.HouseholdUserMembership{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.BelongsToUser,
 		&x.BelongsToHousehold,
@@ -107,7 +107,7 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user from database")
 	}
 
-	getHouseholdMembershipsArgs := []interface{}{userID}
+	getHouseholdMembershipsArgs := []any{userID}
 
 	membershipRows, membershipReadErr := q.getRows(ctx, q.db, "household memberships for user", getHouseholdMembershipsForUserQuery, getHouseholdMembershipsArgs)
 	if membershipReadErr != nil {
@@ -154,7 +154,7 @@ func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID strin
 		return "", ErrInvalidIDProvided
 	}
 
-	args := []interface{}{userID, true}
+	args := []any{userID, true}
 
 	var id string
 	if err := q.getOneRow(ctx, q.db, "default household ID query", getDefaultHouseholdIDForUserQuery, args).Scan(&id); err != nil {
@@ -176,7 +176,7 @@ func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier databa
 		return ErrInvalidIDProvided
 	}
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.UserIDKey:      userID,
 		keys.HouseholdIDKey: householdID,
 	})
@@ -184,7 +184,7 @@ func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier databa
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
+	args := []any{
 		userID,
 		householdID,
 		userID,
@@ -220,7 +220,7 @@ func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, household
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 		userID,
 	}
@@ -249,7 +249,7 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 		return ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.HouseholdIDKey: householdID,
 		keys.UserIDKey:      userID,
 		"new_roles":         input.NewRole,
@@ -258,7 +258,7 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
+	args := []any{
 		input.NewRole,
 		householdID,
 		userID,
@@ -293,7 +293,7 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 		return ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.HouseholdIDKey: householdID,
 		"current_owner":     input.CurrentOwner,
 		"new_owner":         input.NewOwner,
@@ -308,7 +308,7 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	transferHouseholdOwnershipArgs := []interface{}{
+	transferHouseholdOwnershipArgs := []any{
 		input.NewOwner,
 		input.CurrentOwner,
 		householdID,
@@ -320,7 +320,7 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 		return observability.PrepareAndLogError(err, logger, span, "transferring household to new owner")
 	}
 
-	transferHouseholdMembershipArgs := []interface{}{
+	transferHouseholdMembershipArgs := []any{
 		input.NewOwner,
 		householdID,
 		input.CurrentOwner,
@@ -353,7 +353,7 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 		return ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.UserIDKey:      input.UserID,
 		keys.HouseholdIDKey: input.HouseholdID,
 	})
@@ -361,7 +361,7 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 	tracing.AttachUserIDToSpan(span, input.UserID)
 	tracing.AttachHouseholdIDToSpan(span, input.HouseholdID)
 
-	addUserToHouseholdArgs := []interface{}{
+	addUserToHouseholdArgs := []any{
 		input.ID,
 		input.UserID,
 		input.HouseholdID,
@@ -396,7 +396,7 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 	}
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.UserIDKey:      userID,
 		keys.HouseholdIDKey: householdID,
 	})
@@ -410,7 +410,7 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 
 	logger.Info("created transaction")
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 		userID,
 	}

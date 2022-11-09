@@ -90,32 +90,42 @@ resource "google_sql_user" "meal_plan_task_creator_user" {
   password = random_password.meal_plan_task_creator_user_database_password.result
 }
 
-resource "google_cloudfunctions_function" "meal_plan_task_creator" {
-  name                = "meal-plan-task-creation"
-  description         = "Meal Plan Task Creator"
-  runtime             = local.go_runtime
-  available_memory_mb = 128
-
-  source_archive_bucket = google_storage_bucket.meal_plan_task_creator_bucket.name
-  source_archive_object = google_storage_bucket_object.meal_plan_task_creator_archive.name
-  service_account_email = google_service_account.meal_plan_task_creator_user_service_account.email
-
-  entry_point = "CreateMealPlanTasks"
+resource "google_cloudfunctions2_function" "meal_plan_task_creator" {
+  name        = "meal-plan-task-creation"
+  description = "Meal Plan Task Creator"
 
   event_trigger {
-    event_type = local.pubsub_topic_publish_event
-    resource   = google_pubsub_topic.meal_plan_task_creator_topic.name
+    event_type            = local.pubsub_topic_publish_event
+    pubsub_topic          = google_pubsub_topic.meal_plan_task_creator_topic.id
+    retry_policy          = "RETRY_POLICY_RETRY"
+    service_account_email = google_service_account.meal_plan_task_creator_user_service_account.email
   }
 
-  environment_variables = {
-    # TODO: use the meal_plan_task_creator_user for this, currently it has permission denied for accessing tables
-    # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
-    # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
-    PRIXFIXE_DATABASE_USER                     = google_sql_user.api_user.name,
-    PRIXFIXE_DATABASE_PASSWORD                 = random_password.api_user_database_password.result,
-    PRIXFIXE_DATABASE_NAME                     = local.database_name,
-    PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
-    GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
-    GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
+  build_config {
+    runtime     = local.go_runtime
+    entry_point = "CreateMealPlanTasks"
+
+    source {
+      storage_source {
+        bucket = google_storage_bucket.meal_plan_task_creator_bucket.name
+        object = google_storage_bucket_object.meal_plan_task_creator_archive.name
+      }
+    }
+  }
+
+  service_config {
+    available_memory = 128
+
+    environment_variables = {
+      # TODO: use the meal_plan_task_creator_user for this, currently it has permission denied for accessing tables
+      # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
+      # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
+      PRIXFIXE_DATABASE_USER                     = google_sql_user.api_user.name,
+      PRIXFIXE_DATABASE_PASSWORD                 = random_password.api_user_database_password.result,
+      PRIXFIXE_DATABASE_NAME                     = local.database_name,
+      PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
+      GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
+      GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
+    }
   }
 }

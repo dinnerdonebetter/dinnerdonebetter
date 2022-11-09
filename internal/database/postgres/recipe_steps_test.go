@@ -110,7 +110,7 @@ func TestQuerier_RecipeStepExists(T *testing.T) {
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
 		}
@@ -163,7 +163,7 @@ func TestQuerier_RecipeStepExists(T *testing.T) {
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
 		}
@@ -188,7 +188,7 @@ func TestQuerier_RecipeStepExists(T *testing.T) {
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
 		}
@@ -220,7 +220,7 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
 		}
@@ -271,7 +271,7 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
 		}
@@ -302,7 +302,7 @@ func TestQuerier_getRecipeStepByID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStep.ID,
 		}
 
@@ -349,7 +349,7 @@ func TestQuerier_getRecipeStepByID(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStep.ID,
 		}
 
@@ -502,7 +502,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
@@ -552,7 +552,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
@@ -613,7 +613,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		recipeStepCreationArgs := []interface{}{
+		recipeStepCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
@@ -632,7 +632,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		for _, ingredient := range exampleInput.Ingredients {
-			recipeStepIngredientCreationArgs := []interface{}{
+			recipeStepIngredientCreationArgs := []any{
 				ingredient.ID,
 				ingredient.Name,
 				ingredient.Optional,
@@ -653,7 +653,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		}
 
 		for _, product := range exampleInput.Products {
-			args := []interface{}{
+			args := []any{
 				product.ID,
 				product.Name,
 				product.Type,
@@ -675,7 +675,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		}
 
 		for _, instrument := range exampleInput.Instruments {
-			args := []interface{}{
+			args := []any{
 				instrument.ID,
 				instrument.InstrumentID,
 				instrument.RecipeStepProductID,
@@ -722,7 +722,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		recipeStepCreationArgs := []interface{}{
+		recipeStepCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
@@ -740,7 +740,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(recipeStepCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		recipeStepIngredientCreationArgs := []interface{}{
+		recipeStepIngredientCreationArgs := []any{
 			exampleInput.Ingredients[0].ID,
 			exampleInput.Ingredients[0].Name,
 			exampleInput.Ingredients[0].Optional,
@@ -792,7 +792,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		recipeStepCreationArgs := []interface{}{
+		recipeStepCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
@@ -811,7 +811,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		for _, ingredient := range exampleInput.Ingredients {
-			recipeStepIngredientCreationArgs := []interface{}{
+			recipeStepIngredientCreationArgs := []any{
 				ingredient.ID,
 				ingredient.Name,
 				ingredient.Optional,
@@ -831,7 +831,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				WillReturnResult(newArbitraryDatabaseResult())
 		}
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.Products[0].ID,
 			exampleInput.Products[0].Name,
 			exampleInput.Products[0].Type,
@@ -874,7 +874,7 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStep.Index,
 			exampleRecipeStep.Preparation.ID,
 			exampleRecipeStep.MinimumEstimatedTimeInSeconds,
@@ -914,7 +914,7 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStep.Index,
 			exampleRecipeStep.Preparation.ID,
 			exampleRecipeStep.MinimumEstimatedTimeInSeconds,
@@ -950,7 +950,7 @@ func TestQuerier_ArchiveRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
 		}
@@ -995,7 +995,7 @@ func TestQuerier_ArchiveRecipeStep(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
 		}

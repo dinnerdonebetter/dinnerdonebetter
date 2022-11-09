@@ -21,7 +21,7 @@ type (
 	// IndexManager is our wrapper interface for a text search index.
 	IndexManager interface {
 		IndexSearcher
-		Index(ctx context.Context, id string, value interface{}) error
+		Index(ctx context.Context, id string, value any) error
 		Delete(ctx context.Context, id string) (err error)
 	}
 

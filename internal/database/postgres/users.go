@@ -55,7 +55,7 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 		twoFactorSecretVerifiedAt sql.NullTime
 	)
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&user.ID,
 		&user.Username,
 		&user.EmailAddress,
@@ -141,7 +141,7 @@ func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSe
 	tracing.AttachUserIDToSpan(span, userID)
 
 	var query string
-	args := []interface{}{userID}
+	args := []any{userID}
 
 	if withVerifiedTOTPSecret {
 		query = getUserWithVerified2FAQuery
@@ -177,7 +177,7 @@ func (q *Querier) UserHasStatus(ctx context.Context, userID string, statuses ...
 
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []interface{}{userID}
+	args := []any{userID}
 	for _, status := range statuses {
 		args = append(args, status)
 	}
@@ -232,7 +232,7 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 
 	tracing.AttachUsernameToSpan(span, username)
 
-	args := []interface{}{username}
+	args := []any{username}
 
 	row := q.getOneRow(ctx, q.db, "user", getUserByUsernameQuery, args)
 
@@ -262,7 +262,7 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 
 	tracing.AttachUsernameToSpan(span, username)
 
-	args := []interface{}{username}
+	args := []any{username}
 
 	row := q.getOneRow(ctx, q.db, "admin user fetch", getAdminUserByUsernameQuery, args)
 
@@ -292,7 +292,7 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 
 	tracing.AttachEmailAddressToSpan(span, email)
 
-	args := []interface{}{email}
+	args := []any{email}
 	row := q.getOneRow(ctx, q.db, "user", getUserByEmailQuery, args)
 
 	u, _, _, err := q.scanUser(ctx, row, false)
@@ -321,7 +321,7 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 
 	tracing.AttachSearchQueryToSpan(span, usernameQuery)
 
-	args := []interface{}{
+	args := []any{
 		wrapQueryForILIKE(usernameQuery),
 	}
 
@@ -391,14 +391,14 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	}
 
 	tracing.AttachUsernameToSpan(span, input.Username)
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.UsernameKey:                 input.Username,
 		keys.UserEmailAddressKey:         input.EmailAddress,
 		keys.HouseholdInvitationTokenKey: input.InvitationToken,
 		"destination_household":          input.DestinationHouseholdID,
 	})
 
-	userCreationArgs := []interface{}{
+	userCreationArgs := []any{
 		input.ID,
 		input.Username,
 		input.EmailAddress,
@@ -489,7 +489,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		TimeZone:      types.DefaultHouseholdTimeZone,
 	}
 
-	householdCreationArgs := []interface{}{
+	householdCreationArgs := []any{
 		householdCreationInput.ID,
 		householdCreationInput.Name,
 		types.UnpaidHouseholdBillingStatus,
@@ -504,7 +504,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		return observability.PrepareError(writeErr, span, "create household")
 	}
 
-	createHouseholdMembershipForNewUserArgs := []interface{}{
+	createHouseholdMembershipForNewUserArgs := []any{
 		identifiers.New(),
 		userID,
 		householdID,
@@ -536,7 +536,7 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 	tracing.AttachUsernameToSpan(span, updated.Username)
 	logger := q.logger.WithValue(keys.UsernameKey, updated.Username)
 
-	args := []interface{}{
+	args := []any{
 		updated.Username,
 		updated.HashedPassword,
 		updated.AvatarSrc,
@@ -576,7 +576,7 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 	tracing.AttachUserIDToSpan(span, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	args := []interface{}{
+	args := []any{
 		newHash,
 		false,
 		userID,
@@ -611,7 +611,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 	tracing.AttachUserIDToSpan(span, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	args := []interface{}{
+	args := []any{
 		nil,
 		newSecret,
 		userID,
@@ -641,7 +641,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	tracing.AttachUserIDToSpan(span, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	args := []interface{}{
+	args := []any{
 		types.GoodStandingUserAccountStatus,
 		userID,
 	}
@@ -679,14 +679,14 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	archiveUserArgs := []interface{}{userID}
+	archiveUserArgs := []any{userID}
 
 	if err = q.performWriteQuery(ctx, tx, "user archive", archiveUserQuery, archiveUserArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving user")
 	}
 
-	archiveMembershipsArgs := []interface{}{userID}
+	archiveMembershipsArgs := []any{userID}
 
 	if err = q.performWriteQuery(ctx, tx, "user memberships archive", archiveMembershipsQuery, archiveMembershipsArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)

@@ -45,7 +45,7 @@ func (q *Querier) scanMealPlanOptionVote(ctx context.Context, scan database.Scan
 
 	x = &types.MealPlanOptionVote{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Rank,
 		&x.Abstain,
@@ -133,7 +133,7 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanOptionID,
 		mealPlanOptionVoteID,
 		mealPlanEventID,
@@ -176,7 +176,7 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanOptionID,
 		mealPlanOptionVoteID,
 		mealPlanEventID,
@@ -221,7 +221,7 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 		mealPlanEventID,
 		mealPlanOptionID,
@@ -315,7 +315,7 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 
 	votes := []*types.MealPlanOptionVote{}
 	for _, vote := range input.Votes {
-		args := []interface{}{
+		args := []any{
 			vote.ID,
 			vote.Rank,
 			vote.Abstain,
@@ -368,7 +368,7 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 	logger := q.logger.WithValue(keys.MealPlanOptionVoteIDKey, updated.ID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Rank,
 		updated.Abstain,
 		updated.Notes,
@@ -420,7 +420,7 @@ func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mea
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanOptionID,
 		mealPlanOptionVoteID,
 	}

@@ -63,7 +63,7 @@ func (q *Querier) scanRecipeStepProduct(ctx context.Context, scan database.Scann
 
 	x = &types.RecipeStepProduct{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Type,
@@ -163,7 +163,7 @@ func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepProductID,
 		recipeID,
@@ -207,7 +207,7 @@ func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStep
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepProductID,
 		recipeID,
@@ -241,7 +241,7 @@ func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID s
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 	}
 
@@ -317,7 +317,7 @@ func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQu
 		return nil, ErrNilInputProvided
 	}
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.Type,
@@ -380,7 +380,7 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 	logger := q.logger.WithValue(keys.RecipeStepProductIDKey, updated.ID)
 	tracing.AttachRecipeStepProductIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Name,
 		updated.Type,
 		updated.MeasurementUnit.ID,
@@ -427,7 +427,7 @@ func (q *Querier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, re
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepProductID,
 	}

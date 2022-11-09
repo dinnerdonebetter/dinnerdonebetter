@@ -77,7 +77,7 @@ func (q *Querier) scanValidIngredientPreparation(ctx context.Context, scan datab
 
 	x = &types.ValidIngredientPreparation{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Notes,
 		&x.Preparation.ID,
@@ -181,7 +181,7 @@ func (q *Querier) ValidIngredientPreparationExists(ctx context.Context, validIng
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientPreparationID,
 	}
 
@@ -209,7 +209,7 @@ func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngred
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientPreparationID,
 	}
 
@@ -269,7 +269,7 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 	return x, nil
 }
 
-func (q *Querier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -289,7 +289,7 @@ func (q *Querier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx co
 	return query, args
 }
 
-func (q *Querier) buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
 	return q.buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
 }
 
@@ -335,7 +335,7 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 	return x, nil
 }
 
-func (q *Querier) buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
 	return q.buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx, "valid_ingredient_id", limit, ids)
 }
 
@@ -399,7 +399,7 @@ func (q *Querier) CreateValidIngredientPreparation(ctx context.Context, input *t
 
 	logger := q.logger.WithValue(keys.ValidIngredientPreparationIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Notes,
 		input.ValidPreparationID,
@@ -440,7 +440,7 @@ func (q *Querier) UpdateValidIngredientPreparation(ctx context.Context, updated 
 	logger := q.logger.WithValue(keys.ValidIngredientPreparationIDKey, updated.ID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Notes,
 		updated.Preparation.ID,
 		updated.Ingredient.ID,
@@ -472,7 +472,7 @@ func (q *Querier) ArchiveValidIngredientPreparation(ctx context.Context, validIn
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientPreparationID,
 	}
 

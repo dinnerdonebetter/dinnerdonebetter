@@ -67,7 +67,7 @@ func (q *Querier) scanHousehold(ctx context.Context, scan database.Scanner, incl
 	household = &types.Household{Members: []*types.HouseholdUserMembershipWithUser{}}
 	membership = &types.HouseholdUserMembershipWithUser{BelongsToUser: &types.User{}}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&household.ID,
 		&household.Name,
 		&household.BillingStatus,
@@ -178,7 +178,7 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID, userID string) 
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 	}
 
@@ -214,7 +214,7 @@ func (q *Querier) GetHouseholdByID(ctx context.Context, householdID string) (*ty
 	}
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 	}
 
@@ -242,7 +242,7 @@ func (q *Querier) GetHouseholdByID(ctx context.Context, householdID string) (*ty
 
 // buildGetHouseholdsQuery builds a SQL query selecting households that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
-func (q *Querier) buildGetHouseholdsQuery(ctx context.Context, userID string, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {
+func (q *Querier) buildGetHouseholdsQuery(ctx context.Context, userID string, forAdmin bool, filter *types.QueryFilter) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -364,7 +364,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	householdCreationArgs := []interface{}{
+	householdCreationArgs := []any{
 		input.ID,
 		input.Name,
 		types.UnpaidHouseholdBillingStatus,
@@ -398,7 +398,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		HouseholdRole: authorization.HouseholdAdminRole.String(),
 	}
 
-	addUserToHouseholdArgs := []interface{}{
+	addUserToHouseholdArgs := []any{
 		addInput.ID,
 		addInput.UserID,
 		addInput.HouseholdID,
@@ -435,7 +435,7 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	logger := q.logger.WithValue(keys.HouseholdIDKey, updated.ID)
 	tracing.AttachHouseholdIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Name,
 		updated.ContactEmail,
 		updated.ContactPhone,
@@ -470,12 +470,12 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	logger := q.logger.WithValues(map[string]interface{}{
+	logger := q.logger.WithValues(map[string]any{
 		keys.HouseholdIDKey: householdID,
 		keys.UserIDKey:      userID,
 	})
 
-	args := []interface{}{
+	args := []any{
 		userID,
 		householdID,
 	}

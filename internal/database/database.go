@@ -23,7 +23,7 @@ var (
 type (
 	// Scanner represents any database response (i.e. sql.Row[s]).
 	Scanner interface {
-		Scan(dest ...interface{}) error
+		Scan(dest ...any) error
 	}
 
 	// ResultIterator represents any iterable database response (i.e. sql.Rows).
@@ -36,10 +36,10 @@ type (
 
 	// SQLQueryExecutor is a subset interface for sql.{DB|Tx} objects.
 	SQLQueryExecutor interface {
-		ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+		ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 		PrepareContext(context.Context, string) (*sql.Stmt, error)
-		QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
-		QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
+		QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
+		QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 	}
 
 	// SQLTransactionManager is a subset interface for sql.{DB|Tx} objects.

@@ -120,7 +120,7 @@ func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
 		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementConversion.ID,
 		}
 
@@ -154,7 +154,7 @@ func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
 		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementConversion.ID,
 		}
 
@@ -176,7 +176,7 @@ func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
 		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementConversion.ID,
 		}
 
@@ -203,7 +203,7 @@ func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementConversion.ID,
 		}
 
@@ -237,7 +237,7 @@ func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementConversion.ID,
 		}
 
@@ -265,7 +265,7 @@ func TestQuerier_GetValidMeasurementConversionsFromUnit(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getValidMeasurementConversionsFromUnitArgs := []interface{}{
+		getValidMeasurementConversionsFromUnitArgs := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
@@ -293,7 +293,7 @@ func TestQuerier_GetValidMeasurementConversionsToUnit(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getValidMeasurementConversionsToUnitArgs := []interface{}{
+		getValidMeasurementConversionsToUnitArgs := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
@@ -327,7 +327,7 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		validMeasurementConversionCreationArgs := []interface{}{
+		validMeasurementConversionCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.From,
 			exampleInput.To,
@@ -372,7 +372,7 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		validMeasurementConversionCreationArgs := []interface{}{
+		validMeasurementConversionCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.From,
 			exampleInput.To,
@@ -414,7 +414,7 @@ func TestQuerier_UpdateValidMeasurementConversion(T *testing.T) {
 			ingredientID = &exampleValidMeasurementConversion.OnlyForIngredient.ID
 		}
 
-		updateValidMeasurementConversionArgs := []interface{}{
+		updateValidMeasurementConversionArgs := []any{
 			exampleValidMeasurementConversion.From.ID,
 			exampleValidMeasurementConversion.To.ID,
 			ingredientID,
@@ -454,7 +454,7 @@ func TestQuerier_UpdateValidMeasurementConversion(T *testing.T) {
 			ingredientID = &exampleValidMeasurementConversion.OnlyForIngredient.ID
 		}
 
-		updateValidMeasurementConversionArgs := []interface{}{
+		updateValidMeasurementConversionArgs := []any{
 			exampleValidMeasurementConversion.From.ID,
 			exampleValidMeasurementConversion.To.ID,
 			ingredientID,
@@ -484,7 +484,7 @@ func TestQuerier_ArchiveValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementConversion.ID,
 		}
 
@@ -514,7 +514,7 @@ func TestQuerier_ArchiveValidMeasurementConversion(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidMeasurementConversion.ID,
 		}
 

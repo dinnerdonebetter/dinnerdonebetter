@@ -29,32 +29,6 @@ type (
 	}
 )
 
-func (r *publisher) Publish(ctx context.Context, data interface{}) error {
-	_, span := r.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := r.logger.Clone()
-
-	var b bytes.Buffer
-	if err := r.encoder.Encode(ctx, &b, data); err != nil {
-		return observability.PrepareError(err, span, "encoding topic message")
-	}
-
-	msg := &pubsub.Message{Data: b.Bytes()}
-	result := r.publisher.Publish(ctx, msg)
-
-	<-result.Ready()
-
-	// The Get method blocks until a server-generated ID or an error is returned for the published message.
-	if _, resultCheckErr := result.Get(ctx); resultCheckErr != nil {
-		observability.AcknowledgeError(resultCheckErr, logger, span, "publishing pubsub message")
-	}
-
-	logger.Debug("published message")
-
-	return nil
-}
-
 // providePubSubPublisher provides a Pub/Sub-backed publisher.
 func providePubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tracerProvider tracing.TracerProvider, topic string) *publisher {
 	return &publisher{
@@ -100,4 +74,30 @@ func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publis
 	p.publisherCache[topic] = pub
 
 	return pub, nil
+}
+
+func (r *publisher) Publish(ctx context.Context, data any) error {
+	_, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := r.logger.Clone()
+
+	var b bytes.Buffer
+	if err := r.encoder.Encode(ctx, &b, data); err != nil {
+		return observability.PrepareError(err, span, "encoding topic message")
+	}
+
+	msg := &pubsub.Message{Data: b.Bytes()}
+	result := r.publisher.Publish(ctx, msg)
+
+	<-result.Ready()
+
+	// The Get method blocks until a server-generated ID or an error is returned for the published message.
+	if _, resultCheckErr := result.Get(ctx); resultCheckErr != nil {
+		observability.AcknowledgeError(resultCheckErr, logger, span, "publishing pubsub message")
+	}
+
+	logger.Debug("published message")
+
+	return nil
 }

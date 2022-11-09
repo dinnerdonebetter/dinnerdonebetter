@@ -80,7 +80,7 @@ func (q *Querier) scanValidIngredientMeasurementUnit(ctx context.Context, scan d
 
 	x = &types.ValidIngredientMeasurementUnit{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Notes,
 		&x.MeasurementUnit.ID,
@@ -187,7 +187,7 @@ func (q *Querier) ValidIngredientMeasurementUnitExists(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientMeasurementUnitID,
 	}
 
@@ -215,7 +215,7 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientMeasurementUnitID,
 	}
 
@@ -229,7 +229,7 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 	return validIngredientMeasurementUnit, nil
 }
 
-func (q *Querier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -249,7 +249,7 @@ func (q *Querier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx
 	return query, args
 }
 
-func (q *Querier) buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
 	return q.buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx, "valid_ingredient_id", limit, ids)
 }
 
@@ -299,7 +299,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 	return x, nil
 }
 
-func (q *Querier) buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *Querier) buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
 	return q.buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx, "valid_measurement_unit_id", limit, ids)
 }
 
@@ -409,7 +409,7 @@ func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, inpu
 
 	logger := q.logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Notes,
 		input.ValidMeasurementUnitID,
@@ -454,7 +454,7 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 	logger := q.logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, updated.ID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Notes,
 		updated.MeasurementUnit.ID,
 		updated.Ingredient.ID,
@@ -488,7 +488,7 @@ func (q *Querier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, val
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientMeasurementUnitID,
 	}
 

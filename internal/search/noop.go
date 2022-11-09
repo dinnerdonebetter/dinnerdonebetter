@@ -23,7 +23,7 @@ func (*NoopIndexManager) Search(context.Context, string, string, string) ([]stri
 }
 
 // Index is a no-op method.
-func (*NoopIndexManager) Index(context.Context, string, interface{}) error {
+func (*NoopIndexManager) Index(context.Context, string, any) error {
 	return nil
 }
 

@@ -125,7 +125,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.ID,
 		}
 
@@ -183,7 +183,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.ID,
 		}
 
@@ -209,7 +209,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.ID,
 		}
 
@@ -237,7 +237,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 
 		columns := append(householdsTableColumns, householdsUserMembershipTableColumns...)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.ID,
 		}
 
@@ -264,7 +264,7 @@ func TestQuerier_GetHouseholdByID(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.ID,
 		}
 
@@ -299,7 +299,7 @@ func TestQuerier_GetHouseholdByID(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.ID,
 		}
 
@@ -322,7 +322,7 @@ func TestQuerier_GetHouseholdByID(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.ID,
 		}
 
@@ -347,7 +347,7 @@ func TestQuerier_GetHouseholdByID(T *testing.T) {
 
 		columns := append(householdsTableColumns, householdsUserMembershipTableColumns...)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.ID,
 		}
 
@@ -583,7 +583,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -597,7 +597,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		addUserToHouseholdArgs := []interface{}{
+		addUserToHouseholdArgs := []any{
 			&idMatcher{},
 			exampleInput.BelongsToUser,
 			&idMatcher{},
@@ -671,7 +671,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -711,7 +711,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin()
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -725,7 +725,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		addUserToHouseholdArgs := []interface{}{
+		addUserToHouseholdArgs := []any{
 			&idMatcher{},
 			exampleInput.BelongsToUser,
 			&idMatcher{},
@@ -762,7 +762,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin()
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -776,7 +776,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		addUserToHouseholdArgs := []interface{}{
+		addUserToHouseholdArgs := []any{
 			&idMatcher{},
 			exampleInput.BelongsToUser,
 			&idMatcher{},
@@ -814,7 +814,7 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.Name,
 			exampleHousehold.ContactEmail,
 			exampleHousehold.ContactPhone,
@@ -855,7 +855,7 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHousehold.Name,
 			exampleHousehold.ContactEmail,
 			exampleHousehold.ContactPhone,
@@ -886,7 +886,7 @@ func TestQuerier_ArchiveHousehold(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleUserID,
 			exampleHouseholdID,
 		}
@@ -931,7 +931,7 @@ func TestQuerier_ArchiveHousehold(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleUserID,
 			exampleHouseholdID,
 		}

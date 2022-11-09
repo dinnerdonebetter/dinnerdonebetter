@@ -119,13 +119,13 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		userRetrievalArgs := []interface{}{exampleUser.ID}
+		userRetrievalArgs := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
-		getHouseholdMembershipsForUserArgs := []interface{}{exampleUser.ID}
+		getHouseholdMembershipsForUserArgs := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdMembershipsForUserQuery)).
 			WithArgs(interfaceToDriverValue(getHouseholdMembershipsForUserArgs)...).
@@ -180,7 +180,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		userRetrievalArgs := []interface{}{exampleUser.ID}
+		userRetrievalArgs := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
@@ -215,13 +215,13 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		userRetrievalArgs := []interface{}{exampleUser.ID}
+		userRetrievalArgs := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
-		getHouseholdMembershipsForUserArgs := []interface{}{exampleUser.ID}
+		getHouseholdMembershipsForUserArgs := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdMembershipsForUserQuery)).
 			WithArgs(interfaceToDriverValue(getHouseholdMembershipsForUserArgs)...).
@@ -255,12 +255,12 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		userRetrievalArgs := []interface{}{exampleUser.ID}
+		userRetrievalArgs := []any{exampleUser.ID}
 		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
-		getHouseholdMembershipsForUserArgs := []interface{}{exampleUser.ID}
+		getHouseholdMembershipsForUserArgs := []any{exampleUser.ID}
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdMembershipsForUserQuery)).
 			WithArgs(interfaceToDriverValue(getHouseholdMembershipsForUserArgs)...).
 			WillReturnRows(buildInvalidRowsFromHouseholdUserMembershipsWithUsers(exampleHousehold.Members...))
@@ -284,7 +284,7 @@ func TestQuerier_GetDefaultHouseholdIDForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUserID, true}
+		args := []any{exampleUserID, true}
 
 		db.ExpectQuery(formatQueryForSQLMock(getDefaultHouseholdIDForUserQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -316,7 +316,7 @@ func TestQuerier_GetDefaultHouseholdIDForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUserID, true}
+		args := []any{exampleUserID, true}
 
 		db.ExpectQuery(formatQueryForSQLMock(getDefaultHouseholdIDForUserQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -342,7 +342,7 @@ func TestQuerier_MarkHouseholdAsUserDefault(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		markHouseholdAsUserDefaultArgs := []interface{}{
+		markHouseholdAsUserDefaultArgs := []any{
 			exampleUserID,
 			exampleHouseholdID,
 			exampleUserID,
@@ -386,7 +386,7 @@ func TestQuerier_MarkHouseholdAsUserDefault(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		markHouseholdAsUserDefaultArgs := []interface{}{
+		markHouseholdAsUserDefaultArgs := []any{
 			exampleUserID,
 			exampleHouseholdID,
 			exampleUserID,
@@ -412,7 +412,7 @@ func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		userIsMemberOfHouseholdArgs := []interface{}{
+		userIsMemberOfHouseholdArgs := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -461,7 +461,7 @@ func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		userIsMemberOfHouseholdArgs := []interface{}{
+		userIsMemberOfHouseholdArgs := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -490,7 +490,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		fakeArgs := []interface{}{
+		fakeArgs := []any{
 			exampleInput.NewRole,
 			exampleHouseholdID,
 			exampleUserID,
@@ -537,7 +537,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		fakeArgs := []interface{}{
+		fakeArgs := []any{
 			exampleInput.NewRole,
 			exampleHouseholdID,
 			exampleUserID,
@@ -565,7 +565,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectBegin()
 
-		fakeHouseholdTransferArgs := []interface{}{
+		fakeHouseholdTransferArgs := []any{
 			exampleInput.NewOwner,
 			exampleInput.CurrentOwner,
 			exampleHouseholdID,
@@ -575,7 +575,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeHouseholdTransferArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		fakeHouseholdMembershipsTransferArgs := []interface{}{
+		fakeHouseholdMembershipsTransferArgs := []any{
 			exampleInput.NewOwner,
 			exampleHouseholdID,
 			exampleInput.CurrentOwner,
@@ -637,7 +637,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectBegin()
 
-		fakeHouseholdTransferArgs := []interface{}{
+		fakeHouseholdTransferArgs := []any{
 			exampleInput.NewOwner,
 			exampleInput.CurrentOwner,
 			exampleHousehold.ID,
@@ -663,7 +663,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectBegin()
 
-		fakeHouseholdTransferArgs := []interface{}{
+		fakeHouseholdTransferArgs := []any{
 			exampleInput.NewOwner,
 			exampleInput.CurrentOwner,
 			exampleHouseholdID,
@@ -673,7 +673,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeHouseholdTransferArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		fakeHouseholdMembershipsTransferArgs := []interface{}{
+		fakeHouseholdMembershipsTransferArgs := []any{
 			exampleInput.NewOwner,
 			exampleHouseholdID,
 			exampleInput.CurrentOwner,
@@ -699,7 +699,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectBegin()
 
-		fakeHouseholdTransferArgs := []interface{}{
+		fakeHouseholdTransferArgs := []any{
 			exampleInput.NewOwner,
 			exampleInput.CurrentOwner,
 			exampleHouseholdID,
@@ -709,7 +709,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeHouseholdTransferArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		fakeHouseholdMembershipsTransferArgs := []interface{}{
+		fakeHouseholdMembershipsTransferArgs := []any{
 			exampleInput.NewOwner,
 			exampleHouseholdID,
 			exampleInput.CurrentOwner,
@@ -736,7 +736,7 @@ func TestSQLQuerier_addUserToHousehold(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		addUserToHouseholdArgs := []interface{}{
+		addUserToHouseholdArgs := []any{
 			exampleInput.ID,
 			exampleInput.UserID,
 			exampleInput.HouseholdID,
@@ -782,7 +782,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -797,7 +797,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
 
-		markHouseholdAsUserDefaultArgs := []interface{}{
+		markHouseholdAsUserDefaultArgs := []any{
 			exampleUserID,
 			exampleHouseholdList.Households[0].ID,
 			exampleUserID,
@@ -859,7 +859,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -890,7 +890,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -915,7 +915,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -935,7 +935,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			Name:          fmt.Sprintf("%s_default", exampleUserID),
 			BelongsToUser: exampleUserID,
 		}
-		createHouseholdForNewUserArgs := []interface{}{
+		createHouseholdForNewUserArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -950,7 +950,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -980,7 +980,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -1000,7 +1000,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			Name:          fmt.Sprintf("%s_default", exampleUserID),
 			BelongsToUser: exampleUserID,
 		}
-		createHouseholdForNewUserArgs := []interface{}{
+		createHouseholdForNewUserArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1031,7 +1031,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -1046,7 +1046,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
 
-		markHouseholdAsUserDefaultArgs := []interface{}{
+		markHouseholdAsUserDefaultArgs := []any{
 			exampleUserID,
 			exampleHouseholdList.Households[0].ID,
 			exampleUserID,
@@ -1073,7 +1073,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectBegin()
 
-		args := []interface{}{
+		args := []any{
 			exampleHouseholdID,
 			exampleUserID,
 		}
@@ -1088,7 +1088,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
 
-		markHouseholdAsUserDefaultArgs := []interface{}{
+		markHouseholdAsUserDefaultArgs := []any{
 			exampleUserID,
 			exampleHouseholdList.Households[0].ID,
 			exampleUserID,

@@ -37,7 +37,7 @@ func (q *Querier) scanMeal(ctx context.Context, scan database.Scanner, includeCo
 
 	x = &types.Meal{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Description,
@@ -98,7 +98,7 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 
 	for rows.Next() {
 		var recipeID string
-		targetVars := []interface{}{
+		targetVars := []any{
 			&x.ID,
 			&x.Name,
 			&x.Description,
@@ -134,7 +134,7 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	args := []interface{}{
+	args := []any{
 		mealID,
 	}
 
@@ -162,7 +162,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	args := []interface{}{
+	args := []any{
 		mealID,
 	}
 
@@ -277,7 +277,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 
 	logger := q.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.Description,
@@ -359,7 +359,7 @@ func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQuer
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachUserIDToSpan(span, recipeID)
 
-	args := []interface{}{
+	args := []any{
 		identifiers.New(),
 		mealID,
 		recipeID,
@@ -395,7 +395,7 @@ func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error 
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []interface{}{
+	args := []any{
 		userID,
 		mealID,
 	}
