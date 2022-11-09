@@ -45,8 +45,8 @@ resource "google_project_iam_member" "data_changes_user" {
 
 resource "google_cloudfunctions2_function" "data_changes" {
   name        = "data-changes"
+  location    = "us-central1"
   description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
-
 
   event_trigger {
     event_type            = local.pubsub_topic_publish_event

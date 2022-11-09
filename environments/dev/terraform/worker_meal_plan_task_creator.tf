@@ -93,6 +93,7 @@ resource "google_sql_user" "meal_plan_task_creator_user" {
 resource "google_cloudfunctions2_function" "meal_plan_task_creator" {
   name        = "meal-plan-task-creation"
   description = "Meal Plan Task Creator"
+  location    = "us-central1"
 
   event_trigger {
     event_type            = local.pubsub_topic_publish_event

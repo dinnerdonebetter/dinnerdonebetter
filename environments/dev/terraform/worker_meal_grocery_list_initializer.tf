@@ -93,6 +93,7 @@ resource "google_sql_user" "meal_plan_grocery_list_initializer_user" {
 resource "google_cloudfunctions2_function" "meal_plan_grocery_list_initializer" {
   name        = "meal-plan-grocery-list-initialization"
   description = "Meal Plan Grocery List Initializer"
+  location    = "us-central1"
 
   event_trigger {
     event_type            = local.pubsub_topic_publish_event

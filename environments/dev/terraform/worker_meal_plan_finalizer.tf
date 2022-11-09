@@ -93,6 +93,7 @@ resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_user" {
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   name        = "meal-plan-finalizer"
   description = "Meal Plan Finalizer"
+  location    = "us-central1"
 
   event_trigger {
     event_type            = local.pubsub_topic_publish_event
