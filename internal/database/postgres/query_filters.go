@@ -16,8 +16,8 @@ func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBui
 
 	qf.SetPage(qf.Page)
 
-	if qp := qf.QueryPage(); qp > 0 {
-		queryBuilder = queryBuilder.Offset(qp)
+	if qp := qf.QueryOffset(); qp > 0 {
+		queryBuilder = queryBuilder.Offset(uint64(qp))
 	}
 
 	if qf.Limit != nil && *qf.Limit != 0 {

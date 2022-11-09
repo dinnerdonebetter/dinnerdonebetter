@@ -28,7 +28,7 @@ type (
 	Pagination struct {
 		_ struct{}
 
-		Page          uint64 `json:"page"`
+		Page          uint16 `json:"page"`
 		Limit         uint8  `json:"limit"`
 		FilteredCount uint64 `json:"filteredCount"`
 		TotalCount    uint64 `json:"totalCount"`

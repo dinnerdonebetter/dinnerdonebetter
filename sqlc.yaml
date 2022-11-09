@@ -31,7 +31,7 @@ sql:
       - "internal/database/postgres/queries/valid_preparations"
       - "internal/database/postgres/queries/meal_plans"
       - "internal/database/postgres/queries/recipe_step_products"
-      - "internal/database/postgres/queries/webhooks"
+      # - "internal/database/postgres/queries/webhooks"
       - "internal/database/postgres/queries/meal_plan_tasks"
       - "internal/database/postgres/queries/recipe_steps"
       - "internal/database/postgres/queries/webhook_trigger_events"

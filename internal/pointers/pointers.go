@@ -14,6 +14,11 @@ func Uint8(x uint8) *uint8 {
 	return &x
 }
 
+// Uint16 returns a pointer to a uint16.
+func Uint16(x uint16) *uint16 {
+	return &x
+}
+
 // Uint32 returns a pointer to a uint32.
 func Uint32(x uint32) *uint32 {
 	return &x

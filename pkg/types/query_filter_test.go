@@ -24,7 +24,7 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		qf := &QueryFilter{
-			Page:            pointers.Uint64(100),
+			Page:            pointers.Uint16(100),
 			Limit:           pointers.Uint8(MaxLimit),
 			CreatedAfter:    pointers.Time(time.Now().Truncate(time.Second)),
 			CreatedBefore:   pointers.Time(time.Now().Truncate(time.Second)),
@@ -57,8 +57,8 @@ func TestQueryFilter_FromParams(T *testing.T) {
 
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
-			Page:            func(x uint64) *uint64 { return &x }(100),
-			Limit:           func(x uint8) *uint8 { return &x }(MaxLimit),
+			Page:            pointers.Uint16(100),
+			Limit:           pointers.Uint8(MaxLimit),
 			CreatedAfter:    pointers.Time(tt),
 			CreatedBefore:   pointers.Time(tt),
 			UpdatedAfter:    pointers.Time(tt),
@@ -96,7 +96,7 @@ func TestQueryFilter_SetPage(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expected := uint64(123)
+		expected := uint16(123)
 		qf := &QueryFilter{}
 		qf.SetPage(&expected)
 
@@ -109,9 +109,12 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
-		qf := &QueryFilter{Limit: func(x uint8) *uint8 { return &x }(10), Page: func(x uint64) *uint64 { return &x }(11)}
-		expected := uint64(100)
-		actual := qf.QueryPage()
+		qf := &QueryFilter{
+			Limit: pointers.Uint8(10),
+			Page:  pointers.Uint16(11),
+		}
+		expected := uint16(100)
+		actual := qf.QueryOffset()
 
 		assert.Equal(t, expected, actual)
 	})
@@ -127,8 +130,8 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		require.NoError(t, err)
 
 		qf := &QueryFilter{
-			Page:            func(x uint64) *uint64 { return &x }(100),
-			Limit:           func(x uint8) *uint8 { return &x }(MaxLimit),
+			Page:            pointers.Uint16(100),
+			Limit:           pointers.Uint8(MaxLimit),
 			CreatedAfter:    pointers.Time(tt),
 			CreatedBefore:   pointers.Time(tt),
 			UpdatedAfter:    pointers.Time(tt),
@@ -173,8 +176,8 @@ func TestExtractQueryFilter(T *testing.T) {
 		require.NoError(t, err)
 
 		expected := &QueryFilter{
-			Page:          func(x uint64) *uint64 { return &x }(100),
-			Limit:         func(x uint8) *uint8 { return &x }(MaxLimit),
+			Page:          pointers.Uint16(100),
+			Limit:         pointers.Uint8(MaxLimit),
 			CreatedAfter:  pointers.Time(tt),
 			CreatedBefore: pointers.Time(tt),
 			UpdatedAfter:  pointers.Time(tt),
