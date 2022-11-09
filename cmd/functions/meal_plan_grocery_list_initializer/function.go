@@ -3,7 +3,6 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
-	"github.com/prixfixeco/backend/internal/features/grocerylistpreparation"
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
@@ -12,6 +11,7 @@ import (
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
+	"github.com/prixfixeco/backend/internal/features/grocerylistpreparation"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability"
