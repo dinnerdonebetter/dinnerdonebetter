@@ -9,7 +9,7 @@ jobs:
   setup:
     strategy:
       matrix:
-        go-version: [ '1.16.x' ]
+        go-version: [ '1.19.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,7 +27,6 @@ jobs:
         function: [
           'data_changes',
           'meal_plan_finalizer',
-          'meal_planning_prober',
           'meal_plan_task_creator',
           'meal_plan_grocery_list_initializer',
         ]

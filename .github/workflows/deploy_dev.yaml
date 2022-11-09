@@ -27,11 +27,6 @@ jobs:
       - name: Authorize Docker push
         run: gcloud auth configure-docker
 
-      - name: Build Container
-        run: |
-          docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -42,6 +37,11 @@ jobs:
         working-directory: environments/dev/terraform
         id: init
         run: terraform init
+
+      - name: Build API server container
+        run: |
+          docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
 
       - name: Terraform Format
         working-directory: environments/dev/terraform
@@ -60,7 +60,7 @@ jobs:
       - name: Build meal plan grocery list initializer cloud function directory
         run: ./scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
 
-      - name: copy server config file
+      - name: copy API server config file
         working-directory: environments/dev
         run: |
           cp config_files/service-config.json terraform/service-config.json
@@ -72,10 +72,9 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        # if: github.event_name == 'release'
         working-directory: environments/dev/terraform
 
-      - name: Push Container
+      - name: Push API server container
         run: |
           docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
           docker push gcr.io/prixfixe-dev/api_server:latest
