@@ -52,14 +52,17 @@ func TestQueryFilter_FromParams(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		tt, err := time.Parse(time.RFC3339Nano, time.Now().UTC().Truncate(time.Second).Format(time.RFC3339Nano))
+		require.NoError(t, err)
+
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
 			Page:            func(x uint64) *uint64 { return &x }(100),
 			Limit:           func(x uint8) *uint8 { return &x }(MaxLimit),
-			CreatedAfter:    pointers.Time(time.Now().Truncate(time.Second)),
-			CreatedBefore:   pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedAfter:    pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedBefore:   pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedAfter:    pointers.Time(tt),
+			CreatedBefore:   pointers.Time(tt),
+			UpdatedAfter:    pointers.Time(tt),
+			UpdatedBefore:   pointers.Time(tt),
 			SortBy:          SortDescending,
 			IncludeArchived: boolPointer(true),
 		}
@@ -76,6 +79,8 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		}
 
 		actual.FromParams(exampleInput)
+		actual.CreatedAfter.Location()
+
 		assert.Equal(t, expected, actual)
 
 		exampleInput[sortByQueryKey] = []string{*SortAscending}
@@ -117,13 +122,17 @@ func TestQueryFilter_ToValues(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
+		tt, err := time.Parse(time.RFC3339Nano, time.Now().UTC().Truncate(time.Second).Format(time.RFC3339Nano))
+		require.NoError(t, err)
+
 		qf := &QueryFilter{
 			Page:            func(x uint64) *uint64 { return &x }(100),
 			Limit:           func(x uint8) *uint8 { return &x }(MaxLimit),
-			CreatedAfter:    pointers.Time(time.Now().Truncate(time.Second)),
-			CreatedBefore:   pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedAfter:    pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedBefore:   pointers.Time(time.Now().Truncate(time.Second)),
+			CreatedAfter:    pointers.Time(tt),
+			CreatedBefore:   pointers.Time(tt),
+			UpdatedAfter:    pointers.Time(tt),
+			UpdatedBefore:   pointers.Time(tt),
 			SortBy:          SortDescending,
 			IncludeArchived: boolPointer(true),
 		}
@@ -160,13 +169,16 @@ func TestExtractQueryFilter(T *testing.T) {
 
 		ctx := context.Background()
 
+		tt, err := time.Parse(time.RFC3339Nano, time.Now().UTC().Truncate(time.Second).Format(time.RFC3339Nano))
+		require.NoError(t, err)
+
 		expected := &QueryFilter{
 			Page:          func(x uint64) *uint64 { return &x }(100),
 			Limit:         func(x uint8) *uint8 { return &x }(MaxLimit),
-			CreatedAfter:  pointers.Time(time.Now().UTC().Truncate(time.Second)),
-			CreatedBefore: pointers.Time(time.Now().UTC().Truncate(time.Second)),
-			UpdatedAfter:  pointers.Time(time.Now().UTC().Truncate(time.Second)),
-			UpdatedBefore: pointers.Time(time.Now().UTC().Truncate(time.Second)),
+			CreatedAfter:  pointers.Time(tt),
+			CreatedBefore: pointers.Time(tt),
+			UpdatedAfter:  pointers.Time(tt),
+			UpdatedBefore: pointers.Time(tt),
 			SortBy:        SortDescending,
 		}
 		exampleInput := url.Values{

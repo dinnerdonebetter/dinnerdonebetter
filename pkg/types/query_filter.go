@@ -140,19 +140,19 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 		qf.Limit = uint8Pointer(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
 	}
 
-	if t, err := time.Parse(time.RFC3339, params.Get(createdBeforeQueryKey)); err == nil {
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(createdBeforeQueryKey)); err == nil {
 		qf.CreatedBefore = &t
 	}
 
-	if t, err := time.Parse(time.RFC3339, params.Get(createdAfterQueryKey)); err == nil {
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(createdAfterQueryKey)); err == nil {
 		qf.CreatedAfter = &t
 	}
 
-	if t, err := time.Parse(time.RFC3339, params.Get(updatedBeforeQueryKey)); err == nil {
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(updatedBeforeQueryKey)); err == nil {
 		qf.UpdatedBefore = &t
 	}
 
-	if t, err := time.Parse(time.RFC3339, params.Get(updatedAfterQueryKey)); err == nil {
+	if t, err := time.Parse(time.RFC3339Nano, params.Get(updatedAfterQueryKey)); err == nil {
 		qf.UpdatedAfter = &t
 	}
 
@@ -204,19 +204,19 @@ func (qf *QueryFilter) ToValues() url.Values {
 	}
 
 	if qf.CreatedBefore != nil {
-		v.Set(createdBeforeQueryKey, qf.CreatedBefore.Format(time.RFC3339))
+		v.Set(createdBeforeQueryKey, qf.CreatedBefore.Format(time.RFC3339Nano))
 	}
 
 	if qf.CreatedAfter != nil {
-		v.Set(createdAfterQueryKey, qf.CreatedAfter.Format(time.RFC3339))
+		v.Set(createdAfterQueryKey, qf.CreatedAfter.Format(time.RFC3339Nano))
 	}
 
 	if qf.UpdatedBefore != nil {
-		v.Set(updatedBeforeQueryKey, qf.UpdatedBefore.Format(time.RFC3339))
+		v.Set(updatedBeforeQueryKey, qf.UpdatedBefore.Format(time.RFC3339Nano))
 	}
 
 	if qf.UpdatedAfter != nil {
-		v.Set(updatedAfterQueryKey, qf.UpdatedAfter.Format(time.RFC3339))
+		v.Set(updatedAfterQueryKey, qf.UpdatedAfter.Format(time.RFC3339Nano))
 	}
 
 	if qf.IncludeArchived != nil {
