@@ -1,29 +1,15 @@
-on:
-  pull_request:
-    paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
+on: [pull_request]
+#  pull_request:
+#    paths:
+#      - pkg/**
+#      - cmd/**
+#      - internal/**
 name: Build
 jobs:
   setup:
     strategy:
       matrix:
         go-version: [ '1.19.x' ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-
-  functions:
-    needs: setup
-    strategy:
-      matrix:
         function: [
           'data_changes',
           'meal_plan_finalizer',
@@ -35,5 +21,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
       - name: Build ${{ matrix.function }} function
-        run: ./scripts/build_cloud_function.sh ${{ matrix.function }}
+        run: go build github.com/prixfixeco/backend/cmd/functions/${{ matrix.function }}
