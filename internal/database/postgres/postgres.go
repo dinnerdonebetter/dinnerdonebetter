@@ -227,12 +227,12 @@ func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	var exists bool
 	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue(keys.DatabaseQueryKey, query).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, "boolean query", query, args)
 
+	var exists bool
 	err := querier.QueryRowContext(ctx, query, args...).Scan(&exists)
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil

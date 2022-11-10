@@ -11,64 +11,18 @@ import (
 
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
-	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
-	"github.com/prixfixeco/backend/internal/messagequeue"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/workers"
-	"github.com/prixfixeco/backend/pkg/types"
 )
 
 const (
 	dataChangesTopicName = "data_changes"
 )
-
-func finalizeMealPlans(
-	ctx context.Context,
-	logger logging.Logger,
-	tracer tracing.Tracer,
-	dataManager database.DataManager,
-	dataChangesPublisher messagequeue.Publisher,
-) (int, error) {
-	_, span := tracer.StartSpan(ctx)
-	defer span.End()
-
-	mealPlans, fetchMealPlansErr := dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-	if fetchMealPlansErr != nil {
-		log.Fatal(fetchMealPlansErr)
-	}
-
-	var changedCount int
-	for _, mealPlan := range mealPlans {
-		changed, err := dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
-		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "finalizing meal plan")
-			continue
-		}
-
-		if changed {
-			changedCount++
-
-			if dataChangePublishErr := dataChangesPublisher.Publish(ctx, &types.DataChangeMessage{
-				DataType:                  types.MealPlanDataType,
-				EventType:                 types.MealPlanFinalizedCustomerEventType,
-				MealPlan:                  mealPlan,
-				MealPlanID:                mealPlan.ID,
-				Context:                   map[string]string{},
-				AttributableToHouseholdID: mealPlan.BelongsToHousehold,
-			}); dataChangePublishErr != nil {
-				observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message")
-			}
-		}
-	}
-
-	return changedCount, nil
-}
 
 // PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
 // https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
