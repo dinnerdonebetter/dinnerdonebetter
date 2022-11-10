@@ -68,7 +68,7 @@ resource "google_cloudfunctions2_function" "data_changes" {
   }
 
   service_config {
-    available_memory = "128M"
+    available_memory = "128Mi"
 
     environment_variables = {
       PRIXFIXE_SENDGRID_API_TOKEN      = var.SENDGRID_API_TOKEN
