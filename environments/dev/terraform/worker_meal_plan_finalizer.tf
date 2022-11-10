@@ -115,7 +115,7 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   }
 
   service_config {
-    available_memory = 128
+    available_memory = "128M"
 
     environment_variables = {
       # TODO: use the meal_plan_finalizer_user for this, currently it has permission denied for accessing tables
