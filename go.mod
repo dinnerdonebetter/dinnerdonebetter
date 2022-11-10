@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/pubsub v1.10.3
 	cloud.google.com/go/secretmanager v1.1.0
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/GoogleCloudPlatform/functions-framework-go v1.6.1
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.3.0
 	github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244
 	github.com/Masterminds/squirrel v1.5.0
@@ -73,6 +74,7 @@ require (
 require (
 	cloud.google.com/go v0.100.2 // indirect
 	cloud.google.com/go/compute v1.2.0 // indirect
+	cloud.google.com/go/functions v1.0.0 // indirect
 	cloud.google.com/go/iam v0.1.0 // indirect
 	cloud.google.com/go/storage v1.15.0 // indirect
 	cloud.google.com/go/trace v1.0.0 // indirect
@@ -82,6 +84,7 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
+	github.com/cloudevents/sdk-go/v2 v2.6.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.0.0-20211202110751-50105067ef27 // indirect
@@ -100,7 +103,7 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/kr/text v0.2.0 // indirect
+	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/launchdarkly/ccache v1.1.0 // indirect
@@ -108,6 +111,8 @@ require (
 	github.com/launchdarkly/go-semver v1.0.2 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -119,6 +124,9 @@ require (
 	github.com/tkrajina/go-reflector v0.5.5 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/otel/internal/metric v0.26.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.7.0 // indirect
+	go.uber.org/zap v1.19.1 // indirect
 	golang.org/x/image v0.0.0-20220302094943-723b81ca9867 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
@@ -136,7 +144,6 @@ require (
 
 require (
 	cloud.google.com/go/kms v1.2.0 // indirect
-	cloud.google.com/go/logging v1.4.2
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/cznic/ql v1.2.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.1.1
