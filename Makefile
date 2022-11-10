@@ -64,7 +64,7 @@ endif
 .PHONY: ensure_hosts
 ensure_hosts:
 	if [ `cat /etc/hosts | grep api.prixfixe.local | wc -l` -ne 1 ]; then sudo -- sh -c "echo \"127.0.0.1       api.prixfixe.local\" >> /etc/hosts"; fi
-	
+
 
 .PHONY: clean_vendor
 clean_vendor:
@@ -114,8 +114,8 @@ terraformat:
 	@touch environments/dev/terraform/opentelemetry-config.yaml
 	@(cd environments/dev/terraform && terraform fmt)
 
-.PHONY: check_terraform
-check_terraform:
+.PHONY: lint_terraform
+lint_terraform: terraformat
 	@(cd environments/dev/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
 
 .PHONY: fmt
@@ -147,7 +147,7 @@ golang_lint:
 		golangci/golangci-lint:v1.50 golangci-lint run --config=.golangci.yml ./...
 
 .PHONY: lint
-lint: docker_lint queries_lint golang_lint # check_terraform
+lint: docker_lint queries_lint golang_lint # terraform_lint
 
 .PHONY: clean_coverage
 clean_coverage:

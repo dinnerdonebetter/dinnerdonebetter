@@ -1,4 +1,4 @@
-resource "google_storage_bucket" "website" {
+resource "google_storage_bucket" "api_media" {
   provider                    = google
   name                        = "media.prixfixe.dev"
   location                    = "US"
@@ -33,7 +33,7 @@ resource "google_storage_bucket" "website" {
 }
 
 resource "google_storage_bucket_access_control" "public_rule" {
-  bucket = google_storage_bucket.website.name
+  bucket = google_storage_bucket.api_media.name
   role   = "READER"
   entity = "allUsers"
 }
@@ -49,11 +49,11 @@ data "google_iam_policy" "public_policy" {
 }
 
 resource "google_storage_bucket_iam_policy" "policy" {
-  bucket      = google_storage_bucket.website.name
+  bucket      = google_storage_bucket.api_media.name
   policy_data = data.google_iam_policy.public_policy.policy_data
 }
 
-resource "cloudflare_record" "website" {
+resource "cloudflare_record" "api_media" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "media"
   value   = "c.storage.googleapis.com"

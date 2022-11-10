@@ -19,13 +19,13 @@ const (
 )
 
 // BuildFakeSQLQuery builds a fake SQL query and arg pair.
-func BuildFakeSQLQuery() (query string, args []interface{}) {
+func BuildFakeSQLQuery() (query string, args []any) {
 	s := fmt.Sprintf("%s %s WHERE things = ? AND stuff = ?",
 		fake.RandomString([]string{"SELECT * FROM", "INSERT INTO", "UPDATE"}),
 		fake.Password(true, true, true, false, false, 32),
 	)
 
-	return s, []interface{}{"things", "stuff"}
+	return s, []any{"things", "stuff"}
 }
 
 // BuildFakeID builds a fake ID.

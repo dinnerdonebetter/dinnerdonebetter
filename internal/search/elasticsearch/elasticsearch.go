@@ -97,7 +97,7 @@ func elasticsearchIsReady(
 ) (ready bool) {
 	attemptCount := 0
 
-	logger := l.WithValues(map[string]interface{}{
+	logger := l.WithValues(map[string]any{
 		"interval": time.Second.String(),
 		"address":  cfg.Address,
 	})

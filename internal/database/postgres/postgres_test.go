@@ -41,7 +41,7 @@ func (s *idMatcher) Match(v driver.Value) bool {
 	return true
 }
 
-func assertArgCountMatchesQuery(t *testing.T, query string, args []interface{}) {
+func assertArgCountMatchesQuery(t *testing.T, query string, args []any) {
 	t.Helper()
 
 	queryArgCount := len(regexp.MustCompile(`\$\d+`).FindAllString(query, -1))
@@ -74,7 +74,7 @@ func formatQueryForSQLMock(query string) string {
 	).Replace(query)
 }
 
-func interfaceToDriverValue(in []interface{}) []driver.Value {
+func interfaceToDriverValue(in []any) []driver.Value {
 	out := []driver.Value{}
 
 	for _, x := range in {

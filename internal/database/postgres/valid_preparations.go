@@ -41,7 +41,7 @@ func (q *Querier) scanValidPreparation(ctx context.Context, scan database.Scanne
 
 	x = &types.ValidPreparation{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Description,
@@ -113,7 +113,7 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
-	args := []interface{}{
+	args := []any{
 		validPreparationID,
 	}
 
@@ -141,7 +141,7 @@ func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID st
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
-	args := []interface{}{
+	args := []any{
 		validPreparationID,
 	}
 
@@ -163,7 +163,7 @@ func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPr
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	args := []interface{}{}
+	args := []any{}
 
 	row := q.getOneRow(ctx, q.db, "validPreparation", getRandomValidPreparationQuery, args)
 
@@ -191,7 +191,7 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidPreparationIDToSpan(span, query)
 
-	args := []interface{}{
+	args := []any{
 		wrapQueryForILIKE(query),
 	}
 
@@ -257,7 +257,7 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.Valid
 
 	logger := q.logger.WithValue(keys.ValidPreparationIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.Description,
@@ -306,7 +306,7 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	logger := q.logger.WithValue(keys.ValidPreparationIDKey, updated.ID)
 	tracing.AttachValidPreparationIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Name,
 		updated.Description,
 		updated.IconPath,
@@ -342,7 +342,7 @@ func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationI
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
-	args := []interface{}{
+	args := []any{
 		validPreparationID,
 	}
 

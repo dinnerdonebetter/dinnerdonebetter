@@ -33,7 +33,7 @@ func (q *Querier) scanPasswordResetToken(ctx context.Context, scan database.Scan
 
 	x = &types.PasswordResetToken{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Token,
 		&x.ExpiresAt,
@@ -63,7 +63,7 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	}
 	tracing.AttachPasswordResetTokenToSpan(span, token)
 
-	args := []interface{}{
+	args := []any{
 		token,
 	}
 
@@ -91,7 +91,7 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 
 	logger := q.logger.WithValue(keys.PasswordResetTokenIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Token,
 		input.BelongsToUser,
@@ -132,7 +132,7 @@ func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTok
 	logger = logger.WithValue(keys.PasswordResetTokenIDKey, passwordResetTokenID)
 	tracing.AttachPasswordResetTokenIDToSpan(span, passwordResetTokenID)
 
-	args := []interface{}{
+	args := []any{
 		passwordResetTokenID,
 	}
 

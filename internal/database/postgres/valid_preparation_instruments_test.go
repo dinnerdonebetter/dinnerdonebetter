@@ -110,7 +110,7 @@ func TestQuerier_ValidPreparationInstrumentExists(T *testing.T) {
 		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.ID,
 		}
 
@@ -145,7 +145,7 @@ func TestQuerier_ValidPreparationInstrumentExists(T *testing.T) {
 		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.ID,
 		}
 
@@ -168,7 +168,7 @@ func TestQuerier_ValidPreparationInstrumentExists(T *testing.T) {
 		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.ID,
 		}
 
@@ -195,7 +195,7 @@ func TestQuerier_GetValidPreparationInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.ID,
 		}
 
@@ -229,7 +229,7 @@ func TestQuerier_GetValidPreparationInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.ID,
 		}
 
@@ -364,7 +364,7 @@ func TestQuerier_CreateValidPreparationInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			exampleInput.ValidPreparationID,
@@ -407,7 +407,7 @@ func TestQuerier_CreateValidPreparationInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			exampleInput.ValidPreparationID,
@@ -442,7 +442,7 @@ func TestQuerier_UpdateValidPreparationInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.Notes,
 			exampleValidPreparationInstrument.Preparation.ID,
 			exampleValidPreparationInstrument.Instrument.ID,
@@ -475,7 +475,7 @@ func TestQuerier_UpdateValidPreparationInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.Notes,
 			exampleValidPreparationInstrument.Preparation.ID,
 			exampleValidPreparationInstrument.Instrument.ID,
@@ -503,7 +503,7 @@ func TestQuerier_ArchiveValidPreparationInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.ID,
 		}
 
@@ -533,7 +533,7 @@ func TestQuerier_ArchiveValidPreparationInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidPreparationInstrument.ID,
 		}
 

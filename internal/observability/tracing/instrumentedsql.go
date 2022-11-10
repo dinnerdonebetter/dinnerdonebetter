@@ -39,6 +39,6 @@ type instrumentedSQLLoggerWrapper struct {
 	logger logging.Logger
 }
 
-func (w *instrumentedSQLLoggerWrapper) Log(_ context.Context, msg string, keyvals ...interface{}) {
+func (w *instrumentedSQLLoggerWrapper) Log(_ context.Context, msg string, keyvals ...any) {
 	// this is noisy AF, log at your own peril
 }

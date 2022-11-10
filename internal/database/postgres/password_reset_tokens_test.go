@@ -57,7 +57,7 @@ func TestSQLQuerier_GetPasswordResetTokenByToken(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleToken.Token,
 		}
 
@@ -91,7 +91,7 @@ func TestSQLQuerier_GetPasswordResetTokenByToken(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleToken.Token,
 		}
 
@@ -123,7 +123,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 			return exampleToken.CreatedAt
 		}
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Token,
 			exampleInput.BelongsToUser,
@@ -164,7 +164,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 			return exampleToken.CreatedAt
 		}
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Token,
 			exampleInput.BelongsToUser,
@@ -193,7 +193,7 @@ func TestSQLQuerier_RedeemPasswordResetToken(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{examplePasswordResetTokenID}
+		args := []any{examplePasswordResetTokenID}
 
 		db.ExpectExec(formatQueryForSQLMock(redeemPasswordResetTokenQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -225,7 +225,7 @@ func TestSQLQuerier_RedeemPasswordResetToken(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{examplePasswordResetTokenID}
+		args := []any{examplePasswordResetTokenID}
 
 		db.ExpectExec(formatQueryForSQLMock(redeemPasswordResetTokenQuery)).
 			WithArgs(interfaceToDriverValue(args)...).

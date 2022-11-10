@@ -105,7 +105,7 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanGroceryListItem.ID,
 		}
 
@@ -141,7 +141,7 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanGroceryListItem.ID,
 		}
 
@@ -164,7 +164,7 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanGroceryListItem.ID,
 		}
 
@@ -183,7 +183,7 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 func prepareForMealPlanGroceryListItemDataHydration(t *testing.T, db sqlmock.Sqlmock, exampleMealPlanGroceryListItem *types.MealPlanGroceryListItem) {
 	t.Helper()
 
-	getValidIngredientArgs := []interface{}{
+	getValidIngredientArgs := []any{
 		exampleMealPlanGroceryListItem.Ingredient.ID,
 	}
 
@@ -191,7 +191,7 @@ func prepareForMealPlanGroceryListItemDataHydration(t *testing.T, db sqlmock.Sql
 		WithArgs(interfaceToDriverValue(getValidIngredientArgs)...).
 		WillReturnRows(buildMockRowsFromValidIngredients(false, 0, &exampleMealPlanGroceryListItem.Ingredient))
 
-	getValidMeasurementUnitArgs := []interface{}{
+	getValidMeasurementUnitArgs := []any{
 		exampleMealPlanGroceryListItem.MeasurementUnit.ID,
 	}
 
@@ -212,7 +212,7 @@ func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanGroceryListItemArgs := []interface{}{
+		getMealPlanGroceryListItemArgs := []any{
 			exampleMealPlan.ID,
 			exampleMealPlanGroceryListItem.ID,
 		}
@@ -251,7 +251,7 @@ func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanGroceryListItemArgs := []interface{}{
+		getMealPlanGroceryListItemArgs := []any{
 			exampleMealPlan.ID,
 			exampleMealPlanGroceryListItem.ID,
 		}
@@ -288,7 +288,7 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanGroceryListItemsForMealPlanArgs := []interface{}{
+		getMealPlanGroceryListItemsForMealPlanArgs := []any{
 			exampleMealPlan.ID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
@@ -314,7 +314,7 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanGroceryListItemsForMealPlanArgs := []interface{}{
+		getMealPlanGroceryListItemsForMealPlanArgs := []any{
 			exampleMealPlan.ID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
@@ -336,7 +336,7 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		getMealPlanGroceryListItemsForMealPlanArgs := []interface{}{
+		getMealPlanGroceryListItemsForMealPlanArgs := []any{
 			exampleMealPlan.ID,
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
@@ -371,7 +371,7 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.BelongsToMealPlan,
 			exampleInput.ValidIngredientID,
@@ -422,7 +422,7 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.BelongsToMealPlan,
 			exampleInput.ValidIngredientID,
@@ -470,7 +470,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 			purchasedMeasurementUnitID = &exampleMealPlanGroceryListItem.PurchasedMeasurementUnit.ID
 		}
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanGroceryListItem.BelongsToMealPlan,
 			exampleMealPlanGroceryListItem.Ingredient.ID,
 			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
@@ -516,7 +516,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 			purchasedMeasurementUnitID = &exampleMealPlanGroceryListItem.PurchasedMeasurementUnit.ID
 		}
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanGroceryListItem.BelongsToMealPlan,
 			exampleMealPlanGroceryListItem.Ingredient.ID,
 			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
@@ -552,7 +552,7 @@ func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanGroceryListItem.ID,
 		}
 
@@ -582,7 +582,7 @@ func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleMealPlanGroceryListItem.ID,
 		}
 

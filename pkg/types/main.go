@@ -9,6 +9,8 @@ const (
 	sortAscendingString = "asc"
 	// sortDescendingString is the pre-determined Descending sortType for external use.
 	sortDescendingString = "desc"
+	// QueryFilterRequestContextKey is the non-string type we use for referencing QueryFilter objects.
+	QueryFilterRequestContextKey ContextKey = "query_filter"
 )
 
 var (

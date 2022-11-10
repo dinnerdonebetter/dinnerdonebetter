@@ -28,8 +28,8 @@ const (
 type (
 	// cookieEncoderDecoder is a stand-in interface for gorilla/securecookie.
 	cookieEncoderDecoder interface {
-		Encode(name string, value interface{}) (string, error)
-		Decode(name, value string, dst interface{}) error
+		Encode(name string, value any) (string, error)
+		Decode(name, value string, dst any) error
 	}
 
 	// service handles passwords service-wide.

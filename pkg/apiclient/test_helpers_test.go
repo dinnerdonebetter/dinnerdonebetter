@@ -54,11 +54,11 @@ type requestSpec struct {
 	path              string
 	method            string
 	query             string
-	pathArgs          []interface{}
+	pathArgs          []any
 	bodyShouldBeEmpty bool
 }
 
-func newRequestSpec(bodyShouldBeEmpty bool, method, query, path string, pathArgs ...interface{}) *requestSpec {
+func newRequestSpec(bodyShouldBeEmpty bool, method, query, path string, pathArgs ...any) *requestSpec {
 	return &requestSpec{
 		path:              path,
 		pathArgs:          pathArgs,
@@ -97,7 +97,7 @@ func assertRequestQuality(t *testing.T, req *http.Request, spec *requestSpec) {
 }
 
 // createBodyFromStruct takes any value in and returns an io.Reader for placement within http.NewRequest's last argument.
-func createBodyFromStruct(t *testing.T, in interface{}) io.Reader {
+func createBodyFromStruct(t *testing.T, in any) io.Reader {
 	t.Helper()
 
 	out, err := json.Marshal(in)
@@ -198,7 +198,7 @@ func buildTestClientWithBytesResponse(t *testing.T, spec *requestSpec, outputBod
 	return buildTestClient(t, ts), ts
 }
 
-func buildTestClientWithJSONResponse(t *testing.T, spec *requestSpec, outputBody interface{}) (*Client, *httptest.Server) {
+func buildTestClientWithJSONResponse(t *testing.T, spec *requestSpec, outputBody any) (*Client, *httptest.Server) {
 	t.Helper()
 
 	ts := httptest.NewTLSServer(http.HandlerFunc(
@@ -214,7 +214,7 @@ func buildTestClientWithJSONResponse(t *testing.T, spec *requestSpec, outputBody
 	return buildTestClient(t, ts), ts
 }
 
-func buildTestClientWithRequestBodyValidation(t *testing.T, spec *requestSpec, inputBody, expectedInput, outputBody interface{}) *Client {
+func buildTestClientWithRequestBodyValidation(t *testing.T, spec *requestSpec, inputBody, expectedInput, outputBody any) *Client {
 	t.Helper()
 
 	ts := httptest.NewTLSServer(http.HandlerFunc(

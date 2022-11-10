@@ -41,7 +41,7 @@ func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, include
 
 	x = &types.Recipe{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Source,
@@ -110,7 +110,7 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 	}
 
@@ -136,7 +136,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 	x = &types.Recipe{}
 	y = &types.RecipeStep{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Source,
@@ -191,7 +191,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 	}
 
@@ -335,7 +335,7 @@ func (q *Querier) getRecipeIDsForMeal(ctx context.Context, mealID string) (x []s
 	}
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	args := []interface{}{
+	args := []any{
 		mealID,
 	}
 
@@ -403,7 +403,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.Source,
@@ -576,7 +576,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	tracing.AttachRecipeIDToSpan(span, updated.ID)
 	tracing.AttachUserIDToSpan(span, updated.CreatedByUser)
 
-	args := []interface{}{
+	args := []any{
 		updated.Name,
 		updated.Source,
 		updated.Description,
@@ -616,7 +616,7 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []interface{}{
+	args := []any{
 		userID,
 		recipeID,
 	}

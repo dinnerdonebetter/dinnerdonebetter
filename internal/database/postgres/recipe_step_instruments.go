@@ -61,7 +61,7 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 	x = &types.RecipeStepInstrument{}
 	instrument := types.NullableValidInstrument{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&instrument.ID,
 		&instrument.Name,
@@ -160,7 +160,7 @@ func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, reci
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepInstrumentID,
 		recipeID,
@@ -204,7 +204,7 @@ func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepInstrumentID,
 		recipeID,
@@ -285,7 +285,7 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []interface{}{
+	args := []any{
 		recipeID,
 	}
 
@@ -316,7 +316,7 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 
 	logger := q.logger.WithValue(keys.RecipeStepInstrumentIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.InstrumentID,
 		input.RecipeStepProductID,
@@ -385,7 +385,7 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 		instrumentID = &updated.Instrument.ID
 	}
 
-	args := []interface{}{
+	args := []any{
 		instrumentID,
 		updated.RecipeStepProductID,
 		updated.Name,
@@ -430,7 +430,7 @@ func (q *Querier) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID,
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		recipeStepID,
 		recipeStepInstrumentID,
 	}

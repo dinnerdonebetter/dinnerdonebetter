@@ -53,7 +53,7 @@ func (q *Querier) scanValidIngredient(ctx context.Context, scan database.Scanner
 
 	x = &types.ValidIngredient{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Description,
@@ -141,7 +141,7 @@ func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID s
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientID,
 	}
 
@@ -169,7 +169,7 @@ func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID stri
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientID,
 	}
 
@@ -191,7 +191,7 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	args := []interface{}{}
+	args := []any{}
 
 	row := q.getOneRow(ctx, q.db, "valid ingredient", getRandomValidIngredientQuery, args)
 
@@ -219,7 +219,7 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string) (
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidIngredientIDToSpan(span, query)
 
-	args := []interface{}{
+	args := []any{
 		wrapQueryForILIKE(query),
 	}
 
@@ -249,7 +249,7 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidIngredientIDToSpan(span, query)
 
-	args := []interface{}{
+	args := []any{
 		wrapQueryForILIKE(query),
 	}
 
@@ -317,7 +317,7 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 
 	logger := q.logger.WithValue(keys.ValidIngredientIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.Description,
@@ -398,7 +398,7 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 	logger := q.logger.WithValue(keys.ValidIngredientIDKey, updated.ID)
 	tracing.AttachValidIngredientIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Name,
 		updated.Description,
 		updated.Warning,
@@ -450,7 +450,7 @@ func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID 
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
 
-	args := []interface{}{
+	args := []any{
 		validIngredientID,
 	}
 

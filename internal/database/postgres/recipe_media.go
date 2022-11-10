@@ -36,7 +36,7 @@ func (q *Querier) scanPieceOfRecipeMedia(ctx context.Context, scan database.Scan
 
 	x = &types.RecipeMedia{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.BelongsToRecipe,
 		&x.BelongsToRecipeStep,
@@ -93,7 +93,7 @@ func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
 
-	args := []interface{}{
+	args := []any{
 		recipeMediaID,
 	}
 
@@ -121,7 +121,7 @@ func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*ty
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
 
-	args := []interface{}{
+	args := []any{
 		recipeMediaID,
 	}
 
@@ -151,7 +151,7 @@ func (q *Querier) getRecipeMediaForRecipe(ctx context.Context, recipeID string) 
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	recipeMediaForRecipeArgs := []interface{}{
+	recipeMediaForRecipeArgs := []any{
 		recipeID,
 	}
 
@@ -189,7 +189,7 @@ func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, rec
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	recipeMediaForRecipeStepArgs := []interface{}{
+	recipeMediaForRecipeStepArgs := []any{
 		recipeID,
 		recipeStepID,
 	}
@@ -220,7 +220,7 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 
 	logger := q.logger.WithValue(keys.RecipeMediaIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.BelongsToRecipe,
 		input.BelongsToRecipeStep,
@@ -267,7 +267,7 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 	logger := q.logger.WithValue(keys.RecipeMediaIDKey, updated.ID)
 	tracing.AttachRecipeMediaIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.BelongsToRecipe,
 		updated.BelongsToRecipeStep,
 		updated.MimeType,
@@ -302,7 +302,7 @@ func (q *Querier) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) 
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
 
-	args := []interface{}{
+	args := []any{
 		recipeMediaID,
 	}
 

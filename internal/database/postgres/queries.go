@@ -41,7 +41,7 @@ func (q *Querier) logQueryBuildingError(span tracing.Span, err error) {
 }
 
 // BuildQuery builds a given query, handles whatever errs and returns just the query and args.
-func (q *Querier) buildQuery(span tracing.Span, builder squirrel.Sqlizer) (query string, args []interface{}) {
+func (q *Querier) buildQuery(span tracing.Span, builder squirrel.Sqlizer) (query string, args []any) {
 	query, args, err := builder.ToSql()
 	q.logQueryBuildingError(span, err)
 	return minimizeSQL(query), args
@@ -56,7 +56,7 @@ func (q *Querier) buildTotalCountQuery(
 	userID string,
 	forAdmin,
 	includeArchived bool,
-) (query string, args []interface{}) {
+) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -99,7 +99,7 @@ func (q *Querier) buildTotalCountQueryWithILike(
 	userID string,
 	forAdmin,
 	includeArchived bool,
-) (query string, args []interface{}) {
+) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -144,7 +144,7 @@ func (q *Querier) buildFilteredCountQuery(
 	forAdmin,
 	includeArchived bool,
 	filter *types.QueryFilter,
-) (query string, args []interface{}) {
+) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -196,7 +196,7 @@ func (q *Querier) buildFilteredCountQueryWithILike(
 	forAdmin,
 	includeArchived bool,
 	filter *types.QueryFilter,
-) (query string, args []interface{}) {
+) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -249,7 +249,7 @@ func (q *Querier) buildListQuery(
 	ownerID string,
 	forAdmin bool,
 	filter *types.QueryFilter,
-) (query string, args []interface{}) {
+) (query string, args []any) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -322,7 +322,7 @@ func (q *Querier) buildListQueryWithILike(
 	ownerID string,
 	forAdmin bool,
 	filter *types.QueryFilter,
-) (query string, args []interface{}) {
+) (query string, args []any) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

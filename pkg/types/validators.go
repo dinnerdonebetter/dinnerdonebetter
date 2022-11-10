@@ -19,7 +19,7 @@ type stringDurationValidator struct {
 	maxDuration time.Duration
 }
 
-func (v *stringDurationValidator) Validate(value interface{}) error {
+func (v *stringDurationValidator) Validate(value any) error {
 	raw, ok := value.(string)
 	if !ok {
 		return errInvalidType

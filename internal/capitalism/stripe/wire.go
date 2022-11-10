@@ -1,9 +1,9 @@
 package stripe
 
 import (
-	"github.com/prixfixeco/backend/internal/capitalism"
-
 	"github.com/google/wire"
+
+	"github.com/prixfixeco/backend/internal/capitalism"
 )
 
 var (

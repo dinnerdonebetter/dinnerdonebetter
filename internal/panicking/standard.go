@@ -9,10 +9,10 @@ func NewProductionPanicker() Panicker {
 
 type stdLibPanicker struct{}
 
-func (p stdLibPanicker) Panic(msg interface{}) {
+func (p stdLibPanicker) Panic(msg any) {
 	panic(msg)
 }
 
-func (p stdLibPanicker) Panicf(format string, args ...interface{}) {
+func (p stdLibPanicker) Panicf(format string, args ...any) {
 	p.Panic(fmt.Sprintf(format, args...))
 }

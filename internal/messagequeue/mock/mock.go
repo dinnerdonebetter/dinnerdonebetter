@@ -16,7 +16,7 @@ type Publisher struct {
 }
 
 // Publish implements our interface.
-func (m *Publisher) Publish(ctx context.Context, data interface{}) error {
+func (m *Publisher) Publish(ctx context.Context, data any) error {
 	return m.Called(ctx, data).Error(0)
 }
 

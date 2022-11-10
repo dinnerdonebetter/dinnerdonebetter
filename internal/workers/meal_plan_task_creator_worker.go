@@ -121,7 +121,7 @@ func (w *MealPlanTaskCreatorWorker) DetermineCreatableMealPlanTasks(ctx context.
 
 	inputs := map[string][]*types.MealPlanTaskDatabaseCreationInput{}
 	for _, result := range results {
-		l := logger.Clone().WithValues(map[string]interface{}{
+		l := logger.Clone().WithValues(map[string]any{
 			keys.MealPlanIDKey:       result.MealPlanID,
 			keys.MealPlanEventIDKey:  result.MealPlanEventID,
 			keys.MealPlanOptionIDKey: result.MealPlanOptionID,

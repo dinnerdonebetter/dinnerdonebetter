@@ -69,7 +69,7 @@ func AttachTimeToSpan(span trace.Span, attachmentKey string, t time.Time) {
 }
 
 // AttachToSpan allows a user to attach any value to a span.
-func AttachToSpan(span trace.Span, key string, val interface{}) {
+func AttachToSpan(span trace.Span, key string, val any) {
 	if span != nil {
 		span.SetAttributes(attribute.String(key, fmt.Sprintf("%+v", val)))
 	}
@@ -211,7 +211,7 @@ func AttachErrorToSpan(span trace.Span, description string, err error) {
 }
 
 // AttachDatabaseQueryToSpan attaches a given search query to a span.
-func AttachDatabaseQueryToSpan(span trace.Span, queryDescription, query string, args []interface{}) {
+func AttachDatabaseQueryToSpan(span trace.Span, queryDescription, query string, args []any) {
 	AttachStringToSpan(span, keys.DatabaseQueryKey, query)
 	AttachStringToSpan(span, "query_description", queryDescription)
 

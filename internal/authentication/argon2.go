@@ -71,7 +71,7 @@ func (a *Argon2Authenticator) ValidateLogin(ctx context.Context, hash, password,
 
 	if totpSecret != "" && totpCode != "" {
 		if !totp.Validate(totpCode, totpSecret) {
-			logger.WithValues(map[string]interface{}{
+			logger.WithValues(map[string]any{
 				"password_matches": passwordMatches,
 				"provided_code":    totpCode,
 			}).Debug("invalid code provided")

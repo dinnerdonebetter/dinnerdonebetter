@@ -75,7 +75,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 		f, err := os.CreateTemp("", "")
 		require.NoError(t, err)
 
-		assert.Error(t, cfg.EncodeToFile(f.Name(), func(interface{}) ([]byte, error) {
+		assert.Error(t, cfg.EncodeToFile(f.Name(), func(any) ([]byte, error) {
 			return nil, errors.New("blah")
 		}))
 	})

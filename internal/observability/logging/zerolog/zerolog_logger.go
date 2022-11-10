@@ -106,7 +106,7 @@ func (l *zerologLogger) Error(err error, whatWasHappeningWhenErrorOccurred strin
 }
 
 // Printf satisfies our contract for the logging.Logger Printf method.
-func (l *zerologLogger) Printf(format string, args ...interface{}) {
+func (l *zerologLogger) Printf(format string, args ...any) {
 	l.logger.Printf(format, args...)
 }
 
@@ -117,13 +117,13 @@ func (l *zerologLogger) Clone() logging.Logger {
 }
 
 // WithValue satisfies our contract for the logging.Logger WithValue method.
-func (l *zerologLogger) WithValue(key string, value interface{}) logging.Logger {
+func (l *zerologLogger) WithValue(key string, value any) logging.Logger {
 	l2 := l.logger.With().Interface(key, value).Logger()
 	return &zerologLogger{logger: l2}
 }
 
 // WithValues satisfies our contract for the logging.Logger WithValues method.
-func (l *zerologLogger) WithValues(values map[string]interface{}) logging.Logger {
+func (l *zerologLogger) WithValues(values map[string]any) logging.Logger {
 	var l2 = l.logger.With().Logger()
 
 	for key, val := range values {

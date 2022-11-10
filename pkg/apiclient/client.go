@@ -256,8 +256,8 @@ func (c *Client) fetchResponseToRequest(ctx context.Context, client *http.Client
 	return res, nil
 }
 
-// executeAndUnmarshal executes a request and unmarshalls it to the provided interface.
-func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, httpClient *http.Client, out interface{}) error {
+// executeAndUnmarshal executes a request and unmarshals it to the provided interface.
+func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, httpClient *http.Client, out any) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -283,12 +283,12 @@ func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, htt
 }
 
 // fetchAndUnmarshal takes a given request and executes it with the auth client.
-func (c *Client) fetchAndUnmarshal(ctx context.Context, req *http.Request, out interface{}) error {
+func (c *Client) fetchAndUnmarshal(ctx context.Context, req *http.Request, out any) error {
 	return c.executeAndUnmarshal(ctx, req, c.authedClient, out)
 }
 
 // fetchAndUnmarshalWithoutAuthentication takes a given request and executes it with the plain client.
-func (c *Client) fetchAndUnmarshalWithoutAuthentication(ctx context.Context, req *http.Request, out interface{}) error {
+func (c *Client) fetchAndUnmarshalWithoutAuthentication(ctx context.Context, req *http.Request, out any) error {
 	return c.executeAndUnmarshal(ctx, req, c.unauthenticatedClient, out)
 }
 

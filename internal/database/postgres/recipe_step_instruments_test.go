@@ -109,7 +109,7 @@ func TestQuerier_RecipeStepInstrumentExists(T *testing.T) {
 		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepInstrument.ID,
 			exampleRecipeID,
@@ -183,7 +183,7 @@ func TestQuerier_RecipeStepInstrumentExists(T *testing.T) {
 		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepInstrument.ID,
 			exampleRecipeID,
@@ -212,7 +212,7 @@ func TestQuerier_RecipeStepInstrumentExists(T *testing.T) {
 		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepInstrument.ID,
 			exampleRecipeID,
@@ -245,7 +245,7 @@ func TestQuerier_GetRecipeStepInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepInstrument.ID,
 			exampleRecipeID,
@@ -316,7 +316,7 @@ func TestQuerier_GetRecipeStepInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepInstrument.ID,
 			exampleRecipeID,
@@ -478,7 +478,7 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.InstrumentID,
 			exampleInput.RecipeStepProductID,
@@ -528,7 +528,7 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.InstrumentID,
 			exampleInput.RecipeStepProductID,
@@ -570,7 +570,7 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepInstrument.Instrument.ID,
 			exampleRecipeStepInstrument.RecipeStepProductID,
 			exampleRecipeStepInstrument.Name,
@@ -610,7 +610,7 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepInstrument.Instrument.ID,
 			exampleRecipeStepInstrument.RecipeStepProductID,
 			exampleRecipeStepInstrument.Name,
@@ -646,7 +646,7 @@ func TestQuerier_ArchiveRecipeStepInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepInstrument.ID,
 		}
@@ -691,7 +691,7 @@ func TestQuerier_ArchiveRecipeStepInstrument(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeStepID,
 			exampleRecipeStepInstrument.ID,
 		}

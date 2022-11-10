@@ -131,7 +131,7 @@ func TestQuerier_ValidIngredientMeasurementUnitExists(T *testing.T) {
 		exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -166,7 +166,7 @@ func TestQuerier_ValidIngredientMeasurementUnitExists(T *testing.T) {
 		exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -189,7 +189,7 @@ func TestQuerier_ValidIngredientMeasurementUnitExists(T *testing.T) {
 		exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -216,7 +216,7 @@ func TestQuerier_GetValidIngredientMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -250,7 +250,7 @@ func TestQuerier_GetValidIngredientMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -385,7 +385,7 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			exampleInput.ValidMeasurementUnitID,
@@ -433,7 +433,7 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			exampleInput.ValidMeasurementUnitID,
@@ -470,7 +470,7 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.Notes,
 			exampleValidIngredientMeasurementUnit.MeasurementUnit.ID,
 			exampleValidIngredientMeasurementUnit.Ingredient.ID,
@@ -505,7 +505,7 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.Notes,
 			exampleValidIngredientMeasurementUnit.MeasurementUnit.ID,
 			exampleValidIngredientMeasurementUnit.Ingredient.ID,
@@ -535,7 +535,7 @@ func TestQuerier_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -565,7 +565,7 @@ func TestQuerier_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 

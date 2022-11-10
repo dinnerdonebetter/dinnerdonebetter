@@ -79,7 +79,7 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 		DestinationHousehold: types.Household{},
 	}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&householdInvitation.ID,
 		&householdInvitation.DestinationHousehold.ID,
 		&householdInvitation.DestinationHousehold.Name,
@@ -183,7 +183,7 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []interface{}{
+	args := []any{
 		householdInvitationID,
 	}
 
@@ -217,7 +217,7 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []interface{}{
+	args := []any{
 		householdID,
 		householdInvitationID,
 	}
@@ -255,7 +255,7 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 
 	logger.Debug("fetching household invitation")
 
-	args := []interface{}{
+	args := []any{
 		token,
 		invitationID,
 	}
@@ -293,7 +293,7 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 	logger = logger.WithValue(keys.HouseholdInvitationTokenKey, token)
 	tracing.AttachHouseholdInvitationTokenToSpan(span, token)
 
-	args := []interface{}{
+	args := []any{
 		emailAddress,
 		token,
 	}
@@ -322,7 +322,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 
 	logger := q.logger.WithValue(keys.HouseholdInvitationIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.FromUser,
 		input.ToUser,
@@ -358,7 +358,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 }
 
 // BuildGetPendingHouseholdInvitationsFromUserQuery builds a query for fetching pending household invitations sent by a given user.
-func (q *Querier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []interface{}) {
+func (q *Querier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -435,7 +435,7 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 }
 
 // BuildGetPendingHouseholdInvitationsForUserQuery builds a query for fetching pending household invitations sent to a given user.
-func (q *Querier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []interface{}) {
+func (q *Querier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -526,7 +526,7 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []interface{}{
+	args := []any{
 		status,
 		note,
 		householdInvitationID,
@@ -623,7 +623,7 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, userID)
 
-	args := []interface{}{userID, userEmail}
+	args := []any{userID, userEmail}
 
 	if err := q.performWriteQuery(ctx, querier, "invitation attachment", attachInvitationsToUserIDQuery, args); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareAndLogError(err, logger, span, "attaching invitations to user")
@@ -648,7 +648,7 @@ func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.
 
 	logger.Debug("fetched invitation to accept for user")
 
-	createHouseholdMembershipForNewUserArgs := []interface{}{
+	createHouseholdMembershipForNewUserArgs := []any{
 		identifiers.New(),
 		input.ID,
 		input.DestinationHouseholdID,

@@ -99,7 +99,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	return nil
 }
 
-func (e *Emailer) preparePersonalization(to *mail.Email, data map[string]interface{}) *mail.Personalization {
+func (e *Emailer) preparePersonalization(to *mail.Email, data map[string]any) *mail.Personalization {
 	p := mail.NewPersonalization()
 	p.AddTos(to)
 
@@ -111,7 +111,7 @@ func (e *Emailer) preparePersonalization(to *mail.Email, data map[string]interfa
 }
 
 // sendDynamicTemplateEmail sends an email.
-func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.Email, templateID string, data map[string]interface{}, request rest.Request) error {
+func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.Email, templateID string, data map[string]any, request rest.Request) error {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -15,11 +15,11 @@ func NewMockPanicker() *Panicker {
 }
 
 // Panic satisfies our interface.
-func (p *Panicker) Panic(msg interface{}) {
+func (p *Panicker) Panic(msg any) {
 	p.Called(msg)
 }
 
 // Panicf satisfies our interface.
-func (p *Panicker) Panicf(format string, args ...interface{}) {
+func (p *Panicker) Panicf(format string, args ...any) {
 	p.Called(format, args)
 }

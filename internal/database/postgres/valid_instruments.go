@@ -35,7 +35,7 @@ func (q *Querier) scanValidInstrument(ctx context.Context, scan database.Scanner
 
 	x = &types.ValidInstrument{}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.PluralName,
@@ -105,7 +105,7 @@ func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID s
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		validInstrumentID,
 	}
 
@@ -133,7 +133,7 @@ func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID stri
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		validInstrumentID,
 	}
 
@@ -155,7 +155,7 @@ func (q *Querier) GetRandomValidInstrument(ctx context.Context) (*types.ValidIns
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	args := []interface{}{}
+	args := []any{}
 
 	row := q.getOneRow(ctx, q.db, "validInstrument", getRandomValidInstrumentQuery, args)
 
@@ -183,7 +183,7 @@ func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) (
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidInstrumentIDToSpan(span, query)
 
-	args := []interface{}{
+	args := []any{
 		wrapQueryForILIKE(query),
 	}
 
@@ -215,7 +215,7 @@ func (q *Querier) SearchForValidInstrumentsForPreparation(ctx context.Context, p
 
 	// TODO: restrict results by preparation ID
 
-	args := []interface{}{
+	args := []any{
 		wrapQueryForILIKE(query),
 	}
 
@@ -283,7 +283,7 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 
 	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, input.ID)
 
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.Name,
 		input.PluralName,
@@ -328,7 +328,7 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, updated.ID)
 	tracing.AttachValidInstrumentIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.Name,
 		updated.PluralName,
 		updated.Description,
@@ -362,7 +362,7 @@ func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID 
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
 
-	args := []interface{}{
+	args := []any{
 		validInstrumentID,
 	}
 

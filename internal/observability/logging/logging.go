@@ -40,15 +40,15 @@ type Logger interface {
 	Info(string)
 	Debug(string)
 	Error(err error, whatWasHappeningWhenErrorOccurred string)
-	Printf(string, ...interface{})
+	Printf(string, ...any)
 
 	SetLevel(Level)
 	SetRequestIDFunc(RequestIDFunc)
 
 	Clone() Logger
 	WithName(string) Logger
-	WithValues(map[string]interface{}) Logger
-	WithValue(string, interface{}) Logger
+	WithValues(map[string]any) Logger
+	WithValue(string, any) Logger
 	WithRequest(*http.Request) Logger
 	WithResponse(response *http.Response) Logger
 	WithError(error) Logger

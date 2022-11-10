@@ -115,7 +115,7 @@ func TestQuerier_UserHasStatus(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleStatus := string(types.GoodStandingUserAccountStatus)
 
-		args := []interface{}{exampleUserID, exampleStatus}
+		args := []any{exampleUserID, exampleStatus}
 
 		db.ExpectQuery(formatQueryForSQLMock(userHasStatusQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -160,7 +160,7 @@ func TestQuerier_UserHasStatus(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleStatus := string(types.GoodStandingUserAccountStatus)
 
-		args := []interface{}{exampleUserID, exampleStatus}
+		args := []any{exampleUserID, exampleStatus}
 
 		db.ExpectQuery(formatQueryForSQLMock(userHasStatusQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -185,7 +185,7 @@ func TestQuerier_getUser(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.ID}
+		args := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -217,7 +217,7 @@ func TestQuerier_getUser(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.ID}
+		args := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -238,7 +238,7 @@ func TestQuerier_getUser(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.ID}
+		args := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -263,7 +263,7 @@ func TestQuerier_GetUser(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.ID}
+		args := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -295,7 +295,7 @@ func TestQuerier_GetUser(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.ID}
+		args := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -320,7 +320,7 @@ func TestQuerier_GetUserWithUnverifiedTwoFactorSecret(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.ID}
+		args := []any{exampleUser.ID}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -356,7 +356,7 @@ func TestQuerier_GetUserByEmail(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.EmailAddress}
+		args := []any{exampleUser.EmailAddress}
 		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
@@ -389,7 +389,7 @@ func TestQuerier_GetUserByEmail(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.EmailAddress}
+		args := []any{exampleUser.EmailAddress}
 		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
@@ -413,7 +413,7 @@ func TestQuerier_GetUserByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.Username}
+		args := []any{exampleUser.Username}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -445,7 +445,7 @@ func TestQuerier_GetUserByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.Username}
+		args := []any{exampleUser.Username}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -466,7 +466,7 @@ func TestQuerier_GetUserByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.Username}
+		args := []any{exampleUser.Username}
 
 		db.ExpectQuery(formatQueryForSQLMock(getUserByUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -491,7 +491,7 @@ func TestQuerier_GetAdminUserByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.Username}
+		args := []any{exampleUser.Username}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAdminUserByUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -525,7 +525,7 @@ func TestQuerier_GetAdminUserByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.Username}
+		args := []any{exampleUser.Username}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAdminUserByUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -546,7 +546,7 @@ func TestQuerier_GetAdminUserByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{exampleUser.Username}
+		args := []any{exampleUser.Username}
 
 		db.ExpectQuery(formatQueryForSQLMock(getAdminUserByUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -573,7 +573,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleUsername),
 		}
 
@@ -606,7 +606,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleUsername),
 		}
 
@@ -628,7 +628,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleUsername),
 		}
 
@@ -649,7 +649,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			wrapQueryForILIKE(exampleUsername),
 		}
 
@@ -782,7 +782,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -802,7 +802,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -817,7 +817,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -830,7 +830,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		attachInvitationsToUsersArgs := []interface{}{
+		attachInvitationsToUsersArgs := []any{
 			&idMatcher{},
 			exampleUser.EmailAddress,
 		}
@@ -914,7 +914,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -963,7 +963,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1015,7 +1015,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1035,7 +1035,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1050,7 +1050,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1062,7 +1062,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		args := []interface{}{
+		args := []any{
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.InvitationToken,
 		}
@@ -1074,7 +1074,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs = []interface{}{
+		createHouseholdMembershipForNewUserArgs = []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1086,7 +1086,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		invitationStatusUpdateArgs := []interface{}{
+		invitationStatusUpdateArgs := []any{
 			types.AcceptedHouseholdInvitationStatus,
 			"",
 			exampleHouseholdInvitation.ID,
@@ -1097,7 +1097,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		attachInvitationsToUsersArgs := []interface{}{
+		attachInvitationsToUsersArgs := []any{
 			&idMatcher{},
 			exampleUser.EmailAddress,
 		}
@@ -1143,7 +1143,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1163,7 +1163,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1178,7 +1178,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1190,7 +1190,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		args := []interface{}{
+		args := []any{
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.InvitationToken,
 		}
@@ -1234,7 +1234,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1254,7 +1254,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1269,7 +1269,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1281,7 +1281,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		args := []interface{}{
+		args := []any{
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.InvitationToken,
 		}
@@ -1293,7 +1293,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs = []interface{}{
+		createHouseholdMembershipForNewUserArgs = []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1337,7 +1337,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1357,7 +1357,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1403,7 +1403,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1423,7 +1423,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1438,7 +1438,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1482,7 +1482,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1502,7 +1502,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1517,7 +1517,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1530,7 +1530,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		attachInvitationsToUsersArgs := []interface{}{
+		attachInvitationsToUsersArgs := []any{
 			&idMatcher{},
 			exampleUser.EmailAddress,
 		}
@@ -1571,7 +1571,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1591,7 +1591,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1606,7 +1606,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1619,7 +1619,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		attachInvitationsToUsersArgs := []interface{}{
+		attachInvitationsToUsersArgs := []any{
 			&idMatcher{},
 			exampleUser.EmailAddress,
 		}
@@ -1663,7 +1663,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		userCreationArgs := []interface{}{
+		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
@@ -1683,7 +1683,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		// create household for created user
 		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
 		householdCreationInput.ID = exampleHousehold.ID
-		householdCreationArgs := []interface{}{
+		householdCreationArgs := []any{
 			&idMatcher{},
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
@@ -1698,7 +1698,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1710,7 +1710,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		args := []interface{}{
+		args := []any{
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.InvitationToken,
 		}
@@ -1722,7 +1722,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs = []interface{}{
+		createHouseholdMembershipForNewUserArgs = []any{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1734,7 +1734,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		invitationStatusUpdateArgs := []interface{}{
+		invitationStatusUpdateArgs := []any{
 			types.AcceptedHouseholdInvitationStatus,
 			"",
 			exampleHouseholdInvitation.ID,
@@ -1765,7 +1765,7 @@ func TestQuerier_UpdateUser(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleUser.Username,
 			exampleUser.HashedPassword,
 			exampleUser.AvatarSrc,
@@ -1802,7 +1802,7 @@ func TestQuerier_UpdateUser(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleUser.Username,
 			exampleUser.HashedPassword,
 			exampleUser.AvatarSrc,
@@ -1835,7 +1835,7 @@ func TestQuerier_UpdateUserPassword(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHashedPassword,
 			false,
 			exampleUserID,
@@ -1881,7 +1881,7 @@ func TestQuerier_UpdateUserPassword(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleHashedPassword,
 			false,
 			exampleUserID,
@@ -1908,7 +1908,7 @@ func TestQuerier_UpdateUserTwoFactorSecret(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			nil,
 			exampleUser.TwoFactorSecret,
 			exampleUser.ID,
@@ -1953,7 +1953,7 @@ func TestQuerier_UpdateUserTwoFactorSecret(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			nil,
 			exampleUser.TwoFactorSecret,
 			exampleUser.ID,
@@ -1980,7 +1980,7 @@ func TestQuerier_VerifyUserTwoFactorSecret(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			types.GoodStandingUserAccountStatus,
 			exampleUserID,
 		}
@@ -2011,7 +2011,7 @@ func TestQuerier_VerifyUserTwoFactorSecret(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			types.GoodStandingUserAccountStatus,
 			exampleUserID,
 		}
@@ -2039,13 +2039,13 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		archiveUserArgs := []interface{}{exampleUserID}
+		archiveUserArgs := []any{exampleUserID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveUserQuery)).
 			WithArgs(interfaceToDriverValue(archiveUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		archiveMembershipsArgs := []interface{}{exampleUserID}
+		archiveMembershipsArgs := []any{exampleUserID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveMembershipsQuery)).
 			WithArgs(interfaceToDriverValue(archiveMembershipsArgs)...).
@@ -2092,7 +2092,7 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		archiveUserArgs := []interface{}{exampleUserID}
+		archiveUserArgs := []any{exampleUserID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveUserQuery)).
 			WithArgs(interfaceToDriverValue(archiveUserArgs)...).
@@ -2115,13 +2115,13 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		archiveUserArgs := []interface{}{exampleUserID}
+		archiveUserArgs := []any{exampleUserID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveUserQuery)).
 			WithArgs(interfaceToDriverValue(archiveUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		archiveMembershipsArgs := []interface{}{exampleUserID}
+		archiveMembershipsArgs := []any{exampleUserID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveMembershipsQuery)).
 			WithArgs(interfaceToDriverValue(archiveMembershipsArgs)...).
@@ -2144,13 +2144,13 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 
 		db.ExpectBegin()
 
-		archiveUserArgs := []interface{}{exampleUserID}
+		archiveUserArgs := []any{exampleUserID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveUserQuery)).
 			WithArgs(interfaceToDriverValue(archiveUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		archiveMembershipsArgs := []interface{}{exampleUserID}
+		archiveMembershipsArgs := []any{exampleUserID}
 
 		db.ExpectExec(formatQueryForSQLMock(archiveMembershipsQuery)).
 			WithArgs(interfaceToDriverValue(archiveMembershipsArgs)...).

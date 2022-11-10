@@ -1,15 +1,17 @@
 package zerolog
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/url"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
+
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 func Test_buildZerologger(T *testing.T) {
@@ -166,7 +168,7 @@ func Test_zerologLogger_WithValues(T *testing.T) {
 
 		l := NewZerologLogger()
 
-		assert.NotNil(t, l.WithValues(map[string]interface{}{"name": t.Name()}))
+		assert.NotNil(t, l.WithValues(map[string]any{"name": t.Name()}))
 	})
 }
 
@@ -179,6 +181,21 @@ func Test_zerologLogger_WithError(T *testing.T) {
 		l := NewZerologLogger()
 
 		assert.NotNil(t, l.WithError(errors.New("blah")))
+	})
+}
+
+func Test_zerologLogger_WithSpan(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		l := NewZerologLogger()
+
+		span := trace.SpanFromContext(ctx)
+
+		assert.NotNil(t, l.WithSpan(span))
 	})
 }
 

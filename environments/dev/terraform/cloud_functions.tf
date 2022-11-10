@@ -1,4 +1,5 @@
 locals {
   go_runtime                 = "go119"
-  pubsub_topic_publish_event = "google.pubsub.topic.publish"
+  available_memory           = "128Mi"
+  pubsub_topic_publish_event = "google.cloud.pubsub.topic.v1.messagePublished"
 }

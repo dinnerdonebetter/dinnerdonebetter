@@ -16,9 +16,9 @@ type (
 	// ClientEncoder is an encoder for a service client.
 	ClientEncoder interface {
 		ContentType() string
-		Unmarshal(ctx context.Context, data []byte, v interface{}) error
-		Encode(ctx context.Context, dest io.Writer, v interface{}) error
-		EncodeReader(ctx context.Context, data interface{}) (io.Reader, error)
+		Unmarshal(ctx context.Context, data []byte, v any) error
+		Encode(ctx context.Context, dest io.Writer, v any) error
+		EncodeReader(ctx context.Context, data any) (io.Reader, error)
 	}
 
 	// clientEncoder is our concrete implementation of ClientEncoder.
@@ -29,12 +29,12 @@ type (
 	}
 )
 
-func (e *clientEncoder) Unmarshal(ctx context.Context, data []byte, v interface{}) error {
+func (e *clientEncoder) Unmarshal(ctx context.Context, data []byte, v any) error {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := e.logger.WithValue("data_length", len(data))
-	var unmarshalFunc func(data []byte, v interface{}) error
+	var unmarshalFunc func(data []byte, v any) error
 
 	switch e.contentType {
 	case ContentTypeXML:
@@ -52,7 +52,7 @@ func (e *clientEncoder) Unmarshal(ctx context.Context, data []byte, v interface{
 	return nil
 }
 
-func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data interface{}) error {
+func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data any) error {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,11 +72,11 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data interfa
 	return nil
 }
 
-func (e *clientEncoder) EncodeReader(ctx context.Context, data interface{}) (io.Reader, error) {
+func (e *clientEncoder) EncodeReader(ctx context.Context, data any) (io.Reader, error) {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	var marshalFunc func(v interface{}) ([]byte, error)
+	var marshalFunc func(v any) ([]byte, error)
 
 	switch e.contentType {
 	case ContentTypeXML:

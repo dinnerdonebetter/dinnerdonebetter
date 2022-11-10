@@ -64,7 +64,7 @@ func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner,
 		Votes: []*types.MealPlanOptionVote{},
 	}
 
-	targetVars := []interface{}{
+	targetVars := []any{
 		&x.ID,
 		&x.AssignedCook,
 		&x.AssignedDishwasher,
@@ -155,7 +155,7 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 		mealPlanEventID,
 		mealPlanOptionID,
@@ -198,7 +198,7 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanID,
 		mealPlanEventID,
 		mealPlanOptionID,
@@ -230,7 +230,7 @@ func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID st
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanOptionID,
 	}
 
@@ -266,7 +266,7 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanEventID,
 		mealPlanID,
 	}
@@ -363,7 +363,7 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, input.ID)
 
 	// we're leaving PrepStepsCreated out on purpose since it would be false by default.
-	args := []interface{}{
+	args := []any{
 		input.ID,
 		input.AssignedCook,
 		input.AssignedDishwasher,
@@ -414,7 +414,7 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, updated.ID)
 	tracing.AttachMealPlanOptionIDToSpan(span, updated.ID)
 
-	args := []interface{}{
+	args := []any{
 		updated.AssignedCook,
 		updated.AssignedDishwasher,
 		updated.Meal.ID,
@@ -460,7 +460,7 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []interface{}{
+	args := []any{
 		mealPlanEventID,
 		mealPlanOptionID,
 	}
@@ -619,7 +619,7 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 
 	winner, tiebroken, chosen := q.decideOptionWinner(ctx, mealPlanEvent.Options)
 	if chosen {
-		args := []interface{}{
+		args := []any{
 			mealPlanEventID,
 			winner,
 			tiebroken,

@@ -37,7 +37,7 @@ func buildLoggingMiddleware(logger logging.Logger, cfg *routing.Config) func(nex
 				}
 
 				if shouldLog {
-					logger.WithRequest(req).WithValues(map[string]interface{}{
+					logger.WithRequest(req).WithValues(map[string]any{
 						"status":  ww.Status(),
 						"elapsed": time.Since(start).Milliseconds(),
 						"written": ww.BytesWritten(),

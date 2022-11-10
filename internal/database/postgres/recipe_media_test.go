@@ -86,7 +86,7 @@ func TestQuerier_RecipeMediaExists(T *testing.T) {
 		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.ID,
 		}
 
@@ -120,7 +120,7 @@ func TestQuerier_RecipeMediaExists(T *testing.T) {
 		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.ID,
 		}
 
@@ -142,7 +142,7 @@ func TestQuerier_RecipeMediaExists(T *testing.T) {
 		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.ID,
 		}
 
@@ -169,7 +169,7 @@ func TestQuerier_GetRecipeMedia(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.ID,
 		}
 
@@ -203,7 +203,7 @@ func TestQuerier_GetRecipeMedia(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.ID,
 		}
 
@@ -231,7 +231,7 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		recipeMediaForRecipeArgs := []interface{}{
+		recipeMediaForRecipeArgs := []any{
 			exampleRecipeID,
 		}
 
@@ -254,7 +254,7 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		recipeMediaForRecipeArgs := []interface{}{
+		recipeMediaForRecipeArgs := []any{
 			exampleRecipeID,
 		}
 
@@ -277,7 +277,7 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		recipeMediaForRecipeArgs := []interface{}{
+		recipeMediaForRecipeArgs := []any{
 			exampleRecipeID,
 		}
 
@@ -306,7 +306,7 @@ func TestQuerier_CreateRecipeMedia(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.BelongsToRecipe,
 			exampleInput.BelongsToRecipeStep,
@@ -352,7 +352,7 @@ func TestQuerier_CreateRecipeMedia(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.BelongsToRecipe,
 			exampleInput.BelongsToRecipeStep,
@@ -390,7 +390,7 @@ func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.BelongsToRecipe,
 			exampleRecipeMedia.BelongsToRecipeStep,
 			exampleRecipeMedia.MimeType,
@@ -426,7 +426,7 @@ func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.BelongsToRecipe,
 			exampleRecipeMedia.BelongsToRecipeStep,
 			exampleRecipeMedia.MimeType,
@@ -457,7 +457,7 @@ func TestQuerier_ArchiveRecipeMedia(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.ID,
 		}
 
@@ -487,7 +487,7 @@ func TestQuerier_ArchiveRecipeMedia(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleRecipeMedia.ID,
 		}
 

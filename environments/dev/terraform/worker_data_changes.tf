@@ -43,27 +43,38 @@ resource "google_project_iam_member" "data_changes_user" {
   member  = format("serviceAccount:%s", google_service_account.data_changes_user_service_account.email)
 }
 
-resource "google_cloudfunctions_function" "data_changes" {
+resource "google_cloudfunctions2_function" "data_changes" {
   name        = "data-changes"
+  location    = "us-central1"
   description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
-  runtime     = local.go_runtime
-
-  available_memory_mb   = 128
-  source_archive_bucket = google_storage_bucket.data_changes_bucket.name
-  source_archive_object = google_storage_bucket_object.data_changes_archive.name
-  service_account_email = google_service_account.data_changes_user_service_account.email
 
   event_trigger {
-    event_type = local.pubsub_topic_publish_event
-    resource   = google_pubsub_topic.data_changes_topic.name
+    event_type            = local.pubsub_topic_publish_event
+    pubsub_topic          = google_pubsub_topic.data_changes_topic.id
+    retry_policy          = "RETRY_POLICY_RETRY"
+    service_account_email = google_service_account.data_changes_user_service_account.email
   }
 
-  environment_variables = {
-    PRIXFIXE_SENDGRID_API_TOKEN      = var.SENDGRID_API_TOKEN
-    PRIXFIXE_SEGMENT_API_TOKEN       = var.SEGMENT_API_TOKEN
-    GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
-    GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
+  build_config {
+    runtime     = local.go_runtime
+    entry_point = "ProcessDataChange"
+
+    source {
+      storage_source {
+        bucket = google_storage_bucket.data_changes_bucket.name
+        object = google_storage_bucket_object.data_changes_archive.name
+      }
+    }
   }
 
-  entry_point = "ProcessDataChange"
+  service_config {
+    available_memory = "128Mi"
+
+    environment_variables = {
+      PRIXFIXE_SENDGRID_API_TOKEN      = var.SENDGRID_API_TOKEN
+      PRIXFIXE_SEGMENT_API_TOKEN       = var.SEGMENT_API_TOKEN
+      GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
+      GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
+    }
+  }
 }

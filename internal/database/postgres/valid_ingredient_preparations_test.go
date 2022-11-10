@@ -128,7 +128,7 @@ func TestQuerier_ValidIngredientPreparationExists(T *testing.T) {
 		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.ID,
 		}
 
@@ -163,7 +163,7 @@ func TestQuerier_ValidIngredientPreparationExists(T *testing.T) {
 		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.ID,
 		}
 
@@ -186,7 +186,7 @@ func TestQuerier_ValidIngredientPreparationExists(T *testing.T) {
 		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 
 		c, db := buildTestClient(t)
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.ID,
 		}
 
@@ -213,7 +213,7 @@ func TestQuerier_GetValidIngredientPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.ID,
 		}
 
@@ -247,7 +247,7 @@ func TestQuerier_GetValidIngredientPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.ID,
 		}
 
@@ -382,7 +382,7 @@ func TestQuerier_CreateValidIngredientPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			exampleInput.ValidPreparationID,
@@ -425,7 +425,7 @@ func TestQuerier_CreateValidIngredientPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
 			exampleInput.ValidPreparationID,
@@ -460,7 +460,7 @@ func TestQuerier_UpdateValidIngredientPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.Notes,
 			exampleValidIngredientPreparation.Preparation.ID,
 			exampleValidIngredientPreparation.Ingredient.ID,
@@ -493,7 +493,7 @@ func TestQuerier_UpdateValidIngredientPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.Notes,
 			exampleValidIngredientPreparation.Preparation.ID,
 			exampleValidIngredientPreparation.Ingredient.ID,
@@ -521,7 +521,7 @@ func TestQuerier_ArchiveValidIngredientPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.ID,
 		}
 
@@ -551,7 +551,7 @@ func TestQuerier_ArchiveValidIngredientPreparation(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
+		args := []any{
 			exampleValidIngredientPreparation.ID,
 		}
 

@@ -21,11 +21,11 @@ func (m *mockSessionManager) RenewToken(ctx context.Context) error {
 	return m.Called(ctx).Error(0)
 }
 
-func (m *mockSessionManager) Get(ctx context.Context, key string) interface{} {
+func (m *mockSessionManager) Get(ctx context.Context, key string) any {
 	return m.Called(ctx, key).Get(0)
 }
 
-func (m *mockSessionManager) Put(ctx context.Context, key string, val interface{}) {
+func (m *mockSessionManager) Put(ctx context.Context, key string, val any) {
 	m.Called(ctx, key, val)
 }
 

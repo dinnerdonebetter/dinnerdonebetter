@@ -140,7 +140,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachEmailAddressToSpan(span, registrationInput.EmailAddress)
 	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
 
-	logger = logger.WithValues(map[string]interface{}{
+	logger = logger.WithValues(map[string]any{
 		keys.UsernameKey:                 registrationInput.Username,
 		keys.UserEmailAddressKey:         registrationInput.EmailAddress,
 		keys.HouseholdInvitationIDKey:    registrationInput.InvitationID,

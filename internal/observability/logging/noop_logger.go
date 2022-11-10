@@ -27,7 +27,7 @@ func (l *noopLogger) Error(error, string) {}
 func (l *noopLogger) Fatal(error) {}
 
 // Printf satisfies our interface.
-func (l *noopLogger) Printf(string, ...interface{}) {}
+func (l *noopLogger) Printf(string, ...any) {}
 
 // SetLevel satisfies our interface.
 func (l *noopLogger) SetLevel(Level) {}
@@ -42,10 +42,10 @@ func (l *noopLogger) WithName(string) Logger { return l }
 func (l *noopLogger) Clone() Logger { return l }
 
 // WithValues satisfies our interface.
-func (l *noopLogger) WithValues(map[string]interface{}) Logger { return l }
+func (l *noopLogger) WithValues(map[string]any) Logger { return l }
 
 // WithValue satisfies our interface.
-func (l *noopLogger) WithValue(string, interface{}) Logger { return l }
+func (l *noopLogger) WithValue(string, any) Logger { return l }
 
 // WithRequest satisfies our interface.
 func (l *noopLogger) WithRequest(*http.Request) Logger { return l }
