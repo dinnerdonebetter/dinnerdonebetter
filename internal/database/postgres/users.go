@@ -26,6 +26,7 @@ var (
 		"users.id",
 		"users.username",
 		"users.email_address",
+		"users.email_address_verified_at",
 		"users.avatar_src",
 		"users.hashed_password",
 		"users.requires_password_change",
@@ -58,6 +59,7 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 		&user.ID,
 		&user.Username,
 		&user.EmailAddress,
+		&user.EmailAddressVerifiedAt,
 		&user.AvatarSrc,
 		&user.HashedPassword,
 		&user.RequiresPasswordChange,
@@ -376,7 +378,7 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 //go:embed queries/users/create.sql
 var userCreationQuery string
 
-//go:embed queries/users/create_household_memberships_for_new_user.sql
+//go:embed queries/household_user_memberships/create_for_new_user.sql
 var createHouseholdMembershipForNewUserQuery string
 
 // CreateUser creates a user.
@@ -396,6 +398,11 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		"destination_household":          input.DestinationHouseholdID,
 	})
 
+	token, err := q.secretGenerator.GenerateBase32EncodedString(ctx, 32)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "generating email verification token")
+	}
+
 	userCreationArgs := []any{
 		input.ID,
 		input.Username,
@@ -406,20 +413,8 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		types.UnverifiedHouseholdStatus,
 		input.Birthday,
 		authorization.ServiceUserRole.String(),
+		token,
 	}
-
-	user := &types.User{
-		ID:              input.ID,
-		Username:        input.Username,
-		EmailAddress:    input.EmailAddress,
-		HashedPassword:  input.HashedPassword,
-		TwoFactorSecret: input.TwoFactorSecret,
-		Birthday:        input.Birthday,
-		ServiceRole:     authorization.ServiceUserRole.String(),
-		CreatedAt:       q.currentTime(),
-	}
-	logger = logger.WithValue(keys.UserIDKey, user.ID)
-	tracing.AttachUserIDToSpan(span, user.ID)
 
 	// begin user creation transaction
 	tx, beginTransactionErr := q.db.BeginTx(ctx, nil)
@@ -441,6 +436,19 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	}
 
 	hasValidInvite := input.InvitationToken != "" && input.DestinationHouseholdID != ""
+
+	user := &types.User{
+		ID:              input.ID,
+		Username:        input.Username,
+		EmailAddress:    input.EmailAddress,
+		HashedPassword:  input.HashedPassword,
+		TwoFactorSecret: input.TwoFactorSecret,
+		Birthday:        input.Birthday,
+		ServiceRole:     authorization.ServiceUserRole.String(),
+		CreatedAt:       q.currentTime(),
+	}
+	logger = logger.WithValue(keys.UserIDKey, user.ID)
+	tracing.AttachUserIDToSpan(span, user.ID)
 
 	if err := q.createHouseholdForUser(ctx, tx, hasValidInvite, user.ID); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating household for new user")

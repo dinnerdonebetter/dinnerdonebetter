@@ -53,6 +53,7 @@ type (
 		AccountStatus             userAccountStatus `json:"accountStatus"`
 		Username                  string            `json:"username"`
 		EmailAddress              string            `json:"emailAddress"`
+		EmailAddressVerifiedAt    *time.Time        `json:"emailAddressVerifiedAt"`
 		ServiceRole               string            `json:"serviceRoles"`
 		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}

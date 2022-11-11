@@ -2,6 +2,7 @@ SELECT
 	users.id,
 	users.username,
 	users.email_address,
+    users.email_address_verified_at,
 	users.avatar_src,
 	users.hashed_password,
 	users.requires_password_change,

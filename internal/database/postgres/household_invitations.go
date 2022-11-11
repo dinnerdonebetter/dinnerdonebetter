@@ -46,6 +46,7 @@ var (
 		"users.id",
 		"users.username",
 		"users.email_address",
+		"users.email_address_verified_at",
 		"users.avatar_src",
 		"users.hashed_password",
 		"users.requires_password_change",
@@ -98,6 +99,7 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 		&householdInvitation.FromUser.ID,
 		&householdInvitation.FromUser.Username,
 		&householdInvitation.FromUser.EmailAddress,
+		&householdInvitation.FromUser.EmailAddressVerifiedAt,
 		&householdInvitation.FromUser.AvatarSrc,
 		&householdInvitation.FromUser.HashedPassword,
 		&householdInvitation.FromUser.RequiresPasswordChange,
@@ -226,7 +228,7 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 
 	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning household invitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitation")
 	}
 
 	return householdInvitation, nil
@@ -264,7 +266,7 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 
 	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning household invitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitation")
 	}
 
 	return householdInvitation, nil

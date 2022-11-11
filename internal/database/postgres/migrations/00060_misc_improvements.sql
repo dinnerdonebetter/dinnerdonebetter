@@ -1,35 +1,36 @@
-ALTER TABLE users RENAME COLUMN service_roles TO service_role;
 ALTER TABLE household_user_memberships RENAME COLUMN household_roles TO household_role;
 CREATE TYPE recipe_ingredient_scale AS ENUM ('linear', 'logarithmic', 'exponential');                                                       -- #294
 ALTER TABLE household_invitations ADD COLUMN expires_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW() + interval '1 week';                -- #24
 ALTER TABLE recipe_step_instruments ADD COLUMN option_index INTEGER NOT NULL DEFAULT 0;                                                     -- #230/#295
 ALTER TABLE recipe_step_ingredients ADD COLUMN option_index INTEGER NOT NULL DEFAULT 0;                                                     -- #230/#295
 ALTER TABLE recipe_step_ingredients ADD COLUMN requires_defrost BOOLEAN NOT NULL DEFAULT 'false';                                           -- #318
-ALTER TABLE users DROP COLUMN birth_day;                                                                                                   -- #364
+ALTER TABLE users RENAME COLUMN service_roles TO service_role;
+ALTER TABLE users DROP COLUMN birth_day;                                                                                                    -- #364
 ALTER TABLE users DROP COLUMN birth_month;                                                                                                  -- #364
 ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                                                                             -- #364
+ALTER TABLE users ADD COLUMN email_address_verification_token TEXT NOT NULL;                                                                -- #156
+ALTER TABLE users ADD COLUMN email_address_verified_at TIMESTAMP WITH TIME ZONE;                                                            -- #156
 -- ALTER TABLE valid_ingredients ADD COLUMN contains_alcohol BOOLEAN NOT NULL DEFAULT 'false';                                              -- #363
 -- ALTER TABLE valid_ingredients ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
--- ALTER TABLE valid_instruments ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
 -- ALTER TABLE valid_ingredients ADD COLUMN shopping_suggestions TEXT NOT NULL DEFAULT '';                                                  -- #320
+-- ALTER TABLE valid_instruments ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
 -- ALTER TABLE valid_measurement_units ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                            -- #184
 -- ALTER TABLE valid_preparations ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                 -- #184
--- CREATE TYPE valid_election_method AS ENUM ('schulze', 'instant-runoff');                                                                 -- #188
+CREATE TYPE valid_election_method AS ENUM ('schulze', 'instant-runoff');                                                                    -- #188
 -- ALTER TABLE meal_plans ADD COLUMN election_method valid_election_method NOT NULL DEFAULT 'schulze';                                      -- #188
 -- ALTER TABLE recipe_step_products ADD COLUMN is_liquid NOT NULL DEFAULT 'false';                                                          -- #160
 -- ALTER TABLE recipe_step_products ADD COLUMN is_waste NOT NULL DEFAULT 'false';                                                           -- #384
--- ALTER TABLE users RENAME COLUMN email_address_verified_at TIMESTAMP WITH TIME ZONE;                                                      -- #156
 -- ALTER TABLE valid_instruments ADD COLUMN display_in_summary_lists BOOLEAN NOT NULL DEFAULT 'true';                                       -- #241
--- CREATE TYPE component_type AS ENUM ('unspecified', 'amuse-bouche', 'appetizer', 'soup', 'main', 'salad', 'beverage', 'side', 'dessert'); -- #267
+CREATE TYPE component_type AS ENUM ('unspecified', 'amuse-bouche', 'appetizer', 'soup', 'main', 'salad', 'beverage', 'side', 'dessert');    -- #267
 -- ALTER TABLE meal_recipes ADD COLUMN "component_type" component_type NOT NULL DEFAULT 'unspecified';                                      -- #267
 
 -- CREATE TABLE IF NOT EXISTS valid_ingredient_statuses (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
---     "name" text NOT NULL,
---     plural_name text DEFAULT ''::text NOT NULL,
---     slug text DEFAULT ''::text NOT NULL,
---     description text text DEFAULT ''::text NOT NULL,
---     icon_path text text DEFAULT ''::text NOT NULL,
+--     "name" TEXT NOT NULL,
+--     plural_name TEXT NOT NULL DEFAULT '',
+--     slug TEXT NOT NULL DEFAULT '',
+--     description text TEXT NOT NULL DEFAULT '',
+--     icon_path text TEXT NOT NULL DEFAULT '',
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 --     last_updated_at TIMESTAMP WITH TIME ZONE,
 --     archived_at TIMESTAMP WITH TIME ZONE
@@ -37,7 +38,7 @@ ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                 
 
 -- CREATE TABLE IF NOT EXISTS valid_ingredient_status_ingredients (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
---     notes text DEFAULT ''::text NOT NULL,
+--     notes TEXT NOT NULL DEFAULT '',
 --     valid_ingredient_id CHAR(27) NOT NULL REFERENCES valid_ingredients(id) ON DELETE CASCADE,
 --     valid_ingredient_status_id CHAR(27) NOT NULL REFERENCES valid_ingredient_statuses(id) ON DELETE CASCADE,
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -49,7 +50,7 @@ ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                 
 -- -- #194
 -- CREATE TABLE IF NOT EXISTS valid_instrument_ownerships (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
---     notes text DEFAULT ''::text NOT NULL,
+--     notes TEXT NOT NULL DEFAULT '',
 --     valid_instrument_id CHAR(27) NOT NULL REFERENCES valid_instruments(id) ON DELETE CASCADE,
 --     household_id CHAR(27) NOT NULL REFERENCES households(id) ON DELETE CASCADE,
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -61,10 +62,10 @@ ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                 
 -- -- #152
 -- CREATE TABLE IF NOT EXISTS preparation_conditions (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
---     notes text DEFAULT ''::text NOT NULL,
+--     notes TEXT NOT NULL DEFAULT '',
 --     valid_preparation_id CHAR(27) NOT NULL REFERENCES valid_preparations(id) ON DELETE CASCADE,
 --     liquid_count INTEGER NOT NULL DEFAULT 0,
---     notice TEXT DEFAULT ''::text NOT NULL,
+--     notice TEXT DEFAULT '' NOT NULL,
 --     minimum_temperature NUMERIC(15, 2),
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 --     last_updated_at TIMESTAMP WITH TIME ZONE,
@@ -76,7 +77,7 @@ ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                 
 -- CREATE TABLE IF NOT EXISTS recipe_lists (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
 --     name text,
---     notes text DEFAULT ''::text NOT NULL,
+--     notes TEXT NOT NULL DEFAULT '',
 --     belongs_to_user CHAR(27) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 --     "public" boolean NOT NULL DEFAULT 'false',
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -88,7 +89,7 @@ ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                 
 -- -- #231
 -- CREATE TABLE IF NOT EXISTS recipe_list_entries (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
---     notes text DEFAULT ''::text NOT NULL,
+--     notes TEXT NOT NULL DEFAULT '',
 --     recipe_id CHAR(27) NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
 --     belongs_to_recipe_collection CHAR(27) NOT NULL REFERENCES recipe_lists(id) ON DELETE CASCADE,
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -101,7 +102,7 @@ ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                 
 -- CREATE TABLE IF NOT EXISTS meal_lists (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
 --     name text,
---     notes text DEFAULT ''::text NOT NULL,
+--     notes TEXT NOT NULL DEFAULT '',
 --     belongs_to_user CHAR(27) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 --     "public" boolean NOT NULL DEFAULT 'false',
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -113,7 +114,7 @@ ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                 
 -- -- #296
 -- CREATE TABLE IF NOT EXISTS meal_list_entries (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
---     notes text DEFAULT ''::text NOT NULL,
+--     notes TEXT NOT NULL DEFAULT '',
 --     meal_id CHAR(27) NOT NULL REFERENCES meals(id) ON DELETE CASCADE,
 --     belongs_to_meal_collection CHAR(27) NOT NULL REFERENCES meal_lists(id) ON DELETE CASCADE,
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -198,7 +199,7 @@ ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                 
 -- -- #394
 -- CREATE TABLE IF NOT EXISTS valid_ingredient_package_quantities (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
---     notes text DEFAULT ''::text NOT NULL,
+--     notes TEXT NOT NULL DEFAULT '',
 --     valid_ingredient_id CHAR(27) NOT NULL REFERENCES valid_ingredients(id) ON DELETE CASCADE,
 --     valid_package_quantity_id CHAR(27) NOT NULL REFERENCES valid_package_quantities(id) ON DELETE CASCADE,
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
