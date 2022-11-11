@@ -64,6 +64,7 @@ var (
 		"household_invitations.note",
 		"household_invitations.status_note",
 		"household_invitations.token",
+		"household_invitations.expires_at",
 		"household_invitations.created_at",
 		"household_invitations.last_updated_at",
 		"household_invitations.archived_at",
@@ -116,6 +117,7 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 		&householdInvitation.Note,
 		&householdInvitation.StatusNote,
 		&householdInvitation.Token,
+		&householdInvitation.ExpiresAt,
 		&householdInvitation.CreatedAt,
 		&householdInvitation.LastUpdatedAt,
 		&householdInvitation.ArchivedAt,
@@ -330,6 +332,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 		input.ToEmail,
 		input.Token,
 		input.DestinationHouseholdID,
+		input.ExpiresAt,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "household invitation creation", createHouseholdInvitationQuery, args); err != nil {
@@ -346,6 +349,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 		StatusNote:           "",
 		Status:               types.PendingHouseholdInvitationStatus,
 		DestinationHousehold: types.Household{ID: input.DestinationHouseholdID},
+		ExpiresAt:            input.ExpiresAt,
 		CreatedAt:            q.currentTime(),
 	}
 

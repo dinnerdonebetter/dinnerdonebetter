@@ -1,10 +1,10 @@
-on: [pull_request]
-#  pull_request:
-#    paths:
-#      - pkg/**
-#      - cmd/**
-#      - internal/**
-name: Build
+on: # [pull_request]
+  pull_request:
+    paths:
+      - pkg/**
+      - cmd/**
+      - internal/**
+name: Build Cloud Functions
 jobs:
   setup:
     strategy:
@@ -26,6 +26,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
+      # get rid of the mod and sum file for this function just to ensure it builds
       - name: Build ${{ matrix.function }} function
         run: rm -rf cmd/functions/${{ matrix.function }}/go.{mod,sum}
 
