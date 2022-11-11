@@ -17,6 +17,7 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 		YieldsNothing:            fake.Bool(),
 		RestrictToIngredients:    fake.Bool(),
 		ZeroIngredientsAllowable: fake.Bool(),
+		Slug:                     buildUniqueString(),
 		PastTense:                buildUniqueString(),
 		CreatedAt:                BuildFakeTime(),
 	}
@@ -43,15 +44,7 @@ func BuildFakeValidPreparationList() *types.ValidPreparationList {
 // BuildFakeValidPreparationUpdateRequestInput builds a faked ValidPreparationUpdateRequestInput from a valid preparation.
 func BuildFakeValidPreparationUpdateRequestInput() *types.ValidPreparationUpdateRequestInput {
 	validPreparation := BuildFakeValidPreparation()
-	return &types.ValidPreparationUpdateRequestInput{
-		Name:                     &validPreparation.Name,
-		Description:              &validPreparation.Description,
-		IconPath:                 &validPreparation.IconPath,
-		YieldsNothing:            &validPreparation.YieldsNothing,
-		RestrictToIngredients:    &validPreparation.RestrictToIngredients,
-		ZeroIngredientsAllowable: &validPreparation.ZeroIngredientsAllowable,
-		PastTense:                &validPreparation.PastTense,
-	}
+	return converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(validPreparation)
 }
 
 // BuildFakeValidPreparationCreationRequestInput builds a faked ValidPreparationCreationRequestInput.

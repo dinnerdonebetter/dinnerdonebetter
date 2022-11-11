@@ -15,6 +15,7 @@ func ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(input *
 		Universal:   &input.Universal,
 		Metric:      &input.Metric,
 		Imperial:    &input.Imperial,
+		Slug:        &input.Slug,
 		PluralName:  &input.PluralName,
 	}
 
@@ -32,6 +33,7 @@ func ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDataba
 		Universal:   input.Universal,
 		Metric:      input.Metric,
 		Imperial:    input.Imperial,
+		Slug:        input.Slug,
 		PluralName:  input.PluralName,
 	}
 
@@ -49,6 +51,7 @@ func ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(valid
 		Metric:      validMeasurementUnit.Metric,
 		Imperial:    validMeasurementUnit.Imperial,
 		PluralName:  validMeasurementUnit.PluralName,
+		Slug:        validMeasurementUnit.Slug,
 	}
 }
 
@@ -64,5 +67,6 @@ func ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput(vali
 		Metric:      validMeasurementUnit.Metric,
 		Imperial:    validMeasurementUnit.Imperial,
 		PluralName:  validMeasurementUnit.PluralName,
+		Slug:        validMeasurementUnit.Slug,
 	}
 }

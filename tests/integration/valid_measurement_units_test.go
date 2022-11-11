@@ -26,6 +26,7 @@ func checkValidMeasurementUnitEquality(t *testing.T, expected, actual *types.Val
 	assert.Equal(t, expected.Universal, actual.Universal, "expected Universal for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Universal, actual.Universal)
 	assert.Equal(t, expected.Metric, actual.Metric, "expected Metric for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Metric, actual.Metric)
 	assert.Equal(t, expected.Imperial, actual.Imperial, "expected Imperial for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Imperial, actual.Imperial)
+	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
 	assert.Equal(t, expected.PluralName, actual.PluralName, "expected PluralName for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.PluralName, actual.PluralName)
 	assert.NotZero(t, actual.CreatedAt)
 }

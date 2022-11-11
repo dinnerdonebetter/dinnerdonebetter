@@ -31,30 +31,34 @@ func init() {
 type (
 	// ValidInstrument represents a valid instrument.
 	ValidInstrument struct {
-		_                struct{}
-		CreatedAt        time.Time  `json:"createdAt"`
-		LastUpdatedAt    *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt       *time.Time `json:"archivedAt"`
-		IconPath         string     `json:"iconPath"`
-		ID               string     `json:"id"`
-		Name             string     `json:"name"`
-		PluralName       string     `json:"pluralName"`
-		Description      string     `json:"description"`
-		UsableForStorage bool       `json:"usedForStorage"`
+		_                     struct{}
+		CreatedAt             time.Time  `json:"createdAt"`
+		LastUpdatedAt         *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt            *time.Time `json:"archivedAt"`
+		IconPath              string     `json:"iconPath"`
+		ID                    string     `json:"id"`
+		Name                  string     `json:"name"`
+		PluralName            string     `json:"pluralName"`
+		Description           string     `json:"description"`
+		Slug                  string     `json:"slug"`
+		DisplayInSummaryLists bool       `json:"displayInSummaryLists"`
+		UsableForStorage      bool       `json:"usedForStorage"`
 	}
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
 	NullableValidInstrument struct {
-		_                struct{}
-		LastUpdatedAt    *time.Time
-		ArchivedAt       *time.Time
-		Description      *string
-		IconPath         *string
-		ID               *string
-		Name             *string
-		PluralName       *string
-		UsableForStorage *bool
-		CreatedAt        *time.Time
+		_                     struct{}
+		LastUpdatedAt         *time.Time
+		ArchivedAt            *time.Time
+		Description           *string
+		IconPath              *string
+		ID                    *string
+		Name                  *string
+		Slug                  *string
+		DisplayInSummaryLists *bool
+		PluralName            *string
+		UsableForStorage      *bool
+		CreatedAt             *time.Time
 	}
 
 	// ValidInstrumentList represents a list of valid instruments.
@@ -66,36 +70,42 @@ type (
 
 	// ValidInstrumentCreationRequestInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentCreationRequestInput struct {
-		_                struct{}
-		ID               string `json:"-"`
-		Name             string `json:"name"`
-		PluralName       string `json:"pluralName"`
-		Description      string `json:"description"`
-		IconPath         string `json:"iconPath"`
-		UsableForStorage bool   `json:"usedForStorage"`
+		_                     struct{}
+		ID                    string `json:"-"`
+		Name                  string `json:"name"`
+		PluralName            string `json:"pluralName"`
+		Description           string `json:"description"`
+		IconPath              string `json:"iconPath"`
+		Slug                  string `json:"slug"`
+		DisplayInSummaryLists bool   `json:"displayInSummaryLists"`
+		UsableForStorage      bool   `json:"usedForStorage"`
 	}
 
 	// ValidInstrumentDatabaseCreationInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentDatabaseCreationInput struct {
 		_ struct{}
 
-		ID               string `json:"id"`
-		Name             string `json:"name"`
-		PluralName       string `json:"pluralName"`
-		Description      string `json:"description"`
-		IconPath         string `json:"iconPath"`
-		UsableForStorage bool   `json:"usedForStorage"`
+		ID                    string
+		Name                  string
+		PluralName            string
+		Description           string
+		IconPath              string
+		Slug                  string
+		DisplayInSummaryLists bool
+		UsableForStorage      bool
 	}
 
 	// ValidInstrumentUpdateRequestInput represents what a user could set as input for updating valid instruments.
 	ValidInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		Name             *string `json:"name"`
-		PluralName       *string `json:"pluralName"`
-		Description      *string `json:"description"`
-		IconPath         *string `json:"iconPath"`
-		UsableForStorage *bool   `json:"usedForStorage"`
+		Name                  *string `json:"name"`
+		PluralName            *string `json:"pluralName"`
+		Description           *string `json:"description"`
+		IconPath              *string `json:"iconPath"`
+		Slug                  *string `json:"slug"`
+		UsableForStorage      *bool   `json:"usedForStorage"`
+		DisplayInSummaryLists *bool   `json:"displayInSummaryLists"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
@@ -142,6 +152,14 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 
 	if input.UsableForStorage != nil && *input.UsableForStorage != x.UsableForStorage {
 		x.UsableForStorage = *input.UsableForStorage
+	}
+
+	if input.Slug != nil && *input.Slug != x.Slug {
+		x.Slug = *input.Slug
+	}
+
+	if input.DisplayInSummaryLists != nil && *input.DisplayInSummaryLists != x.DisplayInSummaryLists {
+		x.DisplayInSummaryLists = *input.DisplayInSummaryLists
 	}
 }
 

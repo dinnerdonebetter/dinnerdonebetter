@@ -37,6 +37,7 @@ func buildMockRowsFromValidMeasurementUnits(includeCounts bool, filteredCount ui
 			x.Universal,
 			x.Metric,
 			x.Imperial,
+			x.Slug,
 			x.PluralName,
 			x.CreatedAt,
 			x.LastUpdatedAt,
@@ -473,6 +474,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 			exampleInput.Metric,
 			exampleInput.Imperial,
 			exampleInput.PluralName,
+			exampleInput.Slug,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validMeasurementUnitCreationQuery)).
@@ -521,6 +523,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 			exampleInput.Metric,
 			exampleInput.Imperial,
 			exampleInput.PluralName,
+			exampleInput.Slug,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validMeasurementUnitCreationQuery)).
@@ -559,6 +562,7 @@ func TestQuerier_UpdateValidMeasurementUnit(T *testing.T) {
 			exampleValidMeasurementUnit.Universal,
 			exampleValidMeasurementUnit.Metric,
 			exampleValidMeasurementUnit.Imperial,
+			exampleValidMeasurementUnit.Slug,
 			exampleValidMeasurementUnit.PluralName,
 			exampleValidMeasurementUnit.ID,
 		}
@@ -597,6 +601,7 @@ func TestQuerier_UpdateValidMeasurementUnit(T *testing.T) {
 			exampleValidMeasurementUnit.Universal,
 			exampleValidMeasurementUnit.Metric,
 			exampleValidMeasurementUnit.Imperial,
+			exampleValidMeasurementUnit.Slug,
 			exampleValidMeasurementUnit.PluralName,
 			exampleValidMeasurementUnit.ID,
 		}

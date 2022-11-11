@@ -29,6 +29,8 @@ var (
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
 		"valid_instruments.usable_for_storage",
+		"valid_instruments.display_in_summary_lists",
+		"valid_instruments.slug",
 		"valid_instruments.created_at",
 		"valid_instruments.last_updated_at",
 		"valid_instruments.archived_at",
@@ -60,7 +62,7 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 	defer span.End()
 
 	x = &types.RecipeStepInstrument{}
-	instrument := types.NullableValidInstrument{}
+	instrument := &types.NullableValidInstrument{}
 
 	targetVars := []any{
 		&x.ID,
@@ -70,6 +72,8 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 		&instrument.Description,
 		&instrument.IconPath,
 		&instrument.UsableForStorage,
+		&instrument.DisplayInSummaryLists,
+		&instrument.Slug,
 		&instrument.CreatedAt,
 		&instrument.LastUpdatedAt,
 		&instrument.ArchivedAt,

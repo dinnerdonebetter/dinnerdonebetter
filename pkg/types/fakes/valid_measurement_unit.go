@@ -19,6 +19,7 @@ func BuildFakeValidMeasurementUnit() *types.ValidMeasurementUnit {
 		Metric:      fake.Bool(),
 		Imperial:    fake.Bool(),
 		PluralName:  buildUniqueString(),
+		Slug:        buildUniqueString(),
 		CreatedAt:   BuildFakeTime(),
 	}
 }
@@ -44,16 +45,7 @@ func BuildFakeValidMeasurementUnitList() *types.ValidMeasurementUnitList {
 // BuildFakeValidMeasurementUnitUpdateRequestInput builds a faked ValidMeasurementUnitUpdateRequestInput from a valid ingredient.
 func BuildFakeValidMeasurementUnitUpdateRequestInput() *types.ValidMeasurementUnitUpdateRequestInput {
 	validMeasurementUnit := BuildFakeValidMeasurementUnit()
-	return &types.ValidMeasurementUnitUpdateRequestInput{
-		Name:        &validMeasurementUnit.Name,
-		Description: &validMeasurementUnit.Description,
-		Volumetric:  &validMeasurementUnit.Volumetric,
-		IconPath:    &validMeasurementUnit.IconPath,
-		Universal:   &validMeasurementUnit.Universal,
-		Metric:      &validMeasurementUnit.Metric,
-		Imperial:    &validMeasurementUnit.Imperial,
-		PluralName:  &validMeasurementUnit.PluralName,
-	}
+	return converters.ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(validMeasurementUnit)
 }
 
 // BuildFakeValidMeasurementUnitCreationRequestInput builds a faked ValidMeasurementUnitCreationRequestInput.

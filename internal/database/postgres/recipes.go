@@ -157,6 +157,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&y.Preparation.YieldsNothing,
 		&y.Preparation.RestrictToIngredients,
 		&y.Preparation.ZeroIngredientsAllowable,
+		&y.Preparation.Slug,
 		&y.Preparation.PastTense,
 		&y.Preparation.CreatedAt,
 		&y.Preparation.LastUpdatedAt,

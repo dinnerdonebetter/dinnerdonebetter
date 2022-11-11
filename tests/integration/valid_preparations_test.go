@@ -24,6 +24,7 @@ func checkValidPreparationEquality(t *testing.T, expected, actual *types.ValidPr
 	assert.Equal(t, expected.YieldsNothing, actual.YieldsNothing, "expected YieldsNothing for valid preparation %s to be %v, but it was %v", expected.ID, expected.YieldsNothing, actual.YieldsNothing)
 	assert.Equal(t, expected.RestrictToIngredients, actual.RestrictToIngredients, "expected RestrictToIngredients for valid preparation %s to be %v, but it was %v", expected.ID, expected.RestrictToIngredients, actual.RestrictToIngredients)
 	assert.Equal(t, expected.ZeroIngredientsAllowable, actual.ZeroIngredientsAllowable, "expected ZeroIngredientsAllowable for valid preparation %s to be %v, but it was %v", expected.ID, expected.ZeroIngredientsAllowable, actual.ZeroIngredientsAllowable)
+	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for valid preparation %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
 	assert.NotZero(t, actual.CreatedAt)
 }
 

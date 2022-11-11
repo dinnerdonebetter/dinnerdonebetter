@@ -75,6 +75,7 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			x.MeasurementUnit.Universal,
 			x.MeasurementUnit.Metric,
 			x.MeasurementUnit.Imperial,
+			x.MeasurementUnit.Slug,
 			x.MeasurementUnit.PluralName,
 			x.MeasurementUnit.CreatedAt,
 			x.MeasurementUnit.LastUpdatedAt,

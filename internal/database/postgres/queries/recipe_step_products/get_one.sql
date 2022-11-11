@@ -10,6 +10,7 @@ SELECT
 	valid_measurement_units.universal,
 	valid_measurement_units.metric,
 	valid_measurement_units.imperial,
+    valid_measurement_units.slug,
 	valid_measurement_units.plural_name,
 	valid_measurement_units.created_at,
 	valid_measurement_units.last_updated_at,

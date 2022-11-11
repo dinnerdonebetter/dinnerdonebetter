@@ -6,6 +6,7 @@ SELECT
 	valid_preparations.yields_nothing,
 	valid_preparations.restrict_to_ingredients,
 	valid_preparations.zero_ingredients_allowable,
+    valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,

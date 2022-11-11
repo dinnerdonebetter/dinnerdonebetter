@@ -10,19 +10,19 @@ ALTER TABLE users DROP COLUMN birth_month;                                      
 ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                                                                             -- #364
 ALTER TABLE users ADD COLUMN email_address_verification_token TEXT NOT NULL;                                                                -- #156
 ALTER TABLE users ADD COLUMN email_address_verified_at TIMESTAMP WITH TIME ZONE;                                                            -- #156
-ALTER TABLE valid_ingredients ADD COLUMN contains_alcohol BOOLEAN NOT NULL DEFAULT 'false';                                              -- #363
-ALTER TABLE valid_ingredients ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
-ALTER TABLE valid_ingredients ADD COLUMN shopping_suggestions TEXT NOT NULL DEFAULT '';                                                  -- #320
--- ALTER TABLE valid_instruments ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
--- ALTER TABLE valid_measurement_units ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                            -- #184
--- ALTER TABLE valid_preparations ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                 -- #184
+ALTER TABLE valid_ingredients ADD COLUMN contains_alcohol BOOLEAN NOT NULL DEFAULT 'false';                                                 -- #363
+ALTER TABLE valid_ingredients ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                     -- #184
+ALTER TABLE valid_ingredients ADD COLUMN shopping_suggestions TEXT NOT NULL DEFAULT '';                                                     -- #320
+ALTER TABLE valid_instruments ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                     -- #184
+ALTER TABLE valid_instruments ADD COLUMN display_in_summary_lists BOOLEAN NOT NULL DEFAULT 'true';                                          -- #241
+ALTER TABLE valid_measurement_units ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                               -- #184
+ALTER TABLE valid_preparations ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                    -- #184
 CREATE TYPE valid_election_method AS ENUM ('schulze', 'instant-runoff');                                                                    -- #188
--- ALTER TABLE meal_plans ADD COLUMN election_method valid_election_method NOT NULL DEFAULT 'schulze';                                      -- #188
--- ALTER TABLE recipe_step_products ADD COLUMN is_liquid NOT NULL DEFAULT 'false';                                                          -- #160
--- ALTER TABLE recipe_step_products ADD COLUMN is_waste NOT NULL DEFAULT 'false';                                                           -- #384
--- ALTER TABLE valid_instruments ADD COLUMN display_in_summary_lists BOOLEAN NOT NULL DEFAULT 'true';                                       -- #241
+-- ALTER TABLE meal_plans ADD COLUMN election_method valid_election_method NOT NULL DEFAULT 'schulze';                                         -- #188
+-- ALTER TABLE recipe_step_products ADD COLUMN is_liquid NOT NULL DEFAULT 'false';                                                             -- #160
+-- ALTER TABLE recipe_step_products ADD COLUMN is_waste NOT NULL DEFAULT 'false';                                                              -- #384
 CREATE TYPE component_type AS ENUM ('unspecified', 'amuse-bouche', 'appetizer', 'soup', 'main', 'salad', 'beverage', 'side', 'dessert');    -- #267
--- ALTER TABLE meal_recipes ADD COLUMN "component_type" component_type NOT NULL DEFAULT 'unspecified';                                      -- #267
+-- ALTER TABLE meal_recipes ADD COLUMN "component_type" component_type NOT NULL DEFAULT 'unspecified';                                         -- #267
 
 -- CREATE TABLE IF NOT EXISTS valid_ingredient_statuses (
 --     id CHAR(27) NOT NULL PRIMARY KEY,

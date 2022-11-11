@@ -27,6 +27,7 @@ var (
 		"valid_preparations.yields_nothing",
 		"valid_preparations.restrict_to_ingredients",
 		"valid_preparations.zero_ingredients_allowable",
+		"valid_preparations.slug",
 		"valid_preparations.past_tense",
 		"valid_preparations.created_at",
 		"valid_preparations.last_updated_at",
@@ -49,6 +50,7 @@ func (q *Querier) scanValidPreparation(ctx context.Context, scan database.Scanne
 		&x.YieldsNothing,
 		&x.RestrictToIngredients,
 		&x.ZeroIngredientsAllowable,
+		&x.Slug,
 		&x.PastTense,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -266,6 +268,7 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.Valid
 		input.RestrictToIngredients,
 		input.ZeroIngredientsAllowable,
 		input.PastTense,
+		input.Slug,
 	}
 
 	// create the valid preparation.
@@ -281,6 +284,7 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.Valid
 		YieldsNothing:            input.YieldsNothing,
 		RestrictToIngredients:    input.RestrictToIngredients,
 		ZeroIngredientsAllowable: input.ZeroIngredientsAllowable,
+		Slug:                     input.Slug,
 		PastTense:                input.PastTense,
 		CreatedAt:                q.currentTime(),
 	}
@@ -313,6 +317,7 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 		updated.YieldsNothing,
 		updated.RestrictToIngredients,
 		updated.ZeroIngredientsAllowable,
+		updated.Slug,
 		updated.PastTense,
 		updated.ID,
 	}

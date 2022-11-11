@@ -35,6 +35,8 @@ func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64,
 			x.Description,
 			x.IconPath,
 			x.UsableForStorage,
+			x.DisplayInSummaryLists,
+			x.Slug,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -549,6 +551,8 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 			exampleInput.Description,
 			exampleInput.IconPath,
 			exampleInput.UsableForStorage,
+			exampleInput.DisplayInSummaryLists,
+			exampleInput.Slug,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validInstrumentCreationQuery)).
@@ -594,6 +598,8 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 			exampleInput.Description,
 			exampleInput.IconPath,
 			exampleInput.UsableForStorage,
+			exampleInput.DisplayInSummaryLists,
+			exampleInput.Slug,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validInstrumentCreationQuery)).
@@ -630,6 +636,8 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 			exampleValidInstrument.Description,
 			exampleValidInstrument.IconPath,
 			exampleValidInstrument.UsableForStorage,
+			exampleValidInstrument.DisplayInSummaryLists,
+			exampleValidInstrument.Slug,
 			exampleValidInstrument.ID,
 		}
 
@@ -665,6 +673,8 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 			exampleValidInstrument.Description,
 			exampleValidInstrument.IconPath,
 			exampleValidInstrument.UsableForStorage,
+			exampleValidInstrument.DisplayInSummaryLists,
+			exampleValidInstrument.Slug,
 			exampleValidInstrument.ID,
 		}
 

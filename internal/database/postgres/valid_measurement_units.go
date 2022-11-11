@@ -29,6 +29,7 @@ var (
 		"valid_measurement_units.universal",
 		"valid_measurement_units.metric",
 		"valid_measurement_units.imperial",
+		"valid_measurement_units.slug",
 		"valid_measurement_units.plural_name",
 		"valid_measurement_units.created_at",
 		"valid_measurement_units.last_updated_at",
@@ -52,6 +53,7 @@ func (q *Querier) scanValidMeasurementUnit(ctx context.Context, scan database.Sc
 		&x.Universal,
 		&x.Metric,
 		&x.Imperial,
+		&x.Slug,
 		&x.PluralName,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -270,6 +272,7 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 		input.Metric,
 		input.Imperial,
 		input.PluralName,
+		input.Slug,
 	}
 
 	// create the valid measurement unit.
@@ -286,6 +289,7 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 		Universal:   input.Universal,
 		Metric:      input.Metric,
 		Imperial:    input.Imperial,
+		Slug:        input.Slug,
 		PluralName:  input.PluralName,
 		CreatedAt:   q.currentTime(),
 	}
@@ -319,6 +323,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 		updated.Universal,
 		updated.Metric,
 		updated.Imperial,
+		updated.Slug,
 		updated.PluralName,
 		updated.ID,
 	}

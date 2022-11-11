@@ -22,6 +22,8 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid instrument %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid instrument %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.Equal(t, expected.UsableForStorage, actual.UsableForStorage, "expected UsableForStorage for valid instrument %s to be %v, but it was %v", expected.ID, expected.UsableForStorage, actual.UsableForStorage)
+	assert.Equal(t, expected.DisplayInSummaryLists, actual.DisplayInSummaryLists, "expected DisplayInSummaryLists for valid instrument %s to be %v, but it was %v", expected.ID, expected.DisplayInSummaryLists, actual.DisplayInSummaryLists)
+	assert.Equal(t, expected.Slug, actual.Slug, "expected UsableForStorage for valid instrument %s to be %v, but it was %v", expected.ID, expected.UsableForStorage, actual.UsableForStorage)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
