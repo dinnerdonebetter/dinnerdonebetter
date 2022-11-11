@@ -90,6 +90,8 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE (email_address)
 );
 
+COMMENT ON COLUMN users.username IS 'username for the user';
+
 CREATE TABLE IF NOT EXISTS api_clients (
     id CHAR(20) NOT NULL PRIMARY KEY,
     "name" text DEFAULT ''::text,

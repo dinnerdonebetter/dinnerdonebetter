@@ -52,7 +52,7 @@ var (
 		"users.password_last_changed_at",
 		"users.two_factor_secret",
 		"users.two_factor_secret_verified_at",
-		"users.service_roles",
+		"users.service_role",
 		"users.user_account_status",
 		"users.user_account_status_explanation",
 		"users.birth_day",

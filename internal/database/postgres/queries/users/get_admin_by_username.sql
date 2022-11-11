@@ -8,7 +8,7 @@ SELECT
 	users.password_last_changed_at,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
-	users.service_roles,
+	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birth_day,
@@ -18,6 +18,6 @@ SELECT
 	users.archived_at
 FROM users
 WHERE users.archived_at IS NULL
-	AND users.service_roles ILIKE '%service_admin%'
+	AND users.service_role = 'service_admin'
 	AND users.username = $1
 	AND users.two_factor_secret_verified_at IS NOT NULL;

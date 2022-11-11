@@ -107,7 +107,7 @@ func init() {
 		panic(err)
 	}
 
-	if _, err = db.Exec(`UPDATE users SET service_roles = $1 WHERE id = $2`, authorization.ServiceAdminRole.String(), premadeAdminUser.ID); err != nil {
+	if _, err = db.Exec(`UPDATE users SET service_role = $1 WHERE id = $2`, authorization.ServiceAdminRole.String(), premadeAdminUser.ID); err != nil {
 		panic(err)
 	}
 
