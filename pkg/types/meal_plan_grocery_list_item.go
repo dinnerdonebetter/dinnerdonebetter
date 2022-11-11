@@ -44,17 +44,17 @@ type (
 	MealPlanGroceryListItem struct {
 		_                        struct{}
 		CreatedAt                time.Time             `json:"createdAt"`
-		QuantityPurchased        *float32              `json:"quantityPurchased"`
+		PurchasedMeasurementUnit *ValidMeasurementUnit `json:"purchasedMeasurementUnit"`
 		LastUpdatedAt            *time.Time            `json:"lastUpdatedAt"`
 		PurchasePrice            *float32              `json:"purchasePrice"`
 		PurchasedUPC             *string               `json:"purchasedUPC"`
-		PurchasedMeasurementUnit *ValidMeasurementUnit `json:"purchasedMeasurementUnit"`
 		ArchivedAt               *time.Time            `json:"archivedAt"`
-		ID                       string                `json:"id"`
-		StatusExplanation        string                `json:"statusExplanation"`
-		Status                   string                `json:"status"`
-		MeasurementUnit          ValidMeasurementUnit  `json:"measurementUnit"`
+		QuantityPurchased        *float32              `json:"quantityPurchased"`
 		BelongsToMealPlan        string                `json:"belongsToMealPlan"`
+		ID                       string                `json:"id"`
+		Status                   string                `json:"status"`
+		StatusExplanation        string                `json:"statusExplanation"`
+		MeasurementUnit          ValidMeasurementUnit  `json:"measurementUnit"`
 		Ingredient               ValidIngredient       `json:"ingredient"`
 		MaximumQuantityNeeded    float32               `json:"maximumQuantityNeeded"`
 		MinimumQuantityNeeded    float32               `json:"minimumQuantityNeeded"`

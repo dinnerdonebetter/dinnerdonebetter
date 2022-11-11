@@ -35,9 +35,9 @@ type (
 		CreatedAt     time.Time        `json:"createdAt"`
 		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time       `json:"archivedAt"`
-		Preparation   ValidPreparation `json:"preparation"`
 		Notes         string           `json:"notes"`
 		ID            string           `json:"id"`
+		Preparation   ValidPreparation `json:"preparation"`
 		Ingredient    ValidIngredient  `json:"ingredient"`
 	}
 

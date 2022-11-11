@@ -23,5 +23,8 @@ INSERT INTO valid_ingredients
 	restrict_to_preparations,
 	minimum_ideal_storage_temperature_in_celsius,
 	maximum_ideal_storage_temperature_in_celsius,
-	storage_instructions
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24);
+	storage_instructions,
+    slug,
+    contains_alcohol,
+    shopping_suggestions
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27);

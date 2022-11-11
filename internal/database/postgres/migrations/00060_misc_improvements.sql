@@ -10,9 +10,9 @@ ALTER TABLE users DROP COLUMN birth_month;                                      
 ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                                                                             -- #364
 ALTER TABLE users ADD COLUMN email_address_verification_token TEXT NOT NULL;                                                                -- #156
 ALTER TABLE users ADD COLUMN email_address_verified_at TIMESTAMP WITH TIME ZONE;                                                            -- #156
--- ALTER TABLE valid_ingredients ADD COLUMN contains_alcohol BOOLEAN NOT NULL DEFAULT 'false';                                              -- #363
--- ALTER TABLE valid_ingredients ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
--- ALTER TABLE valid_ingredients ADD COLUMN shopping_suggestions TEXT NOT NULL DEFAULT '';                                                  -- #320
+ALTER TABLE valid_ingredients ADD COLUMN contains_alcohol BOOLEAN NOT NULL DEFAULT 'false';                                              -- #363
+ALTER TABLE valid_ingredients ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
+ALTER TABLE valid_ingredients ADD COLUMN shopping_suggestions TEXT NOT NULL DEFAULT '';                                                  -- #320
 -- ALTER TABLE valid_instruments ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
 -- ALTER TABLE valid_measurement_units ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                            -- #184
 -- ALTER TABLE valid_preparations ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                 -- #184

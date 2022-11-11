@@ -23,6 +23,9 @@ SELECT
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
+    valid_ingredients.slug,
+    valid_ingredients.contains_alcohol,
+    valid_ingredients.shopping_suggestions,
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at

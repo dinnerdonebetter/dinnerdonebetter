@@ -36,6 +36,9 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		MinimumIdealStorageTemperatureInCelsius: pointers.Float32(float32(BuildFakeNumber())),
 		MaximumIdealStorageTemperatureInCelsius: pointers.Float32(float32(BuildFakeNumber())),
 		StorageInstructions:                     buildUniqueString(),
+		Slug:                                    buildUniqueString(),
+		ContainsAlcohol:                         fake.Bool(),
+		ShoppingSuggestions:                     buildUniqueString(),
 	}
 }
 
@@ -60,31 +63,7 @@ func BuildFakeValidIngredientList() *types.ValidIngredientList {
 // BuildFakeValidIngredientUpdateRequestInput builds a faked ValidIngredientUpdateRequestInput from a valid ingredient.
 func BuildFakeValidIngredientUpdateRequestInput() *types.ValidIngredientUpdateRequestInput {
 	validIngredient := BuildFakeValidIngredient()
-	return &types.ValidIngredientUpdateRequestInput{
-		Name:                                    &validIngredient.Name,
-		Description:                             &validIngredient.Description,
-		Warning:                                 &validIngredient.Warning,
-		ContainsEgg:                             &validIngredient.ContainsEgg,
-		ContainsDairy:                           &validIngredient.ContainsDairy,
-		ContainsPeanut:                          &validIngredient.ContainsPeanut,
-		ContainsTreeNut:                         &validIngredient.ContainsTreeNut,
-		ContainsSoy:                             &validIngredient.ContainsSoy,
-		ContainsWheat:                           &validIngredient.ContainsWheat,
-		ContainsShellfish:                       &validIngredient.ContainsShellfish,
-		ContainsSesame:                          &validIngredient.ContainsSesame,
-		ContainsFish:                            &validIngredient.ContainsFish,
-		ContainsGluten:                          &validIngredient.ContainsGluten,
-		AnimalFlesh:                             &validIngredient.AnimalFlesh,
-		IsMeasuredVolumetrically:                &validIngredient.IsMeasuredVolumetrically,
-		IsLiquid:                                &validIngredient.IsLiquid,
-		IconPath:                                &validIngredient.IconPath,
-		PluralName:                              &validIngredient.PluralName,
-		AnimalDerived:                           &validIngredient.AnimalDerived,
-		RestrictToPreparations:                  &validIngredient.RestrictToPreparations,
-		MinimumIdealStorageTemperatureInCelsius: validIngredient.MinimumIdealStorageTemperatureInCelsius,
-		MaximumIdealStorageTemperatureInCelsius: validIngredient.MaximumIdealStorageTemperatureInCelsius,
-		StorageInstructions:                     &validIngredient.StorageInstructions,
-	}
+	return converters.ConvertValidIngredientToValidIngredientUpdateRequestInput(validIngredient)
 }
 
 // BuildFakeValidIngredientCreationRequestInput builds a faked ValidIngredientCreationRequestInput.

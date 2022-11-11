@@ -30,6 +30,9 @@ func ConvertValidIngredientToValidIngredientUpdateRequestInput(input *types.Vali
 		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     &input.StorageInstructions,
+		Slug:                                    &input.Slug,
+		ContainsAlcohol:                         &input.ContainsAlcohol,
+		ShoppingSuggestions:                     &input.ShoppingSuggestions,
 	}
 
 	return x
@@ -61,6 +64,9 @@ func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreation
 		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     input.StorageInstructions,
+		Slug:                                    input.Slug,
+		ContainsAlcohol:                         input.ContainsAlcohol,
+		ShoppingSuggestions:                     input.ShoppingSuggestions,
 	}
 
 	return x
@@ -93,6 +99,9 @@ func ConvertValidIngredientToValidIngredientCreationRequestInput(validIngredient
 		MinimumIdealStorageTemperatureInCelsius: validIngredient.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: validIngredient.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     validIngredient.StorageInstructions,
+		Slug:                                    validIngredient.Slug,
+		ContainsAlcohol:                         validIngredient.ContainsAlcohol,
+		ShoppingSuggestions:                     validIngredient.ShoppingSuggestions,
 	}
 }
 
@@ -123,6 +132,9 @@ func ConvertValidIngredientToValidIngredientDatabaseCreationInput(validIngredien
 		MinimumIdealStorageTemperatureInCelsius: validIngredient.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: validIngredient.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     validIngredient.StorageInstructions,
+		Slug:                                    validIngredient.Slug,
+		ContainsAlcohol:                         validIngredient.ContainsAlcohol,
+		ShoppingSuggestions:                     validIngredient.ShoppingSuggestions,
 	}
 }
 
@@ -156,6 +168,9 @@ func ConvertNullableValidIngredientToValidIngredient(input *types.NullableValidI
 		ContainsSesame:                          *input.ContainsSesame,
 		ContainsFish:                            *input.ContainsFish,
 		ContainsGluten:                          *input.ContainsGluten,
+		Slug:                                    *input.Slug,
+		ContainsAlcohol:                         *input.ContainsAlcohol,
+		ShoppingSuggestions:                     *input.ShoppingSuggestions,
 	}
 }
 
@@ -189,5 +204,8 @@ func ConvertValidIngredientToNullableValidIngredient(input *types.ValidIngredien
 		ContainsSesame:                          &input.ContainsSesame,
 		ContainsFish:                            &input.ContainsFish,
 		ContainsGluten:                          &input.ContainsGluten,
+		Slug:                                    &input.Slug,
+		ContainsAlcohol:                         &input.ContainsAlcohol,
+		ShoppingSuggestions:                     &input.ShoppingSuggestions,
 	}
 }

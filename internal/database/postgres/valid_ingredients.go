@@ -40,6 +40,9 @@ var (
 		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
 		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
 		"valid_ingredients.storage_instructions",
+		"valid_ingredients.slug",
+		"valid_ingredients.contains_alcohol",
+		"valid_ingredients.shopping_suggestions",
 		"valid_ingredients.created_at",
 		"valid_ingredients.last_updated_at",
 		"valid_ingredients.archived_at",
@@ -78,6 +81,9 @@ func (q *Querier) scanValidIngredient(ctx context.Context, scan database.Scanner
 		&x.MinimumIdealStorageTemperatureInCelsius,
 		&x.MaximumIdealStorageTemperatureInCelsius,
 		&x.StorageInstructions,
+		&x.Slug,
+		&x.ContainsAlcohol,
+		&x.ShoppingSuggestions,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -342,6 +348,9 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 		input.MinimumIdealStorageTemperatureInCelsius,
 		input.MaximumIdealStorageTemperatureInCelsius,
 		input.StorageInstructions,
+		input.Slug,
+		input.ContainsAlcohol,
+		input.ShoppingSuggestions,
 	}
 
 	// create the valid ingredient.
@@ -374,6 +383,9 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
 		StorageInstructions:                     input.StorageInstructions,
+		Slug:                                    input.Slug,
+		ContainsAlcohol:                         input.ContainsAlcohol,
+		ShoppingSuggestions:                     input.ShoppingSuggestions,
 		CreatedAt:                               q.currentTime(),
 	}
 
@@ -422,6 +434,9 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 		updated.MinimumIdealStorageTemperatureInCelsius,
 		updated.MaximumIdealStorageTemperatureInCelsius,
 		updated.StorageInstructions,
+		updated.Slug,
+		updated.ContainsAlcohol,
+		updated.ShoppingSuggestions,
 		updated.ID,
 	}
 
