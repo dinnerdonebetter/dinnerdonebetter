@@ -11,7 +11,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/unrolled/secure"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -19,9 +18,8 @@ import (
 )
 
 const (
-	roughlyOneYear = time.Hour * 24 * 365
-	maxTimeout     = 120 * time.Second
-	maxCORSAge     = 300
+	maxTimeout = 120 * time.Second
+	maxCORSAge = 300
 )
 
 var (
@@ -37,19 +35,20 @@ type router struct {
 	logger logging.Logger
 }
 
+var (
+	validDomains = []string{
+		"http://localhost",
+		"https://prixfixe.dev",
+		"https://www.prixfixe.dev",
+		"https://api.prixfixe.dev",
+		"https://admin.prixfixe.dev",
+	}
+)
+
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
 	corsHandler := cors.New(cors.Options{
 		// Use this to allow specific origin hosts,
-		AllowedOrigins: []string{
-			"http://localhost:9000",
-			"http://localhost:7000",
-			"https://www.prixfixe.local:5555",
-			"https://admin.prixfixe.local:5555",
-			"https://prixfixe.dev",
-			"https://www.prixfixe.dev",
-			"https://api.prixfixe.dev",
-			"https://admin.prixfixe.dev",
-		},
+		AllowedOrigins: validDomains,
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 		AllowedMethods: []string{
 			http.MethodGet,
@@ -65,37 +64,9 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 		MaxAge:           maxCORSAge,
 	})
 
-	sec := secure.New(secure.Options{
-		AllowedHosts:            []string{""},
-		AllowedHostsAreRegex:    false,
-		HostsProxyHeaders:       []string{"X-Forwarded-Hosts"},
-		SSLRedirect:             true,
-		SSLTemporaryRedirect:    false,
-		SSLHost:                 "",
-		SSLHostFunc:             nil,
-		SSLProxyHeaders:         map[string]string{"X-Forwarded-Proto": "https"},
-		STSSeconds:              int64(roughlyOneYear.Seconds()),
-		STSIncludeSubdomains:    true,
-		STSPreload:              true,
-		ForceSTSHeader:          false,
-		FrameDeny:               true,
-		CustomFrameOptionsValue: "",
-		ContentTypeNosniff:      true,
-		BrowserXssFilter:        true,
-		CustomBrowserXssValue:   "",
-		ContentSecurityPolicy:   "",
-		PublicKey:               "",
-		ReferrerPolicy:          "",
-		FeaturePolicy:           "",
-		ExpectCTHeader:          "",
-		SecureContextKey:        "secureContext",
-		IsDevelopment:           true,
-	})
-
 	mux := chi.NewRouter()
 	mux.Use(
 		buildTracingMiddleware(tracer),
-		sec.Handler,
 		chimiddleware.RequestID,
 		chimiddleware.RealIP,
 		chimiddleware.Timeout(maxTimeout),

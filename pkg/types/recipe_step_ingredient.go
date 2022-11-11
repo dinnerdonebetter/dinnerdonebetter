@@ -34,17 +34,19 @@ type (
 		_                   struct{}
 		CreatedAt           time.Time            `json:"createdAt"`
 		RecipeStepProductID *string              `json:"recipeStepProductID"`
-		LastUpdatedAt       *time.Time           `json:"lastUpdatedAt"`
 		ArchivedAt          *time.Time           `json:"archivedAt"`
 		Ingredient          *ValidIngredient     `json:"ingredient"`
+		LastUpdatedAt       *time.Time           `json:"lastUpdatedAt"`
+		BelongsToRecipeStep string               `json:"belongsToRecipeStep"`
 		QuantityNotes       string               `json:"quantityNotes"`
 		Name                string               `json:"name"`
 		ID                  string               `json:"id"`
 		IngredientNotes     string               `json:"ingredientNotes"`
-		BelongsToRecipeStep string               `json:"belongsToRecipeStep"`
 		MeasurementUnit     ValidMeasurementUnit `json:"measurementUnit"`
 		MinimumQuantity     float32              `json:"minimumQuantity"`
 		MaximumQuantity     float32              `json:"maximumQuantity"`
+		OptionIndex         uint16               `json:"optionIndex"`
+		RequiresDefrost     bool                 `json:"requiresDefrost"`
 		Optional            bool                 `json:"optional"`
 		ProductOfRecipeStep bool                 `json:"productOfRecipeStep"`
 	}
@@ -69,6 +71,8 @@ type (
 		IngredientNotes     string                                 `json:"ingredientNotes"`
 		MaximumQuantity     float32                                `json:"maximumQuantity"`
 		MinimumQuantity     float32                                `json:"minimumQuantity"`
+		OptionIndex         uint16                                 `json:"optionIndex"`
+		RequiresDefrost     bool                                   `json:"requiresDefrost"`
 		Optional            bool                                   `json:"optional"`
 		ProductOfRecipeStep bool                                   `json:"productOfRecipeStep"`
 	}
@@ -87,6 +91,8 @@ type (
 		MinimumQuantity     float32 `json:"minimumQuantity"`
 		MaximumQuantity     float32 `json:"maximumQuantity"`
 		Optional            bool    `json:"optional"`
+		OptionIndex         uint16  `json:"optionIndex"`
+		RequiresDefrost     bool    `json:"requiresDefrost"`
 		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 	}
 
@@ -105,6 +111,8 @@ type (
 		MinimumQuantity     *float32 `json:"minimumQuantity"`
 		MaximumQuantity     *float32 `json:"maximumQuantity"`
 		ProductOfRecipeStep *bool    `json:"productOfRecipeStep"`
+		OptionIndex         *uint16  `json:"optionIndex"`
+		RequiresDefrost     *bool    `json:"requiresDefrost"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.
@@ -167,6 +175,14 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 
 	if input.Optional != nil && *input.Optional != x.Optional {
 		x.Optional = *input.Optional
+	}
+
+	if input.OptionIndex != nil && *input.OptionIndex != x.OptionIndex {
+		x.OptionIndex = *input.OptionIndex
+	}
+
+	if input.RequiresDefrost != nil && *input.RequiresDefrost != x.RequiresDefrost {
+		x.RequiresDefrost = *input.RequiresDefrost
 	}
 }
 

@@ -17,6 +17,8 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 		IngredientNotes:     input.IngredientNotes,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Optional:            input.Optional,
+		OptionIndex:         input.OptionIndex,
+		RequiresDefrost:     input.RequiresDefrost,
 	}
 
 	return x
@@ -36,6 +38,8 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 		MaximumQuantity:     &input.MaximumQuantity,
 		ProductOfRecipeStep: &input.ProductOfRecipeStep,
 		Optional:            &input.Optional,
+		OptionIndex:         &input.OptionIndex,
+		RequiresDefrost:     &input.RequiresDefrost,
 	}
 
 	return x
@@ -55,6 +59,8 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recip
 		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
 		IngredientNotes:     recipeStepIngredient.IngredientNotes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
+		OptionIndex:         recipeStepIngredient.OptionIndex,
+		RequiresDefrost:     recipeStepIngredient.RequiresDefrost,
 	}
 }
 
@@ -72,5 +78,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(reci
 		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
 		IngredientNotes:     recipeStepIngredient.IngredientNotes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
+		OptionIndex:         recipeStepIngredient.OptionIndex,
+		RequiresDefrost:     recipeStepIngredient.RequiresDefrost,
 	}
 }

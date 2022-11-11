@@ -20,6 +20,7 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		CreatedAt:           fake.Date(),
 		BelongsToRecipeStep: fake.UUID(),
 		Optional:            fake.Bool(),
+		OptionIndex:         uint16(fake.Uint8()),
 		MinimumQuantity:     fake.Uint32(),
 		MaximumQuantity:     fake.Uint32(),
 	}
@@ -46,18 +47,7 @@ func BuildFakeRecipeStepInstrumentList() *types.RecipeStepInstrumentList {
 // BuildFakeRecipeStepInstrumentUpdateRequestInput builds a faked RecipeStepInstrumentUpdateRequestInput from a recipe step instrument.
 func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrumentUpdateRequestInput {
 	recipeStepInstrument := BuildFakeRecipeStepInstrument()
-	return &types.RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID:        &recipeStepInstrument.Instrument.ID,
-		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
-		Name:                &recipeStepInstrument.Name,
-		ProductOfRecipeStep: &recipeStepInstrument.ProductOfRecipeStep,
-		Notes:               &recipeStepInstrument.Notes,
-		PreferenceRank:      &recipeStepInstrument.PreferenceRank,
-		BelongsToRecipeStep: &recipeStepInstrument.BelongsToRecipeStep,
-		Optional:            &recipeStepInstrument.Optional,
-		MinimumQuantity:     &recipeStepInstrument.MinimumQuantity,
-		MaximumQuantity:     &recipeStepInstrument.MaximumQuantity,
-	}
+	return converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(recipeStepInstrument)
 }
 
 // BuildFakeRecipeStepInstrumentCreationRequestInput builds a faked RecipeStepInstrumentCreationRequestInput.

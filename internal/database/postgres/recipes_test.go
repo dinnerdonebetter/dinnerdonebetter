@@ -973,6 +973,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.ProductOfRecipeStep,
 					ingredient.RecipeStepProductID,
 					ingredient.IngredientNotes,
+					ingredient.OptionIndex,
+					ingredient.RequiresDefrost,
 					ingredient.BelongsToRecipeStep,
 				}
 
@@ -991,6 +993,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					instrument.Notes,
 					instrument.PreferenceRank,
 					instrument.Optional,
+					instrument.OptionIndex,
 					instrument.MinimumQuantity,
 					instrument.MaximumQuantity,
 					instrument.BelongsToRecipeStep,

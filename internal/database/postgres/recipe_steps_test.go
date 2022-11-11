@@ -644,6 +644,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.ProductOfRecipeStep,
 				ingredient.RecipeStepProductID,
 				ingredient.IngredientNotes,
+				ingredient.OptionIndex,
+				ingredient.RequiresDefrost,
 				ingredient.BelongsToRecipeStep,
 			}
 
@@ -684,6 +686,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				instrument.Notes,
 				instrument.PreferenceRank,
 				instrument.Optional,
+				instrument.OptionIndex,
 				instrument.MinimumQuantity,
 				instrument.MaximumQuantity,
 				instrument.BelongsToRecipeStep,
@@ -752,6 +755,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Ingredients[0].ProductOfRecipeStep,
 			exampleInput.Ingredients[0].RecipeStepProductID,
 			exampleInput.Ingredients[0].IngredientNotes,
+			exampleInput.Ingredients[0].OptionIndex,
+			exampleInput.Ingredients[0].RequiresDefrost,
 			exampleInput.Ingredients[0].BelongsToRecipeStep,
 		}
 
@@ -823,6 +828,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.ProductOfRecipeStep,
 				ingredient.RecipeStepProductID,
 				ingredient.IngredientNotes,
+				ingredient.OptionIndex,
+				ingredient.RequiresDefrost,
 				ingredient.BelongsToRecipeStep,
 			}
 

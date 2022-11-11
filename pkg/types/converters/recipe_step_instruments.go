@@ -1,6 +1,8 @@
 package converters
 
-import "github.com/prixfixeco/backend/pkg/types"
+import (
+	"github.com/prixfixeco/backend/pkg/types"
+)
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput creates a RecipeStepInstrumentUpdateRequestInput from a RecipeStepInstrument.
 func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
@@ -13,6 +15,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 		PreferenceRank:      &input.PreferenceRank,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
 		Optional:            &input.Optional,
+		OptionIndex:         &input.OptionIndex,
 		MinimumQuantity:     &input.MinimumQuantity,
 		MaximumQuantity:     &input.MaximumQuantity,
 	}
@@ -31,6 +34,7 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 		PreferenceRank:      input.PreferenceRank,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Optional:            input.Optional,
+		OptionIndex:         input.OptionIndex,
 		MinimumQuantity:     input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
 	}
@@ -55,6 +59,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recip
 		PreferenceRank:      recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
 		Optional:            recipeStepInstrument.Optional,
+		OptionIndex:         recipeStepInstrument.OptionIndex,
 		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,
 		MaximumQuantity:     recipeStepInstrument.MaximumQuantity,
 	}
@@ -77,6 +82,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(reci
 		PreferenceRank:      recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
 		Optional:            recipeStepInstrument.Optional,
+		OptionIndex:         recipeStepInstrument.OptionIndex,
 		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,
 		MaximumQuantity:     recipeStepInstrument.MaximumQuantity,
 	}
