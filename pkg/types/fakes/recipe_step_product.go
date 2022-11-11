@@ -21,7 +21,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		MaximumQuantity:                    float32(minQty + 1),
 		QuantityNotes:                      buildUniqueString(),
 		MeasurementUnit:                    *BuildFakeValidMeasurementUnit(),
-		CreatedAt:                          fake.Date(),
+		CreatedAt:                          BuildFakeTime(),
 		BelongsToRecipeStep:                fake.UUID(),
 		Compostable:                        fake.Bool(),
 		MaximumStorageDurationInSeconds:    pointers.Uint32(fake.Uint32()),

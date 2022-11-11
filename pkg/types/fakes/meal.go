@@ -1,8 +1,6 @@
 package fakes
 
 import (
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -17,7 +15,7 @@ func BuildFakeMeal() *types.Meal {
 		ID:            BuildFakeID(),
 		Name:          buildUniqueString(),
 		Description:   buildUniqueString(),
-		CreatedAt:     fake.Date(),
+		CreatedAt:     BuildFakeTime(),
 		CreatedByUser: BuildFakeID(),
 		Recipes:       recipes,
 	}

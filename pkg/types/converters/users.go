@@ -21,7 +21,6 @@ func ConvertUserToUserDatabaseCreationInput(user *types.User) *types.UserDatabas
 		Username:        user.Username,
 		HashedPassword:  user.HashedPassword,
 		TwoFactorSecret: user.TwoFactorSecret,
-		BirthDay:        user.BirthDay,
-		BirthMonth:      user.BirthMonth,
+		Birthday:        user.Birthday,
 	}
 }

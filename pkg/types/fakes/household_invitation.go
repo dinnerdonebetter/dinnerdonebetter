@@ -20,7 +20,7 @@ func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 		ID:                   buildUniqueString(),
 		ExpiresAt:            BuildFakeTime(),
 		Status:               types.PendingHouseholdInvitationStatus,
-		CreatedAt:            fake.Date(),
+		CreatedAt:            BuildFakeTime(),
 	}
 }
 

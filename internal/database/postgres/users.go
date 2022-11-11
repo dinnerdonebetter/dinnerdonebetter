@@ -35,8 +35,7 @@ var (
 		"users.service_role",
 		"users.user_account_status",
 		"users.user_account_status_explanation",
-		"users.birth_day",
-		"users.birth_month",
+		"users.birthday",
 		"users.created_at",
 		"users.last_updated_at",
 		"users.archived_at",
@@ -68,8 +67,7 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 		&user.ServiceRole,
 		&user.AccountStatus,
 		&user.AccountStatusExplanation,
-		&user.BirthDay,
-		&user.BirthMonth,
+		&user.Birthday,
 		&user.CreatedAt,
 		&user.LastUpdatedAt,
 		&user.ArchivedAt,
@@ -406,8 +404,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		input.TwoFactorSecret,
 		input.AvatarSrc,
 		types.UnverifiedHouseholdStatus,
-		input.BirthDay,
-		input.BirthMonth,
+		input.Birthday,
 		authorization.ServiceUserRole.String(),
 	}
 
@@ -417,8 +414,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		EmailAddress:    input.EmailAddress,
 		HashedPassword:  input.HashedPassword,
 		TwoFactorSecret: input.TwoFactorSecret,
-		BirthMonth:      input.BirthMonth,
-		BirthDay:        input.BirthDay,
+		Birthday:        input.Birthday,
 		ServiceRole:     authorization.ServiceUserRole.String(),
 		CreatedAt:       q.currentTime(),
 	}
@@ -542,8 +538,7 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 		updated.AvatarSrc,
 		updated.TwoFactorSecret,
 		updated.TwoFactorSecretVerifiedAt,
-		updated.BirthDay,
-		updated.BirthMonth,
+		updated.Birthday,
 		updated.ID,
 	}
 

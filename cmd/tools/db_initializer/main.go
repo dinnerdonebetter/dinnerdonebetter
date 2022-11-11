@@ -98,11 +98,3 @@ func main() {
 		log.Fatal(fmt.Errorf("initializing running query: %w", err))
 	}
 }
-
-func sp(s string) *string {
-	return &s
-}
-
-func uint8p(n uint8) *uint8 {
-	return &n
-}

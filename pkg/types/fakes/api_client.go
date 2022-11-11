@@ -16,7 +16,7 @@ func BuildFakeAPIClient() *types.APIClient {
 		ClientID:      BuildFakeID(),
 		ClientSecret:  []byte(BuildFakePassword()),
 		BelongsToUser: fake.UUID(),
-		CreatedAt:     fake.Date(),
+		CreatedAt:     BuildFakeTime(),
 	}
 }
 

@@ -17,7 +17,7 @@ func BuildFakeHouseholdUserMembershipWithUser() *types.HouseholdUserMembershipWi
 		BelongsToUser:      u,
 		BelongsToHousehold: fake.UUID(),
 		HouseholdRole:      authorization.HouseholdMemberRole.String(),
-		CreatedAt:          fake.Date(),
+		CreatedAt:          BuildFakeTime(),
 		ArchivedAt:         nil,
 	}
 }

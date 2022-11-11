@@ -16,7 +16,7 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 		Description:      buildUniqueString(),
 		IconPath:         buildUniqueString(),
 		UsableForStorage: fake.Bool(),
-		CreatedAt:        fake.Date(),
+		CreatedAt:        BuildFakeTime(),
 	}
 }
 

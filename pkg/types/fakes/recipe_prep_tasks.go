@@ -33,7 +33,7 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 		MinimumStorageTemperatureInCelsius:     float32(minStorageTemp),
 		MaximumStorageTemperatureInCelsius:     float32(minStorageTemp + 1),
 		BelongsToRecipe:                        BuildFakeID(),
-		CreatedAt:                              fake.Date(),
+		CreatedAt:                              BuildFakeTime(),
 		LastUpdatedAt:                          nil,
 		ArchivedAt:                             nil,
 	}

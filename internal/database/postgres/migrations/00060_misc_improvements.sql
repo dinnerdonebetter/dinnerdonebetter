@@ -2,12 +2,12 @@ ALTER TABLE users RENAME COLUMN service_roles TO service_role;
 ALTER TABLE household_user_memberships RENAME COLUMN household_roles TO household_role;
 CREATE TYPE recipe_ingredient_scale AS ENUM ('linear', 'logarithmic', 'exponential');                                                       -- #294
 ALTER TABLE household_invitations ADD COLUMN expires_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW() + interval '1 week';                -- #24
-ALTER TABLE recipe_step_instruments ADD COLUMN option_index INTEGER NOT NULL DEFAULT 0;                                                  -- #230/#295
-ALTER TABLE recipe_step_ingredients ADD COLUMN option_index INTEGER NOT NULL DEFAULT 0;                                                  -- #230/#295
-ALTER TABLE recipe_step_ingredients ADD COLUMN requires_defrost BOOLEAN NOT NULL DEFAULT 'false';                                        -- #318
--- ALTER TABLE users DROP COLUMN birth_year;                                                                                                -- #364
--- ALTER TABLE users DROP COLUMN birth_month;                                                                                               -- #364
--- ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                                                                          -- #364
+ALTER TABLE recipe_step_instruments ADD COLUMN option_index INTEGER NOT NULL DEFAULT 0;                                                     -- #230/#295
+ALTER TABLE recipe_step_ingredients ADD COLUMN option_index INTEGER NOT NULL DEFAULT 0;                                                     -- #230/#295
+ALTER TABLE recipe_step_ingredients ADD COLUMN requires_defrost BOOLEAN NOT NULL DEFAULT 'false';                                           -- #318
+ALTER TABLE users DROP COLUMN birth_day;                                                                                                   -- #364
+ALTER TABLE users DROP COLUMN birth_month;                                                                                                  -- #364
+ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                                                                             -- #364
 -- ALTER TABLE valid_ingredients ADD COLUMN contains_alcohol BOOLEAN NOT NULL DEFAULT 'false';                                              -- #363
 -- ALTER TABLE valid_ingredients ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
 -- ALTER TABLE valid_instruments ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                  -- #184
