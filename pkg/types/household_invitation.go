@@ -39,24 +39,26 @@ type (
 	HouseholdInvitationCreationRequestInput struct {
 		_ struct{}
 
-		ID                     string `json:"-"`
-		FromUser               string `json:"-"`
-		Note                   string `json:"note"`
-		ToEmail                string `json:"toEmail"`
-		DestinationHouseholdID string `json:"-"`
+		ID                     string     `json:"-"`
+		FromUser               string     `json:"-"`
+		Note                   string     `json:"note"`
+		ToEmail                string     `json:"toEmail"`
+		ExpiresAt              *time.Time `json:"expiresAt"`
+		DestinationHouseholdID string     `json:"-"`
 	}
 
 	// HouseholdInvitationDatabaseCreationInput represents what a User could set as input for creating household invitations.
 	HouseholdInvitationDatabaseCreationInput struct {
 		_ struct{}
 
-		ID                     string  `json:"id"`
-		FromUser               string  `json:"fromUser"`
-		ToUser                 *string `json:"toUser"`
-		Note                   string  `json:"note"`
-		ToEmail                string  `json:"toEmail"`
-		Token                  string  `json:"token"`
-		DestinationHouseholdID string  `json:"destinationHousehold"`
+		ID                     string    `json:"id"`
+		FromUser               string    `json:"fromUser"`
+		ToUser                 *string   `json:"toUser"`
+		Note                   string    `json:"note"`
+		ToEmail                string    `json:"toEmail"`
+		Token                  string    `json:"token"`
+		ExpiresAt              time.Time `json:"expiresAt"`
+		DestinationHouseholdID string    `json:"destinationHousehold"`
 	}
 
 	// HouseholdInvitation represents a household invitation.
@@ -72,6 +74,7 @@ type (
 		Token                string                    `json:"token"`
 		ID                   string                    `json:"id"`
 		Note                 string                    `json:"note"`
+		ExpiresAt            time.Time                 `json:"expiresAt"`
 		DestinationHousehold Household                 `json:"destinationHousehold"`
 		FromUser             User                      `json:"fromUser"`
 	}

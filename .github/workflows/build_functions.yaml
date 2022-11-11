@@ -27,4 +27,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Build ${{ matrix.function }} function
+        run: rm -rf cmd/functions/${{ matrix.function }}/go.{mod,sum}
+
+      - name: Build ${{ matrix.function }} function
         run: go build github.com/prixfixeco/backend/cmd/functions/${{ matrix.function }}
