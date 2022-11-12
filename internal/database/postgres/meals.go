@@ -90,14 +90,16 @@ func (q *Querier) scanMeals(ctx context.Context, rows database.ResultIterator, i
 }
 
 // scanMealWithRecipes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.Meal, recipeIDs []string, err error) {
+func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.Meal, mealComponents []*types.MealComponentDatabaseCreationInput, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	x = &types.Meal{}
 
 	for rows.Next() {
-		var recipeID string
+		var (
+			recipeID, componentType string
+		)
 		targetVars := []any{
 			&x.ID,
 			&x.Name,
@@ -107,15 +109,16 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 			&x.ArchivedAt,
 			&x.CreatedByUser,
 			&recipeID,
+			&componentType,
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
 			return nil, nil, observability.PrepareError(err, span, "scanning complete meal")
 		}
-		recipeIDs = append(recipeIDs, recipeID)
+		mealComponents = append(mealComponents, &types.MealComponentDatabaseCreationInput{ComponentType: componentType, RecipeID: recipeID})
 	}
 
-	return x, recipeIDs, nil
+	return x, mealComponents, nil
 }
 
 //go:embed queries/meals/exists.sql
@@ -171,7 +174,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal retrieval query")
 	}
 
-	m, recipeIDs, err := q.scanMealWithRecipes(ctx, rows)
+	m, mealComponents, err := q.scanMealWithRecipes(ctx, rows)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal retrieval query")
 	}
@@ -180,13 +183,16 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 		return nil, sql.ErrNoRows
 	}
 
-	for _, id := range recipeIDs {
-		r, getRecipeErr := q.getRecipe(ctx, id, "")
+	for _, mealComponent := range mealComponents {
+		r, getRecipeErr := q.getRecipe(ctx, mealComponent.RecipeID, "")
 		if getRecipeErr != nil {
 			return nil, observability.PrepareError(getRecipeErr, span, "fetching recipe for meal")
 		}
 
-		m.Recipes = append(m.Recipes, r)
+		m.Components = append(m.Components, &types.MealComponent{
+			ComponentType: mealComponent.ComponentType,
+			Recipe:        *r,
+		})
 	}
 
 	return m, nil
@@ -298,8 +304,8 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 		CreatedAt:     q.currentTime(),
 	}
 
-	for _, recipeID := range input.Recipes {
-		if err := q.CreateMealRecipe(ctx, querier, x.ID, recipeID); err != nil {
+	for _, recipeID := range input.Components {
+		if err := q.CreateMealComponent(ctx, querier, x.ID, recipeID); err != nil {
 			q.rollbackTransaction(ctx, querier)
 			return nil, observability.PrepareAndLogError(err, logger, span, "creating meal recipe")
 		}
@@ -337,11 +343,11 @@ func (q *Querier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreat
 	return x, nil
 }
 
-//go:embed queries/meal_recipes/create.sql
+//go:embed queries/meal_components/create.sql
 var mealRecipeCreationQuery string
 
-// CreateMealRecipe creates a meal in the database.
-func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQueryExecutor, mealID, recipeID string) error {
+// CreateMealComponent creates a meal component in the database.
+func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQueryExecutor, mealID string, input *types.MealComponentDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -353,16 +359,15 @@ func (q *Querier) CreateMealRecipe(ctx context.Context, querier database.SQLQuer
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	if recipeID == "" {
-		return ErrInvalidIDProvided
+	if input == nil {
+		return ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachUserIDToSpan(span, recipeID)
 
 	args := []any{
 		identifiers.New(),
 		mealID,
-		recipeID,
+		input.RecipeID,
+		input.ComponentType,
 	}
 
 	// create the meal.

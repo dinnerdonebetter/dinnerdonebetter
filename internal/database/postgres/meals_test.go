@@ -15,6 +15,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
@@ -57,10 +58,11 @@ func buildMockFullRowsFromMeal(meal *types.Meal) *sqlmock.Rows {
 		"meals.last_updated_at",
 		"meals.archived_at",
 		"meals.created_by_user",
-		"meal_recipes.recipe_id",
+		"meal_components.recipe_id",
+		"meal_components.meal_component_type",
 	})
 
-	for _, recipe := range meal.Recipes {
+	for _, mealComponent := range meal.Components {
 		exampleRows.AddRow(
 			&meal.ID,
 			&meal.Name,
@@ -69,7 +71,8 @@ func buildMockFullRowsFromMeal(meal *types.Meal) *sqlmock.Rows {
 			&meal.LastUpdatedAt,
 			&meal.ArchivedAt,
 			&meal.CreatedByUser,
-			&recipe.ID,
+			&mealComponent.Recipe.ID,
+			&mealComponent.ComponentType,
 		)
 	}
 
@@ -205,8 +208,8 @@ func prepareMockToSuccessfullyGetMeal(t *testing.T, exampleMeal *types.Meal, db 
 		WithArgs(interfaceToDriverValue(getMealArgs)...).
 		WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
 
-	for _, recipe := range exampleMeal.Recipes {
-		prepareMockToSuccessfullyGetRecipe(t, recipe, "", db)
+	for _, component := range exampleMeal.Components {
+		prepareMockToSuccessfullyGetRecipe(t, &component.Recipe, "", db)
 	}
 }
 
@@ -218,9 +221,9 @@ func TestQuerier_GetMeal(T *testing.T) {
 
 		exampleMeal := fakes.BuildFakeMeal()
 
-		for i := range exampleMeal.Recipes {
-			for j := range exampleMeal.Recipes[i].Steps {
-				exampleMeal.Recipes[i].Steps[j].Products = nil
+		for i := range exampleMeal.Components {
+			for j := range exampleMeal.Components[i].Recipe.Steps {
+				exampleMeal.Components[i].Recipe.Steps[j].Products = nil
 			}
 		}
 
@@ -310,7 +313,7 @@ func TestQuerier_GetMeal(T *testing.T) {
 			WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
 
 		getRecipeArgs := []any{
-			exampleMeal.Recipes[0].ID,
+			exampleMeal.Components[0].Recipe.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
@@ -334,7 +337,7 @@ func TestQuerier_GetMeals(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleMealList := fakes.BuildFakeMealList()
 		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Recipes = nil
+			exampleMealList.Meals[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -361,7 +364,7 @@ func TestQuerier_GetMeals(T *testing.T) {
 		exampleMealList.Page = 0
 		exampleMealList.Limit = 0
 		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Recipes = nil
+			exampleMealList.Meals[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -432,7 +435,7 @@ func TestQuerier_SearchForMeals(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleMealList := fakes.BuildFakeMealList()
 		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Recipes = nil
+			exampleMealList.Meals[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -459,7 +462,7 @@ func TestQuerier_SearchForMeals(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleMealList := fakes.BuildFakeMealList()
 		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Recipes = nil
+			exampleMealList.Meals[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -486,7 +489,7 @@ func TestQuerier_SearchForMeals(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleMealList := fakes.BuildFakeMealList()
 		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Recipes = nil
+			exampleMealList.Meals[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -517,7 +520,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMeal.ID = "1"
 
-		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
+		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -535,11 +538,12 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			WithArgs(interfaceToDriverValue(mealCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		for _, recipeID := range exampleInput.Recipes {
+		for _, component := range exampleInput.Components {
 			mealRecipeCreationArgs := []any{
 				&idMatcher{},
 				exampleMeal.ID,
-				recipeID,
+				component.RecipeID,
+				component.ComponentType,
 			}
 
 			db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -555,7 +559,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		actual, err := c.CreateMeal(ctx, exampleInput)
 		assert.NoError(t, err)
-		exampleMeal.Recipes = nil
+		exampleMeal.Components = nil
 
 		assert.Equal(t, exampleMeal, actual)
 
@@ -579,7 +583,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		t.Parallel()
 
 		exampleMeal := fakes.BuildFakeMeal()
-		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
+		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -599,7 +603,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMeal.ID = "1"
 
-		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
+		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -632,7 +636,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMeal.ID = "1"
 
-		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
+		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -653,7 +657,8 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		mealRecipeCreationArgs := []any{
 			&idMatcher{},
 			exampleMeal.ID,
-			exampleInput.Recipes[0],
+			exampleInput.Components[0].RecipeID,
+			exampleInput.Components[0].ComponentType,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -679,7 +684,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMeal.ID = "1"
 
-		exampleInput := fakes.ConvertMealToMealDatabaseCreationInput(exampleMeal)
+		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -697,11 +702,12 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			WithArgs(interfaceToDriverValue(mealCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		for _, recipeID := range exampleInput.Recipes {
+		for _, component := range exampleInput.Components {
 			mealRecipeCreationArgs := []any{
 				&idMatcher{},
 				exampleMeal.ID,
-				recipeID,
+				component.RecipeID,
+				component.ComponentType,
 			}
 
 			db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -730,7 +736,6 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleMeal := fakes.BuildFakeMeal()
-		exampleRecipe := fakes.BuildFakeRecipe()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -738,7 +743,8 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		mealRecipeCreationArgs := []any{
 			&idMatcher{},
 			exampleMeal.ID,
-			exampleRecipe.ID,
+			exampleMeal.Components[0].Recipe.ID,
+			exampleMeal.Components[0].ComponentType,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -749,7 +755,9 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 			return exampleMeal.CreatedAt
 		}
 
-		err := c.CreateMealRecipe(ctx, c.db, exampleMeal.ID, exampleRecipe.ID)
+		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
+
+		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, exampleInput)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
@@ -758,18 +766,20 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 	T.Run("with missing meal ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleMeal := fakes.BuildFakeMeal()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		err := c.CreateMealRecipe(ctx, c.db, "", exampleRecipe.ID)
+		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
+
+		err := c.CreateMealComponent(ctx, c.db, "", exampleInput)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with missing recipe ID", func(t *testing.T) {
+	T.Run("with missing input", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMeal := fakes.BuildFakeMeal()
@@ -777,7 +787,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		err := c.CreateMealRecipe(ctx, c.db, exampleMeal.ID, "")
+		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, nil)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
@@ -787,7 +797,6 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleMeal := fakes.BuildFakeMeal()
-		exampleRecipe := fakes.BuildFakeRecipe()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -795,7 +804,8 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		mealRecipeCreationArgs := []any{
 			&idMatcher{},
 			exampleMeal.ID,
-			exampleRecipe.ID,
+			exampleMeal.Components[0].Recipe.ID,
+			exampleMeal.Components[0].ComponentType,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -806,7 +816,9 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 			return exampleMeal.CreatedAt
 		}
 
-		err := c.CreateMealRecipe(ctx, c.db, exampleMeal.ID, exampleRecipe.ID)
+		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
+
+		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, exampleInput)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)

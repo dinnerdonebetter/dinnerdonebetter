@@ -1055,8 +1055,8 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		for i := range exampleMealPlan.Events {
 			for j := range exampleMealPlan.Events[i].Options {
-				for k := range exampleMealPlan.Events[i].Options[j].Meal.Recipes {
-					exampleMealPlan.Events[i].Options[j].Meal.Recipes[k].PrepTasks = nil
+				for k := range exampleMealPlan.Events[i].Options[j].Meal.Components {
+					exampleMealPlan.Events[i].Options[j].Meal.Components[k].Recipe.PrepTasks = nil
 				}
 			}
 		}

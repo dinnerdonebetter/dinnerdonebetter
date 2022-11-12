@@ -157,6 +157,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&y.Preparation.YieldsNothing,
 		&y.Preparation.RestrictToIngredients,
 		&y.Preparation.ZeroIngredientsAllowable,
+		&y.Preparation.Slug,
 		&y.Preparation.PastTense,
 		&y.Preparation.CreatedAt,
 		&y.Preparation.LastUpdatedAt,
@@ -467,7 +468,12 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 			Name:          x.Name,
 			Description:   x.Description,
 			CreatedByUser: x.CreatedByUser,
-			Recipes:       []string{x.ID},
+			Components: []*types.MealComponentDatabaseCreationInput{
+				{
+					RecipeID:      x.ID,
+					ComponentType: types.MealComponentTypesMain,
+				},
+			},
 		})
 
 		if mealCreateErr != nil {

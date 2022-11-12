@@ -1,25 +1,32 @@
 package fakes
 
 import (
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 )
 
-// BuildFakeMeal builds a faked recipe.
+// BuildFakeMeal builds a faked meal.
 func BuildFakeMeal() *types.Meal {
-	recipes := []*types.Recipe{}
+	recipes := []*types.MealComponent{}
 	for i := 0; i < exampleQuantity; i++ {
-		recipes = append(recipes, BuildFakeRecipe())
+		recipes = append(recipes, BuildFakeMealComponent())
 	}
 
 	return &types.Meal{
 		ID:            BuildFakeID(),
 		Name:          buildUniqueString(),
 		Description:   buildUniqueString(),
-		CreatedAt:     fake.Date(),
+		CreatedAt:     BuildFakeTime(),
 		CreatedByUser: BuildFakeID(),
-		Recipes:       recipes,
+		Components:    recipes,
+	}
+}
+
+// BuildFakeMealComponent builds a faked meal component.
+func BuildFakeMealComponent() *types.MealComponent {
+	return &types.MealComponent{
+		Recipe:        *BuildFakeRecipe(),
+		ComponentType: types.MealComponentTypesAmuseBouche,
 	}
 }
 
@@ -41,55 +48,8 @@ func BuildFakeMealList() *types.MealList {
 	}
 }
 
-// BuildFakeMealUpdateRequestInputFromMeal builds a faked MealUpdateRequestInput from a recipe.
-func BuildFakeMealUpdateRequestInputFromMeal(recipe *types.Meal) *types.MealUpdateRequestInput {
-	recipeIDs := []string{}
-	for _, r := range BuildFakeRecipeList().Recipes {
-		recipeIDs = append(recipeIDs, r.ID)
-	}
-
-	return &types.MealUpdateRequestInput{
-		Name:          &recipe.Name,
-		Description:   &recipe.Description,
-		CreatedByUser: &recipe.CreatedByUser,
-		Recipes:       recipeIDs,
-	}
-}
-
 // BuildFakeMealCreationRequestInput builds a faked MealCreationRequestInput.
 func BuildFakeMealCreationRequestInput() *types.MealCreationRequestInput {
 	recipe := BuildFakeMeal()
-	return BuildFakeMealCreationRequestInputFromMeal(recipe)
-}
-
-// BuildFakeMealCreationRequestInputFromMeal builds a faked MealCreationRequestInput from a recipe.
-func BuildFakeMealCreationRequestInputFromMeal(meal *types.Meal) *types.MealCreationRequestInput {
-	recipeIDs := []string{}
-	for _, r := range BuildFakeRecipeList().Recipes {
-		recipeIDs = append(recipeIDs, r.ID)
-	}
-
-	return &types.MealCreationRequestInput{
-		ID:            meal.ID,
-		Name:          meal.Name,
-		Description:   meal.Description,
-		CreatedByUser: meal.CreatedByUser,
-		Recipes:       recipeIDs,
-	}
-}
-
-// ConvertMealToMealDatabaseCreationInput builds a faked MealDatabaseCreationInput from a recipe.
-func ConvertMealToMealDatabaseCreationInput(meal *types.Meal) *types.MealDatabaseCreationInput {
-	recipeIDs := []string{}
-	for _, r := range BuildFakeRecipeList().Recipes {
-		recipeIDs = append(recipeIDs, r.ID)
-	}
-
-	return &types.MealDatabaseCreationInput{
-		ID:            meal.ID,
-		Name:          meal.Name,
-		Description:   meal.Description,
-		CreatedByUser: meal.CreatedByUser,
-		Recipes:       recipeIDs,
-	}
+	return converters.ConvertMealToMealCreationRequestInput(recipe)
 }

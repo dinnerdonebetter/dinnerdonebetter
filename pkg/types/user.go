@@ -44,8 +44,7 @@ type (
 		LastUpdatedAt             *time.Time        `json:"lastUpdatedAt"`
 		TwoFactorSecretVerifiedAt *time.Time        `json:"twoFactorSecretVerifiedAt"`
 		AvatarSrc                 *string           `json:"avatar"`
-		BirthMonth                *uint8            `json:"birthMonth"`
-		BirthDay                  *uint8            `json:"birthDay"`
+		Birthday                  *time.Time        `json:"birthday"`
 		ArchivedAt                *time.Time        `json:"archivedAt"`
 		AccountStatusExplanation  string            `json:"accountStatusExplanation"`
 		TwoFactorSecret           string            `json:"-"`
@@ -54,6 +53,7 @@ type (
 		AccountStatus             userAccountStatus `json:"accountStatus"`
 		Username                  string            `json:"username"`
 		EmailAddress              string            `json:"emailAddress"`
+		EmailAddressVerifiedAt    *time.Time        `json:"emailAddressVerifiedAt"`
 		ServiceRole               string            `json:"serviceRoles"`
 		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}
@@ -69,36 +69,33 @@ type (
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
 		_               struct{}
-		BirthDay        *uint8 `json:"birthDay,omitempty"`
-		BirthMonth      *uint8 `json:"birthMonth,omitempty"`
-		Password        string `json:"password"`
-		EmailAddress    string `json:"emailAddress"`
-		InvitationToken string `json:"invitationToken,omitempty"`
-		InvitationID    string `json:"invitationID,omitempty"`
-		Username        string `json:"username"`
+		Birthday        *time.Time `json:"birthday,omitempty"`
+		Password        string     `json:"password"`
+		EmailAddress    string     `json:"emailAddress"`
+		InvitationToken string     `json:"invitationToken,omitempty"`
+		InvitationID    string     `json:"invitationID,omitempty"`
+		Username        string     `json:"username"`
 	}
 
 	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.
 	UserDatabaseCreationInput struct {
 		_                      struct{}
-		BirthMonth             *uint8  `json:"-"`
-		BirthDay               *uint8  `json:"-"`
-		ID                     string  `json:"-"`
-		AvatarSrc              *string `json:"-"`
-		HashedPassword         string  `json:"-"`
-		TwoFactorSecret        string  `json:"-"`
-		InvitationToken        string  `json:"-"`
-		DestinationHouseholdID string  `json:"-"`
-		Username               string  `json:"-"`
-		EmailAddress           string  `json:"-"`
+		Birthday               *time.Time `json:"-"`
+		ID                     string     `json:"-"`
+		AvatarSrc              *string    `json:"-"`
+		HashedPassword         string     `json:"-"`
+		TwoFactorSecret        string     `json:"-"`
+		InvitationToken        string     `json:"-"`
+		DestinationHouseholdID string     `json:"-"`
+		Username               string     `json:"-"`
+		EmailAddress           string     `json:"-"`
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
 		_               struct{}
 		CreatedAt       time.Time         `json:"createdAt"`
-		BirthMonth      *uint8            `json:"birthMonth"`
-		BirthDay        *uint8            `json:"birthDay"`
+		Birthday        *time.Time        `json:"birthday"`
 		AvatarSrc       *string           `json:"avatar"`
 		Username        string            `json:"username"`
 		EmailAddress    string            `json:"emailAddress"`
@@ -207,12 +204,8 @@ func (u *User) Update(input *User) {
 		u.TwoFactorSecret = input.TwoFactorSecret
 	}
 
-	if input.BirthDay != nil && *input.BirthDay != 0 && input.BirthDay != u.BirthDay {
-		u.BirthDay = input.BirthDay
-	}
-
-	if input.BirthMonth != nil && *input.BirthMonth != 0 && input.BirthMonth != u.BirthMonth {
-		u.BirthMonth = input.BirthMonth
+	if input.Birthday != nil && input.Birthday != u.Birthday {
+		u.Birthday = input.Birthday
 	}
 }
 

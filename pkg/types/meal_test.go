@@ -17,7 +17,12 @@ func TestMealCreationRequestInput_Validate(T *testing.T) {
 		x := &MealCreationRequestInput{
 			Name:        fake.LoremIpsumSentence(exampleQuantity),
 			Description: fake.LoremIpsumSentence(exampleQuantity),
-			Recipes:     []string{fake.LoremIpsumSentence(exampleQuantity)},
+			Components: []*MealComponentCreationRequestInput{
+				{
+					RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
+					ComponentType: MealComponentTypesAmuseBouche,
+				},
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -44,7 +49,12 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 			Name:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Description:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			CreatedByUser: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Recipes:       []string{fake.LoremIpsumSentence(exampleQuantity)},
+			Components: []*MealComponentUpdateRequestInput{
+				{
+					RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
+					ComponentType: MealComponentTypesAmuseBouche,
+				},
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())

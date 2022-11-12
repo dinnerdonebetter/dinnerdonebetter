@@ -76,6 +76,7 @@ var fullRecipesColumns = []string{
 	"valid_preparations.yields_nothing",
 	"valid_preparations.restrict_to_ingredients",
 	"valid_preparations.zero_ingredients_allowable",
+	"valid_preparations.slug",
 	"valid_preparations.past_tense",
 	"valid_preparations.created_at",
 	"valid_preparations.last_updated_at",
@@ -118,6 +119,7 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Preparation.YieldsNothing,
 			&step.Preparation.RestrictToIngredients,
 			&step.Preparation.ZeroIngredientsAllowable,
+			&step.Preparation.Slug,
 			&step.Preparation.PastTense,
 			&step.Preparation.CreatedAt,
 			&step.Preparation.LastUpdatedAt,
@@ -973,6 +975,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.ProductOfRecipeStep,
 					ingredient.RecipeStepProductID,
 					ingredient.IngredientNotes,
+					ingredient.OptionIndex,
+					ingredient.RequiresDefrost,
 					ingredient.BelongsToRecipeStep,
 				}
 
@@ -991,6 +995,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					instrument.Notes,
 					instrument.PreferenceRank,
 					instrument.Optional,
+					instrument.OptionIndex,
 					instrument.MinimumQuantity,
 					instrument.MaximumQuantity,
 					instrument.BelongsToRecipeStep,
@@ -1117,6 +1122,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			&idMatcher{},
 			&idMatcher{},
 			exampleRecipe.ID,
+			types.MealComponentTypesMain,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -1130,8 +1136,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
-		require.NotNil(t, actual)
 		require.NoError(t, err)
+		require.NotNil(t, actual)
 		require.Equal(t, len(exampleRecipe.Steps), len(actual.Steps))
 
 		for i, step := range exampleRecipe.Steps {
@@ -1390,6 +1396,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			&idMatcher{},
 			&idMatcher{},
 			exampleRecipe.ID,
+			types.MealComponentTypesMain,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).

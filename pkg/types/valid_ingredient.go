@@ -37,16 +37,16 @@ type (
 		ArchivedAt                              *time.Time `json:"archivedAt"`
 		MaximumIdealStorageTemperatureInCelsius *float32   `json:"maximumIdealStorageTemperatureInCelsius"`
 		MinimumIdealStorageTemperatureInCelsius *float32   `json:"minimumIdealStorageTemperatureInCelsius"`
-		Warning                                 string     `json:"warning"`
 		IconPath                                string     `json:"iconPath"`
+		Warning                                 string     `json:"warning"`
 		PluralName                              string     `json:"pluralName"`
 		StorageInstructions                     string     `json:"storageInstructions"`
 		Name                                    string     `json:"name"`
 		ID                                      string     `json:"id"`
 		Description                             string     `json:"description"`
-		ContainsDairy                           bool       `json:"containsDairy"`
+		Slug                                    string     `json:"slug"`
+		ShoppingSuggestions                     string     `json:"shoppingSuggestions"`
 		ContainsShellfish                       bool       `json:"containsShellfish"`
-		AnimalFlesh                             bool       `json:"animalFlesh"`
 		IsMeasuredVolumetrically                bool       `json:"isMeasuredVolumetrically"`
 		IsLiquid                                bool       `json:"isLiquid"`
 		ContainsPeanut                          bool       `json:"containsPeanut"`
@@ -59,6 +59,9 @@ type (
 		ContainsSesame                          bool       `json:"containsSesame"`
 		ContainsFish                            bool       `json:"containsFish"`
 		ContainsGluten                          bool       `json:"containsGluten"`
+		ContainsDairy                           bool       `json:"containsDairy"`
+		ContainsAlcohol                         bool       `json:"containsAlcohol"`
+		AnimalFlesh                             bool       `json:"animalFlesh"`
 	}
 
 	// NullableValidIngredient represents a nullable valid ingredient.
@@ -91,6 +94,9 @@ type (
 		ContainsSesame                          *bool      `json:"containsSesame"`
 		ContainsFish                            *bool      `json:"containsFish"`
 		ContainsGluten                          *bool      `json:"containsGluten"`
+		Slug                                    *string    `json:"slug"`
+		ContainsAlcohol                         *bool      `json:"containsAlcohol"`
+		ShoppingSuggestions                     *string    `json:"shoppingSuggestions"`
 	}
 
 	// ValidIngredientList represents a list of valid ingredients.
@@ -112,11 +118,11 @@ type (
 		StorageInstructions                     string   `json:"storageInstructions"`
 		Name                                    string   `json:"name"`
 		Description                             string   `json:"description"`
-		ContainsWheat                           bool     `json:"containsWheat"`
-		ContainsShellfish                       bool     `json:"containsShellfish"`
+		Slug                                    string   `json:"slug"`
+		ShoppingSuggestions                     string   `json:"shoppingSuggestions"`
 		IsMeasuredVolumetrically                bool     `json:"isMeasuredVolumetrically"`
 		ContainsFish                            bool     `json:"containsFish"`
-		ContainsGluten                          bool     `json:"containsGluten"`
+		ContainsShellfish                       bool     `json:"containsShellfish"`
 		AnimalFlesh                             bool     `json:"animalFlesh"`
 		ContainsEgg                             bool     `json:"containsEgg"`
 		IsLiquid                                bool     `json:"isLiquid"`
@@ -127,6 +133,9 @@ type (
 		ContainsDairy                           bool     `json:"containsDairy"`
 		ContainsSesame                          bool     `json:"containsSesame"`
 		ContainsTreeNut                         bool     `json:"containsTreeNut"`
+		ContainsWheat                           bool     `json:"containsWheat"`
+		ContainsAlcohol                         bool     `json:"containsAlcohol"`
+		ContainsGluten                          bool     `json:"containsGluten"`
 	}
 
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
@@ -141,11 +150,11 @@ type (
 		StorageInstructions                     string   `json:"storageInstructions"`
 		Name                                    string   `json:"name"`
 		Description                             string   `json:"description"`
-		ContainsWheat                           bool     `json:"containsWheat"`
-		ContainsShellfish                       bool     `json:"containsShellfish"`
+		Slug                                    string   `json:"slug"`
+		ShoppingSuggestions                     string   `json:"shoppingSuggestions"`
 		IsMeasuredVolumetrically                bool     `json:"isMeasuredVolumetrically"`
 		ContainsFish                            bool     `json:"containsFish"`
-		ContainsGluten                          bool     `json:"containsGluten"`
+		ContainsShellfish                       bool     `json:"containsShellfish"`
 		AnimalFlesh                             bool     `json:"animalFlesh"`
 		ContainsEgg                             bool     `json:"containsEgg"`
 		IsLiquid                                bool     `json:"isLiquid"`
@@ -156,6 +165,9 @@ type (
 		ContainsDairy                           bool     `json:"containsDairy"`
 		ContainsSesame                          bool     `json:"containsSesame"`
 		ContainsTreeNut                         bool     `json:"containsTreeNut"`
+		ContainsWheat                           bool     `json:"containsWheat"`
+		ContainsAlcohol                         bool     `json:"containsAlcohol"`
+		ContainsGluten                          bool     `json:"containsGluten"`
 	}
 
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.
@@ -184,6 +196,9 @@ type (
 		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius"`
 		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius"`
 		StorageInstructions                     *string  `json:"storageInstructions"`
+		Slug                                    *string  `json:"slug"`
+		ContainsAlcohol                         *bool    `json:"containsAlcohol"`
+		ShoppingSuggestions                     *string  `json:"shoppingSuggestions"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
@@ -303,6 +318,18 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 
 	if input.StorageInstructions != nil && *input.StorageInstructions != x.StorageInstructions {
 		x.StorageInstructions = *input.StorageInstructions
+	}
+
+	if input.Slug != nil && *input.Slug != x.Slug {
+		x.Slug = *input.Slug
+	}
+
+	if input.ContainsAlcohol != nil && *input.ContainsAlcohol != x.ContainsAlcohol {
+		x.ContainsAlcohol = *input.ContainsAlcohol
+	}
+
+	if input.ShoppingSuggestions != nil && *input.ShoppingSuggestions != x.ShoppingSuggestions {
+		x.ShoppingSuggestions = *input.ShoppingSuggestions
 	}
 }
 

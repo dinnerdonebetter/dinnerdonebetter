@@ -5,7 +5,7 @@ terraform {
     organization = "prixfixe"
 
     workspaces {
-      name = "prixfixe-backend-dev"
+      name = "dev-backend"
     }
   }
   required_providers {

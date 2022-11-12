@@ -36,6 +36,11 @@ type (
 		TotalCount    uint64 `json:"totalCount"`
 	}
 
+	QueryFilteredResult[T any] struct {
+		Data []*T `json:"data"`
+		Pagination
+	}
+
 	// ErrorResponse represents a response we might send to the User in the event of an error.
 	ErrorResponse struct {
 		_ struct{}

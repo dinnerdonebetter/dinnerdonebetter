@@ -6,6 +6,7 @@ UPDATE valid_measurement_units SET
 	universal = $5,
 	metric = $6,
 	imperial = $7,
-	plural_name = $8,
+	slug = $8,
+	plural_name = $9,
 	last_updated_at = NOW()
-WHERE archived_at IS NULL AND id = $9;
+WHERE archived_at IS NULL AND id = $10;

@@ -1,8 +1,6 @@
 package fakes
 
 import (
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 )
@@ -14,7 +12,7 @@ func BuildFakeValidIngredientPreparation() *types.ValidIngredientPreparation {
 		Notes:       buildUniqueString(),
 		Preparation: *BuildFakeValidPreparation(),
 		Ingredient:  *BuildFakeValidIngredient(),
-		CreatedAt:   fake.Date(),
+		CreatedAt:   BuildFakeTime(),
 	}
 }
 

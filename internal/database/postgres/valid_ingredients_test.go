@@ -53,6 +53,9 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 			x.MinimumIdealStorageTemperatureInCelsius,
 			x.MaximumIdealStorageTemperatureInCelsius,
 			x.StorageInstructions,
+			x.Slug,
+			x.ContainsAlcohol,
+			x.ShoppingSuggestions,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -585,6 +588,9 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.MinimumIdealStorageTemperatureInCelsius,
 			exampleInput.MaximumIdealStorageTemperatureInCelsius,
 			exampleInput.StorageInstructions,
+			exampleInput.Slug,
+			exampleInput.ContainsAlcohol,
+			exampleInput.ShoppingSuggestions,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -648,6 +654,9 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.MinimumIdealStorageTemperatureInCelsius,
 			exampleInput.MaximumIdealStorageTemperatureInCelsius,
 			exampleInput.StorageInstructions,
+			exampleInput.Slug,
+			exampleInput.ContainsAlcohol,
+			exampleInput.ShoppingSuggestions,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -702,6 +711,9 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.MinimumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.MaximumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.StorageInstructions,
+			exampleValidIngredient.Slug,
+			exampleValidIngredient.ContainsAlcohol,
+			exampleValidIngredient.ShoppingSuggestions,
 			exampleValidIngredient.ID,
 		}
 
@@ -755,6 +767,9 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.MinimumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.MaximumIdealStorageTemperatureInCelsius,
 			exampleValidIngredient.StorageInstructions,
+			exampleValidIngredient.Slug,
+			exampleValidIngredient.ContainsAlcohol,
+			exampleValidIngredient.ShoppingSuggestions,
 			exampleValidIngredient.ID,
 		}
 

@@ -502,7 +502,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
-		// Recipes
+		// Components
 		recipePath := "recipes"
 		recipesRouteWithPrefix := fmt.Sprintf("/%s", recipePath)
 		recipeIDRouteParam := buildURLVarChunk(recipesservice.RecipeIDURIParamKey, "")

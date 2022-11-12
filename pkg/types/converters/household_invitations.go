@@ -13,6 +13,10 @@ func ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreatio
 		DestinationHouseholdID: input.DestinationHouseholdID,
 	}
 
+	if input.ExpiresAt != nil {
+		x.ExpiresAt = *input.ExpiresAt
+	}
+
 	return x
 }
 
@@ -24,6 +28,7 @@ func ConvertHouseholdInvitationToHouseholdInvitationCreationInput(householdInvit
 		Note:                   householdInvitation.Note,
 		ToEmail:                householdInvitation.ToEmail,
 		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
+		ExpiresAt:              &householdInvitation.ExpiresAt,
 	}
 }
 
@@ -45,5 +50,6 @@ func ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(househ
 		ToEmail:                householdInvitation.ToEmail,
 		Token:                  householdInvitation.Token,
 		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
+		ExpiresAt:              householdInvitation.ExpiresAt,
 	}
 }

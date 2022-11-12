@@ -10,13 +10,15 @@ import (
 // BuildFakeValidInstrument builds a faked valid instrument.
 func BuildFakeValidInstrument() *types.ValidInstrument {
 	return &types.ValidInstrument{
-		ID:               BuildFakeID(),
-		Name:             buildUniqueString(),
-		PluralName:       buildUniqueString(),
-		Description:      buildUniqueString(),
-		IconPath:         buildUniqueString(),
-		UsableForStorage: fake.Bool(),
-		CreatedAt:        fake.Date(),
+		ID:                    BuildFakeID(),
+		Name:                  buildUniqueString(),
+		PluralName:            buildUniqueString(),
+		Description:           buildUniqueString(),
+		IconPath:              buildUniqueString(),
+		Slug:                  buildUniqueString(),
+		DisplayInSummaryLists: fake.Bool(),
+		UsableForStorage:      fake.Bool(),
+		CreatedAt:             BuildFakeTime(),
 	}
 }
 
@@ -41,13 +43,7 @@ func BuildFakeValidInstrumentList() *types.ValidInstrumentList {
 // BuildFakeValidInstrumentUpdateRequestInput builds a faked ValidInstrumentUpdateRequestInput from a valid instrument.
 func BuildFakeValidInstrumentUpdateRequestInput() *types.ValidInstrumentUpdateRequestInput {
 	validInstrument := BuildFakeValidInstrument()
-	return &types.ValidInstrumentUpdateRequestInput{
-		Name:             &validInstrument.Name,
-		PluralName:       &validInstrument.PluralName,
-		Description:      &validInstrument.Description,
-		IconPath:         &validInstrument.IconPath,
-		UsableForStorage: &validInstrument.UsableForStorage,
-	}
+	return converters.ConvertValidInstrumentToValidInstrumentUpdateRequestInput(validInstrument)
 }
 
 // BuildFakeValidInstrumentCreationRequestInput builds a faked ValidInstrumentCreationRequestInput.

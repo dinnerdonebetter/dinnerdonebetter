@@ -35,11 +35,12 @@ type (
 		CreatedAt     time.Time  `json:"createdAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time `json:"archivedAt"`
+		Name          string     `json:"name"`
 		IconPath      string     `json:"iconPath"`
 		ID            string     `json:"id"`
 		Description   string     `json:"description"`
 		PluralName    string     `json:"pluralName"`
-		Name          string     `json:"name"`
+		Slug          string     `json:"slug"`
 		Volumetric    bool       `json:"volumetric"`
 		Universal     bool       `json:"universal"`
 		Metric        bool       `json:"metric"`
@@ -61,6 +62,7 @@ type (
 		Description string    `json:"description"`
 		IconPath    string    `json:"iconPath"`
 		PluralName  string    `json:"pluralName"`
+		Slug        string    `json:"slug"`
 		Volumetric  bool      `json:"volumetric"`
 		Universal   bool      `json:"universal"`
 		Metric      bool      `json:"metric"`
@@ -70,16 +72,17 @@ type (
 	// ValidMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitDatabaseCreationInput struct {
 		_           struct{}
-		CreatedAt   time.Time `json:"createdAt"`
-		Name        string    `json:"name"`
-		Description string    `json:"description"`
-		ID          string    `json:"id"`
-		IconPath    string    `json:"iconPath"`
-		PluralName  string    `json:"pluralName"`
-		Volumetric  bool      `json:"volumetric"`
-		Universal   bool      `json:"universal"`
-		Metric      bool      `json:"metric"`
-		Imperial    bool      `json:"imperial"`
+		CreatedAt   time.Time
+		Name        string
+		Description string
+		ID          string
+		IconPath    string
+		PluralName  string
+		Slug        string
+		Volumetric  bool
+		Universal   bool
+		Metric      bool
+		Imperial    bool
 	}
 
 	// ValidMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid measurement units.
@@ -94,6 +97,7 @@ type (
 		Metric      *bool      `json:"metric"`
 		Imperial    *bool      `json:"imperial"`
 		PluralName  *string    `json:"pluralName"`
+		Slug        *string    `json:"slug"`
 	}
 
 	// ValidMeasurementUnitDataManager describes a structure capable of storing valid measurement units permanently.
@@ -139,14 +143,21 @@ func (x *ValidMeasurementUnit) Update(input *ValidMeasurementUnitUpdateRequestIn
 	if input.Universal != nil && *input.Universal != x.Universal {
 		x.Universal = *input.Universal
 	}
+
 	if input.Metric != nil && *input.Metric != x.Metric {
 		x.Metric = *input.Metric
 	}
+
 	if input.Imperial != nil && *input.Imperial != x.Imperial {
 		x.Imperial = *input.Imperial
 	}
+
 	if input.PluralName != nil && *input.PluralName != x.PluralName {
 		x.PluralName = *input.PluralName
+	}
+
+	if input.Slug != nil && *input.Slug != x.Slug {
+		x.Slug = *input.Slug
 	}
 }
 

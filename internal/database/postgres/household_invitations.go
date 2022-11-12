@@ -46,17 +46,17 @@ var (
 		"users.id",
 		"users.username",
 		"users.email_address",
+		"users.email_address_verified_at",
 		"users.avatar_src",
 		"users.hashed_password",
 		"users.requires_password_change",
 		"users.password_last_changed_at",
 		"users.two_factor_secret",
 		"users.two_factor_secret_verified_at",
-		"users.service_roles",
+		"users.service_role",
 		"users.user_account_status",
 		"users.user_account_status_explanation",
-		"users.birth_day",
-		"users.birth_month",
+		"users.birthday",
 		"users.created_at",
 		"users.last_updated_at",
 		"users.archived_at",
@@ -64,6 +64,7 @@ var (
 		"household_invitations.note",
 		"household_invitations.status_note",
 		"household_invitations.token",
+		"household_invitations.expires_at",
 		"household_invitations.created_at",
 		"household_invitations.last_updated_at",
 		"household_invitations.archived_at",
@@ -98,6 +99,7 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 		&householdInvitation.FromUser.ID,
 		&householdInvitation.FromUser.Username,
 		&householdInvitation.FromUser.EmailAddress,
+		&householdInvitation.FromUser.EmailAddressVerifiedAt,
 		&householdInvitation.FromUser.AvatarSrc,
 		&householdInvitation.FromUser.HashedPassword,
 		&householdInvitation.FromUser.RequiresPasswordChange,
@@ -107,8 +109,7 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 		&householdInvitation.FromUser.ServiceRole,
 		&householdInvitation.FromUser.AccountStatus,
 		&householdInvitation.FromUser.AccountStatusExplanation,
-		&householdInvitation.FromUser.BirthDay,
-		&householdInvitation.FromUser.BirthMonth,
+		&householdInvitation.FromUser.Birthday,
 		&householdInvitation.FromUser.CreatedAt,
 		&householdInvitation.FromUser.LastUpdatedAt,
 		&householdInvitation.FromUser.ArchivedAt,
@@ -116,6 +117,7 @@ func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Sca
 		&householdInvitation.Note,
 		&householdInvitation.StatusNote,
 		&householdInvitation.Token,
+		&householdInvitation.ExpiresAt,
 		&householdInvitation.CreatedAt,
 		&householdInvitation.LastUpdatedAt,
 		&householdInvitation.ArchivedAt,
@@ -226,7 +228,7 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 
 	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning household invitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitation")
 	}
 
 	return householdInvitation, nil
@@ -264,7 +266,7 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 
 	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning household invitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitation")
 	}
 
 	return householdInvitation, nil
@@ -330,6 +332,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 		input.ToEmail,
 		input.Token,
 		input.DestinationHouseholdID,
+		input.ExpiresAt,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "household invitation creation", createHouseholdInvitationQuery, args); err != nil {
@@ -346,6 +349,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 		StatusNote:           "",
 		Status:               types.PendingHouseholdInvitationStatus,
 		DestinationHousehold: types.Household{ID: input.DestinationHouseholdID},
+		ExpiresAt:            input.ExpiresAt,
 		CreatedAt:            q.currentTime(),
 	}
 

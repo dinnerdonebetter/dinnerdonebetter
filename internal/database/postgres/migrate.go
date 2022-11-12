@@ -310,6 +310,11 @@ var (
 			Description: "floats refactor",
 			Script:      fetchMigration("00059_floats_refactor"),
 		},
+		{
+			Version:     60,
+			Description: "misc. additions",
+			Script:      fetchMigration("00060_misc_improvements"),
+		},
 	}
 )
 

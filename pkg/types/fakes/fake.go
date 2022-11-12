@@ -39,7 +39,7 @@ func BuildFakeNumber() float64 {
 
 // BuildFakeTime builds a fake time.
 func BuildFakeTime() time.Time {
-	return fake.Date()
+	return fake.Date().Add(0).Truncate(time.Second).UTC()
 }
 
 // buildUniqueString builds a fake string.

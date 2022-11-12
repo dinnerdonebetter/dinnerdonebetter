@@ -40,6 +40,7 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.MeasurementUnit.Universal,
 			x.MeasurementUnit.Metric,
 			x.MeasurementUnit.Imperial,
+			x.MeasurementUnit.Slug,
 			x.MeasurementUnit.PluralName,
 			x.MeasurementUnit.CreatedAt,
 			x.MeasurementUnit.LastUpdatedAt,
@@ -52,6 +53,8 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.MinimumStorageTemperatureInCelsius,
 			x.MaximumStorageTemperatureInCelsius,
 			x.StorageInstructions,
+			x.IsLiquid,
+			x.IsWaste,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -581,6 +584,8 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.MaximumStorageTemperatureInCelsius,
 			exampleInput.StorageInstructions,
 			exampleInput.BelongsToRecipeStep,
+			exampleInput.IsLiquid,
+			exampleInput.IsWaste,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
@@ -633,6 +638,8 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.MaximumStorageTemperatureInCelsius,
 			exampleInput.StorageInstructions,
 			exampleInput.BelongsToRecipeStep,
+			exampleInput.IsLiquid,
+			exampleInput.IsWaste,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
@@ -675,6 +682,8 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.StorageInstructions,
+			exampleRecipeStepProduct.IsLiquid,
+			exampleRecipeStepProduct.IsWaste,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}
@@ -717,6 +726,8 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
 			exampleRecipeStepProduct.StorageInstructions,
+			exampleRecipeStepProduct.IsLiquid,
+			exampleRecipeStepProduct.IsWaste,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}

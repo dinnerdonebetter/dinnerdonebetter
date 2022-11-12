@@ -23,6 +23,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
 	assert.WithinDuration(t, expected.VotingDeadline, actual.VotingDeadline, time.Nanosecond*1000, "expected VotingDeadline for meal plan %s to be %v, but it was %v", expected.ID, expected.VotingDeadline, actual.VotingDeadline)
 	assert.Equal(t, expected.TasksCreated, actual.TasksCreated, "expected TasksCreated for meal plan %s to be %v, but it was %v", expected.ID, expected.TasksCreated, actual.TasksCreated)
+	assert.Equal(t, expected.ElectionMethod, actual.ElectionMethod, "expected ElectionMethod for meal plan %s to be %v, but it was %v", expected.ID, expected.ElectionMethod, actual.ElectionMethod)
 	assert.Equal(t, expected.GroceryListInitialized, actual.GroceryListInitialized, "expected GroceryListInitialized for meal plan %s to be %v, but it was %v", expected.ID, expected.GroceryListInitialized, actual.GroceryListInitialized)
 	assert.NotZero(t, actual.CreatedAt)
 }
@@ -121,6 +122,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				Notes:          t.Name(),
 				Status:         types.AwaitingVotesMealPlanStatus,
 				VotingDeadline: now.Add(baseDeadline),
+				ElectionMethod: types.MealPlanElectionMethodSchulze,
 				Events: []*types.MealPlanEvent{
 					{
 						StartsAt: now.Add(24 * time.Hour),
@@ -145,13 +147,14 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			}
 
 			exampleMealPlanInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
-			createdMealPlan, err := testClients.user.CreateMealPlan(ctx, exampleMealPlanInput)
-			require.NotEmpty(t, createdMealPlan.ID)
+			mealPlanCreationResult, err := testClients.user.CreateMealPlan(ctx, exampleMealPlanInput)
+			require.NotEmpty(t, mealPlanCreationResult.ID)
 			require.NoError(t, err)
-			t.Logf("meal plan %q created", createdMealPlan.ID)
+			t.Logf("meal plan %q created", mealPlanCreationResult.ID)
 
-			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err := testClients.user.GetMealPlan(ctx, mealPlanCreationResult.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
+
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
 			require.NotEmpty(t, createdMealPlan.Events)
@@ -311,6 +314,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				Notes:          t.Name(),
 				Status:         types.AwaitingVotesMealPlanStatus,
 				VotingDeadline: now.Add(baseDeadline),
+				ElectionMethod: types.MealPlanElectionMethodSchulze,
 				Events: []*types.MealPlanEvent{
 					{
 						StartsAt: now.Add(24 * time.Hour),

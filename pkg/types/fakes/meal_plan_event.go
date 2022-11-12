@@ -36,7 +36,7 @@ func BuildFakeMealPlanEvent() *types.MealPlanEvent {
 			types.SupperMealName,
 			types.DinnerMealName,
 		}),
-		CreatedAt:         fake.Date(),
+		CreatedAt:         BuildFakeTime(),
 		BelongsToMealPlan: BuildFakeID(),
 		Options:           options,
 	}

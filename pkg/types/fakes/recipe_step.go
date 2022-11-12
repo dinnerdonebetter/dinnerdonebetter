@@ -46,7 +46,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		Notes:                         buildUniqueString(),
 		Products:                      products,
 		Optional:                      false,
-		CreatedAt:                     fake.Date(),
+		CreatedAt:                     BuildFakeTime(),
 		BelongsToRecipe:               BuildFakeID(),
 		Ingredients:                   ingredients,
 		ExplicitInstructions:          buildUniqueString(),

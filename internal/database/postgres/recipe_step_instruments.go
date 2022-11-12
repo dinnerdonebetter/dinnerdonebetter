@@ -29,6 +29,8 @@ var (
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
 		"valid_instruments.usable_for_storage",
+		"valid_instruments.display_in_summary_lists",
+		"valid_instruments.slug",
 		"valid_instruments.created_at",
 		"valid_instruments.last_updated_at",
 		"valid_instruments.archived_at",
@@ -40,6 +42,7 @@ var (
 		"recipe_step_instruments.optional",
 		"recipe_step_instruments.minimum_quantity",
 		"recipe_step_instruments.maximum_quantity",
+		"recipe_step_instruments.option_index",
 		"recipe_step_instruments.created_at",
 		"recipe_step_instruments.last_updated_at",
 		"recipe_step_instruments.archived_at",
@@ -59,7 +62,7 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 	defer span.End()
 
 	x = &types.RecipeStepInstrument{}
-	instrument := types.NullableValidInstrument{}
+	instrument := &types.NullableValidInstrument{}
 
 	targetVars := []any{
 		&x.ID,
@@ -69,6 +72,8 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 		&instrument.Description,
 		&instrument.IconPath,
 		&instrument.UsableForStorage,
+		&instrument.DisplayInSummaryLists,
+		&instrument.Slug,
 		&instrument.CreatedAt,
 		&instrument.LastUpdatedAt,
 		&instrument.ArchivedAt,
@@ -80,6 +85,7 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 		&x.Optional,
 		&x.MinimumQuantity,
 		&x.MaximumQuantity,
+		&x.OptionIndex,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -325,6 +331,7 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 		input.Notes,
 		input.PreferenceRank,
 		input.Optional,
+		input.OptionIndex,
 		input.MinimumQuantity,
 		input.MaximumQuantity,
 		input.BelongsToRecipeStep,
@@ -345,6 +352,7 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 		PreferenceRank:      input.PreferenceRank,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Optional:            input.Optional,
+		OptionIndex:         input.OptionIndex,
 		MinimumQuantity:     input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
 		CreatedAt:           q.currentTime(),
@@ -393,6 +401,7 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 		updated.Notes,
 		updated.PreferenceRank,
 		updated.Optional,
+		updated.OptionIndex,
 		updated.MinimumQuantity,
 		updated.MaximumQuantity,
 		updated.BelongsToRecipeStep,

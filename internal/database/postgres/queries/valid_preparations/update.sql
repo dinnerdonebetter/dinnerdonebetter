@@ -6,7 +6,8 @@ SET
 	yields_nothing = $4,
 	restrict_to_ingredients = $5,
 	zero_ingredients_allowable = $6,
-	past_tense = $7,
+    slug = $7,
+	past_tense = $8,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $8;
+	AND id = $9;

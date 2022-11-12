@@ -202,8 +202,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		HashedPassword:  hp,
 		TwoFactorSecret: tfs,
 		InvitationToken: registrationInput.InvitationToken,
-		BirthDay:        registrationInput.BirthDay,
-		BirthMonth:      registrationInput.BirthMonth,
+		Birthday:        registrationInput.Birthday,
 	}
 
 	if invitation != nil {
@@ -238,8 +237,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		EmailAddress:    user.EmailAddress,
 		CreatedAt:       user.CreatedAt,
 		TwoFactorSecret: user.TwoFactorSecret,
-		BirthDay:        user.BirthDay,
-		BirthMonth:      user.BirthMonth,
+		Birthday:        user.Birthday,
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
 

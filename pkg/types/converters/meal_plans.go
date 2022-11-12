@@ -26,6 +26,7 @@ func ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input *t
 		Notes:          input.Notes,
 		VotingDeadline: input.VotingDeadline,
 		Events:         events,
+		ElectionMethod: input.ElectionMethod,
 	}
 
 	return x
@@ -43,6 +44,7 @@ func ConvertMealPlanToMealPlanCreationRequestInput(mealPlan *types.MealPlan) *ty
 		Notes:              mealPlan.Notes,
 		VotingDeadline:     mealPlan.VotingDeadline,
 		Events:             events,
+		ElectionMethod:     mealPlan.ElectionMethod,
 		BelongsToHousehold: mealPlan.BelongsToHousehold,
 	}
 }
@@ -59,6 +61,7 @@ func ConvertMealPlanToMealPlanDatabaseCreationInput(mealPlan *types.MealPlan) *t
 		Notes:              mealPlan.Notes,
 		VotingDeadline:     mealPlan.VotingDeadline,
 		Events:             events,
+		ElectionMethod:     mealPlan.ElectionMethod,
 		BelongsToHousehold: mealPlan.BelongsToHousehold,
 	}
 }

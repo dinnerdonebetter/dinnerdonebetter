@@ -16,9 +16,11 @@ import (
 
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
+	mockrandom "github.com/prixfixeco/backend/internal/random/mock"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*types.User) *sqlmock.Rows {
@@ -35,6 +37,7 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.ID,
 			user.Username,
 			user.EmailAddress,
+			user.EmailAddressVerifiedAt,
 			user.AvatarSrc,
 			user.HashedPassword,
 			user.RequiresPasswordChange,
@@ -44,8 +47,7 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.ServiceRole,
 			user.AccountStatus,
 			user.AccountStatusExplanation,
-			user.BirthDay,
-			user.BirthMonth,
+			user.Birthday,
 			user.CreatedAt,
 			user.LastUpdatedAt,
 			user.ArchivedAt,
@@ -782,6 +784,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectBegin()
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
@@ -790,9 +801,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -847,7 +858,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		actual.ID = exampleUser.ID
 		assert.Equal(t, exampleUser, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with nil input", func(t *testing.T) {
@@ -882,13 +893,22 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
 		actual, err := c.CreateUser(ctx, exampleUserCreationInput)
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with error executing user creation query", func(t *testing.T) {
@@ -912,6 +932,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -922,9 +951,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -937,7 +966,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with already existent user", func(t *testing.T) {
@@ -961,6 +990,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -971,9 +1009,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -986,7 +1024,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with destination household", func(t *testing.T) {
@@ -1013,6 +1051,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -1023,9 +1070,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -1114,7 +1161,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		actual.ID = exampleUser.ID
 		assert.Equal(t, exampleUser, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with destination household and error fetching pre-existing invitation", func(t *testing.T) {
@@ -1141,6 +1188,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -1151,9 +1207,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -1205,7 +1261,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with destination household and error creating new membership", func(t *testing.T) {
@@ -1232,6 +1288,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -1242,9 +1307,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -1311,7 +1376,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with error executing household creation query", func(t *testing.T) {
@@ -1335,6 +1400,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -1345,9 +1419,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -1377,7 +1451,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with error creating household user membership", func(t *testing.T) {
@@ -1401,6 +1475,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -1411,9 +1494,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -1456,7 +1539,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with error attaching invitations to user", func(t *testing.T) {
@@ -1480,6 +1563,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -1490,9 +1582,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -1545,7 +1637,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with error committing transaction", func(t *testing.T) {
@@ -1569,6 +1661,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -1579,9 +1680,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -1634,7 +1735,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 
 	T.Run("with error accepting household invitation", func(t *testing.T) {
@@ -1661,6 +1762,15 @@ func TestQuerier_CreateUser(T *testing.T) {
 			return exampleCreationTime
 		}
 
+		exampleToken := fakes.BuildFakeID()
+		secretGenerator := &mockrandom.Generator{}
+		secretGenerator.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			32,
+		).Return(exampleToken, nil)
+		c.secretGenerator = secretGenerator
+
 		db.ExpectBegin()
 
 		userCreationArgs := []any{
@@ -1671,9 +1781,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.TwoFactorSecret,
 			exampleUserCreationInput.AvatarSrc,
 			types.UnverifiedHouseholdStatus,
-			exampleUserCreationInput.BirthDay,
-			exampleUserCreationInput.BirthMonth,
+			exampleUserCreationInput.Birthday,
 			authorization.ServiceUserRole.String(),
+			exampleToken,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
@@ -1750,7 +1860,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		assert.Error(t, err)
 		require.Nil(t, actual)
 
-		mock.AssertExpectationsForObjects(t, db)
+		mock.AssertExpectationsForObjects(t, db, secretGenerator)
 	})
 }
 
@@ -1771,8 +1881,7 @@ func TestQuerier_UpdateUser(T *testing.T) {
 			exampleUser.AvatarSrc,
 			exampleUser.TwoFactorSecret,
 			exampleUser.TwoFactorSecretVerifiedAt,
-			exampleUser.BirthDay,
-			exampleUser.BirthMonth,
+			exampleUser.Birthday,
 			exampleUser.ID,
 		}
 
@@ -1808,8 +1917,7 @@ func TestQuerier_UpdateUser(T *testing.T) {
 			exampleUser.AvatarSrc,
 			exampleUser.TwoFactorSecret,
 			exampleUser.TwoFactorSecretVerifiedAt,
-			exampleUser.BirthDay,
-			exampleUser.BirthMonth,
+			exampleUser.Birthday,
 			exampleUser.ID,
 		}
 

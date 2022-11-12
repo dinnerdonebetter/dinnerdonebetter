@@ -22,6 +22,8 @@ var (
 		"valid_instruments.description",
 		"valid_instruments.icon_path",
 		"valid_instruments.usable_for_storage",
+		"valid_instruments.display_in_summary_lists",
+		"valid_instruments.slug",
 		"valid_instruments.created_at",
 		"valid_instruments.last_updated_at",
 		"valid_instruments.archived_at",
@@ -42,6 +44,8 @@ func (q *Querier) scanValidInstrument(ctx context.Context, scan database.Scanner
 		&x.Description,
 		&x.IconPath,
 		&x.UsableForStorage,
+		&x.DisplayInSummaryLists,
+		&x.Slug,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -290,6 +294,8 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 		input.Description,
 		input.IconPath,
 		input.UsableForStorage,
+		input.DisplayInSummaryLists,
+		input.Slug,
 	}
 
 	// create the valid instrument.
@@ -298,13 +304,15 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 	}
 
 	x := &types.ValidInstrument{
-		ID:               input.ID,
-		Name:             input.Name,
-		PluralName:       input.PluralName,
-		Description:      input.Description,
-		IconPath:         input.IconPath,
-		UsableForStorage: input.UsableForStorage,
-		CreatedAt:        q.currentTime(),
+		ID:                    input.ID,
+		Name:                  input.Name,
+		PluralName:            input.PluralName,
+		Description:           input.Description,
+		IconPath:              input.IconPath,
+		UsableForStorage:      input.UsableForStorage,
+		Slug:                  input.Slug,
+		DisplayInSummaryLists: input.DisplayInSummaryLists,
+		CreatedAt:             q.currentTime(),
 	}
 
 	tracing.AttachValidInstrumentIDToSpan(span, x.ID)
@@ -334,6 +342,8 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 		updated.Description,
 		updated.IconPath,
 		updated.UsableForStorage,
+		updated.DisplayInSummaryLists,
+		updated.Slug,
 		updated.ID,
 	}
 

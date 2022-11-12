@@ -21,6 +21,8 @@ func ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(input *types.
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                &input.StorageInstructions,
+		IsWaste:                            &input.IsWaste,
+		IsLiquid:                           &input.IsLiquid,
 	}
 
 	return x
@@ -44,6 +46,8 @@ func ConvertRecipeStepProductCreationInputToRecipeStepProductDatabaseCreationInp
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                input.StorageInstructions,
+		IsWaste:                            input.IsWaste,
+		IsLiquid:                           input.IsLiquid,
 	}
 
 	return x
@@ -65,6 +69,8 @@ func ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(recipeStepP
 		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                recipeStepProduct.StorageInstructions,
+		IsWaste:                            recipeStepProduct.IsWaste,
+		IsLiquid:                           recipeStepProduct.IsLiquid,
 	}
 }
 
@@ -84,5 +90,7 @@ func ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(recipeStep
 		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                recipeStepProduct.StorageInstructions,
+		IsWaste:                            recipeStepProduct.IsWaste,
+		IsLiquid:                           recipeStepProduct.IsLiquid,
 	}
 }

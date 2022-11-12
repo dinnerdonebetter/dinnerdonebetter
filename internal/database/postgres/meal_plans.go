@@ -22,6 +22,7 @@ var (
 		"meal_plans.voting_deadline",
 		"meal_plans.grocery_list_initialized",
 		"meal_plans.tasks_created",
+		"meal_plans.election_method",
 		"meal_plans.created_at",
 		"meal_plans.last_updated_at",
 		"meal_plans.archived_at",
@@ -43,6 +44,7 @@ func (q *Querier) scanMealPlan(ctx context.Context, scan database.Scanner, inclu
 		&x.VotingDeadline,
 		&x.GroceryListInitialized,
 		&x.TasksCreated,
+		&x.ElectionMethod,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -273,6 +275,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 		Status:             status,
 		VotingDeadline:     input.VotingDeadline,
 		BelongsToHousehold: input.BelongsToHousehold,
+		ElectionMethod:     input.ElectionMethod,
 		CreatedAt:          q.currentTime(),
 	}
 

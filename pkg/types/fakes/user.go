@@ -10,24 +10,24 @@ import (
 	"github.com/pquerna/otp/totp"
 
 	"github.com/prixfixeco/backend/internal/authorization"
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // BuildFakeUser builds a faked User.
 func BuildFakeUser() *types.User {
-	fakeDate := fake.Date()
+	fakeDate := BuildFakeTime()
 
 	return &types.User{
 		ID:                        BuildFakeID(),
 		EmailAddress:              fake.Email(),
 		Username:                  fake.Password(true, true, true, false, false, 32),
-		BirthDay:                  func(x uint8) *uint8 { return &x }(fake.Uint8()),
-		BirthMonth:                func(x uint8) *uint8 { return &x }(fake.Uint8()),
+		Birthday:                  pointers.Time(BuildFakeTime()),
 		AccountStatus:             types.GoodStandingUserAccountStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedAt: &fakeDate,
 		ServiceRole:               authorization.ServiceUserRole.String(),
-		CreatedAt:                 fake.Date(),
+		CreatedAt:                 BuildFakeTime(),
 	}
 }
 
@@ -57,8 +57,7 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 		Username:     exampleUser.Username,
 		EmailAddress: fake.Email(),
 		Password:     BuildFakePassword(),
-		BirthDay:     exampleUser.BirthDay,
-		BirthMonth:   exampleUser.BirthMonth,
+		Birthday:     exampleUser.Birthday,
 	}
 }
 
@@ -68,8 +67,7 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 		Username:     user.Username,
 		EmailAddress: user.EmailAddress,
 		Password:     BuildFakePassword(),
-		BirthDay:     user.BirthDay,
-		BirthMonth:   user.BirthMonth,
+		Birthday:     user.Birthday,
 	}
 }
 
@@ -79,8 +77,7 @@ func BuildFakeUserRegistrationInputWithInviteFromUser(user *types.User) *types.U
 		Username:        user.Username,
 		EmailAddress:    user.EmailAddress,
 		Password:        BuildFakePassword(),
-		BirthDay:        user.BirthDay,
-		BirthMonth:      user.BirthMonth,
+		Birthday:        user.Birthday,
 		InvitationToken: fake.UUID(),
 		InvitationID:    BuildFakeID(),
 	}
@@ -147,7 +144,7 @@ func BuildFakeTOTPSecretVerificationInputForUser(user *types.User) *types.TOTPSe
 
 // BuildFakePasswordResetToken builds a faked PasswordResetToken.
 func BuildFakePasswordResetToken() *types.PasswordResetToken {
-	fakeDate := fake.Date()
+	fakeDate := BuildFakeTime()
 
 	return &types.PasswordResetToken{
 		ID:            BuildFakeID(),

@@ -38,7 +38,7 @@ DELETE FROM "recipe_step_products" WHERE id IS NOT NULL;
 DELETE FROM "recipe_step_instruments" WHERE id IS NOT NULL;
 DELETE FROM "recipe_step_ingredients" WHERE id IS NOT NULL;
 DELETE FROM "meals" WHERE id IS NOT NULL;
-DELETE FROM "meal_recipes" WHERE id IS NOT NULL;
+DELETE FROM "meal_components" WHERE id IS NOT NULL;
 DELETE FROM "meal_plans" WHERE id IS NOT NULL;
 DELETE FROM "meal_plan_options" WHERE id IS NOT NULL;
 DELETE FROM "meal_plan_option_votes" WHERE id IS NOT NULL;
@@ -97,12 +97,4 @@ func main() {
 	if _, err = dataManager.DB().ExecContext(ctx, replacedDump); err != nil {
 		log.Fatal(fmt.Errorf("initializing running query: %w", err))
 	}
-}
-
-func sp(s string) *string {
-	return &s
-}
-
-func uint8p(n uint8) *uint8 {
-	return &n
 }

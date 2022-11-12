@@ -484,9 +484,9 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 				meal, mealFetchErr := testClients.user.GetMeal(ctx, m.ID)
 				requireNotNilAndNoProblems(t, meal, mealFetchErr)
 
-				for _, r := range meal.Recipes {
-					if r.ID == createdRecipe.ID {
-						foundMealID = r.ID
+				for _, component := range meal.Components {
+					if component.Recipe.ID == createdRecipe.ID {
+						foundMealID = meal.ID
 					}
 				}
 			}

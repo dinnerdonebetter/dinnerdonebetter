@@ -11,7 +11,9 @@ SET
 	minimum_storage_temperature_in_celsius = $9,
 	maximum_storage_temperature_in_celsius = $10,
 	storage_instructions = $11,
+	is_liquid = $12,
+	is_waste = $13,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_recipe_step = $12
-	AND id = $13;
+	AND belongs_to_recipe_step = $14
+	AND id = $15;

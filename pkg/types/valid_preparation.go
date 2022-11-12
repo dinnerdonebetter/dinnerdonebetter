@@ -40,6 +40,7 @@ type (
 		IconPath                 string     `json:"iconPath"`
 		PastTense                string     `json:"pastTense"`
 		ID                       string     `json:"id"`
+		Slug                     string     `json:"slug"`
 		YieldsNothing            bool       `json:"yieldsNothing"`
 		RestrictToIngredients    bool       `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable bool       `json:"zeroIngredientsAllowable"`
@@ -60,6 +61,7 @@ type (
 		Description              string `json:"description"`
 		IconPath                 string `json:"iconPath"`
 		PastTense                string `json:"pastTense"`
+		Slug                     string `json:"slug"`
 		YieldsNothing            bool   `json:"yieldsNothing"`
 		RestrictToIngredients    bool   `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable bool   `json:"zeroIngredientsAllowable"`
@@ -73,6 +75,7 @@ type (
 		Description              string `json:"description"`
 		IconPath                 string `json:"iconPath"`
 		PastTense                string `json:"pastTense"`
+		Slug                     string `json:"slug"`
 		YieldsNothing            bool   `json:"yieldsNothing"`
 		RestrictToIngredients    bool   `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable bool   `json:"zeroIngredientsAllowable"`
@@ -86,6 +89,7 @@ type (
 		Description              *string `json:"description"`
 		IconPath                 *string `json:"iconPath"`
 		YieldsNothing            *bool   `json:"yieldsNothing"`
+		Slug                     *string `json:"slug"`
 		RestrictToIngredients    *bool   `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable *bool   `json:"zeroIngredientsAllowable"`
 		PastTense                *string `json:"pastTense"`
@@ -132,14 +136,21 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 	if input.YieldsNothing != nil && *input.YieldsNothing != x.YieldsNothing {
 		x.YieldsNothing = *input.YieldsNothing
 	}
+
 	if input.RestrictToIngredients != nil && *input.RestrictToIngredients != x.RestrictToIngredients {
 		x.RestrictToIngredients = *input.RestrictToIngredients
 	}
+
 	if input.ZeroIngredientsAllowable != nil && *input.ZeroIngredientsAllowable != x.ZeroIngredientsAllowable {
 		x.ZeroIngredientsAllowable = *input.ZeroIngredientsAllowable
 	}
+
 	if input.PastTense != nil && *input.PastTense != x.PastTense {
 		x.PastTense = *input.PastTense
+	}
+
+	if input.Slug != nil && *input.Slug != x.Slug {
+		x.Slug = *input.Slug
 	}
 }
 

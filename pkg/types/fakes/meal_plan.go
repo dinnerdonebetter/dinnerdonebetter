@@ -26,10 +26,11 @@ func BuildFakeMealPlan() *types.MealPlan {
 		Notes:                  buildUniqueString(),
 		Status:                 types.AwaitingVotesMealPlanStatus,
 		VotingDeadline:         now,
-		CreatedAt:              fake.Date(),
+		CreatedAt:              BuildFakeTime(),
 		BelongsToHousehold:     fake.UUID(),
 		TasksCreated:           false,
 		GroceryListInitialized: false,
+		ElectionMethod:         types.MealPlanElectionMethodSchulze,
 		Events:                 events,
 	}
 }

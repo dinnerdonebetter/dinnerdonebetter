@@ -15,7 +15,7 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 	}
 
 	meal := BuildFakeMeal()
-	meal.Recipes = nil
+	meal.Components = nil
 
 	return &types.MealPlanOption{
 		ID:                     BuildFakeID(),
@@ -24,7 +24,7 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 		Votes:                  examples,
 		Chosen:                 false,
 		Notes:                  buildUniqueString(),
-		CreatedAt:              fake.Date(),
+		CreatedAt:              BuildFakeTime(),
 		BelongsToMealPlanEvent: fake.UUID(),
 	}
 }

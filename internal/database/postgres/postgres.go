@@ -18,6 +18,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/random"
 )
 
 const (
@@ -32,15 +33,16 @@ var _ database.DataManager = (*Querier)(nil)
 
 // Querier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type Querier struct {
-	tracer        tracing.Tracer
-	sqlBuilder    squirrel.StatementBuilderType
-	logger        logging.Logger
-	timeFunc      func() time.Time
-	config        *dbconfig.Config
-	db            *sql.DB
-	connectionURL string
-	migrateOnce   sync.Once
-	logQueries    bool
+	tracer          tracing.Tracer
+	sqlBuilder      squirrel.StatementBuilderType
+	logger          logging.Logger
+	timeFunc        func() time.Time
+	config          *dbconfig.Config
+	db              *sql.DB
+	secretGenerator random.Generator
+	connectionURL   string
+	migrateOnce     sync.Once
+	logQueries      bool
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
@@ -65,14 +67,15 @@ func ProvideDatabaseClient(
 	db.SetConnMaxLifetime(1800 * time.Second)
 
 	c := &Querier{
-		db:            db,
-		config:        cfg,
-		tracer:        tracer,
-		logQueries:    cfg.LogQueries,
-		timeFunc:      defaultTimeFunc,
-		connectionURL: string(cfg.ConnectionDetails),
-		logger:        logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:    squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:              db,
+		config:          cfg,
+		tracer:          tracer,
+		logQueries:      cfg.LogQueries,
+		timeFunc:        defaultTimeFunc,
+		secretGenerator: random.NewGenerator(logger, tracerProvider),
+		connectionURL:   string(cfg.ConnectionDetails),
+		logger:          logging.EnsureLogger(logger).WithName("querier"),
+		sqlBuilder:      squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
 	if cfg.Debug {

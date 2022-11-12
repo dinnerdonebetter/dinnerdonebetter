@@ -14,6 +14,11 @@ const (
 	// MealPlanDataType indicates an event is related to a meal plan.
 	MealPlanDataType dataType = "meal_plan"
 
+	// MealPlanElectionMethodSchulze is used to denote the Schulze election method.
+	MealPlanElectionMethodSchulze = "schulze"
+	// MealPlanElectionMethodInstantRunoff is used to denote the Instant Runoff election method.
+	MealPlanElectionMethodInstantRunoff = "instant-runoff"
+
 	// MealPlanCreatedCustomerEventType indicates a meal plan was created.
 	MealPlanCreatedCustomerEventType CustomerEventType = "meal_plan_created"
 	// MealPlanUpdatedCustomerEventType indicates a meal plan was updated.
@@ -50,6 +55,7 @@ type (
 		Status                 MealPlanStatus   `json:"status"`
 		ID                     string           `json:"id"`
 		Notes                  string           `json:"notes"`
+		ElectionMethod         string           `json:"electionMethod"`
 		BelongsToHousehold     string           `json:"belongsToHousehold"`
 		Events                 []*MealPlanEvent `json:"events"`
 		GroceryListInitialized bool             `json:"groceryListInitialized"`
@@ -70,17 +76,19 @@ type (
 		BelongsToHousehold string                               `json:"-"`
 		Notes              string                               `json:"notes"`
 		ID                 string                               `json:"-"`
+		ElectionMethod     string                               `json:"electionMethod"`
 		Events             []*MealPlanEventCreationRequestInput `json:"events"`
 	}
 
 	// MealPlanDatabaseCreationInput represents what a user could set as input for creating meal plans.
 	MealPlanDatabaseCreationInput struct {
 		_                  struct{}
-		VotingDeadline     time.Time                             `json:"votingDeadline"`
-		BelongsToHousehold string                                `json:"belongsToHousehold"`
-		Notes              string                                `json:"notes"`
-		ID                 string                                `json:"id"`
-		Events             []*MealPlanEventDatabaseCreationInput `json:"events"`
+		VotingDeadline     time.Time
+		BelongsToHousehold string
+		Notes              string
+		ID                 string
+		ElectionMethod     string
+		Events             []*MealPlanEventDatabaseCreationInput
 	}
 
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.
@@ -147,6 +155,7 @@ func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) 
 		x,
 		validation.Field(&x.VotingDeadline, validation.Required),
 		validation.Field(&x.Events, validation.Required),
+		validation.Field(&x.ElectionMethod, validation.In(MealPlanElectionMethodSchulze, MealPlanElectionMethodInstantRunoff)),
 	)
 }
 

@@ -24,7 +24,7 @@ func BuildFakeWebhook() *types.Webhook {
 		URL:                fake.URL(),
 		Method:             http.MethodPost,
 		Events:             events,
-		CreatedAt:          fake.Date(),
+		CreatedAt:          BuildFakeTime(),
 		ArchivedAt:         nil,
 		BelongsToHousehold: fake.UUID(),
 	}
@@ -36,7 +36,7 @@ func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
 		ID:               BuildFakeID(),
 		TriggerEvent:     string(types.WebhookCreatedCustomerEventType),
 		BelongsToWebhook: BuildFakeID(),
-		CreatedAt:        fake.Date(),
+		CreatedAt:        BuildFakeTime(),
 		ArchivedAt:       nil,
 	}
 }

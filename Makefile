@@ -137,6 +137,10 @@ docker_lint:
 queries_lint:
 	$(SQL_GENERATOR) compile
 
+.PHONY: querier
+querier: queries_lint
+	$(SQL_GENERATOR) generate
+
 .PHONY: golang_lint
 golang_lint:
 	@docker pull golangci/golangci-lint:v1.50

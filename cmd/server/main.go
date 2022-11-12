@@ -8,10 +8,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"strconv"
 	"syscall"
 	"time"
 
+	"cloud.google.com/go/profiler"
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
@@ -44,6 +46,25 @@ func main() {
 			log.Fatal(cfgHydrateErr)
 		}
 		cfg = c
+
+		profilerConfig := profiler.Config{
+			Service:        "api-server",
+			ServiceVersion: "unknown",
+		}
+
+		if info, ok := debug.ReadBuildInfo(); ok {
+			for i := range info.Settings {
+				setting := info.Settings[i]
+				if setting.Key == "vcs.revision" {
+					profilerConfig.ServiceVersion = setting.Value
+				}
+			}
+		}
+
+		// Profiler initialization, best done as early as possible.
+		if profilerStartErr := profiler.Start(profilerConfig); profilerStartErr != nil {
+			log.Fatal(profilerStartErr)
+		}
 	} else if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
 		configBytes, configReadErr := os.ReadFile(configFilepath)
 		if configReadErr != nil {

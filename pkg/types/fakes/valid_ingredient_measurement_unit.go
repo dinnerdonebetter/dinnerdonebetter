@@ -1,8 +1,6 @@
 package fakes
 
 import (
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 )
@@ -18,7 +16,7 @@ func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurement
 		Ingredient:               *BuildFakeValidIngredient(),
 		MinimumAllowableQuantity: float32(minQty),
 		MaximumAllowableQuantity: float32(minQty + 1),
-		CreatedAt:                fake.Date(),
+		CreatedAt:                BuildFakeTime(),
 	}
 }
 

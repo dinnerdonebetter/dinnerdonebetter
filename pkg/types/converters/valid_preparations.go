@@ -13,6 +13,7 @@ func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *types.Va
 		YieldsNothing:            &input.YieldsNothing,
 		RestrictToIngredients:    &input.RestrictToIngredients,
 		ZeroIngredientsAllowable: &input.ZeroIngredientsAllowable,
+		Slug:                     &input.Slug,
 		PastTense:                &input.PastTense,
 	}
 
@@ -28,6 +29,7 @@ func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreati
 		YieldsNothing:            input.YieldsNothing,
 		RestrictToIngredients:    input.RestrictToIngredients,
 		ZeroIngredientsAllowable: input.ZeroIngredientsAllowable,
+		Slug:                     input.Slug,
 		PastTense:                input.PastTense,
 	}
 
@@ -44,6 +46,7 @@ func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparat
 		YieldsNothing:            validPreparation.YieldsNothing,
 		RestrictToIngredients:    validPreparation.RestrictToIngredients,
 		ZeroIngredientsAllowable: validPreparation.ZeroIngredientsAllowable,
+		Slug:                     validPreparation.Slug,
 		PastTense:                validPreparation.PastTense,
 	}
 }
@@ -58,6 +61,7 @@ func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPrepara
 		YieldsNothing:            validPreparation.YieldsNothing,
 		RestrictToIngredients:    validPreparation.RestrictToIngredients,
 		ZeroIngredientsAllowable: validPreparation.ZeroIngredientsAllowable,
+		Slug:                     validPreparation.Slug,
 		PastTense:                validPreparation.PastTense,
 	}
 }

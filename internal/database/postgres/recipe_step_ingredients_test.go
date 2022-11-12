@@ -61,6 +61,9 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			ingredient.MinimumIdealStorageTemperatureInCelsius,
 			ingredient.MaximumIdealStorageTemperatureInCelsius,
 			ingredient.StorageInstructions,
+			ingredient.Slug,
+			ingredient.ContainsAlcohol,
+			ingredient.ShoppingSuggestions,
 			ingredient.CreatedAt,
 			ingredient.LastUpdatedAt,
 			ingredient.ArchivedAt,
@@ -72,6 +75,7 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			x.MeasurementUnit.Universal,
 			x.MeasurementUnit.Metric,
 			x.MeasurementUnit.Imperial,
+			x.MeasurementUnit.Slug,
 			x.MeasurementUnit.PluralName,
 			x.MeasurementUnit.CreatedAt,
 			x.MeasurementUnit.LastUpdatedAt,
@@ -82,6 +86,8 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			x.ProductOfRecipeStep,
 			x.RecipeStepProductID,
 			x.IngredientNotes,
+			x.OptionIndex,
+			x.RequiresDefrost,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -584,6 +590,8 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			exampleInput.ProductOfRecipeStep,
 			exampleInput.RecipeStepProductID,
 			exampleInput.IngredientNotes,
+			exampleInput.OptionIndex,
+			exampleInput.RequiresDefrost,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -635,6 +643,8 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			exampleInput.ProductOfRecipeStep,
 			exampleInput.RecipeStepProductID,
 			exampleInput.IngredientNotes,
+			exampleInput.OptionIndex,
+			exampleInput.RequiresDefrost,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -682,6 +692,8 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 			exampleInput.ProductOfRecipeStep,
 			exampleInput.RecipeStepProductID,
 			exampleInput.IngredientNotes,
+			exampleInput.OptionIndex,
+			exampleInput.RequiresDefrost,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -724,6 +736,8 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 			exampleRecipeStepIngredient.ProductOfRecipeStep,
 			exampleRecipeStepIngredient.RecipeStepProductID,
 			exampleRecipeStepIngredient.IngredientNotes,
+			exampleRecipeStepIngredient.OptionIndex,
+			exampleRecipeStepIngredient.RequiresDefrost,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}
@@ -766,6 +780,8 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 			exampleRecipeStepIngredient.ProductOfRecipeStep,
 			exampleRecipeStepIngredient.RecipeStepProductID,
 			exampleRecipeStepIngredient.IngredientNotes,
+			exampleRecipeStepIngredient.OptionIndex,
+			exampleRecipeStepIngredient.RequiresDefrost,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}

@@ -73,7 +73,7 @@ ALTER TABLE meal_plans ALTER COLUMN voting_deadline TYPE TIMESTAMP WITH TIME ZON
 ALTER TABLE meal_plans ALTER COLUMN last_updated_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(last_updated_at);
 ALTER TABLE meal_plans ALTER COLUMN archived_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(archived_at);
 
--- meal_recipes
+-- meal_components
 ALTER TABLE meal_recipes ALTER COLUMN created_at DROP DEFAULT;
 ALTER TABLE meal_recipes ALTER COLUMN created_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(created_at);
 ALTER TABLE meal_recipes ALTER COLUMN created_at SET DEFAULT NOW();
