@@ -27,7 +27,7 @@ import (
 func logJSON(t *testing.T, x any) {
 	t.Helper()
 
-	rawBytes, err := json.MarshalIndent(x, "", "")
+	rawBytes, err := json.Marshal(x)
 	require.NoError(t, err)
 
 	t.Log(string(rawBytes))

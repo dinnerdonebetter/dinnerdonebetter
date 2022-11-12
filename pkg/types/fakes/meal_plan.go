@@ -30,6 +30,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 		BelongsToHousehold:     fake.UUID(),
 		TasksCreated:           false,
 		GroceryListInitialized: false,
+		ElectionMethod:         types.MealPlanElectionMethodSchulze,
 		Events:                 events,
 	}
 }

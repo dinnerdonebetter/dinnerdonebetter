@@ -15,14 +15,14 @@ ALTER TABLE valid_ingredients ADD COLUMN slug TEXT NOT NULL DEFAULT '';         
 ALTER TABLE valid_ingredients ADD COLUMN shopping_suggestions TEXT NOT NULL DEFAULT '';                                                     -- #320
 ALTER TABLE valid_instruments ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                     -- #184
 ALTER TABLE valid_instruments ADD COLUMN display_in_summary_lists BOOLEAN NOT NULL DEFAULT 'true';                                          -- #241
-ALTER TABLE valid_measurement_units ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                              -- #184
+ALTER TABLE valid_measurement_units ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                               -- #184
 ALTER TABLE valid_preparations ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                    -- #184
 CREATE TYPE valid_election_method AS ENUM ('schulze', 'instant-runoff');                                                                    -- #188
--- ALTER TABLE meal_plans ADD COLUMN election_method valid_election_method NOT NULL DEFAULT 'schulze';                                         -- #188
-ALTER TABLE recipe_step_products ADD COLUMN is_liquid BOOLEAN NOT NULL DEFAULT 'false';                                                             -- #160
-ALTER TABLE recipe_step_products ADD COLUMN is_waste BOOLEAN NOT NULL DEFAULT 'false';                                                              -- #384
+ALTER TABLE meal_plans ADD COLUMN election_method valid_election_method NOT NULL DEFAULT 'schulze';                                         -- #188
+ALTER TABLE recipe_step_products ADD COLUMN is_liquid BOOLEAN NOT NULL DEFAULT 'false';                                                     -- #160
+ALTER TABLE recipe_step_products ADD COLUMN is_waste BOOLEAN NOT NULL DEFAULT 'false';                                                      -- #384
 CREATE TYPE component_type AS ENUM ('unspecified', 'amuse-bouche', 'appetizer', 'soup', 'main', 'salad', 'beverage', 'side', 'dessert');    -- #267
--- ALTER TABLE meal_recipes ADD COLUMN "type" component_type NOT NULL DEFAULT 'unspecified';                                         -- #267
+-- ALTER TABLE meal_recipes ADD COLUMN "meal_component_type" component_type NOT NULL DEFAULT 'unspecified';                                                   -- #267
 
 -- CREATE TABLE IF NOT EXISTS valid_ingredient_statuses (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
@@ -207,4 +207,3 @@ CREATE TYPE component_type AS ENUM ('unspecified', 'amuse-bouche', 'appetizer', 
 --     archived_at TIMESTAMP WITH TIME ZONE,
 --     UNIQUE (valid_ingredient_id, valid_package_quantity_id, archived_at)
 -- );
-

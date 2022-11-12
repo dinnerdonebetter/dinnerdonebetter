@@ -13,6 +13,25 @@ const (
 	// MealDataType indicates an event is related to a meal.
 	MealDataType dataType = "meal"
 
+	// MealComponentTypesUnspecified represents the unspecified meal component type.
+	MealComponentTypesUnspecified = "unspecified"
+	// MealComponentTypesAmuse represents the amuse-bouche meal component type.
+	MealComponentTypesAmuse = "amuse-bouche"
+	// MealComponentTypesAppetizer represents the appetizer meal component type.
+	MealComponentTypesAppetizer = "appetizer"
+	// MealComponentTypesSoup represents the soup meal component type.
+	MealComponentTypesSoup = "soup"
+	// MealComponentTypesMain represents the main meal component type.
+	MealComponentTypesMain = "main"
+	// MealComponentTypesSalad represents the salad meal component type.
+	MealComponentTypesSalad = "salad"
+	// MealComponentTypesBeverage represents the beverage meal component type.
+	MealComponentTypesBeverage = "beverage"
+	// MealComponentTypesSide represents the side meal component type.
+	MealComponentTypesSide = "side"
+	// MealComponentTypesDessert represents the dessert meal component type.
+	MealComponentTypesDessert = "dessert"
+
 	// MealCreatedCustomerEventType indicates a meal was created.
 	MealCreatedCustomerEventType CustomerEventType = "meal_created"
 	// MealUpdatedCustomerEventType indicates a meal was updated.
@@ -65,6 +84,12 @@ type (
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"-"`
 		Recipes       []string `json:"recipes"`
+	}
+
+	// MealRecipeCreationRequestInput represents what a user could set as input for creating meal recipes.
+	MealRecipeCreationRequestInput struct {
+		RecipeID          string `json:"recipeID"`
+		MealComponentType string `json:"mealComponentType"`
 	}
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
