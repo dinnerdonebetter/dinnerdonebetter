@@ -28,6 +28,8 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 	assert.Equal(t, expected.MinimumStorageTemperatureInCelsius, actual.MinimumStorageTemperatureInCelsius, "expected MinimumStorageTemperatureInCelsius for recipe step product %s to be %v, but was %v", expected.ID, expected.MinimumStorageTemperatureInCelsius, actual.MinimumStorageTemperatureInCelsius)
 	assert.Equal(t, expected.MaximumStorageTemperatureInCelsius, actual.MaximumStorageTemperatureInCelsius, "expected MaximumStorageTemperatureInCelsius for recipe step product %s to be %v, but was %v", expected.ID, expected.MaximumStorageTemperatureInCelsius, actual.MaximumStorageTemperatureInCelsius)
 	assert.Equal(t, expected.StorageInstructions, actual.StorageInstructions, "expected StorageInstructions for recipe step product %s to be %v, but was %v", expected.ID, expected.StorageInstructions, actual.StorageInstructions)
+	assert.Equal(t, expected.IsLiquid, actual.IsLiquid, "expected IsLiquid for recipe step product %s to be %v, but was %v", expected.ID, expected.IsLiquid, actual.IsLiquid)
+	assert.Equal(t, expected.IsWaste, actual.IsWaste, "expected IsWaste for recipe step product %s to be %v, but was %v", expected.ID, expected.IsWaste, actual.IsWaste)
 	assert.NotZero(t, actual.CreatedAt)
 }
 

@@ -670,6 +670,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				product.MaximumStorageTemperatureInCelsius,
 				product.StorageInstructions,
 				product.BelongsToRecipeStep,
+				product.IsLiquid,
+				product.IsWaste,
 			}
 
 			db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
@@ -853,6 +855,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Products[0].MaximumStorageTemperatureInCelsius,
 			exampleInput.Products[0].StorageInstructions,
 			exampleInput.Products[0].BelongsToRecipeStep,
+			exampleInput.Products[0].IsLiquid,
+			exampleInput.Products[0].IsWaste,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).

@@ -44,6 +44,8 @@ var (
 		"recipe_step_products.minimum_storage_temperature_in_celsius",
 		"recipe_step_products.maximum_storage_temperature_in_celsius",
 		"recipe_step_products.storage_instructions",
+		"recipe_step_products.is_liquid",
+		"recipe_step_products.is_waste",
 		"recipe_step_products.created_at",
 		"recipe_step_products.last_updated_at",
 		"recipe_step_products.archived_at",
@@ -89,6 +91,8 @@ func (q *Querier) scanRecipeStepProduct(ctx context.Context, scan database.Scann
 		&x.MinimumStorageTemperatureInCelsius,
 		&x.MaximumStorageTemperatureInCelsius,
 		&x.StorageInstructions,
+		&x.IsLiquid,
+		&x.IsWaste,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -333,6 +337,8 @@ func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQu
 		input.MaximumStorageTemperatureInCelsius,
 		input.StorageInstructions,
 		input.BelongsToRecipeStep,
+		input.IsLiquid,
+		input.IsWaste,
 	}
 
 	// create the recipe step product.
@@ -354,6 +360,8 @@ func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQu
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius: input.MaximumStorageTemperatureInCelsius,
 		StorageInstructions:                input.StorageInstructions,
+		IsLiquid:                           input.IsLiquid,
+		IsWaste:                            input.IsWaste,
 		CreatedAt:                          q.currentTime(),
 	}
 
@@ -394,6 +402,8 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 		updated.MinimumStorageTemperatureInCelsius,
 		updated.MaximumStorageTemperatureInCelsius,
 		updated.StorageInstructions,
+		updated.IsLiquid,
+		updated.IsWaste,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

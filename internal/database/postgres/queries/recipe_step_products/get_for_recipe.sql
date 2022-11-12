@@ -23,6 +23,8 @@ SELECT
 	recipe_step_products.minimum_storage_temperature_in_celsius,
 	recipe_step_products.maximum_storage_temperature_in_celsius,
 	recipe_step_products.storage_instructions,
+    recipe_step_products.is_liquid,
+    recipe_step_products.is_waste,
 	recipe_step_products.created_at,
 	recipe_step_products.last_updated_at,
 	recipe_step_products.archived_at,

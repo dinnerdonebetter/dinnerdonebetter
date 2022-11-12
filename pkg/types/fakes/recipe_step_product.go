@@ -24,6 +24,8 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		CreatedAt:                          BuildFakeTime(),
 		BelongsToRecipeStep:                fake.UUID(),
 		Compostable:                        fake.Bool(),
+		IsLiquid:                           fake.Bool(),
+		IsWaste:                            fake.Bool(),
 		MaximumStorageDurationInSeconds:    pointers.Uint32(fake.Uint32()),
 		MinimumStorageTemperatureInCelsius: pointers.Float32(float32(storageTemp)),
 		MaximumStorageTemperatureInCelsius: pointers.Float32(float32(storageTemp + 1)),
@@ -52,20 +54,7 @@ func BuildFakeRecipeStepProductList() *types.RecipeStepProductList {
 // BuildFakeRecipeStepProductUpdateRequestInput builds a faked RecipeStepProductUpdateRequestInput from a recipe step product.
 func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpdateRequestInput {
 	recipeStepProduct := BuildFakeRecipeStepProduct()
-	return &types.RecipeStepProductUpdateRequestInput{
-		Name:                               &recipeStepProduct.Name,
-		Type:                               &recipeStepProduct.Type,
-		MinimumQuantity:                    &recipeStepProduct.MinimumQuantity,
-		MaximumQuantity:                    &recipeStepProduct.MaximumQuantity,
-		QuantityNotes:                      &recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:                  &recipeStepProduct.MeasurementUnit.ID,
-		BelongsToRecipeStep:                &recipeStepProduct.BelongsToRecipeStep,
-		Compostable:                        &recipeStepProduct.Compostable,
-		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,
-		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius: recipeStepProduct.MaximumStorageTemperatureInCelsius,
-		StorageInstructions:                &recipeStepProduct.StorageInstructions,
-	}
+	return converters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(recipeStepProduct)
 }
 
 // BuildFakeRecipeStepProductCreationRequestInput builds a faked RecipeStepProductCreationRequestInput.

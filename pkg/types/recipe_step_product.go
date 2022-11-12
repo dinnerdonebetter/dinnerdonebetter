@@ -38,20 +38,22 @@ type (
 	RecipeStepProduct struct {
 		_                                  struct{}
 		CreatedAt                          time.Time            `json:"createdAt"`
+		MaximumStorageDurationInSeconds    *uint32              `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius *float32             `json:"minimumStorageTemperatureInCelsius"`
-		LastUpdatedAt                      *time.Time           `json:"lastUpdatedAt"`
 		MaximumStorageTemperatureInCelsius *float32             `json:"maximumStorageTemperatureInCelsius"`
 		ArchivedAt                         *time.Time           `json:"archivedAt"`
-		MaximumStorageDurationInSeconds    *uint32              `json:"maximumStorageDurationInSeconds"`
+		LastUpdatedAt                      *time.Time           `json:"lastUpdatedAt"`
+		ID                                 string               `json:"id"`
 		Type                               string               `json:"type"`
 		Name                               string               `json:"name"`
-		BelongsToRecipeStep                string               `json:"belongsToRecipeStep"`
-		ID                                 string               `json:"id"`
-		QuantityNotes                      string               `json:"quantityNotes"`
 		StorageInstructions                string               `json:"storageInstructions"`
+		QuantityNotes                      string               `json:"quantityNotes"`
+		BelongsToRecipeStep                string               `json:"belongsToRecipeStep"`
 		MeasurementUnit                    ValidMeasurementUnit `json:"measurementUnit"`
 		MaximumQuantity                    float32              `json:"maximumQuantity"`
 		MinimumQuantity                    float32              `json:"minimumQuantity"`
+		IsWaste                            bool                 `json:"isWaste"`
+		IsLiquid                           bool                 `json:"isLiquid"`
 		Compostable                        bool                 `json:"compostable"`
 	}
 
@@ -78,24 +80,28 @@ type (
 		MaximumQuantity                    float32  `json:"maximumQuantity"`
 		MinimumQuantity                    float32  `json:"minimumQuantity"`
 		Compostable                        bool     `json:"compostable"`
+		IsLiquid                           bool     `json:"isLiquid"`
+		IsWaste                            bool     `json:"isWaste"`
 	}
 
 	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductDatabaseCreationInput struct {
 		_                                  struct{}
-		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
-		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds"`
-		Type                               string   `json:"type"`
-		QuantityNotes                      string   `json:"quantityNotes"`
-		BelongsToRecipeStep                string   `json:"belongsToRecipeStep"`
-		MeasurementUnitID                  string   `json:"measurementUnitID"`
-		Name                               string   `json:"name"`
-		ID                                 string   `json:"id"`
-		StorageInstructions                string   `json:"storageInstructions"`
-		MaximumQuantity                    float32  `json:"maximumQuantity"`
-		MinimumQuantity                    float32  `json:"minimumQuantity"`
-		Compostable                        bool     `json:"compostable"`
+		MinimumStorageTemperatureInCelsius *float32
+		MaximumStorageTemperatureInCelsius *float32
+		MaximumStorageDurationInSeconds    *uint32
+		Type                               string
+		QuantityNotes                      string
+		BelongsToRecipeStep                string
+		MeasurementUnitID                  string
+		Name                               string
+		ID                                 string
+		StorageInstructions                string
+		MaximumQuantity                    float32
+		MinimumQuantity                    float32
+		Compostable                        bool
+		IsLiquid                           bool
+		IsWaste                            bool
 	}
 
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
@@ -113,6 +119,8 @@ type (
 		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
 		StorageInstructions                *string  `json:"storageInstructions"`
+		IsLiquid                           *bool    `json:"isLiquid"`
+		IsWaste                            *bool    `json:"isWaste"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.
@@ -179,6 +187,14 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 
 	if input.StorageInstructions != nil && *input.StorageInstructions != x.StorageInstructions {
 		x.StorageInstructions = *input.StorageInstructions
+	}
+
+	if input.IsLiquid != nil && *input.IsLiquid != x.IsLiquid {
+		x.IsLiquid = *input.IsLiquid
+	}
+
+	if input.IsWaste != nil && *input.IsWaste != x.IsWaste {
+		x.IsWaste = *input.IsWaste
 	}
 }
 
