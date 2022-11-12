@@ -3,7 +3,7 @@ sql:
   - schema: "internal/database/postgres/migrations"
     queries:
       - "internal/database/postgres/queries/admin"
-      - "internal/database/postgres/queries/meal_recipes"
+      - "internal/database/postgres/queries/meal_components"
       - "internal/database/postgres/queries/users"
       - "internal/database/postgres/queries/api_clients"
       - "internal/database/postgres/queries/meals"

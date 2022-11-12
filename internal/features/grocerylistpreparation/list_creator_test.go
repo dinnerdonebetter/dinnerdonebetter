@@ -38,16 +38,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 						{
 							Chosen: true,
 							Meal: types.Meal{
-								Recipes: []*types.Recipe{
+								Components: []*types.MealComponent{
 									{
-										Steps: []*types.RecipeStep{
-											{
-												Ingredients: []*types.RecipeStepIngredient{
-													{
-														Ingredient:      onion,
-														MinimumQuantity: 100,
-														MaximumQuantity: 100,
-														MeasurementUnit: *grams,
+										Recipe: types.Recipe{
+											Steps: []*types.RecipeStep{
+												{
+													Ingredients: []*types.RecipeStepIngredient{
+														{
+															Ingredient:      onion,
+															MinimumQuantity: 100,
+															MaximumQuantity: 100,
+															MeasurementUnit: *grams,
+														},
 													},
 												},
 											},
@@ -63,16 +65,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 						{
 							Chosen: true,
 							Meal: types.Meal{
-								Recipes: []*types.Recipe{
+								Components: []*types.MealComponent{
 									{
-										Steps: []*types.RecipeStep{
-											{
-												Ingredients: []*types.RecipeStepIngredient{
-													{
-														Ingredient:      carrot,
-														MinimumQuantity: 100,
-														MaximumQuantity: 100,
-														MeasurementUnit: *grams,
+										Recipe: types.Recipe{
+											Steps: []*types.RecipeStep{
+												{
+													Ingredients: []*types.RecipeStepIngredient{
+														{
+															Ingredient:      carrot,
+															MinimumQuantity: 100,
+															MaximumQuantity: 100,
+															MeasurementUnit: *grams,
+														},
 													},
 												},
 											},
@@ -88,16 +92,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 						{
 							Chosen: true,
 							Meal: types.Meal{
-								Recipes: []*types.Recipe{
+								Components: []*types.MealComponent{
 									{
-										Steps: []*types.RecipeStep{
-											{
-												Ingredients: []*types.RecipeStepIngredient{
-													{
-														Ingredient:      celery,
-														MinimumQuantity: 100,
-														MaximumQuantity: 100,
-														MeasurementUnit: *grams,
+										Recipe: types.Recipe{
+											Steps: []*types.RecipeStep{
+												{
+													Ingredients: []*types.RecipeStepIngredient{
+														{
+															Ingredient:      celery,
+															MinimumQuantity: 100,
+															MaximumQuantity: 100,
+															MeasurementUnit: *grams,
+														},
 													},
 												},
 											},
@@ -113,16 +119,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 						{
 							Chosen: true,
 							Meal: types.Meal{
-								Recipes: []*types.Recipe{
+								Components: []*types.MealComponent{
 									{
-										Steps: []*types.RecipeStep{
-											{
-												Ingredients: []*types.RecipeStepIngredient{
-													{
-														Ingredient:      salt,
-														MinimumQuantity: 100,
-														MaximumQuantity: 100,
-														MeasurementUnit: *grams,
+										Recipe: types.Recipe{
+											Steps: []*types.RecipeStep{
+												{
+													Ingredients: []*types.RecipeStepIngredient{
+														{
+															Ingredient:      salt,
+															MinimumQuantity: 100,
+															MaximumQuantity: 100,
+															MeasurementUnit: *grams,
+														},
 													},
 												},
 											},
@@ -138,16 +146,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 						{
 							Chosen: true,
 							Meal: types.Meal{
-								Recipes: []*types.Recipe{
+								Components: []*types.MealComponent{
 									{
-										Steps: []*types.RecipeStep{
-											{
-												Ingredients: []*types.RecipeStepIngredient{
-													{
-														Ingredient:      onion,
-														MinimumQuantity: 100,
-														MaximumQuantity: 100,
-														MeasurementUnit: *grams,
+										Recipe: types.Recipe{
+											Steps: []*types.RecipeStep{
+												{
+													Ingredients: []*types.RecipeStepIngredient{
+														{
+															Ingredient:      onion,
+															MinimumQuantity: 100,
+															MaximumQuantity: 100,
+															MeasurementUnit: *grams,
+														},
 													},
 												},
 											},

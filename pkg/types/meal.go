@@ -15,8 +15,8 @@ const (
 
 	// MealComponentTypesUnspecified represents the unspecified meal component type.
 	MealComponentTypesUnspecified = "unspecified"
-	// MealComponentTypesAmuse represents the amuse-bouche meal component type.
-	MealComponentTypesAmuse = "amuse-bouche"
+	// MealComponentTypesAmuseBouche represents the amuse-bouche meal component type.
+	MealComponentTypesAmuseBouche = "amuse-bouche"
 	// MealComponentTypesAppetizer represents the appetizer meal component type.
 	MealComponentTypesAppetizer = "appetizer"
 	// MealComponentTypesSoup represents the soup meal component type.
@@ -51,20 +51,20 @@ type (
 	// Meal represents a meal.
 	Meal struct {
 		_             struct{}
-		CreatedAt     time.Time  `json:"createdAt"`
-		ArchivedAt    *time.Time `json:"archivedAt"`
-		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
-		ID            string     `json:"id"`
-		Description   string     `json:"description"`
-		CreatedByUser string     `json:"createdByUser"`
-		Name          string     `json:"name"`
-		Recipes       []*Recipe  `json:"recipes"`
+		CreatedAt     time.Time        `json:"createdAt"`
+		ArchivedAt    *time.Time       `json:"archivedAt"`
+		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
+		ID            string           `json:"id"`
+		Description   string           `json:"description"`
+		CreatedByUser string           `json:"createdByUser"`
+		Name          string           `json:"name"`
+		Components    []*MealComponent `json:"components"`
 	}
 
-	// MealRecipe is a recipe with some extra data attached to it.
-	MealRecipe struct {
-		Recipe        *Recipe `json:"recipe"`
-		ComponentType string  `json:"componentType"`
+	// MealComponent is a recipe with some extra data attached to it.
+	MealComponent struct {
+		ComponentType string `json:"componentType"`
+		Recipe        Recipe `json:"recipe"`
 	}
 
 	// MealList represents a list of meals.
@@ -79,37 +79,49 @@ type (
 	MealCreationRequestInput struct {
 		_ struct{}
 
-		ID            string   `json:"-"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		CreatedByUser string   `json:"-"`
-		Recipes       []string `json:"recipes"`
+		ID            string                               `json:"-"`
+		Name          string                               `json:"name"`
+		Description   string                               `json:"description"`
+		CreatedByUser string                               `json:"-"`
+		Components    []*MealComponentCreationRequestInput `json:"recipes"`
 	}
 
-	// MealRecipeCreationRequestInput represents what a user could set as input for creating meal recipes.
-	MealRecipeCreationRequestInput struct {
-		RecipeID          string `json:"recipeID"`
-		MealComponentType string `json:"mealComponentType"`
+	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.
+	MealComponentCreationRequestInput struct {
+		RecipeID      string `json:"recipeID"`
+		ComponentType string `json:"mealComponentType"`
 	}
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
 	MealDatabaseCreationInput struct {
 		_ struct{}
 
-		ID            string   `json:"id"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		CreatedByUser string   `json:"belongsToHousehold"`
-		Recipes       []string `json:"recipes"`
+		ID            string                                `json:"id"`
+		Name          string                                `json:"name"`
+		Description   string                                `json:"description"`
+		CreatedByUser string                                `json:"belongsToHousehold"`
+		Components    []*MealComponentDatabaseCreationInput `json:"recipes"`
+	}
+
+	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
+	MealComponentDatabaseCreationInput struct {
+		RecipeID      string `json:"recipeID"`
+		ComponentType string `json:"mealComponentType"`
 	}
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
 	MealUpdateRequestInput struct {
 		_             struct{}
-		Name          *string  `json:"name"`
-		Description   *string  `json:"description"`
-		CreatedByUser *string  `json:"-"`
-		Recipes       []string `json:"recipes"`
+		Name          *string                            `json:"name"`
+		Description   *string                            `json:"description"`
+		CreatedByUser *string                            `json:"-"`
+		Components    []*MealComponentUpdateRequestInput `json:"recipes"`
+	}
+
+	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.
+	MealComponentUpdateRequestInput struct {
+		RecipeID      string `json:"recipeID"`
+		ComponentType string `json:"mealComponentType"`
 	}
 
 	// MealDataManager describes a structure capable of storing meals permanently.
@@ -151,7 +163,7 @@ func (x *MealCreationRequestInput) ValidateWithContext(ctx context.Context) erro
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Recipes, validation.Required),
+		validation.Field(&x.Components, validation.Required),
 	)
 }
 
@@ -163,7 +175,7 @@ func (x *MealDatabaseCreationInput) ValidateWithContext(ctx context.Context) err
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Recipes, validation.Required),
+		validation.Field(&x.Components, validation.Required),
 		validation.Field(&x.CreatedByUser, validation.Required),
 	)
 }
@@ -177,7 +189,7 @@ func (x *MealUpdateRequestInput) ValidateWithContext(ctx context.Context) error 
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Recipes, validation.Required),
+		validation.Field(&x.Components, validation.Required),
 		validation.Field(&x.CreatedByUser, validation.Required),
 	)
 }

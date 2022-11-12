@@ -1122,6 +1122,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			&idMatcher{},
 			&idMatcher{},
 			exampleRecipe.ID,
+			types.MealComponentTypesMain,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -1135,8 +1136,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
-		require.NotNil(t, actual)
 		require.NoError(t, err)
+		require.NotNil(t, actual)
 		require.Equal(t, len(exampleRecipe.Steps), len(actual.Steps))
 
 		for i, step := range exampleRecipe.Steps {
@@ -1395,6 +1396,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			&idMatcher{},
 			&idMatcher{},
 			exampleRecipe.ID,
+			types.MealComponentTypesMain,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).

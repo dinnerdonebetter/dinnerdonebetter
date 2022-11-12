@@ -207,7 +207,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating Recipes service portion of config: %w", err), result)
+			result = multierror.Append(fmt.Errorf("error validating Components service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {

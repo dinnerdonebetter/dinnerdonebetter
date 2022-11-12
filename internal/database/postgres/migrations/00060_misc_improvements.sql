@@ -22,8 +22,10 @@ ALTER TABLE meal_plans ADD COLUMN election_method valid_election_method NOT NULL
 ALTER TABLE recipe_step_products ADD COLUMN is_liquid BOOLEAN NOT NULL DEFAULT 'false';                                                     -- #160
 ALTER TABLE recipe_step_products ADD COLUMN is_waste BOOLEAN NOT NULL DEFAULT 'false';                                                      -- #384
 CREATE TYPE component_type AS ENUM ('unspecified', 'amuse-bouche', 'appetizer', 'soup', 'main', 'salad', 'beverage', 'side', 'dessert');    -- #267
--- ALTER TABLE meal_recipes ADD COLUMN "meal_component_type" component_type NOT NULL DEFAULT 'unspecified';                                                   -- #267
+ALTER TABLE meal_recipes ADD COLUMN "meal_component_type" component_type NOT NULL DEFAULT 'unspecified';                                    -- #267
+ALTER TABLE meal_recipes RENAME TO meal_components;
 
+-- #215
 -- CREATE TABLE IF NOT EXISTS valid_ingredient_statuses (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
 --     "name" TEXT NOT NULL,
@@ -34,17 +36,6 @@ CREATE TYPE component_type AS ENUM ('unspecified', 'amuse-bouche', 'appetizer', 
 --     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
 --     last_updated_at TIMESTAMP WITH TIME ZONE,
 --     archived_at TIMESTAMP WITH TIME ZONE
--- );
-
--- CREATE TABLE IF NOT EXISTS valid_ingredient_status_ingredients (
---     id CHAR(27) NOT NULL PRIMARY KEY,
---     notes TEXT NOT NULL DEFAULT '',
---     valid_ingredient_id CHAR(27) NOT NULL REFERENCES valid_ingredients(id) ON DELETE CASCADE,
---     valid_ingredient_status_id CHAR(27) NOT NULL REFERENCES valid_ingredient_statuses(id) ON DELETE CASCADE,
---     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
---     last_updated_at TIMESTAMP WITH TIME ZONE,
---     archived_at TIMESTAMP WITH TIME ZONE,
---     UNIQUE (valid_ingredient_id, valid_ingredient_status_id, archived_at)
 -- );
 
 -- -- #194
@@ -121,44 +112,6 @@ CREATE TYPE component_type AS ENUM ('unspecified', 'amuse-bouche', 'appetizer', 
 --     last_updated_at TIMESTAMP WITH TIME ZONE,
 --     archived_at TIMESTAMP WITH TIME ZONE
 --     UNIQUE (name, meal_id, belongs_to_meal_collection, archived_at)
--- );
-
--- -- #278, #279, #280
--- CREATE TYPE us_state AS ENUM ('AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WY');
--- CREATE TABLE IF NOT EXISTS grocery_stores (
---     "id" CHAR(27) NOT NULL PRIMARY KEY,
---     "brand" TEXT NOT NULL DEFAULT '',
---     "street_address_1" TEXT NOT NULL DEFAULT '',
---     "street_address_2" TEXT NOT NULL DEFAULT '',
---     "city" TEXT NOT NULL DEFAULT '',
---     "state" us_state NOT NULL,
---     "zip_code" TEXT NOT NULL DEFAULT '',
---     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
---     "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
---     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL
--- );
-
--- CREATE TABLE IF NOT EXISTS valid_grocery_sections (
---     "id" CHAR(27) NOT NULL PRIMARY KEY,
---     "name" TEXT NOT NULL,
---     "description" TEXT NOT NULL,
---     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
---     "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
---     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
---     "created_by_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE,
---     UNIQUE("name", "belongs_to_store", "archived_at")
--- );
-
--- CREATE TABLE IF NOT EXISTS valid_ingredient_grocery_sections (
---     "id" CHAR(27) NOT NULL PRIMARY KEY,
---     "notes" TEXT NOT NULL DEFAULT '',
---     "valid_ingredient_id" CHAR(27) NOT NULL REFERENCES valid_ingredients("id") ON DELETE CASCADE,
---     "valid_grocery_section_id" CHAR(27) NOT NULL REFERENCES valid_grocery_sections("id") ON DELETE CASCADE,
---     "grocery_store_id" CHAR(27) NOT NULL REFERENCES grocery_stores("id") ON DELETE CASCADE,
---     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
---     "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
---     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
---     UNIQUE("valid_ingredient_id", "grocery_store_id", "valid_grocery_section_id","archived_at")
 -- );
 
 -- -- #335

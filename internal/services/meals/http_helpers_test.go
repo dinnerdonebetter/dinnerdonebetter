@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
 )
@@ -39,8 +40,8 @@ func buildTestHelper(t *testing.T) *mealsServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleMeal = fakes.BuildFakeMeal()
 	helper.exampleMeal.CreatedByUser = helper.exampleHousehold.ID
-	helper.exampleCreationInput = fakes.BuildFakeMealCreationRequestInputFromMeal(helper.exampleMeal)
-	helper.exampleUpdateInput = fakes.BuildFakeMealUpdateRequestInputFromMeal(helper.exampleMeal)
+	helper.exampleCreationInput = converters.ConvertMealToMealCreationRequestInput(helper.exampleMeal)
+	helper.exampleUpdateInput = converters.ConvertMealToMealUpdateRequestInput(helper.exampleMeal)
 
 	helper.service.mealIDFetcher = func(*http.Request) string {
 		return helper.exampleMeal.ID

@@ -28,11 +28,14 @@ func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *a
 	t.Helper()
 
 	createdRecipes := []*types.Recipe{}
-	createdRecipeIDs := []string{}
+	createdRecipeIDs := []*types.MealComponentCreationRequestInput{}
 	for i := 0; i < 3; i++ {
 		_, _, recipe := createRecipeForTest(ctx, t, adminClient, client, nil)
 		createdRecipes = append(createdRecipes, recipe)
-		createdRecipeIDs = append(createdRecipeIDs, recipe.ID)
+		createdRecipeIDs = append(createdRecipeIDs, &types.MealComponentCreationRequestInput{
+			RecipeID:      recipe.ID,
+			ComponentType: types.MealComponentTypesUnspecified,
+		})
 	}
 
 	t.Log("creating meal")
@@ -41,8 +44,8 @@ func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *a
 		exampleMeal = fakes.BuildFakeMeal()
 	}
 
-	exampleMealInput := fakes.BuildFakeMealCreationRequestInputFromMeal(exampleMeal)
-	exampleMealInput.Recipes = createdRecipeIDs
+	exampleMealInput := converters.ConvertMealToMealCreationRequestInput(exampleMeal)
+	exampleMealInput.Components = createdRecipeIDs
 
 	createdMeal, err := client.CreateMeal(ctx, exampleMealInput)
 	require.NoError(t, err)

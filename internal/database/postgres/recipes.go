@@ -468,7 +468,12 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 			Name:          x.Name,
 			Description:   x.Description,
 			CreatedByUser: x.CreatedByUser,
-			Recipes:       []string{x.ID},
+			Components: []*types.MealComponentDatabaseCreationInput{
+				{
+					RecipeID:      x.ID,
+					ComponentType: types.MealComponentTypesMain,
+				},
+			},
 		})
 
 		if mealCreateErr != nil {

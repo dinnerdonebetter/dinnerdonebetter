@@ -15,7 +15,7 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 	}
 
 	meal := BuildFakeMeal()
-	meal.Recipes = nil
+	meal.Components = nil
 
 	return &types.MealPlanOption{
 		ID:                     BuildFakeID(),

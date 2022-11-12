@@ -40,9 +40,9 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 		for _, option := range event.Options {
 			if option.Chosen {
 				logger = logger.WithValue(keys.MealPlanOptionIDKey, option.ID)
-				for _, recipe := range option.Meal.Recipes {
-					logger = logger.WithValue(keys.RecipeIDKey, recipe.ID)
-					for _, step := range recipe.Steps {
+				for _, component := range option.Meal.Components {
+					logger = logger.WithValue(keys.RecipeIDKey, component.Recipe.ID)
+					for _, step := range component.Recipe.Steps {
 						logger = logger.WithValue(keys.RecipeStepIDKey, step.ID)
 						for _, ingredient := range step.Ingredients {
 							if ingredient.Ingredient != nil {

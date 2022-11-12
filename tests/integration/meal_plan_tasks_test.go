@@ -40,7 +40,7 @@ func (s *TestSuite) TestMealPlanTasks_CompleteLifecycle() {
 			exampleMealPlanTaskInput := converters.ConvertMealPlanTaskToMealPlanTaskCreationRequestInput(exampleMealPlanTask)
 
 			exampleMealPlanTaskInput.MealPlanOptionID = createdMealPlan.Events[0].Options[0].ID
-			exampleMealPlanTaskInput.RecipePrepTaskID = createdMealPlan.Events[0].Options[0].Meal.Recipes[0].PrepTasks[0].ID
+			exampleMealPlanTaskInput.RecipePrepTaskID = createdMealPlan.Events[0].Options[0].Meal.Components[0].Recipe.PrepTasks[0].ID
 
 			createdMealPlanTask, err := testClients.admin.CreateMealPlanTask(ctx, createdMealPlan.ID, exampleMealPlanTaskInput)
 			require.NoError(t, err)
