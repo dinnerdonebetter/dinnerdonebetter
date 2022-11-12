@@ -1,10 +1,10 @@
-on:
-  pull_request:
-    paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
-      - tests/**
+on: [gollum]
+#  pull_request:
+#    paths:
+#      - pkg/**
+#      - cmd/**
+#      - internal/**
+#      - tests/**
 name: Lint go code
 jobs:
   formatting:

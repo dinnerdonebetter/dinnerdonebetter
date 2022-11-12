@@ -7,7 +7,7 @@ ALTER TABLE users RENAME COLUMN service_roles TO service_role;
 ALTER TABLE users DROP COLUMN birth_day;                                                                                                    -- #364
 ALTER TABLE users DROP COLUMN birth_month;                                                                                                  -- #364
 ALTER TABLE users ADD COLUMN birthday TIMESTAMP WITH TIME ZONE;                                                                             -- #364
-ALTER TABLE users ADD COLUMN email_address_verification_token TEXT DEFAULT '';                                                              -- #156
+ALTER TABLE users ADD COLUMN email_address_verification_token TEXT NOT NULL DEFAULT '';                                                     -- #156
 ALTER TABLE users ADD COLUMN email_address_verified_at TIMESTAMP WITH TIME ZONE;                                                            -- #156
 ALTER TABLE valid_ingredients ADD COLUMN contains_alcohol BOOLEAN NOT NULL DEFAULT 'false';                                                 -- #363
 ALTER TABLE valid_ingredients ADD COLUMN slug TEXT NOT NULL DEFAULT '';                                                                     -- #184
