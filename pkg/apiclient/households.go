@@ -295,8 +295,8 @@ func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID str
 		return ErrNilInputProvided
 	}
 
-	tracing.AttachToSpan(span, "old_owner", input.CurrentOwner)
-	tracing.AttachToSpan(span, "new_owner", input.NewOwner)
+	tracing.AttachStringToSpan(span, "old_owner", input.CurrentOwner)
+	tracing.AttachStringToSpan(span, "new_owner", input.NewOwner)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "validating input")

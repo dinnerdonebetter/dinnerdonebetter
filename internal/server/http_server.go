@@ -50,6 +50,7 @@ type (
 		mealPlanOptionsService                 types.MealPlanOptionDataService
 		mealPlanOptionVotesService             types.MealPlanOptionVoteDataService
 		validMeasurementUnitsService           types.ValidMeasurementUnitDataService
+		validIngredientStatesService           types.ValidIngredientStateDataService
 		validPreparationInstrumentsService     types.ValidPreparationInstrumentDataService
 		validIngredientMeasurementUnitsService types.ValidIngredientMeasurementUnitDataService
 		mealPlanEventsService                  types.MealPlanEventDataService
@@ -90,6 +91,7 @@ func ProvideHTTPServer(
 	mealPlanOptionsService types.MealPlanOptionDataService,
 	mealPlanOptionVotesService types.MealPlanOptionVoteDataService,
 	validMeasurementUnitsService types.ValidMeasurementUnitDataService,
+	validIngredientStatesService types.ValidIngredientStateDataService,
 	validPreparationInstrumentsService types.ValidPreparationInstrumentDataService,
 	validIngredientMeasurementUnitsService types.ValidIngredientMeasurementUnitDataService,
 	mealPlanEventsService types.MealPlanEventDataService,
@@ -144,6 +146,7 @@ func ProvideHTTPServer(
 		recipePrepTasksService:                 recipePrepTasksService,
 		mealPlanGroceryListItemsService:        mealPlanGroceryListItemsService,
 		validMeasurementConversionsService:     validMeasurementConversionsService,
+		validIngredientStatesService:           validIngredientStatesService,
 	}
 
 	srv.setupRouter(ctx, router, metricsHandler)
