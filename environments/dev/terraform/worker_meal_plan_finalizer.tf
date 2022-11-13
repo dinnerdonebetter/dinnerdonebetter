@@ -128,7 +128,7 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
     secret_environment_variables {
       key        = "PRIXFIXE_DATABASE_PASSWORD"
       project_id = local.project_id
-      secret     = google_secret_manager_secret.api_user_database_password.id
+      secret     = google_secret_manager_secret.api_user_database_password.secret_id
       version    = "latest"
     }
   }

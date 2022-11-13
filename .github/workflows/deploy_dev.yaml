@@ -1,7 +1,7 @@
-on: # [pull_request]
-  push:
-    branches:
-      - dev
+on: [pull_request]
+#  push:
+#    branches:
+#      - dev
 name: Deploy
 jobs:
   deploy:
@@ -42,11 +42,6 @@ jobs:
         run: |
           docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-
-      - name: Terraform Format
-        working-directory: environments/dev/terraform
-        id: fmt
-        run: terraform fmt -check
 
       - name: Build data changes cloud function directory
         run: ./scripts/build_cloud_function.sh data_changes
