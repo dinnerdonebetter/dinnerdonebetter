@@ -95,7 +95,7 @@ data "google_iam_policy" "meal_plan_finalizer_invocation_policy" {
   binding {
     role = "roles/run.invoker"
     members = [
-      google_project_iam_member.meal_plan_finalizer_user.member,
+      'allAuthenticatedUsers',
     ]
   }
 }
