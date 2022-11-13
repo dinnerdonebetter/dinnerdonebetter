@@ -8,6 +8,8 @@ import (
 	"time"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
 
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
@@ -24,6 +26,11 @@ const (
 	dataChangesTopicName = "data_changes"
 )
 
+func init() {
+	// Register a CloudEvent function with the Functions Framework
+	functions.CloudEvent("FinalizeMealPlans", FinalizeMealPlans)
+}
+
 // PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
 // https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
 type PubSubMessage struct {
@@ -31,7 +38,7 @@ type PubSubMessage struct {
 }
 
 // FinalizeMealPlans is our cloud function entrypoint.
-func FinalizeMealPlans(ctx context.Context, _ PubSubMessage) error {
+func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger()
 	logger.SetLevel(logging.DebugLevel)
 
