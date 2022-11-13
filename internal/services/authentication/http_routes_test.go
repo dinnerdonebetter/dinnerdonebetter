@@ -1461,7 +1461,7 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusSeeOther, helper.res.Code)
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, actualCookie, "Max-Age=0")
 
@@ -1550,7 +1550,7 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusSeeOther, helper.res.Code)
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, actualCookie, "Max-Age=0")
 
