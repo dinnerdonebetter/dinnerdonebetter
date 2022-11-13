@@ -332,7 +332,7 @@ func fetchMigration(name string) string {
 func (q *Querier) migrationFunc() {
 	driver := darwin.NewGenericDriver(q.db, darwin.PostgresDialect{})
 	if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {
-		panic(fmt.Errorf("migrating database: %w", err))
+		panic(fmt.Errorf("running migration: %w", err))
 	}
 }
 
