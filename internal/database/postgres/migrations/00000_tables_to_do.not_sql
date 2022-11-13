@@ -1,4 +1,3 @@
-
 -- -- #194
 -- CREATE TABLE IF NOT EXISTS valid_instrument_ownerships (
 --     id CHAR(27) NOT NULL PRIMARY KEY,
