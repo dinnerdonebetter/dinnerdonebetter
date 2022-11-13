@@ -2,7 +2,6 @@ on: # [gollum]
   pull_request:
     paths:
       - pkg/**
-      - cmd/**
       - internal/**
 name: Tests
 jobs:
