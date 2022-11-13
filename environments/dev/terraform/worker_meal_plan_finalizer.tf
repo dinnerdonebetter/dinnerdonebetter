@@ -91,6 +91,19 @@ resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_user" {
   password = random_password.meal_plan_finalizer_user_database_password.result
 }
 
+# Permissions on the service account used by the function and Eventarc trigger
+resource "google_project_iam_member" "invoking" {
+  project = "my-project-name"
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+}
+
+resource "google_project_iam_member" "event-receiving" {
+  project = "my-project-name"
+  role    = "roles/eventarc.eventReceiver"
+  member  = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+}
+
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   name        = "meal-plan-finalizer"
   description = "Meal Plan Finalizer"
