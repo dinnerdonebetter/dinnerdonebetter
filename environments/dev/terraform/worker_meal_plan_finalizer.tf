@@ -91,21 +91,21 @@ resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_user" {
   password = random_password.meal_plan_finalizer_user_database_password.result
 }
 
-data "google_iam_policy" "meal_plan_finalizer_invocation_policy" {
-  binding {
-    role = "roles/run.invoker"
-    members = [
-      'allAuthenticatedUsers',
-    ]
-  }
-}
+#data "google_iam_policy" "meal_plan_finalizer_invocation_policy" {
+#  binding {
+#    role = "roles/run.invoker"
+#    members = [
+#      'allAuthenticatedUsers',
+#    ]
+#  }
+#}
 
-resource "google_cloudfunctions2_function_iam_policy" "policy" {
-  project        = google_cloudfunctions2_function.meal_plan_finalizer.project
-  location       = google_cloudfunctions2_function.meal_plan_finalizer.location
-  cloud_function = google_cloudfunctions2_function.meal_plan_finalizer.name
-  policy_data    = data.google_iam_policy.meal_plan_finalizer_invocation_policy.policy_data
-}
+#resource "google_cloudfunctions2_function_iam_policy" "policy" {
+#  project        = google_cloudfunctions2_function.meal_plan_finalizer.project
+#  location       = google_cloudfunctions2_function.meal_plan_finalizer.location
+#  cloud_function = google_cloudfunctions2_function.meal_plan_finalizer.name
+#  policy_data    = data.google_iam_policy.meal_plan_finalizer_invocation_policy.policy_data
+#}
 
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   name        = "meal-plan-finalizer"
