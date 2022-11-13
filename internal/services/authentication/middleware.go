@@ -80,6 +80,7 @@ func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 				next.ServeHTTP(res, req)
 				return
 			} else {
+				logger = logger.WithValue("cookie.value", cookie.Value)
 				observability.AcknowledgeError(err, logger, span, "decoding cookie")
 			}
 		}
