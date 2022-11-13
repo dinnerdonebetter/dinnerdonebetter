@@ -134,7 +134,6 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   }
 
   event_trigger {
-    trigger               = "meal_plan_finalization_trigger"
     trigger_region        = local.gcp_region
     event_type            = local.pubsub_topic_publish_event
     pubsub_topic          = google_pubsub_topic.meal_plan_topic.id
