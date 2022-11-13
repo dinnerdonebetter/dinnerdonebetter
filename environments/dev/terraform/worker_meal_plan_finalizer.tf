@@ -92,19 +92,32 @@ resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_user" {
 }
 
 # Permissions on the service account used by the function and Eventarc trigger
-resource "google_project_iam_member" "invoking" {
-  project = "my-project-name"
+resource "google_project_iam_member" "meal_plan_finalizer_invoking" {
+  project = local.project_id
   role    = "roles/run.invoker"
   member  = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
 }
 
-resource "google_project_iam_member" "event-receiving" {
-  project = "my-project-name"
+resource "google_project_iam_member" "meal_plan_finalizer_event_receiving" {
+  project = local.project_id
   role    = "roles/eventarc.eventReceiver"
   member  = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+  depends_on = [google_project_iam_member.meal_plan_finalizer_invoking]
+}
+
+resource "google_project_iam_member" "meal_plan_finalizer_artifactregistry_reader" {
+  project = local.project_id
+  role     = "roles/artifactregistry.reader"
+  member   = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+  depends_on = [google_project_iam_member.meal_plan_finalizer_event_receiving]
 }
 
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
+  depends_on = [
+    google_project_iam_member.meal_plan_finalizer_event_receiving,
+    google_project_iam_member.meal_plan_finalizer_artifactregistry_reader,
+  ]
+
   name        = "meal-plan-finalizer"
   description = "Meal Plan Finalizer"
   location    = local.gcp_region
