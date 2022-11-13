@@ -91,13 +91,13 @@ resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_user" {
   password = random_password.meal_plan_finalizer_user_database_password.result
 }
 
-#resource "google_cloudfunctions2_function_iam_member" "member" {
-#  project = google_cloudfunctions2_function.meal_plan_finalizer.project
-#  location = google_cloudfunctions2_function.meal_plan_finalizer.location
-#  cloud_function = google_cloudfunctions2_function.meal_plan_finalizer.name
-#  role = "roles/run.invoker"
-#  member = "allAuthenticatedUsers"
-#}
+resource "google_cloudfunctions2_function_iam_member" "member" {
+  project = google_cloudfunctions2_function.meal_plan_finalizer.project
+  location = google_cloudfunctions2_function.meal_plan_finalizer.location
+  cloud_function = google_cloudfunctions2_function.meal_plan_finalizer.name
+  role = "roles/run.invoker"
+  member = "allAuthenticatedUsers"
+}
 
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   name        = "meal-plan-finalizer"

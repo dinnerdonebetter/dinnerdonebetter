@@ -87,7 +87,7 @@ func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 		logger.Debug("no cookie attached to request")
 
 		// if no cookie was attached to the request, tell them to login first.
-		http.Redirect(res, req, "/users/login", http.StatusUnauthorized)
+		res.WriteHeader(http.StatusUnauthorized)
 	})
 }
 
