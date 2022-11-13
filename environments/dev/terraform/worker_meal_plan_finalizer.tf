@@ -37,8 +37,8 @@ resource "google_pubsub_topic" "meal_plan_topic" {
 }
 
 resource "google_storage_bucket" "meal_plan_finalizer_bucket" {
-  name     = "meal-plan-finalizer-cloud-function"
-  location = "US"
+  name                        = "meal-plan-finalizer-cloud-function"
+  location                    = "US"
   uniform_bucket_level_access = true
 }
 
@@ -97,9 +97,9 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   location    = "us-central1"
 
   event_trigger {
-    event_type            = local.pubsub_topic_publish_event
-    pubsub_topic          = google_pubsub_topic.meal_plan_topic.id
-    retry_policy          = "RETRY_POLICY_RETRY"
+    event_type   = local.pubsub_topic_publish_event
+    pubsub_topic = google_pubsub_topic.meal_plan_topic.id
+    retry_policy = "RETRY_POLICY_RETRY"
   }
 
   build_config {
@@ -115,10 +115,10 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   }
 
   service_config {
-    available_memory = "128Mi"
-    ingress_settings = "ALLOW_INTERNAL_ONLY"
+    available_memory               = "128Mi"
+    ingress_settings               = "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true
-    service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
+    service_account_email          = google_service_account.meal_plan_finalizer_user_service_account.email
 
     environment_variables = {
       # TODO: use the meal_plan_finalizer_user for this, currently it has permission denied for accessing tables
