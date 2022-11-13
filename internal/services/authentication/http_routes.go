@@ -335,7 +335,7 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 
 	logger.Debug("user logged out")
 
-	http.Redirect(res, req, "/", http.StatusSeeOther)
+	res.WriteHeader(http.StatusAccepted)
 }
 
 // StatusHandler returns the user info for the user making the request.
