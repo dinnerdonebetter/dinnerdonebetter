@@ -191,11 +191,11 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	// fetch supplementary data from env vars
 	dbURI := fmt.Sprintf(
 		"user=%s password=%s database=%s host=%s/%s",
-		os.Getenv("PRIXFIXE_DATABASE_USER"),
-		os.Getenv("PRIXFIXE_DATABASE_PASSWORD"),
-		os.Getenv("PRIXFIXE_DATABASE_NAME"),
+		os.Getenv(gcpDatabaseUserEnvVarKey),
+		os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
+		os.Getenv(gcpDatabaseNameEnvVarKey),
 		socketDir,
-		os.Getenv("PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"),
+		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
 	)
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
@@ -250,11 +250,11 @@ func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.
 	// fetch supplementary data from env vars
 	dbURI := fmt.Sprintf(
 		"user=%s password=%s database=%s host=%s/%s",
-		os.Getenv("PRIXFIXE_DATABASE_USER"),
-		os.Getenv("PRIXFIXE_DATABASE_PASSWORD"),
-		os.Getenv("PRIXFIXE_DATABASE_NAME"),
+		os.Getenv(gcpDatabaseUserEnvVarKey),
+		os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
+		os.Getenv(gcpDatabaseNameEnvVarKey),
 		socketDir,
-		os.Getenv("PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"),
+		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
 	)
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
