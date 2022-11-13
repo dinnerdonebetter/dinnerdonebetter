@@ -96,12 +96,6 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   description = "Meal Plan Finalizer"
   location    = "us-central1"
 
-  event_trigger {
-    event_type   = local.pubsub_topic_publish_event
-    pubsub_topic = google_pubsub_topic.meal_plan_topic.id
-    retry_policy = "RETRY_POLICY_RETRY"
-  }
-
   build_config {
     runtime     = local.go_runtime
     entry_point = "FinalizeMealPlans"
@@ -125,11 +119,25 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
       # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
       # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
       PRIXFIXE_DATABASE_USER                     = google_sql_user.api_user.name,
-      PRIXFIXE_DATABASE_PASSWORD                 = random_password.api_user_database_password.result,
       PRIXFIXE_DATABASE_NAME                     = local.database_name,
       PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
       GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
     }
+
+    secret_environment_variables {
+      key        = "PRIXFIXE_DATABASE_PASSWORD"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.api_user_database_password.id
+      version    = "latest"
+    }
+  }
+
+  event_trigger {
+    trigger_region        = local.gcp_region
+    event_type            = local.pubsub_topic_publish_event
+    pubsub_topic          = google_pubsub_topic.meal_plan_topic.id
+    retry_policy          = "RETRY_POLICY_RETRY"
+    service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
   }
 }
