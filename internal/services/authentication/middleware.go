@@ -72,14 +72,21 @@ func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 		_, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
+		logger := s.logger.WithRequest(req)
+
 		if cookie, cookieErr := req.Cookie(s.config.Cookies.Name); !errors.Is(cookieErr, http.ErrNoCookie) && cookie != nil {
 			var token string
 			if err := s.cookieManager.Decode(s.config.Cookies.Name, cookie.Value, &token); err == nil {
 				next.ServeHTTP(res, req)
+				return
+			} else {
+				observability.AcknowledgeError(err, logger, span, "decoding cookie")
 			}
 		}
 
-		// if no error was attached to the request, tell them to login first.
+		logger.Debug("no cookie attached to request")
+
+		// if no cookie was attached to the request, tell them to login first.
 		http.Redirect(res, req, "/users/login", http.StatusUnauthorized)
 	})
 }
