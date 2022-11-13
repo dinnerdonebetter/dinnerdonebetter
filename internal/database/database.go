@@ -96,5 +96,6 @@ type (
 		types.MealPlanGroceryListItemDataManager
 		types.ValidMeasurementConversionDataManager
 		types.RecipeMediaDataManager
+		types.ValidIngredientStateDataManager
 	}
 )

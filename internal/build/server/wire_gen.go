@@ -44,6 +44,7 @@ import (
 	"github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	"github.com/prixfixeco/backend/internal/services/validingredientpreparations"
 	"github.com/prixfixeco/backend/internal/services/validingredients"
+	"github.com/prixfixeco/backend/internal/services/validingredientstates"
 	"github.com/prixfixeco/backend/internal/services/validinstruments"
 	"github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
 	"github.com/prixfixeco/backend/internal/services/validmeasurementunits"
@@ -136,7 +137,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	recipesConfig := &servicesConfigurations.Recipes
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
-	recipeMediaDataManager := database.ProvideRecipeMediaDataService(dataManager)
+	recipeMediaDataManager := database.ProvideRecipeMediaDataManager(dataManager)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
 	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider)
 	if err != nil {
@@ -189,6 +190,12 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	if err != nil {
 		return nil, err
 	}
+	validingredientstatesConfig := &servicesConfigurations.ValidIngredientStates
+	validIngredientStateDataManager := database.ProvideValidIngredientStateDataManager(dataManager)
+	validIngredientStateDataService, err := validingredientstates.ProvideService(ctx, logger, validingredientstatesConfig, validIngredientStateDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
 	validpreparationinstrumentsConfig := &servicesConfigurations.ValidPreparationInstruments
 	validPreparationInstrumentDataManager := database.ProvideValidPreparationInstrumentDataManager(dataManager)
 	validPreparationInstrumentDataService, err := validpreparationinstruments.ProvideService(logger, validpreparationinstrumentsConfig, validPreparationInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
@@ -226,7 +233,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	validmeasurementconversionsConfig := &servicesConfigurations.ValidMeasurementConversions
-	validMeasurementConversionDataManager := database.ProvideValidMeasurementConversionDataService(dataManager)
+	validMeasurementConversionDataManager := database.ProvideValidMeasurementConversionDataManager(dataManager)
 	validMeasurementConversionDataService, err := validmeasurementconversions.ProvideService(ctx, logger, validmeasurementconversionsConfig, validMeasurementConversionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
@@ -241,7 +248,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager, tracerProvider)
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, tracerProvider, routingConfig)
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router, tracerProvider, metricsHandler)
+	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router, tracerProvider, metricsHandler)
 	if err != nil {
 		return nil, err
 	}

@@ -46,6 +46,7 @@ import (
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/backend/internal/services/validingredients"
+	validingredientstatesservice "github.com/prixfixeco/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/prixfixeco/backend/internal/services/validinstruments"
 	"github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
 	validmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validmeasurementunits"
@@ -408,6 +409,9 @@ func buildDevConfig() *config.InstanceConfig {
 			ValidPreparations: validpreparationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidIngredientStates: validingredientstatesservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidMeasurementUnits: validmeasurementunitsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -600,6 +604,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidIngredientStates: validingredientstatesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidMeasurementUnits: validmeasurementunitsservice.Config{

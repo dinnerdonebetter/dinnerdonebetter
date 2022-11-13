@@ -29,6 +29,7 @@ import (
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/backend/internal/services/validingredients"
+	validingredientstatesservice "github.com/prixfixeco/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/prixfixeco/backend/internal/services/validinstruments"
 	validmeasurementconversionsservice "github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
 	validmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validmeasurementunits"
@@ -335,6 +336,34 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleValidMeasurementUnitRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementUnitsPermission)).
 					Delete(root, s.validMeasurementUnitsService.ArchiveHandler)
+			})
+		})
+
+		// ValidIngredientStates
+		validIngredientStatePath := "valid_ingredient_states"
+		validIngredientStatesRouteWithPrefix := fmt.Sprintf("/%s", validIngredientStatePath)
+		validIngredientStateIDRouteParam := buildURLVarChunk(validingredientstatesservice.ValidIngredientStateIDURIParamKey, "")
+		v1Router.Route(validIngredientStatesRouteWithPrefix, func(validIngredientStatesRouter routing.Router) {
+			validIngredientStatesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidIngredientStatesPermission)).
+				Post(root, s.validIngredientStatesService.CreateHandler)
+			validIngredientStatesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientStatesPermission)).
+				Get(root, s.validIngredientStatesService.ListHandler)
+			validIngredientStatesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientStatesPermission)).
+				Get(searchRoot, s.validIngredientStatesService.SearchHandler)
+
+			validIngredientStatesRouter.Route(validIngredientStateIDRouteParam, func(singleValidIngredientStateRouter routing.Router) {
+				singleValidIngredientStateRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientStatesPermission)).
+					Get(root, s.validIngredientStatesService.ReadHandler)
+				singleValidIngredientStateRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientStatesPermission)).
+					Put(root, s.validIngredientStatesService.UpdateHandler)
+				singleValidIngredientStateRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientStatesPermission)).
+					Delete(root, s.validIngredientStatesService.ArchiveHandler)
 			})
 		})
 

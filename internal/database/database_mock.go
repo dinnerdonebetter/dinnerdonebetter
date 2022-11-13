@@ -44,13 +44,15 @@ func NewMockDatabase() *MockDatabase {
 		RecipePrepTaskDataManager:                 &mocktypes.RecipePrepTaskDataManager{},
 		MealPlanGroceryListItemDataManager:        &mocktypes.MealPlanGroceryListItemDataManager{},
 		ValidMeasurementConversionDataManager:     &mocktypes.ValidMeasurementConversionDataManager{},
-		MockRecipeMediaDataManager:                &mocktypes.MockRecipeMediaDataManager{},
+		RecipeMediaDataManager:                    &mocktypes.RecipeMediaDataManager{},
+		ValidIngredientStateDataManager:           &mocktypes.ValidIngredientStateDataManager{},
 	}
 }
 
 // MockDatabase is our mock database structure. Note, when using this in tests, you must directly access the type name of all the implicit fields.
 // So `mockDB.On("GetUserByUsername"...)` is destined to fail, whereas `mockDB.UserDataManager.On("GetUserByUsername"...)` would do what you want it to do.
 type MockDatabase struct {
+	*mocktypes.ValidIngredientStateDataManager
 	*mocktypes.AdminUserDataManager
 	*mocktypes.HouseholdUserMembershipDataManager
 	*mocktypes.ValidInstrumentDataManager
@@ -80,7 +82,7 @@ type MockDatabase struct {
 	*mocktypes.RecipePrepTaskDataManager
 	*mocktypes.MealPlanGroceryListItemDataManager
 	*mocktypes.ValidMeasurementConversionDataManager
-	*mocktypes.MockRecipeMediaDataManager
+	*mocktypes.RecipeMediaDataManager
 
 	mock.Mock
 }
@@ -185,10 +187,3 @@ func (m *MockQueryExecutor) QueryRowContext(ctx context.Context, query string, q
 	args := m.Called(ctx, query, queryArgs)
 	return args.Get(0).(*sql.Row)
 }
-
-// SQLQueryExecutorMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
-// safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
-// a SQLQueryExecutor.
-var SQLQueryExecutorMatcher any = mock.MatchedBy(func(SQLQueryExecutor) bool {
-	return true
-})

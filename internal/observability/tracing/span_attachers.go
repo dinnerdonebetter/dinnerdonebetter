@@ -58,21 +58,14 @@ func AttachBooleanToSpan(span trace.Span, key string, b bool) {
 
 // AttachSliceOfStringsToSpan attaches a slice of strings to a span.
 func AttachSliceOfStringsToSpan(span trace.Span, key string, slice []string) {
-	span.SetAttributes(attribute.StringSlice(key, slice))
+	if span != nil {
+		span.SetAttributes(attribute.StringSlice(key, slice))
+	}
 }
 
 // AttachTimeToSpan attaches a uint64 to a span.
 func AttachTimeToSpan(span trace.Span, attachmentKey string, t time.Time) {
-	if span != nil {
-		span.SetAttributes(attribute.String(attachmentKey, t.Format(time.RFC3339Nano)))
-	}
-}
-
-// AttachToSpan allows a user to attach any value to a span.
-func AttachToSpan(span trace.Span, key string, val any) {
-	if span != nil {
-		span.SetAttributes(attribute.String(key, fmt.Sprintf("%+v", val)))
-	}
+	AttachStringToSpan(span, attachmentKey, t.Format(time.RFC3339Nano))
 }
 
 // AttachFilterDataToSpan provides a consistent way to attach a filter's info to a span.
@@ -314,9 +307,9 @@ func AttachRecipePrepTaskIDToSpan(span trace.Span, recipePrepTaskID string) {
 	AttachStringToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 }
 
-// AttachRecipePrepTaskStepIDToSpan attaches a recipe prep task step ID to a given span.
-func AttachRecipePrepTaskStepIDToSpan(span trace.Span, recipePrepTaskStepID string) {
-	AttachStringToSpan(span, keys.RecipePrepTaskStepIDKey, recipePrepTaskStepID)
+// AttachValidIngredientStateIDToSpan attaches a valid ingredient state ID to a given span.
+func AttachValidIngredientStateIDToSpan(span trace.Span, validIngredientStateID string) {
+	AttachStringToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 }
 
 // AttachRecipeStepIDToSpan attaches a recipe step ID to a given span.

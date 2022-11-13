@@ -39,6 +39,7 @@ import (
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/backend/internal/services/validingredients"
+	validingredientstatesservice "github.com/prixfixeco/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/prixfixeco/backend/internal/services/validinstruments"
 	"github.com/prixfixeco/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/backend/internal/services/validpreparationinstruments"
@@ -109,6 +110,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				Webhooks:              webhooksservice.Config{},
 				Users:                 usersservice.Config{},
 				RecipePrepTasks:       recipepreptasksservice.Config{},
+				ValidIngredientStates: validingredientstatesservice.Config{},
 				Auth: authservice.Config{
 					MinimumPasswordLength: 8,
 					MinimumUsernameLength: 8,

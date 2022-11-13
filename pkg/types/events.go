@@ -64,6 +64,8 @@ type (
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
 		ValidMeasurementConversion       *ValidMeasurementConversion     `json:"validMeasurementConversion,omitempty"`
 		ValidMeasurementConversionID     string                          `json:"validMeasurementConversionID,omitempty"`
+		ValidIngredientState             *ValidIngredientState           `json:"validIngredientState,omitempty"`
+		ValidIngredientStateID           string                          `json:"validIngredientStateID,omitempty"`
 	}
 
 	choreType string

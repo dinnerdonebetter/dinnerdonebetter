@@ -74,18 +74,6 @@ func Test_attachSliceToSpan(T *testing.T) {
 	})
 }
 
-func TestAttachToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachToSpan(span, t.Name(), "blah")
-	})
-}
-
 func TestAttachFilterToSpan(T *testing.T) {
 	T.Parallel()
 

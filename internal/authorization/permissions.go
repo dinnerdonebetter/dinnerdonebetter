@@ -90,6 +90,15 @@ const (
 	// ArchiveValidMeasurementUnitsPermission is a household user permission.
 	ArchiveValidMeasurementUnitsPermission Permission = "archive.measurement_units"
 
+	// CreateValidIngredientStatesPermission is a household user permission.
+	CreateValidIngredientStatesPermission Permission = "create.valid_ingredient_states"
+	// ReadValidIngredientStatesPermission is a household user permission.
+	ReadValidIngredientStatesPermission Permission = "read.valid_ingredient_states"
+	// UpdateValidIngredientStatesPermission is a household user permission.
+	UpdateValidIngredientStatesPermission Permission = "update.valid_ingredient_states"
+	// ArchiveValidIngredientStatesPermission is a household user permission.
+	ArchiveValidIngredientStatesPermission Permission = "archive.valid_ingredient_states"
+
 	// CreateValidMeasurementConversionsPermission is a household user permission.
 	CreateValidMeasurementConversionsPermission Permission = "create.measurement_conversions"
 	// ReadValidMeasurementConversionsPermission is a household user permission.
@@ -314,6 +323,10 @@ var (
 		UpdateValidIngredientMeasurementUnitsPermission.ID():  UpdateValidIngredientMeasurementUnitsPermission,
 		ArchiveValidIngredientMeasurementUnitsPermission.ID(): ArchiveValidIngredientMeasurementUnitsPermission,
 
+		CreateValidIngredientStatesPermission.ID():  CreateValidIngredientStatesPermission,
+		UpdateValidIngredientStatesPermission.ID():  UpdateValidIngredientStatesPermission,
+		ArchiveValidIngredientStatesPermission.ID(): ArchiveValidIngredientStatesPermission,
+
 		// only admins can arbitrarily create these via the API, and this is basically for integration test purposes.
 		CreateMealPlanTasksPermission.ID():            CreateMealPlanTasksPermission,
 		CreateMealPlanGroceryListItemsPermission.ID(): CreateMealPlanGroceryListItemsPermission,
@@ -424,6 +437,8 @@ var (
 
 		ReadMealPlanOptionsPermission.ID():   ReadMealPlanOptionsPermission,
 		SearchMealPlanOptionsPermission.ID(): SearchMealPlanOptionsPermission,
+
+		ReadValidIngredientStatesPermission.ID(): ReadValidIngredientStatesPermission,
 
 		ReadMealPlanGroceryListItemsPermission.ID():    ReadMealPlanGroceryListItemsPermission,
 		UpdateMealPlanGroceryListItemsPermission.ID():  UpdateMealPlanGroceryListItemsPermission,

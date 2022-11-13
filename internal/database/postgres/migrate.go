@@ -315,6 +315,11 @@ var (
 			Description: "misc. additions",
 			Script:      fetchMigration("00060_misc_improvements"),
 		},
+		{
+			Version:     61,
+			Description: "valid ingredient statuses",
+			Script:      fetchMigration("00061_valid_ingredient_statuses"),
+		},
 	}
 )
 

@@ -97,6 +97,9 @@ const (
 	// ValidPreparationIDKey is the standard key for referring to a valid preparation's ID.
 	ValidPreparationIDKey = "valid_preparation.id"
 
+	// ValidIngredientStateIDKey is the standard key for referring to a valid ingredient state's ID.
+	ValidIngredientStateIDKey = "valid_ingredient_state.id"
+
 	// ValidIngredientPreparationIDKey is the standard key for referring to a valid ingredient preparation's ID.
 	ValidIngredientPreparationIDKey = "valid_ingredient_preparation.id"
 

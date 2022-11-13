@@ -190,6 +190,9 @@
 		"validMeasurementConversions": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"validIngredientStates": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"auth": {
 			"dataChanges": "data_changes",
 			"cookies": {
