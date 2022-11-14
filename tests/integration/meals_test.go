@@ -34,7 +34,7 @@ func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *a
 		createdRecipes = append(createdRecipes, recipe)
 		createdRecipeIDs = append(createdRecipeIDs, &types.MealComponentCreationRequestInput{
 			RecipeID:      recipe.ID,
-			ComponentType: types.MealComponentTypesUnspecified,
+			ComponentType: types.MealComponentTypesMain,
 		})
 	}
 

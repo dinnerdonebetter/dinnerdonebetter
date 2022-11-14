@@ -131,7 +131,6 @@ func TestBuilder_BuildCreateMealRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleInput := fakes.BuildFakeMealCreationRequestInput()
-
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 
 		actual, err := helper.builder.BuildCreateMealRequest(helper.ctx, exampleInput)
