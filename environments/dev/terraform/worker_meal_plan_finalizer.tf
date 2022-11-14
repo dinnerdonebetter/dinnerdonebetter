@@ -59,12 +59,6 @@ resource "google_service_account" "meal_plan_finalizer_user_service_account" {
   display_name = "Meal Plans Finalizer"
 }
 
-resource "google_project_iam_member" "meal_plan_finalizer_user" {
-  project = local.project_id
-  role    = google_project_iam_custom_role.meal_plan_finalizer_role.id
-  member  = format("serviceAccount:%s", google_service_account.meal_plan_finalizer_user_service_account.email)
-}
-
 resource "random_password" "meal_plan_finalizer_user_database_password" {
   length           = 64
   special          = true
@@ -91,10 +85,42 @@ resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_user" {
   password = random_password.meal_plan_finalizer_user_database_password.result
 }
 
+resource "google_project_iam_member" "meal_plan_finalizer_user" {
+  project = local.project_id
+  role    = google_project_iam_custom_role.meal_plan_finalizer_role.id
+  member  = format("serviceAccount:%s", google_service_account.meal_plan_finalizer_user_service_account.email)
+}
+
+# Permissions on the service account used by the function and Eventarc trigger
+resource "google_project_iam_member" "meal_plan_finalizer_invoking" {
+  project = local.project_id
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+}
+
+resource "google_project_iam_member" "meal_plan_finalizer_event_receiving" {
+  project    = local.project_id
+  role       = "roles/eventarc.eventReceiver"
+  member     = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+  depends_on = [google_project_iam_member.meal_plan_finalizer_invoking]
+}
+
+resource "google_project_iam_member" "meal_plan_finalizer_artifactregistry_reader" {
+  project    = local.project_id
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+  depends_on = [google_project_iam_member.meal_plan_finalizer_event_receiving]
+}
+
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
+  depends_on = [
+    google_project_iam_member.meal_plan_finalizer_event_receiving,
+    google_project_iam_member.meal_plan_finalizer_artifactregistry_reader,
+  ]
+
   name        = "meal-plan-finalizer"
   description = "Meal Plan Finalizer"
-  location    = "us-central1"
+  location    = local.gcp_region
 
   build_config {
     runtime     = local.go_runtime
@@ -128,7 +154,7 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
     secret_environment_variables {
       key        = "PRIXFIXE_DATABASE_PASSWORD"
       project_id = local.project_id
-      secret     = google_secret_manager_secret.api_user_database_password.id
+      secret     = google_secret_manager_secret.api_user_database_password.secret_id
       version    = "latest"
     }
   }

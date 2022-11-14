@@ -6,6 +6,8 @@ import (
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 
 	"github.com/prixfixeco/backend/internal/config"
@@ -20,6 +22,11 @@ import (
 	"github.com/prixfixeco/backend/internal/workers"
 )
 
+func init() {
+	// Register a CloudEvent function with the Functions Framework
+	functions.CloudEvent("CreateMealPlanTasks", CreateMealPlanTasks)
+}
+
 const (
 	dataChangesTopicName = "data_changes"
 )
@@ -31,7 +38,7 @@ type PubSubMessage struct {
 }
 
 // CreateMealPlanTasks is our cloud function entrypoint.
-func CreateMealPlanTasks(ctx context.Context, _ PubSubMessage) error {
+func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger()
 	logger.SetLevel(logging.DebugLevel)
 
