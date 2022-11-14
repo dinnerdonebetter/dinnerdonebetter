@@ -3,6 +3,7 @@ package cloudtrace
 import (
 	"context"
 	"fmt"
+	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/otel"
@@ -32,7 +33,14 @@ func SetupCloudTrace(ctx context.Context, cfg *Config) (tracing.TracerProvider, 
 		return nil, fmt.Errorf("setting up trace exporter: %w", err)
 	}
 
-	res, err := resource.New(ctx, resource.WithProcess())
+	res, err := resource.New(
+		ctx,
+		resource.WithProcess(),
+		resource.WithFromEnv(),
+		resource.WithHost(),
+		resource.WithOS(),
+		resource.WithAttributes(semconv.ServiceNameKey.String("prixfixe-api")),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("setting up process runtime version: %w", err)
 	}
