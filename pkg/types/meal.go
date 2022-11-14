@@ -3,10 +3,12 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -155,15 +157,63 @@ func (x *Meal) Update(input *MealUpdateRequestInput) {
 	}
 }
 
+var errOneMainMinimumRequired = errors.New("at least one main required for meal creation")
+
 var _ validation.ValidatableWithContext = (*MealCreationRequestInput)(nil)
 
 // ValidateWithContext validates a MealCreationRequestInput.
 func (x *MealCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var result *multierror.Error
+
+	atLeastOneMain := false
+	for _, component := range x.Components {
+		if component.ComponentType == MealComponentTypesMain {
+			atLeastOneMain = true
+		}
+
+		if componentValidationErr := component.ValidateWithContext(ctx); componentValidationErr != nil {
+			result = multierror.Append(result, componentValidationErr)
+		}
+	}
+
+	if !atLeastOneMain {
+		result = multierror.Append(result, errOneMainMinimumRequired)
+	}
+
+	if validationErr := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Components, validation.Required),
+	); validationErr != nil {
+		result = multierror.Append(result, validationErr)
+	}
+
+	if result != nil {
+		return result
+	}
+
+	return nil
+}
+
+var _ validation.ValidatableWithContext = (*MealCreationRequestInput)(nil)
+
+// ValidateWithContext validates a MealComponentCreationRequestInput.
+func (x *MealComponentCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ComponentType, validation.In(
+			MealComponentTypesUnspecified,
+			MealComponentTypesAmuseBouche,
+			MealComponentTypesAppetizer,
+			MealComponentTypesSoup,
+			MealComponentTypesMain,
+			MealComponentTypesSalad,
+			MealComponentTypesBeverage,
+			MealComponentTypesSide,
+			MealComponentTypesDessert,
+		)),
 	)
 }
 

@@ -20,7 +20,7 @@ func TestMealCreationRequestInput_Validate(T *testing.T) {
 			Components: []*MealComponentCreationRequestInput{
 				{
 					RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
-					ComponentType: MealComponentTypesAmuseBouche,
+					ComponentType: MealComponentTypesMain,
 				},
 			},
 		}
