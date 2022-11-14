@@ -574,7 +574,7 @@ func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context
 
 	rows, err := q.getRows(ctx, q.db, "expired and unresolved meal plan", getFinalizedMealPlansWithoutGroceryListInitializationQuery, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with expired voting periods retrieval query")
+		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with uninitialized grocery lists query")
 	}
 
 	mealPlans := []*types.MealPlan{}

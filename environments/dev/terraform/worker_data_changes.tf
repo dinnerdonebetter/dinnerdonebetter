@@ -45,17 +45,17 @@ resource "google_project_iam_member" "data_changes_invoking" {
 }
 
 resource "google_project_iam_member" "data_changes_secret_accessor" {
-project    = local.project_id
-role       = "roles/secretmanager.secretAccessor"
-member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-depends_on = [google_project_iam_member.data_changes_invoking]
+  project    = local.project_id
+  role       = "roles/secretmanager.secretAccessor"
+  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
+  depends_on = [google_project_iam_member.data_changes_invoking]
 }
 
 resource "google_project_iam_member" "data_changes_event_receiving" {
-project    = local.project_id
-role       = "roles/eventarc.eventReceiver"
-member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-depends_on = [google_project_iam_member.data_changes_secret_accessor]
+  project    = local.project_id
+  role       = "roles/eventarc.eventReceiver"
+  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
+  depends_on = [google_project_iam_member.data_changes_secret_accessor]
 }
 
 resource "google_project_iam_member" "data_changes_artifactregistry_reader" {
@@ -94,7 +94,7 @@ resource "google_cloudfunctions2_function" "data_changes" {
   }
 
   service_config {
-    available_memory = "128Mi"
+    available_memory               = "128Mi"
     ingress_settings               = "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true
     service_account_email          = google_service_account.data_changes_user_service_account.email
