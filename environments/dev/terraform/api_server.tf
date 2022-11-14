@@ -259,7 +259,7 @@ resource "google_cloud_run_service" "api_server" {
 }
 
 resource "google_cloud_run_domain_mapping" "webapp_domain_mapping" {
-  location = "us-central1"
+  location = local.gcp_region
   name     = "api.prixfixe.dev"
 
   metadata {

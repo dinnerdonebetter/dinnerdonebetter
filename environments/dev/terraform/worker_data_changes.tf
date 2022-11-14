@@ -37,6 +37,27 @@ resource "google_service_account" "data_changes_user_service_account" {
   display_name = "Data Changes Worker"
 }
 
+# Permissions on the service account used by the function and Eventarc trigger
+resource "google_project_iam_member" "data_changes_invoking" {
+  project = local.project_id
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
+}
+
+resource "google_project_iam_member" "data_changes_event_receiving" {
+  project    = local.project_id
+  role       = "roles/eventarc.eventReceiver"
+  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
+  depends_on = [google_project_iam_member.data_changes_invoking]
+}
+
+resource "google_project_iam_member" "data_changes_artifactregistry_reader" {
+  project    = local.project_id
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
+  depends_on = [google_project_iam_member.data_changes_event_receiving]
+}
+
 resource "google_project_iam_member" "data_changes_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.data_changes_worker_role.id
@@ -44,16 +65,14 @@ resource "google_project_iam_member" "data_changes_user" {
 }
 
 resource "google_cloudfunctions2_function" "data_changes" {
-  name        = "data-changes"
-  location    = "us-central1"
-  description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
+  depends_on = [
+    google_project_iam_member.data_changes_event_receiving,
+    google_project_iam_member.data_changes_artifactregistry_reader,
+  ]
 
-  event_trigger {
-    event_type            = local.pubsub_topic_publish_event
-    pubsub_topic          = google_pubsub_topic.data_changes_topic.id
-    retry_policy          = "RETRY_POLICY_RETRY"
-    service_account_email = google_service_account.data_changes_user_service_account.email
-  }
+  name        = "data-changes"
+  location    = local.gcp_region
+  description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
 
   build_config {
     runtime     = local.go_runtime
@@ -71,10 +90,30 @@ resource "google_cloudfunctions2_function" "data_changes" {
     available_memory = "128Mi"
 
     environment_variables = {
-      PRIXFIXE_SENDGRID_API_TOKEN      = var.SENDGRID_API_TOKEN
-      PRIXFIXE_SEGMENT_API_TOKEN       = var.SEGMENT_API_TOKEN
       GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
     }
+
+    secret_environment_variables {
+      key        = "PRIXFIXE_SENDGRID_API_TOKEN"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.sendgrid_api_token.secret_id
+      version    = "latest"
+    }
+
+    secret_environment_variables {
+      key        = "PRIXFIXE_SEGMENT_API_TOKEN"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.segment_api_token.secret_id
+      version    = "latest"
+    }
+  }
+
+  event_trigger {
+    trigger_region        = local.gcp_region
+    event_type            = local.pubsub_topic_publish_event
+    pubsub_topic          = google_pubsub_topic.data_changes_topic.id
+    retry_policy          = "RETRY_POLICY_RETRY"
+    service_account_email = google_service_account.data_changes_user_service_account.email
   }
 }

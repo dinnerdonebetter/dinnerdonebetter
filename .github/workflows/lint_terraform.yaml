@@ -29,11 +29,6 @@ jobs:
         id: init
         run: terraform init
 
-      - name: Terraform Format
-        working-directory: environments/dev/terraform
-        id: fmt
-        run: terraform fmt -check
-
       # begin things have to be done for terraform to succeed
 
       - name: Build data changes cloud function directory
@@ -59,3 +54,8 @@ jobs:
         working-directory: environments/dev/terraform
         id: validate
         run: terraform validate -no-color
+
+      - name: Terraform Format
+        working-directory: environments/dev/terraform
+        id: fmt
+        run: terraform fmt -check

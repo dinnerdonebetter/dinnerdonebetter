@@ -2,11 +2,12 @@ package datachangesfunction
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
 
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
@@ -16,14 +17,32 @@ import (
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
-// PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
+func init() {
+	// Register a CloudEvent function with the Functions Framework
+	functions.CloudEvent("ProcessDataChange", ProcessDataChange)
+}
+
+// MessagePublishedData contains the full Pub/Sub message
+// See the documentation for more details:
+// https://cloud.google.com/eventarc/docs/cloudevents#pubsub
+type MessagePublishedData struct {
+	Message PubSubMessage
+}
+
+// PubSubMessage is the payload of a Pub/Sub event.
+// See the documentation for more details:
 // https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
 type PubSubMessage struct {
-	Base64EncodedDataChangeMessage string `json:"data"`
+	Data []byte `json:"data"`
 }
 
 // ProcessDataChange handles a data change.
-func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
+func ProcessDataChange(ctx context.Context, e event.Event) error {
+	var msg MessagePublishedData
+	if err := e.DataAs(&msg); err != nil {
+		return fmt.Errorf("event.DataAs: %v", err)
+	}
+
 	logger := zerolog.NewZerologLogger()
 
 	cfg, err := config.GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx)
@@ -36,14 +55,14 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 		return fmt.Errorf("error setting up customer data collector: %w", err)
 	}
 
-	rawMessage, err := base64.StdEncoding.DecodeString(m.Base64EncodedDataChangeMessage)
-	if err != nil {
-		return fmt.Errorf("decoding raw pubsub message: %w", err)
-	}
+	//rawMessage, err := base64.StdEncoding.DecodeString(m.Base64EncodedDataChangeMessage)
+	//if err != nil {
+	//	return fmt.Errorf("decoding raw pubsub message: %w", err)
+	//}
 
 	var changeMessage types.DataChangeMessage
-	if unmarshalErr := json.Unmarshal(rawMessage, &changeMessage); unmarshalErr != nil {
-		logger = logger.WithValue("raw_data", rawMessage)
+	if unmarshalErr := json.Unmarshal(msg.Message.Data, &changeMessage); unmarshalErr != nil {
+		logger = logger.WithValue("raw_data", msg.Message.Data)
 		observability.AcknowledgeError(unmarshalErr, logger, nil, "unmarshalling data change message")
 	}
 

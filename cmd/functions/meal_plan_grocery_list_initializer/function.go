@@ -6,6 +6,8 @@ import (
 	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 
 	"github.com/prixfixeco/backend/internal/config"
@@ -25,6 +27,11 @@ const (
 	dataChangesTopicName = "data_changes"
 )
 
+func init() {
+	// Register a CloudEvent function with the Functions Framework
+	functions.CloudEvent("InitializeGroceryListsItemsForMealPlans", InitializeGroceryListsItemsForMealPlans)
+}
+
 // PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
 // https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
 type PubSubMessage struct {
@@ -32,7 +39,7 @@ type PubSubMessage struct {
 }
 
 // InitializeGroceryListsItemsForMealPlans is our cloud function entrypoint.
-func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ PubSubMessage) error {
+func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger()
 	logger.SetLevel(logging.DebugLevel)
 
