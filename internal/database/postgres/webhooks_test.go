@@ -360,7 +360,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 			WillReturnRows(buildMockRowsFromWebhooks(
 				true,
 				exampleWebhookList.FilteredCount,
-				exampleWebhookList.Webhooks...,
+				exampleWebhookList.Data...,
 			))
 
 		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
@@ -393,7 +393,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 			WillReturnRows(buildMockRowsFromWebhooks(
 				true,
 				exampleWebhookList.FilteredCount,
-				exampleWebhookList.Webhooks...,
+				exampleWebhookList.Data...,
 			))
 
 		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, nil)

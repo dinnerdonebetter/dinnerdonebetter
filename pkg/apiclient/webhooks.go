@@ -35,7 +35,7 @@ func (c *Client) GetWebhook(ctx context.Context, webhookID string) (*types.Webho
 }
 
 // GetWebhooks gets a list of webhooks.
-func (c *Client) GetWebhooks(ctx context.Context, filter *types.QueryFilter) (*types.WebhookList, error) {
+func (c *Client) GetWebhooks(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Webhook], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -48,7 +48,7 @@ func (c *Client) GetWebhooks(ctx context.Context, filter *types.QueryFilter) (*t
 		return nil, observability.PrepareAndLogError(err, logger, span, "building webhooks list request")
 	}
 
-	var webhooks *types.WebhookList
+	var webhooks *types.QueryFilteredResult[types.Webhook]
 	if err = c.fetchAndUnmarshal(ctx, req, &webhooks); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving webhooks")
 	}

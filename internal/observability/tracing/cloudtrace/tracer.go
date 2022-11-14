@@ -8,6 +8,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -32,7 +33,14 @@ func SetupCloudTrace(ctx context.Context, cfg *Config) (tracing.TracerProvider, 
 		return nil, fmt.Errorf("setting up trace exporter: %w", err)
 	}
 
-	res, err := resource.New(ctx, resource.WithProcess())
+	res, err := resource.New(
+		ctx,
+		resource.WithProcess(),
+		resource.WithFromEnv(),
+		resource.WithHost(),
+		resource.WithOS(),
+		resource.WithAttributes(semconv.ServiceNameKey.String("prixfixe-api")),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("setting up process runtime version: %w", err)
 	}

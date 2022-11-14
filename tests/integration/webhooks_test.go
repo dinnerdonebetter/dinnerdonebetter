@@ -119,7 +119,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			actual, err := testClients.user.GetWebhooks(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			assert.GreaterOrEqual(t, len(actual.Webhooks), len(expected))
+			assert.GreaterOrEqual(t, len(actual.Data), len(expected))
 
 			// Clean up.
 			//for _, webhook := range actual.Webhooks {
@@ -152,10 +152,10 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			// Assert webhook list equality.
 			actual, err := testClients.user.GetWebhooks(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(t, len(expected) <= len(actual.Webhooks))
+			assert.True(t, len(expected) <= len(actual.Data))
 
 			// Clean up.
-			for _, webhook := range actual.Webhooks {
+			for _, webhook := range actual.Data {
 				assert.NoError(t, testClients.user.ArchiveWebhook(ctx, webhook.ID))
 			}
 		}

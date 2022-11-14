@@ -42,7 +42,14 @@ func SetupJaeger(ctx context.Context, c *Config) (tracing.TracerProvider, error)
 		return nil, fmt.Errorf("initializing Jaeger: %w", err)
 	}
 
-	res, err := resource.New(ctx, resource.WithProcess())
+	res, err := resource.New(
+		ctx,
+		resource.WithProcess(),
+		resource.WithFromEnv(),
+		resource.WithHost(),
+		resource.WithOS(),
+		resource.WithAttributes(semconv.ServiceNameKey.String(c.ServiceName)),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("setting up process runtime version: %w", err)
 	}
@@ -51,10 +58,6 @@ func SetupJaeger(ctx context.Context, c *Config) (tracing.TracerProvider, error)
 		sdktrace.WithBatcher(exporter),
 		sdktrace.WithResource(res),
 		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(c.SpanCollectionProbability)),
-		sdktrace.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String(c.ServiceName),
-			// attribute.String(tagKey, tagVal),
-		)),
 	)
 
 	otel.SetTracerProvider(tp)

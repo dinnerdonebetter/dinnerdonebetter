@@ -105,8 +105,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	// find the webhooks.
 	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
-		webhooks = &types.WebhookList{
-			Webhooks: []*types.Webhook{},
+		webhooks = &types.QueryFilteredResult[types.Webhook]{
+			Data: []*types.Webhook{},
 		}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching webhooks")
