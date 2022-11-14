@@ -36,20 +36,29 @@ type router struct {
 }
 
 var (
-	validDomains = []string{
-		"http://localhost",
-		"https://prixfixe.dev",
-		"https://www.prixfixe.dev",
-		"https://api.prixfixe.dev",
-		"https://admin.prixfixe.dev",
+	validDomains = map[string]struct{}{
+		"http://localhost":           {},
+		"http://localhost:9000":      {},
+		"https://prixfixe.dev":       {},
+		"https://www.prixfixe.dev":   {},
+		"https://api.prixfixe.dev":   {},
+		"https://admin.prixfixe.dev": {},
 	}
 )
 
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
+	validDomainsList := []string{}
+	for k := range validDomains {
+		validDomainsList = append(validDomainsList, k)
+	}
+
 	corsHandler := cors.New(cors.Options{
-		// Use this to allow specific origin hosts,
-		AllowedOrigins: validDomains,
-		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		// AllowedOrigins: validDomainsList,
+		AllowOriginFunc: func(r *http.Request, origin string) bool {
+			logger.WithValue("origin", origin).Info("AllowOriginFunc invoked")
+			_, ok := validDomains[origin]
+			return ok
+		},
 		AllowedMethods: []string{
 			http.MethodGet,
 			http.MethodPost,
@@ -142,9 +151,9 @@ func (r *router) LogRoutes() {
 }
 
 // Route lets you apply a set of routes to a subrouter with a provided pattern.
-func (r *router) Route(pattern string, fn func(r routing.Router)) routing.Router {
+func (r *router) Route(pattern string, routeFunction func(r routing.Router)) routing.Router {
 	r.router.Route(pattern, func(subrouter chi.Router) {
-		fn(buildRouter(subrouter, r.logger, tracing.NewNoopTracerProvider(), r.cfg))
+		routeFunction(buildRouter(subrouter, r.logger, tracing.NewNoopTracerProvider(), r.cfg))
 	})
 
 	return r

@@ -243,10 +243,17 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 
 	logger := q.logger.WithValue(keys.MealPlanIDKey, input.ID)
 
+	status := types.FinalizedMealPlanStatus
+	for _, event := range input.Events {
+		if len(event.Options) > 1 {
+			status = types.AwaitingVotesMealPlanStatus
+		}
+	}
+
 	args := []any{
 		input.ID,
 		input.Notes,
-		types.AwaitingVotesMealPlanStatus,
+		status,
 		input.VotingDeadline,
 		input.BelongsToHousehold,
 	}
@@ -260,13 +267,6 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 	if err = q.performWriteQuery(ctx, tx, "meal plan creation", mealPlanCreationQuery, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan")
-	}
-
-	status := types.FinalizedMealPlanStatus
-	for _, event := range input.Events {
-		if len(event.Options) > 1 {
-			status = types.AwaitingVotesMealPlanStatus
-		}
 	}
 
 	x := &types.MealPlan{
