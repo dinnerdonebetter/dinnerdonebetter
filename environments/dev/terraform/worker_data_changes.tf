@@ -95,6 +95,9 @@ resource "google_cloudfunctions2_function" "data_changes" {
 
   service_config {
     available_memory = "128Mi"
+    ingress_settings               = "ALLOW_INTERNAL_ONLY"
+    all_traffic_on_latest_revision = true
+    service_account_email          = google_service_account.data_changes_user_service_account.email
 
     environment_variables = {
       GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
