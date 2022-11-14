@@ -11,6 +11,9 @@ resource "google_project_iam_custom_role" "meal_plan_finalizer_role" {
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
+    "roles/run.invoker",
+    "roles/eventarc.eventReceiver",
+    "roles/artifactregistry.reader",
   ]
 }
 
@@ -91,32 +94,32 @@ resource "google_project_iam_member" "meal_plan_finalizer_user" {
   member  = format("serviceAccount:%s", google_service_account.meal_plan_finalizer_user_service_account.email)
 }
 
-# Permissions on the service account used by the function and Eventarc trigger
-resource "google_project_iam_member" "meal_plan_finalizer_invoking" {
-  project = local.project_id
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
-}
-
-resource "google_project_iam_member" "meal_plan_finalizer_event_receiving" {
-  project    = local.project_id
-  role       = "roles/eventarc.eventReceiver"
-  member     = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
-  depends_on = [google_project_iam_member.meal_plan_finalizer_invoking]
-}
-
-resource "google_project_iam_member" "meal_plan_finalizer_artifactregistry_reader" {
-  project    = local.project_id
-  role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
-  depends_on = [google_project_iam_member.meal_plan_finalizer_event_receiving]
-}
+## Permissions on the service account used by the function and Eventarc trigger
+#resource "google_project_iam_member" "meal_plan_finalizer_invoking" {
+#  project = local.project_id
+#  role    = "roles/run.invoker"
+#  member  = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+#}
+#
+#resource "google_project_iam_member" "meal_plan_finalizer_event_receiving" {
+#  project    = local.project_id
+#  role       = "roles/eventarc.eventReceiver"
+#  member     = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+#  depends_on = [google_project_iam_member.meal_plan_finalizer_invoking]
+#}
+#
+#resource "google_project_iam_member" "meal_plan_finalizer_artifactregistry_reader" {
+#  project    = local.project_id
+#  role       = "roles/artifactregistry.reader"
+#  member     = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
+#  depends_on = [google_project_iam_member.meal_plan_finalizer_event_receiving]
+#}
 
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
-  depends_on = [
-    google_project_iam_member.meal_plan_finalizer_event_receiving,
-    google_project_iam_member.meal_plan_finalizer_artifactregistry_reader,
-  ]
+#  depends_on = [
+#    google_project_iam_member.meal_plan_finalizer_event_receiving,
+#    google_project_iam_member.meal_plan_finalizer_artifactregistry_reader,
+#  ]
 
   name        = "meal-plan-finalizer"
   description = "Meal Plan Finalizer"
