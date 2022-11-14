@@ -24,7 +24,7 @@ type webhooksTestSuite struct {
 
 	ctx                context.Context
 	exampleWebhook     *types.Webhook
-	exampleWebhookList *types.WebhookList
+	exampleWebhookList *types.QueryFilteredResult[types.Webhook]
 }
 
 var _ suite.SetupTestSuite = (*webhooksTestSuite)(nil)

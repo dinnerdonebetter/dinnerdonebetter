@@ -217,7 +217,7 @@ func TestWebhooksService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.WebhookList{}),
+			mock.IsType(&types.QueryFilteredResult[types.Webhook]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -249,7 +249,7 @@ func TestWebhooksService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.WebhookList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.Webhook])(nil), sql.ErrNoRows)
 		helper.service.webhookDataManager = wd
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -257,7 +257,7 @@ func TestWebhooksService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.WebhookList{}),
+			mock.IsType(&types.QueryFilteredResult[types.Webhook]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -278,7 +278,7 @@ func TestWebhooksService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.WebhookList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.Webhook])(nil), errors.New("blah"))
 		helper.service.webhookDataManager = wd
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

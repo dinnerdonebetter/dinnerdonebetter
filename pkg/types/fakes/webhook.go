@@ -42,20 +42,20 @@ func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
 }
 
 // BuildFakeWebhookList builds a faked WebhookList.
-func BuildFakeWebhookList() *types.WebhookList {
+func BuildFakeWebhookList() *types.QueryFilteredResult[types.Webhook] {
 	var examples []*types.Webhook
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeWebhook())
 	}
 
-	return &types.WebhookList{
+	return &types.QueryFilteredResult[types.Webhook]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		Webhooks: examples,
+		Data: examples,
 	}
 }
 

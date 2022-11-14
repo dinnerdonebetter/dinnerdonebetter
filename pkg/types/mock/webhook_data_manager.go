@@ -28,9 +28,9 @@ func (m *WebhookDataManager) GetWebhook(ctx context.Context, webhookID, househol
 }
 
 // GetWebhooks satisfies our WebhookDataManager interface.
-func (m *WebhookDataManager) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
+func (m *WebhookDataManager) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Webhook], error) {
 	args := m.Called(ctx, householdID, filter)
-	return args.Get(0).(*types.WebhookList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.Webhook]), args.Error(1)
 }
 
 // GetAllWebhooks satisfies our WebhookDataManager interface.

@@ -229,7 +229,7 @@ func (q *Querier) scanWebhooks(ctx context.Context, rows database.ResultIterator
 var getWebhooksForHouseholdQuery string
 
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
-func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
+func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Webhook], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -247,7 +247,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x := &types.WebhookList{
+	x := &types.QueryFilteredResult[types.Webhook]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -265,7 +265,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
 	}
 
-	if x.Webhooks, x.FilteredCount, x.TotalCount, err = q.scanWebhooks(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanWebhooks(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning database response")
 	}
 

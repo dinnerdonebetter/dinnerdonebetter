@@ -78,19 +78,11 @@ type (
 		TriggerEvent     string
 	}
 
-	// WebhookList represents a list of webhooks.
-	WebhookList struct {
-		_ struct{}
-
-		Webhooks []*Webhook `json:"data"`
-		Pagination
-	}
-
 	// WebhookDataManager describes a structure capable of storing webhooks.
 	WebhookDataManager interface {
 		WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error)
 		GetWebhook(ctx context.Context, webhookID, householdID string) (*Webhook, error)
-		GetWebhooks(ctx context.Context, householdID string, filter *QueryFilter) (*WebhookList, error)
+		GetWebhooks(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[Webhook], error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
 		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error
 	}
