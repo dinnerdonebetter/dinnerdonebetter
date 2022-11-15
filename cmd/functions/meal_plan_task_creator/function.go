@@ -2,8 +2,8 @@ package mealplanfinalizerfunction
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"log"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
@@ -46,33 +46,40 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
-	cfg.Database.RunMigrations = false
 
-	tracerProvider := tracing.NewNoopTracerProvider()
+	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
+	if initializeTracerErr != nil {
+		logger.Error(initializeTracerErr, "initializing tracer")
+	}
 	otel.SetTracerProvider(tracerProvider)
+
+	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_task_creator_job")).StartSpan(ctx)
+	defer span.End()
 
 	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
 	if err != nil {
-		log.Fatal(err)
+		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
 	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
-		log.Fatal(err)
+		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
 	}
 
+	defer dataManager.Close()
+
 	if !dataManager.IsReady(ctx, 50) {
-		log.Fatal("database is not ready")
+		return observability.PrepareAndLogError(errors.New("database is not ready"), logger, span, "pinging database")
 	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
-		log.Fatal(err)
+		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
-		log.Fatal(err)
+		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}
 
 	mealPlanTaskCreationEnsurerWorker := workers.ProvideMealPlanTaskCreationEnsurerWorker(
@@ -85,13 +92,7 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 	)
 
 	if err = mealPlanTaskCreationEnsurerWorker.HandleMessage(ctx, nil); err != nil {
-		observability.AcknowledgeError(err, logger, nil, "handling message")
-		return err
-	}
-
-	if closeErr := dataManager.DB().Close(); closeErr != nil {
-		observability.AcknowledgeError(closeErr, logger, nil, "closing database connection")
-		return closeErr
+		return observability.PrepareAndLogError(err, logger, span, "handling message")
 	}
 
 	return nil
