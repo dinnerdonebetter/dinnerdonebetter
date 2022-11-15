@@ -14,7 +14,7 @@ services:
             driver: none
         container_name: postgres
         hostname: pgdatabase
-        image: postgres:13
+        image: postgres:13.7
         environment:
             POSTGRES_DB: 'prixfixe'
             POSTGRES_PASSWORD: 'hunter2'
