@@ -62,6 +62,7 @@ type (
 	// DataManager describes anything that stores data for our services.
 	DataManager interface {
 		DB() *sql.DB
+		Close()
 		Migrate(ctx context.Context, maxAttempts uint8) error
 		IsReady(ctx context.Context, maxAttempts uint8) (ready bool)
 		ProvideSessionStore() scs.Store

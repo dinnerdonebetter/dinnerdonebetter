@@ -100,6 +100,13 @@ func (q *Querier) DB() *sql.DB {
 	return q.db
 }
 
+// Close closes the database connection.
+func (q *Querier) Close() {
+	if err := q.db.Close(); err != nil {
+		q.logger.Error(err, "closing database connection")
+	}
+}
+
 // ProvideSessionStore provides the scs Store for Postgres.
 func (q *Querier) ProvideSessionStore() scs.Store {
 	return postgresstore.New(q.db)

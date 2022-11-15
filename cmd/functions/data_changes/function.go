@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"go.opentelemetry.io/otel"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
@@ -50,20 +52,24 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		return fmt.Errorf("error getting config: %w", err)
 	}
 
+	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
+	if initializeTracerErr != nil {
+		logger.Error(initializeTracerErr, "initializing tracer")
+	}
+	otel.SetTracerProvider(tracerProvider)
+
+	ctx, span := tracing.NewTracer(tracerProvider.Tracer("data_changes_job")).StartSpan(ctx)
+	defer span.End()
+
 	customerDataCollector, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
 	if err != nil {
-		return fmt.Errorf("error setting up customer data collector: %w", err)
+		return observability.PrepareAndLogError(err, logger, span, "error setting up customer data collector")
 	}
 
-	//rawMessage, err := base64.StdEncoding.DecodeString(m.Base64EncodedDataChangeMessage)
-	//if err != nil {
-	//	return fmt.Errorf("decoding raw pubsub message: %w", err)
-	//}
-
 	var changeMessage types.DataChangeMessage
-	if unmarshalErr := json.Unmarshal(msg.Message.Data, &changeMessage); unmarshalErr != nil {
+	if err = json.Unmarshal(msg.Message.Data, &changeMessage); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		observability.AcknowledgeError(unmarshalErr, logger, nil, "unmarshalling data change message")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
 	}
 
 	logger = logger.WithValue("event_type", changeMessage.EventType)
@@ -80,7 +86,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	switch changeMessage.EventType {
 	case types.UserSignedUpCustomerEventType:
 		if err = customerDataCollector.AddUser(ctx, changeMessage.AttributableToUserID, eventContext); err != nil {
-			return observability.PrepareError(err, nil, "notifying customer data platform")
+			return observability.PrepareError(err, span, "notifying customer data platform")
 		}
 		return nil
 	case types.APIClientCreatedCustomerEventType:
@@ -195,11 +201,11 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	case types.WebhookArchivedCustomerEventType:
 		// TODO: flesh these out
 	default:
-		logger.Debug("unknown event type")
+		logger.Info("unknown event type")
 	}
 
 	if dataCollectionErr := customerDataCollector.EventOccurred(ctx, changeMessage.EventType, changeMessage.AttributableToUserID, eventContext); dataCollectionErr != nil {
-		observability.AcknowledgeError(dataCollectionErr, logger, nil, "notifying customer data platform")
+		observability.AcknowledgeError(dataCollectionErr, logger, span, "notifying customer data platform")
 	}
 
 	return nil

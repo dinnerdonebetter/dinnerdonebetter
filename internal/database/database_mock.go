@@ -97,6 +97,11 @@ func (m *MockDatabase) Migrate(ctx context.Context, maxAttempts uint8) error {
 	return m.Called(ctx, maxAttempts).Error(0)
 }
 
+// Close satisfies the DataManager interface.
+func (m *MockDatabase) Close() {
+	m.Called()
+}
+
 // DB satisfies the DataManager interface.
 func (m *MockDatabase) DB() *sql.DB {
 	return m.Called().Get(0).(*sql.DB)

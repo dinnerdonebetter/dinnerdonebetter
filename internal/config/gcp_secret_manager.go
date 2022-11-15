@@ -157,8 +157,8 @@ func fetchSecretFromSecretStore(ctx context.Context, client SecretVersionAccesso
 	return result.Payload.Data, nil
 }
 
-// GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+// getWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
 
 	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
@@ -216,63 +216,19 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	return cfg, nil
 }
 
+// GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	return getWorkerConfigFromGoogleCloudSecretManager(ctx)
+}
+
 // GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	logger := zerolog.NewZerologLogger()
+	return getWorkerConfigFromGoogleCloudSecretManager(ctx)
+}
 
-	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
-	if secretManagerCreationErr != nil {
-		return nil, fmt.Errorf("failed to create secretmanager client: %w", secretManagerCreationErr)
-	}
-
-	var cfg *InstanceConfig
-	configBytes, configFetchErr := fetchSecretFromSecretStore(ctx, client, "api_service_config")
-	if configFetchErr != nil {
-		return nil, fmt.Errorf("fetching config from secret store: %w", configFetchErr)
-	}
-
-	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
-		return nil, encodeErr
-	}
-
-	rawPort := os.Getenv("PORT")
-	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
-	if portParseErr != nil {
-		return nil, fmt.Errorf("parsing port: %w", portParseErr)
-	}
-	cfg.Server.HTTPPort = uint16(port)
-
-	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
-	if !isSet {
-		socketDir = googleCloudCloudSQLSocket
-	}
-
-	// fetch supplementary data from env vars
-	dbURI := fmt.Sprintf(
-		"user=%s password=%s database=%s host=%s/%s",
-		os.Getenv(gcpDatabaseUserEnvVarKey),
-		os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
-		os.Getenv(gcpDatabaseNameEnvVarKey),
-		socketDir,
-		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
-	)
-
-	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
-	cfg.Database.RunMigrations = false
-
-	logger.Debug("fetched database values")
-
-	cfg.Events.Publishers.PubSubConfig.TopicName = "data_changes"
-
-	// we don't actually need these, except for validation
-	cfg.CustomerData.APIToken = " "
-	cfg.Email.Sendgrid.APIToken = " "
-
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
-	}
-
-	return cfg, nil
+// GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	return getWorkerConfigFromGoogleCloudSecretManager(ctx)
 }
 
 // GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
