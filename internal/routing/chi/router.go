@@ -47,11 +47,6 @@ var (
 )
 
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
-	validDomainsList := []string{}
-	for k := range validDomains {
-		validDomainsList = append(validDomainsList, k)
-	}
-
 	corsHandler := cors.New(cors.Options{
 		// AllowedOrigins: validDomainsList,
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
