@@ -112,16 +112,6 @@ resource "google_project_iam_member" "meal_plan_finalizer_artifactregistry_reade
   depends_on = [google_project_iam_member.meal_plan_finalizer_event_receiving]
 }
 
-resource "google_cloudfunctions2_function_iam_binding" "binding" {
-  project        = google_cloudfunctions2_function.meal_plan_finalizer.project
-  location       = google_cloudfunctions2_function.meal_plan_finalizer.location
-  cloud_function = google_cloudfunctions2_function.meal_plan_finalizer.name
-  role           = "roles/viewer"
-  members = [
-    "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}",
-  ]
-}
-
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   depends_on = [
     google_project_iam_member.meal_plan_finalizer_event_receiving,

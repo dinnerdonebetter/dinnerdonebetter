@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
-	"time"
-
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
@@ -66,7 +63,8 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
 	defer span.End()
 
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, &http.Client{Timeout: 5 * time.Second})
+	client := tracing.BuildTracedHTTPClient()
+	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring emailer")
 	}

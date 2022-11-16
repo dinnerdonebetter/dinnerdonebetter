@@ -116,7 +116,7 @@ func elasticsearchIsReady(
 			EnableRetryOnTimeout: true,
 			MaxRetries:           50,
 			RetryBackoff:         func(attempt int) time.Duration { return time.Second },
-			Transport:            observability.HTTPClient().Transport,
+			Transport:            tracing.BuildTracedHTTPTransport(10 * time.Second),
 			Logger:               nil,
 		})
 		if err != nil {

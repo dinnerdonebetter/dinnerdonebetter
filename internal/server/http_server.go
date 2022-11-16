@@ -156,6 +156,11 @@ func ProvideHTTPServer(
 	return srv, nil
 }
 
+// Shutdown shuts down the server.
+func (s *HTTPServer) Shutdown(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
+}
+
 // Serve serves HTTP traffic.
 func (s *HTTPServer) Serve() {
 	s.logger.Debug("setting up server")

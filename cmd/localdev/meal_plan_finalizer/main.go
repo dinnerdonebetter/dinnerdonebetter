@@ -5,11 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
@@ -19,6 +17,7 @@ import (
 	"github.com/prixfixeco/backend/internal/messagequeue/redis"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/workers"
 	"github.com/prixfixeco/backend/pkg/utils"
 )
@@ -38,10 +37,7 @@ func main() {
 	}
 
 	logger.Info("starting meal plan finalizer workers...")
-
-	client := &http.Client{
-		Timeout: 5 * time.Second,
-	}
+	client := tracing.BuildTracedHTTPClient()
 
 	// find and validate our configuration filepath.
 	configFilepath := os.Getenv(configFilepathEnvVar)
