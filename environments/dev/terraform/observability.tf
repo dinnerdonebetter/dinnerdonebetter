@@ -52,11 +52,15 @@ resource "google_monitoring_alert_policy" "alert_policy" {
 }
 
 resource "google_monitoring_service" "api_service" {
-  service_id = "api-service"
+  service_id   = "api-service"
   display_name = "API Service"
 
   basic_service {
-    service_type  = "CLOUD_RUN"
+    service_type = "CLOUD_RUN"
+    service_labels = {
+      service_name = "api-service"
+      location     = local.gcp_region
+    }
   }
 }
 
