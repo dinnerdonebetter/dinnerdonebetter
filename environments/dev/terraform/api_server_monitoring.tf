@@ -1,3 +1,16 @@
+resource "google_monitoring_service" "api_service" {
+  service_id   = "api-service"
+  display_name = "API Service"
+
+  basic_service {
+    service_type = "CLOUD_RUN"
+    service_labels = {
+      service_name = google_cloud_run_service.api_server.name
+      location     = local.gcp_region
+    }
+  }
+}
+
 resource "google_monitoring_uptime_check_config" "api_uptime" {
   display_name = "api-server-uptime-check"
   timeout      = "60s"
@@ -28,7 +41,7 @@ resource "google_monitoring_notification_channel" "api_server_monitor_notificati
   }
 }
 
-resource "google_monitoring_alert_policy" "alert_policy" {
+resource "google_monitoring_alert_policy" "dev_api_alert_policy" {
   display_name = "Dev API Alert Policy"
   combiner     = "OR"
 
@@ -51,30 +64,32 @@ resource "google_monitoring_alert_policy" "alert_policy" {
   }
 }
 
-resource "google_monitoring_service" "api_service" {
-  service_id   = "api-service"
-  display_name = "API Service"
-
-  basic_service {
-    service_type = "CLOUD_RUN"
-    service_labels = {
-      service_name = google_cloud_run_service.api_server.name
-      location     = local.gcp_region
-    }
-  }
-}
-
 resource "google_monitoring_slo" "api_server_latency_slo" {
   service = google_monitoring_service.api_service.service_id
 
   slo_id          = "api-server-latency-slo"
   goal            = 0.999
   calendar_period = "DAY"
-  display_name    = "SLO for API Server"
+  display_name    = "API Server Latency"
 
   basic_sli {
     latency {
       threshold = "1s"
+    }
+  }
+}
+
+resource "google_monitoring_slo" "api_server_availability_slo" {
+  service = google_monitoring_service.api_service.service_id
+
+  slo_id          = "api-server-availability-slo"
+  goal            = 0.999
+  calendar_period = "DAY"
+  display_name    = "API Server Availability"
+
+  basic_sli {
+    availability {
+      enabled = true
     }
   }
 }
