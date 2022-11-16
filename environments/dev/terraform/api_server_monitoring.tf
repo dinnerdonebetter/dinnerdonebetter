@@ -53,29 +53,26 @@ resource "google_monitoring_slo" "api_server_latency_slo" {
     latency {
       threshold = "1s"
     }
+  }
+}
+
+resource "google_monitoring_slo" "api_server_availability_slo" {
+  service = google_monitoring_service.api_service.service_id
+
+  slo_id          = "api-server-availability-slo"
+  goal            = 0.999
+  calendar_period = "DAY"
+  display_name    = "API Server Availability"
+
+  basic_sli {
     availability {
       enabled = true
     }
   }
 }
 
-#resource "google_monitoring_slo" "api_server_availability_slo" {
-#  service = google_monitoring_service.api_service.service_id
-#
-#  slo_id          = "api-server-availability-slo"
-#  goal            = 0.999
-#  calendar_period = "DAY"
-#  display_name    = "API Server Availability"
-#
-#  basic_sli {
-#    availability {
-#      enabled = true
-#    }
-#  }
-#}
-
 resource "google_monitoring_alert_policy" "api_latency_alert_policy" {
-  display_name = "Dev API Alert Policy"
+  display_name = "Dev API Latency Alert Policy"
   combiner     = "OR"
 
   conditions {
