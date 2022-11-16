@@ -52,7 +52,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
 }
 
 resource "google_monitoring_service" "api_service" {
-  service_id   = "api-service"
+  service_id   = google_cloud_run_service.api_server.name
   display_name = "API Service"
 
   basic_service {
