@@ -12,7 +12,7 @@ FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
-RUN adduser -D server-runner
+RUN adduser server-runner
 USER server-runner
 COPY --from=build-stage /server /server
 
