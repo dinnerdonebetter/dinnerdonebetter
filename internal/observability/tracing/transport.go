@@ -39,3 +39,8 @@ func BuildTracedHTTPTransport(timeout time.Duration) http.RoundTripper {
 
 	return otelhttp.NewTransport(t, otelhttp.WithSpanNameFormatter(FormatSpan))
 }
+
+// BuildTracedHTTPClient returns a tracing-enabled HTTP client.
+func BuildTracedHTTPClient() *http.Client {
+	return &http.Client{Transport: BuildTracedHTTPTransport(10 * time.Second), Timeout: 10 * time.Second}
+}

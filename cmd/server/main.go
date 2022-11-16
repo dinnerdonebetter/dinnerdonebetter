@@ -8,12 +8,10 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"runtime/debug"
 	"strconv"
 	"syscall"
 	"time"
 
-	"cloud.google.com/go/profiler"
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
@@ -46,25 +44,6 @@ func main() {
 			log.Fatal(cfgHydrateErr)
 		}
 		cfg = c
-
-		profilerConfig := profiler.Config{
-			Service:        "api-server",
-			ServiceVersion: "unknown",
-		}
-
-		if info, ok := debug.ReadBuildInfo(); ok {
-			for i := range info.Settings {
-				setting := info.Settings[i]
-				if setting.Key == "vcs.revision" {
-					profilerConfig.ServiceVersion = setting.Value
-				}
-			}
-		}
-
-		// Profiler initialization, best done as early as possible.
-		if profilerStartErr := profiler.Start(profilerConfig); profilerStartErr != nil {
-			log.Fatal(profilerStartErr)
-		}
 	} else if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
 		configBytes, configReadErr := os.ReadFile(configFilepath)
 		if configReadErr != nil {
@@ -118,7 +97,7 @@ func main() {
 		logger.Error(metricsHandlerErr, "initializing metrics handler")
 	}
 
-	client := &http.Client{Transport: tracing.BuildTracedHTTPTransport(10 * time.Second), Timeout: 10 * time.Second}
+	client := tracing.BuildTracedHTTPClient()
 	// should make wire do these someday
 	emailer, emailerSetupErr := cfg.Email.ProvideEmailer(logger, client)
 	if emailerSetupErr != nil {
@@ -127,12 +106,11 @@ func main() {
 
 	// only allow initialization to take so long.
 	ctx, cancel := context.WithTimeout(ctx, cfg.Server.StartupDeadline)
-	ctx, initSpan := tracing.StartSpan(ctx)
+	ctx, span := tracing.StartSpan(ctx)
 
-	dbConfig := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracerProvider)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
-		logger.Error(err, "initializing database client")
+		observability.AcknowledgeError(err, logger, span, "initializing database client")
 		return
 	}
 
@@ -140,20 +118,12 @@ func main() {
 	// NOTE: we should, at some point, return a function that we can defer that will end any database connections and such
 	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider, metricsHandler, dataManager, emailer)
 	if err != nil {
-		logger.Error(err, "initializing HTTP server")
+		observability.AcknowledgeError(err, logger, span, "initializing HTTP server")
 		return
 	}
 
-	initSpan.End()
+	span.End()
 	cancel()
-
-	// I slept and dreamt that life was joy.
-	//   I awoke and saw that life was service.
-	//   	I acted and behold, service deployed.
-	srv.Serve()
-
-	// Run server
-	go srv.Serve()
 
 	signalChan := make(chan os.Signal, 1)
 
@@ -162,7 +132,11 @@ func main() {
 		syscall.SIGHUP,
 		syscall.SIGINT,
 		syscall.SIGQUIT,
+		syscall.SIGTERM,
 	)
+
+	// Run server
+	go srv.Serve()
 
 	// os.Interrupt
 	<-signalChan
@@ -172,11 +146,16 @@ func main() {
 		<-signalChan
 	}()
 
-	_, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	_, cancelShutdown := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelShutdown()
 
-	if dbCloseErr := dataManager.DB().Close(); dbCloseErr != nil {
-		observability.AcknowledgeError(err, logger, nil, "closing database connection")
+	// Gracefully shutdown the server by waiting on existing requests (except websockets).
+	if err = srv.Shutdown(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "server shutdown failed")
+	}
+
+	if err = dataManager.DB().Close(); err != nil {
+		observability.AcknowledgeError(err, logger, span, "closing database connection")
 	}
 
 	cancel()
