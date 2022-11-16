@@ -11,7 +11,6 @@ RUN go build -trimpath -o /server github.com/prixfixeco/backend/cmd/server
 FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
-
 COPY --from=build-stage /server /server
 
 ENTRYPOINT ["/server"]

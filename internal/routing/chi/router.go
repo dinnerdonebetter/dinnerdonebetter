@@ -37,7 +37,6 @@ type router struct {
 
 var (
 	validDomains = map[string]struct{}{
-		"http://localhost":           {},
 		"http://localhost:9000":      {},
 		"https://prixfixe.dev":       {},
 		"https://www.prixfixe.dev":   {},
@@ -48,10 +47,12 @@ var (
 
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
 	corsHandler := cors.New(cors.Options{
-		// AllowedOrigins: validDomainsList,
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
-			logger.WithValue("origin", origin).Info("AllowOriginFunc invoked")
 			_, ok := validDomains[origin]
+			if !ok {
+				logger.WithValue("origin", origin).Info("AllowOriginFunc returning false")
+			}
+
 			return ok
 		},
 		AllowedMethods: []string{

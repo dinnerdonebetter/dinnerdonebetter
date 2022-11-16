@@ -111,7 +111,6 @@ format:
 terraformat:
 	@touch environments/dev/terraform/service-config.json
 	@touch environments/dev/terraform/worker-config.json
-	@touch environments/dev/terraform/opentelemetry-config.yaml
 	@(cd environments/dev/terraform && terraform fmt)
 
 .PHONY: lint_terraform
