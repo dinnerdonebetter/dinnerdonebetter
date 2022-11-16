@@ -13,14 +13,7 @@ FROM debian:bullseye
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
 # Create the user
-RUN groupadd --gid 1000 $server-runner \
-    && useradd --uid 1000 --gid 1000 -m $server-runner \
-    #
-    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
-    && apt-get update \
-    && apt-get install -y sudo \
-    && echo $server-runner ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$server-runner \
-    && chmod 0440 /etc/sudoers.d/$server-runner
+RUN groupadd --gid 1000 server-runner && useradd --uid 1000 --gid 1000 -m server-runner
 
 # ********************************************************
 # * Anything else you want to do like clean up goes here *
