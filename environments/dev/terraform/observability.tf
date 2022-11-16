@@ -50,3 +50,22 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     }
   }
 }
+
+data "google_monitoring_app_engine_service" "default" {
+  module_id = "api"
+}
+
+resource "google_monitoring_slo" "api_server_latency_slo" {
+  service = data.google_monitoring_app_engine_service.default.service_id
+
+  slo_id = "api_server_latency_slo"
+  goal = 0.999
+  calendar_period = "DAY"
+  display_name = "SLO for API Server"
+
+  basic_sli {
+    latency {
+      threshold = "1s"
+    }
+  }
+}
