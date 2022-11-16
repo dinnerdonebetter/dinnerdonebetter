@@ -1,4 +1,4 @@
-resource "google_monitoring_alert_policy" "worker_alert_policy" {
+resource "google_monitoring_alert_policy" "worker_memory_usage_alert_policy" {
   display_name = "Workers Memory Usage"
   combiner     = "OR"
   conditions {

@@ -41,7 +41,40 @@ resource "google_monitoring_notification_channel" "api_server_monitor_notificati
   }
 }
 
-resource "google_monitoring_alert_policy" "dev_api_alert_policy" {
+resource "google_monitoring_slo" "api_server_latency_slo" {
+  service = google_monitoring_service.api_service.service_id
+
+  slo_id          = "api-server-latency-slo"
+  goal            = 0.999
+  calendar_period = "DAY"
+  display_name    = "API Server Latency"
+
+  basic_sli {
+    latency {
+      threshold = "1s"
+    }
+    availability {
+      enabled = true
+    }
+  }
+}
+
+#resource "google_monitoring_slo" "api_server_availability_slo" {
+#  service = google_monitoring_service.api_service.service_id
+#
+#  slo_id          = "api-server-availability-slo"
+#  goal            = 0.999
+#  calendar_period = "DAY"
+#  display_name    = "API Server Availability"
+#
+#  basic_sli {
+#    availability {
+#      enabled = true
+#    }
+#  }
+#}
+
+resource "google_monitoring_alert_policy" "api_latency_alert_policy" {
   display_name = "Dev API Alert Policy"
   combiner     = "OR"
 
@@ -64,32 +97,28 @@ resource "google_monitoring_alert_policy" "dev_api_alert_policy" {
   }
 }
 
-resource "google_monitoring_slo" "api_server_latency_slo" {
-  service = google_monitoring_service.api_service.service_id
+resource "google_monitoring_alert_policy" "latency_server_memory_usage_alert_policy" {
+  display_name = "API Server Memory Usage"
+  combiner     = "OR"
+  conditions {
+    display_name = "API Server Memory Utilization"
 
-  slo_id          = "api-server-latency-slo"
-  goal            = 0.999
-  calendar_period = "DAY"
-  display_name    = "API Server Latency"
-
-  basic_sli {
-    latency {
-      threshold = "1s"
+    condition_threshold {
+      filter     = "resource.type = \"cloud_run_revision\" AND (resource.labels.service_name == \"api-server\") AND metric.type = \"run.googleapis.com/container/memory/utilizations\""
+      duration   = "300s"
+      comparison = "COMPARISON_GT"
+      aggregations {
+        alignment_period   = "300s"
+        per_series_aligner = "ALIGN_PERCENTILE_99"
+      }
+      trigger {
+        count = 1
+      }
+      threshold_value = 0.8
     }
   }
-}
 
-resource "google_monitoring_slo" "api_server_availability_slo" {
-  service = google_monitoring_service.api_service.service_id
-
-  slo_id          = "api-server-availability-slo"
-  goal            = 0.999
-  calendar_period = "DAY"
-  display_name    = "API Server Availability"
-
-  basic_sli {
-    availability {
-      enabled = true
-    }
+  alert_strategy {
+    auto_close = "259200s"
   }
 }
