@@ -51,12 +51,17 @@ resource "google_monitoring_alert_policy" "alert_policy" {
   }
 }
 
-data "google_monitoring_app_engine_service" "default" {
-  module_id = "api"
+resource "google_monitoring_service" "api_service" {
+  service_id = "api-service"
+  display_name = "API Service"
+
+  basic_service {
+    service_type  = "CLOUD_RUN"
+  }
 }
 
 resource "google_monitoring_slo" "api_server_latency_slo" {
-  service = data.google_monitoring_app_engine_service.default.service_id
+  service = google_monitoring_service.api_service.service_id
 
   slo_id          = "api-server-latency-slo"
   goal            = 0.999
