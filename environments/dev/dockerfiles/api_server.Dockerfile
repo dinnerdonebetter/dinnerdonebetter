@@ -12,6 +12,7 @@ FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
+USER server-runner
 COPY --from=build-stage /server /server
 
 ENTRYPOINT ["/server"]
