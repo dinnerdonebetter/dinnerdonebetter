@@ -20,7 +20,7 @@ RUN groupadd --gid 1000 server-runner && useradd --uid 1000 --gid 1000 -m server
 # ********************************************************
 
 # [Optional] Set the default user. Omit if you want to keep the default as root.
-USER $server-runner
+USER server-runner
 
 COPY --from=build-stage /server /server
 

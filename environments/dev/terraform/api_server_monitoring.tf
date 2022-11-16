@@ -72,7 +72,7 @@ resource "google_monitoring_slo" "api_server_availability_slo" {
 }
 
 resource "google_monitoring_alert_policy" "api_latency_alert_policy" {
-  display_name = "Dev API Latency Alert Policy"
+  display_name = "API Latency Alert Policy"
   combiner     = "OR"
 
   conditions {
