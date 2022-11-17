@@ -484,7 +484,7 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 
 	query, args := q.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, userID, filter)
 
-	rows, err := q.getRows(ctx, q.db, "household invitations from user", query, args)
+	rows, err := q.getRows(ctx, q.db, "household invitations for user", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}

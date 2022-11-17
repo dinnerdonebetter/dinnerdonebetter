@@ -155,7 +155,7 @@ func (q *Querier) getRecipeMediaForRecipe(ctx context.Context, recipeID string) 
 		recipeID,
 	}
 
-	rows, err := q.getRows(ctx, q.db, "recipe media", recipeMediaForRecipeQuery, recipeMediaForRecipeArgs)
+	rows, err := q.getRows(ctx, q.db, "recipe media for recipe", recipeMediaForRecipeQuery, recipeMediaForRecipeArgs)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe media list retrieval query")
 	}
@@ -194,7 +194,7 @@ func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, rec
 		recipeStepID,
 	}
 
-	rows, err := q.getRows(ctx, q.db, "recipe media", recipeMediaForRecipeStepQuery, recipeMediaForRecipeStepArgs)
+	rows, err := q.getRows(ctx, q.db, "recipe media for recipe step", recipeMediaForRecipeStepQuery, recipeMediaForRecipeStepArgs)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe media list retrieval query")
 	}

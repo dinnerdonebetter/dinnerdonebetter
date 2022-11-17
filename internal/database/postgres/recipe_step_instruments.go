@@ -263,7 +263,7 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 
 	query, args := q.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "recipeStepInstruments", query, args)
+	rows, err := q.getRows(ctx, q.db, "recipe step instruments", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step instruments list retrieval query")
 	}
@@ -295,7 +295,7 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 		recipeID,
 	}
 
-	rows, err := q.getRows(ctx, q.db, "recipe step instruments", getRecipeStepInstrumentsForRecipeQuery, args)
+	rows, err := q.getRows(ctx, q.db, "recipe step instruments for recipe", getRecipeStepInstrumentsForRecipeQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step instruments list retrieval query")
 	}

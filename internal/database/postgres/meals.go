@@ -257,7 +257,7 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 	where := squirrel.ILike{"name": wrapQueryForILIKE(mealNameQuery)}
 	query, args := q.buildListQueryWithILike(ctx, "meals", nil, nil, where, "", mealsTableColumns, "", false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "meals", query, args)
+	rows, err := q.getRows(ctx, q.db, "meals search", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals search query")
 	}

@@ -340,7 +340,7 @@ func (q *Querier) getRecipeIDsForMeal(ctx context.Context, mealID string) (x []s
 		mealID,
 	}
 
-	rows, err := q.getRows(ctx, q.db, "recipes", getRecipesForMealQuery, args)
+	rows, err := q.getRows(ctx, q.db, "recipes for meal", getRecipesForMealQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
 	}
@@ -373,7 +373,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
 	query, args := q.buildListQueryWithILike(ctx, "recipes", nil, nil, where, "", recipesTableColumns, "", false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "recipes", query, args)
+	rows, err := q.getRows(ctx, q.db, "recipes search", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing recipes search query")
 	}

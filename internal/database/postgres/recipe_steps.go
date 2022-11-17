@@ -261,7 +261,7 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 
 	query, args := q.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "recipeSteps", query, args)
+	rows, err := q.getRows(ctx, q.db, "recipe steps", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe steps list retrieval query")
 	}

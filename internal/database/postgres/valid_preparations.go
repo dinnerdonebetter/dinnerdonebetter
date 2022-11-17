@@ -233,7 +233,7 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 
 	query, args := q.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "validPreparations", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid preparations", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}
