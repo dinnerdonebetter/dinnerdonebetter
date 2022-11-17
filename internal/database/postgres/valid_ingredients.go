@@ -261,7 +261,7 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 
 	// TODO: find some way to restrict by preparationID
 
-	rows, err := q.getRows(ctx, q.db, "valid ingredients", validIngredientSearchQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid ingredients search", validIngredientSearchQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
@@ -297,7 +297,7 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 
 	query, args := q.buildListQuery(ctx, "valid_ingredients", nil, nil, nil, householdOwnershipColumn, validIngredientsTableColumns, "", false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "validIngredients", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid ingredients", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}

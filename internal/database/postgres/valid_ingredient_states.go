@@ -203,7 +203,7 @@ func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *types.Qu
 
 	query, args := q.buildListQuery(ctx, "valid_ingredient_states", nil, nil, nil, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "validIngredientStates", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid ingredient states", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}

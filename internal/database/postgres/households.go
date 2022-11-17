@@ -218,7 +218,7 @@ func (q *Querier) GetHouseholdByID(ctx context.Context, householdID string) (*ty
 		householdID,
 	}
 
-	rows, err := q.getRows(ctx, q.db, "household", getHouseholdAndMembershipsByIDQuery, args)
+	rows, err := q.getRows(ctx, q.db, "household by id", getHouseholdAndMembershipsByIDQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}

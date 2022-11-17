@@ -206,7 +206,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 
 	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "mealPlans", query, args)
+	rows, err := q.getRows(ctx, q.db, "meal plans", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing meal plans list retrieval query")
 	}
