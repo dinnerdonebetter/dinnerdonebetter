@@ -1,4 +1,4 @@
-on: [gollum]
+on: [gollum] # SAD NOTES: this thing won't work right :'(
 #  pull_request:
 #    paths:
 #      - pkg/**
