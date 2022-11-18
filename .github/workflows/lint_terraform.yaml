@@ -1,7 +1,7 @@
-on: # [gollum]
-  pull_request:
-    paths:
-      - environments/dev/terraform/**
+on: [pull_request]
+#  pull_request:
+#    paths:
+#      - environments/dev/terraform/**
 name: Lint Terraform code
 jobs:
   terraform:
