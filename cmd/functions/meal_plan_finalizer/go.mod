@@ -9,6 +9,8 @@ require (
 	github.com/GoogleCloudPlatform/functions-framework-go v1.6.1
 	github.com/cloudevents/sdk-go/v2 v2.6.1
 	github.com/prixfixeco/backend v0.0.0-00010101000000-000000000000
+	go.opentelemetry.io/otel v1.3.0
+	go.uber.org/automaxprocs v1.5.1
 )
 
 require (
@@ -100,7 +102,6 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.28.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/runtime v0.27.0 // indirect
-	go.opentelemetry.io/otel v1.3.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.3.0 // indirect
 	go.opentelemetry.io/otel/exporters/prometheus v0.26.0 // indirect
 	go.opentelemetry.io/otel/internal/metric v0.26.0 // indirect
