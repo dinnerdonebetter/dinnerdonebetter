@@ -17,6 +17,7 @@ import (
 
 type (
 	messagePublisher interface {
+		Stop()
 		Publish(context.Context, *pubsub.Message) *pubsub.PublishResult
 	}
 
@@ -29,8 +30,10 @@ type (
 	}
 )
 
-// providePubSubPublisher provides a Pub/Sub-backed publisher.
-func providePubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tracerProvider tracing.TracerProvider, topic string) *publisher {
+// buildPubSubPublisher provides a Pub/Sub-backed publisher.
+func buildPubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tracerProvider tracing.TracerProvider, topic string) *publisher {
+	pubsubClient.Stop()
+
 	return &publisher{
 		topic:     topic,
 		encoder:   encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
@@ -38,6 +41,11 @@ func providePubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, t
 		publisher: pubsubClient,
 		tracer:    tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_publisher", topic))),
 	}
+}
+
+// Stop calls Stop on the topic.
+func (p *publisher) Stop() {
+	p.publisher.Stop()
 }
 
 type publisherProvider struct {
@@ -58,6 +66,13 @@ func ProvidePubSubPublisherProvider(logger logging.Logger, tracerProvider tracin
 	}
 }
 
+// Close closes the connection topic.
+func (p *publisherProvider) Close() {
+	if err := p.pubsubClient.Close(); err != nil {
+		p.logger.Error(err, "closing pubsub connection")
+	}
+}
+
 // ProviderPublisher returns a publisher for a given topic.
 func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
 	logger := logging.EnsureLogger(p.logger.Clone())
@@ -70,7 +85,7 @@ func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publis
 
 	t := p.pubsubClient.Topic(topic)
 
-	pub := providePubSubPublisher(logger, t, p.tracerProvider, topic)
+	pub := buildPubSubPublisher(logger, t, p.tracerProvider, topic)
 	p.publisherCache[topic] = pub
 
 	return pub, nil

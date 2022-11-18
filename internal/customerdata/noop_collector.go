@@ -19,9 +19,7 @@ func NewNoopCollector() Collector {
 }
 
 // Close does nothing.
-func (c *noopCollector) Close() error {
-	return nil
-}
+func (c *noopCollector) Close() {}
 
 // AddUser does nothing.
 func (c *noopCollector) AddUser(context.Context, string, map[string]any) error {

@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 func TestProvideCollector(T *testing.T) {
@@ -17,7 +18,7 @@ func TestProvideCollector(T *testing.T) {
 		cfg := &Config{}
 		logger := logging.NewNoopLogger()
 
-		actual, err := ProvideCollector(cfg, logger)
+		actual, err := ProvideCollector(cfg, logger, tracing.NewNoopTracerProvider())
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})
@@ -31,7 +32,7 @@ func TestProvideCollector(T *testing.T) {
 		}
 		logger := logging.NewNoopLogger()
 
-		actual, err := ProvideCollector(cfg, logger)
+		actual, err := ProvideCollector(cfg, logger, tracing.NewNoopTracerProvider())
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})

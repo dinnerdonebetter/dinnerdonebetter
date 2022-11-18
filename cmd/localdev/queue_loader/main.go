@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	_ "go.uber.org/automaxprocs"
+
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"

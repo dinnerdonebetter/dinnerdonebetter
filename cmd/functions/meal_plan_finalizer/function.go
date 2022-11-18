@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
@@ -28,20 +30,6 @@ const (
 func init() {
 	// Register a CloudEvent function with the Functions Framework
 	functions.CloudEvent("FinalizeMealPlans", FinalizeMealPlans)
-}
-
-// MessagePublishedData contains the full Pub/Sub message
-// See the documentation for more details:
-// https://cloud.google.com/eventarc/docs/cloudevents#pubsub
-type MessagePublishedData struct {
-	Message PubSubMessage
-}
-
-// PubSubMessage is the payload of a Pub/Sub event.
-// See the documentation for more details:
-// https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
-type PubSubMessage struct {
-	Data []byte `json:"data"`
 }
 
 // FinalizeMealPlans is our cloud function entrypoint.
@@ -69,10 +57,12 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 		return observability.PrepareAndLogError(err, logger, span, "configuring emailer")
 	}
 
-	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
+	customerDataCollector, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
 	}
+
+	defer customerDataCollector.Close()
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
@@ -90,17 +80,21 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
 	}
 
+	defer publisherProvider.Close()
+
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}
+
+	defer dataChangesPublisher.Stop()
 
 	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
 		logger,
 		dataManager,
 		dataChangesPublisher,
 		emailer,
-		cdp,
+		customerDataCollector,
 		tracerProvider,
 	)
 

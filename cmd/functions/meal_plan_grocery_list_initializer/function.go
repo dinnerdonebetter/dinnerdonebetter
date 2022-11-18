@@ -9,6 +9,7 @@ import (
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
@@ -32,12 +33,6 @@ func init() {
 	functions.CloudEvent("InitializeGroceryListsItemsForMealPlans", InitializeGroceryListsItemsForMealPlans)
 }
 
-// PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
-// https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
-type PubSubMessage struct {
-	Data []byte `json:"data"`
-}
-
 // InitializeGroceryListsItemsForMealPlans is our cloud function entrypoint.
 func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger()
@@ -57,10 +52,12 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event)
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_grocery_list_items_init_job")).StartSpan(ctx)
 	defer span.End()
 
-	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
+	customerDataCollector, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
 	}
+
+	defer customerDataCollector.Close()
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
@@ -78,17 +75,21 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event)
 		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
 	}
 
+	defer publisherProvider.Close()
+
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}
+
+	defer dataChangesPublisher.Stop()
 
 	mealPlanGroceryListInitializationWorker := workers.ProvideMealPlanGroceryListInitializer(
 		logger,
 		dataManager,
 		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
 		dataChangesPublisher,
-		cdp,
+		customerDataCollector,
 		tracerProvider,
 		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)
