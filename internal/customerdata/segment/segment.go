@@ -46,8 +46,10 @@ func NewSegmentCustomerDataCollector(logger logging.Logger, tracerProvider traci
 }
 
 // Close wraps the internal client's Close method.
-func (c *CustomerDataCollector) Close() error {
-	return c.client.Close()
+func (c *CustomerDataCollector) Close() {
+	if err := c.client.Close(); err != nil {
+		c.logger.Error(err, "closing connection")
+	}
 }
 
 // AddUser upsert's a user's identity.

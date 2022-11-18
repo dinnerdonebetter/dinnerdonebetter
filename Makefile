@@ -14,6 +14,7 @@ LOCAL_ADDRESS                 := api.prixfixe.local
 DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.15.0
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
+CLOUD_FUNCTIONS               := data_changes meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
 
 ## non-PHONY folders/files
 
@@ -74,6 +75,9 @@ vendor:
 	if [ ! -f go.mod ]; then go mod init; fi
 	go mod tidy
 	go mod vendor
+	for cloudFunction in $(CLOUD_FUNCTIONS); do \
+  		(cd cmd/functions/$$cloudFunction && go mod tidy) \
+	done
 
 .PHONY: revendor
 revendor: clean_vendor vendor

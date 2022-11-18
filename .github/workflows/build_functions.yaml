@@ -1,9 +1,9 @@
-on: # [gollum]
-  pull_request:
-    paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
+on: [gollum] # SAD NOTES: this thing won't work right :'(
+#  pull_request:
+#    paths:
+#      - pkg/**
+#      - cmd/**
+#      - internal/**
 name: Build Cloud Functions
 jobs:
   setup:

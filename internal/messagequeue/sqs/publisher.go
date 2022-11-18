@@ -33,6 +33,10 @@ type (
 	}
 )
 
+// Stop does nothing.
+func (r *sqsPublisher) Stop() {}
+
+// Publish publishes a message onto an SQS event queue.
 func (r *sqsPublisher) Publish(ctx context.Context, data any) error {
 	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
@@ -109,3 +113,6 @@ func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publis
 
 	return pub, nil
 }
+
+// Close returns a Publisher for a given topic.
+func (p *publisherProvider) Close() {}

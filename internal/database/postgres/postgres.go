@@ -97,6 +97,7 @@ func ProvideDatabaseClient(
 
 // DB provides the database object.
 func (q *Querier) DB() *sql.DB {
+	q.logger.Info("closing database connection")
 	return q.db
 }
 

@@ -9,6 +9,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "go.uber.org/automaxprocs"
+
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
@@ -69,7 +71,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
+	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger, tracerProvider)
 	if err != nil {
 		log.Fatal(err)
 	}

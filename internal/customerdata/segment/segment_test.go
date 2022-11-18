@@ -49,7 +49,7 @@ func TestCustomerDataCollector_Close(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
-		require.NoError(t, collector.Close())
+		collector.Close()
 	})
 }
 

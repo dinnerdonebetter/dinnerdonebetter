@@ -36,3 +36,8 @@ func (m *ProducerProvider) ProviderPublisher(topic string) (messagequeue.Publish
 
 	return args.Get(0).(messagequeue.Publisher), args.Error(1)
 }
+
+// Close implements our interface.
+func (m *ProducerProvider) Close() {
+	m.Called()
+}

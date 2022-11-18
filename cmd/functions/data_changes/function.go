@@ -10,6 +10,7 @@ import (
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
@@ -61,10 +62,12 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("data_changes_job")).StartSpan(ctx)
 	defer span.End()
 
-	customerDataCollector, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
+	customerDataCollector, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "error setting up customer data collector")
 	}
+
+	defer customerDataCollector.Close()
 
 	var changeMessage types.DataChangeMessage
 	if err = json.Unmarshal(msg.Message.Data, &changeMessage); err != nil {

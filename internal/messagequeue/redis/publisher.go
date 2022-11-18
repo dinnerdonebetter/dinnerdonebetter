@@ -37,6 +37,10 @@ type (
 	}
 )
 
+// Stop implements the Publisher interface.
+func (r *redisPublisher) Stop() {}
+
+// Publish implements the Publisher interface.
 func (r *redisPublisher) Publish(ctx context.Context, data any) error {
 	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
@@ -120,3 +124,6 @@ func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publis
 
 	return pub, nil
 }
+
+// Close does nothing.
+func (p *publisherProvider) Close() {}

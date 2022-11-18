@@ -18,8 +18,8 @@ type (
 )
 
 // Close is a mock function.
-func (m *MockCollector) Close() error {
-	return m.Called().Error(0)
+func (m *MockCollector) Close() {
+	m.Called()
 }
 
 // AddUser is a mock function.

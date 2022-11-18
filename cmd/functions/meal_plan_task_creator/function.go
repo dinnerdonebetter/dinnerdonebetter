@@ -9,6 +9,7 @@ import (
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/prixfixeco/backend/internal/config"
 	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
@@ -56,10 +57,12 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_task_creator_job")).StartSpan(ctx)
 	defer span.End()
 
-	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
+	customerDataCollector, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
 	}
+
+	defer customerDataCollector.Close()
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
@@ -77,17 +80,21 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
 	}
 
+	defer publisherProvider.Close()
+
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}
+
+	defer dataChangesPublisher.Stop()
 
 	mealPlanTaskCreationEnsurerWorker := workers.ProvideMealPlanTaskCreationEnsurerWorker(
 		logger,
 		dataManager,
 		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
 		dataChangesPublisher,
-		cdp,
+		customerDataCollector,
 		tracerProvider,
 	)
 

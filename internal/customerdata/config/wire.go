@@ -5,6 +5,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/customerdata"
 	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 var (
@@ -15,6 +16,6 @@ var (
 )
 
 // ProvideCollector provides a customerdata.Collector from a config.
-func ProvideCollector(cfg *Config, logger logging.Logger) (customerdata.Collector, error) {
-	return cfg.ProvideCollector(logger)
+func ProvideCollector(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider) (customerdata.Collector, error) {
+	return cfg.ProvideCollector(logger, tracerProvider)
 }

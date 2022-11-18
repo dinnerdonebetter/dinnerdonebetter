@@ -14,6 +14,7 @@ import (
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/prixfixeco/backend/internal/build/server"
 	"github.com/prixfixeco/backend/internal/config"
