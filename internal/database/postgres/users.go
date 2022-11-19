@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/lib/pq"
 
@@ -449,6 +450,10 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	}
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachUserIDToSpan(span, user.ID)
+
+	if strings.TrimSpace(input.HouseholdName) == "" {
+		input.HouseholdName = fmt.Sprintf("%s's cool household", input.Username)
+	}
 
 	if err = q.createHouseholdForUser(ctx, tx, hasValidInvite, input.HouseholdName, user.ID); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating household for new user")
