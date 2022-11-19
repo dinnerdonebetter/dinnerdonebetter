@@ -69,11 +69,11 @@ type (
 	HouseholdUserMembershipDatabaseCreationInput struct {
 		_ struct{}
 
-		ID            string `json:"-"`
-		Reason        string `json:"reason"`
-		UserID        string `json:"userID"`
-		HouseholdID   string `json:"householdID"`
-		HouseholdRole string `json:"householdRoles"`
+		ID            string
+		Reason        string
+		UserID        string
+		HouseholdID   string
+		HouseholdRole string
 	}
 
 	// HouseholdOwnershipTransferInput represents what a User could set as input for updating household user memberships.

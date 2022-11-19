@@ -61,13 +61,13 @@ type (
 	WebhookDatabaseCreationInput struct {
 		_ struct{}
 
-		ID                 string                                      `json:"id"`
-		Name               string                                      `json:"name"`
-		ContentType        string                                      `json:"contentType"`
-		URL                string                                      `json:"url"`
-		Method             string                                      `json:"method"`
-		BelongsToHousehold string                                      `json:"belongsToHousehold"`
-		Events             []*WebhookTriggerEventDatabaseCreationInput `json:"events"`
+		ID                 string
+		Name               string
+		ContentType        string
+		URL                string
+		Method             string
+		BelongsToHousehold string
+		Events             []*WebhookTriggerEventDatabaseCreationInput
 	}
 
 	// WebhookTriggerEventDatabaseCreationInput is used for creating a webhook trigger event.

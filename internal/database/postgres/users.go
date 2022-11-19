@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/lib/pq"
 
@@ -450,26 +451,30 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachUserIDToSpan(span, user.ID)
 
-	if err := q.createHouseholdForUser(ctx, tx, hasValidInvite, user.ID); err != nil {
+	if strings.TrimSpace(input.HouseholdName) == "" {
+		input.HouseholdName = fmt.Sprintf("%s's cool household", input.Username)
+	}
+
+	if err = q.createHouseholdForUser(ctx, tx, hasValidInvite, input.HouseholdName, user.ID); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 	}
 
 	logger.Debug("household created")
 
 	if hasValidInvite {
-		if err := q.acceptInvitationForUser(ctx, tx, input); err != nil {
+		if err = q.acceptInvitationForUser(ctx, tx, input); err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "accepting household invitation")
 		}
 		logger.Debug("accepted invitation and joined household for user")
 	}
 
-	if err := q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
+	if err = q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		logger = logger.WithValue("email_address", user.EmailAddress).WithValue("user_id", user.ID)
 		return nil, observability.PrepareAndLogError(err, logger, span, "attaching existing invitations to new user")
 	}
 
-	if err := tx.Commit(); err != nil {
+	if err = tx.Commit(); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
@@ -478,7 +483,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	return user, nil
 }
 
-func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, userID string) error {
+func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, householdName, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -486,9 +491,14 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	householdID := identifiers.New()
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
+	hn := householdName
+	if householdName == "" {
+		hn = fmt.Sprintf("%s_default", userID)
+	}
+
 	householdCreationInput := &types.HouseholdCreationRequestInput{
 		ID:            householdID,
-		Name:          fmt.Sprintf("%s_default", userID),
+		Name:          hn,
 		BelongsToUser: userID,
 		TimeZone:      types.DefaultHouseholdTimeZone,
 	}

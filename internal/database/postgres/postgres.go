@@ -22,8 +22,7 @@ import (
 )
 
 const (
-	name        = "db_client"
-	tracingName = name
+	tracingName = "db_client"
 
 	// https://www.postgresql.org/docs/current/errcodes-appendix.html
 	postgresDuplicateEntryErrorCode = "23505"

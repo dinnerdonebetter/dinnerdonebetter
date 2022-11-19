@@ -52,10 +52,10 @@ type (
 	// RecipePrepTaskStepDatabaseCreationInput represents a recipe prep task step.
 	RecipePrepTaskStepDatabaseCreationInput struct {
 		_                       struct{}
-		ID                      string `json:"id"`
-		BelongsToRecipeStep     string `json:"belongsToRecipeStep"`
-		BelongsToRecipePrepTask string `json:"belongsToRecipeStepTask"`
-		SatisfiesRecipeStep     bool   `json:"satisfiesRecipeStep"`
+		ID                      string
+		BelongsToRecipeStep     string
+		BelongsToRecipePrepTask string
+		SatisfiesRecipeStep     bool
 	}
 
 	// RecipePrepTaskStepUpdateRequestInput represents a recipe prep task step.

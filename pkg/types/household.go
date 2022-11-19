@@ -82,12 +82,12 @@ type (
 	HouseholdDatabaseCreationInput struct {
 		_ struct{}
 
-		ID            string `json:"-"`
-		Name          string `json:"name"`
-		ContactEmail  string `json:"contactEmail"`
-		ContactPhone  string `json:"contactPhone"`
-		TimeZone      string `json:"timeZone"`
-		BelongsToUser string `json:"-"`
+		ID            string
+		Name          string
+		ContactEmail  string
+		ContactPhone  string
+		TimeZone      string
+		BelongsToUser string
 	}
 
 	// HouseholdUpdateRequestInput represents what a User could set as input for updating households.
@@ -171,7 +171,7 @@ func (x *HouseholdUpdateRequestInput) ValidateWithContext(ctx context.Context) e
 // HouseholdCreationInputForNewUser creates a new HouseholdInputCreation struct for a given user.
 func HouseholdCreationInputForNewUser(u *User) *HouseholdCreationRequestInput {
 	return &HouseholdCreationRequestInput{
-		Name:          fmt.Sprintf("%s_default", u.ID),
+		Name:          fmt.Sprintf("%s's cool household", u.Username),
 		BelongsToUser: u.ID,
 	}
 }

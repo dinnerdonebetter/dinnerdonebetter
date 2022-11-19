@@ -98,17 +98,17 @@ type (
 	MealDatabaseCreationInput struct {
 		_ struct{}
 
-		ID            string                                `json:"id"`
-		Name          string                                `json:"name"`
-		Description   string                                `json:"description"`
-		CreatedByUser string                                `json:"belongsToHousehold"`
-		Components    []*MealComponentDatabaseCreationInput `json:"recipes"`
+		ID            string
+		Name          string
+		Description   string
+		CreatedByUser string
+		Components    []*MealComponentDatabaseCreationInput
 	}
 
 	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
 	MealComponentDatabaseCreationInput struct {
-		RecipeID      string `json:"recipeID"`
-		ComponentType string `json:"mealComponentType"`
+		RecipeID      string
+		ComponentType string
 	}
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.

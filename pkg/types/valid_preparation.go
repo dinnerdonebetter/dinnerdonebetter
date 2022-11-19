@@ -70,15 +70,15 @@ type (
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationDatabaseCreationInput struct {
 		_                        struct{}
-		ID                       string `json:"id"`
-		Name                     string `json:"name"`
-		Description              string `json:"description"`
-		IconPath                 string `json:"iconPath"`
-		PastTense                string `json:"pastTense"`
-		Slug                     string `json:"slug"`
-		YieldsNothing            bool   `json:"yieldsNothing"`
-		RestrictToIngredients    bool   `json:"restrictToIngredients"`
-		ZeroIngredientsAllowable bool   `json:"zeroIngredientsAllowable"`
+		ID                       string
+		Name                     string
+		Description              string
+		IconPath                 string
+		PastTense                string
+		Slug                     string
+		YieldsNothing            bool
+		RestrictToIngredients    bool
+		ZeroIngredientsAllowable bool
 	}
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
