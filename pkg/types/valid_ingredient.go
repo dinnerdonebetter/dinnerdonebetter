@@ -141,33 +141,33 @@ type (
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
 	ValidIngredientDatabaseCreationInput struct {
 		_                                       struct{}
-		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius"`
-		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		ID                                      string   `json:"id"`
-		Warning                                 string   `json:"warning"`
-		IconPath                                string   `json:"iconPath"`
-		PluralName                              string   `json:"pluralName"`
-		StorageInstructions                     string   `json:"storageInstructions"`
-		Name                                    string   `json:"name"`
-		Description                             string   `json:"description"`
-		Slug                                    string   `json:"slug"`
-		ShoppingSuggestions                     string   `json:"shoppingSuggestions"`
-		IsMeasuredVolumetrically                bool     `json:"isMeasuredVolumetrically"`
-		ContainsFish                            bool     `json:"containsFish"`
-		ContainsShellfish                       bool     `json:"containsShellfish"`
-		AnimalFlesh                             bool     `json:"animalFlesh"`
-		ContainsEgg                             bool     `json:"containsEgg"`
-		IsLiquid                                bool     `json:"isLiquid"`
-		ContainsSoy                             bool     `json:"containsSoy"`
-		ContainsPeanut                          bool     `json:"containsPeanut"`
-		AnimalDerived                           bool     `json:"animalDerived"`
-		RestrictToPreparations                  bool     `json:"restrictToPreparations"`
-		ContainsDairy                           bool     `json:"containsDairy"`
-		ContainsSesame                          bool     `json:"containsSesame"`
-		ContainsTreeNut                         bool     `json:"containsTreeNut"`
-		ContainsWheat                           bool     `json:"containsWheat"`
-		ContainsAlcohol                         bool     `json:"containsAlcohol"`
-		ContainsGluten                          bool     `json:"containsGluten"`
+		MinimumIdealStorageTemperatureInCelsius *float32
+		MaximumIdealStorageTemperatureInCelsius *float32
+		ID                                      string
+		Warning                                 string
+		IconPath                                string
+		PluralName                              string
+		StorageInstructions                     string
+		Name                                    string
+		Description                             string
+		Slug                                    string
+		ShoppingSuggestions                     string
+		IsMeasuredVolumetrically                bool
+		ContainsFish                            bool
+		ContainsShellfish                       bool
+		AnimalFlesh                             bool
+		ContainsEgg                             bool
+		IsLiquid                                bool
+		ContainsSoy                             bool
+		ContainsPeanut                          bool
+		AnimalDerived                           bool
+		RestrictToPreparations                  bool
+		ContainsDairy                           bool
+		ContainsSesame                          bool
+		ContainsTreeNut                         bool
+		ContainsWheat                           bool
+		ContainsAlcohol                         bool
+		ContainsGluten                          bool
 	}
 
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.

@@ -77,17 +77,17 @@ type (
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
 		_                  struct{}
-		InspiredByRecipeID *string                                `json:"inspiredByRecipeID"`
-		CreatedByUser      string                                 `json:"belongsToHousehold"`
-		ID                 string                                 `json:"id"`
-		Name               string                                 `json:"name"`
-		Source             string                                 `json:"source"`
-		Description        string                                 `json:"description"`
-		Steps              []*RecipeStepDatabaseCreationInput     `json:"steps"`
-		PrepTasks          []*RecipePrepTaskDatabaseCreationInput `json:"prepTasks"`
-		AlsoCreateMeal     bool                                   `json:"alsoCreateMeal"`
-		SealOfApproval     bool                                   `json:"sealOfApproval"`
-		YieldsPortions     uint8                                  `json:"yieldsPortions"`
+		InspiredByRecipeID *string
+		CreatedByUser      string
+		ID                 string
+		Name               string
+		Source             string
+		Description        string
+		Steps              []*RecipeStepDatabaseCreationInput
+		PrepTasks          []*RecipePrepTaskDatabaseCreationInput
+		AlsoCreateMeal     bool
+		SealOfApproval     bool
+		YieldsPortions     uint8
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.

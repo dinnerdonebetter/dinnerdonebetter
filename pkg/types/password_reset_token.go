@@ -47,10 +47,10 @@ type (
 	// PasswordResetTokenDatabaseCreationInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenDatabaseCreationInput struct {
 		_             struct{}
-		ExpiresAt     time.Time `json:"expiresAt"`
-		ID            string    `json:"id"`
-		Token         string    `json:"token"`
-		BelongsToUser string    `json:"belongsToUser"`
+		ExpiresAt     time.Time
+		ID            string
+		Token         string
+		BelongsToUser string
 	}
 
 	// PasswordResetTokenRedemptionRequestInput represents what a user could set as input for creating password reset tokens.

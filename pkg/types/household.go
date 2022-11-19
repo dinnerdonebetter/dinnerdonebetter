@@ -82,12 +82,12 @@ type (
 	HouseholdDatabaseCreationInput struct {
 		_ struct{}
 
-		ID            string `json:"-"`
-		Name          string `json:"name"`
-		ContactEmail  string `json:"contactEmail"`
-		ContactPhone  string `json:"contactPhone"`
-		TimeZone      string `json:"timeZone"`
-		BelongsToUser string `json:"-"`
+		ID            string
+		Name          string
+		ContactEmail  string
+		ContactPhone  string
+		TimeZone      string
+		BelongsToUser string
 	}
 
 	// HouseholdUpdateRequestInput represents what a User could set as input for updating households.

@@ -84,20 +84,20 @@ type (
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
 		_                             struct{}
-		MinimumEstimatedTimeInSeconds *uint32                                      `json:"minimumEstimatedTimeInSeconds"`
-		MaximumTemperatureInCelsius   *float32                                     `json:"maximumTemperatureInCelsius"`
-		MinimumTemperatureInCelsius   *float32                                     `json:"minimumTemperatureInCelsius"`
-		MaximumEstimatedTimeInSeconds *uint32                                      `json:"maximumEstimatedTimeInSeconds"`
-		PreparationID                 string                                       `json:"preparationID"`
-		ID                            string                                       `json:"id"`
-		Notes                         string                                       `json:"notes"`
-		BelongsToRecipe               string                                       `json:"belongsToRecipe"`
-		ExplicitInstructions          string                                       `json:"explicitInstructions"`
-		Products                      []*RecipeStepProductDatabaseCreationInput    `json:"products"`
-		Ingredients                   []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
-		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput `json:"instruments"`
-		Index                         uint32                                       `json:"index"`
-		Optional                      bool                                         `json:"optional"`
+		MinimumEstimatedTimeInSeconds *uint32
+		MaximumTemperatureInCelsius   *float32
+		MinimumTemperatureInCelsius   *float32
+		MaximumEstimatedTimeInSeconds *uint32
+		PreparationID                 string
+		ID                            string
+		Notes                         string
+		BelongsToRecipe               string
+		ExplicitInstructions          string
+		Products                      []*RecipeStepProductDatabaseCreationInput
+		Ingredients                   []*RecipeStepIngredientDatabaseCreationInput
+		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput
+		Index                         uint32
+		Optional                      bool
 	}
 
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.

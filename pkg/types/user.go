@@ -75,20 +75,22 @@ type (
 		InvitationToken string     `json:"invitationToken,omitempty"`
 		InvitationID    string     `json:"invitationID,omitempty"`
 		Username        string     `json:"username"`
+		HouseholdName   string     `json:"householdName"`
 	}
 
 	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.
 	UserDatabaseCreationInput struct {
 		_                      struct{}
-		Birthday               *time.Time `json:"-"`
-		ID                     string     `json:"-"`
-		AvatarSrc              *string    `json:"-"`
-		HashedPassword         string     `json:"-"`
-		TwoFactorSecret        string     `json:"-"`
-		InvitationToken        string     `json:"-"`
-		DestinationHouseholdID string     `json:"-"`
-		Username               string     `json:"-"`
-		EmailAddress           string     `json:"-"`
+		Birthday               *time.Time
+		ID                     string
+		AvatarSrc              *string
+		HashedPassword         string
+		TwoFactorSecret        string
+		InvitationToken        string
+		DestinationHouseholdID string
+		Username               string
+		EmailAddress           string
+		HouseholdName          string
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.

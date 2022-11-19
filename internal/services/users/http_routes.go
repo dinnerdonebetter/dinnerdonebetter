@@ -203,6 +203,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		TwoFactorSecret: tfs,
 		InvitationToken: registrationInput.InvitationToken,
 		Birthday:        registrationInput.Birthday,
+		HouseholdName:   registrationInput.HouseholdName,
 	}
 
 	if invitation != nil {

@@ -96,16 +96,16 @@ type (
 	// RecipePrepTaskDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskDatabaseCreationInput struct {
 		_                                      struct{}
-		ID                                     string                                     `json:"id"`
-		Notes                                  string                                     `json:"notes"`
-		ExplicitStorageInstructions            string                                     `json:"explicitStorageInstructions"`
-		StorageType                            string                                     `json:"storageType"`
-		BelongsToRecipe                        string                                     `json:"belongsToRecipe"`
-		TaskSteps                              []*RecipePrepTaskStepDatabaseCreationInput `json:"recipeSteps"`
-		MaximumTimeBufferBeforeRecipeInSeconds uint32                                     `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     float32                                    `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius     float32                                    `json:"maximumStorageTemperatureInCelsius"`
-		MinimumTimeBufferBeforeRecipeInSeconds uint32                                     `json:"minimumTimeBufferBeforeRecipeInSeconds"`
+		ID                                     string
+		Notes                                  string
+		ExplicitStorageInstructions            string
+		StorageType                            string
+		BelongsToRecipe                        string
+		TaskSteps                              []*RecipePrepTaskStepDatabaseCreationInput
+		MaximumTimeBufferBeforeRecipeInSeconds uint32
+		MinimumStorageTemperatureInCelsius     float32
+		MaximumStorageTemperatureInCelsius     float32
+		MinimumTimeBufferBeforeRecipeInSeconds uint32
 	}
 
 	// RecipePrepTaskUpdateRequestInput represents what a user could set as input for updating recipes.
