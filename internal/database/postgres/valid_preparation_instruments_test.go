@@ -275,7 +275,7 @@ func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidPreparationInstruments(true, exampleValidPreparationInstrumentList.FilteredCount, exampleValidPreparationInstrumentList.ValidPreparationInstruments...))
+			WillReturnRows(buildMockRowsFromValidPreparationInstruments(true, exampleValidPreparationInstrumentList.FilteredCount, exampleValidPreparationInstrumentList.Data...))
 
 		actual, err := c.GetValidPreparationInstruments(ctx, filter)
 		assert.NoError(t, err)
@@ -299,7 +299,7 @@ func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidPreparationInstruments(true, exampleValidPreparationInstrumentList.FilteredCount, exampleValidPreparationInstrumentList.ValidPreparationInstruments...))
+			WillReturnRows(buildMockRowsFromValidPreparationInstruments(true, exampleValidPreparationInstrumentList.FilteredCount, exampleValidPreparationInstrumentList.Data...))
 
 		actual, err := c.GetValidPreparationInstruments(ctx, filter)
 		assert.NoError(t, err)

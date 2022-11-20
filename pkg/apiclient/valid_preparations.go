@@ -86,7 +86,7 @@ func (c *Client) SearchValidPreparations(ctx context.Context, query string, limi
 }
 
 // GetValidPreparations retrieves a list of valid preparations.
-func (c *Client) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (*types.ValidPreparationList, error) {
+func (c *Client) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparation], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -99,7 +99,7 @@ func (c *Client) GetValidPreparations(ctx context.Context, filter *types.QueryFi
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparations list request")
 	}
 
-	var validPreparations *types.ValidPreparationList
+	var validPreparations *types.QueryFilteredResult[types.ValidPreparation]
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparations); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparations")
 	}

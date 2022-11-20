@@ -121,7 +121,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 				// assert meal plan option vote list equality
 				actual, err := testClients.user.GetMealPlanOptionVotes(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID, nil)
 				requireNotNilAndNoProblems(t, actual, err)
-				assert.NotEmpty(t, actual.MealPlanOptionVotes)
+				assert.NotEmpty(t, actual.Data)
 
 				t.Log("cleaning up")
 				assert.NoError(t, testClients.user.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))

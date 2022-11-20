@@ -245,11 +245,11 @@ func TestQuerier_SearchForValidIngredientStates(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(validIngredientStateSearchQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientStates(false, 0, exampleValidIngredientStates.ValidIngredientStates...))
+			WillReturnRows(buildMockRowsFromValidIngredientStates(false, 0, exampleValidIngredientStates.Data...))
 
 		actual, err := c.SearchForValidIngredientStates(ctx, exampleQuery)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientStates.ValidIngredientStates, actual)
+		assert.Equal(t, exampleValidIngredientStates.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -324,7 +324,7 @@ func TestQuerier_GetValidIngredientStates(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientStates(true, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.ValidIngredientStates...))
+			WillReturnRows(buildMockRowsFromValidIngredientStates(true, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.Data...))
 
 		actual, err := c.GetValidIngredientStates(ctx, filter)
 		assert.NoError(t, err)
@@ -348,7 +348,7 @@ func TestQuerier_GetValidIngredientStates(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientStates(true, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.ValidIngredientStates...))
+			WillReturnRows(buildMockRowsFromValidIngredientStates(true, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.Data...))
 
 		actual, err := c.GetValidIngredientStates(ctx, filter)
 		assert.NoError(t, err)

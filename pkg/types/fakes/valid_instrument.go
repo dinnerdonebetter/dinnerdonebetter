@@ -23,20 +23,20 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 }
 
 // BuildFakeValidInstrumentList builds a faked ValidInstrumentList.
-func BuildFakeValidInstrumentList() *types.ValidInstrumentList {
+func BuildFakeValidInstrumentList() *types.QueryFilteredResult[types.ValidInstrument] {
 	var examples []*types.ValidInstrument
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidInstrument())
 	}
 
-	return &types.ValidInstrumentList{
+	return &types.QueryFilteredResult[types.ValidInstrument]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		ValidInstruments: examples,
+		Data: examples,
 	}
 }
 

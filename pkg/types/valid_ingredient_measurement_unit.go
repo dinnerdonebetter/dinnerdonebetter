@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidIngredientMeasurementUnit))
-	gob.Register(new(ValidIngredientMeasurementUnitList))
 	gob.Register(new(ValidIngredientMeasurementUnitCreationRequestInput))
 	gob.Register(new(ValidIngredientMeasurementUnitUpdateRequestInput))
 }
@@ -41,13 +40,6 @@ type (
 		Ingredient               ValidIngredient      `json:"ingredient"`
 		MinimumAllowableQuantity float32              `json:"minimumAllowableQuantity"`
 		MaximumAllowableQuantity float32              `json:"maximumAllowableQuantity"`
-	}
-
-	// ValidIngredientMeasurementUnitList represents a list of valid ingredient measurement units.
-	ValidIngredientMeasurementUnitList struct {
-		_                               struct{}
-		ValidIngredientMeasurementUnits []*ValidIngredientMeasurementUnit `json:"data"`
-		Pagination
 	}
 
 	// ValidIngredientMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid ingredient measurement units.
@@ -88,9 +80,9 @@ type (
 	ValidIngredientMeasurementUnitDataManager interface {
 		ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (bool, error)
 		GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*ValidIngredientMeasurementUnit, error)
-		GetValidIngredientMeasurementUnits(ctx context.Context, filter *QueryFilter) (*ValidIngredientMeasurementUnitList, error)
-		GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*ValidIngredientMeasurementUnitList, error)
-		GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, ingredientID string, filter *QueryFilter) (*ValidIngredientMeasurementUnitList, error)
+		GetValidIngredientMeasurementUnits(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientMeasurementUnit], error)
+		GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientMeasurementUnit], error)
+		GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, ingredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientMeasurementUnit], error)
 		CreateValidIngredientMeasurementUnit(ctx context.Context, input *ValidIngredientMeasurementUnitDatabaseCreationInput) (*ValidIngredientMeasurementUnit, error)
 		UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *ValidIngredientMeasurementUnit) error
 		ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error

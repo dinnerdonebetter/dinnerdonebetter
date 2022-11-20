@@ -266,7 +266,7 @@ func TestQuerier_GetValidMeasurementConversionsFromUnit(T *testing.T) {
 
 		ctx := context.Background()
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-		exampleValidMeasurementConversions := fakes.BuildFakeValidMeasurementConversionList().ValidMeasurementConversions
+		exampleValidMeasurementConversions := fakes.BuildFakeValidMeasurementConversionList().Data
 
 		c, db := buildTestClient(t)
 
@@ -294,7 +294,7 @@ func TestQuerier_GetValidMeasurementConversionsToUnit(T *testing.T) {
 
 		ctx := context.Background()
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-		exampleValidMeasurementConversions := fakes.BuildFakeValidMeasurementConversionList().ValidMeasurementConversions
+		exampleValidMeasurementConversions := fakes.BuildFakeValidMeasurementConversionList().Data
 
 		c, db := buildTestClient(t)
 

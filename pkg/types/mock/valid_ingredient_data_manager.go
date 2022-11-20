@@ -46,9 +46,9 @@ func (m *ValidIngredientDataManager) SearchForValidIngredientsForPreparation(ctx
 }
 
 // GetValidIngredients is a mock function.
-func (m *ValidIngredientDataManager) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.ValidIngredientList, error) {
+func (m *ValidIngredientDataManager) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.ValidIngredientList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), args.Error(1)
 }
 
 // CreateValidIngredient is a mock function.

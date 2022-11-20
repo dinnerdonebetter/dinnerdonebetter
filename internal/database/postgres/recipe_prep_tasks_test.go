@@ -222,7 +222,7 @@ func TestQuerier_GetRecipePrepTasksForRecipe(T *testing.T) {
 
 		ctx := context.Background()
 		exampleRecipe := fakes.BuildFakeRecipe()
-		expected := fakes.BuildFakeRecipePrepTaskList().RecipePrepTasks
+		expected := fakes.BuildFakeRecipePrepTaskList().Data
 
 		c, db := buildTestClient(t)
 

@@ -27,20 +27,20 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 }
 
 // BuildFakeRecipeStepInstrumentList builds a faked RecipeStepInstrumentList.
-func BuildFakeRecipeStepInstrumentList() *types.RecipeStepInstrumentList {
+func BuildFakeRecipeStepInstrumentList() *types.QueryFilteredResult[types.RecipeStepInstrument] {
 	var examples []*types.RecipeStepInstrument
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepInstrument())
 	}
 
-	return &types.RecipeStepInstrumentList{
+	return &types.QueryFilteredResult[types.RecipeStepInstrument]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		RecipeStepInstruments: examples,
+		Data: examples,
 	}
 }
 

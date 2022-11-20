@@ -313,11 +313,11 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(validIngredientSearchQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredients.ValidIngredients...))
+			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredients.Data...))
 
 		actual, err := c.SearchForValidIngredients(ctx, exampleQuery)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredients.ValidIngredients, actual)
+		assert.Equal(t, exampleValidIngredients.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -395,11 +395,11 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(validIngredientSearchQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredients.ValidIngredients...))
+			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredients.Data...))
 
 		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredients.ValidIngredients, actual)
+		assert.Equal(t, exampleValidIngredients.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -474,7 +474,7 @@ func TestQuerier_GetValidIngredients(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredients(true, exampleValidIngredientList.FilteredCount, exampleValidIngredientList.ValidIngredients...))
+			WillReturnRows(buildMockRowsFromValidIngredients(true, exampleValidIngredientList.FilteredCount, exampleValidIngredientList.Data...))
 
 		actual, err := c.GetValidIngredients(ctx, filter)
 		assert.NoError(t, err)
@@ -498,7 +498,7 @@ func TestQuerier_GetValidIngredients(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredients(true, exampleValidIngredientList.FilteredCount, exampleValidIngredientList.ValidIngredients...))
+			WillReturnRows(buildMockRowsFromValidIngredients(true, exampleValidIngredientList.FilteredCount, exampleValidIngredientList.Data...))
 
 		actual, err := c.GetValidIngredients(ctx, filter)
 		assert.NoError(t, err)

@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidMeasurementUnit))
-	gob.Register(new(ValidMeasurementUnitList))
 	gob.Register(new(ValidMeasurementUnitCreationRequestInput))
 	gob.Register(new(ValidMeasurementUnitUpdateRequestInput))
 }
@@ -45,13 +44,6 @@ type (
 		Universal     bool       `json:"universal"`
 		Metric        bool       `json:"metric"`
 		Imperial      bool       `json:"imperial"`
-	}
-
-	// ValidMeasurementUnitList represents a list of valid measurement units.
-	ValidMeasurementUnitList struct {
-		_                     struct{}
-		ValidMeasurementUnits []*ValidMeasurementUnit `json:"data"`
-		Pagination
 	}
 
 	// ValidMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid measurement units.
@@ -104,7 +96,7 @@ type (
 	ValidMeasurementUnitDataManager interface {
 		ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (bool, error)
 		GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*ValidMeasurementUnit, error)
-		GetValidMeasurementUnits(ctx context.Context, filter *QueryFilter) (*ValidMeasurementUnitList, error)
+		GetValidMeasurementUnits(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
 		SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*ValidMeasurementUnit, error)
 		CreateValidMeasurementUnit(ctx context.Context, input *ValidMeasurementUnitDatabaseCreationInput) (*ValidMeasurementUnit, error)
 		UpdateValidMeasurementUnit(ctx context.Context, updated *ValidMeasurementUnit) error

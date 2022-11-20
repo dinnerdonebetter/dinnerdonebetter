@@ -24,7 +24,6 @@ const (
 
 func init() {
 	gob.Register(new(MealPlanOptionVote))
-	gob.Register(new(MealPlanOptionVoteList))
 	gob.Register(new(MealPlanOptionVoteCreationRequestInput))
 	gob.Register(new(MealPlanOptionVoteUpdateRequestInput))
 }
@@ -56,13 +55,6 @@ type (
 		LastUpdatedAt           sql.NullTime
 		CreatedAt               sql.NullTime
 		ArchivedAt              sql.NullTime
-	}
-
-	// MealPlanOptionVoteList represents a list of meal plan option votes.
-	MealPlanOptionVoteList struct {
-		_                   struct{}
-		MealPlanOptionVotes []*MealPlanOptionVote `json:"data"`
-		Pagination
 	}
 
 	// MealPlanOptionVoteCreationInput represents what a user could set as input for creating meal plan option votes.
@@ -103,7 +95,7 @@ type (
 	MealPlanOptionVoteDataManager interface {
 		MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (bool, error)
 		GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*MealPlanOptionVote, error)
-		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *QueryFilter) (*MealPlanOptionVoteList, error)
+		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *QueryFilter) (*QueryFilteredResult[MealPlanOptionVote], error)
 		GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (x []*MealPlanOptionVote, err error)
 		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVotesDatabaseCreationInput) ([]*MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, updated *MealPlanOptionVote) error

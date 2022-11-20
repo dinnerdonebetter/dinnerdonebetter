@@ -23,7 +23,7 @@ type adminTestSuite struct {
 
 	ctx                  context.Context
 	exampleHousehold     *types.Household
-	exampleHouseholdList *types.HouseholdList
+	exampleHouseholdList *types.QueryFilteredResult[types.Household]
 }
 
 var _ suite.SetupTestSuite = (*adminTestSuite)(nil)

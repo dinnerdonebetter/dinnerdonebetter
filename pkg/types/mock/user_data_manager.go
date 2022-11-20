@@ -65,9 +65,9 @@ func (m *UserDataManager) SearchForUsersByUsername(ctx context.Context, username
 }
 
 // GetUsers is a mock function.
-func (m *UserDataManager) GetUsers(ctx context.Context, filter *types.QueryFilter) (*types.UserList, error) {
+func (m *UserDataManager) GetUsers(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.User], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.UserList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.User]), args.Error(1)
 }
 
 // CreateUser is a mock function.

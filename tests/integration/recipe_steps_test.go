@@ -180,10 +180,10 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.RecipeSteps),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.RecipeSteps),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

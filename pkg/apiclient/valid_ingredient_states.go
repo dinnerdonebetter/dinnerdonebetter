@@ -66,7 +66,7 @@ func (c *Client) SearchValidIngredientStates(ctx context.Context, query string, 
 }
 
 // GetValidIngredientStates retrieves a list of valid ingredient states.
-func (c *Client) GetValidIngredientStates(ctx context.Context, filter *types.QueryFilter) (*types.ValidIngredientStateList, error) {
+func (c *Client) GetValidIngredientStates(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientState], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -79,7 +79,7 @@ func (c *Client) GetValidIngredientStates(ctx context.Context, filter *types.Que
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient states list request")
 	}
 
-	var validIngredientStates *types.ValidIngredientStateList
+	var validIngredientStates *types.QueryFilteredResult[types.ValidIngredientState]
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientStates); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient states")
 	}

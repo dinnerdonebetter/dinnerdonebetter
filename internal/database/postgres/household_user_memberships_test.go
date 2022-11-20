@@ -795,11 +795,11 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Data...))
 
 		markHouseholdAsUserDefaultArgs := []any{
 			exampleUserID,
-			exampleHouseholdList.Households[0].ID,
+			exampleHouseholdList.Data[0].ID,
 			exampleUserID,
 		}
 
@@ -909,7 +909,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleHouseholdList := fakes.BuildFakeHouseholdList()
-		exampleHouseholdList.Households = []*types.Household{}
+		exampleHouseholdList.Data = []*types.Household{}
 
 		c, db := buildTestClient(t)
 
@@ -928,7 +928,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Data...))
 
 		// create household user membership for created user
 		householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -974,7 +974,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleHouseholdList := fakes.BuildFakeHouseholdList()
-		exampleHouseholdList.Households = []*types.Household{}
+		exampleHouseholdList.Data = []*types.Household{}
 
 		c, db := buildTestClient(t)
 
@@ -993,7 +993,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Data...))
 
 		// create household user membership for created user
 		householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -1044,11 +1044,11 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Data...))
 
 		markHouseholdAsUserDefaultArgs := []any{
 			exampleUserID,
-			exampleHouseholdList.Households[0].ID,
+			exampleHouseholdList.Data[0].ID,
 			exampleUserID,
 		}
 
@@ -1086,11 +1086,11 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Data...))
 
 		markHouseholdAsUserDefaultArgs := []any{
 			exampleUserID,
-			exampleHouseholdList.Households[0].ID,
+			exampleHouseholdList.Data[0].ID,
 			exampleUserID,
 		}
 

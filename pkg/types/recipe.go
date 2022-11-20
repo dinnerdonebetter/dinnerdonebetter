@@ -25,7 +25,6 @@ const (
 
 func init() {
 	gob.Register(new(Recipe))
-	gob.Register(new(RecipeList))
 	gob.Register(new(RecipeCreationRequestInput))
 	gob.Register(new(RecipeUpdateRequestInput))
 }
@@ -48,14 +47,6 @@ type (
 		PrepTasks          []*RecipePrepTask `json:"prepTasks"`
 		SealOfApproval     bool              `json:"sealOfApproval"`
 		YieldsPortions     uint8             `json:"yieldsPortions"`
-	}
-
-	// RecipeList represents a list of recipes.
-	RecipeList struct {
-		_ struct{}
-
-		Recipes []*Recipe `json:"data"`
-		Pagination
 	}
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
@@ -109,8 +100,8 @@ type (
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
 		GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*Recipe, error)
-		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
-		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*RecipeList, error)
+		GetRecipes(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
+		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error

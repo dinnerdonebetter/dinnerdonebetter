@@ -26,20 +26,20 @@ func BuildFakeMealPlanTaskCreationRequestInput() *types.MealPlanTaskCreationRequ
 }
 
 // BuildFakeMealPlanTaskList builds a faked MealPlanTaskList.
-func BuildFakeMealPlanTaskList() *types.MealPlanTaskList {
+func BuildFakeMealPlanTaskList() *types.QueryFilteredResult[types.MealPlanTask] {
 	var examples []*types.MealPlanTask
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanTask())
 	}
 
-	return &types.MealPlanTaskList{
+	return &types.QueryFilteredResult[types.MealPlanTask]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		MealPlanTasks: examples,
+		Data: examples,
 	}
 }
 

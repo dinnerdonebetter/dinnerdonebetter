@@ -380,7 +380,7 @@ func TestQuerier_GetHouseholds(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Data...))
 
 		actual, err := c.GetHouseholds(ctx, exampleUserID, filter)
 		assert.NoError(t, err)
@@ -417,7 +417,7 @@ func TestQuerier_GetHouseholds(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Data...))
 
 		actual, err := c.GetHouseholds(ctx, exampleUserID, filter)
 		assert.NoError(t, err)
@@ -486,7 +486,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Data...))
 
 		actual, err := c.GetHouseholdsForAdmin(ctx, exampleUserID, filter)
 		assert.NoError(t, err)
@@ -510,7 +510,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Data...))
 
 		actual, err := c.GetHouseholdsForAdmin(ctx, exampleUserID, filter)
 		assert.NoError(t, err)

@@ -180,12 +180,12 @@ func (s *validPreparationsTestSuite) TestClient_SearchValidPreparations() {
 		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidPreparationList.ValidPreparations)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidPreparationList.Data)
 		actual, err := c.SearchValidPreparations(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparationList.ValidPreparations, actual)
+		assert.Equal(t, exampleValidPreparationList.Data, actual)
 	})
 
 	s.Run("with empty query", func() {

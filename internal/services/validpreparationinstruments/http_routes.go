@@ -150,7 +150,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstruments(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validPreparationInstruments = &types.ValidPreparationInstrumentList{ValidPreparationInstruments: []*types.ValidPreparationInstrument{}}
+		validPreparationInstruments = &types.QueryFilteredResult[types.ValidPreparationInstrument]{Data: []*types.ValidPreparationInstrument{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation instruments")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

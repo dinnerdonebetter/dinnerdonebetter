@@ -187,11 +187,11 @@ func (q *Querier) GetMealPlan(ctx context.Context, mealPlanID, householdID strin
 }
 
 // GetMealPlans fetches a list of meal plans from the database that meet a particular filter.
-func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.MealPlanList, err error) {
+func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlan], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.MealPlanList{}
+	x = &types.QueryFilteredResult[types.MealPlan]{}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -211,12 +211,12 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 		return nil, observability.PrepareError(err, span, "executing meal plans list retrieval query")
 	}
 
-	if x.MealPlans, x.FilteredCount, x.TotalCount, err = q.scanMealPlans(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMealPlans(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning meal plans")
 	}
 
 	fullMealPlans := []*types.MealPlan{}
-	for _, mp := range x.MealPlans {
+	for _, mp := range x.Data {
 		fmp, mealPlanFetchErr := q.getMealPlan(ctx, mp.ID, householdID, false)
 		if mealPlanFetchErr != nil {
 			return nil, observability.PrepareError(mealPlanFetchErr, span, "scanning meal plans")
@@ -224,7 +224,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 
 		fullMealPlans = append(fullMealPlans, fmp)
 	}
-	x.MealPlans = fullMealPlans
+	x.Data = fullMealPlans
 
 	return x, nil
 }

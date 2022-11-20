@@ -36,7 +36,6 @@ const (
 
 func init() {
 	gob.Register(new(MealPlan))
-	gob.Register(new(MealPlanList))
 	gob.Register(new(MealPlanCreationRequestInput))
 	gob.Register(new(MealPlanUpdateRequestInput))
 }
@@ -60,13 +59,6 @@ type (
 		Events                 []*MealPlanEvent `json:"events"`
 		GroceryListInitialized bool             `json:"groceryListInitialized"`
 		TasksCreated           bool             `json:"tasksCreated"`
-	}
-
-	// MealPlanList represents a list of meal plans.
-	MealPlanList struct {
-		_         struct{}
-		MealPlans []*MealPlan `json:"data"`
-		Pagination
 	}
 
 	// MealPlanCreationRequestInput represents what a user could set as input for creating meal plans.
@@ -112,7 +104,7 @@ type (
 	MealPlanDataManager interface {
 		MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error)
 		GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*MealPlan, error)
-		GetMealPlans(ctx context.Context, householdID string, filter *QueryFilter) (*MealPlanList, error)
+		GetMealPlans(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[MealPlan], error)
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error

@@ -32,20 +32,20 @@ func BuildFakeUser() *types.User {
 }
 
 // BuildFakeUserList builds a faked UserList.
-func BuildFakeUserList() *types.UserList {
+func BuildFakeUserList() *types.QueryFilteredResult[types.User] {
 	var examples []*types.User
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeUser())
 	}
 
-	return &types.UserList{
+	return &types.QueryFilteredResult[types.User]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		Users: examples,
+		Data: examples,
 	}
 }
 

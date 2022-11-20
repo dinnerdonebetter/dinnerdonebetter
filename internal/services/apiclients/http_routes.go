@@ -53,8 +53,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	apiClients, err := s.apiClientDataManager.GetAPIClients(ctx, requester, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// just return an empty list if there are no results.
-		apiClients = &types.APIClientList{
-			Clients: []*types.APIClient{},
+		apiClients = &types.QueryFilteredResult[types.APIClient]{
+			Data: []*types.APIClient{},
 		}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching API clients from database")

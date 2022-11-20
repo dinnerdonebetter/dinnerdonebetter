@@ -331,7 +331,7 @@ func TestRecipeStepIngredientsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.RecipeStepIngredientList{}),
+			mock.IsType(&types.QueryFilteredResult[types.RecipeStepIngredient]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -378,7 +378,7 @@ func TestRecipeStepIngredientsService_ListHandler(T *testing.T) {
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.RecipeStepIngredientList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.RecipeStepIngredient])(nil), sql.ErrNoRows)
 		helper.service.recipeStepIngredientDataManager = recipeStepIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -386,7 +386,7 @@ func TestRecipeStepIngredientsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.RecipeStepIngredientList{}),
+			mock.IsType(&types.QueryFilteredResult[types.RecipeStepIngredient]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -409,7 +409,7 @@ func TestRecipeStepIngredientsService_ListHandler(T *testing.T) {
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.RecipeStepIngredientList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.RecipeStepIngredient])(nil), errors.New("blah"))
 		helper.service.recipeStepIngredientDataManager = recipeStepIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

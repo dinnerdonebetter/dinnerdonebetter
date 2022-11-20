@@ -18,7 +18,6 @@ const (
 
 func init() {
 	gob.Register(new(RecipePrepTask))
-	gob.Register(new(RecipePrepTaskList))
 	gob.Register(new(RecipePrepTaskCreationRequestInput))
 	gob.Register(new(RecipePrepTaskUpdateRequestInput))
 }

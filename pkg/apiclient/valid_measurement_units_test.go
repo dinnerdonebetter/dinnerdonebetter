@@ -143,12 +143,12 @@ func (s *validMeasurementUnitsTestSuite) TestClient_SearchValidMeasurementUnits(
 		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidMeasurementUnitList.ValidMeasurementUnits)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidMeasurementUnitList.Data)
 		actual, err := c.SearchValidMeasurementUnits(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidMeasurementUnitList.ValidMeasurementUnits, actual)
+		assert.Equal(t, exampleValidMeasurementUnitList.Data, actual)
 	})
 
 	s.Run("with empty query", func() {

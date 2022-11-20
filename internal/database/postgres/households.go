@@ -298,7 +298,7 @@ func (q *Querier) buildGetHouseholdsQuery(ctx context.Context, userID string, fo
 }
 
 // getHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryExecutor, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryExecutor, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -309,7 +309,7 @@ func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryEx
 	tracing.AttachQueryFilterToSpan(span, filter)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	x = &types.HouseholdList{}
+	x = &types.QueryFilteredResult[types.Household]{}
 	if filter != nil {
 		if filter.Page != nil {
 			x.Page = *filter.Page
@@ -327,7 +327,7 @@ func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryEx
 		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
 	}
 
-	if x.Households, x.FilteredCount, x.TotalCount, err = q.scanHouseholds(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanHouseholds(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning households from database")
 	}
 
@@ -335,12 +335,12 @@ func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryEx
 }
 
 // GetHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *Querier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+func (q *Querier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
 	return q.getHouseholds(ctx, q.db, userID, false, filter)
 }
 
 // GetHouseholdsForAdmin fetches a list of households from the database that meet a particular filter for all users.
-func (q *Querier) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+func (q *Querier) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
 	return q.getHouseholds(ctx, q.db, userID, true, filter)
 }
 

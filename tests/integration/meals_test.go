@@ -122,10 +122,10 @@ func (s *TestSuite) TestMeals_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.Meals),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.Meals),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")
@@ -185,10 +185,10 @@ func (s *TestSuite) TestMeals_Searching() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.Meals),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.Meals),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidIngredientPreparation))
-	gob.Register(new(ValidIngredientPreparationList))
 	gob.Register(new(ValidIngredientPreparationCreationRequestInput))
 	gob.Register(new(ValidIngredientPreparationUpdateRequestInput))
 }
@@ -39,13 +38,6 @@ type (
 		ID            string           `json:"id"`
 		Preparation   ValidPreparation `json:"preparation"`
 		Ingredient    ValidIngredient  `json:"ingredient"`
-	}
-
-	// ValidIngredientPreparationList represents a list of valid ingredient preparations.
-	ValidIngredientPreparationList struct {
-		_                           struct{}
-		ValidIngredientPreparations []*ValidIngredientPreparation `json:"data"`
-		Pagination
 	}
 
 	// ValidIngredientPreparationCreationRequestInput represents what a user could set as input for creating valid ingredient preparations.
@@ -80,9 +72,9 @@ type (
 	ValidIngredientPreparationDataManager interface {
 		ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (bool, error)
 		GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*ValidIngredientPreparation, error)
-		GetValidIngredientPreparations(ctx context.Context, filter *QueryFilter) (*ValidIngredientPreparationList, error)
-		GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*ValidIngredientPreparationList, error)
-		GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*ValidIngredientPreparationList, error)
+		GetValidIngredientPreparations(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
+		GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
+		GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
 		CreateValidIngredientPreparation(ctx context.Context, input *ValidIngredientPreparationDatabaseCreationInput) (*ValidIngredientPreparation, error)
 		UpdateValidIngredientPreparation(ctx context.Context, updated *ValidIngredientPreparation) error
 		ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error

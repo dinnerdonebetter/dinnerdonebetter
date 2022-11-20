@@ -107,7 +107,7 @@ func (s *recipePrepTasksTestSuite) TestClient_GetRecipePrepTasks() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleRecipePrepTaskList := fakes.BuildFakeRecipePrepTaskList().RecipePrepTasks
+		exampleRecipePrepTaskList := fakes.BuildFakeRecipePrepTaskList().Data
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipePrepTaskList)

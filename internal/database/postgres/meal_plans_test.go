@@ -351,8 +351,8 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		exampleHouseholdID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for i := range exampleMealPlanList.MealPlans {
-			exampleMealPlanList.MealPlans[i].Events = nil
+		for i := range exampleMealPlanList.Data {
+			exampleMealPlanList.Data[i].Events = nil
 		}
 
 		ctx := context.Background()
@@ -362,9 +362,9 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
+			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.Data...))
 
-		for _, mp := range exampleMealPlanList.MealPlans {
+		for _, mp := range exampleMealPlanList.Data {
 			prepareMockToSuccessfullyGetMealPlan(t, mp, exampleHouseholdID, db, false)
 		}
 
@@ -383,8 +383,8 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
 		exampleMealPlanList.Page = 0
 		exampleMealPlanList.Limit = 0
-		for i := range exampleMealPlanList.MealPlans {
-			exampleMealPlanList.MealPlans[i].Events = nil
+		for i := range exampleMealPlanList.Data {
+			exampleMealPlanList.Data[i].Events = nil
 		}
 
 		ctx := context.Background()
@@ -394,9 +394,9 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
+			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.Data...))
 
-		for _, mp := range exampleMealPlanList.MealPlans {
+		for _, mp := range exampleMealPlanList.Data {
 			prepareMockToSuccessfullyGetMealPlan(t, mp, exampleHouseholdID, db, false)
 		}
 
@@ -1182,7 +1182,7 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 
 		expected := []*types.MealPlan{}
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for _, mp := range exampleMealPlanList.MealPlans {
+		for _, mp := range exampleMealPlanList.Data {
 			mp.Events = nil
 			expected = append(expected, mp)
 		}
@@ -1192,7 +1192,7 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
 			WithArgs().
-			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
+			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.Data...))
 
 		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 		assert.NoError(t, err)
@@ -1222,7 +1222,7 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for _, mp := range exampleMealPlanList.MealPlans {
+		for _, mp := range exampleMealPlanList.Data {
 			mp.Events = nil
 		}
 
@@ -1244,7 +1244,7 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for _, mp := range exampleMealPlanList.MealPlans {
+		for _, mp := range exampleMealPlanList.Data {
 			mp.Events = nil
 		}
 
@@ -1253,7 +1253,7 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlansQuery)).
 			WithArgs().
-			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...).RowError(0, errors.New("blah")))
+			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.Data...).RowError(0, errors.New("blah")))
 
 		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 		assert.Error(t, err)

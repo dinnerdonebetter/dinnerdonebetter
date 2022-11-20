@@ -344,11 +344,11 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 }
 
 // GetUsers fetches a list of users from the database that meet a particular filter.
-func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *types.UserList, err error) {
+func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.User], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.UserList{}
+	x = &types.QueryFilteredResult[types.User]{}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -369,7 +369,7 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
-	if x.Users, x.FilteredCount, x.TotalCount, err = q.scanUsers(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanUsers(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, span, "loading response from database")
 	}
 

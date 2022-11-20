@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidPreparation))
-	gob.Register(new(ValidPreparationList))
 	gob.Register(new(ValidPreparationCreationRequestInput))
 	gob.Register(new(ValidPreparationUpdateRequestInput))
 }
@@ -44,13 +43,6 @@ type (
 		YieldsNothing            bool       `json:"yieldsNothing"`
 		RestrictToIngredients    bool       `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable bool       `json:"zeroIngredientsAllowable"`
-	}
-
-	// ValidPreparationList represents a list of valid preparations.
-	ValidPreparationList struct {
-		_                 struct{}
-		ValidPreparations []*ValidPreparation `json:"data"`
-		Pagination
 	}
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
@@ -100,7 +92,7 @@ type (
 		ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error)
 		GetValidPreparation(ctx context.Context, validPreparationID string) (*ValidPreparation, error)
 		GetRandomValidPreparation(ctx context.Context) (*ValidPreparation, error)
-		GetValidPreparations(ctx context.Context, filter *QueryFilter) (*ValidPreparationList, error)
+		GetValidPreparations(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidPreparation], error)
 		SearchForValidPreparations(ctx context.Context, query string) ([]*ValidPreparation, error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error

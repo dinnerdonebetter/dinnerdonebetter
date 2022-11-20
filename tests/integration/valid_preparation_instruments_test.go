@@ -153,10 +153,10 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.ValidPreparationInstruments),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.ValidPreparationInstruments),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")
@@ -215,14 +215,14 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing_ByValue() {
 			validPreparationInstrumentsForInstrument, err := testClients.user.GetValidPreparationInstrumentsForInstrument(ctx, createdValidInstrument.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationInstrumentsForInstrument, err)
 
-			require.Len(t, validPreparationInstrumentsForInstrument.ValidPreparationInstruments, 1)
-			assert.Equal(t, validPreparationInstrumentsForInstrument.ValidPreparationInstruments[0].ID, createdValidPreparationInstrument.ID)
+			require.Len(t, validPreparationInstrumentsForInstrument.Data, 1)
+			assert.Equal(t, validPreparationInstrumentsForInstrument.Data[0].ID, createdValidPreparationInstrument.ID)
 
 			validPreparationInstrumentsForPreparation, err := testClients.user.GetValidPreparationInstrumentsForPreparation(ctx, createdValidPreparation.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationInstrumentsForPreparation, err)
 
-			require.Len(t, validPreparationInstrumentsForPreparation.ValidPreparationInstruments, 1)
-			assert.Equal(t, validPreparationInstrumentsForPreparation.ValidPreparationInstruments[0].ID, createdValidPreparationInstrument.ID)
+			require.Len(t, validPreparationInstrumentsForPreparation.Data, 1)
+			assert.Equal(t, validPreparationInstrumentsForPreparation.Data[0].ID, createdValidPreparationInstrument.ID)
 
 			t.Log("cleaning up valid preparation instrument")
 			assert.NoError(t, testClients.admin.ArchiveValidPreparationInstrument(ctx, createdValidPreparationInstrument.ID))

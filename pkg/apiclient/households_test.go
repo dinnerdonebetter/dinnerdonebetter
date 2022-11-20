@@ -26,7 +26,7 @@ type householdsTestSuite struct {
 	ctx                  context.Context
 	exampleHousehold     *types.Household
 	exampleUser          *types.User
-	exampleHouseholdList *types.HouseholdList
+	exampleHouseholdList *types.QueryFilteredResult[types.Household]
 }
 
 var _ suite.SetupTestSuite = (*householdsTestSuite)(nil)
@@ -192,9 +192,9 @@ func (s *householdsTestSuite) TestClient_GetHouseholds() {
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdList)
 		actual, err := c.GetHouseholds(s.ctx, filter)
 
-		for i, household := range actual.Households {
+		for i, household := range actual.Data {
 			for j := range household.Members {
-				actual.Households[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt = s.exampleHouseholdList.Households[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt
+				actual.Data[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt = s.exampleHouseholdList.Data[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt
 			}
 		}
 

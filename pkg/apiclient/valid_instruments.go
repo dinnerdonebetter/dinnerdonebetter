@@ -86,7 +86,7 @@ func (c *Client) SearchValidInstruments(ctx context.Context, query string, limit
 }
 
 // GetValidInstruments retrieves a list of valid instruments.
-func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (*types.ValidInstrumentList, error) {
+func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidInstrument], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -99,7 +99,7 @@ func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFil
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid instruments list request")
 	}
 
-	var validInstruments *types.ValidInstrumentList
+	var validInstruments *types.QueryFilteredResult[types.ValidInstrument]
 	if err = c.fetchAndUnmarshal(ctx, req, &validInstruments); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instruments")
 	}

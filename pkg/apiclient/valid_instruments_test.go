@@ -180,12 +180,12 @@ func (s *validInstrumentsTestSuite) TestClient_SearchValidInstruments() {
 		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidInstrumentList.ValidInstruments)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidInstrumentList.Data)
 		actual, err := c.SearchValidInstruments(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidInstrumentList.ValidInstruments, actual)
+		assert.Equal(t, exampleValidInstrumentList.Data, actual)
 	})
 
 	s.Run("with empty query", func() {

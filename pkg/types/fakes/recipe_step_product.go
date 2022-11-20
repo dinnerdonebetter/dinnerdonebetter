@@ -34,20 +34,20 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 }
 
 // BuildFakeRecipeStepProductList builds a faked RecipeStepProductList.
-func BuildFakeRecipeStepProductList() *types.RecipeStepProductList {
+func BuildFakeRecipeStepProductList() *types.QueryFilteredResult[types.RecipeStepProduct] {
 	var examples []*types.RecipeStepProduct
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepProduct())
 	}
 
-	return &types.RecipeStepProductList{
+	return &types.QueryFilteredResult[types.RecipeStepProduct]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		RecipeStepProducts: examples,
+		Data: examples,
 	}
 }
 

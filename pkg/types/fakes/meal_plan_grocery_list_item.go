@@ -25,20 +25,20 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 	}
 }
 
-func BuildFakeMealPlanGroceryListItemList() *types.MealPlanGroceryListItemList {
+func BuildFakeMealPlanGroceryListItemList() *types.QueryFilteredResult[types.MealPlanGroceryListItem] {
 	var examples []*types.MealPlanGroceryListItem
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanGroceryListItem())
 	}
 
-	return &types.MealPlanGroceryListItemList{
+	return &types.QueryFilteredResult[types.MealPlanGroceryListItem]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		MealPlanGroceryListItems: examples,
+		Data: examples,
 	}
 }
 

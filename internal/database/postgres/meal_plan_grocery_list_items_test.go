@@ -276,7 +276,7 @@ func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 
 		ctx := context.Background()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList().MealPlanGroceryListItems
+		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList().Data
 		for i := range exampleMealPlanGroceryListItemList {
 			exampleMealPlanGroceryListItemList[i].Ingredient = types.ValidIngredient{
 				ID: exampleMealPlanGroceryListItemList[i].Ingredient.ID,

@@ -610,7 +610,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.MealPlanOptionVoteList{}),
+			mock.IsType(&types.QueryFilteredResult[types.MealPlanOptionVote]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -658,7 +658,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.MealPlanOptionVoteList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.MealPlanOptionVote])(nil), sql.ErrNoRows)
 		helper.service.dataManager = dbManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -666,7 +666,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.MealPlanOptionVoteList{}),
+			mock.IsType(&types.QueryFilteredResult[types.MealPlanOptionVote]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -690,7 +690,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.MealPlanOptionVoteList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.MealPlanOptionVote])(nil), errors.New("blah"))
 		helper.service.dataManager = dbManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

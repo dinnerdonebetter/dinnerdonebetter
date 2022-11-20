@@ -325,7 +325,7 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidMeasurementUnitList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidMeasurementUnit]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -370,7 +370,7 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidMeasurementUnitList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
 		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -378,7 +378,7 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidMeasurementUnitList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidMeasurementUnit]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -399,7 +399,7 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidMeasurementUnitList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -440,7 +440,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 			"SearchForValidMeasurementUnits",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(exampleValidMeasurementUnitList.ValidMeasurementUnits, nil)
+		).Return(exampleValidMeasurementUnitList.Data, nil)
 		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidIngredient))
-	gob.Register(new(ValidIngredientList))
 	gob.Register(new(ValidIngredientCreationRequestInput))
 	gob.Register(new(ValidIngredientUpdateRequestInput))
 }
@@ -97,13 +96,6 @@ type (
 		Slug                                    *string    `json:"slug"`
 		ContainsAlcohol                         *bool      `json:"containsAlcohol"`
 		ShoppingSuggestions                     *string    `json:"shoppingSuggestions"`
-	}
-
-	// ValidIngredientList represents a list of valid ingredients.
-	ValidIngredientList struct {
-		_                struct{}
-		ValidIngredients []*ValidIngredient `json:"data"`
-		Pagination
 	}
 
 	// ValidIngredientCreationRequestInput represents what a user could set as input for creating valid ingredients.
@@ -206,7 +198,7 @@ type (
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error)
 		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
-		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*ValidIngredientList, error)
+		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredient], error)
 		SearchForValidIngredients(ctx context.Context, query string) ([]*ValidIngredient, error)
 		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)

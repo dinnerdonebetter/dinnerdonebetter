@@ -181,13 +181,13 @@ func (q *Querier) SearchForValidIngredientStates(ctx context.Context, query stri
 }
 
 // GetValidIngredientStates fetches a list of valid preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientStateList, err error) {
+func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientState], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.ValidIngredientStateList{}
+	x = &types.QueryFilteredResult[types.ValidIngredientState]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -208,7 +208,7 @@ func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *types.Qu
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}
 
-	if x.ValidIngredientStates, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientStates(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientStates(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid preparations")
 	}
 

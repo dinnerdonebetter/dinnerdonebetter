@@ -178,7 +178,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	recipeStepIngredients, err := s.recipeStepIngredientDataManager.GetRecipeStepIngredients(ctx, recipeID, recipeStepID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipeStepIngredients = &types.RecipeStepIngredientList{RecipeStepIngredients: []*types.RecipeStepIngredient{}}
+		recipeStepIngredients = &types.QueryFilteredResult[types.RecipeStepIngredient]{Data: []*types.RecipeStepIngredient{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe step ingredients")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

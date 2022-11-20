@@ -55,20 +55,20 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 }
 
 // BuildFakeRecipeStepList builds a faked RecipeStepList.
-func BuildFakeRecipeStepList() *types.RecipeStepList {
+func BuildFakeRecipeStepList() *types.QueryFilteredResult[types.RecipeStep] {
 	var examples []*types.RecipeStep
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStep())
 	}
 
-	return &types.RecipeStepList{
+	return &types.QueryFilteredResult[types.RecipeStep]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		RecipeSteps: examples,
+		Data: examples,
 	}
 }
 

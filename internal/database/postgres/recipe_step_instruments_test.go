@@ -357,7 +357,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepInstruments(true, exampleRecipeStepInstrumentList.FilteredCount, exampleRecipeStepInstrumentList.RecipeStepInstruments...))
+			WillReturnRows(buildMockRowsFromRecipeStepInstruments(true, exampleRecipeStepInstrumentList.FilteredCount, exampleRecipeStepInstrumentList.Data...))
 
 		actual, err := c.GetRecipeStepInstruments(ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.NoError(t, err)
@@ -411,7 +411,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepInstruments(true, exampleRecipeStepInstrumentList.FilteredCount, exampleRecipeStepInstrumentList.RecipeStepInstruments...))
+			WillReturnRows(buildMockRowsFromRecipeStepInstruments(true, exampleRecipeStepInstrumentList.FilteredCount, exampleRecipeStepInstrumentList.Data...))
 
 		actual, err := c.GetRecipeStepInstruments(ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.NoError(t, err)

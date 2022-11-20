@@ -36,7 +36,7 @@ func (c *Client) GetMeal(ctx context.Context, mealID string) (*types.Meal, error
 }
 
 // GetMeals retrieves a list of meals.
-func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*types.MealList, error) {
+func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Meal], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -49,7 +49,7 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 		return nil, observability.PrepareAndLogError(err, logger, span, "building meals list request")
 	}
 
-	var meals *types.MealList
+	var meals *types.QueryFilteredResult[types.Meal]
 	if err = c.fetchAndUnmarshal(ctx, req, &meals); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meals")
 	}
@@ -58,7 +58,7 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 }
 
 // SearchForMeals retrieves a list of meals.
-func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types.QueryFilter) (*types.MealList, error) {
+func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Meal], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,7 +72,7 @@ func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types
 		return nil, observability.PrepareAndLogError(err, logger, span, "building meals list request")
 	}
 
-	var meals *types.MealList
+	var meals *types.QueryFilteredResult[types.Meal]
 	if err = c.fetchAndUnmarshal(ctx, req, &meals); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meals")
 	}

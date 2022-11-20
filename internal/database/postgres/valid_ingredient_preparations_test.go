@@ -294,7 +294,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientPreparations(true, exampleValidIngredientPreparationList.FilteredCount, exampleValidIngredientPreparationList.ValidIngredientPreparations...))
+			WillReturnRows(buildMockRowsFromValidIngredientPreparations(true, exampleValidIngredientPreparationList.FilteredCount, exampleValidIngredientPreparationList.Data...))
 
 		actual, err := c.GetValidIngredientPreparations(ctx, filter)
 		assert.NoError(t, err)
@@ -318,7 +318,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientPreparations(true, exampleValidIngredientPreparationList.FilteredCount, exampleValidIngredientPreparationList.ValidIngredientPreparations...))
+			WillReturnRows(buildMockRowsFromValidIngredientPreparations(true, exampleValidIngredientPreparationList.FilteredCount, exampleValidIngredientPreparationList.Data...))
 
 		actual, err := c.GetValidIngredientPreparations(ctx, filter)
 		assert.NoError(t, err)

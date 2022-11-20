@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(RecipeStepInstrument))
-	gob.Register(new(RecipeStepInstrumentList))
 	gob.Register(new(RecipeStepInstrumentCreationRequestInput))
 	gob.Register(new(RecipeStepInstrumentUpdateRequestInput))
 }
@@ -47,13 +46,6 @@ type (
 		ProductOfRecipeStep bool             `json:"productOfRecipeStep"`
 		PreferenceRank      uint8            `json:"preferenceRank"`
 		Optional            bool             `json:"optional"`
-	}
-
-	// RecipeStepInstrumentList represents a list of recipe step instruments.
-	RecipeStepInstrumentList struct {
-		_                     struct{}
-		RecipeStepInstruments []*RecipeStepInstrument `json:"data"`
-		Pagination
 	}
 
 	// RecipeStepInstrumentCreationRequestInput represents what a user could set as input for creating recipe step instruments.
@@ -110,7 +102,7 @@ type (
 	RecipeStepInstrumentDataManager interface {
 		RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (bool, error)
 		GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*RecipeStepInstrument, error)
-		GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*RecipeStepInstrumentList, error)
+		GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStepInstrument], error)
 		CreateRecipeStepInstrument(ctx context.Context, input *RecipeStepInstrumentDatabaseCreationInput) (*RecipeStepInstrument, error)
 		UpdateRecipeStepInstrument(ctx context.Context, updated *RecipeStepInstrument) error
 		ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error

@@ -25,20 +25,20 @@ func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 }
 
 // BuildFakeHouseholdInvitationList builds a faked HouseholdInvitationList.
-func BuildFakeHouseholdInvitationList() *types.HouseholdInvitationList {
+func BuildFakeHouseholdInvitationList() *types.QueryFilteredResult[types.HouseholdInvitation] {
 	var examples []*types.HouseholdInvitation
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeHouseholdInvitation())
 	}
 
-	return &types.HouseholdInvitationList{
+	return &types.QueryFilteredResult[types.HouseholdInvitation]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		HouseholdInvitations: examples,
+		Data: examples,
 	}
 }
 

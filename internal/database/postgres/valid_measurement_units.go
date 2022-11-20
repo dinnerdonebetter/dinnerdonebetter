@@ -214,13 +214,13 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 }
 
 // GetValidMeasurementUnits fetches a list of valid measurement units from the database that meet a particular filter.
-func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.ValidMeasurementUnitList, err error) {
+func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.ValidMeasurementUnitList{}
+	x = &types.QueryFilteredResult[types.ValidMeasurementUnit]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -241,7 +241,7 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
 
-	if x.ValidMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidMeasurementUnits(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidMeasurementUnits(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement units")
 	}
 

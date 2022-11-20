@@ -17,20 +17,20 @@ func BuildFakeValidIngredientPreparation() *types.ValidIngredientPreparation {
 }
 
 // BuildFakeValidIngredientPreparationList builds a faked ValidIngredientPreparationList.
-func BuildFakeValidIngredientPreparationList() *types.ValidIngredientPreparationList {
+func BuildFakeValidIngredientPreparationList() *types.QueryFilteredResult[types.ValidIngredientPreparation] {
 	var examples []*types.ValidIngredientPreparation
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidIngredientPreparation())
 	}
 
-	return &types.ValidIngredientPreparationList{
+	return &types.QueryFilteredResult[types.ValidIngredientPreparation]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		ValidIngredientPreparations: examples,
+		Data: examples,
 	}
 }
 

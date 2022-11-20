@@ -39,7 +39,7 @@ func (c *Client) GetHouseholdInvitation(ctx context.Context, householdID, househ
 }
 
 // GetPendingHouseholdInvitationsFromUser retrieves household invitations sent by the user.
-func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -51,7 +51,7 @@ func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, fil
 		return nil, observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
 	}
 
-	var invitationList *types.HouseholdInvitationList
+	var invitationList *types.QueryFilteredResult[types.HouseholdInvitation]
 	if err = c.fetchAndUnmarshal(ctx, req, &invitationList); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}
@@ -60,7 +60,7 @@ func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, fil
 }
 
 // GetPendingHouseholdInvitationsForUser retrieves household invitations received by the user.
-func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,7 +72,7 @@ func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filt
 		return nil, observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
 	}
 
-	var invitationList *types.HouseholdInvitationList
+	var invitationList *types.QueryFilteredResult[types.HouseholdInvitation]
 	if err = c.fetchAndUnmarshal(ctx, req, &invitationList); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}

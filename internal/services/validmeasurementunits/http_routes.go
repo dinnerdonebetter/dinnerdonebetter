@@ -146,7 +146,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	validMeasurementUnits, err := s.validMeasurementUnitDataManager.GetValidMeasurementUnits(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validMeasurementUnits = &types.ValidMeasurementUnitList{ValidMeasurementUnits: []*types.ValidMeasurementUnit{}}
+		validMeasurementUnits = &types.QueryFilteredResult[types.ValidMeasurementUnit]{Data: []*types.ValidMeasurementUnit{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement units")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

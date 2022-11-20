@@ -109,10 +109,10 @@ func (s *mealPlansTestSuite) TestClient_GetMealPlans() {
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 
-		for i := range actual.MealPlans {
-			require.WithinDuration(t, exampleMealPlanList.MealPlans[i].VotingDeadline, actual.MealPlans[i].VotingDeadline, 0)
+		for i := range actual.Data {
+			require.WithinDuration(t, exampleMealPlanList.Data[i].VotingDeadline, actual.Data[i].VotingDeadline, 0)
 
-			actual.MealPlans[i].VotingDeadline = exampleMealPlanList.MealPlans[i].VotingDeadline
+			actual.Data[i].VotingDeadline = exampleMealPlanList.Data[i].VotingDeadline
 		}
 
 		assert.Equal(t, exampleMealPlanList, actual)

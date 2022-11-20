@@ -86,7 +86,7 @@ func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit
 }
 
 // GetValidIngredients retrieves a list of valid ingredients.
-func (c *Client) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.ValidIngredientList, error) {
+func (c *Client) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -99,7 +99,7 @@ func (c *Client) GetValidIngredients(ctx context.Context, filter *types.QueryFil
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredients list request")
 	}
 
-	var validIngredients *types.ValidIngredientList
+	var validIngredients *types.QueryFilteredResult[types.ValidIngredient]
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredients); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredients")
 	}

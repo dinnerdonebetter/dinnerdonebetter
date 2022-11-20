@@ -40,15 +40,15 @@ func (m *HouseholdInvitationDataManager) GetHouseholdInvitationByEmailAndToken(c
 }
 
 // GetPendingHouseholdInvitationsFromUser is a mock function.
-func (m *HouseholdInvitationDataManager) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+func (m *HouseholdInvitationDataManager) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.HouseholdInvitationList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.HouseholdInvitation]), args.Error(1)
 }
 
 // GetPendingHouseholdInvitationsForUser is a mock function.
-func (m *HouseholdInvitationDataManager) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+func (m *HouseholdInvitationDataManager) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.HouseholdInvitationList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.HouseholdInvitation]), args.Error(1)
 }
 
 // CreateHouseholdInvitation is a mock function.

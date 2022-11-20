@@ -227,7 +227,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 			"SearchForUsersByUsername",
 			testutils.ContextMatcher,
 			helper.exampleUser.Username,
-		).Return(exampleUserList.Users, nil)
+		).Return(exampleUserList.Data, nil)
 		helper.service.userDataManager = mockDB
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -306,7 +306,7 @@ func TestService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.UserList{}),
+			mock.IsType(&types.QueryFilteredResult[types.User]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -327,7 +327,7 @@ func TestService_ListHandler(T *testing.T) {
 			"GetUsers",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.UserList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.User])(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

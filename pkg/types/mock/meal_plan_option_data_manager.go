@@ -28,9 +28,9 @@ func (m *MealPlanOptionDataManager) GetMealPlanOption(ctx context.Context, mealP
 }
 
 // GetMealPlanOptions is a mock function.
-func (m *MealPlanOptionDataManager) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *types.QueryFilter) (*types.MealPlanOptionList, error) {
+func (m *MealPlanOptionDataManager) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.MealPlanOption], error) {
 	args := m.Called(ctx, mealPlanID, mealPlanEventID, filter)
-	return args.Get(0).(*types.MealPlanOptionList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.MealPlanOption]), args.Error(1)
 }
 
 // CreateMealPlanOption is a mock function.

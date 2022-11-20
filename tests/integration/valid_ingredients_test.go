@@ -137,10 +137,10 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.ValidIngredients),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.ValidIngredients),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

@@ -323,7 +323,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientPreparationList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientPreparation]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -368,7 +368,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 			"GetValidIngredientPreparations",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidIngredientPreparationList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), sql.ErrNoRows)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -376,7 +376,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientPreparationList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientPreparation]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -397,7 +397,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 			"GetValidIngredientPreparations",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidIngredientPreparationList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -876,7 +876,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.ValidIngredientPreparationList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		helper.service.SearchByIngredientHandler(helper.res, helper.req)
@@ -948,7 +948,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.ValidIngredientPreparationList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		helper.service.SearchByPreparationHandler(helper.res, helper.req)

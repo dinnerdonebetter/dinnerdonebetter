@@ -28,7 +28,6 @@ const (
 
 func init() {
 	gob.Register(new(RecipeStepProduct))
-	gob.Register(new(RecipeStepProductList))
 	gob.Register(new(RecipeStepProductCreationRequestInput))
 	gob.Register(new(RecipeStepProductUpdateRequestInput))
 }
@@ -55,13 +54,6 @@ type (
 		IsWaste                            bool                 `json:"isWaste"`
 		IsLiquid                           bool                 `json:"isLiquid"`
 		Compostable                        bool                 `json:"compostable"`
-	}
-
-	// RecipeStepProductList represents a list of recipe step products.
-	RecipeStepProductList struct {
-		_                  struct{}
-		RecipeStepProducts []*RecipeStepProduct `json:"data"`
-		Pagination
 	}
 
 	// RecipeStepProductCreationRequestInput represents what a user could set as input for creating recipe step products.
@@ -127,7 +119,7 @@ type (
 	RecipeStepProductDataManager interface {
 		RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (bool, error)
 		GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*RecipeStepProduct, error)
-		GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*RecipeStepProductList, error)
+		GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStepProduct], error)
 		CreateRecipeStepProduct(ctx context.Context, input *RecipeStepProductDatabaseCreationInput) (*RecipeStepProduct, error)
 		UpdateRecipeStepProduct(ctx context.Context, updated *RecipeStepProduct) error
 		ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error

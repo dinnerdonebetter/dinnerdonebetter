@@ -30,20 +30,20 @@ func BuildFakeAPIClientCreationResponseFromClient(client *types.APIClient) *type
 }
 
 // BuildFakeAPIClientList builds a faked APIClientList.
-func BuildFakeAPIClientList() *types.APIClientList {
+func BuildFakeAPIClientList() *types.QueryFilteredResult[types.APIClient] {
 	var examples []*types.APIClient
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeAPIClient())
 	}
 
-	return &types.APIClientList{
+	return &types.QueryFilteredResult[types.APIClient]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		Clients: examples,
+		Data: examples,
 	}
 }
 

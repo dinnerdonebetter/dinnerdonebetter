@@ -48,7 +48,7 @@ func (c *Client) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeSt
 }
 
 // GetRecipeStepInstruments retrieves a list of recipe step instruments.
-func (c *Client) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.RecipeStepInstrumentList, error) {
+func (c *Client) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeStepInstrument], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,7 +72,7 @@ func (c *Client) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeS
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step instruments list request")
 	}
 
-	var recipeStepInstruments *types.RecipeStepInstrumentList
+	var recipeStepInstruments *types.QueryFilteredResult[types.RecipeStepInstrument]
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepInstruments); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step instruments")
 	}

@@ -394,11 +394,11 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientsForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(getRecipeStepIngredientsForRecipeArgs)...).
-			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, exampleRecipeStepIngredientList.RecipeStepIngredients...))
+			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, exampleRecipeStepIngredientList.Data...))
 
 		actual, err := c.getRecipeStepIngredientsForRecipe(ctx, exampleRecipeID)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepIngredientList.RecipeStepIngredients, actual)
+		assert.Equal(t, exampleRecipeStepIngredientList.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -456,7 +456,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepIngredients(true, exampleRecipeStepIngredientList.FilteredCount, exampleRecipeStepIngredientList.RecipeStepIngredients...))
+			WillReturnRows(buildMockRowsFromRecipeStepIngredients(true, exampleRecipeStepIngredientList.FilteredCount, exampleRecipeStepIngredientList.Data...))
 
 		actual, err := c.GetRecipeStepIngredients(ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.NoError(t, err)
@@ -509,7 +509,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepIngredients(true, exampleRecipeStepIngredientList.FilteredCount, exampleRecipeStepIngredientList.RecipeStepIngredients...))
+			WillReturnRows(buildMockRowsFromRecipeStepIngredients(true, exampleRecipeStepIngredientList.FilteredCount, exampleRecipeStepIngredientList.Data...))
 
 		actual, err := c.GetRecipeStepIngredients(ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.NoError(t, err)

@@ -33,7 +33,6 @@ const (
 
 func init() {
 	gob.Register(new(RecipePrepTask))
-	gob.Register(new(RecipePrepTaskList))
 	gob.Register(new(RecipePrepTaskCreationRequestInput))
 	gob.Register(new(RecipePrepTaskUpdateRequestInput))
 }
@@ -55,14 +54,6 @@ type (
 		MaximumStorageTemperatureInCelsius     float32               `json:"maximumStorageTemperatureInCelsius"`
 		MaximumTimeBufferBeforeRecipeInSeconds uint32                `json:"maximumTimeBufferBeforeRecipeInSeconds"`
 		MinimumStorageTemperatureInCelsius     float32               `json:"minimumStorageTemperatureInCelsius"`
-	}
-
-	// RecipePrepTaskList represents a list of recipe prep tasks.
-	RecipePrepTaskList struct {
-		_ struct{}
-
-		RecipePrepTasks []*RecipePrepTask `json:"data"`
-		Pagination
 	}
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.

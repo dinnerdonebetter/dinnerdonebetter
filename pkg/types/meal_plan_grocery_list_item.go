@@ -34,7 +34,6 @@ const (
 
 func init() {
 	gob.Register(new(MealPlanGroceryListItem))
-	gob.Register(new(MealPlanGroceryListItemList))
 	gob.Register(new(MealPlanGroceryListItemCreationRequestInput))
 	gob.Register(new(MealPlanGroceryListItemUpdateRequestInput))
 }
@@ -58,13 +57,6 @@ type (
 		Ingredient               ValidIngredient       `json:"ingredient"`
 		MaximumQuantityNeeded    float32               `json:"maximumQuantityNeeded"`
 		MinimumQuantityNeeded    float32               `json:"minimumQuantityNeeded"`
-	}
-
-	// MealPlanGroceryListItemList represents a list of meal plan grocery list items.
-	MealPlanGroceryListItemList struct {
-		_                        struct{}
-		MealPlanGroceryListItems []*MealPlanGroceryListItem `json:"data"`
-		Pagination
 	}
 
 	// MealPlanGroceryListItemCreationRequestInput represents what a user could set as input for creating meal plan grocery list items.

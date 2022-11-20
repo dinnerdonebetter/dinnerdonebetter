@@ -36,7 +36,7 @@ func (c *Client) GetValidIngredientMeasurementUnit(ctx context.Context, validIng
 }
 
 // GetValidIngredientMeasurementUnits retrieves a list of valid ingredient preparations.
-func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.ValidIngredientMeasurementUnitList, error) {
+func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -49,7 +49,7 @@ func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter 
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validIngredientMeasurementUnits *types.ValidIngredientMeasurementUnitList
+	var validIngredientMeasurementUnits *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnits); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
@@ -58,7 +58,7 @@ func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter 
 }
 
 // GetValidIngredientMeasurementUnitsForIngredient retrieves a list of valid ingredient preparations.
-func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.ValidIngredientMeasurementUnitList, error) {
+func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -76,7 +76,7 @@ func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Con
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validPreparationInstruments *types.ValidIngredientMeasurementUnitList
+	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
@@ -85,7 +85,7 @@ func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Con
 }
 
 // GetValidIngredientMeasurementUnitsForMeasurementUnit retrieves a list of valid ingredient preparations.
-func (c *Client) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (*types.ValidIngredientMeasurementUnitList, error) {
+func (c *Client) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,7 +103,7 @@ func (c *Client) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx contex
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validPreparationInstruments *types.ValidIngredientMeasurementUnitList
+	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}

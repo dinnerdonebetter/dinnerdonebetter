@@ -232,13 +232,13 @@ func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngred
 }
 
 // GetValidIngredientPreparations fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
+func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.ValidIngredientPreparationList{}
+	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -270,7 +270,7 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}
 
-	if x.ValidIngredientPreparations, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientPreparations(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientPreparations(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient preparations")
 	}
 
@@ -302,7 +302,7 @@ func (q *Querier) buildGetValidIngredientPreparationsWithPreparationIDsQuery(ctx
 }
 
 // GetValidIngredientPreparationsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
+func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -314,7 +314,7 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, preparationID)
 
-	x = &types.ValidIngredientPreparationList{}
+	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -336,7 +336,7 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}
 
-	if x.ValidIngredientPreparations, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientPreparations(ctx, rows, false); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientPreparations(ctx, rows, false); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient preparations")
 	}
 
@@ -348,7 +348,7 @@ func (q *Querier) buildGetValidIngredientPreparationsWithIngredientIDsQuery(ctx 
 }
 
 // GetValidIngredientPreparationsForIngredient fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.ValidIngredientPreparationList, err error) {
+func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -360,7 +360,7 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, ingredientID)
 
-	x = &types.ValidIngredientPreparationList{
+	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{
 		Pagination: types.Pagination{
 			Limit: 20,
 		},
@@ -386,7 +386,7 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}
 
-	if x.ValidIngredientPreparations, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientPreparations(ctx, rows, false); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientPreparations(ctx, rows, false); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient preparations")
 	}
 

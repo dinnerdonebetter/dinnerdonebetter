@@ -145,7 +145,7 @@ func TestMealPlanGroceryListItemsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList().MealPlanGroceryListItems
+		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList().Data
 
 		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
 		mealPlanGroceryListItemDataManager.On(

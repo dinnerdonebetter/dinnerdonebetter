@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(RecipeStepIngredient))
-	gob.Register(new(RecipeStepIngredientList))
 	gob.Register(new(RecipeStepIngredientCreationRequestInput))
 	gob.Register(new(RecipeStepIngredientUpdateRequestInput))
 }
@@ -49,13 +48,6 @@ type (
 		RequiresDefrost     bool                 `json:"requiresDefrost"`
 		Optional            bool                 `json:"optional"`
 		ProductOfRecipeStep bool                 `json:"productOfRecipeStep"`
-	}
-
-	// RecipeStepIngredientList represents a list of recipe step ingredients.
-	RecipeStepIngredientList struct {
-		_                     struct{}
-		RecipeStepIngredients []*RecipeStepIngredient `json:"data"`
-		Pagination
 	}
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
@@ -119,7 +111,7 @@ type (
 	RecipeStepIngredientDataManager interface {
 		RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (bool, error)
 		GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*RecipeStepIngredient, error)
-		GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*RecipeStepIngredientList, error)
+		GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStepIngredient], error)
 		CreateRecipeStepIngredient(ctx context.Context, input *RecipeStepIngredientDatabaseCreationInput) (*RecipeStepIngredient, error)
 		UpdateRecipeStepIngredient(ctx context.Context, updated *RecipeStepIngredient) error
 		ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID string) error

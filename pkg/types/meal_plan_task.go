@@ -34,7 +34,6 @@ const (
 
 func init() {
 	gob.Register(new(MealPlanTask))
-	gob.Register(new(MealPlanTaskList))
 }
 
 type (
@@ -51,13 +50,6 @@ type (
 		StatusExplanation   string         `json:"statusExplanation"`
 		MealPlanOption      MealPlanOption `json:"mealPlanOption"`
 		RecipePrepTask      RecipePrepTask `json:"recipePrepTask"`
-	}
-
-	// MealPlanTaskList represents a list of meal plan tasks.
-	MealPlanTaskList struct {
-		_             struct{}
-		MealPlanTasks []*MealPlanTask `json:"data"`
-		Pagination
 	}
 
 	// MealPlanTaskCreationRequestInput represents a meal plan task.

@@ -28,9 +28,9 @@ func (m *APIClientDataManager) GetAPIClientByDatabaseID(ctx context.Context, cli
 }
 
 // GetAPIClients is a mock function.
-func (m *APIClientDataManager) GetAPIClients(ctx context.Context, userID string, filter *types.QueryFilter) (*types.APIClientList, error) {
+func (m *APIClientDataManager) GetAPIClients(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.APIClient], error) {
 	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.APIClientList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.APIClient]), args.Error(1)
 }
 
 // CreateAPIClient is a mock function.

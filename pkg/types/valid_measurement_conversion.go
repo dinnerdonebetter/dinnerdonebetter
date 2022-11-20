@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidMeasurementConversion))
-	gob.Register(new(ValidMeasurementConversionList))
 	gob.Register(new(ValidMeasurementConversionCreationRequestInput))
 	gob.Register(new(ValidMeasurementConversionUpdateRequestInput))
 }
@@ -41,13 +40,6 @@ type (
 		From              ValidMeasurementUnit `json:"from"`
 		To                ValidMeasurementUnit `json:"to"`
 		Modifier          float32              `json:"modifier"`
-	}
-
-	// ValidMeasurementConversionList represents a list of valid measurement conversions.
-	ValidMeasurementConversionList struct {
-		_                           struct{}
-		ValidMeasurementConversions []*ValidMeasurementConversion `json:"data"`
-		Pagination
 	}
 
 	// ValidMeasurementConversionCreationRequestInput represents what a user could set as input for creating valid measurement conversions.

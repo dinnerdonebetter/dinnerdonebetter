@@ -146,7 +146,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	validInstruments, err := s.validInstrumentDataManager.GetValidInstruments(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validInstruments = &types.ValidInstrumentList{ValidInstruments: []*types.ValidInstrument{}}
+		validInstruments = &types.QueryFilteredResult[types.ValidInstrument]{Data: []*types.ValidInstrument{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid instruments")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

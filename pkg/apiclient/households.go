@@ -78,7 +78,7 @@ func (c *Client) GetHousehold(ctx context.Context, householdID string) (*types.H
 }
 
 // GetHouseholds retrieves a list of households.
-func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (*types.HouseholdList, error) {
+func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Household], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -89,7 +89,7 @@ func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (
 		return nil, observability.PrepareError(err, span, "building household list request")
 	}
 
-	var households *types.HouseholdList
+	var households *types.QueryFilteredResult[types.Household]
 	if err = c.fetchAndUnmarshal(ctx, req, &households); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving households")
 	}

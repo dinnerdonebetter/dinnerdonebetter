@@ -398,7 +398,7 @@ func (q *Querier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx context.C
 }
 
 // GetPendingHouseholdInvitationsFromUser fetches pending household invitations sent from a given user.
-func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -417,12 +417,12 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}
 
-	returnList := &types.HouseholdInvitationList{
+	returnList := &types.QueryFilteredResult[types.HouseholdInvitation]{
 		Pagination: types.Pagination{
 			FilteredCount: fc,
 			TotalCount:    tc,
 		},
-		HouseholdInvitations: householdInvitations,
+		Data: householdInvitations,
 	}
 
 	if filter != nil {
@@ -475,7 +475,7 @@ func (q *Querier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context.Co
 }
 
 // GetPendingHouseholdInvitationsForUser fetches pending household invitations sent to a given user.
-func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -494,12 +494,12 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}
 
-	returnList := &types.HouseholdInvitationList{
+	returnList := &types.QueryFilteredResult[types.HouseholdInvitation]{
 		Pagination: types.Pagination{
 			FilteredCount: fc,
 			TotalCount:    tc,
 		},
-		HouseholdInvitations: householdInvitations,
+		Data: householdInvitations,
 	}
 
 	if filter != nil {

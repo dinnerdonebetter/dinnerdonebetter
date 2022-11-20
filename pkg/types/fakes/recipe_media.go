@@ -23,20 +23,20 @@ func BuildFakeRecipeMedia() *types.RecipeMedia {
 }
 
 // BuildFakeRecipeMediaList builds a faked RecipeMediaList.
-func BuildFakeRecipeMediaList() *types.RecipeMediaList {
+func BuildFakeRecipeMediaList() *types.QueryFilteredResult[types.RecipeMedia] {
 	var examples []*types.RecipeMedia
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeMedia())
 	}
 
-	return &types.RecipeMediaList{
+	return &types.QueryFilteredResult[types.RecipeMedia]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		RecipeMedia: examples,
+		Data: examples,
 	}
 }
 

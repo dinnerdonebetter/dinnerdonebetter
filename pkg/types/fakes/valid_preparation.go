@@ -24,20 +24,20 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 }
 
 // BuildFakeValidPreparationList builds a faked ValidPreparationList.
-func BuildFakeValidPreparationList() *types.ValidPreparationList {
+func BuildFakeValidPreparationList() *types.QueryFilteredResult[types.ValidPreparation] {
 	var examples []*types.ValidPreparation
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidPreparation())
 	}
 
-	return &types.ValidPreparationList{
+	return &types.QueryFilteredResult[types.ValidPreparation]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		ValidPreparations: examples,
+		Data: examples,
 	}
 }
 

@@ -325,7 +325,7 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidInstrumentList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidInstrument]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -370,7 +370,7 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 			"GetValidInstruments",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidInstrumentList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.ValidInstrument])(nil), sql.ErrNoRows)
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -378,7 +378,7 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidInstrumentList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidInstrument]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -399,7 +399,7 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 			"GetValidInstruments",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidInstrumentList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidInstrument])(nil), errors.New("blah"))
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -440,7 +440,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			"SearchForValidInstruments",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(exampleValidInstrumentList.ValidInstruments, nil)
+		).Return(exampleValidInstrumentList.Data, nil)
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

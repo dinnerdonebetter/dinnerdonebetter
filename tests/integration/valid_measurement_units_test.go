@@ -103,10 +103,10 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.ValidMeasurementUnits),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.ValidMeasurementUnits),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(RecipeMedia))
-	gob.Register(new(RecipeMediaList))
 	gob.Register(new(RecipeMediaCreationRequestInput))
 	gob.Register(new(RecipeMediaUpdateRequestInput))
 }
@@ -42,13 +41,6 @@ type (
 		InternalPath        string     `json:"internalPath"`
 		ExternalPath        string     `json:"externalPath"`
 		Index               uint16     `json:"index"`
-	}
-
-	// RecipeMediaList represents a list of valid preparations.
-	RecipeMediaList struct {
-		_           struct{}
-		RecipeMedia []*RecipeMedia `json:"data"`
-		Pagination
 	}
 
 	// RecipeMediaCreationRequestInput represents what a user could set as input for creating valid preparations.

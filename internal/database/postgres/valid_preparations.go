@@ -211,13 +211,13 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 }
 
 // GetValidPreparations fetches a list of valid preparations from the database that meet a particular filter.
-func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.ValidPreparationList, err error) {
+func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.ValidPreparationList{}
+	x = &types.QueryFilteredResult[types.ValidPreparation]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -238,7 +238,7 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}
 
-	if x.ValidPreparations, x.FilteredCount, x.TotalCount, err = q.scanValidPreparations(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparations(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid preparations")
 	}
 

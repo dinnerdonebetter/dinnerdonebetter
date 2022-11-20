@@ -33,7 +33,7 @@ func (c *Client) GetUser(ctx context.Context, userID string) (*types.User, error
 }
 
 // GetUsers retrieves a list of users.
-func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*types.UserList, error) {
+func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.User], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -44,7 +44,7 @@ func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*type
 		return nil, observability.PrepareError(err, span, "building users list request")
 	}
 
-	var users *types.UserList
+	var users *types.QueryFilteredResult[types.User]
 	if err = c.fetchAndUnmarshal(ctx, req, &users); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving users")
 	}

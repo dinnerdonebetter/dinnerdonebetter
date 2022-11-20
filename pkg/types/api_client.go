@@ -34,14 +34,6 @@ type (
 		ClientSecret  []byte     `json:"-"`
 	}
 
-	// APIClientList is a response struct containing a list of API clients.
-	APIClientList struct {
-		_ struct{}
-
-		Clients []*APIClient `json:"data"`
-		Pagination
-	}
-
 	// APIClientCreationRequestInput is a struct for use when creating API clients.
 	APIClientCreationRequestInput struct {
 		_ struct{}
@@ -67,7 +59,7 @@ type (
 	APIClientDataManager interface {
 		GetAPIClientByClientID(ctx context.Context, clientID string) (*APIClient, error)
 		GetAPIClientByDatabaseID(ctx context.Context, clientID, ownerUserID string) (*APIClient, error)
-		GetAPIClients(ctx context.Context, owneruserID string, filter *QueryFilter) (*APIClientList, error)
+		GetAPIClients(ctx context.Context, owneruserID string, filter *QueryFilter) (*QueryFilteredResult[APIClient], error)
 		CreateAPIClient(ctx context.Context, input *APIClientCreationRequestInput) (*APIClient, error)
 		ArchiveAPIClient(ctx context.Context, clientID, ownerUserID string) error
 	}

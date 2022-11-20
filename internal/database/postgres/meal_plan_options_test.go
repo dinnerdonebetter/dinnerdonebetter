@@ -366,9 +366,9 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
-		for i := range exampleMealPlanOptionList.MealPlanOptions {
-			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
-			exampleMealPlanOptionList.MealPlanOptions[i].Meal = types.Meal{ID: exampleMealPlanOptionList.MealPlanOptions[i].Meal.ID}
+		for i := range exampleMealPlanOptionList.Data {
+			exampleMealPlanOptionList.Data[i].Votes = []*types.MealPlanOptionVote{}
+			exampleMealPlanOptionList.Data[i].Meal = types.Meal{ID: exampleMealPlanOptionList.Data[i].Meal.ID}
 		}
 
 		ctx := context.Background()
@@ -379,7 +379,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlanOptions(true, exampleMealPlanOptionList.FilteredCount, exampleMealPlanOptionList.MealPlanOptions...))
+			WillReturnRows(buildMockRowsFromMealPlanOptions(true, exampleMealPlanOptionList.FilteredCount, exampleMealPlanOptionList.Data...))
 
 		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
 		assert.NoError(t, err)
@@ -411,8 +411,8 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		exampleMealPlanOptionList.Page = 0
 		exampleMealPlanOptionList.Limit = 0
 
-		for i := range exampleMealPlanOptionList.MealPlanOptions {
-			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
+		for i := range exampleMealPlanOptionList.Data {
+			exampleMealPlanOptionList.Data[i].Votes = []*types.MealPlanOptionVote{}
 		}
 
 		ctx := context.Background()
@@ -423,7 +423,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlanOptions(true, exampleMealPlanOptionList.FilteredCount, exampleMealPlanOptionList.MealPlanOptions...))
+			WillReturnRows(buildMockRowsFromMealPlanOptions(true, exampleMealPlanOptionList.FilteredCount, exampleMealPlanOptionList.Data...))
 
 		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
 		assert.NoError(t, err)

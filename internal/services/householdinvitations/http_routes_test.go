@@ -548,7 +548,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.HouseholdInvitationList{}),
+			mock.IsType(&types.QueryFilteredResult[types.HouseholdInvitation]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -581,7 +581,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.HouseholdInvitationList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
@@ -614,7 +614,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.HouseholdInvitationList{}),
+			mock.IsType(&types.QueryFilteredResult[types.HouseholdInvitation]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -647,7 +647,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.HouseholdInvitationList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)

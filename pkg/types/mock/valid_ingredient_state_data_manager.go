@@ -34,9 +34,9 @@ func (m *ValidIngredientStateDataManager) SearchForValidIngredientStates(ctx con
 }
 
 // GetValidIngredientStates is a mock function.
-func (m *ValidIngredientStateDataManager) GetValidIngredientStates(ctx context.Context, filter *types.QueryFilter) (*types.ValidIngredientStateList, error) {
+func (m *ValidIngredientStateDataManager) GetValidIngredientStates(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientState], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.ValidIngredientStateList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredientState]), args.Error(1)
 }
 
 // CreateValidIngredientState is a mock function.

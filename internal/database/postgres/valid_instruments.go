@@ -237,13 +237,13 @@ func (q *Querier) SearchForValidInstrumentsForPreparation(ctx context.Context, p
 }
 
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
-func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.ValidInstrumentList, err error) {
+func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.ValidInstrumentList{}
+	x = &types.QueryFilteredResult[types.ValidInstrument]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -266,7 +266,7 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}
 
-	if x.ValidInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidInstruments(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidInstruments(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid instruments")
 	}
 
