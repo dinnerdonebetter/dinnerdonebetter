@@ -189,8 +189,7 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 		t := s.T()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
-		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(exampleRecipe)
-		exampleInput.CreatedByUser = ""
+		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
 		examplePrepTask := fakes.BuildFakeRecipePrepTask()
 		examplePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(exampleRecipe, examplePrepTask)
 		examplePrepTaskInput.TaskSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
@@ -236,7 +235,7 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(s.exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInput(s.exampleRecipe)
 
 		c := buildTestClientWithInvalidURL(t)
 
@@ -248,7 +247,7 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(s.exampleRecipe)
+		exampleInput := converters.ConvertRecipeToRecipeCreationRequestInput(s.exampleRecipe)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateRecipe(s.ctx, exampleInput)

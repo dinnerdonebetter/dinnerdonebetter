@@ -62,9 +62,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	input.ID = identifiers.New()
+	input.CreatedByUser = sessionCtxData.Requester.UserID
+	tracing.AttachRecipeIDToSpan(span, input.ID)
 
 	for i, step := range input.Steps {
-		// ordinarily we'd set the ID here, but it was done for us above in the converter.
+		input.Steps[i].ID = identifiers.New()
 		input.Steps[i].BelongsToRecipe = input.ID
 		for j := range step.Ingredients {
 			input.Steps[i].Ingredients[j].ID = identifiers.New()
@@ -91,9 +93,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			input.PrepTasks[i].TaskSteps[j].BelongsToRecipePrepTask = input.PrepTasks[i].ID
 		}
 	}
-
-	input.CreatedByUser = sessionCtxData.Requester.UserID
-	tracing.AttachRecipeIDToSpan(span, input.ID)
 
 	recipe, err := s.recipeDataManager.CreateRecipe(ctx, input)
 	if err != nil {

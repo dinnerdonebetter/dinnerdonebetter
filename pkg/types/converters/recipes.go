@@ -1,6 +1,9 @@
 package converters
 
-import "github.com/prixfixeco/backend/pkg/types"
+import (
+	"github.com/prixfixeco/backend/internal/identifiers"
+	"github.com/prixfixeco/backend/pkg/types"
+)
 
 // ConvertRecipeToRecipeUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeUpdateRequestInput {
@@ -20,6 +23,7 @@ func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeU
 // ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *types.RecipeCreationRequestInput) (*types.RecipeDatabaseCreationInput, error) {
 	x := &types.RecipeDatabaseCreationInput{
+		ID:                 identifiers.New(),
 		AlsoCreateMeal:     input.AlsoCreateMeal,
 		Name:               input.Name,
 		Source:             input.Source,
@@ -30,7 +34,9 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *types
 	}
 
 	for _, step := range input.Steps {
-		x.Steps = append(x.Steps, ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(step))
+		s := ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(step)
+		s.BelongsToRecipe = x.ID
+		x.Steps = append(x.Steps, s)
 	}
 
 	for _, task := range input.PrepTasks {
@@ -38,14 +44,15 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *types
 		if err != nil {
 			return nil, err
 		}
+		prepTaskDatabaseCreationInput.BelongsToRecipe = x.ID
 		x.PrepTasks = append(x.PrepTasks, prepTaskDatabaseCreationInput)
 	}
 
 	return x, nil
 }
 
-// ConvertRecipeToRecipeCreationRequestInputFromRecipe builds a RecipeCreationRequestInput from a recipe.
-func ConvertRecipeToRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.RecipeCreationRequestInput {
+// ConvertRecipeToRecipeCreationRequestInput builds a RecipeCreationRequestInput from a recipe.
+func ConvertRecipeToRecipeCreationRequestInput(recipe *types.Recipe) *types.RecipeCreationRequestInput {
 	steps := []*types.RecipeStepCreationRequestInput{}
 	for _, step := range recipe.Steps {
 		steps = append(steps, ConvertRecipeStepToRecipeStepCreationRequestInput(step))
@@ -61,7 +68,6 @@ func ConvertRecipeToRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		CreatedByUser:      recipe.CreatedByUser,
 		SealOfApproval:     recipe.SealOfApproval,
 		YieldsPortions:     recipe.YieldsPortions,
 		Steps:              steps,

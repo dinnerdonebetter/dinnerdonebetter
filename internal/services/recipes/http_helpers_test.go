@@ -40,7 +40,7 @@ func buildTestHelper(t *testing.T) *recipesServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleRecipe = fakes.BuildFakeRecipe()
 	helper.exampleRecipe.CreatedByUser = helper.exampleHousehold.ID
-	helper.exampleCreationInput = converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(helper.exampleRecipe)
+	helper.exampleCreationInput = converters.ConvertRecipeToRecipeCreationRequestInput(helper.exampleRecipe)
 	helper.exampleUpdateInput = converters.ConvertRecipeToRecipeUpdateRequestInput(helper.exampleRecipe)
 
 	helper.service.recipeIDFetcher = func(*http.Request) string {

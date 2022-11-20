@@ -91,7 +91,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 		}
 	}
 
-	exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(exampleRecipe)
+	exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
 	for i := range exampleRecipeInput.Steps {
 		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
 	}
@@ -459,7 +459,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 				}
 			}
 
-			exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInputFromRecipe(exampleRecipe)
+			exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
 			for i := range exampleRecipeInput.Steps {
 				exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
 			}
