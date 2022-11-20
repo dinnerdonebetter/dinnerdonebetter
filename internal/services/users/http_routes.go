@@ -664,7 +664,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	logger.Debug("session context data data extracted")
+	logger.Debug("session context data extracted")
 
 	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
 	if err != nil {

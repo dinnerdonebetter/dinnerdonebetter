@@ -102,7 +102,7 @@ func TestServerEncoderDecoder_EncodeErrorResponse(T *testing.T) {
 		res.Header().Set(ContentTypeHeaderKey, "application/xml")
 
 		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, exampleCode)
-		assert.Equal(t, fmt.Sprintf("<ErrorResponse><Message>%s</Message><Code>%d</Code></ErrorResponse>", exampleMessage, exampleCode), res.Body.String())
+		assert.Equal(t, fmt.Sprintf("<APIError><Message>%s</Message><Code>%d</Code></APIError>", exampleMessage, exampleCode), res.Body.String())
 		assert.Equal(t, exampleCode, res.Code, "expected status code to match")
 	})
 }

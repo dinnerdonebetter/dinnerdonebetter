@@ -22,6 +22,6 @@ func TestErrorResponse_Error(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotEmpty(t, (&ErrorResponse{}).Error())
+		assert.NotEmpty(t, (&APIError{}).Error())
 	})
 }

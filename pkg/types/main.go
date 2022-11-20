@@ -9,8 +9,6 @@ const (
 	sortAscendingString = "asc"
 	// sortDescendingString is the pre-determined Descending sortType for external use.
 	sortDescendingString = "desc"
-	// QueryFilterRequestContextKey is the non-string type we use for referencing QueryFilter objects.
-	QueryFilterRequestContextKey ContextKey = "query_filter"
 )
 
 var (
@@ -41,8 +39,8 @@ type (
 		Pagination
 	}
 
-	// ErrorResponse represents a response we might send to the User in the event of an error.
-	ErrorResponse struct {
+	// APIError represents a response we might send to the User in the event of an error.
+	APIError struct {
 		_ struct{}
 
 		Message string `json:"message"`
@@ -50,8 +48,8 @@ type (
 	}
 )
 
-var _ error = (*ErrorResponse)(nil)
+var _ error = (*APIError)(nil)
 
-func (er *ErrorResponse) Error() string {
-	return fmt.Sprintf("%d: %s", er.Code, er.Message)
+func (e *APIError) Error() string {
+	return fmt.Sprintf("%d: %s", e.Code, e.Message)
 }
