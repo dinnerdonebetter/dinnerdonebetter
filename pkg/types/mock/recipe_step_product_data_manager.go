@@ -28,9 +28,9 @@ func (m *RecipeStepProductDataManager) GetRecipeStepProduct(ctx context.Context,
 }
 
 // GetRecipeStepProducts is a mock function.
-func (m *RecipeStepProductDataManager) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.RecipeStepProductList, error) {
+func (m *RecipeStepProductDataManager) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeStepProduct], error) {
 	args := m.Called(ctx, recipeID, recipeStepID, filter)
-	return args.Get(0).(*types.RecipeStepProductList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.RecipeStepProduct]), args.Error(1)
 }
 
 // CreateRecipeStepProduct is a mock function.

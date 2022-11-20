@@ -155,10 +155,10 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.ValidIngredientMeasurementUnits),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.ValidIngredientMeasurementUnits),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")
@@ -217,14 +217,14 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing_ByValues() {
 			validIngredientMeasurementUnitsForValidIngredient, err := testClients.user.GetValidIngredientMeasurementUnitsForIngredient(ctx, createdValidIngredient.ID, nil)
 			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidIngredient, err)
 
-			require.Len(t, validIngredientMeasurementUnitsForValidIngredient.ValidIngredientMeasurementUnits, 1)
-			assert.Equal(t, validIngredientMeasurementUnitsForValidIngredient.ValidIngredientMeasurementUnits[0].ID, createdValidIngredientMeasurementUnit.ID)
+			require.Len(t, validIngredientMeasurementUnitsForValidIngredient.Data, 1)
+			assert.Equal(t, validIngredientMeasurementUnitsForValidIngredient.Data[0].ID, createdValidIngredientMeasurementUnit.ID)
 
 			validIngredientMeasurementUnitsForValidMeasurementUnit, err := testClients.user.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, createdValidMeasurementUnit.ID, nil)
 			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidMeasurementUnit, err)
 
-			require.Len(t, validIngredientMeasurementUnitsForValidMeasurementUnit.ValidIngredientMeasurementUnits, 1)
-			assert.Equal(t, validIngredientMeasurementUnitsForValidMeasurementUnit.ValidIngredientMeasurementUnits[0].ID, createdValidIngredientMeasurementUnit.ID)
+			require.Len(t, validIngredientMeasurementUnitsForValidMeasurementUnit.Data, 1)
+			assert.Equal(t, validIngredientMeasurementUnitsForValidMeasurementUnit.Data[0].ID, createdValidIngredientMeasurementUnit.ID)
 		}
 	})
 }

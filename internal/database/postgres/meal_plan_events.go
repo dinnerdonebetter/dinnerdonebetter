@@ -207,13 +207,13 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 }
 
 // GetMealPlanEvents fetches a list of mealPlanEvents from the database that meet a particular filter.
-func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.MealPlanEventList, err error) {
+func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlanEvent], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.MealPlanEventList{}
+	x = &types.QueryFilteredResult[types.MealPlanEvent]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -234,11 +234,11 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan events list retrieval query")
 	}
 
-	if x.MealPlanEvents, x.FilteredCount, x.TotalCount, err = q.scanMealPlanEvents(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMealPlanEvents(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan events")
 	}
 
-	logger.WithValue("quantity", len(x.MealPlanEvents)).Info("fetched meal plan events")
+	logger.WithValue("quantity", len(x.Data)).Info("fetched meal plan events")
 
 	return x, nil
 }

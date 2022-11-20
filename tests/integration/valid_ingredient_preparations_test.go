@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,6 +8,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
@@ -156,10 +156,10 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.ValidIngredientPreparations),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.ValidIngredientPreparations),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")
@@ -218,14 +218,14 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			validIngredientMeasurementUnitsForValidIngredient, err := testClients.user.GetValidIngredientPreparationsForIngredient(ctx, createdValidIngredient.ID, nil)
 			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidIngredient, err)
 
-			require.Len(t, validIngredientMeasurementUnitsForValidIngredient.ValidIngredientPreparations, 1)
-			assert.Equal(t, validIngredientMeasurementUnitsForValidIngredient.ValidIngredientPreparations[0].ID, createdValidIngredientPreparation.ID)
+			require.Len(t, validIngredientMeasurementUnitsForValidIngredient.Data, 1)
+			assert.Equal(t, validIngredientMeasurementUnitsForValidIngredient.Data[0].ID, createdValidIngredientPreparation.ID)
 
 			validIngredientMeasurementUnitsForValidMeasurementUnit, err := testClients.user.GetValidIngredientPreparationsForPreparation(ctx, createdValidPreparation.ID, nil)
 			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidMeasurementUnit, err)
 
-			require.Len(t, validIngredientMeasurementUnitsForValidMeasurementUnit.ValidIngredientPreparations, 1)
-			assert.Equal(t, validIngredientMeasurementUnitsForValidMeasurementUnit.ValidIngredientPreparations[0].ID, createdValidIngredientPreparation.ID)
+			require.Len(t, validIngredientMeasurementUnitsForValidMeasurementUnit.Data, 1)
+			assert.Equal(t, validIngredientMeasurementUnitsForValidMeasurementUnit.Data[0].ID, createdValidIngredientPreparation.ID)
 
 			t.Log("cleaning up valid ingredient preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))

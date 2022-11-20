@@ -37,7 +37,6 @@ const (
 
 func init() {
 	gob.Register(new(MealPlanEvent))
-	gob.Register(new(MealPlanEventList))
 	gob.Register(new(MealPlanEventCreationRequestInput))
 	gob.Register(new(MealPlanEventUpdateRequestInput))
 }
@@ -56,13 +55,6 @@ type (
 		BelongsToMealPlan string            `json:"belongsToMealPlan"`
 		ID                string            `json:"id"`
 		Options           []*MealPlanOption `json:"options"`
-	}
-
-	// MealPlanEventList represents a list of meal plans.
-	MealPlanEventList struct {
-		_              struct{}
-		MealPlanEvents []*MealPlanEvent `json:"data"`
-		Pagination
 	}
 
 	// MealPlanEventCreationRequestInput represents what a user could set as input for creating meal plans.
@@ -103,7 +95,7 @@ type (
 	MealPlanEventDataManager interface {
 		MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error)
 		GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*MealPlanEvent, error)
-		GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *QueryFilter) (*MealPlanEventList, error)
+		GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *QueryFilter) (*QueryFilteredResult[MealPlanEvent], error)
 		CreateMealPlanEvent(ctx context.Context, input *MealPlanEventDatabaseCreationInput) (*MealPlanEvent, error)
 		UpdateMealPlanEvent(ctx context.Context, updated *MealPlanEvent) error
 		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error

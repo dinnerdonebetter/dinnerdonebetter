@@ -150,7 +150,7 @@ func (q *Querier) GetAPIClientByDatabaseID(ctx context.Context, clientID, userID
 }
 
 // GetAPIClients gets a list of API clients.
-func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.APIClientList, err error) {
+func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.APIClient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -161,7 +161,7 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.APIClientList{}
+	x = &types.QueryFilteredResult[types.APIClient]{}
 	if filter != nil {
 		if filter.Page != nil {
 			x.Page = *filter.Page
@@ -183,7 +183,7 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 		return nil, observability.PrepareError(err, span, "querying for API clients")
 	}
 
-	if x.Clients, x.FilteredCount, x.TotalCount, err = q.scanAPIClients(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanAPIClients(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning response from database")
 	}
 

@@ -66,7 +66,7 @@ func (c *Client) SearchValidMeasurementUnits(ctx context.Context, query string, 
 }
 
 // GetValidMeasurementUnits retrieves a list of valid measurement units.
-func (c *Client) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.ValidMeasurementUnitList, error) {
+func (c *Client) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -79,7 +79,7 @@ func (c *Client) GetValidMeasurementUnits(ctx context.Context, filter *types.Que
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid measurement units list request")
 	}
 
-	var validMeasurementUnits *types.ValidMeasurementUnitList
+	var validMeasurementUnits *types.QueryFilteredResult[types.ValidMeasurementUnit]
 	if err = c.fetchAndUnmarshal(ctx, req, &validMeasurementUnits); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement units")
 	}

@@ -54,7 +54,7 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlan
 }
 
 // GetMealPlanOptionVotes retrieves a list of meal plan option votes.
-func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *types.QueryFilter) (*types.MealPlanOptionVoteList, error) {
+func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.MealPlanOptionVote], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -84,7 +84,7 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 		return nil, observability.PrepareAndLogError(err, logger, span, "building meal plan option votes list request")
 	}
 
-	var mealPlanOptionVotes *types.MealPlanOptionVoteList
+	var mealPlanOptionVotes *types.QueryFilteredResult[types.MealPlanOptionVote]
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptionVotes); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan option votes")
 	}

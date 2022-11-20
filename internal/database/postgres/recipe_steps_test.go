@@ -376,10 +376,10 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 
-		for i := range exampleRecipeStepList.RecipeSteps {
-			exampleRecipeStepList.RecipeSteps[i].Instruments = nil
-			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
-			exampleRecipeStepList.RecipeSteps[i].Products = nil
+		for i := range exampleRecipeStepList.Data {
+			exampleRecipeStepList.Data[i].Instruments = nil
+			exampleRecipeStepList.Data[i].Ingredients = nil
+			exampleRecipeStepList.Data[i].Products = nil
 		}
 
 		ctx := context.Background()
@@ -389,7 +389,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeSteps(true, exampleRecipeStepList.FilteredCount, exampleRecipeStepList.RecipeSteps...))
+			WillReturnRows(buildMockRowsFromRecipeSteps(true, exampleRecipeStepList.FilteredCount, exampleRecipeStepList.Data...))
 
 		actual, err := c.GetRecipeSteps(ctx, exampleRecipeID, filter)
 		assert.NoError(t, err)
@@ -419,10 +419,10 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 		exampleRecipeStepList.Page = 0
 		exampleRecipeStepList.Limit = 0
-		for i := range exampleRecipeStepList.RecipeSteps {
-			exampleRecipeStepList.RecipeSteps[i].Instruments = nil
-			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
-			exampleRecipeStepList.RecipeSteps[i].Products = nil
+		for i := range exampleRecipeStepList.Data {
+			exampleRecipeStepList.Data[i].Instruments = nil
+			exampleRecipeStepList.Data[i].Ingredients = nil
+			exampleRecipeStepList.Data[i].Products = nil
 		}
 
 		ctx := context.Background()
@@ -432,7 +432,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeSteps(true, exampleRecipeStepList.FilteredCount, exampleRecipeStepList.RecipeSteps...))
+			WillReturnRows(buildMockRowsFromRecipeSteps(true, exampleRecipeStepList.FilteredCount, exampleRecipeStepList.Data...))
 
 		actual, err := c.GetRecipeSteps(ctx, exampleRecipeID, filter)
 		assert.NoError(t, err)

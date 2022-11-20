@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -323,7 +322,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientMeasurementUnitList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -368,7 +367,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidIngredientMeasurementUnitList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), sql.ErrNoRows)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -376,7 +375,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientMeasurementUnitList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -397,7 +396,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidIngredientMeasurementUnitList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -876,7 +875,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.ValidIngredientMeasurementUnitList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
 		helper.service.SearchByIngredientHandler(helper.res, helper.req)
@@ -948,7 +947,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.ValidIngredientMeasurementUnitList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
 		helper.service.SearchByMeasurementUnitHandler(helper.res, helper.req)

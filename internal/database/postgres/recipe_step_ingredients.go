@@ -360,7 +360,7 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 }
 
 // GetRecipeStepIngredients fetches a list of recipe step ingredients from the database that meet a particular filter.
-func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepIngredientList, err error) {
+func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.RecipeStepIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -378,7 +378,7 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	x = &types.RecipeStepIngredientList{}
+	x = &types.QueryFilteredResult[types.RecipeStepIngredient]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -398,7 +398,7 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
 	}
 
-	if x.RecipeStepIngredients, x.FilteredCount, x.TotalCount, err = q.scanRecipeStepIngredients(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipeStepIngredients(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step ingredients")
 	}
 

@@ -59,7 +59,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	households, err := fetchFunc(ctx, requester, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		households = &types.HouseholdList{Households: []*types.Household{}}
+		households = &types.QueryFilteredResult[types.Household]{Data: []*types.Household{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching households")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

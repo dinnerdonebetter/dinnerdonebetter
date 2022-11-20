@@ -297,7 +297,7 @@ func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientMeasurementUnits(true, exampleValidIngredientMeasurementUnitList.FilteredCount, exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits...))
+			WillReturnRows(buildMockRowsFromValidIngredientMeasurementUnits(true, exampleValidIngredientMeasurementUnitList.FilteredCount, exampleValidIngredientMeasurementUnitList.Data...))
 
 		actual, err := c.GetValidIngredientMeasurementUnits(ctx, filter)
 		assert.NoError(t, err)
@@ -321,7 +321,7 @@ func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientMeasurementUnits(true, exampleValidIngredientMeasurementUnitList.FilteredCount, exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits...))
+			WillReturnRows(buildMockRowsFromValidIngredientMeasurementUnits(true, exampleValidIngredientMeasurementUnitList.FilteredCount, exampleValidIngredientMeasurementUnitList.Data...))
 
 		actual, err := c.GetValidIngredientMeasurementUnits(ctx, filter)
 		assert.NoError(t, err)

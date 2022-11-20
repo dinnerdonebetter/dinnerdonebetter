@@ -3,9 +3,9 @@ package stripe
 import (
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/capitalism"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/capitalism"
 )
 
 func TestProvideAPIKey(T *testing.T) {

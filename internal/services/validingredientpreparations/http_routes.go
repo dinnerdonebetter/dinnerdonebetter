@@ -150,7 +150,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	validIngredientPreparations, err := s.validIngredientPreparationDataManager.GetValidIngredientPreparations(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredientPreparations = &types.ValidIngredientPreparationList{ValidIngredientPreparations: []*types.ValidIngredientPreparation{}}
+		validIngredientPreparations = &types.QueryFilteredResult[types.ValidIngredientPreparation]{Data: []*types.ValidIngredientPreparation{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient preparations")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

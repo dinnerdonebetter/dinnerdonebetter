@@ -21,20 +21,20 @@ func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurement
 }
 
 // BuildFakeValidIngredientMeasurementUnitList builds a faked ValidIngredientMeasurementUnitList.
-func BuildFakeValidIngredientMeasurementUnitList() *types.ValidIngredientMeasurementUnitList {
+func BuildFakeValidIngredientMeasurementUnitList() *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit] {
 	var examples []*types.ValidIngredientMeasurementUnit
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidIngredientMeasurementUnit())
 	}
 
-	return &types.ValidIngredientMeasurementUnitList{
+	return &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		ValidIngredientMeasurementUnits: examples,
+		Data: examples,
 	}
 }
 

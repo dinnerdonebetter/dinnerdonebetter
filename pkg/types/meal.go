@@ -44,7 +44,6 @@ const (
 
 func init() {
 	gob.Register(new(Meal))
-	gob.Register(new(MealList))
 	gob.Register(new(MealCreationRequestInput))
 	gob.Register(new(MealUpdateRequestInput))
 }
@@ -67,14 +66,6 @@ type (
 	MealComponent struct {
 		ComponentType string `json:"componentType"`
 		Recipe        Recipe `json:"recipe"`
-	}
-
-	// MealList represents a list of meals.
-	MealList struct {
-		_ struct{}
-
-		Meals []*Meal `json:"data"`
-		Pagination
 	}
 
 	// MealCreationRequestInput represents what a user could set as input for creating meals.
@@ -130,8 +121,8 @@ type (
 	MealDataManager interface {
 		MealExists(ctx context.Context, mealID string) (bool, error)
 		GetMeal(ctx context.Context, mealID string) (*Meal, error)
-		GetMeals(ctx context.Context, filter *QueryFilter) (*MealList, error)
-		SearchForMeals(ctx context.Context, query string, filter *QueryFilter) (*MealList, error)
+		GetMeals(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
+		SearchForMeals(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
 		CreateMeal(ctx context.Context, input *MealDatabaseCreationInput) (*Meal, error)
 		ArchiveMeal(ctx context.Context, mealID, userID string) error
 	}

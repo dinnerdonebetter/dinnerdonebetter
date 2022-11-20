@@ -69,7 +69,7 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		body, err := json.Marshal(exampleInput)
 		require.NoError(t, err)
 
-		exampleMealPlans := fakes.BuildFakeMealPlanList().MealPlans
+		exampleMealPlans := fakes.BuildFakeMealPlanList().Data
 
 		dbm := database.NewMockDatabase()
 		dbm.MealPlanDataManager.On(

@@ -5,9 +5,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/sqs"
@@ -15,6 +12,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 

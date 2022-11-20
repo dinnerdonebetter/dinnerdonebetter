@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -331,7 +330,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.MealPlanOptionList{}),
+			mock.IsType(&types.QueryFilteredResult[types.MealPlanOption]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -378,7 +377,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.MealPlanOptionList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.MealPlanOption])(nil), sql.ErrNoRows)
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -386,7 +385,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.MealPlanOptionList{}),
+			mock.IsType(&types.QueryFilteredResult[types.MealPlanOption]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -409,7 +408,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.MealPlanOptionList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.MealPlanOption])(nil), errors.New("blah"))
 		helper.service.mealPlanOptionDataManager = mealPlanOptionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

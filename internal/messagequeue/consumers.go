@@ -16,14 +16,17 @@ type (
 	}
 )
 
-type noopConsumer struct{}
+var _ Consumer = (*NoopConsumer)(nil)
+
+// NoopConsumer is a no-op [messagequeue.Consumer].
+type NoopConsumer struct{}
 
 // Consume does nothing.
-func (n *noopConsumer) Consume(_ chan bool, _ chan error) {}
+func (n *NoopConsumer) Consume(_ chan bool, _ chan error) {}
 
 // NewNoopConsumer is a noop Consumer.
-func NewNoopConsumer() Consumer {
-	return &noopConsumer{}
+func NewNoopConsumer() *NoopConsumer {
+	return &NoopConsumer{}
 }
 
 type noopConsumerProvider struct{}

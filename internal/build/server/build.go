@@ -5,7 +5,6 @@ package server
 
 import (
 	"context"
-	graphing "github.com/prixfixeco/backend/internal/features/recipeanalysis"
 
 	"github.com/google/wire"
 
@@ -15,6 +14,7 @@ import (
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
+	graphing "github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/metrics"

@@ -324,7 +324,7 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientStateList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientState]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -369,7 +369,7 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 			"GetValidIngredientStates",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidIngredientStateList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.ValidIngredientState])(nil), sql.ErrNoRows)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -377,7 +377,7 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientStateList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientState]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -398,7 +398,7 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 			"GetValidIngredientStates",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidIngredientStateList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredientState])(nil), errors.New("blah"))
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -439,7 +439,7 @@ func TestValidIngredientStatesService_SearchHandler(T *testing.T) {
 			"SearchForValidIngredientStates",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(exampleValidIngredientStateList.ValidIngredientStates, nil)
+		).Return(exampleValidIngredientStateList.Data, nil)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

@@ -227,7 +227,7 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 
 		ctx := context.Background()
 		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeMediaList := fakes.BuildFakeRecipeMediaList().RecipeMedia
+		exampleRecipeMediaList := fakes.BuildFakeRecipeMediaList().Data
 
 		c, db := buildTestClient(t)
 

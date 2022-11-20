@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-
 	"github.com/rs/zerolog"
 	"go.opentelemetry.io/otel/trace"
+
+	"github.com/prixfixeco/backend/internal/observability/keys"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 const here = "github.com/prixfixeco/backend/"

@@ -324,7 +324,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidPreparationList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidPreparation]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -369,7 +369,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 			"GetValidPreparations",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidPreparationList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.ValidPreparation])(nil), sql.ErrNoRows)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -377,7 +377,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidPreparationList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidPreparation]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -398,7 +398,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 			"GetValidPreparations",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidPreparationList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidPreparation])(nil), errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -439,7 +439,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 			"SearchForValidPreparations",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(exampleValidPreparationList.ValidPreparations, nil)
+		).Return(exampleValidPreparationList.Data, nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

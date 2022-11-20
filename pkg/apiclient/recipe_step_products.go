@@ -48,7 +48,7 @@ func (c *Client) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepI
 }
 
 // GetRecipeStepProducts retrieves a list of recipe step products.
-func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.RecipeStepProductList, error) {
+func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeStepProduct], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,7 +72,7 @@ func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStep
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step products list request")
 	}
 
-	var recipeStepProducts *types.RecipeStepProductList
+	var recipeStepProducts *types.QueryFilteredResult[types.RecipeStepProduct]
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepProducts); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step products")
 	}

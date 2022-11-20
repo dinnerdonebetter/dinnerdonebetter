@@ -36,7 +36,7 @@ func (c *Client) GetValidIngredientPreparation(ctx context.Context, validIngredi
 }
 
 // GetValidIngredientPreparations retrieves a list of valid ingredient preparations.
-func (c *Client) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (*types.ValidIngredientPreparationList, error) {
+func (c *Client) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientPreparation], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -49,7 +49,7 @@ func (c *Client) GetValidIngredientPreparations(ctx context.Context, filter *typ
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validIngredientPreparations *types.ValidIngredientPreparationList
+	var validIngredientPreparations *types.QueryFilteredResult[types.ValidIngredientPreparation]
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientPreparations); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
@@ -58,7 +58,7 @@ func (c *Client) GetValidIngredientPreparations(ctx context.Context, filter *typ
 }
 
 // GetValidIngredientPreparationsForIngredient retrieves a list of valid ingredient preparations.
-func (c *Client) GetValidIngredientPreparationsForIngredient(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.ValidIngredientPreparationList, error) {
+func (c *Client) GetValidIngredientPreparationsForIngredient(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientPreparation], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -76,7 +76,7 @@ func (c *Client) GetValidIngredientPreparationsForIngredient(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validPreparationInstruments *types.ValidIngredientPreparationList
+	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientPreparation]
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
@@ -85,7 +85,7 @@ func (c *Client) GetValidIngredientPreparationsForIngredient(ctx context.Context
 }
 
 // GetValidIngredientPreparationsForPreparation retrieves a list of valid ingredient preparations.
-func (c *Client) GetValidIngredientPreparationsForPreparation(ctx context.Context, validPreparationID string, filter *types.QueryFilter) (*types.ValidIngredientPreparationList, error) {
+func (c *Client) GetValidIngredientPreparationsForPreparation(ctx context.Context, validPreparationID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientPreparation], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,7 +103,7 @@ func (c *Client) GetValidIngredientPreparationsForPreparation(ctx context.Contex
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validPreparationInstruments *types.ValidIngredientPreparationList
+	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientPreparation]
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}

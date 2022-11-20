@@ -9,14 +9,13 @@ import (
 	"net/url"
 	"testing"
 
-	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -50,7 +49,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.HouseholdList{}),
+			mock.IsType(&types.QueryFilteredResult[types.Household]{}),
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -95,7 +94,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.HouseholdList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.Household])(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -103,7 +102,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.HouseholdList{}),
+			mock.IsType(&types.QueryFilteredResult[types.Household]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -125,7 +124,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.HouseholdList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.Household])(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

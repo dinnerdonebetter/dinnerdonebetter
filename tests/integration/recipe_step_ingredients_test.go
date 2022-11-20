@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,6 +8,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
@@ -153,10 +153,10 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.RecipeStepIngredients),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.RecipeStepIngredients),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

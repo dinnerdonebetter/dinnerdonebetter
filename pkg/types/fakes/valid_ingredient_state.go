@@ -19,20 +19,20 @@ func BuildFakeValidIngredientState() *types.ValidIngredientState {
 }
 
 // BuildFakeValidIngredientStateList builds a faked ValidIngredientStateList.
-func BuildFakeValidIngredientStateList() *types.ValidIngredientStateList {
+func BuildFakeValidIngredientStateList() *types.QueryFilteredResult[types.ValidIngredientState] {
 	var examples []*types.ValidIngredientState
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidIngredientState())
 	}
 
-	return &types.ValidIngredientStateList{
+	return &types.QueryFilteredResult[types.ValidIngredientState]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		ValidIngredientStates: examples,
+		Data: examples,
 	}
 }
 

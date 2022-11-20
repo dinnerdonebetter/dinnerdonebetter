@@ -262,7 +262,7 @@ func (q *Querier) buildGetValidIngredientMeasurementUnitRestrictedByIngredientID
 }
 
 // GetValidIngredientMeasurementUnitsForIngredient fetches a list of valid measurement units from the database that belong to a given ingredient ID.
-func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
+func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -274,7 +274,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, ingredientID)
 
-	x = &types.ValidIngredientMeasurementUnitList{
+	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: types.Pagination{
 			Limit: 20,
 		},
@@ -300,7 +300,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
-	if x.ValidIngredientMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, false); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, false); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient measurement units")
 	}
 
@@ -312,7 +312,7 @@ func (q *Querier) buildGetValidIngredientMeasurementUnitsRestrictedByMeasurement
 }
 
 // GetValidIngredientMeasurementUnitsForMeasurementUnit fetches a list of valid measurement units from the database that belong to a given ingredient ID.
-func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
+func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -324,7 +324,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validMeasurementUnitID)
 
-	x = &types.ValidIngredientMeasurementUnitList{
+	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: types.Pagination{
 			Limit: 20,
 		},
@@ -350,7 +350,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
-	if x.ValidIngredientMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, false); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, false); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient measurement units")
 	}
 
@@ -358,13 +358,13 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 }
 
 // GetValidIngredientMeasurementUnits fetches a list of valid ingredient measurement units from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
+func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.ValidIngredientMeasurementUnitList{}
+	x := &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -396,7 +396,7 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}
 
-	if x.ValidIngredientMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient measurement units")
 	}
 

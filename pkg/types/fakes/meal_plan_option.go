@@ -30,20 +30,20 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 }
 
 // BuildFakeMealPlanOptionList builds a faked MealPlanOptionList.
-func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
+func BuildFakeMealPlanOptionList() *types.QueryFilteredResult[types.MealPlanOption] {
 	var examples []*types.MealPlanOption
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanOption())
 	}
 
-	return &types.MealPlanOptionList{
+	return &types.QueryFilteredResult[types.MealPlanOption]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		MealPlanOptions: examples,
+		Data: examples,
 	}
 }
 

@@ -9,12 +9,11 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -325,7 +324,7 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredient]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -370,7 +369,7 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 			"GetValidIngredients",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidIngredientList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.ValidIngredient])(nil), sql.ErrNoRows)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -378,7 +377,7 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredient]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -399,7 +398,7 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 			"GetValidIngredients",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidIngredientList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredient])(nil), errors.New("blah"))
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -440,7 +439,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"SearchForValidIngredients",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return(exampleValidIngredientList.ValidIngredients, nil)
+		).Return(exampleValidIngredientList.Data, nil)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

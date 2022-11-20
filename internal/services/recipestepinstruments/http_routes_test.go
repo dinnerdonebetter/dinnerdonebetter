@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -331,7 +330,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.RecipeStepInstrumentList{}),
+			mock.IsType(&types.QueryFilteredResult[types.RecipeStepInstrument]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -378,7 +377,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.RecipeStepInstrumentList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.RecipeStepInstrument])(nil), sql.ErrNoRows)
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -386,7 +385,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.RecipeStepInstrumentList{}),
+			mock.IsType(&types.QueryFilteredResult[types.RecipeStepInstrument]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -409,7 +408,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.RecipeStepInstrumentList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.RecipeStepInstrument])(nil), errors.New("blah"))
 		helper.service.recipeStepInstrumentDataManager = recipeStepInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

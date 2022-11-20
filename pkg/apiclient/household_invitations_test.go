@@ -25,7 +25,7 @@ type householdInvitationsTestSuite struct {
 	exampleHousehold           *types.Household
 	exampleHouseholdInvitation *types.HouseholdInvitation
 	exampleUser                *types.User
-	exampleHouseholdList       *types.HouseholdList
+	exampleHouseholdList       *types.QueryFilteredResult[types.Household]
 }
 
 var _ suite.SetupTestSuite = (*householdInvitationsTestSuite)(nil)

@@ -146,7 +146,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	validPreparations, err := s.validPreparationDataManager.GetValidPreparations(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validPreparations = &types.ValidPreparationList{ValidPreparations: []*types.ValidPreparation{}}
+		validPreparations = &types.QueryFilteredResult[types.ValidPreparation]{Data: []*types.ValidPreparation{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparations")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

@@ -28,21 +28,21 @@ func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparation(ct
 }
 
 // GetValidIngredientPreparations is a mock function.
-func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (*types.ValidIngredientPreparationList, error) {
+func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientPreparation], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.ValidIngredientPreparationList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredientPreparation]), args.Error(1)
 }
 
 // GetValidIngredientPreparationsForIngredient is a mock function.
-func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*types.ValidIngredientPreparationList, error) {
+func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientPreparation], error) {
 	args := m.Called(ctx, ingredientID, filter)
-	return args.Get(0).(*types.ValidIngredientPreparationList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredientPreparation]), args.Error(1)
 }
 
 // GetValidIngredientPreparationsForPreparation is a mock function.
-func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.ValidIngredientPreparationList, error) {
+func (m *ValidIngredientPreparationDataManager) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientPreparation], error) {
 	args := m.Called(ctx, preparationID, filter)
-	return args.Get(0).(*types.ValidIngredientPreparationList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredientPreparation]), args.Error(1)
 }
 
 // CreateValidIngredientPreparation is a mock function.

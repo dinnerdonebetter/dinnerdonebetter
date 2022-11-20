@@ -336,8 +336,8 @@ func TestQuerier_GetMeals(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleMealList := fakes.BuildFakeMealList()
-		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Components = nil
+		for i := range exampleMealList.Data {
+			exampleMealList.Data[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -347,7 +347,7 @@ func TestQuerier_GetMeals(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMeals(true, exampleMealList.FilteredCount, exampleMealList.Meals...))
+			WillReturnRows(buildMockRowsFromMeals(true, exampleMealList.FilteredCount, exampleMealList.Data...))
 
 		actual, err := c.GetMeals(ctx, filter)
 		assert.NoError(t, err)
@@ -363,8 +363,8 @@ func TestQuerier_GetMeals(T *testing.T) {
 		exampleMealList := fakes.BuildFakeMealList()
 		exampleMealList.Page = 0
 		exampleMealList.Limit = 0
-		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Components = nil
+		for i := range exampleMealList.Data {
+			exampleMealList.Data[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -374,7 +374,7 @@ func TestQuerier_GetMeals(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMeals(true, exampleMealList.FilteredCount, exampleMealList.Meals...))
+			WillReturnRows(buildMockRowsFromMeals(true, exampleMealList.FilteredCount, exampleMealList.Data...))
 
 		actual, err := c.GetMeals(ctx, filter)
 		assert.NoError(t, err)
@@ -434,8 +434,8 @@ func TestQuerier_SearchForMeals(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleMealList := fakes.BuildFakeMealList()
-		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Components = nil
+		for i := range exampleMealList.Data {
+			exampleMealList.Data[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -447,7 +447,7 @@ func TestQuerier_SearchForMeals(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMeals(true, exampleMealList.FilteredCount, exampleMealList.Meals...))
+			WillReturnRows(buildMockRowsFromMeals(true, exampleMealList.FilteredCount, exampleMealList.Data...))
 
 		actual, err := c.SearchForMeals(ctx, recipeNameQuery, filter)
 		assert.NoError(t, err)
@@ -461,8 +461,8 @@ func TestQuerier_SearchForMeals(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleMealList := fakes.BuildFakeMealList()
-		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Components = nil
+		for i := range exampleMealList.Data {
+			exampleMealList.Data[i].Components = nil
 		}
 
 		ctx := context.Background()
@@ -488,8 +488,8 @@ func TestQuerier_SearchForMeals(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleMealList := fakes.BuildFakeMealList()
-		for i := range exampleMealList.Meals {
-			exampleMealList.Meals[i].Components = nil
+		for i := range exampleMealList.Data {
+			exampleMealList.Data[i].Components = nil
 		}
 
 		ctx := context.Background()

@@ -296,11 +296,11 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(validMeasurementUnitSearchQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, 0, exampleValidMeasurementUnits.ValidMeasurementUnits...))
+			WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, 0, exampleValidMeasurementUnits.Data...))
 
 		actual, err := c.SearchForValidMeasurementUnits(ctx, exampleQuery)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidMeasurementUnits.ValidMeasurementUnits, actual)
+		assert.Equal(t, exampleValidMeasurementUnits.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -375,7 +375,7 @@ func TestQuerier_GetValidMeasurementUnits(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementUnits(true, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.ValidMeasurementUnits...))
+			WillReturnRows(buildMockRowsFromValidMeasurementUnits(true, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.Data...))
 
 		actual, err := c.GetValidMeasurementUnits(ctx, filter)
 		assert.NoError(t, err)
@@ -399,7 +399,7 @@ func TestQuerier_GetValidMeasurementUnits(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementUnits(true, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.ValidMeasurementUnits...))
+			WillReturnRows(buildMockRowsFromValidMeasurementUnits(true, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.Data...))
 
 		actual, err := c.GetValidMeasurementUnits(ctx, filter)
 		assert.NoError(t, err)

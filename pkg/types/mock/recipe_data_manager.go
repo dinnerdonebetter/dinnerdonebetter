@@ -34,15 +34,15 @@ func (m *RecipeDataManager) GetRecipeByIDAndUser(ctx context.Context, recipeID, 
 }
 
 // SearchForRecipes is a mock function.
-func (m *RecipeDataManager) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.RecipeList, error) {
+func (m *RecipeDataManager) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
 	args := m.Called(ctx, query, filter)
-	return args.Get(0).(*types.RecipeList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.Recipe]), args.Error(1)
 }
 
 // GetRecipes is a mock function.
-func (m *RecipeDataManager) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*types.RecipeList, error) {
+func (m *RecipeDataManager) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.RecipeList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.Recipe]), args.Error(1)
 }
 
 // CreateRecipe is a mock function.

@@ -107,12 +107,12 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_GetMealPlanGroceryListIte
 		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleMealPlanID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanGroceryListItemList.MealPlanGroceryListItems)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanGroceryListItemList.Data)
 		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(s.ctx, s.exampleMealPlanID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanGroceryListItemList.MealPlanGroceryListItems, actual)
+		assert.Equal(t, exampleMealPlanGroceryListItemList.Data, actual)
 	})
 
 	s.Run("with invalid meal plan ID", func() {

@@ -40,20 +40,20 @@ func BuildFakeHouseholdForUser(u *types.User) *types.Household {
 }
 
 // BuildFakeHouseholdList builds a faked HouseholdList.
-func BuildFakeHouseholdList() *types.HouseholdList {
+func BuildFakeHouseholdList() *types.QueryFilteredResult[types.Household] {
 	var examples []*types.Household
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeHousehold())
 	}
 
-	return &types.HouseholdList{
+	return &types.QueryFilteredResult[types.Household]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		Households: examples,
+		Data: examples,
 	}
 }
 

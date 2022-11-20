@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 func TestConfig_ProvideMetricsHandler(T *testing.T) {

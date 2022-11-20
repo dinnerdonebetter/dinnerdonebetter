@@ -38,7 +38,7 @@ func (c *Client) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe,
 }
 
 // GetRecipes retrieves a list of recipes.
-func (c *Client) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*types.RecipeList, error) {
+func (c *Client) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -51,7 +51,7 @@ func (c *Client) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipes list request")
 	}
 
-	var recipes *types.RecipeList
+	var recipes *types.QueryFilteredResult[types.Recipe]
 	if err = c.fetchAndUnmarshal(ctx, req, &recipes); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipes")
 	}
@@ -60,7 +60,7 @@ func (c *Client) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*ty
 }
 
 // SearchForRecipes retrieves a list of recipes.
-func (c *Client) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.RecipeList, error) {
+func (c *Client) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -74,7 +74,7 @@ func (c *Client) SearchForRecipes(ctx context.Context, query string, filter *typ
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipes list request")
 	}
 
-	var recipes *types.RecipeList
+	var recipes *types.QueryFilteredResult[types.Recipe]
 	if err = c.fetchAndUnmarshal(ctx, req, &recipes); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipes")
 	}

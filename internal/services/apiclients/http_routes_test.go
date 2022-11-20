@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"testing"
 
-	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -18,6 +16,7 @@ import (
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -52,7 +51,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.APIClientList{}),
+			mock.IsType(&types.QueryFilteredResult[types.APIClient]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -96,7 +95,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.APIClientList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.APIClient])(nil), sql.ErrNoRows)
 		helper.service.apiClientDataManager = mockDB
 		helper.service.userDataManager = mockDB
 
@@ -105,7 +104,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.APIClientList{}),
+			mock.IsType(&types.QueryFilteredResult[types.APIClient]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -126,7 +125,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.APIClientList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.APIClient])(nil), errors.New("blah"))
 		helper.service.apiClientDataManager = mockDB
 		helper.service.userDataManager = mockDB
 

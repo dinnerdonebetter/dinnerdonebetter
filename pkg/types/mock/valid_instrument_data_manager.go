@@ -40,9 +40,9 @@ func (m *ValidInstrumentDataManager) SearchForValidInstruments(ctx context.Conte
 }
 
 // GetValidInstruments is a mock function.
-func (m *ValidInstrumentDataManager) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (*types.ValidInstrumentList, error) {
+func (m *ValidInstrumentDataManager) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidInstrument], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.ValidInstrumentList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidInstrument]), args.Error(1)
 }
 
 // CreateValidInstrument is a mock function.

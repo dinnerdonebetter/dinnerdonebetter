@@ -3,14 +3,15 @@ package integration
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types/converters"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.RecipeStepInstrument, checkInstrument bool) {
@@ -388,10 +389,10 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.RecipeStepInstruments),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.RecipeStepInstruments),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

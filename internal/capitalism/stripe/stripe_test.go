@@ -14,18 +14,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/capitalism"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-	testutils "github.com/prixfixeco/backend/tests/utils"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/client"
 	"github.com/stripe/stripe-go/v72/webhook"
+
+	"github.com/prixfixeco/backend/internal/capitalism"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 const (

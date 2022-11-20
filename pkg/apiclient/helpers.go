@@ -81,7 +81,7 @@ func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any
 	}
 
 	if res.StatusCode >= http.StatusBadRequest {
-		apiErr := &types.ErrorResponse{Code: res.StatusCode}
+		apiErr := &types.APIError{Code: res.StatusCode}
 
 		if err = c.encoder.Unmarshal(ctx, bodyBytes, &apiErr); err != nil {
 			observability.AcknowledgeError(err, logger, span, "unmarshalling error response")

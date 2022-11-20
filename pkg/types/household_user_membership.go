@@ -46,14 +46,6 @@ type (
 		DefaultHousehold   bool       `json:"defaultHousehold"`
 	}
 
-	// HouseholdUserMembershipList represents a list of household user memberships.
-	HouseholdUserMembershipList struct {
-		_ struct{}
-
-		HouseholdUserMemberships []*HouseholdUserMembership `json:"data"`
-		Pagination
-	}
-
 	// HouseholdUserMembershipCreationRequestInput represents what a User could set as input for updating household user memberships.
 	HouseholdUserMembershipCreationRequestInput struct {
 		_ struct{}

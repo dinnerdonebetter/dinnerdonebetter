@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidInstrument))
-	gob.Register(new(ValidInstrumentList))
 	gob.Register(new(ValidInstrumentCreationRequestInput))
 	gob.Register(new(ValidInstrumentUpdateRequestInput))
 }
@@ -59,13 +58,6 @@ type (
 		PluralName            *string
 		UsableForStorage      *bool
 		CreatedAt             *time.Time
-	}
-
-	// ValidInstrumentList represents a list of valid instruments.
-	ValidInstrumentList struct {
-		_                struct{}
-		ValidInstruments []*ValidInstrument `json:"data"`
-		Pagination
 	}
 
 	// ValidInstrumentCreationRequestInput represents what a user could set as input for creating valid instruments.
@@ -113,7 +105,7 @@ type (
 		ValidInstrumentExists(ctx context.Context, validInstrumentID string) (bool, error)
 		GetValidInstrument(ctx context.Context, validInstrumentID string) (*ValidInstrument, error)
 		GetRandomValidInstrument(ctx context.Context) (*ValidInstrument, error)
-		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*ValidInstrumentList, error)
+		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidInstrument], error)
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error

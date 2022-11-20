@@ -32,7 +32,7 @@ func (c *Client) GetAPIClient(ctx context.Context, apiClientDatabaseID string) (
 }
 
 // GetAPIClients gets a list of API clients.
-func (c *Client) GetAPIClients(ctx context.Context, filter *types.QueryFilter) (*types.APIClientList, error) {
+func (c *Client) GetAPIClients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.APIClient], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -43,7 +43,7 @@ func (c *Client) GetAPIClients(ctx context.Context, filter *types.QueryFilter) (
 		return nil, observability.PrepareError(err, span, "building API clients list request")
 	}
 
-	var apiClients *types.APIClientList
+	var apiClients *types.QueryFilteredResult[types.APIClient]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiClients); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching api clients")
 	}

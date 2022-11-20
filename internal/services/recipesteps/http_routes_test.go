@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -327,7 +326,7 @@ func TestRecipeStepsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.RecipeStepList{}),
+			mock.IsType(&types.QueryFilteredResult[types.RecipeStep]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -373,7 +372,7 @@ func TestRecipeStepsService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.RecipeStepList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.RecipeStep])(nil), sql.ErrNoRows)
 		helper.service.recipeStepDataManager = recipeStepDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -381,7 +380,7 @@ func TestRecipeStepsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.RecipeStepList{}),
+			mock.IsType(&types.QueryFilteredResult[types.RecipeStep]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -403,7 +402,7 @@ func TestRecipeStepsService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.RecipeStepList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.RecipeStep])(nil), errors.New("blah"))
 		helper.service.recipeStepDataManager = recipeStepDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

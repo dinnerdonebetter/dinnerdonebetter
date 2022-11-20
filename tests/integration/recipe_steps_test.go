@@ -1,17 +1,16 @@
 package integration
 
 import (
-	"github.com/prixfixeco/backend/pkg/types/converters"
-	testutils "github.com/prixfixeco/backend/tests/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
@@ -180,10 +179,10 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.RecipeSteps),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.RecipeSteps),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

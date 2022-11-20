@@ -2,16 +2,15 @@ package integration
 
 import (
 	"fmt"
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidInstrument) {
@@ -115,10 +114,10 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.ValidInstruments),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.ValidInstruments),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

@@ -188,7 +188,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	recipes, err := s.recipeDataManager.GetRecipes(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipes = &types.RecipeList{Recipes: []*types.Recipe{}}
+		recipes = &types.QueryFilteredResult[types.Recipe]{Data: []*types.Recipe{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipes")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -231,7 +231,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	recipes, err := s.recipeDataManager.SearchForRecipes(ctx, searchQuery, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipes = &types.RecipeList{Recipes: []*types.Recipe{}}
+		recipes = &types.QueryFilteredResult[types.Recipe]{Data: []*types.Recipe{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipes")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

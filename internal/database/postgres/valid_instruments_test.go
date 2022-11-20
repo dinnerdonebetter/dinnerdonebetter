@@ -294,11 +294,11 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.ValidInstruments...))
+			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.Data...))
 
 		actual, err := c.SearchForValidInstruments(ctx, exampleQuery)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidInstruments.ValidInstruments, actual)
+		assert.Equal(t, exampleValidInstruments.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -376,11 +376,11 @@ func TestQuerier_SearchForValidInstrumentsForPreparation(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.ValidInstruments...))
+			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.Data...))
 
 		actual, err := c.SearchForValidInstrumentsForPreparation(ctx, "", exampleQuery)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidInstruments.ValidInstruments, actual)
+		assert.Equal(t, exampleValidInstruments.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -455,7 +455,7 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.ValidInstruments...))
+			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.Data...))
 
 		actual, err := c.GetValidInstruments(ctx, filter)
 		assert.NoError(t, err)
@@ -479,7 +479,7 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.ValidInstruments...))
+			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.Data...))
 
 		actual, err := c.GetValidInstruments(ctx, filter)
 		assert.NoError(t, err)

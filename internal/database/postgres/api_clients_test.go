@@ -274,7 +274,7 @@ func TestQuerier_GetAPIClients(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromAPIClients(true, exampleAPIClientList.FilteredCount, exampleAPIClientList.Clients...))
+			WillReturnRows(buildMockRowsFromAPIClients(true, exampleAPIClientList.FilteredCount, exampleAPIClientList.Data...))
 
 		actual, err := c.GetAPIClients(ctx, exampleUserID, filter)
 		assert.NoError(t, err)
@@ -310,7 +310,7 @@ func TestQuerier_GetAPIClients(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromAPIClients(true, exampleAPIClientList.FilteredCount, exampleAPIClientList.Clients...))
+			WillReturnRows(buildMockRowsFromAPIClients(true, exampleAPIClientList.FilteredCount, exampleAPIClientList.Data...))
 
 		actual, err := c.GetAPIClients(ctx, exampleUserID, filter)
 		assert.NoError(t, err)

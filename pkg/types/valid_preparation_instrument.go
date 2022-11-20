@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidPreparationInstrument))
-	gob.Register(new(ValidPreparationInstrumentList))
 	gob.Register(new(ValidPreparationInstrumentCreationRequestInput))
 	gob.Register(new(ValidPreparationInstrumentUpdateRequestInput))
 }
@@ -39,13 +38,6 @@ type (
 		Notes         string           `json:"notes"`
 		Preparation   ValidPreparation `json:"preparation"`
 		Instrument    ValidInstrument  `json:"instrument"`
-	}
-
-	// ValidPreparationInstrumentList represents a list of valid preparation instruments.
-	ValidPreparationInstrumentList struct {
-		_                           struct{}
-		ValidPreparationInstruments []*ValidPreparationInstrument `json:"data"`
-		Pagination
 	}
 
 	// ValidPreparationInstrumentCreationRequestInput represents what a user could set as input for creating valid preparation instruments.
@@ -80,9 +72,9 @@ type (
 	ValidPreparationInstrumentDataManager interface {
 		ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (bool, error)
 		GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*ValidPreparationInstrument, error)
-		GetValidPreparationInstruments(ctx context.Context, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
-		GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
-		GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
+		GetValidPreparationInstruments(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationInstrument], error)
+		GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationInstrument], error)
+		GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationInstrument], error)
 		CreateValidPreparationInstrument(ctx context.Context, input *ValidPreparationInstrumentDatabaseCreationInput) (*ValidPreparationInstrument, error)
 		UpdateValidPreparationInstrument(ctx context.Context, updated *ValidPreparationInstrument) error
 		ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error

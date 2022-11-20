@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v5"
@@ -12,6 +11,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
 )
@@ -73,14 +73,14 @@ func (s *TestSuite) TestHouseholds_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.Households),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.Households),
+				len(actual.Data),
 			)
 
 			// Clean up.
-			for _, createdHousehold := range actual.Households {
+			for _, createdHousehold := range actual.Data {
 				assert.NoError(t, testClients.user.ArchiveHousehold(ctx, createdHousehold.ID))
 			}
 		}
@@ -251,12 +251,12 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("checking for received invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
-			assert.NotEmpty(t, invitations.HouseholdInvitations)
+			assert.NotEmpty(t, invitations.Data)
 
 			t.Logf("accepting invitation")
 			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
@@ -265,13 +265,13 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			t.Logf("checking for sent invitation")
 			sentInvitations, err = testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.Empty(t, sentInvitations.HouseholdInvitations)
+			assert.Empty(t, sentInvitations.Data)
 
 			t.Logf("fetching households")
 			households, err := c.GetHouseholds(ctx, nil)
 
 			var found bool
-			for _, household := range households.Households {
+			for _, household := range households.Data {
 				if !found {
 					found = household.ID == relevantHouseholdID
 				}
@@ -325,7 +325,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
@@ -337,7 +337,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			t.Logf("checking for invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
-			assert.NotEmpty(t, invitations.HouseholdInvitations)
+			assert.NotEmpty(t, invitations.Data)
 
 			t.Logf("accepting invitation")
 			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
@@ -347,7 +347,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			households, err := c.GetHouseholds(ctx, nil)
 
 			var found bool
-			for _, household := range households.Households {
+			for _, household := range households.Data {
 				if !found {
 					found = household.ID == relevantHouseholdID
 				}
@@ -362,7 +362,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			t.Logf("checking for sent invitation")
 			sentInvitations, err = testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.Empty(t, sentInvitations.HouseholdInvitations)
+			assert.Empty(t, sentInvitations.Data)
 		}
 	})
 }
@@ -406,7 +406,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
@@ -418,7 +418,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			t.Logf("checking for invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
-			assert.NotEmpty(t, invitations.HouseholdInvitations)
+			assert.NotEmpty(t, invitations.Data)
 
 			t.Logf("cancelling invitation")
 			err = testClients.user.CancelHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
@@ -427,7 +427,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			t.Logf("checking for sent invitation")
 			sentInvitations, err = testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.Empty(t, sentInvitations.HouseholdInvitations)
+			assert.Empty(t, sentInvitations.Data)
 		}
 	})
 }
@@ -474,7 +474,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
@@ -490,7 +490,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			require.NoError(t, err)
 
 			var found bool
-			for _, household := range households.Households {
+			for _, household := range households.Data {
 				if !found {
 					found = household.ID == relevantHouseholdID
 				}
@@ -545,7 +545,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.Empty(t, sentInvitations.HouseholdInvitations)
+			assert.Empty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
@@ -557,7 +557,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			t.Logf("checking for invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
-			assert.Empty(t, invitations.HouseholdInvitations)
+			assert.Empty(t, invitations.Data)
 		}
 	})
 }
@@ -603,12 +603,12 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("checking for received invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
-			assert.NotEmpty(t, invitations.HouseholdInvitations)
+			assert.NotEmpty(t, invitations.Data)
 
 			t.Logf("accepting invitation")
 			err = c.RejectHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
@@ -617,7 +617,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			t.Logf("checking for sent invitation")
 			sentInvitations, err = testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.Empty(t, sentInvitations.HouseholdInvitations)
+			assert.Empty(t, sentInvitations.Data)
 		}
 	})
 }
@@ -702,7 +702,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 				t.Logf("checking for received invitation")
 				invitations, fetchInvitationsErr := clients[i].GetPendingHouseholdInvitationsForUser(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, fetchInvitationsErr)
-				assert.NotEmpty(t, invitations.HouseholdInvitations)
+				assert.NotEmpty(t, invitations.Data)
 
 				t.Logf("accepting invitation")
 				err = clients[i].AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
@@ -861,7 +861,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
 
@@ -878,14 +878,14 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			households, err := c.GetHouseholds(ctx, nil)
 			require.NoError(t, err)
 
-			assert.Len(t, households.Households, 2)
+			assert.Len(t, households.Data, 2)
 
 			var (
 				found            bool
 				otherHouseholdID string
 			)
 
-			for _, household := range households.Households {
+			for _, household := range households.Data {
 				if household.ID == relevantHouseholdID {
 					if !found {
 						found = true

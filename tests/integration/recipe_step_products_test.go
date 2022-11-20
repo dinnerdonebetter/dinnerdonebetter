@@ -1,16 +1,15 @@
 package integration
 
 import (
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.RecipeStepProduct) {
@@ -162,10 +161,10 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.RecipeStepProducts),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.RecipeStepProducts),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

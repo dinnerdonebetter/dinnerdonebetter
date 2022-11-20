@@ -34,9 +34,9 @@ func (m *ValidMeasurementUnitDataManager) SearchForValidMeasurementUnits(ctx con
 }
 
 // GetValidMeasurementUnits is a mock function.
-func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.ValidMeasurementUnitList, error) {
+func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.ValidMeasurementUnitList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidMeasurementUnit]), args.Error(1)
 }
 
 // CreateValidMeasurementUnit is a mock function.

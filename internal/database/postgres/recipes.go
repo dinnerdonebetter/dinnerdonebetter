@@ -292,11 +292,11 @@ func (q *Querier) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID str
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
-func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x *types.RecipeList, err error) {
+func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.RecipeList{}
+	x = &types.QueryFilteredResult[types.Recipe]{}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -316,7 +316,7 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
 	}
 
-	if x.Recipes, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning recipes")
 	}
 
@@ -353,11 +353,11 @@ func (q *Querier) getRecipeIDsForMeal(ctx context.Context, mealID string) (x []s
 }
 
 // SearchForRecipes fetches a list of recipes from the database that match a query.
-func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *types.QueryFilter) (x *types.RecipeList, err error) {
+func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.RecipeList{}
+	x = &types.QueryFilteredResult[types.Recipe]{}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -378,7 +378,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 		return nil, observability.PrepareError(err, span, "executing recipes search query")
 	}
 
-	if x.Recipes, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning recipes")
 	}
 

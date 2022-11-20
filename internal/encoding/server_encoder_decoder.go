@@ -109,7 +109,7 @@ func (e *serverEncoderDecoder) EncodeErrorResponse(ctx context.Context, res http
 
 	res.WriteHeader(statusCode)
 
-	if err := enc.Encode(&types.ErrorResponse{Message: msg, Code: statusCode}); err != nil {
+	if err := enc.Encode(&types.APIError{Message: msg, Code: statusCode}); err != nil {
 		observability.AcknowledgeError(err, logger, span, "encoding error response")
 	}
 }

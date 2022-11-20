@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
@@ -91,12 +91,12 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				t.Logf("checking for sent invitation")
 				sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
-				assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+				assert.NotEmpty(t, sentInvitations.Data)
 
 				t.Logf("checking for received invitation")
 				invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, err)
-				assert.NotEmpty(t, invitations.HouseholdInvitations)
+				assert.NotEmpty(t, invitations.Data)
 
 				t.Logf("accepting invitation")
 				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
@@ -283,12 +283,12 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				t.Logf("checking for sent invitation")
 				sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
-				assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+				assert.NotEmpty(t, sentInvitations.Data)
 
 				t.Logf("checking for received invitation")
 				invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, err)
-				assert.NotEmpty(t, invitations.HouseholdInvitations)
+				assert.NotEmpty(t, invitations.Data)
 
 				t.Logf("accepting invitation")
 				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
@@ -442,10 +442,10 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.MealPlans),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.MealPlans),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

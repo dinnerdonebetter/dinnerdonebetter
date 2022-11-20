@@ -485,8 +485,8 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		for i := range exampleHouseholdInvitationList.HouseholdInvitations {
-			exampleHouseholdInvitationList.HouseholdInvitations[i].DestinationHousehold.Members = nil
+		for i := range exampleHouseholdInvitationList.Data {
+			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
 		}
 
 		c, db := buildTestClient(t)
@@ -495,7 +495,7 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholdInvitations(true, exampleHouseholdInvitationList.FilteredCount, exampleHouseholdInvitationList.HouseholdInvitations...))
+			WillReturnRows(buildMockRowsFromHouseholdInvitations(true, exampleHouseholdInvitationList.FilteredCount, exampleHouseholdInvitationList.Data...))
 
 		actual, err := c.GetPendingHouseholdInvitationsFromUser(ctx, exampleUserID, filter)
 		assert.NoError(t, err)
@@ -511,8 +511,8 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		for i := range exampleHouseholdInvitationList.HouseholdInvitations {
-			exampleHouseholdInvitationList.HouseholdInvitations[i].DestinationHousehold.Members = nil
+		for i := range exampleHouseholdInvitationList.Data {
+			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
 		}
 
 		c, db := buildTestClient(t)
@@ -570,8 +570,8 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsForUser(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		for i := range exampleHouseholdInvitationList.HouseholdInvitations {
-			exampleHouseholdInvitationList.HouseholdInvitations[i].DestinationHousehold.Members = nil
+		for i := range exampleHouseholdInvitationList.Data {
+			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
 		}
 
 		c, db := buildTestClient(t)
@@ -580,7 +580,7 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsForUser(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholdInvitations(true, exampleHouseholdInvitationList.FilteredCount, exampleHouseholdInvitationList.HouseholdInvitations...))
+			WillReturnRows(buildMockRowsFromHouseholdInvitations(true, exampleHouseholdInvitationList.FilteredCount, exampleHouseholdInvitationList.Data...))
 
 		actual, err := c.GetPendingHouseholdInvitationsForUser(ctx, exampleUserID, filter)
 		assert.NoError(t, err)

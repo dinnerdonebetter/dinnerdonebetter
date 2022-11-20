@@ -162,7 +162,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	mealPlans, err := s.mealPlanDataManager.GetMealPlans(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		mealPlans = &types.MealPlanList{MealPlans: []*types.MealPlan{}}
+		mealPlans = &types.QueryFilteredResult[types.MealPlan]{Data: []*types.MealPlan{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plans")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

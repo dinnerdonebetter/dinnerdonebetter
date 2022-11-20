@@ -84,10 +84,10 @@ func (s *TestSuite) TestAPIClients_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.Clients),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.Clients),
+				len(actual.Data),
 			)
 
 			// Clean up.

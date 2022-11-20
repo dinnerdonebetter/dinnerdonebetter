@@ -79,14 +79,6 @@ type (
 		FromUser             User                      `json:"fromUser"`
 	}
 
-	// HouseholdInvitationList represents a list of households.
-	HouseholdInvitationList struct {
-		_ struct{}
-
-		HouseholdInvitations []*HouseholdInvitation `json:"data"`
-		Pagination
-	}
-
 	// HouseholdInvitationUpdateRequestInput is used by users to update the status of a given household invitation.
 	HouseholdInvitationUpdateRequestInput struct {
 		Token string `json:"token"`
@@ -99,8 +91,8 @@ type (
 		GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*HouseholdInvitation, error)
 		GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*HouseholdInvitation, error)
 		GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*HouseholdInvitation, error)
-		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
-		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
+		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[HouseholdInvitation], error)
+		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[HouseholdInvitation], error)
 		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationDatabaseCreationInput) (*HouseholdInvitation, error)
 		CancelHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error
 		AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error

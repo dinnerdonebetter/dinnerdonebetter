@@ -42,7 +42,7 @@ func (c *Client) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEvent
 }
 
 // GetMealPlanEvents retrieves a list of meal plan events.
-func (c *Client) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*types.MealPlanEventList, error) {
+func (c *Client) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.MealPlanEvent], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -58,7 +58,7 @@ func (c *Client) GetMealPlanEvents(ctx context.Context, mealPlanID string, filte
 		return nil, observability.PrepareError(err, span, "building meal plan events list request")
 	}
 
-	var mealPlanEvents *types.MealPlanEventList
+	var mealPlanEvents *types.QueryFilteredResult[types.MealPlanEvent]
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanEvents); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving meal plan events")
 	}

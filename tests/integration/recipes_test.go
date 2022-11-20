@@ -3,8 +3,6 @@ package integration
 import (
 	"context"
 	"fmt"
-	"github.com/prixfixeco/backend/pkg/types/converters"
-	testutils "github.com/prixfixeco/backend/tests/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,7 +12,9 @@ import (
 	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
@@ -480,7 +480,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 			requireNotNilAndNoProblems(t, mealResults, err)
 
 			foundMealID := ""
-			for _, m := range mealResults.Meals {
+			for _, m := range mealResults.Data {
 				meal, mealFetchErr := testClients.user.GetMeal(ctx, m.ID)
 				requireNotNilAndNoProblems(t, meal, mealFetchErr)
 
@@ -546,10 +546,10 @@ func (s *TestSuite) TestRecipes_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.Recipes),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.Recipes),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")
@@ -610,10 +610,10 @@ func (s *TestSuite) TestRecipes_Searching() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.Recipes),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.Recipes),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

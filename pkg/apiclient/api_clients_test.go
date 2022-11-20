@@ -24,7 +24,7 @@ type apiClientsTestSuite struct {
 
 	ctx                  context.Context
 	exampleAPIClient     *types.APIClient
-	exampleAPIClientList *types.APIClientList
+	exampleAPIClientList *types.QueryFilteredResult[types.APIClient]
 }
 
 var _ suite.SetupTestSuite = (*apiClientsTestSuite)(nil)
@@ -35,8 +35,8 @@ func (s *apiClientsTestSuite) SetupTest() {
 	s.exampleAPIClient.ClientSecret = nil
 	s.exampleAPIClientList = fakes.BuildFakeAPIClientList()
 
-	for i := 0; i < len(s.exampleAPIClientList.Clients); i++ {
-		s.exampleAPIClientList.Clients[i].ClientSecret = nil
+	for i := 0; i < len(s.exampleAPIClientList.Data); i++ {
+		s.exampleAPIClientList.Data[i].ClientSecret = nil
 	}
 }
 

@@ -3,15 +3,15 @@ package integration
 import (
 	"context"
 	"fmt"
-	"github.com/prixfixeco/backend/pkg/apiclient"
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
@@ -103,10 +103,10 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.ValidMeasurementUnits),
+				len(expected) <= len(actual.Data),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.ValidMeasurementUnits),
+				len(actual.Data),
 			)
 
 			t.Log("cleaning up")

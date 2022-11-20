@@ -26,7 +26,6 @@ const (
 
 func init() {
 	gob.Register(new(RecipeStep))
-	gob.Register(new(RecipeStepList))
 	gob.Register(new(RecipeStepCreationRequestInput))
 	gob.Register(new(RecipeStepUpdateRequestInput))
 }
@@ -56,11 +55,7 @@ type (
 	}
 
 	// RecipeStepList represents a list of recipe steps.
-	RecipeStepList struct {
-		_           struct{}
-		RecipeSteps []*RecipeStep `json:"data"`
-		Pagination
-	}
+	RecipeStepList []*RecipeStep
 
 	// RecipeStepCreationRequestInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationRequestInput struct {
@@ -119,7 +114,7 @@ type (
 	RecipeStepDataManager interface {
 		RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (bool, error)
 		GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*RecipeStep, error)
-		GetRecipeSteps(ctx context.Context, recipeID string, filter *QueryFilter) (*RecipeStepList, error)
+		GetRecipeSteps(ctx context.Context, recipeID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStep], error)
 		CreateRecipeStep(ctx context.Context, input *RecipeStepDatabaseCreationInput) (*RecipeStep, error)
 		UpdateRecipeStep(ctx context.Context, updated *RecipeStep) error
 		ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error
@@ -135,21 +130,6 @@ type (
 		ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
-
-// Len implements the sorter interface.
-func (r *RecipeStepList) Len() int {
-	return len(r.RecipeSteps)
-}
-
-// Less implements the sorter interface.
-func (r *RecipeStepList) Less(i, j int) bool {
-	return r.RecipeSteps[i].Index < r.RecipeSteps[j].Index
-}
-
-// Swap implements the sorter interface.
-func (r *RecipeStepList) Swap(i, j int) {
-	r.RecipeSteps[i], r.RecipeSteps[j] = r.RecipeSteps[j], r.RecipeSteps[i]
-}
 
 // Update merges an RecipeStepUpdateRequestInput with a recipe step.
 func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {

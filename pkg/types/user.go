@@ -58,14 +58,6 @@ type (
 		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}
 
-	// UserList represents a list of users.
-	UserList struct {
-		_ struct{}
-
-		Users []*User `json:"data"`
-		Pagination
-	}
-
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
 		_               struct{}
@@ -166,7 +158,7 @@ type (
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
-		GetUsers(ctx context.Context, filter *QueryFilter) (*UserList, error)
+		GetUsers(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[User], error)
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
 		UpdateUser(ctx context.Context, updated *User) error
 		UpdateUserPassword(ctx context.Context, userID, newHash string) error

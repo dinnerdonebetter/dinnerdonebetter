@@ -153,7 +153,7 @@ func TestUnmarshalBody(T *testing.T) {
 			Body: io.NopCloser(
 				strings.NewReader(
 					func() string {
-						bs, err := json.Marshal(&types.ErrorResponse{})
+						bs, err := json.Marshal(&types.APIError{})
 						require.NoError(t, err)
 						return string(bs)
 					}(),

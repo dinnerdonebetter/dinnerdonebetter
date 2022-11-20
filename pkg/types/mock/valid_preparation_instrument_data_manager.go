@@ -28,21 +28,21 @@ func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrument(ct
 }
 
 // GetValidPreparationInstruments is a mock function.
-func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
+func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.ValidPreparationInstrumentList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), args.Error(1)
 }
 
 // GetValidPreparationInstrumentsForPreparation is a mock function.
-func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
+func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
 	args := m.Called(ctx, preparationID, filter)
-	return args.Get(0).(*types.ValidPreparationInstrumentList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), args.Error(1)
 }
 
 // GetValidPreparationInstrumentsForInstrument is a mock function.
-func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
+func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
 	args := m.Called(ctx, instrumentID, filter)
-	return args.Get(0).(*types.ValidPreparationInstrumentList), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), args.Error(1)
 }
 
 // CreateValidPreparationInstrument is a mock function.

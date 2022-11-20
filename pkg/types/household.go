@@ -58,14 +58,6 @@ type (
 		Members                    []*HouseholdUserMembershipWithUser `json:"members"`
 	}
 
-	// HouseholdList represents a list of households.
-	HouseholdList struct {
-		_ struct{}
-
-		Households []*Household `json:"data"`
-		Pagination
-	}
-
 	// HouseholdCreationRequestInput represents what a User could set as input for creating households.
 	HouseholdCreationRequestInput struct {
 		_ struct{}
@@ -105,8 +97,8 @@ type (
 	HouseholdDataManager interface {
 		GetHousehold(ctx context.Context, householdID, userID string) (*Household, error)
 		GetHouseholdByID(ctx context.Context, householdID string) (*Household, error)
-		GetHouseholds(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdList, error)
-		GetHouseholdsForAdmin(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdList, error)
+		GetHouseholds(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Household], error)
+		GetHouseholdsForAdmin(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Household], error)
 		CreateHousehold(ctx context.Context, input *HouseholdDatabaseCreationInput) (*Household, error)
 		UpdateHousehold(ctx context.Context, updated *Household) error
 		ArchiveHousehold(ctx context.Context, householdID string, userID string) error

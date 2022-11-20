@@ -25,7 +25,6 @@ const (
 
 func init() {
 	gob.Register(new(MealPlanOption))
-	gob.Register(new(MealPlanOptionList))
 	gob.Register(new(MealPlanOptionCreationRequestInput))
 	gob.Register(new(MealPlanOptionUpdateRequestInput))
 }
@@ -46,13 +45,6 @@ type (
 		Votes                  []*MealPlanOptionVote `json:"votes"`
 		Chosen                 bool                  `json:"chosen"`
 		TieBroken              bool                  `json:"tieBroken"`
-	}
-
-	// MealPlanOptionList represents a list of meal plan options.
-	MealPlanOptionList struct {
-		_               struct{}
-		MealPlanOptions []*MealPlanOption `json:"data"`
-		Pagination
 	}
 
 	// MealPlanOptionCreationRequestInput represents what a user could set as input for creating meal plan options.
@@ -91,7 +83,7 @@ type (
 	MealPlanOptionDataManager interface {
 		MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (bool, error)
 		GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*MealPlanOption, error)
-		GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *QueryFilter) (*MealPlanOptionList, error)
+		GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *QueryFilter) (*QueryFilteredResult[MealPlanOption], error)
 		CreateMealPlanOption(ctx context.Context, input *MealPlanOptionDatabaseCreationInput) (*MealPlanOption, error)
 		UpdateMealPlanOption(ctx context.Context, updated *MealPlanOption) error
 		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error

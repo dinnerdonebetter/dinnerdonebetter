@@ -4,11 +4,10 @@ import (
 	"context"
 	"sync"
 
-	"github.com/prixfixeco/backend/internal/messagequeue"
-
 	"github.com/go-redis/redis/v8"
 
 	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 )

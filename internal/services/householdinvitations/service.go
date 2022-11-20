@@ -5,10 +5,8 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/backend/internal/email"
-
-	"github.com/prixfixeco/backend/internal/messagequeue"
-
 	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"

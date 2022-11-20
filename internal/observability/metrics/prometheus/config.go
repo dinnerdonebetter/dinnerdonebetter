@@ -5,11 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"go.opentelemetry.io/contrib/instrumentation/runtime"
-
-	"github.com/prixfixeco/backend/internal/observability/metrics"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/global"
@@ -21,6 +18,7 @@ import (
 	selector "go.opentelemetry.io/otel/sdk/metric/selector/simple"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/metrics"
 )
 
 const (

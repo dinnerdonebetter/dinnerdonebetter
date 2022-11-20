@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -323,7 +322,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidPreparationInstrumentList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidPreparationInstrument]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -368,7 +367,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 			"GetValidPreparationInstruments",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidPreparationInstrumentList)(nil), sql.ErrNoRows)
+		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), sql.ErrNoRows)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -376,7 +375,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidPreparationInstrumentList{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidPreparationInstrument]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -397,7 +396,7 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 			"GetValidPreparationInstruments",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.ValidPreparationInstrumentList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -876,7 +875,7 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.ValidPreparationInstrumentList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
 		helper.service.SearchByPreparationHandler(helper.res, helper.req)
@@ -948,7 +947,7 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.ValidPreparationInstrumentList)(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
 		helper.service.SearchByInstrumentHandler(helper.res, helper.req)

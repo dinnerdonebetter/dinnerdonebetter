@@ -19,20 +19,20 @@ func BuildFakeValidMeasurementConversion() *types.ValidMeasurementConversion {
 }
 
 // BuildFakeValidMeasurementConversionList builds a faked ValidMeasurementConversionList.
-func BuildFakeValidMeasurementConversionList() *types.ValidMeasurementConversionList {
+func BuildFakeValidMeasurementConversionList() *types.QueryFilteredResult[types.ValidMeasurementConversion] {
 	var examples []*types.ValidMeasurementConversion
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidMeasurementConversion())
 	}
 
-	return &types.ValidMeasurementConversionList{
+	return &types.QueryFilteredResult[types.ValidMeasurementConversion]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		ValidMeasurementConversions: examples,
+		Data: examples,
 	}
 }
 

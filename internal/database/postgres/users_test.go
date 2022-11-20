@@ -581,11 +581,11 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(searchForUserByUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUserList.Users...))
+			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUserList.Data...))
 
 		actual, err := c.SearchForUsersByUsername(ctx, exampleUsername)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleUserList.Users, actual)
+		assert.Equal(t, exampleUserList.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -683,7 +683,7 @@ func TestQuerier_GetUsers(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromUsers(true, exampleUserList.FilteredCount, exampleUserList.Users...))
+			WillReturnRows(buildMockRowsFromUsers(true, exampleUserList.FilteredCount, exampleUserList.Data...))
 
 		actual, err := c.GetUsers(ctx, filter)
 		assert.NoError(t, err)
@@ -706,7 +706,7 @@ func TestQuerier_GetUsers(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromUsers(true, exampleUserList.FilteredCount, exampleUserList.Users...))
+			WillReturnRows(buildMockRowsFromUsers(true, exampleUserList.FilteredCount, exampleUserList.Data...))
 
 		actual, err := c.GetUsers(ctx, filter)
 		assert.NoError(t, err)

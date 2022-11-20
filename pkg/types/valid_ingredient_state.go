@@ -23,7 +23,6 @@ const (
 
 func init() {
 	gob.Register(new(ValidIngredientState))
-	gob.Register(new(ValidIngredientStateList))
 	gob.Register(new(ValidIngredientStateCreationRequestInput))
 	gob.Register(new(ValidIngredientStateUpdateRequestInput))
 }
@@ -41,13 +40,6 @@ type (
 		ID            string     `json:"id"`
 		Name          string     `json:"name"`
 		Slug          string     `json:"slug"`
-	}
-
-	// ValidIngredientStateList represents a list of valid ingredient states.
-	ValidIngredientStateList struct {
-		_                     struct{}
-		ValidIngredientStates []*ValidIngredientState `json:"data"`
-		Pagination
 	}
 
 	// ValidIngredientStateCreationRequestInput represents what a user could set as input for creating valid ingredient states.
@@ -86,7 +78,7 @@ type (
 	ValidIngredientStateDataManager interface {
 		ValidIngredientStateExists(ctx context.Context, validPreparationID string) (bool, error)
 		GetValidIngredientState(ctx context.Context, validPreparationID string) (*ValidIngredientState, error)
-		GetValidIngredientStates(ctx context.Context, filter *QueryFilter) (*ValidIngredientStateList, error)
+		GetValidIngredientStates(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientState], error)
 		SearchForValidIngredientStates(ctx context.Context, query string) ([]*ValidIngredientState, error)
 		CreateValidIngredientState(ctx context.Context, input *ValidIngredientStateDatabaseCreationInput) (*ValidIngredientState, error)
 		UpdateValidIngredientState(ctx context.Context, updated *ValidIngredientState) error

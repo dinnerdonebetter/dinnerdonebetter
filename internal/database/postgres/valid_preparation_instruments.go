@@ -188,11 +188,11 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 }
 
 // GetValidPreparationInstruments fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
+func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.ValidPreparationInstrumentList{}
+	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if filter != nil {
@@ -223,7 +223,7 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
 	}
 
-	if x.ValidPreparationInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
 	}
 
@@ -255,7 +255,7 @@ func (q *Querier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx
 }
 
 // GetValidPreparationInstrumentsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
+func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -264,7 +264,7 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 	}
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, preparationID)
 
-	x = &types.ValidPreparationInstrumentList{
+	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
 		Pagination: types.Pagination{
 			Limit: 20,
 		},
@@ -289,7 +289,7 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
 	}
 
-	if x.ValidPreparationInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
 	}
 
@@ -301,7 +301,7 @@ func (q *Querier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx 
 }
 
 // GetValidPreparationInstrumentsForInstrument fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
+func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -310,7 +310,7 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	}
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, instrumentID)
 
-	x = &types.ValidPreparationInstrumentList{
+	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
 		Pagination: types.Pagination{
 			Limit: 20,
 		},
@@ -335,7 +335,7 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
 	}
 
-	if x.ValidPreparationInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
 		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
 	}
 

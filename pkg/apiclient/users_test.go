@@ -25,7 +25,7 @@ type usersBaseSuite struct {
 
 	ctx             context.Context
 	exampleUser     *types.User
-	exampleUserList *types.UserList
+	exampleUserList *types.QueryFilteredResult[types.User]
 }
 
 var _ suite.SetupTestSuite = (*usersBaseSuite)(nil)
@@ -41,13 +41,13 @@ func (s *usersBaseSuite) SetupTest() {
 	s.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 	s.exampleUserList = fakes.BuildFakeUserList()
-	for i := 0; i < len(s.exampleUserList.Users); i++ {
+	for i := 0; i < len(s.exampleUserList.Data); i++ {
 		// the hashed passwords is never transmitted over the wire.
-		s.exampleUserList.Users[i].HashedPassword = ""
+		s.exampleUserList.Data[i].HashedPassword = ""
 		// the two factor secret is transmitted over the wire only on creation.
-		s.exampleUserList.Users[i].TwoFactorSecret = ""
+		s.exampleUserList.Data[i].TwoFactorSecret = ""
 		// the two factor secret validation is never transmitted over the wire.
-		s.exampleUserList.Users[i].TwoFactorSecretVerifiedAt = nil
+		s.exampleUserList.Data[i].TwoFactorSecretVerifiedAt = nil
 	}
 }
 
@@ -145,11 +145,11 @@ func (s *usersTestSuite) TestClient_SearchForUsersByUsername() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("q=%s", exampleUsername), expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserList.Users)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserList.Data)
 
 		actual, err := c.SearchForUsersByUsername(s.ctx, exampleUsername)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleUserList.Users, actual)
+		assert.Equal(t, s.exampleUserList.Data, actual)
 	})
 
 	s.Run("with empty query", func() {

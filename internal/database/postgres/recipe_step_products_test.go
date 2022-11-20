@@ -361,11 +361,11 @@ func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 		}
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, exampleRecipeStepProductList.FilteredCount, exampleRecipeStepProductList.RecipeStepProducts...))
+			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, exampleRecipeStepProductList.FilteredCount, exampleRecipeStepProductList.Data...))
 
 		actual, err := c.getRecipeStepProductsForRecipe(ctx, exampleRecipeID)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepProductList.RecipeStepProducts, actual)
+		assert.Equal(t, exampleRecipeStepProductList.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -446,7 +446,7 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepProducts(true, exampleRecipeStepProductList.FilteredCount, exampleRecipeStepProductList.RecipeStepProducts...))
+			WillReturnRows(buildMockRowsFromRecipeStepProducts(true, exampleRecipeStepProductList.FilteredCount, exampleRecipeStepProductList.Data...))
 
 		actual, err := c.GetRecipeStepProducts(ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.NoError(t, err)
@@ -500,7 +500,7 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepProducts(true, exampleRecipeStepProductList.FilteredCount, exampleRecipeStepProductList.RecipeStepProducts...))
+			WillReturnRows(buildMockRowsFromRecipeStepProducts(true, exampleRecipeStepProductList.FilteredCount, exampleRecipeStepProductList.Data...))
 
 		actual, err := c.GetRecipeStepProducts(ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.NoError(t, err)

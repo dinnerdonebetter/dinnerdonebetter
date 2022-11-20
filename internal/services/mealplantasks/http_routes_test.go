@@ -141,7 +141,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleMealPlanTaskList := fakes.BuildFakeMealPlanTaskList().MealPlanTasks
+		exampleMealPlanTaskList := fakes.BuildFakeMealPlanTaskList().Data
 
 		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
 		mealPlanTaskDataManager.On(

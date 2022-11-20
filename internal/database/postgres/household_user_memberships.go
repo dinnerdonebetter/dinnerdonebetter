@@ -429,17 +429,17 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 		return observability.PrepareError(fetchRemainingHouseholdsErr, span, "fetching remaining households")
 	}
 
-	logger = logger.WithValue("count", len(remainingHouseholds.Households))
+	logger = logger.WithValue("count", len(remainingHouseholds.Data))
 	logger.Info("remaining households fetched")
 
-	if len(remainingHouseholds.Households) == 0 {
+	if len(remainingHouseholds.Data) == 0 {
 		if err := q.createHouseholdForUser(ctx, tx, false, "", userID); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 		}
 		return nil
 	}
 
-	household := remainingHouseholds.Households[0]
+	household := remainingHouseholds.Data[0]
 
 	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
 	logger.Info("about to mark household as default")

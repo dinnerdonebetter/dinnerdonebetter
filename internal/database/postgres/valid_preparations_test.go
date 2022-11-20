@@ -292,11 +292,11 @@ func TestQuerier_SearchForValidPreparations(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(validPreparationSearchQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidPreparations(false, 0, exampleValidPreparations.ValidPreparations...))
+			WillReturnRows(buildMockRowsFromValidPreparations(false, 0, exampleValidPreparations.Data...))
 
 		actual, err := c.SearchForValidPreparations(ctx, exampleQuery)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparations.ValidPreparations, actual)
+		assert.Equal(t, exampleValidPreparations.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -371,7 +371,7 @@ func TestQuerier_GetValidPreparations(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidPreparations(true, exampleValidPreparationList.FilteredCount, exampleValidPreparationList.ValidPreparations...))
+			WillReturnRows(buildMockRowsFromValidPreparations(true, exampleValidPreparationList.FilteredCount, exampleValidPreparationList.Data...))
 
 		actual, err := c.GetValidPreparations(ctx, filter)
 		assert.NoError(t, err)
@@ -395,7 +395,7 @@ func TestQuerier_GetValidPreparations(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidPreparations(true, exampleValidPreparationList.FilteredCount, exampleValidPreparationList.ValidPreparations...))
+			WillReturnRows(buildMockRowsFromValidPreparations(true, exampleValidPreparationList.FilteredCount, exampleValidPreparationList.Data...))
 
 		actual, err := c.GetValidPreparations(ctx, filter)
 		assert.NoError(t, err)

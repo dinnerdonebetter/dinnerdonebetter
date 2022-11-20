@@ -199,13 +199,13 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 }
 
 // GetMeals fetches a list of meals from the database that meet a particular filter.
-func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *types.MealList, err error) {
+func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.MealList{}
+	x = &types.QueryFilteredResult[types.Meal]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -226,7 +226,7 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
 	}
 
-	if x.Meals, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meals")
 	}
 
@@ -234,13 +234,13 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 }
 
 // SearchForMeals fetches a list of recipes from the database that match a query.
-func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *types.QueryFilter) (x *types.MealList, err error) {
+func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	x = &types.MealList{}
+	x = &types.QueryFilteredResult[types.Meal]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
@@ -262,7 +262,7 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals search query")
 	}
 
-	if x.Meals, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meals")
 	}
 
