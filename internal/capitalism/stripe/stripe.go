@@ -7,16 +7,16 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v72/client"
+	"github.com/stripe/stripe-go/v72/webhook"
+
 	"github.com/prixfixeco/backend/internal/capitalism"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
-
-	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/client"
-	"github.com/stripe/stripe-go/v72/webhook"
 )
 
 const (

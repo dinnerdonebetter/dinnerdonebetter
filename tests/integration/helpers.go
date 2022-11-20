@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/prixfixeco/backend/pkg/utils"
 	"net/http"
 	"testing"
 	"time"
@@ -21,6 +20,7 @@ import (
 	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+	"github.com/prixfixeco/backend/pkg/utils"
 	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 

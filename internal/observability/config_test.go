@@ -4,15 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/tracing/jaeger"
-
-	"github.com/prixfixeco/backend/internal/observability/metrics/prometheus"
-
-	"github.com/prixfixeco/backend/internal/observability/metrics/config"
-
 	"github.com/stretchr/testify/assert"
 
+	"github.com/prixfixeco/backend/internal/observability/metrics/config"
+	"github.com/prixfixeco/backend/internal/observability/metrics/prometheus"
 	tracingcfg "github.com/prixfixeco/backend/internal/observability/tracing/config"
+	"github.com/prixfixeco/backend/internal/observability/tracing/jaeger"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

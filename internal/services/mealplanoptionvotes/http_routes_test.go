@@ -7,13 +7,12 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/database"
-	"github.com/prixfixeco/backend/internal/encoding"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"

@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/metrics/prometheus"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

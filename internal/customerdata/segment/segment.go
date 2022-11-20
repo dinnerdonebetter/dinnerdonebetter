@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 
-	"github.com/prixfixeco/backend/pkg/types"
-
 	"gopkg.in/segmentio/analytics-go.v3"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 const (

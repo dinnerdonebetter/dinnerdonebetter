@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 

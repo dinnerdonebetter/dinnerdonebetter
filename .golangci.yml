@@ -181,7 +181,16 @@ linters-settings:
       rangeValCopy:
         sizeThreshold: 32
 
-# last updated this list at v1.41.0
+  gci:
+    sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+      - prefix(github.com/prixfixeco) # Custom section: groups all imports with the specified Prefix.
+      - prefix(github.com/prixfixeco/backend) # Custom section: groups all imports with the specified Prefix.
+    skip-generated: true
+    custom-order: true
+
+# last updated this list at v1.50.0
 linters:
   fast: false
   disable-all: false
@@ -193,6 +202,8 @@ linters:
     - ineffassign      # Detects when assignments to existing variables are not used
     - staticcheck      # Staticcheck is a go vet on steroids, applying a ton of static analysis checks
     - unused           # Checks Go code for unused constants, variables, functions and types
+    # - typecheck        # Like the front-end of a Go compiler, parses and type-checks Go code
+    # Normally disabled, but enabled here
     - bodyclose        # checks whether HTTP response body is closed successfully  # NOTE: disabled because of go 1.18
     - nilerr           # Finds the code that returns nil even if it checks that the error is not nil.
     - asciicheck       # Simple linter to check that your code does not contain non-ASCII identifiers
@@ -200,7 +211,6 @@ linters:
     - dogsled          # Checks assignments with too many blank identifiers (e.g. x, , , _, := f())
     - durationcheck    # check for two durations multiplied together
     - errorlint        # errorlint is a linter for that can be used to find code that will cause problems with the error wrapping scheme introduced in Go 1.13.
-    # - exhaustive       # check exhaustiveness of enum switch statements
     - exportloopref    # checks for pointers to enclosing loop variables
     - forbidigo        # Forbids identifiers
     - forcetypeassert  # finds forced type assertions
@@ -231,6 +241,7 @@ linters:
     - unparam          # Reports unused function parameters	unused
     - wastedassign     # wastedassign finds wasted assignment statements.
     - whitespace       # Tool for detection of leading and trailing whitespace
+    - gci              # Gci control golang package import order and make it always deterministic.
 
   disable:
     - goerr113         # Golang linter to check the errors handling expressions
@@ -240,14 +251,12 @@ linters:
     - gocognit         # Computes and checks the cognitive complexity of functions
     - gocyclo          # Computes and checks the cyclomatic complexity of functions
     - nestif           # Reports deeply nested if statements
-    - typecheck        # Like the front-end of a Go compiler, parses and type-checks Go code
     - wsl              # Whitespace Linter - Forces you to use empty lines! Easily the most annoying one on here
-    # - revive         # Fast, configurable, extensible, flexible, and beautiful linter for Go. Drop-in replacement of golint.
-    # Normally enabled:
+    - revive         # Fast, configurable, extensible, flexible, and beautiful linter for Go. Drop-in replacement of golint.
+    - exhaustive       # check exhaustiveness of enum switch statements
     - dupl             # Tool for code clone detection
     - exhaustivestruct # Checks if all struct's fields are initialized
     - funlen           # Tool for detection of long functions
-    - gci              # Gci control golang package import order and make it always deterministic.
     - gochecknoglobals # check that no global variables exist
     - gochecknoinits   # Checks that no init functions are present in Go code
     - godox            # Tool for detection of FIXME, TODO and other comment keywords

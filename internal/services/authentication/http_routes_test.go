@@ -18,8 +18,6 @@ import (
 	"testing"
 	"time"
 
-	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
-
 	"github.com/gorilla/securecookie"
 	"github.com/o1egl/paseto"
 	"github.com/stretchr/testify/assert"
@@ -30,6 +28,7 @@ import (
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/encoding"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"

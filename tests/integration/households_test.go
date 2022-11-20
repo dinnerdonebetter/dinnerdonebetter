@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"github.com/prixfixeco/backend/pkg/types/converters"
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v5"
@@ -12,6 +11,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
 )

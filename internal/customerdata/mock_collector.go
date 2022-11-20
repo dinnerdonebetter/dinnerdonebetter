@@ -3,9 +3,9 @@ package customerdata
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/pkg/types"
-
 	"github.com/stretchr/testify/mock"
+
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 var _ Collector = (*MockCollector)(nil)

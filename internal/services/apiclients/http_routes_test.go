@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"testing"
 
-	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -18,6 +16,7 @@ import (
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"

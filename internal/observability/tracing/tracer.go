@@ -3,12 +3,11 @@ package tracing
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
-
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 )
 
 type errorHandler struct {

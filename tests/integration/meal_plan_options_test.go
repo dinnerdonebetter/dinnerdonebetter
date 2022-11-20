@@ -1,14 +1,15 @@
 package integration
 
 import (
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types/converters"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/require"
 	"testing"
 
-	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanOption) {
