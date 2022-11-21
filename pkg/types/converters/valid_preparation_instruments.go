@@ -1,12 +1,14 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // ConvertValidPreparationInstrumentCreationRequestInputToValidPreparationInstrumentDatabaseCreationInput creates a ValidPreparationInstrumentDatabaseCreationInput from a ValidPreparationInstrumentCreationRequestInput.
 func ConvertValidPreparationInstrumentCreationRequestInputToValidPreparationInstrumentDatabaseCreationInput(input *types.ValidPreparationInstrumentCreationRequestInput) *types.ValidPreparationInstrumentDatabaseCreationInput {
 	x := &types.ValidPreparationInstrumentDatabaseCreationInput{
+		ID:                 identifiers.New(),
 		Notes:              input.Notes,
 		ValidPreparationID: input.ValidPreparationID,
 		ValidInstrumentID:  input.ValidInstrumentID,

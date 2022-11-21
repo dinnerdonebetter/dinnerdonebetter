@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -23,6 +24,7 @@ func ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input *t
 	}
 
 	x := &types.MealPlanDatabaseCreationInput{
+		ID:             identifiers.New(),
 		Notes:          input.Notes,
 		VotingDeadline: input.VotingDeadline,
 		Events:         events,

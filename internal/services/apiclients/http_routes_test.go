@@ -144,7 +144,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 	})
 }
 
-var apiClientCreationInputMatcher any = mock.MatchedBy(func(input *types.APIClientCreationRequestInput) bool {
+var apiClientCreationInputMatcher any = mock.MatchedBy(func(input *types.APIClientDatabaseCreationInput) bool {
 	return true
 })
 

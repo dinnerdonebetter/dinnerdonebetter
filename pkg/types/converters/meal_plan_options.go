@@ -18,6 +18,7 @@ func ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(input *types.MealPl
 // ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput creates a MealPlanOptionDatabaseCreationInput from a MealPlanOptionCreationRequestInput.
 func ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input *types.MealPlanOptionCreationRequestInput) *types.MealPlanOptionDatabaseCreationInput {
 	x := &types.MealPlanOptionDatabaseCreationInput{
+		ID:                     input.ID,
 		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
 		MealID:                 input.MealID,
 		Notes:                  input.Notes,

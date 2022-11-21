@@ -25,22 +25,8 @@ func ConvertRecipeStepToRecipeStepUpdateRequestInput(input *types.RecipeStep) *t
 
 // ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput creates a RecipeStepDatabaseCreationInput from a RecipeStepCreationRequestInput.
 func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *types.RecipeStepCreationRequestInput) *types.RecipeStepDatabaseCreationInput {
-	ingredients := []*types.RecipeStepIngredientDatabaseCreationInput{}
-	for _, ingredient := range input.Ingredients {
-		ingredients = append(ingredients, ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(ingredient))
-	}
-
-	instruments := []*types.RecipeStepInstrumentDatabaseCreationInput{}
-	for _, instrument := range input.Instruments {
-		instruments = append(instruments, ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(instrument))
-	}
-
-	products := []*types.RecipeStepProductDatabaseCreationInput{}
-	for _, product := range input.Products {
-		products = append(products, ConvertRecipeStepProductCreationInputToRecipeStepProductDatabaseCreationInput(product))
-	}
-
 	x := &types.RecipeStepDatabaseCreationInput{
+		ID:                            identifiers.New(),
 		Index:                         input.Index,
 		PreparationID:                 input.PreparationID,
 		MinimumEstimatedTimeInSeconds: input.MinimumEstimatedTimeInSeconds,
@@ -48,15 +34,30 @@ func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *type
 		MinimumTemperatureInCelsius:   input.MinimumTemperatureInCelsius,
 		MaximumTemperatureInCelsius:   input.MaximumTemperatureInCelsius,
 		Notes:                         input.Notes,
-		Products:                      products,
 		Optional:                      input.Optional,
-		Ingredients:                   ingredients,
-		Instruments:                   instruments,
 		ExplicitInstructions:          input.ExplicitInstructions,
 	}
 
-	// we need to set this here or later converters will fail
-	x.ID = identifiers.New()
+	x.Ingredients = []*types.RecipeStepIngredientDatabaseCreationInput{}
+	for _, ingredient := range input.Ingredients {
+		convertedIngredient := ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(ingredient)
+		convertedIngredient.BelongsToRecipeStep = x.ID
+		x.Ingredients = append(x.Ingredients, convertedIngredient)
+	}
+
+	x.Instruments = []*types.RecipeStepInstrumentDatabaseCreationInput{}
+	for _, instrument := range input.Instruments {
+		convertedInstrument := ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(instrument)
+		convertedInstrument.BelongsToRecipeStep = x.ID
+		x.Instruments = append(x.Instruments, convertedInstrument)
+	}
+
+	x.Products = []*types.RecipeStepProductDatabaseCreationInput{}
+	for _, product := range input.Products {
+		convertedProduct := ConvertRecipeStepProductCreationInputToRecipeStepProductDatabaseCreationInput(product)
+		convertedProduct.BelongsToRecipeStep = x.ID
+		x.Products = append(x.Products, convertedProduct)
+	}
 
 	return x
 }

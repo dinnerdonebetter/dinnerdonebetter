@@ -194,7 +194,7 @@ func (q *Querier) GetAPIClients(ctx context.Context, userID string, filter *type
 var createAPIClientQuery string
 
 // CreateAPIClient creates an API client.
-func (q *Querier) CreateAPIClient(ctx context.Context, input *types.APIClientCreationRequestInput) (*types.APIClient, error) {
+func (q *Querier) CreateAPIClient(ctx context.Context, input *types.APIClientDatabaseCreationInput) (*types.APIClient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

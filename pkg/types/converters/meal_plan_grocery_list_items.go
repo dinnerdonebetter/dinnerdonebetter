@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -51,6 +52,7 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput
 
 func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(input *types.MealPlanGroceryListItemCreationRequestInput) *types.MealPlanGroceryListItemDatabaseCreationInput {
 	return &types.MealPlanGroceryListItemDatabaseCreationInput{
+		ID:                         identifiers.New(),
 		PurchasePrice:              input.PurchasePrice,
 		PurchasedUPC:               input.PurchasedUPC,
 		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitID,

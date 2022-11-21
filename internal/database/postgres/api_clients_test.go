@@ -392,7 +392,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 
 		exampleAPIClient := fakes.BuildFakeAPIClient()
 		exampleAPIClient.ClientSecret = nil
-		exampleInput := fakes.BuildFakeAPIClientCreationInputFromClient(exampleAPIClient)
+		exampleInput := fakes.BuildFakeAPIClientDatabaseCreationInputFromClient(exampleAPIClient)
 		exampleAPIClient.ID = exampleInput.ID
 
 		ctx := context.Background()
@@ -426,7 +426,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 
 		exampleAPIClient := fakes.BuildFakeAPIClient()
 		exampleAPIClient.ClientSecret = nil
-		exampleInput := fakes.BuildFakeAPIClientCreationInputFromClient(exampleAPIClient)
+		exampleInput := fakes.BuildFakeAPIClientDatabaseCreationInputFromClient(exampleAPIClient)
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
@@ -451,7 +451,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 		t.Parallel()
 
 		exampleAPIClient := fakes.BuildFakeAPIClient()
-		exampleInput := fakes.BuildFakeAPIClientCreationInputFromClient(exampleAPIClient)
+		exampleInput := fakes.BuildFakeAPIClientDatabaseCreationInputFromClient(exampleAPIClient)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

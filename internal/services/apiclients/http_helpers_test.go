@@ -39,7 +39,6 @@ func buildTestHelper(t *testing.T) *apiClientsServiceHTTPRoutesTestHelper {
 	helper.exampleAPIClient = fakes.BuildFakeAPIClient()
 	helper.exampleAPIClient.BelongsToUser = helper.exampleUser.ID
 	helper.exampleInput = fakes.BuildFakeAPIClientCreationInputFromClient(helper.exampleAPIClient)
-	helper.exampleAPIClient.ID = helper.exampleInput.ID
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{

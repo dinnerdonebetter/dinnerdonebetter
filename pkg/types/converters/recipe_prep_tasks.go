@@ -3,6 +3,7 @@ package converters
 import (
 	"fmt"
 
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
@@ -45,6 +46,7 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 	}
 
 	x := &types.RecipePrepTaskDatabaseCreationInput{
+		ID:                                     identifiers.New(),
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		StorageType:                            input.StorageType,
@@ -61,29 +63,30 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 
 // ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput(recipe *types.RecipeDatabaseCreationInput, input *types.RecipePrepTaskWithinRecipeCreationRequestInput) (*types.RecipePrepTaskDatabaseCreationInput, error) {
-	taskSteps := []*types.RecipePrepTaskStepDatabaseCreationInput{}
-	for i, x := range input.TaskSteps {
-		if y := recipe.FindStepByIndex(x.BelongsToRecipeStepIndex); y != nil {
-			taskSteps = append(taskSteps, &types.RecipePrepTaskStepDatabaseCreationInput{
-				BelongsToRecipeStep:     y.ID,
-				BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
-				SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
-			})
-		} else {
-			return nil, fmt.Errorf("task step #%d has an invalid recipe step index", i+1)
-		}
-	}
-
 	x := &types.RecipePrepTaskDatabaseCreationInput{
+		ID:                                     identifiers.New(),
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		StorageType:                            input.StorageType,
 		BelongsToRecipe:                        input.BelongsToRecipe,
-		TaskSteps:                              taskSteps,
 		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
 		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
 		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
 		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
+	}
+
+	x.TaskSteps = []*types.RecipePrepTaskStepDatabaseCreationInput{}
+	for i, ts := range input.TaskSteps {
+		if rs := recipe.FindStepByIndex(ts.BelongsToRecipeStepIndex); rs != nil {
+			x.TaskSteps = append(x.TaskSteps, &types.RecipePrepTaskStepDatabaseCreationInput{
+				ID:                      identifiers.New(),
+				BelongsToRecipeStep:     rs.ID,
+				BelongsToRecipePrepTask: x.ID,
+				SatisfiesRecipeStep:     ts.SatisfiesRecipeStep,
+			})
+		} else {
+			return nil, fmt.Errorf("task step #%d has an invalid recipe step index", i+1)
+		}
 	}
 
 	return x, nil
