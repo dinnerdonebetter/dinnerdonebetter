@@ -18,7 +18,6 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepInstrumentCreationRequestInput{
 			InstrumentID:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Name:                fake.LoremIpsumSentence(exampleQuantity),
-			BelongsToRecipeStep: fake.LoremIpsumSentence(exampleQuantity),
 			ProductOfRecipeStep: fake.Bool(),
 			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               fake.LoremIpsumSentence(exampleQuantity),

@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -23,6 +24,7 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestI
 // ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput creates a ValidMeasurementConversionDatabaseCreationInput from a ValidMeasurementConversionCreationRequestInput.
 func ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput(input *types.ValidMeasurementConversionCreationRequestInput) *types.ValidMeasurementConversionDatabaseCreationInput {
 	x := &types.ValidMeasurementConversionDatabaseCreationInput{
+		ID:            identifiers.New(),
 		From:          input.From,
 		To:            input.To,
 		ForIngredient: input.ForIngredient,

@@ -161,7 +161,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStepInput := converters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)
 				exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
 
-				createdRecipeStep, createdRecipeStepErr := testClients.user.CreateRecipeStep(ctx, exampleRecipeStepInput)
+				createdRecipeStep, createdRecipeStepErr := testClients.user.CreateRecipeStep(ctx, createdRecipe.ID, exampleRecipeStepInput)
 				require.NoError(t, createdRecipeStepErr)
 				t.Logf("recipe step %q created", createdRecipeStep.ID)
 

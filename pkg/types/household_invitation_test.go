@@ -15,9 +15,7 @@ func TestHouseholdInvitationCreationInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &HouseholdInvitationCreationRequestInput{
-			ToEmail:                t.Name(),
-			FromUser:               t.Name(),
-			DestinationHouseholdID: t.Name(),
+			ToEmail: t.Name(),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

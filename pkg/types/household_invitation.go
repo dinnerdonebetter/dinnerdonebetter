@@ -37,14 +37,10 @@ type (
 
 	// HouseholdInvitationCreationRequestInput represents what a User could set as input for creating household invitations.
 	HouseholdInvitationCreationRequestInput struct {
-		_ struct{}
-
-		ID                     string     `json:"-"`
-		FromUser               string     `json:"-"`
-		Note                   string     `json:"note"`
-		ToEmail                string     `json:"toEmail"`
-		ExpiresAt              *time.Time `json:"expiresAt"`
-		DestinationHouseholdID string     `json:"-"`
+		_         struct{}
+		ExpiresAt *time.Time `json:"expiresAt"`
+		Note      string     `json:"note"`
+		ToEmail   string     `json:"toEmail"`
 	}
 
 	// HouseholdInvitationDatabaseCreationInput represents what a User could set as input for creating household invitations.
@@ -117,8 +113,6 @@ var _ validation.ValidatableWithContext = (*HouseholdInvitationCreationRequestIn
 func (x *HouseholdInvitationCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.ToEmail, validation.Required),
-		validation.Field(&x.FromUser, validation.Required),
-		validation.Field(&x.DestinationHouseholdID, validation.Required),
 	)
 }
 

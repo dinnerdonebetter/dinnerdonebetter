@@ -1,12 +1,14 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput creates a ValidIngredientPreparationDatabaseCreationInput from a ValidIngredientPreparationCreationRequestInput.
 func ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput(input *types.ValidIngredientPreparationCreationRequestInput) *types.ValidIngredientPreparationDatabaseCreationInput {
 	x := &types.ValidIngredientPreparationDatabaseCreationInput{
+		ID:                 identifiers.New(),
 		Notes:              input.Notes,
 		ValidPreparationID: input.ValidPreparationID,
 		ValidIngredientID:  input.ValidIngredientID,
@@ -27,7 +29,6 @@ func ConvertValidIngredientPreparationToValidIngredientPreparationUpdateRequestI
 // ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput builds a ValidIngredientPreparationCreationRequestInput from a ValidIngredientPreparation.
 func ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationCreationRequestInput {
 	return &types.ValidIngredientPreparationCreationRequestInput{
-		ID:                 validIngredientPreparation.ID,
 		Notes:              validIngredientPreparation.Notes,
 		ValidPreparationID: validIngredientPreparation.Preparation.ID,
 		ValidIngredientID:  validIngredientPreparation.Ingredient.ID,

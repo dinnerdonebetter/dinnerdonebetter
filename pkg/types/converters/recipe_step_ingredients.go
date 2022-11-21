@@ -1,12 +1,14 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
 func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *types.RecipeStepIngredientCreationRequestInput) *types.RecipeStepIngredientDatabaseCreationInput {
 	x := &types.RecipeStepIngredientDatabaseCreationInput{
+		ID:                  identifiers.New(),
 		IngredientID:        input.IngredientID,
 		Name:                input.Name,
 		MeasurementUnitID:   input.MeasurementUnitID,
@@ -15,7 +17,6 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 		QuantityNotes:       input.QuantityNotes,
 		ProductOfRecipeStep: input.ProductOfRecipeStep,
 		IngredientNotes:     input.IngredientNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Optional:            input.Optional,
 		OptionIndex:         input.OptionIndex,
 		RequiresDefrost:     input.RequiresDefrost,
@@ -48,7 +49,6 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 // ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput builds a RecipeStepIngredientCreationRequestInput from a RecipeStepIngredient.
 func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientCreationRequestInput {
 	return &types.RecipeStepIngredientCreationRequestInput{
-		ID:                  recipeStepIngredient.ID,
 		Name:                recipeStepIngredient.Name,
 		Optional:            recipeStepIngredient.Optional,
 		IngredientID:        &recipeStepIngredient.Ingredient.ID,
@@ -58,7 +58,6 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recip
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
 		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
 		IngredientNotes:     recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 		OptionIndex:         recipeStepIngredient.OptionIndex,
 		RequiresDefrost:     recipeStepIngredient.RequiresDefrost,
 	}

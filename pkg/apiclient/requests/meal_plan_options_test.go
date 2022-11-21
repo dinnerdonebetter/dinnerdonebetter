@@ -137,11 +137,12 @@ func TestBuilder_BuildCreateMealPlanOptionRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanOptionCreationRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleMealPlanID, exampleInput.BelongsToMealPlanEvent)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleMealPlanID, exampleMealPlanEventID)
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanID, exampleInput)
+		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanID, exampleMealPlanEventID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -154,7 +155,7 @@ func TestBuilder_BuildCreateMealPlanOptionRequest(T *testing.T) {
 
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanEventID, nil)
+		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanEventID, exampleMealPlanEventID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -166,7 +167,7 @@ func TestBuilder_BuildCreateMealPlanOptionRequest(T *testing.T) {
 
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanEventID, &types.MealPlanOptionCreationRequestInput{})
+		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanEventID, exampleMealPlanEventID, &types.MealPlanOptionCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -180,7 +181,7 @@ func TestBuilder_BuildCreateMealPlanOptionRequest(T *testing.T) {
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanOptionCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanEventID, exampleInput)
+		actual, err := helper.builder.BuildCreateMealPlanOptionRequest(helper.ctx, exampleMealPlanEventID, exampleMealPlanEventID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

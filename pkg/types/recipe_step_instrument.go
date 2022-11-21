@@ -50,13 +50,12 @@ type (
 
 	// RecipeStepInstrumentCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentCreationRequestInput struct {
-		_                   struct{}
+		_ struct{}
+
 		InstrumentID        *string `json:"instrumentID"`
 		RecipeStepProductID *string `json:"recipeStepProductID"`
-		ID                  string  `json:"-"`
 		Name                string  `json:"name"`
 		Notes               string  `json:"notes"`
-		BelongsToRecipeStep string  `json:"-"`
 		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 		PreferenceRank      uint8   `json:"preferenceRank"`
 		Optional            bool    `json:"optional"`

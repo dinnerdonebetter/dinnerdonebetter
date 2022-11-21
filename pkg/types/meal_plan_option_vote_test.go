@@ -19,7 +19,6 @@ func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
 			Votes: []*MealPlanOptionVoteCreationInput{
 				{},
 			},
-			ByUser: t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

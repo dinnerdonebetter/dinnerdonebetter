@@ -165,11 +165,12 @@ func TestBuilder_BuildCreateRecipeStepInstrumentRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeID := fakes.BuildFakeID()
+		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleRecipeID, exampleInput.BelongsToRecipeStep)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleRecipeID, exampleRecipeStepID)
 
-		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, exampleRecipeID, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -180,9 +181,10 @@ func TestBuilder_BuildCreateRecipeStepInstrumentRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
+		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, "", exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, "", exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -193,8 +195,9 @@ func TestBuilder_BuildCreateRecipeStepInstrumentRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeID := fakes.BuildFakeID()
+		exampleRecipeStepID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, exampleRecipeID, nil)
+		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -205,8 +208,9 @@ func TestBuilder_BuildCreateRecipeStepInstrumentRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeID := fakes.BuildFakeID()
+		exampleRecipeStepID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, exampleRecipeID, &types.RecipeStepInstrumentCreationRequestInput{})
+		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, &types.RecipeStepInstrumentCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -218,9 +222,10 @@ func TestBuilder_BuildCreateRecipeStepInstrumentRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleRecipeID := fakes.BuildFakeID()
+		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, exampleRecipeID, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeStepInstrumentRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

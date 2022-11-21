@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 )
 
 var _ types.APIClientDataService = (*service)(nil)
@@ -134,24 +135,26 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	dbInput := converters.ConvertAPIClientCreationRequestInputToAPIClientDatabaseCreationInput(input)
+
 	// set some data.
-	if input.ClientID, err = s.secretGenerator.GenerateBase64EncodedString(ctx, clientIDSize); err != nil {
+	if dbInput.ClientID, err = s.secretGenerator.GenerateBase64EncodedString(ctx, clientIDSize); err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating client id")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	if input.ClientSecret, err = s.secretGenerator.GenerateRawBytes(ctx, clientSecretSize); err != nil {
+	if dbInput.ClientSecret, err = s.secretGenerator.GenerateRawBytes(ctx, clientSecretSize); err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating client secret")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	input.ID = identifiers.New()
-	input.BelongsToUser = user.ID
+	dbInput.ID = identifiers.New()
+	dbInput.BelongsToUser = user.ID
 
 	// create the client.
-	client, err := s.apiClientDataManager.CreateAPIClient(ctx, input)
+	client, err := s.apiClientDataManager.CreateAPIClient(ctx, dbInput)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating API client")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -179,7 +182,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	resObj := &types.APIClientCreationResponse{
 		ID:           client.ID,
 		ClientID:     client.ClientID,
-		ClientSecret: base64.RawURLEncoding.EncodeToString(input.ClientSecret),
+		ClientSecret: base64.RawURLEncoding.EncodeToString(client.ClientSecret),
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, resObj, http.StatusCreated)

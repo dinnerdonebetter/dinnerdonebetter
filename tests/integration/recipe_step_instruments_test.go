@@ -63,7 +63,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepInstrument.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
 			exampleRecipeStepInstrumentInput := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
-			createdRecipeStepInstrument, err := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, exampleRecipeStepInstrumentInput)
+			createdRecipeStepInstrument, err := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("recipe step instrument %q created", createdRecipeStepInstrument.ID)
 
@@ -256,8 +256,6 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 					MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
 					Notes:                         step.Notes,
 					PreparationID:                 step.Preparation.ID,
-					BelongsToRecipe:               step.BelongsToRecipe,
-					ID:                            step.ID,
 					Index:                         step.Index,
 					MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
 					MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
@@ -267,8 +265,6 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 				for _, ingredient := range step.Ingredients {
 					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
 						IngredientID:        &ingredient.Ingredient.ID,
-						ID:                  ingredient.ID,
-						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
 						Name:                ingredient.Name,
 						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
 						QuantityNotes:       ingredient.QuantityNotes,
@@ -281,13 +277,11 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 				for _, product := range step.Products {
 					newProduct := &types.RecipeStepProductCreationRequestInput{
-						ID:                  product.ID,
-						Name:                product.Name,
-						Type:                product.Type,
-						MeasurementUnitID:   product.MeasurementUnit.ID,
-						QuantityNotes:       product.QuantityNotes,
-						BelongsToRecipeStep: product.BelongsToRecipeStep,
-						MinimumQuantity:     product.MinimumQuantity,
+						Name:              product.Name,
+						Type:              product.Type,
+						MeasurementUnitID: product.MeasurementUnit.ID,
+						QuantityNotes:     product.QuantityNotes,
+						MinimumQuantity:   product.MinimumQuantity,
 					}
 					newStep.Products = append(newStep.Products, newProduct)
 				}
@@ -372,7 +366,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 				exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepInstrument.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
 				exampleRecipeStepInstrumentInput := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
-				createdRecipeStepInstrument, createdRecipeStepInstrumentErr := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, exampleRecipeStepInstrumentInput)
+				createdRecipeStepInstrument, createdRecipeStepInstrumentErr := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepInstrumentInput)
 				require.NoError(t, createdRecipeStepInstrumentErr)
 				t.Logf("recipe step instrument %q created", createdRecipeStepInstrument.ID)
 				checkRecipeStepInstrumentEquality(t, exampleRecipeStepInstrument, createdRecipeStepInstrument, false)

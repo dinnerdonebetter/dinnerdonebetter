@@ -61,37 +61,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input.ID = identifiers.New()
-
-	for i, step := range input.Steps {
-		// ordinarily we'd set the ID here, but it was done for us above in the converter.
-		input.Steps[i].BelongsToRecipe = input.ID
-		for j := range step.Ingredients {
-			input.Steps[i].Ingredients[j].ID = identifiers.New()
-			input.Steps[i].Ingredients[j].BelongsToRecipeStep = input.Steps[i].ID
-		}
-
-		for j := range step.Instruments {
-			input.Steps[i].Instruments[j].ID = identifiers.New()
-			input.Steps[i].Instruments[j].BelongsToRecipeStep = input.Steps[i].ID
-		}
-
-		for j := range step.Products {
-			input.Steps[i].Products[j].ID = identifiers.New()
-			input.Steps[i].Products[j].BelongsToRecipeStep = input.Steps[i].ID
-		}
-	}
-
-	for i := range input.PrepTasks {
-		input.PrepTasks[i].ID = identifiers.New()
-		input.PrepTasks[i].BelongsToRecipe = input.ID
-
-		for j := range input.PrepTasks[i].TaskSteps {
-			input.PrepTasks[i].TaskSteps[j].ID = identifiers.New()
-			input.PrepTasks[i].TaskSteps[j].BelongsToRecipePrepTask = input.PrepTasks[i].ID
-		}
-	}
-
 	input.CreatedByUser = sessionCtxData.Requester.UserID
 	tracing.AttachRecipeIDToSpan(span, input.ID)
 

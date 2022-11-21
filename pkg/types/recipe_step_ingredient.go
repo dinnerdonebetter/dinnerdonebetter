@@ -52,11 +52,10 @@ type (
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_                   struct{}
+		_ struct{}
+
 		IngredientID        *string                                `json:"ingredientID"`
 		RecipeStepProduct   *RecipeStepProductCreationRequestInput `json:"recipeStepProduct"`
-		ID                  string                                 `json:"-"`
-		BelongsToRecipeStep string                                 `json:"-"`
 		Name                string                                 `json:"name"`
 		MeasurementUnitID   string                                 `json:"measurementUnitID"`
 		QuantityNotes       string                                 `json:"quantityNotes"`

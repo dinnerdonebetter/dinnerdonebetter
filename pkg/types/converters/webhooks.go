@@ -13,13 +13,11 @@ func ConvertWebhookToWebhookCreationRequestInput(webhook *types.Webhook) *types.
 	}
 
 	return &types.WebhookCreationRequestInput{
-		ID:                 webhook.ID,
-		Name:               webhook.Name,
-		ContentType:        webhook.ContentType,
-		URL:                webhook.URL,
-		Method:             webhook.Method,
-		Events:             eventStrings,
-		BelongsToHousehold: webhook.BelongsToHousehold,
+		Name:        webhook.Name,
+		ContentType: webhook.ContentType,
+		URL:         webhook.URL,
+		Method:      webhook.Method,
+		Events:      eventStrings,
 	}
 }
 
@@ -53,6 +51,7 @@ func ConvertWebhookTriggerEventToWebhookTriggerEventDatabaseCreationInput(event 
 // ConvertWebhookCreationRequestInputToWebhookDatabaseCreationInput creates a WebhookDatabaseCreationInput from a WebhookCreationRequestInput.
 func ConvertWebhookCreationRequestInputToWebhookDatabaseCreationInput(input *types.WebhookCreationRequestInput) *types.WebhookDatabaseCreationInput {
 	x := &types.WebhookDatabaseCreationInput{
+		ID:          identifiers.New(),
 		Name:        input.Name,
 		ContentType: input.ContentType,
 		URL:         input.URL,

@@ -81,7 +81,7 @@ func (c *Client) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeS
 }
 
 // CreateRecipeStepInstrument creates a recipe step instrument.
-func (c *Client) CreateRecipeStepInstrument(ctx context.Context, recipeID string, input *types.RecipeStepInstrumentCreationRequestInput) (*types.RecipeStepInstrument, error) {
+func (c *Client) CreateRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepInstrumentCreationRequestInput) (*types.RecipeStepInstrument, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -93,6 +93,12 @@ func (c *Client) CreateRecipeStepInstrument(ctx context.Context, recipeID string
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
+	if recipeStepID == "" {
+		return nil, buildInvalidIDError("recipe")
+	}
+	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -101,7 +107,7 @@ func (c *Client) CreateRecipeStepInstrument(ctx context.Context, recipeID string
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateRecipeStepInstrumentRequest(ctx, recipeID, input)
+	req, err := c.requestBuilder.BuildCreateRecipeStepInstrumentRequest(ctx, recipeID, recipeStepID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step instrument request")
 	}

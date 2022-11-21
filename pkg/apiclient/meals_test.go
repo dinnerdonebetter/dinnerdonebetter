@@ -184,7 +184,6 @@ func (s *mealsTestSuite) TestClient_CreateMeal() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeMealCreationRequestInput()
-		exampleInput.CreatedByUser = ""
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMeal)

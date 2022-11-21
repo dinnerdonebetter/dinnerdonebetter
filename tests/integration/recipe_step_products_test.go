@@ -67,7 +67,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepProduct.MeasurementUnit = *createdValidMeasurementUnit
 			exampleRecipeStepProductInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
-			createdRecipeStepProduct, err := testClients.user.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
+			createdRecipeStepProduct, err := testClients.user.CreateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepProductInput)
 			require.NoError(t, err)
 			t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 
@@ -143,7 +143,7 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepProduct.MeasurementUnit = *createdValidMeasurementUnit
 				exampleRecipeStepProductInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
-				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.user.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
+				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.user.CreateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepProductInput)
 				require.NoError(t, createdRecipeStepProductErr)
 				t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 

@@ -100,10 +100,10 @@ type (
 
 	// ValidIngredientCreationRequestInput represents what a user could set as input for creating valid ingredients.
 	ValidIngredientCreationRequestInput struct {
-		_                                       struct{}
+		_ struct{}
+
 		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius"`
 		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		ID                                      string   `json:"-"`
 		Warning                                 string   `json:"warning"`
 		IconPath                                string   `json:"iconPath"`
 		PluralName                              string   `json:"pluralName"`

@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -22,6 +23,7 @@ func ConvertValidInstrumentToValidInstrumentUpdateRequestInput(input *types.Vali
 // ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreationInput creates a ValidInstrumentDatabaseCreationInput from a ValidInstrumentCreationRequestInput.
 func ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreationInput(input *types.ValidInstrumentCreationRequestInput) *types.ValidInstrumentDatabaseCreationInput {
 	x := &types.ValidInstrumentDatabaseCreationInput{
+		ID:                    identifiers.New(),
 		Name:                  input.Name,
 		PluralName:            input.PluralName,
 		Description:           input.Description,
@@ -54,7 +56,6 @@ func ConvertNullableValidInstrumentToValidInstrument(x *types.NullableValidInstr
 // ConvertValidInstrumentToValidInstrumentCreationRequestInput builds a ValidInstrumentCreationRequestInput from a ValidInstrument.
 func ConvertValidInstrumentToValidInstrumentCreationRequestInput(validInstrument *types.ValidInstrument) *types.ValidInstrumentCreationRequestInput {
 	return &types.ValidInstrumentCreationRequestInput{
-		ID:                    validInstrument.ID,
 		Name:                  validInstrument.Name,
 		PluralName:            validInstrument.PluralName,
 		Description:           validInstrument.Description,

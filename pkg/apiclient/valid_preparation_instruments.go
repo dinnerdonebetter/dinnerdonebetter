@@ -121,7 +121,6 @@ func (c *Client) CreateValidPreparationInstrument(ctx context.Context, input *ty
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, input.ID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")

@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -26,13 +27,13 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 // ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput creates a RecipeStepInstrumentDatabaseCreationInput from a RecipeStepInstrumentCreationRequestInput.
 func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input *types.RecipeStepInstrumentCreationRequestInput) *types.RecipeStepInstrumentDatabaseCreationInput {
 	x := &types.RecipeStepInstrumentDatabaseCreationInput{
+		ID:                  identifiers.New(),
 		InstrumentID:        input.InstrumentID,
 		RecipeStepProductID: input.RecipeStepProductID,
 		Name:                input.Name,
 		ProductOfRecipeStep: input.ProductOfRecipeStep,
 		Notes:               input.Notes,
 		PreferenceRank:      input.PreferenceRank,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Optional:            input.Optional,
 		OptionIndex:         input.OptionIndex,
 		MinimumQuantity:     input.MinimumQuantity,
@@ -50,14 +51,12 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recip
 	}
 
 	return &types.RecipeStepInstrumentCreationRequestInput{
-		ID:                  recipeStepInstrument.ID,
 		InstrumentID:        instrumentID,
 		Name:                recipeStepInstrument.Name,
 		ProductOfRecipeStep: recipeStepInstrument.ProductOfRecipeStep,
 		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
 		Notes:               recipeStepInstrument.Notes,
 		PreferenceRank:      recipeStepInstrument.PreferenceRank,
-		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
 		Optional:            recipeStepInstrument.Optional,
 		OptionIndex:         recipeStepInstrument.OptionIndex,
 		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,

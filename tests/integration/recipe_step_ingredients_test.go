@@ -135,7 +135,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 				exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 
 				exampleRecipeStepIngredientInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
-				createdRecipeStepIngredient, createdRecipeStepIngredientErr := testClients.user.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+				createdRecipeStepIngredient, createdRecipeStepIngredientErr := testClients.user.CreateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepIngredientInput)
 				require.NoError(t, createdRecipeStepIngredientErr)
 
 				t.Logf("recipe step ingredient %q created", createdRecipeStepIngredient.ID)

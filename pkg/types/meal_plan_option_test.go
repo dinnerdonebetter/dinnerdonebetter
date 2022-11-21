@@ -15,11 +15,10 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionCreationRequestInput{
-			AssignedCook:           stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			AssignedDishwasher:     stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToMealPlanEvent: fake.LoremIpsumSentence(exampleQuantity),
-			MealID:                 fake.LoremIpsumSentence(exampleQuantity),
-			Notes:                  fake.LoremIpsumSentence(exampleQuantity),
+			AssignedCook:       stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedDishwasher: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MealID:             fake.LoremIpsumSentence(exampleQuantity),
+			Notes:              fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

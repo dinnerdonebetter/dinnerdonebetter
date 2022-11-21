@@ -308,10 +308,11 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.DestinationHouseholdID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleHouseholdID)
 
-		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, exampleHouseholdID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -322,7 +323,9 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, nil)
+		exampleHouseholdID := fakes.BuildFakeID()
+
+		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, exampleHouseholdID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -333,9 +336,10 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
 
-		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, exampleHouseholdID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

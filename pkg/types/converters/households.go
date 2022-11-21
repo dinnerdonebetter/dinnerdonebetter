@@ -7,12 +7,10 @@ import (
 // ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput creates a HouseholdDatabaseCreationInput from a HouseholdCreationRequestInput.
 func ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput(input *types.HouseholdCreationRequestInput) *types.HouseholdDatabaseCreationInput {
 	x := &types.HouseholdDatabaseCreationInput{
-		ID:            input.ID,
-		Name:          input.Name,
-		ContactEmail:  input.ContactEmail,
-		ContactPhone:  input.ContactPhone,
-		BelongsToUser: input.BelongsToUser,
-		TimeZone:      input.TimeZone,
+		Name:         input.Name,
+		ContactEmail: input.ContactEmail,
+		ContactPhone: input.ContactPhone,
+		TimeZone:     input.TimeZone,
 	}
 
 	return x
@@ -34,11 +32,10 @@ func ConvertHouseholdToHouseholdUpdateRequestInput(input *types.Household) *type
 // ConvertHouseholdToHouseholdCreationRequestInput builds a faked HouseholdCreationRequestInput from a household.
 func ConvertHouseholdToHouseholdCreationRequestInput(household *types.Household) *types.HouseholdCreationRequestInput {
 	return &types.HouseholdCreationRequestInput{
-		Name:          household.Name,
-		ContactEmail:  household.ContactEmail,
-		ContactPhone:  household.ContactPhone,
-		BelongsToUser: household.BelongsToUser,
-		TimeZone:      household.TimeZone,
+		Name:         household.Name,
+		ContactEmail: household.ContactEmail,
+		ContactPhone: household.ContactPhone,
+		TimeZone:     household.TimeZone,
 	}
 }
 
@@ -57,10 +54,7 @@ func ConvertHouseholdToHouseholdDatabaseCreationInput(household *types.Household
 // ConvertHouseholdUserMembershipCreationRequestInputToHouseholdUserMembershipDatabaseCreationInput builds a HouseholdUserMembershipDatabaseCreationInput from a HouseholdUserMembershipCreationRequestInput.
 func ConvertHouseholdUserMembershipCreationRequestInputToHouseholdUserMembershipDatabaseCreationInput(input *types.HouseholdUserMembershipCreationRequestInput) *types.HouseholdUserMembershipDatabaseCreationInput {
 	return &types.HouseholdUserMembershipDatabaseCreationInput{
-		ID:            input.ID,
-		Reason:        input.Reason,
-		UserID:        input.UserID,
-		HouseholdID:   input.HouseholdID,
-		HouseholdRole: input.HouseholdRole,
+		Reason: input.Reason,
+		UserID: input.UserID,
 	}
 }

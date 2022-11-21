@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -21,6 +22,7 @@ func ConvertRecipeMediaToRecipeMediaUpdateRequestInput(input *types.RecipeMedia)
 // ConvertRecipeMediaCreationRequestInputToRecipeMediaDatabaseCreationInput creates a RecipeMediaDatabaseCreationInput from a RecipeMediaCreationRequestInput.
 func ConvertRecipeMediaCreationRequestInputToRecipeMediaDatabaseCreationInput(input *types.RecipeMediaCreationRequestInput) *types.RecipeMediaDatabaseCreationInput {
 	x := &types.RecipeMediaDatabaseCreationInput{
+		ID:                  identifiers.New(),
 		BelongsToRecipe:     input.BelongsToRecipe,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		MimeType:            input.MimeType,

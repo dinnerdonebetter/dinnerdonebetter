@@ -44,7 +44,8 @@ type (
 
 	// ValidIngredientStateCreationRequestInput represents what a user could set as input for creating valid ingredient states.
 	ValidIngredientStateCreationRequestInput struct {
-		_           struct{}
+		_ struct{}
+
 		Name        string `json:"name"`
 		Slug        string `json:"slug"`
 		PastTense   string `json:"pastTense"`

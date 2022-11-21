@@ -59,9 +59,6 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	providedInput.ID = identifiers.New()
-	providedInput.DestinationHouseholdID = householdID
-	providedInput.FromUser = requester
 	providedInput.ToEmail = strings.TrimSpace(strings.ToLower(providedInput.ToEmail))
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
@@ -75,6 +72,10 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	input := converters.ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput(providedInput)
+
+	input.ID = identifiers.New()
+	input.DestinationHouseholdID = householdID
+	input.FromUser = requester
 
 	token, err := s.secretGenerator.GenerateBase64EncodedString(ctx, 64)
 	if err != nil {

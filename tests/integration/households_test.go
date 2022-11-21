@@ -240,11 +240,9 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 			t.Logf("inviting user")
-			invitation, err := testClients.user.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-				FromUser:               s.user.ID,
-				Note:                   t.Name(),
-				ToEmail:                u.EmailAddress,
-				DestinationHouseholdID: relevantHouseholdID,
+			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+				Note:    t.Name(),
+				ToEmail: u.EmailAddress,
 			})
 			require.NoError(t, err)
 
@@ -314,12 +312,10 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 
 			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
-				FromUser:               s.user.ID,
-				Note:                   t.Name(),
-				ToEmail:                gofakeit.Email(),
-				DestinationHouseholdID: relevantHouseholdID,
+				Note:    t.Name(),
+				ToEmail: gofakeit.Email(),
 			}
-			invitation, err := testClients.user.InviteUserToHousehold(ctx, inviteReq)
+			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
 			t.Logf("checking for sent invitation")
@@ -395,12 +391,10 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 
 			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
-				FromUser:               s.user.ID,
-				Note:                   t.Name(),
-				ToEmail:                gofakeit.Email(),
-				DestinationHouseholdID: relevantHouseholdID,
+				Note:    t.Name(),
+				ToEmail: gofakeit.Email(),
 			}
-			invitation, err := testClients.user.InviteUserToHousehold(ctx, inviteReq)
+			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
 			t.Logf("checking for sent invitation")
@@ -460,12 +454,10 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 
 			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
-				FromUser:               s.user.ID,
-				Note:                   t.Name(),
-				ToEmail:                gofakeit.Email(),
-				DestinationHouseholdID: relevantHouseholdID,
+				Note:    t.Name(),
+				ToEmail: gofakeit.Email(),
 			}
-			createdInvitation, err := testClients.user.InviteUserToHousehold(ctx, inviteReq)
+			createdInvitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
 			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)
@@ -532,12 +524,10 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 
 			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
-				FromUser:               s.user.ID,
-				Note:                   t.Name(),
-				ToEmail:                gofakeit.Email(),
-				DestinationHouseholdID: relevantHouseholdID,
+				Note:    t.Name(),
+				ToEmail: gofakeit.Email(),
 			}
-			invitation, err := testClients.user.InviteUserToHousehold(ctx, inviteReq)
+			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
 			require.NoError(t, testClients.user.CancelHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
@@ -592,11 +582,9 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 			t.Logf("inviting user")
-			invitation, err := testClients.user.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-				FromUser:               s.user.ID,
-				Note:                   t.Name(),
-				ToEmail:                u.EmailAddress,
-				DestinationHouseholdID: relevantHouseholdID,
+			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+				Note:    t.Name(),
+				ToEmail: u.EmailAddress,
 			})
 			require.NoError(t, err)
 
@@ -690,10 +678,9 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// add them to the household
 			for i := 0; i < userCount; i++ {
 				t.Logf("adding user %q to household %s", users[i].ID, household.ID)
-				invitation, invitationErr := testClients.user.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-					ToEmail:                users[i].EmailAddress,
-					DestinationHouseholdID: household.ID,
-					Note:                   t.Name(),
+				invitation, invitationErr := testClients.user.InviteUserToHousehold(ctx, household.ID, &types.HouseholdInvitationCreationRequestInput{
+					ToEmail: users[i].EmailAddress,
+					Note:    t.Name(),
 				})
 				require.NoError(t, invitationErr)
 				require.NotEmpty(t, invitation.ID)
@@ -847,12 +834,10 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 
 			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
-				FromUser:               s.user.ID,
-				Note:                   t.Name(),
-				ToEmail:                gofakeit.Email(),
-				DestinationHouseholdID: relevantHouseholdID,
+				Note:    t.Name(),
+				ToEmail: gofakeit.Email(),
 			}
-			createdInvitation, err := testClients.user.InviteUserToHousehold(ctx, inviteReq)
+			createdInvitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
 			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)

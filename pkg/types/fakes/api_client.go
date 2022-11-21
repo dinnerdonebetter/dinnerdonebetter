@@ -57,15 +57,13 @@ func BuildFakeAPIClientCreationInput() *types.APIClientCreationRequestInput {
 			Password:  BuildFakePassword(),
 			TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
 		},
-		Name:          client.Name,
-		ClientID:      client.ClientID,
-		BelongsToUser: client.BelongsToUser,
+		Name: client.Name,
 	}
 }
 
-// BuildFakeAPIClientCreationInputFromClient builds a faked APIClientCreationRequestInput.
-func BuildFakeAPIClientCreationInputFromClient(client *types.APIClient) *types.APIClientCreationRequestInput {
-	return &types.APIClientCreationRequestInput{
+// BuildFakeAPIClientDatabaseCreationInputFromClient builds a faked APIClientDatabaseCreationInput.
+func BuildFakeAPIClientDatabaseCreationInputFromClient(client *types.APIClient) *types.APIClientDatabaseCreationInput {
+	return &types.APIClientDatabaseCreationInput{
 		ID: client.ID,
 		UserLoginInput: types.UserLoginInput{
 			Username:  fake.Username(),
@@ -76,5 +74,17 @@ func BuildFakeAPIClientCreationInputFromClient(client *types.APIClient) *types.A
 		ClientID:      client.ClientID,
 		ClientSecret:  client.ClientSecret,
 		BelongsToUser: client.BelongsToUser,
+	}
+}
+
+// BuildFakeAPIClientCreationInputFromClient builds a faked APIClientCreationRequestInput.
+func BuildFakeAPIClientCreationInputFromClient(client *types.APIClient) *types.APIClientCreationRequestInput {
+	return &types.APIClientCreationRequestInput{
+		UserLoginInput: types.UserLoginInput{
+			Username:  fake.Username(),
+			Password:  BuildFakePassword(),
+			TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
+		},
+		Name: client.Name,
 	}
 }

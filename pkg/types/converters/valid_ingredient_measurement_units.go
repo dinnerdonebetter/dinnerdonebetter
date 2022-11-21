@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -20,6 +21,7 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdate
 // ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientMeasurementUnitDatabaseCreationInput creates a ValidIngredientMeasurementUnitDatabaseCreationInput from a ValidIngredientMeasurementUnitCreationRequestInput.
 func ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientMeasurementUnitDatabaseCreationInput(input *types.ValidIngredientMeasurementUnitCreationRequestInput) *types.ValidIngredientMeasurementUnitDatabaseCreationInput {
 	x := &types.ValidIngredientMeasurementUnitDatabaseCreationInput{
+		ID:                       identifiers.New(),
 		Notes:                    input.Notes,
 		ValidMeasurementUnitID:   input.ValidMeasurementUnitID,
 		ValidIngredientID:        input.ValidIngredientID,
@@ -33,7 +35,6 @@ func ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientM
 // ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput builds a ValidIngredientMeasurementUnitCreationRequestInput from a ValidIngredientMeasurementUnit.
 func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitCreationRequestInput {
 	return &types.ValidIngredientMeasurementUnitCreationRequestInput{
-		ID:                       validIngredientMeasurementUnit.ID,
 		Notes:                    validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID:   validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:        validIngredientMeasurementUnit.Ingredient.ID,

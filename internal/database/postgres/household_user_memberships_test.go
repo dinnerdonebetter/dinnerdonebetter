@@ -931,7 +931,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Data...))
 
 		// create household user membership for created user
-		householdCreationInput := &types.HouseholdCreationRequestInput{
+		householdCreationInput := &types.HouseholdDatabaseCreationInput{
 			Name:          fmt.Sprintf("%s_default", exampleUserID),
 			BelongsToUser: exampleUserID,
 		}
@@ -996,7 +996,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Data...))
 
 		// create household user membership for created user
-		householdCreationInput := &types.HouseholdCreationRequestInput{
+		householdCreationInput := &types.HouseholdDatabaseCreationInput{
 			Name:          fmt.Sprintf("%s_default", exampleUserID),
 			BelongsToUser: exampleUserID,
 		}

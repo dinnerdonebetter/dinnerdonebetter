@@ -13,10 +13,8 @@ import (
 // BuildFakeHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
 func BuildFakeHouseholdUserMembershipCreationRequestInput() *types.HouseholdUserMembershipCreationRequestInput {
 	return &types.HouseholdUserMembershipCreationRequestInput{
-		Reason:        fake.Sentence(10),
-		UserID:        BuildFakeID(),
-		HouseholdID:   BuildFakeID(),
-		HouseholdRole: authorization.HouseholdMemberRole.String(),
+		Reason: fake.Sentence(10),
+		UserID: BuildFakeID(),
 	}
 }
 

@@ -54,7 +54,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
-	providedInput.ByUser = sessionCtxData.Requester.UserID
 
 	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
 
@@ -64,6 +63,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		input.Votes[i].ByUser = sessionCtxData.Requester.UserID
 		tracing.AttachMealPlanOptionVoteIDToSpan(span, input.Votes[i].ID)
 	}
+	input.ByUser = sessionCtxData.Requester.UserID
 
 	mealPlanOptionVotes, err := s.dataManager.CreateMealPlanOptionVote(ctx, input)
 	if err != nil {

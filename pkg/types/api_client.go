@@ -39,6 +39,14 @@ type (
 		_ struct{}
 
 		UserLoginInput
+		Name string `json:"clientName"`
+	}
+
+	// APIClientDatabaseCreationInput is a struct for use when creating API clients.
+	APIClientDatabaseCreationInput struct {
+		_ struct{}
+
+		UserLoginInput
 		ID            string `json:"-"`
 		Name          string `json:"clientName"`
 		ClientID      string `json:"-"`
@@ -60,7 +68,7 @@ type (
 		GetAPIClientByClientID(ctx context.Context, clientID string) (*APIClient, error)
 		GetAPIClientByDatabaseID(ctx context.Context, clientID, ownerUserID string) (*APIClient, error)
 		GetAPIClients(ctx context.Context, owneruserID string, filter *QueryFilter) (*QueryFilteredResult[APIClient], error)
-		CreateAPIClient(ctx context.Context, input *APIClientCreationRequestInput) (*APIClient, error)
+		CreateAPIClient(ctx context.Context, input *APIClientDatabaseCreationInput) (*APIClient, error)
 		ArchiveAPIClient(ctx context.Context, clientID, ownerUserID string) error
 	}
 

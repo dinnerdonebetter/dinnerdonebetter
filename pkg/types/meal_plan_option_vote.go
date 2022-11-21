@@ -70,9 +70,8 @@ type (
 
 	// MealPlanOptionVoteCreationRequestInput is a pending container for multiple votes.
 	MealPlanOptionVoteCreationRequestInput struct {
-		_      struct{}
-		ByUser string                             `json:"-"`
-		Votes  []*MealPlanOptionVoteCreationInput `json:"votes"`
+		_     struct{}
+		Votes []*MealPlanOptionVoteCreationInput `json:"votes"`
 	}
 
 	// MealPlanOptionVotesDatabaseCreationInput represents what a user could set as input for creating meal plan option votes.

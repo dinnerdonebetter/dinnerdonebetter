@@ -165,12 +165,11 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeMealPlanOptionCreationRequestInput()
-		exampleInput.BelongsToMealPlanEvent = s.exampleMealPlanID
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, exampleInput.BelongsToMealPlanEvent)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOption)
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, exampleInput)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, exampleInput)
 		assert.NoError(t, err)
 		assert.Equal(t, s.exampleMealPlanOption, actual)
 	})
@@ -180,7 +179,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, nil)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -191,7 +190,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		c, _ := buildSimpleTestClient(t)
 		exampleInput := &types.MealPlanOptionCreationRequestInput{}
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, exampleInput)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -203,7 +202,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, exampleInput)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -214,7 +213,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		exampleInput := converters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(s.exampleMealPlanOption)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, exampleInput)
+		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

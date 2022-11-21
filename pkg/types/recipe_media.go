@@ -45,7 +45,8 @@ type (
 
 	// RecipeMediaCreationRequestInput represents what a user could set as input for creating valid preparations.
 	RecipeMediaCreationRequestInput struct {
-		_                   struct{}
+		_ struct{}
+
 		BelongsToRecipe     *string `json:"belongsToRecipe"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
 		MimeType            string  `json:"mimeType"`
