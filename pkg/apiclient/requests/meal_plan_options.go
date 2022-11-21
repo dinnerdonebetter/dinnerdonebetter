@@ -85,9 +85,19 @@ func (b *Builder) BuildGetMealPlanOptionsRequest(ctx context.Context, mealPlanID
 }
 
 // BuildCreateMealPlanOptionRequest builds an HTTP request for creating a meal plan option.
-func (b *Builder) BuildCreateMealPlanOptionRequest(ctx context.Context, mealPlanID string, input *types.MealPlanOptionCreationRequestInput) (*http.Request, error) {
+func (b *Builder) BuildCreateMealPlanOptionRequest(ctx context.Context, mealPlanID, mealPlanEventID string, input *types.MealPlanOptionCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -103,7 +113,7 @@ func (b *Builder) BuildCreateMealPlanOptionRequest(ctx context.Context, mealPlan
 		mealPlansBasePath,
 		mealPlanID,
 		mealPlanEventsBasePath,
-		input.BelongsToMealPlanEvent,
+		mealPlanEventID,
 		mealPlanOptionsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)

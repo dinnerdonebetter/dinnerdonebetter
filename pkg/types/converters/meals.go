@@ -13,11 +13,10 @@ func ConvertMealCreationRequestInputToMealDatabaseCreationInput(input *types.Mea
 	}
 
 	x := &types.MealDatabaseCreationInput{
-		ID:            identifiers.New(),
-		Name:          input.Name,
-		Description:   input.Description,
-		CreatedByUser: input.CreatedByUser,
-		Components:    convertedComponents,
+		ID:          identifiers.New(),
+		Name:        input.Name,
+		Description: input.Description,
+		Components:  convertedComponents,
 	}
 
 	return x
@@ -41,11 +40,9 @@ func ConvertMealToMealCreationRequestInput(meal *types.Meal) *types.MealCreation
 	}
 
 	return &types.MealCreationRequestInput{
-		ID:            meal.ID,
-		Name:          meal.Name,
-		Description:   meal.Description,
-		CreatedByUser: meal.CreatedByUser,
-		Components:    convertedComponents,
+		Name:        meal.Name,
+		Description: meal.Description,
+		Components:  convertedComponents,
 	}
 }
 

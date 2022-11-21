@@ -72,11 +72,9 @@ type (
 	MealCreationRequestInput struct {
 		_ struct{}
 
-		ID            string                               `json:"-"`
-		Name          string                               `json:"name"`
-		Description   string                               `json:"description"`
-		CreatedByUser string                               `json:"-"`
-		Components    []*MealComponentCreationRequestInput `json:"recipes"`
+		Name        string                               `json:"name"`
+		Description string                               `json:"description"`
+		Components  []*MealComponentCreationRequestInput `json:"recipes"`
 	}
 
 	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.

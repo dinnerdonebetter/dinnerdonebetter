@@ -81,7 +81,7 @@ func (c *Client) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEve
 }
 
 // CreateMealPlanOption creates a meal plan option.
-func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanID string, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error) {
+func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID string, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -93,6 +93,12 @@ func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanID string, in
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
+	if mealPlanEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -101,7 +107,7 @@ func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanID string, in
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateMealPlanOptionRequest(ctx, mealPlanID, input)
+	req, err := c.requestBuilder.BuildCreateMealPlanOptionRequest(ctx, mealPlanID, mealPlanEventID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan option request")
 	}

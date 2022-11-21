@@ -100,7 +100,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				exampleMealPlanOption.Meal.ID = createdMeal.ID
 
 				exampleMealPlanOptionInput := converters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(exampleMealPlanOption)
-				newlyCreatedMealPlanOption, err := testClients.user.CreateMealPlanOption(ctx, createdMealPlan.ID, exampleMealPlanOptionInput)
+				newlyCreatedMealPlanOption, err := testClients.user.CreateMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, exampleMealPlanOptionInput)
 				require.NoError(t, err)
 				t.Logf("meal plan option %q created", createdMealPlanOption.ID)
 

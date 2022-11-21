@@ -42,12 +42,10 @@ func ConvertMealPlanToMealPlanCreationRequestInput(mealPlan *types.MealPlan) *ty
 	}
 
 	return &types.MealPlanCreationRequestInput{
-		ID:                 mealPlan.ID,
-		Notes:              mealPlan.Notes,
-		VotingDeadline:     mealPlan.VotingDeadline,
-		Events:             events,
-		ElectionMethod:     mealPlan.ElectionMethod,
-		BelongsToHousehold: mealPlan.BelongsToHousehold,
+		Notes:          mealPlan.Notes,
+		VotingDeadline: mealPlan.VotingDeadline,
+		Events:         events,
+		ElectionMethod: mealPlan.ElectionMethod,
 	}
 }
 

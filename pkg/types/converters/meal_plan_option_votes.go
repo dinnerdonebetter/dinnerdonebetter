@@ -19,8 +19,7 @@ func ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput(input *type
 // ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput(input *types.MealPlanOptionVoteCreationRequestInput) *types.MealPlanOptionVotesDatabaseCreationInput {
 	x := &types.MealPlanOptionVotesDatabaseCreationInput{
-		Votes:  input.Votes,
-		ByUser: input.ByUser,
+		Votes: input.Votes,
 	}
 
 	return x

@@ -26,13 +26,12 @@ func ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInpu
 	}
 
 	x := &types.MealPlanEventDatabaseCreationInput{
-		ID:                identifiers.New(),
-		Notes:             input.Notes,
-		StartsAt:          input.StartsAt,
-		EndsAt:            input.EndsAt,
-		MealName:          input.MealName,
-		BelongsToMealPlan: input.BelongsToMealPlan,
-		Options:           options,
+		ID:       identifiers.New(),
+		Notes:    input.Notes,
+		StartsAt: input.StartsAt,
+		EndsAt:   input.EndsAt,
+		MealName: input.MealName,
+		Options:  options,
 	}
 
 	return x
@@ -47,13 +46,11 @@ func ConvertMealPlanEventToMealPlanEventCreationRequestInput(mealPlanEvent *type
 	}
 
 	return &types.MealPlanEventCreationRequestInput{
-		ID:                mealPlanEvent.ID,
-		Notes:             mealPlanEvent.Notes,
-		StartsAt:          mealPlanEvent.StartsAt,
-		EndsAt:            mealPlanEvent.EndsAt,
-		MealName:          mealPlanEvent.MealName,
-		BelongsToMealPlan: mealPlanEvent.BelongsToMealPlan,
-		Options:           options,
+		Notes:    mealPlanEvent.Notes,
+		StartsAt: mealPlanEvent.StartsAt,
+		EndsAt:   mealPlanEvent.EndsAt,
+		MealName: mealPlanEvent.MealName,
+		Options:  options,
 	}
 }
 
