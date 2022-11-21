@@ -90,7 +90,7 @@ func (b *Builder) BuildGetRecipeStepInstrumentsRequest(ctx context.Context, reci
 }
 
 // BuildCreateRecipeStepInstrumentRequest builds an HTTP request for creating a recipe step instrument.
-func (b *Builder) BuildCreateRecipeStepInstrumentRequest(ctx context.Context, recipeID string, input *types.RecipeStepInstrumentCreationRequestInput) (*http.Request, error) {
+func (b *Builder) BuildCreateRecipeStepInstrumentRequest(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepInstrumentCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -98,6 +98,11 @@ func (b *Builder) BuildCreateRecipeStepInstrumentRequest(ctx context.Context, re
 		return nil, ErrInvalidIDProvided
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	if recipeStepID == "" {
+		return nil, ErrEmptyInputProvided
+	}
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -113,7 +118,7 @@ func (b *Builder) BuildCreateRecipeStepInstrumentRequest(ctx context.Context, re
 		recipesBasePath,
 		recipeID,
 		recipeStepsBasePath,
-		input.BelongsToRecipeStep,
+		recipeStepID,
 		recipeStepInstrumentsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)

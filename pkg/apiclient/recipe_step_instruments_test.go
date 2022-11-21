@@ -187,12 +187,11 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_CreateRecipeStepInstrument()
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
-		exampleInput.BelongsToRecipeStep = s.exampleRecipeStepID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrument)
 
-		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, exampleInput)
+		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.NoError(t, err)
 		assert.Equal(t, s.exampleRecipeStepInstrument, actual)
 	})
@@ -201,11 +200,10 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_CreateRecipeStepInstrument()
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
-		exampleInput.BelongsToRecipeStep = s.exampleRecipeStepID
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CreateRecipeStepInstrument(s.ctx, "", exampleInput)
+		actual, err := c.CreateRecipeStepInstrument(s.ctx, "", s.exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -215,7 +213,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_CreateRecipeStepInstrument()
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, nil)
+		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -226,7 +224,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_CreateRecipeStepInstrument()
 		c, _ := buildSimpleTestClient(t)
 		exampleInput := &types.RecipeStepInstrumentCreationRequestInput{}
 
-		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, exampleInput)
+		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -238,7 +236,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_CreateRecipeStepInstrument()
 
 		c := buildTestClientWithInvalidURL(t)
 
-		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, exampleInput)
+		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -249,7 +247,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_CreateRecipeStepInstrument()
 		exampleInput := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(s.exampleRecipeStepInstrument)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, exampleInput)
+		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})

@@ -15,6 +15,9 @@ var (
 	// ErrNilEncoderProvided indicates a nil encoder was provided to the constructor.
 	ErrNilEncoderProvided = errors.New("nil encoder provided")
 
+	// ErrEmptyInputProvided indicates empty input was provided in an unacceptable context.
+	ErrEmptyInputProvided = errors.New("empty input provided")
+
 	// ErrNilInputProvided indicates nil input was provided in an unacceptable context.
 	ErrNilInputProvided = errors.New("nil input provided")
 

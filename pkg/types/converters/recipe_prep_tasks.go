@@ -39,9 +39,8 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 	taskSteps := []*types.RecipePrepTaskStepDatabaseCreationInput{}
 	for _, x := range input.TaskSteps {
 		taskSteps = append(taskSteps, &types.RecipePrepTaskStepDatabaseCreationInput{
-			BelongsToRecipeStep:     x.BelongsToRecipeStep,
-			BelongsToRecipePrepTask: x.BelongsToRecipePrepTask,
-			SatisfiesRecipeStep:     x.SatisfiesRecipeStep,
+			BelongsToRecipeStep: x.BelongsToRecipeStep,
+			SatisfiesRecipeStep: x.SatisfiesRecipeStep,
 		})
 	}
 
@@ -115,9 +114,8 @@ func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *types.Rec
 
 func ConvertRecipePrepTaskStepToRecipePrepTaskStepCreationRequestInput(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepCreationRequestInput {
 	return &types.RecipePrepTaskStepCreationRequestInput{
-		BelongsToRecipeStep:     input.BelongsToRecipeStep,
-		BelongsToRecipePrepTask: input.BelongsToRecipePrepTask,
-		SatisfiesRecipeStep:     input.SatisfiesRecipeStep,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		SatisfiesRecipeStep: input.SatisfiesRecipeStep,
 	}
 }
 
@@ -167,7 +165,6 @@ func ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInp
 
 	return &types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 		BelongsToRecipeStepIndex: belongsToIndex,
-		BelongsToRecipePrepTask:  input.BelongsToRecipePrepTask,
 		SatisfiesRecipeStep:      input.SatisfiesRecipeStep,
 	}
 }

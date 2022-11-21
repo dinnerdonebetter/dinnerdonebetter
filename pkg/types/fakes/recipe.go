@@ -78,7 +78,6 @@ func BuildFakeRecipeCreationRequestInput() *types.RecipeCreationRequestInput {
 	examplePrepTaskInput.TaskSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 		{
 			BelongsToRecipeStepIndex: exampleCreationInput.Steps[0].Index,
-			BelongsToRecipePrepTask:  examplePrepTask.ID,
 			SatisfiesRecipeStep:      false,
 		},
 	}

@@ -59,9 +59,8 @@ func BuildFakeRecipePrepTaskStep() *types.RecipePrepTaskStep {
 
 func BuildFakeRecipePrepTaskStepCreationRequestInput() *types.RecipePrepTaskStepCreationRequestInput {
 	return &types.RecipePrepTaskStepCreationRequestInput{
-		BelongsToRecipeStep:     BuildFakeID(),
-		BelongsToRecipePrepTask: BuildFakeID(),
-		SatisfiesRecipeStep:     fake.Bool(),
+		BelongsToRecipeStep: BuildFakeID(),
+		SatisfiesRecipeStep: fake.Bool(),
 	}
 }
 

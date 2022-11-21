@@ -264,8 +264,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 					MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
 					Notes:                         step.Notes,
 					PreparationID:                 step.Preparation.ID,
-					BelongsToRecipe:               step.BelongsToRecipe,
-					ID:                            step.ID,
 					Index:                         step.Index,
 					MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
 					MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
@@ -274,8 +272,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 				for _, ingredient := range step.Ingredients {
 					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						ID:                  ingredient.ID,
-						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
 						Name:                ingredient.Name,
 						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
 						QuantityNotes:       ingredient.QuantityNotes,
@@ -293,13 +289,11 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 				for _, product := range step.Products {
 					newProduct := &types.RecipeStepProductCreationRequestInput{
-						ID:                  product.ID,
-						Name:                product.Name,
-						Type:                product.Type,
-						MeasurementUnitID:   product.MeasurementUnit.ID,
-						QuantityNotes:       product.QuantityNotes,
-						BelongsToRecipeStep: product.BelongsToRecipeStep,
-						MinimumQuantity:     product.MinimumQuantity,
+						Name:              product.Name,
+						Type:              product.Type,
+						MeasurementUnitID: product.MeasurementUnit.ID,
+						QuantityNotes:     product.QuantityNotes,
+						MinimumQuantity:   product.MinimumQuantity,
 					}
 					newStep.Products = append(newStep.Products, newProduct)
 				}
@@ -730,8 +724,6 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 					MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
 					Notes:                         step.Notes,
 					PreparationID:                 step.Preparation.ID,
-					BelongsToRecipe:               step.BelongsToRecipe,
-					ID:                            step.ID,
 					Index:                         step.Index,
 					MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
 					MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
@@ -740,8 +732,6 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 
 				for _, ingredient := range step.Ingredients {
 					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						ID:                  ingredient.ID,
-						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
 						Name:                ingredient.Name,
 						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
 						QuantityNotes:       ingredient.QuantityNotes,
@@ -759,13 +749,11 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 
 				for _, product := range step.Products {
 					newProduct := &types.RecipeStepProductCreationRequestInput{
-						ID:                  product.ID,
-						Name:                product.Name,
-						Type:                product.Type,
-						MeasurementUnitID:   product.MeasurementUnit.ID,
-						QuantityNotes:       product.QuantityNotes,
-						BelongsToRecipeStep: product.BelongsToRecipeStep,
-						MinimumQuantity:     product.MinimumQuantity,
+						Name:              product.Name,
+						Type:              product.Type,
+						MeasurementUnitID: product.MeasurementUnit.ID,
+						QuantityNotes:     product.QuantityNotes,
+						MinimumQuantity:   product.MinimumQuantity,
 					}
 					newStep.Products = append(newStep.Products, newProduct)
 				}

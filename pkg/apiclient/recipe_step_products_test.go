@@ -187,12 +187,11 @@ func (s *recipeStepProductsTestSuite) TestClient_CreateRecipeStepProduct() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeRecipeStepProductCreationRequestInput()
-		exampleInput.BelongsToRecipeStep = s.exampleRecipeStepID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepProduct)
 
-		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, exampleInput)
+		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
@@ -203,11 +202,10 @@ func (s *recipeStepProductsTestSuite) TestClient_CreateRecipeStepProduct() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeRecipeStepProductCreationRequestInput()
-		exampleInput.BelongsToRecipeStep = s.exampleRecipeStepID
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CreateRecipeStepProduct(s.ctx, "", exampleInput)
+		actual, err := c.CreateRecipeStepProduct(s.ctx, "", s.exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -217,7 +215,7 @@ func (s *recipeStepProductsTestSuite) TestClient_CreateRecipeStepProduct() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, nil)
+		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -228,7 +226,7 @@ func (s *recipeStepProductsTestSuite) TestClient_CreateRecipeStepProduct() {
 		c, _ := buildSimpleTestClient(t)
 		exampleInput := &types.RecipeStepProductCreationRequestInput{}
 
-		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, exampleInput)
+		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -240,7 +238,7 @@ func (s *recipeStepProductsTestSuite) TestClient_CreateRecipeStepProduct() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, exampleInput)
+		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -251,7 +249,7 @@ func (s *recipeStepProductsTestSuite) TestClient_CreateRecipeStepProduct() {
 		exampleInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(s.exampleRecipeStepProduct)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, exampleInput)
+		actual, err := c.CreateRecipeStepProduct(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})

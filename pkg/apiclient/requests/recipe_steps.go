@@ -76,9 +76,14 @@ func (b *Builder) BuildGetRecipeStepsRequest(ctx context.Context, recipeID strin
 }
 
 // BuildCreateRecipeStepRequest builds an HTTP request for creating a recipe step.
-func (b *Builder) BuildCreateRecipeStepRequest(ctx context.Context, input *types.RecipeStepCreationRequestInput) (*http.Request, error) {
+func (b *Builder) BuildCreateRecipeStepRequest(ctx context.Context, recipeID string, input *types.RecipeStepCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if recipeID == "" {
+		return nil, ErrEmptyInputProvided
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -92,7 +97,7 @@ func (b *Builder) BuildCreateRecipeStepRequest(ctx context.Context, input *types
 		ctx,
 		nil,
 		recipesBasePath,
-		input.BelongsToRecipe,
+		recipeID,
 		recipeStepsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)

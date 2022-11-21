@@ -69,11 +69,17 @@ func (c *Client) GetRecipeSteps(ctx context.Context, recipeID string, filter *ty
 }
 
 // CreateRecipeStep creates a recipe step.
-func (c *Client) CreateRecipeStep(ctx context.Context, input *types.RecipeStepCreationRequestInput) (*types.RecipeStep, error) {
+func (c *Client) CreateRecipeStep(ctx context.Context, recipeID string, input *types.RecipeStepCreationRequestInput) (*types.RecipeStep, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
+
+	if recipeID == "" {
+		return nil, buildInvalidIDError("recipe")
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -83,7 +89,7 @@ func (c *Client) CreateRecipeStep(ctx context.Context, input *types.RecipeStepCr
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateRecipeStepRequest(ctx, input)
+	req, err := c.requestBuilder.BuildCreateRecipeStepRequest(ctx, recipeID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step request")
 	}

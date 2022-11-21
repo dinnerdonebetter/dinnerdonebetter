@@ -59,15 +59,14 @@ type (
 
 	// RecipeStepCreationRequestInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationRequestInput struct {
-		_                             struct{}
+		_ struct{}
+
 		MinimumEstimatedTimeInSeconds *uint32                                     `json:"minimumEstimatedTimeInSeconds"`
 		MaximumTemperatureInCelsius   *float32                                    `json:"maximumTemperatureInCelsius"`
 		MinimumTemperatureInCelsius   *float32                                    `json:"minimumTemperatureInCelsius"`
 		MaximumEstimatedTimeInSeconds *uint32                                     `json:"maximumEstimatedTimeInSeconds"`
-		BelongsToRecipe               string                                      `json:"-"`
 		Notes                         string                                      `json:"notes"`
 		PreparationID                 string                                      `json:"preparationID"`
-		ID                            string                                      `json:"-"`
 		ExplicitInstructions          string                                      `json:"explicitInstructions"`
 		Ingredients                   []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
 		Instruments                   []*RecipeStepInstrumentCreationRequestInput `json:"instruments"`

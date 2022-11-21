@@ -81,7 +81,7 @@ func (c *Client) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeS
 }
 
 // CreateRecipeStepIngredient creates a recipe step ingredient.
-func (c *Client) CreateRecipeStepIngredient(ctx context.Context, recipeID string, input *types.RecipeStepIngredientCreationRequestInput) (*types.RecipeStepIngredient, error) {
+func (c *Client) CreateRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepIngredientCreationRequestInput) (*types.RecipeStepIngredient, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -93,6 +93,12 @@ func (c *Client) CreateRecipeStepIngredient(ctx context.Context, recipeID string
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
+	if recipeStepID == "" {
+		return nil, buildInvalidIDError("recipeStep")
+	}
+	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -101,7 +107,7 @@ func (c *Client) CreateRecipeStepIngredient(ctx context.Context, recipeID string
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateRecipeStepIngredientRequest(ctx, recipeID, input)
+	req, err := c.requestBuilder.BuildCreateRecipeStepIngredientRequest(ctx, recipeID, recipeStepID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step ingredient request")
 	}

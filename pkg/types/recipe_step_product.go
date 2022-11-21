@@ -58,16 +58,15 @@ type (
 
 	// RecipeStepProductCreationRequestInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductCreationRequestInput struct {
-		_                                  struct{}
+		_ struct{}
+
 		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
 		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds"`
 		Type                               string   `json:"type"`
 		MeasurementUnitID                  string   `json:"measurementUnitID"`
-		BelongsToRecipeStep                string   `json:"-"`
 		QuantityNotes                      string   `json:"quantityNotes"`
 		Name                               string   `json:"name"`
-		ID                                 string   `json:"-"`
 		StorageInstructions                string   `json:"storageInstructions"`
 		MaximumQuantity                    float32  `json:"maximumQuantity"`
 		MinimumQuantity                    float32  `json:"minimumQuantity"`

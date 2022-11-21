@@ -129,11 +129,12 @@ func TestBuilder_BuildCreateRecipeStepRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
+		exampleRecipeID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeRecipeStepCreationRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleInput.BelongsToRecipe)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleRecipeID)
 
-		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, exampleRecipeID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -144,7 +145,9 @@ func TestBuilder_BuildCreateRecipeStepRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, nil)
+		exampleRecipeID := fakes.BuildFakeID()
+
+		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, exampleRecipeID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -154,7 +157,9 @@ func TestBuilder_BuildCreateRecipeStepRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, &types.RecipeStepCreationRequestInput{})
+		exampleRecipeID := fakes.BuildFakeID()
+
+		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, exampleRecipeID, &types.RecipeStepCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -165,9 +170,10 @@ func TestBuilder_BuildCreateRecipeStepRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
+		exampleRecipeID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeRecipeStepCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, exampleRecipeID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

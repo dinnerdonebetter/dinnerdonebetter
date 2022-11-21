@@ -34,7 +34,6 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 		ProductOfRecipeStep: input.ProductOfRecipeStep,
 		Notes:               input.Notes,
 		PreferenceRank:      input.PreferenceRank,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		Optional:            input.Optional,
 		OptionIndex:         input.OptionIndex,
 		MinimumQuantity:     input.MinimumQuantity,
@@ -52,14 +51,12 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recip
 	}
 
 	return &types.RecipeStepInstrumentCreationRequestInput{
-		ID:                  recipeStepInstrument.ID,
 		InstrumentID:        instrumentID,
 		Name:                recipeStepInstrument.Name,
 		ProductOfRecipeStep: recipeStepInstrument.ProductOfRecipeStep,
 		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
 		Notes:               recipeStepInstrument.Notes,
 		PreferenceRank:      recipeStepInstrument.PreferenceRank,
-		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
 		Optional:            recipeStepInstrument.Optional,
 		OptionIndex:         recipeStepInstrument.OptionIndex,
 		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,

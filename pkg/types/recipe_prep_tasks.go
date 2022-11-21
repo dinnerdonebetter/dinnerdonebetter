@@ -58,7 +58,8 @@ type (
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskCreationRequestInput struct {
-		_                                      struct{}
+		_ struct{}
+
 		Notes                                  string                                    `json:"notes"`
 		ExplicitStorageInstructions            string                                    `json:"explicitStorageInstructions"`
 		StorageType                            string                                    `json:"storageType"`
@@ -72,7 +73,8 @@ type (
 
 	// RecipePrepTaskWithinRecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskWithinRecipeCreationRequestInput struct {
-		_                                      struct{}
+		_ struct{}
+
 		Notes                                  string                                                `json:"notes"`
 		ExplicitStorageInstructions            string                                                `json:"explicitStorageInstructions"`
 		StorageType                            string                                                `json:"storageType"`

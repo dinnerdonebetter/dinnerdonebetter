@@ -80,7 +80,6 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 	}
 
 	return &types.RecipeStepCreationRequestInput{
-		ID:                            recipeStep.ID,
 		Optional:                      recipeStep.Optional,
 		Index:                         recipeStep.Index,
 		PreparationID:                 recipeStep.Preparation.ID,
@@ -90,7 +89,6 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
 		Notes:                         recipeStep.Notes,
 		ExplicitInstructions:          recipeStep.ExplicitInstructions,
-		BelongsToRecipe:               recipeStep.BelongsToRecipe,
 		Products:                      products,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
