@@ -29,7 +29,6 @@ func ConvertValidPreparationInstrumentToValidPreparationInstrumentUpdateRequestI
 // ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput builds a ValidPreparationInstrumentCreationRequestInput from a ValidPreparationInstrument.
 func ConvertValidPreparationInstrumentToValidPreparationInstrumentCreationRequestInput(validPreparationInstrument *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentCreationRequestInput {
 	return &types.ValidPreparationInstrumentCreationRequestInput{
-		ID:                 validPreparationInstrument.ID,
 		Notes:              validPreparationInstrument.Notes,
 		ValidPreparationID: validPreparationInstrument.Preparation.ID,
 		ValidInstrumentID:  validPreparationInstrument.Instrument.ID,

@@ -35,7 +35,6 @@ func ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientM
 // ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput builds a ValidIngredientMeasurementUnitCreationRequestInput from a ValidIngredientMeasurementUnit.
 func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitCreationRequestInput {
 	return &types.ValidIngredientMeasurementUnitCreationRequestInput{
-		ID:                       validIngredientMeasurementUnit.ID,
 		Notes:                    validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID:   validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:        validIngredientMeasurementUnit.Ingredient.ID,

@@ -44,8 +44,8 @@ type (
 
 	// ValidIngredientMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitCreationRequestInput struct {
-		_                        struct{}
-		ID                       string  `json:"-"`
+		_ struct{}
+
 		Notes                    string  `json:"notes"`
 		ValidMeasurementUnitID   string  `json:"validMeasurementUnitID"`
 		ValidIngredientID        string  `json:"validIngredientID"`

@@ -48,7 +48,8 @@ type (
 
 	// ValidMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitCreationRequestInput struct {
-		_           struct{}
+		_ struct{}
+
 		CreatedAt   time.Time `json:"createdAt"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`

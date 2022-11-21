@@ -44,7 +44,8 @@ type (
 
 	// ValidMeasurementConversionCreationRequestInput represents what a user could set as input for creating valid measurement conversions.
 	ValidMeasurementConversionCreationRequestInput struct {
-		_             struct{}
+		_ struct{}
+
 		ForIngredient *string `json:"forIngredient"`
 		From          string  `json:"from"`
 		To            string  `json:"to"`

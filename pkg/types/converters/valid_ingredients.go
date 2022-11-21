@@ -77,7 +77,6 @@ func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreation
 // ConvertValidIngredientToValidIngredientCreationRequestInput builds a ValidIngredientCreationRequestInput from a Ingredient.
 func ConvertValidIngredientToValidIngredientCreationRequestInput(validIngredient *types.ValidIngredient) *types.ValidIngredientCreationRequestInput {
 	return &types.ValidIngredientCreationRequestInput{
-		ID:                                      validIngredient.ID,
 		Name:                                    validIngredient.Name,
 		Description:                             validIngredient.Description,
 		Warning:                                 validIngredient.Warning,

@@ -41,7 +41,6 @@ func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreati
 // ConvertValidPreparationToValidPreparationCreationRequestInput builds a ValidPreparationCreationRequestInput from a ValidPreparation.
 func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparation *types.ValidPreparation) *types.ValidPreparationCreationRequestInput {
 	return &types.ValidPreparationCreationRequestInput{
-		ID:                       validPreparation.ID,
 		Name:                     validPreparation.Name,
 		Description:              validPreparation.Description,
 		IconPath:                 validPreparation.IconPath,

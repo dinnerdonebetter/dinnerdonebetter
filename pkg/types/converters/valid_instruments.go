@@ -56,7 +56,6 @@ func ConvertNullableValidInstrumentToValidInstrument(x *types.NullableValidInstr
 // ConvertValidInstrumentToValidInstrumentCreationRequestInput builds a ValidInstrumentCreationRequestInput from a ValidInstrument.
 func ConvertValidInstrumentToValidInstrumentCreationRequestInput(validInstrument *types.ValidInstrument) *types.ValidInstrumentCreationRequestInput {
 	return &types.ValidInstrumentCreationRequestInput{
-		ID:                    validInstrument.ID,
 		Name:                  validInstrument.Name,
 		PluralName:            validInstrument.PluralName,
 		Description:           validInstrument.Description,

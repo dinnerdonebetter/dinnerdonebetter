@@ -29,7 +29,6 @@ func ConvertValidIngredientPreparationToValidIngredientPreparationUpdateRequestI
 // ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput builds a ValidIngredientPreparationCreationRequestInput from a ValidIngredientPreparation.
 func ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationCreationRequestInput {
 	return &types.ValidIngredientPreparationCreationRequestInput{
-		ID:                 validIngredientPreparation.ID,
 		Notes:              validIngredientPreparation.Notes,
 		ValidPreparationID: validIngredientPreparation.Preparation.ID,
 		ValidIngredientID:  validIngredientPreparation.Ingredient.ID,

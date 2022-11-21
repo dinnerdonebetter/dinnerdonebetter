@@ -42,8 +42,8 @@ type (
 
 	// ValidIngredientPreparationCreationRequestInput represents what a user could set as input for creating valid ingredient preparations.
 	ValidIngredientPreparationCreationRequestInput struct {
-		_                  struct{}
-		ID                 string `json:"-"`
+		_ struct{}
+
 		Notes              string `json:"notes"`
 		ValidPreparationID string `json:"validPreparationID"`
 		ValidIngredientID  string `json:"validIngredientID"`

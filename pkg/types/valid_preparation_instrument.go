@@ -42,8 +42,8 @@ type (
 
 	// ValidPreparationInstrumentCreationRequestInput represents what a user could set as input for creating valid preparation instruments.
 	ValidPreparationInstrumentCreationRequestInput struct {
-		_                  struct{}
-		ID                 string `json:"-"`
+		_ struct{}
+
 		Notes              string `json:"notes"`
 		ValidPreparationID string `json:"validPreparationID"`
 		ValidInstrumentID  string `json:"validInstrumentID"`

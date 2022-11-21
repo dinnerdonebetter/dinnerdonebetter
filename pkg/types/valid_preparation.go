@@ -47,8 +47,8 @@ type (
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationCreationRequestInput struct {
-		_                        struct{}
-		ID                       string `json:"-"`
+		_ struct{}
+
 		Name                     string `json:"name"`
 		Description              string `json:"description"`
 		IconPath                 string `json:"iconPath"`
