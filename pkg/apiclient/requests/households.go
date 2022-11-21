@@ -168,9 +168,13 @@ func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID 
 }
 
 // BuildInviteUserToHouseholdRequest builds a request that adds a user to a household.
-func (b *Builder) BuildInviteUserToHouseholdRequest(ctx context.Context, input *types.HouseholdInvitationCreationRequestInput) (*http.Request, error) {
+func (b *Builder) BuildInviteUserToHouseholdRequest(ctx context.Context, destinationHouseholdID string, input *types.HouseholdInvitationCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if destinationHouseholdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -178,7 +182,7 @@ func (b *Builder) BuildInviteUserToHouseholdRequest(ctx context.Context, input *
 
 	// we don't validate here because it needs to have the user ID
 
-	uri := b.BuildURL(ctx, nil, householdsBasePath, input.DestinationHouseholdID, "invite")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, destinationHouseholdID, "invite")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)

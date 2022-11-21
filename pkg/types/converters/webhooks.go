@@ -13,13 +13,11 @@ func ConvertWebhookToWebhookCreationRequestInput(webhook *types.Webhook) *types.
 	}
 
 	return &types.WebhookCreationRequestInput{
-		ID:                 webhook.ID,
-		Name:               webhook.Name,
-		ContentType:        webhook.ContentType,
-		URL:                webhook.URL,
-		Method:             webhook.Method,
-		Events:             eventStrings,
-		BelongsToHousehold: webhook.BelongsToHousehold,
+		Name:        webhook.Name,
+		ContentType: webhook.ContentType,
+		URL:         webhook.URL,
+		Method:      webhook.Method,
+		Events:      eventStrings,
 	}
 }
 

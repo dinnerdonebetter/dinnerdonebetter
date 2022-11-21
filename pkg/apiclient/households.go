@@ -170,7 +170,7 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 }
 
 // InviteUserToHousehold adds a user to a household.
-func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.HouseholdInvitationCreationRequestInput) (*types.HouseholdInvitation, error) {
+func (c *Client) InviteUserToHousehold(ctx context.Context, destinationHouseholdID string, input *types.HouseholdInvitationCreationRequestInput) (*types.HouseholdInvitation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -178,11 +178,11 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.Househo
 		return nil, ErrNilInputProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, input.DestinationHouseholdID)
+	tracing.AttachHouseholdIDToSpan(span, destinationHouseholdID)
 
 	// we don't validate here because it needs to have the user ID
 
-	req, err := c.requestBuilder.BuildInviteUserToHouseholdRequest(ctx, input)
+	req, err := c.requestBuilder.BuildInviteUserToHouseholdRequest(ctx, destinationHouseholdID, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building add user to household request")
 	}

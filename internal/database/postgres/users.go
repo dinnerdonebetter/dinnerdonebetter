@@ -496,7 +496,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		hn = fmt.Sprintf("%s_default", userID)
 	}
 
-	householdCreationInput := &types.HouseholdCreationRequestInput{
+	householdCreationInput := &types.HouseholdDatabaseCreationInput{
 		ID:            householdID,
 		Name:          hn,
 		BelongsToUser: userID,

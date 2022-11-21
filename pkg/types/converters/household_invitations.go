@@ -7,10 +7,7 @@ import (
 // ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput creates a HouseholdInvitationDatabaseCreationInput from a HouseholdInvitationCreationRequestInput.
 func ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput(input *types.HouseholdInvitationCreationRequestInput) *types.HouseholdInvitationDatabaseCreationInput {
 	x := &types.HouseholdInvitationDatabaseCreationInput{
-		ID:                     input.ID,
-		FromUser:               input.FromUser,
-		ToEmail:                input.ToEmail,
-		DestinationHouseholdID: input.DestinationHouseholdID,
+		ToEmail: input.ToEmail,
 	}
 
 	if input.ExpiresAt != nil {
@@ -23,12 +20,9 @@ func ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreatio
 // ConvertHouseholdInvitationToHouseholdInvitationCreationInput builds a faked HouseholdInvitationCreationRequestInput.
 func ConvertHouseholdInvitationToHouseholdInvitationCreationInput(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationCreationRequestInput {
 	return &types.HouseholdInvitationCreationRequestInput{
-		ID:                     householdInvitation.ID,
-		FromUser:               householdInvitation.FromUser.ID,
-		Note:                   householdInvitation.Note,
-		ToEmail:                householdInvitation.ToEmail,
-		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
-		ExpiresAt:              &householdInvitation.ExpiresAt,
+		Note:      householdInvitation.Note,
+		ToEmail:   householdInvitation.ToEmail,
+		ExpiresAt: &householdInvitation.ExpiresAt,
 	}
 }
 

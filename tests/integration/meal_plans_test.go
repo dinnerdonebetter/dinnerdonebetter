@@ -80,11 +80,9 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 				t.Logf("inviting user")
-				invitation, err := testClients.user.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-					FromUser:               s.user.ID,
-					Note:                   t.Name(),
-					ToEmail:                u.EmailAddress,
-					DestinationHouseholdID: relevantHouseholdID,
+				invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+					Note:    t.Name(),
+					ToEmail: u.EmailAddress,
 				})
 				require.NoError(t, err)
 
@@ -272,11 +270,9 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 				t.Logf("inviting user")
-				invitation, err := testClients.user.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-					FromUser:               s.user.ID,
-					Note:                   t.Name(),
-					ToEmail:                u.EmailAddress,
-					DestinationHouseholdID: relevantHouseholdID,
+				invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+					Note:    t.Name(),
+					ToEmail: u.EmailAddress,
 				})
 				require.NoError(t, err)
 

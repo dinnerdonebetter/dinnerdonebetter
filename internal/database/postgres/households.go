@@ -391,7 +391,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		CreatedAt:     q.currentTime(),
 	}
 
-	addInput := &types.HouseholdUserMembershipCreationRequestInput{
+	addInput := &types.HouseholdUserMembershipDatabaseCreationInput{
 		ID:            identifiers.New(),
 		UserID:        input.BelongsToUser,
 		HouseholdID:   household.ID,

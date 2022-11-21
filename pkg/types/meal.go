@@ -64,6 +64,7 @@ type (
 
 	// MealComponent is a recipe with some extra data attached to it.
 	MealComponent struct {
+		_             struct{}
 		ComponentType string `json:"componentType"`
 		Recipe        Recipe `json:"recipe"`
 	}
@@ -79,6 +80,7 @@ type (
 
 	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.
 	MealComponentCreationRequestInput struct {
+		_             struct{}
 		RecipeID      string `json:"recipeID"`
 		ComponentType string `json:"mealComponentType"`
 	}
@@ -96,6 +98,7 @@ type (
 
 	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
 	MealComponentDatabaseCreationInput struct {
+		_             struct{}
 		RecipeID      string
 		ComponentType string
 	}
@@ -111,6 +114,7 @@ type (
 
 	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.
 	MealComponentUpdateRequestInput struct {
+		_             struct{}
 		RecipeID      string `json:"recipeID"`
 		ComponentType string `json:"mealComponentType"`
 	}
