@@ -15,13 +15,12 @@ func TestValidPreparationCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationCreationRequestInput{
-			Name:                     fake.LoremIpsumSentence(exampleQuantity),
-			Description:              fake.LoremIpsumSentence(exampleQuantity),
-			IconPath:                 fake.LoremIpsumSentence(exampleQuantity),
-			PastTense:                fake.LoremIpsumSentence(exampleQuantity),
-			YieldsNothing:            fake.Bool(),
-			RestrictToIngredients:    fake.Bool(),
-			ZeroIngredientsAllowable: fake.Bool(),
+			Name:                  fake.LoremIpsumSentence(exampleQuantity),
+			Description:           fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:              fake.LoremIpsumSentence(exampleQuantity),
+			PastTense:             fake.LoremIpsumSentence(exampleQuantity),
+			YieldsNothing:         fake.Bool(),
+			RestrictToIngredients: fake.Bool(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -45,13 +44,12 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationUpdateRequestInput{
-			Name:                     stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:              stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			IconPath:                 stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PastTense:                stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			YieldsNothing:            boolPointer(fake.Bool()),
-			RestrictToIngredients:    boolPointer(fake.Bool()),
-			ZeroIngredientsAllowable: boolPointer(fake.Bool()),
+			Name:                  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:           stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			IconPath:              stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			PastTense:             stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			YieldsNothing:         boolPointer(fake.Bool()),
+			RestrictToIngredients: boolPointer(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

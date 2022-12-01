@@ -37,7 +37,6 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.Preparation.IconPath,
 			x.Preparation.YieldsNothing,
 			x.Preparation.RestrictToIngredients,
-			x.Preparation.ZeroIngredientsAllowable,
 			x.Preparation.MinimumIngredientCount,
 			x.Preparation.MaximumIngredientCount,
 			x.Preparation.MinimumInstrumentCount,

@@ -5,7 +5,6 @@ SELECT
 	valid_preparations.icon_path,
 	valid_preparations.yields_nothing,
 	valid_preparations.restrict_to_ingredients,
-	valid_preparations.zero_ingredients_allowable,
     valid_preparations.minimum_ingredient_count,
     valid_preparations.maximum_ingredient_count,
     valid_preparations.minimum_instrument_count,

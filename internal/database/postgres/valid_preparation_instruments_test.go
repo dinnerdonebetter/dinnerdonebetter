@@ -37,7 +37,6 @@ func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCo
 			x.Preparation.IconPath,
 			x.Preparation.YieldsNothing,
 			x.Preparation.RestrictToIngredients,
-			x.Preparation.ZeroIngredientsAllowable,
 			x.Preparation.MinimumIngredientCount,
 			x.Preparation.MaximumIngredientCount,
 			x.Preparation.MinimumInstrumentCount,
