@@ -29,6 +29,11 @@ func Uint64(x uint64) *uint64 {
 	return &x
 }
 
+// Int32 returns a pointer to a uint32.
+func Int32(x int32) *int32 {
+	return &x
+}
+
 // Bool returns a pointer to the provided bool.
 func Bool(x bool) *bool {
 	return &x

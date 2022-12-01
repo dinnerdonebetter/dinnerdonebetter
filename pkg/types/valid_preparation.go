@@ -32,45 +32,62 @@ type (
 	ValidPreparation struct {
 		_                        struct{}
 		CreatedAt                time.Time  `json:"createdAt"`
+		MaximumInstrumentCount   *int32     `json:"maximumInstrumentCount"`
 		ArchivedAt               *time.Time `json:"archivedAt"`
+		MaximumIngredientCount   *int32     `json:"maximumIngredientCount"`
 		LastUpdatedAt            *time.Time `json:"lastUpdatedAt"`
-		Name                     string     `json:"name"`
 		Description              string     `json:"description"`
 		IconPath                 string     `json:"iconPath"`
 		PastTense                string     `json:"pastTense"`
 		ID                       string     `json:"id"`
+		Name                     string     `json:"name"`
 		Slug                     string     `json:"slug"`
-		YieldsNothing            bool       `json:"yieldsNothing"`
-		RestrictToIngredients    bool       `json:"restrictToIngredients"`
+		MinimumInstrumentCount   int32      `json:"minimumInstrumentCount"`
+		MinimumIngredientCount   int32      `json:"minimumIngredientCount"`
 		ZeroIngredientsAllowable bool       `json:"zeroIngredientsAllowable"`
+		RestrictToIngredients    bool       `json:"restrictToIngredients"`
+		YieldsNothing            bool       `json:"yieldsNothing"`
+		TemperatureRequired      bool       `json:"temperatureRequired"`
+		TimeEstimateRequired     bool       `json:"timeEstimateRequired"`
 	}
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationCreationRequestInput struct {
-		_ struct{}
-
-		Name                     string `json:"name"`
+		_                        struct{}
+		MaximumInstrumentCount   *int32 `json:"maximumInstrumentCount"`
+		MaximumIngredientCount   *int32 `json:"maximumIngredientCount"`
 		Description              string `json:"description"`
 		IconPath                 string `json:"iconPath"`
 		PastTense                string `json:"pastTense"`
 		Slug                     string `json:"slug"`
-		YieldsNothing            bool   `json:"yieldsNothing"`
+		Name                     string `json:"name"`
+		MinimumIngredientCount   int32  `json:"minimumIngredientCount"`
+		MinimumInstrumentCount   int32  `json:"minimumInstrumentCount"`
 		RestrictToIngredients    bool   `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable bool   `json:"zeroIngredientsAllowable"`
+		YieldsNothing            bool   `json:"yieldsNothing"`
+		TemperatureRequired      bool   `json:"temperatureRequired"`
+		TimeEstimateRequired     bool   `json:"timeEstimateRequired"`
 	}
 
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationDatabaseCreationInput struct {
 		_                        struct{}
-		ID                       string
-		Name                     string
+		MaximumInstrumentCount   *int32
+		MaximumIngredientCount   *int32
 		Description              string
 		IconPath                 string
 		PastTense                string
 		Slug                     string
-		YieldsNothing            bool
+		ID                       string
+		Name                     string
+		MinimumIngredientCount   int32
+		MinimumInstrumentCount   int32
 		RestrictToIngredients    bool
 		ZeroIngredientsAllowable bool
+		YieldsNothing            bool
+		TemperatureRequired      bool
+		TimeEstimateRequired     bool
 	}
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
@@ -85,6 +102,12 @@ type (
 		RestrictToIngredients    *bool   `json:"restrictToIngredients"`
 		ZeroIngredientsAllowable *bool   `json:"zeroIngredientsAllowable"`
 		PastTense                *string `json:"pastTense"`
+		MinimumInstrumentCount   *int32  `json:"minimumInstrumentCount"`
+		MaximumInstrumentCount   *int32  `json:"maximumInstrumentCount"`
+		MinimumIngredientCount   *int32  `json:"minimumIngredientCount"`
+		MaximumIngredientCount   *int32  `json:"maximumIngredientCount"`
+		TemperatureRequired      *bool   `json:"temperatureRequired"`
+		TimeEstimateRequired     *bool   `json:"timeEstimateRequired"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -135,6 +158,25 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 
 	if input.ZeroIngredientsAllowable != nil && *input.ZeroIngredientsAllowable != x.ZeroIngredientsAllowable {
 		x.ZeroIngredientsAllowable = *input.ZeroIngredientsAllowable
+	}
+
+	if input.MinimumIngredientCount != nil && *input.MinimumIngredientCount != x.MinimumIngredientCount {
+		x.MinimumIngredientCount = *input.MinimumIngredientCount
+	}
+	if input.MaximumIngredientCount != nil && *input.MaximumIngredientCount != *x.MaximumIngredientCount {
+		x.MaximumIngredientCount = input.MaximumIngredientCount
+	}
+	if input.MinimumInstrumentCount != nil && *input.MinimumInstrumentCount != x.MinimumInstrumentCount {
+		x.MinimumInstrumentCount = *input.MinimumInstrumentCount
+	}
+	if input.MaximumInstrumentCount != nil && *input.MaximumInstrumentCount != *x.MaximumInstrumentCount {
+		x.MaximumInstrumentCount = input.MaximumInstrumentCount
+	}
+	if input.TemperatureRequired != nil && *input.TemperatureRequired != x.TemperatureRequired {
+		x.TemperatureRequired = *input.TemperatureRequired
+	}
+	if input.TimeEstimateRequired != nil && *input.TimeEstimateRequired != x.TimeEstimateRequired {
+		x.TimeEstimateRequired = *input.TimeEstimateRequired
 	}
 
 	if input.PastTense != nil && *input.PastTense != x.PastTense {

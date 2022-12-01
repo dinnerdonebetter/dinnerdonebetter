@@ -320,6 +320,11 @@ var (
 			Description: "valid ingredient statuses",
 			Script:      fetchMigration("00061_valid_ingredient_statuses"),
 		},
+		{
+			Version:     62,
+			Description: "valid preparation additions",
+			Script:      fetchMigration("00062_valid_preparation_additions"),
+		},
 	}
 )
 

@@ -36,8 +36,8 @@ type (
 		ArchivedAt    *time.Time       `json:"archivedAt"`
 		ID            string           `json:"id"`
 		Notes         string           `json:"notes"`
-		Preparation   ValidPreparation `json:"preparation"`
 		Instrument    ValidInstrument  `json:"instrument"`
+		Preparation   ValidPreparation `json:"preparation"`
 	}
 
 	// ValidPreparationInstrumentCreationRequestInput represents what a user could set as input for creating valid preparation instruments.

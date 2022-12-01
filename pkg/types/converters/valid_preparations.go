@@ -16,6 +16,12 @@ func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *types.Va
 		ZeroIngredientsAllowable: &input.ZeroIngredientsAllowable,
 		Slug:                     &input.Slug,
 		PastTense:                &input.PastTense,
+		MinimumInstrumentCount:   &input.MinimumInstrumentCount,
+		MaximumInstrumentCount:   input.MaximumInstrumentCount,
+		MinimumIngredientCount:   &input.MinimumIngredientCount,
+		MaximumIngredientCount:   input.MaximumIngredientCount,
+		TemperatureRequired:      &input.TemperatureRequired,
+		TimeEstimateRequired:     &input.TimeEstimateRequired,
 	}
 
 	return x
@@ -33,6 +39,12 @@ func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreati
 		ZeroIngredientsAllowable: input.ZeroIngredientsAllowable,
 		Slug:                     input.Slug,
 		PastTense:                input.PastTense,
+		MinimumInstrumentCount:   input.MinimumInstrumentCount,
+		MaximumInstrumentCount:   input.MaximumInstrumentCount,
+		MinimumIngredientCount:   input.MinimumIngredientCount,
+		MaximumIngredientCount:   input.MaximumIngredientCount,
+		TemperatureRequired:      input.TemperatureRequired,
+		TimeEstimateRequired:     input.TimeEstimateRequired,
 	}
 
 	return x
@@ -49,6 +61,12 @@ func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparat
 		ZeroIngredientsAllowable: validPreparation.ZeroIngredientsAllowable,
 		Slug:                     validPreparation.Slug,
 		PastTense:                validPreparation.PastTense,
+		MinimumInstrumentCount:   validPreparation.MinimumInstrumentCount,
+		MaximumInstrumentCount:   validPreparation.MaximumInstrumentCount,
+		MinimumIngredientCount:   validPreparation.MinimumIngredientCount,
+		MaximumIngredientCount:   validPreparation.MaximumIngredientCount,
+		TemperatureRequired:      validPreparation.TemperatureRequired,
+		TimeEstimateRequired:     validPreparation.TimeEstimateRequired,
 	}
 }
 
@@ -64,5 +82,11 @@ func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPrepara
 		ZeroIngredientsAllowable: validPreparation.ZeroIngredientsAllowable,
 		Slug:                     validPreparation.Slug,
 		PastTense:                validPreparation.PastTense,
+		MinimumInstrumentCount:   validPreparation.MinimumInstrumentCount,
+		MaximumInstrumentCount:   validPreparation.MaximumInstrumentCount,
+		MinimumIngredientCount:   validPreparation.MinimumIngredientCount,
+		MaximumIngredientCount:   validPreparation.MaximumIngredientCount,
+		TemperatureRequired:      validPreparation.TemperatureRequired,
+		TimeEstimateRequired:     validPreparation.TimeEstimateRequired,
 	}
 }
