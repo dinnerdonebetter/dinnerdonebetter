@@ -23,7 +23,12 @@ func checkValidPreparationEquality(t *testing.T, expected, actual *types.ValidPr
 	assert.Equal(t, expected.PastTense, actual.PastTense, "expected PastTense for valid preparation %s to be %v, but it was %v", expected.ID, expected.PastTense, actual.PastTense)
 	assert.Equal(t, expected.YieldsNothing, actual.YieldsNothing, "expected YieldsNothing for valid preparation %s to be %v, but it was %v", expected.ID, expected.YieldsNothing, actual.YieldsNothing)
 	assert.Equal(t, expected.RestrictToIngredients, actual.RestrictToIngredients, "expected RestrictToIngredients for valid preparation %s to be %v, but it was %v", expected.ID, expected.RestrictToIngredients, actual.RestrictToIngredients)
-	assert.Equal(t, expected.ZeroIngredientsAllowable, actual.ZeroIngredientsAllowable, "expected ZeroIngredientsAllowable for valid preparation %s to be %v, but it was %v", expected.ID, expected.ZeroIngredientsAllowable, actual.ZeroIngredientsAllowable)
+	assert.Equal(t, expected.MinimumIngredientCount, actual.MinimumIngredientCount, "expected MinimumIngredientCount for valid preparation %s to be %v, but it was %v", expected.ID, expected.MinimumIngredientCount, actual.MinimumIngredientCount)
+	assert.Equal(t, expected.MaximumIngredientCount, actual.MaximumIngredientCount, "expected MaximumIngredientCount for valid preparation %s to be %v, but it was %v", expected.ID, expected.MaximumIngredientCount, actual.MaximumIngredientCount)
+	assert.Equal(t, expected.MinimumInstrumentCount, actual.MinimumInstrumentCount, "expected MinimumInstrumentCount for valid preparation %s to be %v, but it was %v", expected.ID, expected.MinimumInstrumentCount, actual.MinimumInstrumentCount)
+	assert.Equal(t, expected.MaximumInstrumentCount, actual.MaximumInstrumentCount, "expected MaximumInstrumentCount for valid preparation %s to be %v, but it was %v", expected.ID, expected.MaximumInstrumentCount, actual.MaximumInstrumentCount)
+	assert.Equal(t, expected.TemperatureRequired, actual.TemperatureRequired, "expected TemperatureRequired for valid preparation %s to be %v, but it was %v", expected.ID, expected.TemperatureRequired, actual.TemperatureRequired)
+	assert.Equal(t, expected.TimeEstimateRequired, actual.TimeEstimateRequired, "expected TimeEstimateRequired for valid preparation %s to be %v, but it was %v", expected.ID, expected.TimeEstimateRequired, actual.TimeEstimateRequired)
 	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for valid preparation %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
 	assert.NotZero(t, actual.CreatedAt)
 }

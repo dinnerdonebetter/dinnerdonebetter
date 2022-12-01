@@ -3,6 +3,7 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 )
@@ -10,16 +11,21 @@ import (
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
 	return &types.ValidPreparation{
-		ID:                       BuildFakeID(),
-		Name:                     buildUniqueString(),
-		Description:              buildUniqueString(),
-		IconPath:                 buildUniqueString(),
-		YieldsNothing:            fake.Bool(),
-		RestrictToIngredients:    fake.Bool(),
-		ZeroIngredientsAllowable: fake.Bool(),
-		Slug:                     buildUniqueString(),
-		PastTense:                buildUniqueString(),
-		CreatedAt:                BuildFakeTime(),
+		ID:                     BuildFakeID(),
+		Name:                   buildUniqueString(),
+		Description:            buildUniqueString(),
+		IconPath:               buildUniqueString(),
+		YieldsNothing:          fake.Bool(),
+		RestrictToIngredients:  fake.Bool(),
+		Slug:                   buildUniqueString(),
+		PastTense:              buildUniqueString(),
+		CreatedAt:              BuildFakeTime(),
+		MinimumIngredientCount: int32(BuildFakeNumber()),
+		MaximumIngredientCount: pointers.Int32(int32(BuildFakeNumber())),
+		MinimumInstrumentCount: int32(BuildFakeNumber()),
+		MaximumInstrumentCount: pointers.Int32(int32(BuildFakeNumber())),
+		TemperatureRequired:    fake.Bool(),
+		TimeEstimateRequired:   fake.Bool(),
 	}
 }
 
