@@ -89,12 +89,12 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	routeParamManager := chi.NewRouteParamManager()
 	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
-	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, mediaUploadProcessor, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
+	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, mediaUploadProcessor, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
 	if err != nil {
 		return nil, err
 	}
 	householdsConfig := servicesConfigurations.Households
-	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider, tracerProvider)
+	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +104,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	apiclientsConfig := apiclients.ProvideConfig(authenticationConfig)
-	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, routeParamManager, apiclientsConfig, tracerProvider, generator)
+	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, routeParamManager, apiclientsConfig, tracerProvider, generator)
 	validinstrumentsConfig := &servicesConfigurations.ValidInstruments
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
 	validInstrumentDataService, err := validinstruments.ProvideService(logger, validinstrumentsConfig, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)

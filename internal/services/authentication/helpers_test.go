@@ -13,8 +13,6 @@ import (
 
 	"github.com/prixfixeco/backend/internal/authentication"
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
-	"github.com/prixfixeco/backend/pkg/types"
-	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
@@ -104,65 +102,6 @@ func TestAuthenticationService_getUserIDFromCookie(T *testing.T) {
 
 		_, _, err = helper.service.getUserIDFromCookie(helper.ctx, helper.req)
 		assert.Error(t, err)
-	})
-}
-
-func TestAuthenticationService_determineUserFromRequestCookie(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
-
-		userDataManager := &mocktypes.UserDataManager{}
-		userDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = userDataManager
-
-		actualUser, err := helper.service.determineUserFromRequestCookie(helper.ctx, helper.req)
-		assert.Equal(t, helper.exampleUser, actualUser)
-		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, userDataManager)
-	})
-
-	T.Run("without cookie", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		actualUser, err := helper.service.determineUserFromRequestCookie(helper.req.Context(), helper.req)
-		assert.Nil(t, actualUser)
-		assert.Error(t, err)
-	})
-
-	T.Run("with error retrieving user from datastore", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
-
-		expectedError := errors.New("blah")
-		userDataManager := &mocktypes.UserDataManager{}
-		userDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return((*types.User)(nil), expectedError)
-		helper.service.userDataManager = userDataManager
-
-		actualUser, err := helper.service.determineUserFromRequestCookie(helper.req.Context(), helper.req)
-		assert.Nil(t, actualUser)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, userDataManager)
 	})
 }
 
