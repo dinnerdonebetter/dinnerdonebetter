@@ -34,11 +34,11 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-// ProvideCollector provides a collector.
+// ProvideEventReporter provides a collector.
 func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracing.TracerProvider) (analytics.EventReporter, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSegment:
-		return segment.NewSegmentCustomerDataCollector(logger, tracerProvider, cfg.APIToken)
+		return segment.NewSegmentEventReporter(logger, tracerProvider, cfg.APIToken)
 	default:
 		return analytics.NewNoopCollector(), nil
 	}

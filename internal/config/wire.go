@@ -16,7 +16,7 @@ var (
 			"Meta",
 			"Encoding",
 			"Email",
-			"CustomerData",
+			"Analytics",
 			"Events",
 			"Server",
 			"Routing",

@@ -12,7 +12,7 @@ import (
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
-func TestNewSegmentCustomerDataCollector(T *testing.T) {
+func TestNewSegmentEventReporter(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -20,7 +20,7 @@ func TestNewSegmentCustomerDataCollector(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 	})
@@ -30,13 +30,13 @@ func TestNewSegmentCustomerDataCollector(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), "")
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), "")
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
 }
 
-func TestCustomerDataCollector_Close(T *testing.T) {
+func TestSegmentEventReporter_Close(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -44,7 +44,7 @@ func TestCustomerDataCollector_Close(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -52,7 +52,7 @@ func TestCustomerDataCollector_Close(T *testing.T) {
 	})
 }
 
-func TestCustomerDataCollector_AddUser(T *testing.T) {
+func TestSegmentEventReporter_AddUser(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -65,7 +65,7 @@ func TestCustomerDataCollector_AddUser(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -73,7 +73,7 @@ func TestCustomerDataCollector_AddUser(T *testing.T) {
 	})
 }
 
-func TestCustomerDataCollector_EventOccurred(T *testing.T) {
+func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -86,7 +86,7 @@ func TestCustomerDataCollector_EventOccurred(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 

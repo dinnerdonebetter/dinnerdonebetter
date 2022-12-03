@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 
-	customerdataconfig "github.com/prixfixeco/backend/internal/analytics/config"
+	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/email/sendgrid"
@@ -71,8 +71,8 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				Sendgrid: &sendgrid.Config{},
 				Provider: emailconfig.ProviderSendgrid,
 			},
-			CustomerData: customerdataconfig.Config{
-				Provider: customerdataconfig.ProviderSegment,
+			Analytics: analyticsconfig.Config{
+				Provider: analyticsconfig.ProviderSegment,
 				APIToken: "",
 			},
 			Encoding: encoding.Config{ContentType: "application/json"},

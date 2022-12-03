@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"gopkg.in/segmentio/analytics-go.v3"
+	segment "gopkg.in/segmentio/analytics-go.v3"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	name = "segment_collector"
+	name = "segment_event_reporter"
 )
 
 var (
@@ -21,49 +21,49 @@ var (
 )
 
 type (
-	// CustomerDataCollector is a Segment-backed analytics.Collector.
-	CustomerDataCollector struct {
+	// EventReporter is a Segment-backed EventReporter.
+	EventReporter struct {
 		tracer tracing.Tracer
 		logger logging.Logger
-		client analytics.Client
+		client segment.Client
 	}
 )
 
-// NewSegmentCustomerDataCollector returns a new Segment-backed CustomerDataCollector.
-func NewSegmentCustomerDataCollector(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string) (*CustomerDataCollector, error) {
+// NewSegmentEventReporter returns a new Segment-backed EventReporter.
+func NewSegmentEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string) (*EventReporter, error) {
 	if apiKey == "" {
 		return nil, ErrEmptyAPIToken
 	}
 
-	c := &CustomerDataCollector{
+	c := &EventReporter{
 		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
 		logger: logging.EnsureLogger(logger).WithName(name),
-		client: analytics.New(apiKey),
+		client: segment.New(apiKey),
 	}
 
 	return c, nil
 }
 
 // Close wraps the internal client's Close method.
-func (c *CustomerDataCollector) Close() {
+func (c *EventReporter) Close() {
 	if err := c.client.Close(); err != nil {
 		c.logger.Error(err, "closing connection")
 	}
 }
 
 // AddUser upsert's a user's identity.
-func (c *CustomerDataCollector) AddUser(ctx context.Context, userID string, properties map[string]any) error {
+func (c *EventReporter) AddUser(ctx context.Context, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	t := analytics.NewTraits()
+	t := segment.NewTraits()
 	for k, v := range properties {
 		t.Set(k, v)
 	}
 
-	i := analytics.NewIntegrations().EnableAll()
+	i := segment.NewIntegrations().EnableAll()
 
-	return c.client.Enqueue(analytics.Identify{
+	return c.client.Enqueue(segment.Identify{
 		UserId:       userID,
 		Traits:       t,
 		Integrations: i,
@@ -71,18 +71,18 @@ func (c *CustomerDataCollector) AddUser(ctx context.Context, userID string, prop
 }
 
 // EventOccurred associates events with a user.
-func (c *CustomerDataCollector) EventOccurred(ctx context.Context, event types.CustomerEventType, userID string, properties map[string]any) error {
+func (c *EventReporter) EventOccurred(ctx context.Context, event types.CustomerEventType, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	p := analytics.NewProperties()
+	p := segment.NewProperties()
 	for k, v := range properties {
 		p.Set(k, v)
 	}
 
-	i := analytics.NewIntegrations().EnableAll()
+	i := segment.NewIntegrations().EnableAll()
 
-	return c.client.Enqueue(analytics.Track{
+	return c.client.Enqueue(segment.Track{
 		Event:        string(event),
 		UserId:       userID,
 		Properties:   p,

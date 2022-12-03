@@ -23,13 +23,13 @@ const (
 
 // MealPlanTaskCreatorWorker ensurers meal plan tasks are created.
 type MealPlanTaskCreatorWorker struct {
-	logger                logging.Logger
-	tracer                tracing.Tracer
-	analyzer              recipeanalysis.RecipeAnalyzer
-	encoder               encoding.ClientEncoder
-	dataManager           database.DataManager
-	postUpdatesPublisher  messagequeue.Publisher
-	customerDataCollector analytics.EventReporter
+	logger                 logging.Logger
+	tracer                 tracing.Tracer
+	analyzer               recipeanalysis.RecipeAnalyzer
+	encoder                encoding.ClientEncoder
+	dataManager            database.DataManager
+	postUpdatesPublisher   messagequeue.Publisher
+	analyticsEventReporter analytics.EventReporter
 }
 
 // ProvideMealPlanTaskCreationEnsurerWorker provides a MealPlanTaskCreatorWorker.
@@ -38,17 +38,17 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 	dataManager database.DataManager,
 	grapher recipeanalysis.RecipeAnalyzer,
 	postUpdatesPublisher messagequeue.Publisher,
-	customerDataCollector analytics.EventReporter,
+	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 ) *MealPlanTaskCreatorWorker {
 	return &MealPlanTaskCreatorWorker{
-		logger:                logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
-		tracer:                tracing.NewTracer(tracerProvider.Tracer(mealPlanTaskCreationEnsurerWorkerName)),
-		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		dataManager:           dataManager,
-		analyzer:              grapher,
-		postUpdatesPublisher:  postUpdatesPublisher,
-		customerDataCollector: customerDataCollector,
+		logger:                 logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
+		tracer:                 tracing.NewTracer(tracerProvider.Tracer(mealPlanTaskCreationEnsurerWorkerName)),
+		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
+		dataManager:            dataManager,
+		analyzer:               grapher,
+		postUpdatesPublisher:   postUpdatesPublisher,
+		analyticsEventReporter: analyticsEventReporter,
 	}
 }
 

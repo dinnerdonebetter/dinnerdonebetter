@@ -22,14 +22,14 @@ const (
 
 // MealPlanGroceryListInitializer ensurers meal plan tasks are created.
 type MealPlanGroceryListInitializer struct {
-	logger                logging.Logger
-	tracer                tracing.Tracer
-	analyzer              recipeanalysis.RecipeAnalyzer
-	encoder               encoding.ClientEncoder
-	dataManager           database.DataManager
-	postUpdatesPublisher  messagequeue.Publisher
-	customerDataCollector analytics.EventReporter
-	groceryListCreator    grocerylistpreparation.GroceryListCreator
+	logger                 logging.Logger
+	tracer                 tracing.Tracer
+	analyzer               recipeanalysis.RecipeAnalyzer
+	encoder                encoding.ClientEncoder
+	dataManager            database.DataManager
+	postUpdatesPublisher   messagequeue.Publisher
+	analyticsEventReporter analytics.EventReporter
+	groceryListCreator     grocerylistpreparation.GroceryListCreator
 }
 
 // ProvideMealPlanGroceryListInitializer provides a MealPlanGroceryListInitializer.
@@ -38,19 +38,19 @@ func ProvideMealPlanGroceryListInitializer(
 	dataManager database.DataManager,
 	grapher recipeanalysis.RecipeAnalyzer,
 	postUpdatesPublisher messagequeue.Publisher,
-	customerDataCollector analytics.EventReporter,
+	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
 ) *MealPlanGroceryListInitializer {
 	return &MealPlanGroceryListInitializer{
-		logger:                logging.EnsureLogger(logger).WithName(mealPlanGroceryListInitializerName),
-		tracer:                tracing.NewTracer(tracerProvider.Tracer(mealPlanGroceryListInitializerName)),
-		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		dataManager:           dataManager,
-		analyzer:              grapher,
-		postUpdatesPublisher:  postUpdatesPublisher,
-		customerDataCollector: customerDataCollector,
-		groceryListCreator:    groceryListCreator,
+		logger:                 logging.EnsureLogger(logger).WithName(mealPlanGroceryListInitializerName),
+		tracer:                 tracing.NewTracer(tracerProvider.Tracer(mealPlanGroceryListInitializerName)),
+		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
+		dataManager:            dataManager,
+		analyzer:               grapher,
+		postUpdatesPublisher:   postUpdatesPublisher,
+		analyticsEventReporter: analyticsEventReporter,
+		groceryListCreator:     groceryListCreator,
 	}
 }
 

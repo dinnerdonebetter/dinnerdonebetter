@@ -11,11 +11,11 @@ import (
 var (
 	// Providers are what we provide to dependency injection.
 	Providers = wire.NewSet(
-		ProvideCollector,
+		ProvideEventReporter,
 	)
 )
 
-// ProvideCollector provides a analytics.EventReporter from a config.
-func ProvideCollector(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider) (analytics.EventReporter, error) {
+// ProvideEventReporter provides a analytics.EventReporter from a config.
+func ProvideEventReporter(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider) (analytics.EventReporter, error) {
 	return cfg.ProvideCollector(logger, tracerProvider)
 }

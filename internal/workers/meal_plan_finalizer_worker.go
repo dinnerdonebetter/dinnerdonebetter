@@ -16,13 +16,13 @@ import (
 
 // MealPlanFinalizationWorker finalizes meal plans.
 type MealPlanFinalizationWorker struct {
-	logger                logging.Logger
-	tracer                tracing.Tracer
-	encoder               encoding.ClientEncoder
-	dataManager           database.DataManager
-	postUpdatesPublisher  messagequeue.Publisher
-	emailSender           email.Emailer
-	customerDataCollector analytics.EventReporter
+	logger                 logging.Logger
+	tracer                 tracing.Tracer
+	encoder                encoding.ClientEncoder
+	dataManager            database.DataManager
+	postUpdatesPublisher   messagequeue.Publisher
+	emailSender            email.Emailer
+	analyticsEventReporter analytics.EventReporter
 }
 
 // ProvideMealPlanFinalizationWorker provides a MealPlanFinalizationWorker.
@@ -31,19 +31,19 @@ func ProvideMealPlanFinalizationWorker(
 	dataManager database.DataManager,
 	postUpdatesPublisher messagequeue.Publisher,
 	emailSender email.Emailer,
-	customerDataCollector analytics.EventReporter,
+	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 ) *MealPlanFinalizationWorker {
 	n := "meal_plan_finalizer"
 
 	return &MealPlanFinalizationWorker{
-		logger:                logging.EnsureLogger(logger).WithName(n),
-		tracer:                tracing.NewTracer(tracerProvider.Tracer(n)),
-		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		dataManager:           dataManager,
-		postUpdatesPublisher:  postUpdatesPublisher,
-		emailSender:           emailSender,
-		customerDataCollector: customerDataCollector,
+		logger:                 logging.EnsureLogger(logger).WithName(n),
+		tracer:                 tracing.NewTracer(tracerProvider.Tracer(n)),
+		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
+		dataManager:            dataManager,
+		postUpdatesPublisher:   postUpdatesPublisher,
+		emailSender:            emailSender,
+		analyticsEventReporter: analyticsEventReporter,
 	}
 }
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 
-	customerdataconfig "github.com/prixfixeco/backend/internal/analytics/config"
+	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/encoding"
@@ -68,7 +68,7 @@ type (
 		_             struct{}
 		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Email         emailconfig.Config        `json:"email" mapstructure:"email" toml:"email,omitempty"`
-		CustomerData  customerdataconfig.Config `json:"customerData" mapstructure:"customer_data" toml:"customer_data,omitempty"`
+		Analytics     analyticsconfig.Config    `json:"analytics" mapstructure:"analytics" toml:"analytics,omitempty"`
 		Encoding      encoding.Config           `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
 		Routing       routing.Config            `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
 		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
@@ -143,8 +143,8 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		result = multierror.Append(fmt.Errorf("error validating Encoding portion of config: %w", err), result)
 	}
 
-	if err := cfg.CustomerData.ValidateWithContext(ctx); err != nil {
-		result = multierror.Append(fmt.Errorf("error validating CustomerData portion of config: %w", err), result)
+	if err := cfg.Analytics.ValidateWithContext(ctx); err != nil {
+		result = multierror.Append(fmt.Errorf("error validating Analytics portion of config: %w", err), result)
 	}
 
 	if err := cfg.Observability.ValidateWithContext(ctx); err != nil {
