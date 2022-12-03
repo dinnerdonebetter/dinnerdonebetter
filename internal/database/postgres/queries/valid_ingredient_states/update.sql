@@ -5,6 +5,7 @@ SET
 	icon_path = $3,
     slug = $4,
 	past_tense = $5,
+	attribute_type = $6,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $6;
+	AND id = $7;

@@ -117,18 +117,18 @@ CREATE INDEX IF NOT EXISTS recipe_media_belongs_to_recipe_index ON recipe_media 
 CREATE INDEX IF NOT EXISTS recipe_media_belongs_to_recipe_step_index ON recipe_media (belongs_to_recipe_step);
 CREATE INDEX IF NOT EXISTS webhook_trigger_events_belongs_to_webhook_index ON webhook_trigger_events (belongs_to_webhook);
 
--- CREATE TYPE ingredient_attribute_type AS ENUM (
---     'texture',
---     'consistency',
---     'color',
---     'appearance',
---     'odor',
---     'taste',
---     'sound',
---     'other'
--- );
+CREATE TYPE ingredient_attribute_type AS ENUM (
+    'texture',
+    'consistency',
+    'color',
+    'appearance',
+    'odor',
+    'taste',
+    'sound',
+    'other'
+);
 
--- ALTER TABLE valid_ingredient_states ADD COLUMN attribute_type ingredient_attribute_type NOT NULL DEFAULT 'other';
+ALTER TABLE valid_ingredient_states ADD COLUMN attribute_type ingredient_attribute_type NOT NULL DEFAULT 'other';
 
 CREATE TABLE IF NOT EXISTS recipe_step_conditions (
     id TEXT NOT NULL PRIMARY KEY,

@@ -8,13 +8,14 @@ import (
 // BuildFakeValidIngredientState builds a faked valid preparation.
 func BuildFakeValidIngredientState() *types.ValidIngredientState {
 	return &types.ValidIngredientState{
-		ID:          BuildFakeID(),
-		Name:        buildUniqueString(),
-		Description: buildUniqueString(),
-		IconPath:    buildUniqueString(),
-		Slug:        buildUniqueString(),
-		PastTense:   buildUniqueString(),
-		CreatedAt:   BuildFakeTime(),
+		ID:            BuildFakeID(),
+		Name:          buildUniqueString(),
+		Description:   buildUniqueString(),
+		IconPath:      buildUniqueString(),
+		Slug:          buildUniqueString(),
+		PastTense:     buildUniqueString(),
+		AttributeType: "other",
+		CreatedAt:     BuildFakeTime(),
 	}
 }
 

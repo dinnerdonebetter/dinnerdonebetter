@@ -22,6 +22,7 @@ func checkValidIngredientStateEquality(t *testing.T, expected, actual *types.Val
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid ingredient state %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.Equal(t, expected.PastTense, actual.PastTense, "expected PastTense for valid ingredient state %s to be %v, but it was %v", expected.ID, expected.PastTense, actual.PastTense)
 	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for valid ingredient state %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
+	assert.Equal(t, expected.AttributeType, actual.AttributeType, "expected AttributeType for valid ingredient state %s to be %v, but it was %v", expected.ID, expected.AttributeType, actual.AttributeType)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
