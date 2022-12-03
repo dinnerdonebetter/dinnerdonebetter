@@ -325,6 +325,11 @@ var (
 			Description: "valid preparation additions",
 			Script:      fetchMigration("00062_valid_preparation_additions"),
 		},
+		{
+			Version:     63,
+			Description: "recipe step conditions",
+			Script:      fetchMigration("00063_recipe_step_conditions"),
+		},
 	}
 )
 
