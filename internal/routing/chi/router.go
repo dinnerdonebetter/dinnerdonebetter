@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -37,23 +38,21 @@ type router struct {
 
 var (
 	validDomains = map[string]struct{}{
-		"http://localhost:9000":      {},
-		"https://prixfixe.dev":       {},
-		"https://www.prixfixe.dev":   {},
-		"https://api.prixfixe.dev":   {},
-		"https://admin.prixfixe.dev": {},
+		"prixfixe.dev": {},
 	}
 )
 
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
 	corsHandler := cors.New(cors.Options{
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
-			_, ok := validDomains[origin]
-			if !ok {
-				logger.WithValue("origin", origin).Info("AllowOriginFunc returning false")
+			u, err := url.Parse(origin)
+			if err != nil {
+				return false
 			}
 
-			return ok
+			_, ok := validDomains[u.Hostname()]
+
+			return ok || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
 		},
 		AllowedMethods: []string{
 			http.MethodGet,

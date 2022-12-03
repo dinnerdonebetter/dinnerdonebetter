@@ -89,13 +89,15 @@ var (
 	examplePASETOKey = generatePASETOKey()
 
 	localRoutingConfig = routing.Config{
-		Provider:            routing.ChiProvider,
-		SilenceRouteLogging: false,
+		Provider:               routing.ChiProvider,
+		EnableCORSForLocalhost: true,
+		SilenceRouteLogging:    false,
 	}
 
 	devRoutingConfig = routing.Config{
-		Provider:            routing.ChiProvider,
-		SilenceRouteLogging: true,
+		Provider:               routing.ChiProvider,
+		EnableCORSForLocalhost: true,
+		SilenceRouteLogging:    true,
 	}
 
 	devEnvLogConfig = logcfg.Config{
