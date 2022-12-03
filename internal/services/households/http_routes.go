@@ -130,7 +130,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// notify relevant parties.
 	logger.Debug("created household")
-	s.householdCounter.Increment(ctx)
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
@@ -384,8 +383,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 		}
 	}
-
-	s.householdCounter.Decrement(ctx)
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)

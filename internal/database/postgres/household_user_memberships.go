@@ -137,7 +137,7 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 		ActiveHouseholdID:    defaultHouseholdID,
 	}
 
-	logger.WithValue("session_context_data", sessionCtxData).Debug("fetched session context data for user")
+	logger.Debug("fetched session context data for user")
 
 	return sessionCtxData, nil
 }

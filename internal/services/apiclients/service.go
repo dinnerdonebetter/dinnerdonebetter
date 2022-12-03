@@ -40,7 +40,6 @@ type (
 		encoderDecoder            encoding.ServerEncoderDecoder
 		urlClientIDExtractor      func(req *http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		apiClientCounter          metrics.UnitCounter
 		secretGenerator           random.Generator
 		tracer                    tracing.Tracer
 		dataChangesPublisher      messagequeue.Publisher
@@ -54,7 +53,6 @@ func ProvideAPIClientsService(
 	userDataManager types.UserDataManager,
 	authenticator authentication.Authenticator,
 	encoderDecoder encoding.ServerEncoderDecoder,
-	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
 	cfg *Config,
 	tracerProvider tracing.TracerProvider,
@@ -69,7 +67,6 @@ func ProvideAPIClientsService(
 		encoderDecoder:            encoderDecoder,
 		urlClientIDExtractor:      routeParamManager.BuildRouteParamStringIDFetcher(APIClientIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
-		apiClientCounter:          metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		secretGenerator:           secretGenerator,
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}

@@ -30,7 +30,6 @@ type (
 		householdInvitationDataManager types.HouseholdInvitationDataManager
 		householdMembershipDataManager types.HouseholdUserMembershipDataManager
 		tracer                         tracing.Tracer
-		householdCounter               metrics.UnitCounter
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		dataChangesPublisher           messagequeue.Publisher
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
@@ -47,7 +46,6 @@ func ProvideService(
 	householdInvitationDataManager types.HouseholdInvitationDataManager,
 	householdMembershipDataManager types.HouseholdUserMembershipDataManager,
 	encoder encoding.ServerEncoderDecoder,
-	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
@@ -67,7 +65,6 @@ func ProvideService(
 		householdMembershipDataManager: householdMembershipDataManager,
 		encoderDecoder:                 encoder,
 		dataChangesPublisher:           dataChangesPublisher,
-		householdCounter:               metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 

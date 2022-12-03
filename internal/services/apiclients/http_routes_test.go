@@ -18,7 +18,6 @@ import (
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	mockrandom "github.com/prixfixeco/backend/internal/random/mock"
 	"github.com/prixfixeco/backend/pkg/types"
@@ -211,14 +210,10 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		uc := &mockmetrics.UnitCounter{}
-		uc.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.apiClientCounter = uc
-
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockDB, a, sg, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -616,14 +611,10 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		uc := &mockmetrics.UnitCounter{}
-		uc.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.apiClientCounter = uc
-
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockDB, a, sg, dataChangesPublisher)
 	})
 }
 
@@ -759,10 +750,6 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.apiClientDataManager = apiClientDataManager
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
-		helper.service.apiClientCounter = unitCounter
-
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
@@ -775,7 +762,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, apiClientDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -873,10 +860,6 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.apiClientDataManager = apiClientDataManager
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
-		helper.service.apiClientCounter = unitCounter
-
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
@@ -889,6 +872,6 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, apiClientDataManager, dataChangesPublisher)
 	})
 }

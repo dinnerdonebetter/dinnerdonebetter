@@ -9,7 +9,6 @@ import (
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -31,7 +30,7 @@ func (s *service) getUserIDFromCookie(ctx context.Context, req *http.Request) (c
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithValue("cookie", req.Header[s.config.Cookies.Name])
 
 	if cookie, cookieErr := req.Cookie(s.config.Cookies.Name); !errors.Is(cookieErr, http.ErrNoCookie) && cookie != nil {
 		var (
@@ -57,29 +56,6 @@ func (s *service) getUserIDFromCookie(ctx context.Context, req *http.Request) (c
 	}
 
 	return nil, "", http.ErrNoCookie
-}
-
-// determineUserFromRequestCookie takes a request object and fetches the cookie, and then the user for that cookie.
-func (s *service) determineUserFromRequestCookie(ctx context.Context, req *http.Request) (*types.User, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithRequest(req).WithValue("cookie_count", len(req.Cookies()))
-
-	ctx, userID, err := s.getUserIDFromCookie(ctx, req)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching cookie data from request")
-	}
-
-	user, err := s.userDataManager.GetUser(ctx, userID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching user from database")
-	}
-
-	tracing.AttachUserIDToSpan(span, userID)
-	logger.Debug("user determined from request cookie")
-
-	return user, nil
 }
 
 // validateLogin takes login information and returns whether the login is valid.
