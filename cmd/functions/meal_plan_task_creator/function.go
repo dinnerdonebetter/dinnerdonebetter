@@ -11,8 +11,8 @@ import (
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 
+	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
-	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
@@ -57,12 +57,12 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_task_creator_job")).StartSpan(ctx)
 	defer span.End()
 
-	customerDataCollector, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger, tracerProvider)
+	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
 	}
 
-	defer customerDataCollector.Close()
+	defer analyticsEventReporter.Close()
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
@@ -94,7 +94,7 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 		dataManager,
 		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
 		dataChangesPublisher,
-		customerDataCollector,
+		analyticsEventReporter,
 		tracerProvider,
 	)
 

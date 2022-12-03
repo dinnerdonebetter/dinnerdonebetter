@@ -18,7 +18,7 @@ func TestProvideCollector(T *testing.T) {
 		cfg := &Config{}
 		logger := logging.NewNoopLogger()
 
-		actual, err := ProvideCollector(cfg, logger, tracing.NewNoopTracerProvider())
+		actual, err := ProvideEventReporter(cfg, logger, tracing.NewNoopTracerProvider())
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})
@@ -32,7 +32,7 @@ func TestProvideCollector(T *testing.T) {
 		}
 		logger := logging.NewNoopLogger()
 
-		actual, err := ProvideCollector(cfg, logger, tracing.NewNoopTracerProvider())
+		actual, err := ProvideEventReporter(cfg, logger, tracing.NewNoopTracerProvider())
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})

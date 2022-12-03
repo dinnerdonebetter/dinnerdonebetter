@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"time"
 
+	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
-	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/email/sendgrid"
@@ -207,8 +207,8 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 	}
 
-	customerDataPlatformConfig := customerdataconfig.Config{
-		Provider: customerdataconfig.ProviderSegment,
+	analyticsConfig := analyticsconfig.Config{
+		Provider: analyticsconfig.ProviderSegment,
 		APIToken: "",
 	}
 
@@ -229,8 +229,8 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				Provider: msgconfig.ProviderPubSub,
 			},
 		},
-		Email:        emailConfig,
-		CustomerData: customerDataPlatformConfig,
+		Email:     emailConfig,
+		Analytics: analyticsConfig,
 		Server: server.Config{
 			Debug:           true,
 			HTTPPort:        defaultPort,

@@ -97,7 +97,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
-	cfg.CustomerData.APIToken = os.Getenv(gcpSegmentTokenEnvVarKey)
+	cfg.Analytics.APIToken = os.Getenv(gcpSegmentTokenEnvVarKey)
 
 	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
@@ -206,7 +206,7 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 	cfg.Events.Publishers.PubSubConfig.TopicName = "data_changes"
 
 	// we don't actually need these, except for validation
-	cfg.CustomerData.APIToken = " "
+	cfg.Analytics.APIToken = " "
 	cfg.Email.Sendgrid.APIToken = " "
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
@@ -260,7 +260,7 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
 	// we don't need the HouseholdInviteTemplateID here since we invoke that elsewhere
-	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
+	cfg.Analytics.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr

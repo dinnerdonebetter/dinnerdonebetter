@@ -32,8 +32,6 @@ type (
 
 // buildPubSubPublisher provides a Pub/Sub-backed publisher.
 func buildPubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tracerProvider tracing.TracerProvider, topic string) *publisher {
-	pubsubClient.Stop()
-
 	return &publisher{
 		topic:     topic,
 		encoder:   encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),

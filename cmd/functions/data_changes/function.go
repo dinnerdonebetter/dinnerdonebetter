@@ -11,8 +11,8 @@ import (
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 
+	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
-	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
@@ -62,12 +62,12 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("data_changes_job")).StartSpan(ctx)
 	defer span.End()
 
-	customerDataCollector, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger, tracerProvider)
+	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "error setting up customer data collector")
 	}
 
-	defer customerDataCollector.Close()
+	defer analyticsEventReporter.Close()
 
 	var changeMessage types.DataChangeMessage
 	if err = json.Unmarshal(msg.Message.Data, &changeMessage); err != nil {
@@ -88,7 +88,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	switch changeMessage.EventType {
 	case types.UserSignedUpCustomerEventType:
-		if err = customerDataCollector.AddUser(ctx, changeMessage.AttributableToUserID, eventContext); err != nil {
+		if err = analyticsEventReporter.AddUser(ctx, changeMessage.AttributableToUserID, eventContext); err != nil {
 			return observability.PrepareError(err, span, "notifying customer data platform")
 		}
 		return nil
@@ -207,7 +207,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		logger.Info("unknown event type")
 	}
 
-	if dataCollectionErr := customerDataCollector.EventOccurred(ctx, changeMessage.EventType, changeMessage.AttributableToUserID, eventContext); dataCollectionErr != nil {
+	if dataCollectionErr := analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.AttributableToUserID, eventContext); dataCollectionErr != nil {
 		observability.AcknowledgeError(dataCollectionErr, logger, span, "notifying customer data platform")
 	}
 

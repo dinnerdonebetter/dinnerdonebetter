@@ -23,7 +23,7 @@
 		"sendgrid": null,
 		"provider": ""
 	},
-	"customerData": {
+	"analytics": {
 		"provider": "",
 		"apiToken": ""
 	},

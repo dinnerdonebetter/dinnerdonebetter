@@ -6,8 +6,8 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"github.com/prixfixeco/backend/internal/customerdata"
-	"github.com/prixfixeco/backend/internal/customerdata/segment"
+	"github.com/prixfixeco/backend/internal/analytics"
+	"github.com/prixfixeco/backend/internal/analytics/segment"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
@@ -34,12 +34,12 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-// ProvideCollector provides a collector.
-func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracing.TracerProvider) (customerdata.Collector, error) {
+// ProvideEventReporter provides a collector.
+func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracing.TracerProvider) (analytics.EventReporter, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSegment:
-		return segment.NewSegmentCustomerDataCollector(logger, tracerProvider, cfg.APIToken)
+		return segment.NewSegmentEventReporter(logger, tracerProvider, cfg.APIToken)
 	default:
-		return customerdata.NewNoopCollector(), nil
+		return analytics.NewNoopCollector(), nil
 	}
 }

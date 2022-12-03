@@ -11,8 +11,8 @@ import (
 
 	_ "go.uber.org/automaxprocs"
 
+	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
-	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
@@ -64,7 +64,7 @@ func main() {
 
 	cfg.Database.RunMigrations = false
 
-	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger, tracerProvider)
+	cdp, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
 		log.Fatal(err)
 	}

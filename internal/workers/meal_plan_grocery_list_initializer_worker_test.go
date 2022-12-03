@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/backend/internal/customerdata"
+	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/features/grocerylistpreparation"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
@@ -30,7 +30,7 @@ func TestProvideMealPlanGroceryListInitializer(T *testing.T) {
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&customerdata.MockCollector{},
+			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 			&grocerylistpreparation.MockGroceryListCreator{},
 		)
@@ -49,7 +49,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&customerdata.MockCollector{},
+			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 			&grocerylistpreparation.MockGroceryListCreator{},
 		)
