@@ -31,7 +31,8 @@
 		"contentType": "application/json"
 	},
 	"routing": {
-		"provider": "chi"
+		"provider": "chi",
+		"enableCORSForLocalhost": true
 	},
 	"database": {
 		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
