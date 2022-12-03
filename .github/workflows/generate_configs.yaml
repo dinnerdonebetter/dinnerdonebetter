@@ -3,7 +3,7 @@ on: # [gollum]
     paths:
       - pkg/**
       - internal/**
-name: Tests
+name: Config files
 jobs:
  unit_tests:
    strategy:

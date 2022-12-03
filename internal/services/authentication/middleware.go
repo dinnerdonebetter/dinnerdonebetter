@@ -46,19 +46,17 @@ func (s *service) fetchSessionContextDataFromPASETO(ctx context.Context, req *ht
 		}
 
 		base64Encoded := token.Get(pasetoDataKey)
-
 		gobEncoded, err := base64.RawURLEncoding.DecodeString(base64Encoded)
 		if err != nil {
 			return nil, observability.PrepareError(err, span, "decoding base64 encoded GOB payload")
 		}
 
 		var reqContext *types.SessionContextData
-
 		if err = gob.NewDecoder(bytes.NewReader(gobEncoded)).Decode(&reqContext); err != nil {
 			return nil, observability.PrepareError(err, span, "decoding GOB encoded session info payload")
 		}
 
-		logger.WithValue("active_household_id", reqContext.ActiveHouseholdID).Debug("returning session context data")
+		logger.Debug("fetched context from PASETO")
 
 		return reqContext, nil
 	}
@@ -84,7 +82,7 @@ func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 			}
 		}
 
-		logger.Debug("no cookie attached to request")
+		logger.Info("no cookie attached to request")
 
 		// if no cookie was attached to the request, tell them to login first.
 		res.WriteHeader(http.StatusUnauthorized)
@@ -118,7 +116,6 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 			return
 		}
-		logger.Debug("no cookie attached to request")
 
 		tokenSessionContextData, err := s.fetchSessionContextDataFromPASETO(ctx, req)
 		if err != nil && !(errors.Is(err, errTokenNotFound) || errors.Is(err, errTokenExpired)) {
@@ -164,7 +161,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		logger.Debug("no user attached to request")
+		logger.Info("no user attached to request")
 		http.Redirect(res, req, "/users/login", http.StatusUnauthorized)
 	})
 }
@@ -187,12 +184,10 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			}
 
 			logger = sessionContextData.AttachToLogger(logger)
-
 			isServiceAdmin := sessionContextData.Requester.ServicePermissions.IsServiceAdmin()
 
-			_, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]
-			if !allowed && !isServiceAdmin {
-				logger.Debug("not authorized for household!")
+			if _, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]; !allowed && !isServiceAdmin {
+				logger.Info("not authorized for household")
 				s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 				return
 			}
@@ -201,7 +196,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 				doesNotHaveServicePermission := !sessionContextData.ServiceRolePermissionChecker().HasPermission(perm)
 				doesNotHaveHouseholdPermission := !sessionContextData.HouseholdRolePermissionsChecker().HasPermission(perm)
 				if doesNotHaveServicePermission && doesNotHaveHouseholdPermission {
-					logger.WithValue("deficient_permission", perm.ID()).Debug("request filtered out")
+					logger.WithValue("deficient_permission", perm.ID()).Info("request filtered out")
 					s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 					return
 				}
