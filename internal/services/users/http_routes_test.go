@@ -20,7 +20,6 @@ import (
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	mockrandom "github.com/prixfixeco/backend/internal/random/mock"
 	"github.com/prixfixeco/backend/internal/uploads/images"
@@ -382,10 +381,6 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = db
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.userCounter = unitCounter
-
 		helper.req = helper.req.WithContext(
 			context.WithValue(
 				helper.req.Context(),
@@ -407,7 +402,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
 	})
 
 	T.Run("with user creation disabled", func(t *testing.T) {
@@ -548,10 +543,6 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.userDataManager = db
 		helper.service.householdInvitationDataManager = db
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.userCounter = unitCounter
-
 		helper.req = helper.req.WithContext(
 			context.WithValue(
 				helper.req.Context(),
@@ -573,7 +564,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
 	})
 
 	T.Run("with invitation and no invite found", func(t *testing.T) {
@@ -897,10 +888,6 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = db
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.userCounter = unitCounter
-
 		helper.req = helper.req.WithContext(
 			context.WithValue(
 				helper.req.Context(),
@@ -922,7 +909,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
 	})
 }
 
@@ -2432,15 +2419,11 @@ func TestService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
-		helper.service.userCounter = unitCounter
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, unitCounter)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with no results in the database", func(t *testing.T) {

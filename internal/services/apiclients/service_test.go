@@ -11,8 +11,6 @@ import (
 	"github.com/prixfixeco/backend/internal/database"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
-	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
 	mockrandom "github.com/prixfixeco/backend/internal/random/mock"
@@ -31,7 +29,6 @@ func buildTestService(t *testing.T) *service {
 		authenticator:             &mockauthn.Authenticator{},
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },
-		apiClientCounter:          &mockmetrics.UnitCounter{},
 		secretGenerator:           &mockrandom.Generator{},
 		tracer:                    tracing.NewTracerForTest(serviceName),
 		cfg:                       &Config{},
@@ -57,9 +54,6 @@ func TestProvideAPIClientsService(T *testing.T) {
 			&mocktypes.UserDataManager{},
 			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(counterName, description string) metrics.UnitCounter {
-				return nil
-			},
 			rpm,
 			&Config{},
 			tracing.NewNoopTracerProvider(),

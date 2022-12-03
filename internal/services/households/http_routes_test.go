@@ -17,7 +17,6 @@ import (
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
@@ -168,10 +167,6 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.householdCounter = unitCounter
-
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
@@ -184,7 +179,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -294,10 +289,6 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.householdCounter = unitCounter
-
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
@@ -310,7 +301,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
 }
 
@@ -807,10 +798,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.householdDataManager = householdDataManager
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
-		helper.service.householdCounter = unitCounter
-
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
@@ -823,7 +810,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -921,10 +908,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.householdDataManager = householdDataManager
 
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
-		helper.service.householdCounter = unitCounter
-
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
@@ -937,7 +920,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
 }
 

@@ -11,8 +11,6 @@ import (
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
-	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/backend/internal/routing/mock"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
@@ -21,7 +19,6 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                         logging.NewNoopLogger(),
-		householdCounter:               &mockmetrics.UnitCounter{},
 		householdDataManager:           &mocktypes.HouseholdDataManager{},
 		householdMembershipDataManager: &mocktypes.HouseholdUserMembershipDataManager{},
 		householdIDFetcher:             func(req *http.Request) string { return "" },
@@ -35,10 +32,6 @@ func TestProvideHouseholdsService(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
-
-		var ucp metrics.UnitCounterProvider = func(counterName, description string) metrics.UnitCounter {
-			return &mockmetrics.UnitCounter{}
-		}
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
@@ -64,7 +57,6 @@ func TestProvideHouseholdsService(T *testing.T) {
 			&mocktypes.HouseholdInvitationDataManager{},
 			&mocktypes.HouseholdUserMembershipDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			ucp,
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
@@ -78,10 +70,6 @@ func TestProvideHouseholdsService(T *testing.T) {
 
 	T.Run("with error providing publisher", func(t *testing.T) {
 		t.Parallel()
-
-		var ucp metrics.UnitCounterProvider = func(counterName, description string) metrics.UnitCounter {
-			return &mockmetrics.UnitCounter{}
-		}
 
 		rpm := mockrouting.NewRouteParamManager()
 		cfg := Config{
@@ -98,7 +86,6 @@ func TestProvideHouseholdsService(T *testing.T) {
 			&mocktypes.HouseholdInvitationDataManager{},
 			&mocktypes.HouseholdUserMembershipDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			ucp,
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),

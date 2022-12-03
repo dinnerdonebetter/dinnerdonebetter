@@ -163,7 +163,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// notify interested parties.
 	tracing.AttachAPIClientDatabaseIDToSpan(span, client.ID)
-	s.apiClientCounter.Increment(ctx)
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
@@ -276,9 +275,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
 	}
-
-	// notify relevant parties.
-	s.apiClientCounter.Decrement(ctx)
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)

@@ -48,7 +48,6 @@ type (
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		dataChangesPublisher           messagequeue.Publisher
 		userDataManager                types.UserDataManager
-		userCounter                    metrics.UnitCounter
 		secretGenerator                random.Generator
 		imageUploadProcessor           images.MediaUploadProcessor
 		uploadManager                  uploads.UploadManager
@@ -72,7 +71,6 @@ func ProvideUsersService(
 	householdInvitationDataManager types.HouseholdInvitationDataManager,
 	authenticator authentication.Authenticator,
 	encoder encoding.ServerEncoderDecoder,
-	counterProvider metrics.UnitCounterProvider,
 	imageUploadProcessor images.MediaUploadProcessor,
 	routeParamManager routing.RouteParamManager,
 	tracerProvider tracing.TracerProvider,
@@ -106,7 +104,6 @@ func ProvideUsersService(
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		encoderDecoder:                 encoder,
 		authSettings:                   authSettings,
-		userCounter:                    metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		secretGenerator:                secretGenerator,
 		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		imageUploadProcessor:           imageUploadProcessor,

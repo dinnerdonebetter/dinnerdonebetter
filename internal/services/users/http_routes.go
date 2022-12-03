@@ -229,7 +229,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// notify the relevant parties.
 	tracing.AttachUserIDToSpan(span, user.ID)
-	s.userCounter.Increment(ctx)
 
 	// UserCreationResponse is a struct we can use to notify the user of their two factor secret, but ideally just this once and then never again.
 	ucr := &types.UserCreationResponse{
@@ -724,9 +723,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
-
-	// inform the relatives.
-	s.userCounter.Decrement(ctx)
 
 	// we're all good.
 	res.WriteHeader(http.StatusNoContent)

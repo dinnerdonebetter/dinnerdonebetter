@@ -14,8 +14,6 @@ import (
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
-	mockmetrics "github.com/prixfixeco/backend/internal/observability/metrics/mock"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/internal/routing/chi"
@@ -30,7 +28,6 @@ import (
 func buildTestService(t *testing.T) *service {
 	t.Helper()
 
-	uc := &mockmetrics.UnitCounter{}
 	cfg := &Config{
 		Uploads: uploads.Config{
 			Storage: storage.Config{
@@ -55,9 +52,6 @@ func buildTestService(t *testing.T) *service {
 		&mocktypes.HouseholdInvitationDataManager{},
 		&mockauthn.Authenticator{},
 		mockencoding.NewMockEncoderDecoder(),
-		func(counterName, description string) metrics.UnitCounter {
-			return uc
-		},
 		&images.MockImageUploadProcessor{},
 		chi.NewRouteParamManager(),
 		tracing.NewNoopTracerProvider(),
@@ -68,7 +62,6 @@ func buildTestService(t *testing.T) *service {
 	)
 
 	require.NoError(t, err)
-	mock.AssertExpectationsForObjects(t, uc)
 
 	return s.(*service)
 }
@@ -114,9 +107,6 @@ func TestProvideUsersService(T *testing.T) {
 			&mocktypes.HouseholdInvitationDataManager{},
 			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(counterName, description string) metrics.UnitCounter {
-				return &mockmetrics.UnitCounter{}
-			},
 			&images.MockImageUploadProcessor{},
 			rpm,
 			tracing.NewNoopTracerProvider(),
