@@ -3,7 +3,7 @@ package workers
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/customerdata"
+	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
@@ -22,7 +22,7 @@ type MealPlanFinalizationWorker struct {
 	dataManager           database.DataManager
 	postUpdatesPublisher  messagequeue.Publisher
 	emailSender           email.Emailer
-	customerDataCollector customerdata.Collector
+	customerDataCollector analytics.EventReporter
 }
 
 // ProvideMealPlanFinalizationWorker provides a MealPlanFinalizationWorker.
@@ -31,7 +31,7 @@ func ProvideMealPlanFinalizationWorker(
 	dataManager database.DataManager,
 	postUpdatesPublisher messagequeue.Publisher,
 	emailSender email.Emailer,
-	customerDataCollector customerdata.Collector,
+	customerDataCollector analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 ) *MealPlanFinalizationWorker {
 	n := "meal_plan_finalizer"

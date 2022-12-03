@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 
-	"github.com/prixfixeco/backend/internal/customerdata"
+	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/features/grocerylistpreparation"
@@ -28,7 +28,7 @@ type MealPlanGroceryListInitializer struct {
 	encoder               encoding.ClientEncoder
 	dataManager           database.DataManager
 	postUpdatesPublisher  messagequeue.Publisher
-	customerDataCollector customerdata.Collector
+	customerDataCollector analytics.EventReporter
 	groceryListCreator    grocerylistpreparation.GroceryListCreator
 }
 
@@ -38,7 +38,7 @@ func ProvideMealPlanGroceryListInitializer(
 	dataManager database.DataManager,
 	grapher recipeanalysis.RecipeAnalyzer,
 	postUpdatesPublisher messagequeue.Publisher,
-	customerDataCollector customerdata.Collector,
+	customerDataCollector analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
 ) *MealPlanGroceryListInitializer {

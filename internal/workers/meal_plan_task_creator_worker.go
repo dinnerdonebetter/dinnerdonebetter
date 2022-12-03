@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 
-	"github.com/prixfixeco/backend/internal/customerdata"
+	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
@@ -29,7 +29,7 @@ type MealPlanTaskCreatorWorker struct {
 	encoder               encoding.ClientEncoder
 	dataManager           database.DataManager
 	postUpdatesPublisher  messagequeue.Publisher
-	customerDataCollector customerdata.Collector
+	customerDataCollector analytics.EventReporter
 }
 
 // ProvideMealPlanTaskCreationEnsurerWorker provides a MealPlanTaskCreatorWorker.
@@ -38,7 +38,7 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 	dataManager database.DataManager,
 	grapher recipeanalysis.RecipeAnalyzer,
 	postUpdatesPublisher messagequeue.Publisher,
-	customerDataCollector customerdata.Collector,
+	customerDataCollector analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 ) *MealPlanTaskCreatorWorker {
 	return &MealPlanTaskCreatorWorker{

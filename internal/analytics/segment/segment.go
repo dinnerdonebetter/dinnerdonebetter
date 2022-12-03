@@ -21,7 +21,7 @@ var (
 )
 
 type (
-	// CustomerDataCollector is a Segment-backed customerdata.Collector.
+	// CustomerDataCollector is a Segment-backed analytics.Collector.
 	CustomerDataCollector struct {
 		tracer tracing.Tracer
 		logger logging.Logger

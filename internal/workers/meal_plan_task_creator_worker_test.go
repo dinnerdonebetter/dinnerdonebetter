@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/backend/internal/customerdata"
+	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -32,7 +32,7 @@ func TestProvideMealPlanTaskCreationEnsurerWorker(T *testing.T) {
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&customerdata.MockCollector{},
+			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
@@ -50,7 +50,7 @@ func TestMealPlanTaskCreationEnsurerWorker_HandleMessage(T *testing.T) {
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&customerdata.MockCollector{},
+			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, w)
@@ -77,7 +77,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&customerdata.MockCollector{},
+			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, w)
@@ -104,7 +104,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&customerdata.MockCollector{},
+			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, w)
@@ -254,7 +254,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			&database.MockDatabase{},
 			recipeanalysis.NewRecipeAnalyzer(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&mockpublishers.Publisher{},
-			&customerdata.MockCollector{},
+			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, w)

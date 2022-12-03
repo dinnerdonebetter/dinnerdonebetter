@@ -8,7 +8,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 
-	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
+	customerdataconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/encoding"

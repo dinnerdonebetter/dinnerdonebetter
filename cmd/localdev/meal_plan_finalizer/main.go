@@ -11,8 +11,8 @@ import (
 
 	_ "go.uber.org/automaxprocs"
 
+	customerdataconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
-	customerdataconfig "github.com/prixfixeco/backend/internal/customerdata/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"

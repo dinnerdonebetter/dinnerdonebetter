@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/backend/internal/customerdata"
+	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/email"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -28,7 +28,7 @@ func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
 		&email.MockEmailer{},
-		&customerdata.MockCollector{},
+		&analytics.MockEventReporter{},
 		tracing.NewNoopTracerProvider(),
 	)
 	assert.NotNil(t, worker)
@@ -47,7 +47,7 @@ func TestProvideChoresWorker(T *testing.T) {
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
 			&email.MockEmailer{},
-			&customerdata.MockCollector{},
+			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
