@@ -17,7 +17,7 @@ func BuildFakeRecipeStepCondition() *types.RecipeStepCondition {
 
 	return &types.RecipeStepCondition{
 		Optional:            fake.Bool(),
-		IngredientState:     BuildFakeValidIngredientState(),
+		IngredientState:     *BuildFakeValidIngredientState(),
 		ID:                  BuildFakeID(),
 		BelongsToRecipeStep: BuildFakeID(),
 		Notes:               buildUniqueString(),

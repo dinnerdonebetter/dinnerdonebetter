@@ -136,6 +136,8 @@ CREATE TABLE IF NOT EXISTS recipe_step_conditions (
     id TEXT NOT NULL PRIMARY KEY,
     belongs_to_recipe_step TEXT NOT NULL REFERENCES recipe_steps(id) ON DELETE CASCADE,
     ingredient_state TEXT NOT NULL REFERENCES valid_ingredient_states(id) ON DELETE CASCADE,
+    notes TEXT NOT NULL DEFAULT '',
+    optional BOOLEAN NOT NULL DEFAULT 'false',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE

@@ -81,6 +81,8 @@ func ConvertRecipeStepConditionToRecipeStepConditionDatabaseCreationInput(recipe
 	return &types.RecipeStepConditionDatabaseCreationInput{
 		ID:                  recipeStepCondition.ID,
 		Optional:            recipeStepCondition.Optional,
+		Notes:               recipeStepCondition.Notes,
+		IngredientStateID:   recipeStepCondition.IngredientState.ID,
 		BelongsToRecipeStep: recipeStepCondition.BelongsToRecipeStep,
 	}
 }
