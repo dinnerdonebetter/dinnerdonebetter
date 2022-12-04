@@ -130,6 +130,9 @@ const (
 	// RecipeStepIngredientIDKey is the standard key for referring to a recipe step ingredient's ID.
 	RecipeStepIngredientIDKey = "recipe_step_ingredient.id"
 
+	// RecipeStepConditionIDKey is the standard key for referring to a recipe step condition's ID.
+	RecipeStepConditionIDKey = "recipe_step_condition.id"
+
 	// RecipeStepProductIDKey is the standard key for referring to a recipe step product's ID.
 	RecipeStepProductIDKey = "recipe_step_product.id"
 

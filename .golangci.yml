@@ -225,7 +225,6 @@ linters:
     - goprintffuncname  # Checks that printf-like functions are named with f at the end
     - gosec             # Inspects source code for security problems
     - importas          # Enforces consistent import aliases
-    - makezero          # Finds slice declarations with non-zero initial length
     - misspell          # Finds commonly misspelled English words in comments
     - nakedret          # Finds naked returns in functions greater than a specified function length
     - noctx             # noctx finds sending http request without context.Context
@@ -290,6 +289,7 @@ linters:
     - varnamelen        # checks that the length of a variable's name matches its scope
     - wrapcheck        # Checks that errors returned from external packages are wrapped
     - wsl              # Whitespace Linter - Forces you to use empty lines!
+    - makezero          # Finds slice declarations with non-zero initial length
 
 issues:
   # List of regexps of issue texts to exclude, empty list by default.
