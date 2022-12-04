@@ -327,8 +327,8 @@ var (
 		},
 		{
 			Version:     63,
-			Description: "recipe step conditions",
-			Script:      fetchMigration("00063_recipe_step_conditions"),
+			Description: "recipe step completion conditions",
+			Script:      fetchMigration("00063_recipe_step_completion_conditions"),
 		},
 	}
 )

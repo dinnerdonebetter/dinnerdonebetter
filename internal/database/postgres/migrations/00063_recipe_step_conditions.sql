@@ -132,7 +132,7 @@ ALTER TABLE valid_ingredient_states ADD COLUMN attribute_type ingredient_attribu
 ALTER TABLE recipe_steps ADD COLUMN condition_expression TEXT NOT NULL DEFAULT '';
 ALTER TABLE valid_preparations ADD COLUMN condition_expression_required BOOLEAN NOT NULL DEFAULT 'false';
 
-CREATE TABLE IF NOT EXISTS recipe_step_conditions (
+CREATE TABLE IF NOT EXISTS recipe_step_completion_conditions (
     id TEXT NOT NULL PRIMARY KEY,
     belongs_to_recipe_step TEXT NOT NULL REFERENCES recipe_steps(id) ON DELETE CASCADE,
     ingredient_state TEXT NOT NULL REFERENCES valid_ingredient_states(id) ON DELETE CASCADE,
@@ -143,9 +143,9 @@ CREATE TABLE IF NOT EXISTS recipe_step_conditions (
     archived_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE TABLE IF NOT EXISTS recipe_step_condition_ingredients (
+CREATE TABLE IF NOT EXISTS recipe_step_completion_condition_ingredients (
     id TEXT NOT NULL PRIMARY KEY,
-    belongs_to_recipe_step_condition TEXT NOT NULL REFERENCES recipe_step_conditions(id) ON DELETE CASCADE,
+    belongs_to_recipe_step_completion_condition TEXT NOT NULL REFERENCES recipe_step_completion_conditions(id) ON DELETE CASCADE,
     recipe_step_ingredient TEXT NOT NULL REFERENCES recipe_step_ingredients(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,

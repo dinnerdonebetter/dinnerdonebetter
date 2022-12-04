@@ -203,16 +203,16 @@ const (
 	// ArchiveRecipeStepIngredientsPermission is a household user permission.
 	ArchiveRecipeStepIngredientsPermission Permission = "archive.recipe_step_ingredients"
 
-	// CreateRecipeStepConditionsPermission is a household user permission.
-	CreateRecipeStepConditionsPermission Permission = "create.recipe_step_conditions"
-	// ReadRecipeStepConditionsPermission is a household user permission.
-	ReadRecipeStepConditionsPermission Permission = "read.recipe_step_conditions"
-	// SearchRecipeStepConditionsPermission is a household user permission.
-	SearchRecipeStepConditionsPermission Permission = "search.recipe_step_conditions"
-	// UpdateRecipeStepConditionsPermission is a household user permission.
-	UpdateRecipeStepConditionsPermission Permission = "update.recipe_step_conditions"
-	// ArchiveRecipeStepConditionsPermission is a household user permission.
-	ArchiveRecipeStepConditionsPermission Permission = "archive.recipe_step_conditions"
+	// CreateRecipeStepCompletionConditionsPermission is a household user permission.
+	CreateRecipeStepCompletionConditionsPermission Permission = "create.recipe_step_completion_conditions"
+	// ReadRecipeStepCompletionConditionsPermission is a household user permission.
+	ReadRecipeStepCompletionConditionsPermission Permission = "read.recipe_step_completion_conditions"
+	// SearchRecipeStepCompletionConditionsPermission is a household user permission.
+	SearchRecipeStepCompletionConditionsPermission Permission = "search.recipe_step_completion_conditions"
+	// UpdateRecipeStepCompletionConditionsPermission is a household user permission.
+	UpdateRecipeStepCompletionConditionsPermission Permission = "update.recipe_step_completion_conditions"
+	// ArchiveRecipeStepCompletionConditionsPermission is a household user permission.
+	ArchiveRecipeStepCompletionConditionsPermission Permission = "archive.recipe_step_completion_conditions"
 
 	// CreateRecipeStepProductsPermission is a household user permission.
 	CreateRecipeStepProductsPermission Permission = "create.recipe_step_products"
@@ -412,11 +412,11 @@ var (
 		UpdateRecipeStepIngredientsPermission.ID():  UpdateRecipeStepIngredientsPermission,
 		ArchiveRecipeStepIngredientsPermission.ID(): ArchiveRecipeStepIngredientsPermission,
 
-		CreateRecipeStepConditionsPermission.ID():  CreateRecipeStepConditionsPermission,
-		ReadRecipeStepConditionsPermission.ID():    ReadRecipeStepConditionsPermission,
-		SearchRecipeStepConditionsPermission.ID():  SearchRecipeStepConditionsPermission,
-		UpdateRecipeStepConditionsPermission.ID():  UpdateRecipeStepConditionsPermission,
-		ArchiveRecipeStepConditionsPermission.ID(): ArchiveRecipeStepConditionsPermission,
+		CreateRecipeStepCompletionConditionsPermission.ID():  CreateRecipeStepCompletionConditionsPermission,
+		ReadRecipeStepCompletionConditionsPermission.ID():    ReadRecipeStepCompletionConditionsPermission,
+		SearchRecipeStepCompletionConditionsPermission.ID():  SearchRecipeStepCompletionConditionsPermission,
+		UpdateRecipeStepCompletionConditionsPermission.ID():  UpdateRecipeStepCompletionConditionsPermission,
+		ArchiveRecipeStepCompletionConditionsPermission.ID(): ArchiveRecipeStepCompletionConditionsPermission,
 
 		CreateRecipeStepProductsPermission.ID():  CreateRecipeStepProductsPermission,
 		ReadRecipeStepProductsPermission.ID():    ReadRecipeStepProductsPermission,

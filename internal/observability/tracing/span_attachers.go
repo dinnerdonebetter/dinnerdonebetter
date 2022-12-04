@@ -327,9 +327,9 @@ func AttachRecipeStepIngredientIDToSpan(span trace.Span, recipeStepIngredientID 
 	AttachStringToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 }
 
-// AttachRecipeStepConditionIDToSpan attaches a recipe step condition ID to a given span.
-func AttachRecipeStepConditionIDToSpan(span trace.Span, recipeStepConditionID string) {
-	AttachStringToSpan(span, keys.RecipeStepConditionIDKey, recipeStepConditionID)
+// AttachRecipeStepCompletionConditionIDToSpan attaches a recipe step completion condition ID to a given span.
+func AttachRecipeStepCompletionConditionIDToSpan(span trace.Span, recipeStepCompletionConditionID string) {
+	AttachStringToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 }
 
 // AttachRecipeStepProductIDToSpan attaches a recipe step product ID to a given span.

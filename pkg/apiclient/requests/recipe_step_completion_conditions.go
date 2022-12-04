@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	recipeStepConditionsBasePath = "conditions"
+	recipeStepCompletionConditionsBasePath = "conditions"
 )
 
-// BuildGetRecipeStepConditionRequest builds an HTTP request for fetching a recipe step condition.
-func (b *Builder) BuildGetRecipeStepConditionRequest(ctx context.Context, recipeID, recipeStepID, recipeStepConditionID string) (*http.Request, error) {
+// BuildGetRecipeStepCompletionConditionRequest builds an HTTP request for fetching a recipe step completion condition.
+func (b *Builder) BuildGetRecipeStepCompletionConditionRequest(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -29,10 +29,10 @@ func (b *Builder) BuildGetRecipeStepConditionRequest(ctx context.Context, recipe
 	}
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	if recipeStepConditionID == "" {
+	if recipeStepCompletionConditionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepConditionIDToSpan(span, recipeStepConditionID)
+	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -41,8 +41,8 @@ func (b *Builder) BuildGetRecipeStepConditionRequest(ctx context.Context, recipe
 		recipeID,
 		recipeStepsBasePath,
 		recipeStepID,
-		recipeStepConditionsBasePath,
-		recipeStepConditionID,
+		recipeStepCompletionConditionsBasePath,
+		recipeStepCompletionConditionID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -54,8 +54,8 @@ func (b *Builder) BuildGetRecipeStepConditionRequest(ctx context.Context, recipe
 	return req, nil
 }
 
-// BuildGetRecipeStepConditionsRequest builds an HTTP request for fetching a list of recipe step conditions.
-func (b *Builder) BuildGetRecipeStepConditionsRequest(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*http.Request, error) {
+// BuildGetRecipeStepCompletionConditionsRequest builds an HTTP request for fetching a list of recipe step completion conditions.
+func (b *Builder) BuildGetRecipeStepCompletionConditionsRequest(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -76,7 +76,7 @@ func (b *Builder) BuildGetRecipeStepConditionsRequest(ctx context.Context, recip
 		recipeID,
 		recipeStepsBasePath,
 		recipeStepID,
-		recipeStepConditionsBasePath,
+		recipeStepCompletionConditionsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -89,8 +89,8 @@ func (b *Builder) BuildGetRecipeStepConditionsRequest(ctx context.Context, recip
 	return req, nil
 }
 
-// BuildCreateRecipeStepConditionRequest builds an HTTP request for creating a recipe step condition.
-func (b *Builder) BuildCreateRecipeStepConditionRequest(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepConditionCreationRequestInput) (*http.Request, error) {
+// BuildCreateRecipeStepCompletionConditionRequest builds an HTTP request for creating a recipe step completion condition.
+func (b *Builder) BuildCreateRecipeStepCompletionConditionRequest(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepCompletionConditionCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -119,7 +119,7 @@ func (b *Builder) BuildCreateRecipeStepConditionRequest(ctx context.Context, rec
 		recipeID,
 		recipeStepsBasePath,
 		recipeStepID,
-		recipeStepConditionsBasePath,
+		recipeStepCompletionConditionsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -131,8 +131,8 @@ func (b *Builder) BuildCreateRecipeStepConditionRequest(ctx context.Context, rec
 	return req, nil
 }
 
-// BuildUpdateRecipeStepConditionRequest builds an HTTP request for updating a recipe step condition.
-func (b *Builder) BuildUpdateRecipeStepConditionRequest(ctx context.Context, recipeID string, recipeStepCondition *types.RecipeStepCondition) (*http.Request, error) {
+// BuildUpdateRecipeStepCompletionConditionRequest builds an HTTP request for updating a recipe step completion condition.
+func (b *Builder) BuildUpdateRecipeStepCompletionConditionRequest(ctx context.Context, recipeID string, recipeStepCompletionCondition *types.RecipeStepCompletionCondition) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -141,10 +141,10 @@ func (b *Builder) BuildUpdateRecipeStepConditionRequest(ctx context.Context, rec
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if recipeStepCondition == nil {
+	if recipeStepCompletionCondition == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachRecipeStepConditionIDToSpan(span, recipeStepCondition.ID)
+	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionCondition.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -152,13 +152,13 @@ func (b *Builder) BuildUpdateRecipeStepConditionRequest(ctx context.Context, rec
 		recipesBasePath,
 		recipeID,
 		recipeStepsBasePath,
-		recipeStepCondition.BelongsToRecipeStep,
-		recipeStepConditionsBasePath,
-		recipeStepCondition.ID,
+		recipeStepCompletionCondition.BelongsToRecipeStep,
+		recipeStepCompletionConditionsBasePath,
+		recipeStepCompletionCondition.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := converters.ConvertRecipeStepConditionToRecipeStepConditionUpdateRequestInput(recipeStepCondition)
+	input := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionUpdateRequestInput(recipeStepCompletionCondition)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
@@ -168,8 +168,8 @@ func (b *Builder) BuildUpdateRecipeStepConditionRequest(ctx context.Context, rec
 	return req, nil
 }
 
-// BuildArchiveRecipeStepConditionRequest builds an HTTP request for archiving a recipe step condition.
-func (b *Builder) BuildArchiveRecipeStepConditionRequest(ctx context.Context, recipeID, recipeStepID, recipeStepConditionID string) (*http.Request, error) {
+// BuildArchiveRecipeStepCompletionConditionRequest builds an HTTP request for archiving a recipe step completion condition.
+func (b *Builder) BuildArchiveRecipeStepCompletionConditionRequest(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -183,10 +183,10 @@ func (b *Builder) BuildArchiveRecipeStepConditionRequest(ctx context.Context, re
 	}
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	if recipeStepConditionID == "" {
+	if recipeStepCompletionConditionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepConditionIDToSpan(span, recipeStepConditionID)
+	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -195,8 +195,8 @@ func (b *Builder) BuildArchiveRecipeStepConditionRequest(ctx context.Context, re
 		recipeID,
 		recipeStepsBasePath,
 		recipeStepID,
-		recipeStepConditionsBasePath,
-		recipeStepConditionID,
+		recipeStepCompletionConditionsBasePath,
+		recipeStepCompletionConditionID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 

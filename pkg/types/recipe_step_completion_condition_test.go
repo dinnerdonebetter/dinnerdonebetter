@@ -10,20 +10,20 @@ import (
 	"github.com/prixfixeco/backend/internal/pointers"
 )
 
-func TestRecipeStepConditionCreationRequestInput_Validate(T *testing.T) {
+func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &RecipeStepConditionCreationRequestInput{
+		x := &RecipeStepCompletionConditionCreationRequestInput{
 			IngredientStateID:   t.Name(),
 			BelongsToRecipeStep: t.Name(),
 			Optional:            fake.Bool(),
-			Ingredients: []*RecipeStepConditionIngredientCreationRequestInput{
+			Ingredients: []*RecipeStepCompletionConditionIngredientCreationRequestInput{
 				{
-					BelongsToRecipeStepCondition: t.Name(),
-					RecipeStepIngredient:         t.Name(),
+					BelongsToRecipeStepCompletionCondition: t.Name(),
+					RecipeStepIngredient:                   t.Name(),
 				},
 			},
 		}
@@ -35,20 +35,20 @@ func TestRecipeStepConditionCreationRequestInput_Validate(T *testing.T) {
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
-		x := &RecipeStepConditionCreationRequestInput{}
+		x := &RecipeStepCompletionConditionCreationRequestInput{}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)
 	})
 }
 
-func TestRecipeStepConditionUpdateRequestInput_Validate(T *testing.T) {
+func TestRecipeStepCompletionConditionUpdateRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &RecipeStepConditionUpdateRequestInput{
+		x := &RecipeStepCompletionConditionUpdateRequestInput{
 			IngredientStateID:   pointers.String(t.Name()),
 			BelongsToRecipeStep: pointers.String(t.Name()),
 			Optional:            boolPointer(fake.Bool()),
@@ -61,7 +61,7 @@ func TestRecipeStepConditionUpdateRequestInput_Validate(T *testing.T) {
 	T.Run("with empty strings", func(t *testing.T) {
 		t.Parallel()
 
-		x := &RecipeStepConditionUpdateRequestInput{}
+		x := &RecipeStepCompletionConditionUpdateRequestInput{}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)

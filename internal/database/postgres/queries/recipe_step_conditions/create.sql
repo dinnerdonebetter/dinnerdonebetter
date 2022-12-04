@@ -1,4 +1,4 @@
-INSERT INTO recipe_step_conditions (
+INSERT INTO recipe_step_completion_conditions (
 	id,
     belongs_to_recipe_step,
     ingredient_state,

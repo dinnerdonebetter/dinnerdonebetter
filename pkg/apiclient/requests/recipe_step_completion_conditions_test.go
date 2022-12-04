@@ -10,7 +10,7 @@ import (
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
-func TestBuilder_BuildGetRecipeStepConditionRequest(T *testing.T) {
+func TestBuilder_BuildGetRecipeStepCompletionConditionRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
@@ -22,11 +22,11 @@ func TestBuilder_BuildGetRecipeStepConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCondition.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCondition.ID)
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -38,9 +38,9 @@ func TestBuilder_BuildGetRecipeStepConditionRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionRequest(helper.ctx, "", exampleRecipeStepID, exampleRecipeStepCondition.ID)
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionRequest(helper.ctx, "", exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -51,9 +51,9 @@ func TestBuilder_BuildGetRecipeStepConditionRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionRequest(helper.ctx, exampleRecipeID, "", exampleRecipeStepCondition.ID)
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, "", exampleRecipeStepCompletionCondition.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -66,7 +66,7 @@ func TestBuilder_BuildGetRecipeStepConditionRequest(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, "")
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -79,15 +79,15 @@ func TestBuilder_BuildGetRecipeStepConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCondition.ID)
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildGetRecipeStepConditionsRequest(T *testing.T) {
+func TestBuilder_BuildGetRecipeStepCompletionConditionsRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions"
@@ -103,7 +103,7 @@ func TestBuilder_BuildGetRecipeStepConditionsRequest(T *testing.T) {
 		filter := (*types.QueryFilter)(nil)
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleRecipeID, exampleRecipeStepID)
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionsRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, filter)
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionsRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -118,7 +118,7 @@ func TestBuilder_BuildGetRecipeStepConditionsRequest(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionsRequest(helper.ctx, "", exampleRecipeStepID, filter)
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionsRequest(helper.ctx, "", exampleRecipeStepID, filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -132,7 +132,7 @@ func TestBuilder_BuildGetRecipeStepConditionsRequest(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionsRequest(helper.ctx, exampleRecipeID, "", filter)
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionsRequest(helper.ctx, exampleRecipeID, "", filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -148,13 +148,13 @@ func TestBuilder_BuildGetRecipeStepConditionsRequest(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetRecipeStepConditionsRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, filter)
+		actual, err := helper.builder.BuildGetRecipeStepCompletionConditionsRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildCreateRecipeStepConditionRequest(T *testing.T) {
+func TestBuilder_BuildCreateRecipeStepCompletionConditionRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPath = "/api/v1/recipes/%s/steps/%s/conditions"
@@ -166,11 +166,11 @@ func TestBuilder_BuildCreateRecipeStepConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeRecipeStepConditionCreationRequestInput()
+		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleRecipeID, exampleRecipeStepID)
 
-		actual, err := helper.builder.BuildCreateRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -182,9 +182,9 @@ func TestBuilder_BuildCreateRecipeStepConditionRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeRecipeStepConditionCreationRequestInput()
+		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateRecipeStepConditionRequest(helper.ctx, "", exampleRecipeStepID, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, "", exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -197,7 +197,7 @@ func TestBuilder_BuildCreateRecipeStepConditionRequest(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, nil)
+		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -210,7 +210,7 @@ func TestBuilder_BuildCreateRecipeStepConditionRequest(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, &types.RecipeStepConditionCreationRequestInput{})
+		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, &types.RecipeStepCompletionConditionCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -223,15 +223,15 @@ func TestBuilder_BuildCreateRecipeStepConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeRecipeStepConditionCreationRequestInput()
+		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildUpdateRecipeStepConditionRequest(T *testing.T) {
+func TestBuilder_BuildUpdateRecipeStepCompletionConditionRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
@@ -242,11 +242,11 @@ func TestBuilder_BuildUpdateRecipeStepConditionRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleRecipeID, exampleRecipeStepCondition.BelongsToRecipeStep, exampleRecipeStepCondition.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleRecipeID, exampleRecipeStepCompletionCondition.BelongsToRecipeStep, exampleRecipeStepCompletionCondition.ID)
 
-		actual, err := helper.builder.BuildUpdateRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepCondition)
+		actual, err := helper.builder.BuildUpdateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepCompletionCondition)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -257,9 +257,9 @@ func TestBuilder_BuildUpdateRecipeStepConditionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		actual, err := helper.builder.BuildUpdateRecipeStepConditionRequest(helper.ctx, "", exampleRecipeStepCondition)
+		actual, err := helper.builder.BuildUpdateRecipeStepCompletionConditionRequest(helper.ctx, "", exampleRecipeStepCompletionCondition)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -271,7 +271,7 @@ func TestBuilder_BuildUpdateRecipeStepConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildUpdateRecipeStepConditionRequest(helper.ctx, exampleRecipeID, nil)
+		actual, err := helper.builder.BuildUpdateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -283,15 +283,15 @@ func TestBuilder_BuildUpdateRecipeStepConditionRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		actual, err := helper.builder.BuildUpdateRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepCondition)
+		actual, err := helper.builder.BuildUpdateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepCompletionCondition)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildArchiveRecipeStepConditionRequest(T *testing.T) {
+func TestBuilder_BuildArchiveRecipeStepCompletionConditionRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
@@ -303,11 +303,11 @@ func TestBuilder_BuildArchiveRecipeStepConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCondition.ID)
+		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 
-		actual, err := helper.builder.BuildArchiveRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCondition.ID)
+		actual, err := helper.builder.BuildArchiveRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -319,9 +319,9 @@ func TestBuilder_BuildArchiveRecipeStepConditionRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		actual, err := helper.builder.BuildArchiveRecipeStepConditionRequest(helper.ctx, "", exampleRecipeStepID, exampleRecipeStepCondition.ID)
+		actual, err := helper.builder.BuildArchiveRecipeStepCompletionConditionRequest(helper.ctx, "", exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -332,9 +332,9 @@ func TestBuilder_BuildArchiveRecipeStepConditionRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		actual, err := helper.builder.BuildArchiveRecipeStepConditionRequest(helper.ctx, exampleRecipeID, "", exampleRecipeStepCondition.ID)
+		actual, err := helper.builder.BuildArchiveRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, "", exampleRecipeStepCompletionCondition.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -347,7 +347,7 @@ func TestBuilder_BuildArchiveRecipeStepConditionRequest(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildArchiveRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, "")
+		actual, err := helper.builder.BuildArchiveRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -360,9 +360,9 @@ func TestBuilder_BuildArchiveRecipeStepConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepCondition := fakes.BuildFakeRecipeStepCondition()
+		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 
-		actual, err := helper.builder.BuildArchiveRecipeStepConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCondition.ID)
+		actual, err := helper.builder.BuildArchiveRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
