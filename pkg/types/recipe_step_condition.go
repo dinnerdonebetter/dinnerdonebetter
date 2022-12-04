@@ -10,15 +10,32 @@ import (
 )
 
 const (
-	// RecipeStepConditionDataType indicates an event is related to a recipe step ingredient.
+	// RecipeStepConditionDataType indicates an event is related to a recipe step condition.
 	RecipeStepConditionDataType dataType = "recipe_step_condition"
 
-	// RecipeStepConditionCreatedCustomerEventType indicates a recipe step ingredient was created.
+	// RecipeStepConditionCreatedCustomerEventType indicates a recipe step condition was created.
 	RecipeStepConditionCreatedCustomerEventType CustomerEventType = "recipe_step_condition_created"
-	// RecipeStepConditionUpdatedCustomerEventType indicates a recipe step ingredient was updated.
+	// RecipeStepConditionUpdatedCustomerEventType indicates a recipe step condition was updated.
 	RecipeStepConditionUpdatedCustomerEventType CustomerEventType = "recipe_step_condition_updated"
-	// RecipeStepConditionArchivedCustomerEventType indicates a recipe step ingredient was archived.
+	// RecipeStepConditionArchivedCustomerEventType indicates a recipe step condition was archived.
 	RecipeStepConditionArchivedCustomerEventType CustomerEventType = "recipe_step_condition_archived"
+
+	// IngredientStateAttributeTypeTexture represents the ingredient attribute type for texture.
+	IngredientStateAttributeTypeTexture = "texture"
+	// IngredientStateAttributeTypeConsistency represents the ingredient attribute type for consistency.
+	IngredientStateAttributeTypeConsistency = "consistency"
+	// IngredientStateAttributeTypeColor represents the ingredient attribute type for color.
+	IngredientStateAttributeTypeColor = "color"
+	// IngredientStateAttributeTypeAppearance represents the ingredient attribute type for appearance.
+	IngredientStateAttributeTypeAppearance = "appearance"
+	// IngredientStateAttributeTypeOdor represents the ingredient attribute type for odor.
+	IngredientStateAttributeTypeOdor = "odor"
+	// IngredientStateAttributeTypeTaste represents the ingredient attribute type for taste.
+	IngredientStateAttributeTypeTaste = "taste"
+	// IngredientStateAttributeTypeSound represents the ingredient attribute type for sound.
+	IngredientStateAttributeTypeSound = "sound"
+	// IngredientStateAttributeTypeOther represents the ingredient attribute type for other.
+	IngredientStateAttributeTypeOther = "other"
 )
 
 func init() {
@@ -28,7 +45,7 @@ func init() {
 }
 
 type (
-	// RecipeStepCondition represents a recipe step ingredient.
+	// RecipeStepCondition represents a recipe step condition. Effectively, this says "Ingredients must be in IngredientState".
 	RecipeStepCondition struct {
 		_                   struct{}
 		CreatedAt           time.Time                        `json:"createdAt"`
@@ -53,7 +70,7 @@ type (
 		RecipeStepIngredient         string     `json:"recipeStepIngredient"`
 	}
 
-	// RecipeStepConditionCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
+	// RecipeStepConditionCreationRequestInput represents what a user could set as input for creating recipe step conditions.
 	RecipeStepConditionCreationRequestInput struct {
 		_                   struct{}
 		IngredientStateID   string                                               `json:"ingredientState"`
@@ -70,7 +87,7 @@ type (
 		RecipeStepIngredient         string `json:"recipeStepIngredient"`
 	}
 
-	// RecipeStepConditionDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
+	// RecipeStepConditionDatabaseCreationInput represents what a user could set as input for creating recipe step conditions.
 	RecipeStepConditionDatabaseCreationInput struct {
 		_                   struct{}
 		ID                  string
@@ -89,7 +106,7 @@ type (
 		RecipeStepIngredient         string
 	}
 
-	// RecipeStepConditionUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
+	// RecipeStepConditionUpdateRequestInput represents what a user could set as input for updating recipe step conditions.
 	RecipeStepConditionUpdateRequestInput struct {
 		_ struct{}
 
@@ -99,7 +116,7 @@ type (
 		Optional            *bool   `json:"optional"`
 	}
 
-	// RecipeStepConditionDataManager describes a structure capable of storing recipe step ingredients permanently.
+	// RecipeStepConditionDataManager describes a structure capable of storing recipe step conditions permanently.
 	RecipeStepConditionDataManager interface {
 		RecipeStepConditionExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (bool, error)
 		GetRecipeStepCondition(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*RecipeStepCondition, error)
@@ -109,7 +126,7 @@ type (
 		ArchiveRecipeStepCondition(ctx context.Context, recipeStepID, recipeStepIngredientID string) error
 	}
 
-	// RecipeStepConditionDataService describes a structure capable of serving traffic related to recipe step ingredients.
+	// RecipeStepConditionDataService describes a structure capable of serving traffic related to recipe step conditions.
 	RecipeStepConditionDataService interface {
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
@@ -119,7 +136,7 @@ type (
 	}
 )
 
-// Update merges an RecipeStepConditionUpdateRequestInput with a recipe step ingredient.
+// Update merges an RecipeStepConditionUpdateRequestInput with a recipe step condition.
 func (x *RecipeStepCondition) Update(input *RecipeStepConditionUpdateRequestInput) {
 	if input.IngredientStateID != nil && *input.IngredientStateID != x.IngredientState.ID {
 		x.IngredientState = &ValidIngredientState{ID: *input.IngredientStateID}

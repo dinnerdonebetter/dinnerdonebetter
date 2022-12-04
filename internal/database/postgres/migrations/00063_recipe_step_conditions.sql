@@ -129,6 +129,8 @@ CREATE TYPE ingredient_attribute_type AS ENUM (
 );
 
 ALTER TABLE valid_ingredient_states ADD COLUMN attribute_type ingredient_attribute_type NOT NULL DEFAULT 'other';
+ALTER TABLE recipe_steps ADD COLUMN condition_expression TEXT NOT NULL DEFAULT '';
+ALTER TABLE valid_preparations ADD COLUMN condition_expression_required BOOLEAN NOT NULL DEFAULT 'false';
 
 CREATE TABLE IF NOT EXISTS recipe_step_conditions (
     id TEXT NOT NULL PRIMARY KEY,

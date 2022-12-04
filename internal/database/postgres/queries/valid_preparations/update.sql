@@ -11,8 +11,9 @@ SET
     maximum_instrument_count = $9,
     temperature_required = $10,
     time_estimate_required = $11,
-    slug = $12,
-	past_tense = $13,
+    condition_expression_required = $12,
+    slug = $13,
+	past_tense = $14,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $14;
+	AND id = $15;

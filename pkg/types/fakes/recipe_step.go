@@ -50,6 +50,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		BelongsToRecipe:               BuildFakeID(),
 		Ingredients:                   ingredients,
 		ExplicitInstructions:          buildUniqueString(),
+		ConditionExpression:           buildUniqueString(),
 		Instruments:                   instruments,
 	}
 }
@@ -75,18 +76,7 @@ func BuildFakeRecipeStepList() *types.QueryFilteredResult[types.RecipeStep] {
 // BuildFakeRecipeStepUpdateRequestInput builds a faked RecipeStepUpdateRequestInput from a recipe step.
 func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput {
 	recipeStep := BuildFakeRecipeStep()
-	return &types.RecipeStepUpdateRequestInput{
-		Index:                         &recipeStep.Index,
-		Preparation:                   &recipeStep.Preparation,
-		MinimumEstimatedTimeInSeconds: recipeStep.MinimumEstimatedTimeInSeconds,
-		MaximumEstimatedTimeInSeconds: recipeStep.MaximumEstimatedTimeInSeconds,
-		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
-		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
-		Notes:                         &recipeStep.Notes,
-		Optional:                      &recipeStep.Optional,
-		ExplicitInstructions:          &recipeStep.ExplicitInstructions,
-		BelongsToRecipe:               recipeStep.BelongsToRecipe,
-	}
+	return converters.ConvertRecipeStepToRecipeStepUpdateRequestInput(recipeStep)
 }
 
 // BuildFakeRecipeStepCreationRequestInput builds a faked RecipeStepCreationRequestInput.
