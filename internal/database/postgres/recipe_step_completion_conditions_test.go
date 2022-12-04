@@ -32,6 +32,15 @@ func buildMockRowsFromRecipeStepCompletionConditions(includeCounts bool, filtere
 			x.ID,
 			x.BelongsToRecipeStep,
 			x.IngredientState.ID,
+			x.IngredientState.Name,
+			x.IngredientState.Description,
+			x.IngredientState.IconPath,
+			x.IngredientState.Slug,
+			x.IngredientState.PastTense,
+			x.IngredientState.AttributeType,
+			x.IngredientState.CreatedAt,
+			x.IngredientState.LastUpdatedAt,
+			x.IngredientState.ArchivedAt,
 			x.Optional,
 			x.Notes,
 			x.CreatedAt,
@@ -44,6 +53,42 @@ func buildMockRowsFromRecipeStepCompletionConditions(includeCounts bool, filtere
 		}
 
 		exampleRows.AddRow(rowValues...)
+	}
+
+	return exampleRows
+}
+
+func buildMockRowsFromRecipeStepCompletionConditionsWithIngredients(recipeStepCompletionConditions ...*types.RecipeStepCompletionCondition) *sqlmock.Rows {
+	columns := recipeStepCompletionConditionsTableColumnsWithIngredients
+	exampleRows := sqlmock.NewRows(columns)
+
+	for _, x := range recipeStepCompletionConditions {
+		for _, y := range x.Ingredients {
+			rowValues := []driver.Value{
+				y.ID,
+				y.BelongsToRecipeStepCompletionCondition,
+				y.RecipeStepIngredient,
+				x.ID,
+				x.BelongsToRecipeStep,
+				x.IngredientState.ID,
+				x.IngredientState.Name,
+				x.IngredientState.Description,
+				x.IngredientState.IconPath,
+				x.IngredientState.Slug,
+				x.IngredientState.PastTense,
+				x.IngredientState.AttributeType,
+				x.IngredientState.CreatedAt,
+				x.IngredientState.LastUpdatedAt,
+				x.IngredientState.ArchivedAt,
+				x.Optional,
+				x.Notes,
+				x.CreatedAt,
+				x.LastUpdatedAt,
+				x.ArchivedAt,
+			}
+
+			exampleRows.AddRow(rowValues...)
+		}
 	}
 
 	return exampleRows
@@ -228,7 +273,6 @@ func TestQuerier_GetRecipeStepCompletionCondition(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 		exampleRecipeStepCompletionCondition.IngredientState = types.ValidIngredientState{ID: exampleRecipeStepCompletionCondition.IngredientState.ID}
-		exampleRecipeStepCompletionCondition.Ingredients = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -241,7 +285,7 @@ func TestQuerier_GetRecipeStepCompletionCondition(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepCompletionConditionQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepCompletionConditions(false, 0, exampleRecipeStepCompletionCondition))
+			WillReturnRows(buildMockRowsFromRecipeStepCompletionConditionsWithIngredients(exampleRecipeStepCompletionCondition))
 
 		actual, err := c.GetRecipeStepCompletionCondition(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
 		assert.NoError(t, err)
@@ -341,7 +385,7 @@ func TestQuerier_GetRecipeStepCompletionConditions(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{"valid_ingredient_states.id", "recipe_step_completion_conditions.id"}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepCompletionConditions(true, exampleRecipeStepCompletionConditionList.FilteredCount, exampleRecipeStepCompletionConditionList.Data...))
@@ -399,7 +443,7 @@ func TestQuerier_GetRecipeStepCompletionConditions(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{"valid_ingredient_states.id", "recipe_step_completion_conditions.id"}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepCompletionConditions(true, exampleRecipeStepCompletionConditionList.FilteredCount, exampleRecipeStepCompletionConditionList.Data...))
@@ -421,7 +465,7 @@ func TestQuerier_GetRecipeStepCompletionConditions(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{"valid_ingredient_states.id", "recipe_step_completion_conditions.id"}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
@@ -443,7 +487,7 @@ func TestQuerier_GetRecipeStepCompletionConditions(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{"valid_ingredient_states.id", "recipe_step_completion_conditions.id"}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
@@ -552,7 +596,6 @@ func TestSQLQuerier_createRecipeStepCompletionCondition(T *testing.T) {
 		exampleRecipeStepCompletionCondition.ID = "3"
 		exampleRecipeStepCompletionCondition.BelongsToRecipeStep = "2"
 		exampleRecipeStepCompletionCondition.IngredientState = types.ValidIngredientState{ID: exampleRecipeStepCompletionCondition.IngredientState.ID}
-		exampleRecipeStepCompletionCondition.Ingredients = nil
 
 		exampleInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(exampleRecipeStepCompletionCondition)
 

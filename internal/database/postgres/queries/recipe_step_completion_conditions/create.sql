@@ -1,5 +1,5 @@
 INSERT INTO recipe_step_completion_conditions (
-	id,
+    id,
     belongs_to_recipe_step,
     ingredient_state,
     optional,

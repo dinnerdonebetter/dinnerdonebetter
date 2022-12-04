@@ -56,8 +56,6 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			t.Log("changing recipe step completion condition")
 			createdRecipeStepCompletionCondition.Notes = t.Name() + " updated"
 
-			t.Logf("updating recipe step completion condition: %+v", createdRecipeStepCompletionCondition)
-
 			require.NoError(t, testClients.user.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
 
 			t.Log("fetching changed recipe step completion condition")
@@ -68,7 +66,7 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			checkRecipeStepCompletionConditionEquality(t, createdRecipeStepCompletionCondition, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			// assert recipe step completion condition list equality
+			// assert recipe step completion condition list functionality works
 			listResponse, err := testClients.user.GetRecipeStepCompletionConditions(ctx, createdRecipe.ID, createdRecipeStep.ID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(

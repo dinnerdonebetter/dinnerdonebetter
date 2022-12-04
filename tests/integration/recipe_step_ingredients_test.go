@@ -70,8 +70,6 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 
 			createdRecipeStepIngredient.Update(converters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(newRecipeStepIngredient))
 
-			t.Logf("updating recipe step ingredient: %+v", createdRecipeStepIngredient)
-
 			require.NoError(t, testClients.user.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
 
 			t.Log("fetching changed recipe step ingredient")
