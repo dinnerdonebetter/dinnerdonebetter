@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	recipeStepCompletionConditionsBasePath = "conditions"
+	recipeStepCompletionConditionsBasePath = "completion_conditions"
 )
 
 // BuildGetRecipeStepCompletionConditionRequest builds an HTTP request for fetching a recipe step completion condition.

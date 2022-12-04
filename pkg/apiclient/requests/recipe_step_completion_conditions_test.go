@@ -13,7 +13,7 @@ import (
 func TestBuilder_BuildGetRecipeStepCompletionConditionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/completion_conditions/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -234,7 +234,7 @@ func TestBuilder_BuildCreateRecipeStepCompletionConditionRequest(T *testing.T) {
 func TestBuilder_BuildUpdateRecipeStepCompletionConditionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/completion_conditions/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -294,7 +294,7 @@ func TestBuilder_BuildUpdateRecipeStepCompletionConditionRequest(T *testing.T) {
 func TestBuilder_BuildArchiveRecipeStepCompletionConditionRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/completion_conditions/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

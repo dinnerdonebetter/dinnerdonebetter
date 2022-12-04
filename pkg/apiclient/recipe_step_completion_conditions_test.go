@@ -45,7 +45,7 @@ type recipeStepCompletionConditionsTestSuite struct {
 }
 
 func (s *recipeStepCompletionConditionsTestSuite) TestClient_GetRecipeStepCompletionCondition() {
-	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/completion_conditions/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -254,7 +254,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCom
 }
 
 func (s *recipeStepCompletionConditionsTestSuite) TestClient_UpdateRecipeStepCompletionCondition() {
-	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/completion_conditions/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -304,7 +304,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_UpdateRecipeStepCom
 }
 
 func (s *recipeStepCompletionConditionsTestSuite) TestClient_ArchiveRecipeStepCompletionCondition() {
-	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/conditions/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/steps/%s/completion_conditions/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
