@@ -31,9 +31,8 @@ func ConvertRecipeStepCompletionConditionCreationRequestInputToRecipeStepComplet
 // ConvertRecipeStepCompletionConditionIngredientCreationRequestInputToRecipeStepCompletionConditionIngredientDatabaseCreationInput creates a RecipeStepCompletionConditionIngredientDatabaseCreationInput from a RecipeStepCompletionConditionCreationRequestInput.
 func ConvertRecipeStepCompletionConditionIngredientCreationRequestInputToRecipeStepCompletionConditionIngredientDatabaseCreationInput(input *types.RecipeStepCompletionConditionIngredientCreationRequestInput) *types.RecipeStepCompletionConditionIngredientDatabaseCreationInput {
 	x := &types.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
-		ID:                                     identifiers.New(),
-		BelongsToRecipeStepCompletionCondition: input.BelongsToRecipeStepCompletionCondition,
-		RecipeStepIngredient:                   input.RecipeStepIngredient,
+		ID:                   identifiers.New(),
+		RecipeStepIngredient: input.RecipeStepIngredient,
 	}
 
 	return x
@@ -71,8 +70,7 @@ func ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreation
 // ConvertRecipeStepCompletionConditionIngredientToRecipeStepCompletionConditionIngredientCreationRequestInput builds a RecipeStepCompletionConditionIngredientCreationRequestInput from a RecipeStepCompletionCondition.
 func ConvertRecipeStepCompletionConditionIngredientToRecipeStepCompletionConditionIngredientCreationRequestInput(recipeStepCompletionConditionIngredient *types.RecipeStepCompletionConditionIngredient) *types.RecipeStepCompletionConditionIngredientCreationRequestInput {
 	return &types.RecipeStepCompletionConditionIngredientCreationRequestInput{
-		BelongsToRecipeStepCompletionCondition: recipeStepCompletionConditionIngredient.BelongsToRecipeStepCompletionCondition,
-		RecipeStepIngredient:                   recipeStepCompletionConditionIngredient.RecipeStepIngredient,
+		RecipeStepIngredient: recipeStepCompletionConditionIngredient.RecipeStepIngredient,
 	}
 }
 

@@ -14,11 +14,11 @@ import (
 )
 
 const (
-	// RecipeStepCompletionConditionIDURIParamKey is a standard string that we'll use to refer to recipe step ingredient IDs with.
+	// RecipeStepCompletionConditionIDURIParamKey is a standard string that we'll use to refer to recipe step completion condition IDs with.
 	RecipeStepCompletionConditionIDURIParamKey = "recipeStepCompletionConditionID"
 )
 
-// CreateHandler is our recipe step ingredient creation route.
+// CreateHandler is our recipe step completion condition creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -69,7 +69,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	recipeStepCompletionCondition, err := s.recipeStepCompletionConditionDataManager.CreateRecipeStepCompletionCondition(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating recipe step ingredients")
+		observability.AcknowledgeError(err, logger, span, "creating recipe step completion conditions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -91,7 +91,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipeStepCompletionCondition, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a recipe step ingredient.
+// ReadHandler returns a GET handler that returns a recipe step completion condition.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -120,18 +120,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
-	// determine recipe step ingredient ID.
+	// determine recipe step completion condition ID.
 	recipeStepCompletionConditionID := s.recipeStepCompletionConditionIDFetcher(req)
 	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
-	// fetch recipe step ingredient from database.
+	// fetch recipe step completion condition from database.
 	x, err := s.recipeStepCompletionConditionDataManager.GetRecipeStepCompletionCondition(ctx, recipeID, recipeStepID, recipeStepCompletionConditionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving recipe step ingredient")
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe step completion condition")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -180,7 +180,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		// in the event no rows exist, return an empty list.
 		recipeStepCompletionConditions = &types.QueryFilteredResult[types.RecipeStepCompletionCondition]{Data: []*types.RecipeStepCompletionCondition{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving recipe step ingredients")
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe step completion conditions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -189,7 +189,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, recipeStepCompletionConditions)
 }
 
-// UpdateHandler returns a handler that updates a recipe step ingredient.
+// UpdateHandler returns a handler that updates a recipe step completion condition.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -232,27 +232,27 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
-	// determine recipe step ingredient ID.
+	// determine recipe step completion condition ID.
 	recipeStepCompletionConditionID := s.recipeStepCompletionConditionIDFetcher(req)
 	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
-	// fetch recipe step ingredient from database.
+	// fetch recipe step completion condition from database.
 	recipeStepCompletionCondition, err := s.recipeStepCompletionConditionDataManager.GetRecipeStepCompletionCondition(ctx, recipeID, recipeStepID, recipeStepCompletionConditionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving recipe step ingredient for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe step completion condition for update")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	// update the recipe step ingredient.
+	// update the recipe step completion condition.
 	recipeStepCompletionCondition.Update(input)
 
 	if err = s.recipeStepCompletionConditionDataManager.UpdateRecipeStepCompletionCondition(ctx, recipeStepCompletionCondition); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating recipe step ingredients")
+		observability.AcknowledgeError(err, logger, span, "updating recipe step completion conditions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -275,7 +275,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, recipeStepCompletionCondition)
 }
 
-// ArchiveHandler returns a handler that archives a recipe step ingredient.
+// ArchiveHandler returns a handler that archives a recipe step completion condition.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -304,14 +304,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
-	// determine recipe step ingredient ID.
+	// determine recipe step completion condition ID.
 	recipeStepCompletionConditionID := s.recipeStepCompletionConditionIDFetcher(req)
 	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
 	exists, existenceCheckErr := s.recipeStepCompletionConditionDataManager.RecipeStepCompletionConditionExists(ctx, recipeID, recipeStepID, recipeStepCompletionConditionID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking recipe step ingredient existence")
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking recipe step completion condition existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
@@ -320,7 +320,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if err = s.recipeStepCompletionConditionDataManager.ArchiveRecipeStepCompletionCondition(ctx, recipeStepID, recipeStepCompletionConditionID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving recipe step ingredients")
+		observability.AcknowledgeError(err, logger, span, "archiving recipe step completion conditions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

@@ -11,6 +11,11 @@ import (
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
+const (
+	recipeStepsOnRecipeStepCompletionConditionsJoinClause           = "recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step=recipe_steps.id"
+	validIngredientStatesOnRecipeStepCompletionConditionsJoinClause = "valid_ingredient_states ON recipe_step_completion_conditions.ingredient_state=valid_ingredient_states.id"
+)
+
 var (
 	_ types.RecipeStepCompletionConditionDataManager = (*Querier)(nil)
 
@@ -20,14 +25,16 @@ var (
 		"recipe_step_completion_conditions.belongs_to_recipe_step",
 		"recipe_step_completion_conditions.ingredient_state",
 		"recipe_step_completion_conditions.optional",
-		"recipe_step_completion_conditions.optional",
+		"recipe_step_completion_conditions.notes",
 		"recipe_step_completion_conditions.created_at",
 		"recipe_step_completion_conditions.last_updated_at",
 		"recipe_step_completion_conditions.archived_at",
 	}
 
 	getRecipeStepCompletionConditionsJoins = []string{
+		recipeStepsOnRecipeStepCompletionConditionsJoinClause,
 		recipesOnRecipeStepsJoinClause,
+		validIngredientStatesOnRecipeStepCompletionConditionsJoinClause,
 	}
 )
 
@@ -164,11 +171,9 @@ func (q *Querier) GetRecipeStepCompletionCondition(ctx context.Context, recipeID
 	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 
 	args := []any{
+		recipeID,
 		recipeStepID,
 		recipeStepCompletionConditionID,
-		recipeID,
-		recipeStepID,
-		recipeID,
 	}
 
 	row := q.getOneRow(ctx, q.db, "get recipe step completion condition", getRecipeStepCompletionConditionQuery, args)
@@ -214,7 +219,7 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepCompletionConditionsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "recipe_step_completion_conditions", getRecipeStepCompletionConditionsJoins, []string{}, nil, "", recipeStepCompletionConditionsTableColumns, "", false, filter)
 	rows, err := q.getRows(ctx, q.db, "recipe step completion conditions", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step completion conditions list retrieval query")
@@ -291,7 +296,6 @@ func (q *Querier) UpdateRecipeStepCompletionCondition(ctx context.Context, updat
 		updated.Notes,
 		updated.BelongsToRecipeStep,
 		updated.IngredientState.ID,
-		updated.BelongsToRecipeStep,
 		updated.ID,
 	}
 

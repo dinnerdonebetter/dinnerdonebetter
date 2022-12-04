@@ -140,7 +140,8 @@ CREATE TABLE IF NOT EXISTS recipe_step_completion_conditions (
     optional BOOLEAN NOT NULL DEFAULT 'false',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
-    archived_at TIMESTAMP WITH TIME ZONE
+    archived_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE(belongs_to_recipe_step, ingredient_state)
 );
 
 CREATE TABLE IF NOT EXISTS recipe_step_completion_condition_ingredients (

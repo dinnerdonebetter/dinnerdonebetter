@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -26,6 +27,23 @@ func checkValidIngredientStateEquality(t *testing.T, expected, actual *types.Val
 	assert.NotZero(t, actual.CreatedAt)
 }
 
+func createValidIngredientStateForTest(t *testing.T, ctx context.Context, testClients *testClientWrapper) *types.ValidIngredientState {
+	t.Helper()
+
+	exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
+	exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
+	createdValidIngredientState, err := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
+	require.NoError(t, err)
+	t.Logf("valid ingredient state %q created", createdValidIngredientState.ID)
+	checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
+
+	createdValidIngredientState, err = testClients.admin.GetValidIngredientState(ctx, createdValidIngredientState.ID)
+	requireNotNilAndNoProblems(t, createdValidIngredientState, err)
+	checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
+
+	return createdValidIngredientState
+}
+
 func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -35,16 +53,7 @@ func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
 			defer span.End()
 
 			t.Log("creating valid ingredient state")
-			exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
-			exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
-			createdValidIngredientState, err := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
-			require.NoError(t, err)
-			t.Logf("valid ingredient state %q created", createdValidIngredientState.ID)
-			checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
-
-			createdValidIngredientState, err = testClients.admin.GetValidIngredientState(ctx, createdValidIngredientState.ID)
-			requireNotNilAndNoProblems(t, createdValidIngredientState, err)
-			checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients)
 
 			t.Log("changing valid ingredient state")
 			newValidIngredientState := fakes.BuildFakeValidIngredientState()
