@@ -59,6 +59,8 @@ func BuildFakeRecipeStepCompletionConditionUpdateRequestInput() *types.RecipeSte
 	return &types.RecipeStepCompletionConditionUpdateRequestInput{
 		Optional:            &recipeStepIngredient.Optional,
 		BelongsToRecipeStep: &recipeStepIngredient.BelongsToRecipeStep,
+		IngredientStateID:   &recipeStepIngredient.IngredientState.ID,
+		Notes:               &recipeStepIngredient.Notes,
 	}
 }
 

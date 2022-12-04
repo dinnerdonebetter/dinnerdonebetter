@@ -98,5 +98,6 @@ type (
 		types.ValidMeasurementConversionDataManager
 		types.RecipeMediaDataManager
 		types.ValidIngredientStateDataManager
+		types.RecipeStepCompletionConditionDataManager
 	}
 )

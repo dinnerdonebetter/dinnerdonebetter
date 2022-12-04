@@ -148,6 +148,9 @@
 		"recipeStepIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"recipeStepCompletionConditions": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},

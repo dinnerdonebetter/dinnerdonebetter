@@ -21,6 +21,7 @@ import (
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	recipepreptasksservice "github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
+	recipestepcompletionconditionsservice "github.com/prixfixeco/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
@@ -693,6 +694,38 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleRecipeStepIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepIngredientsPermission)).
 					Delete(root, s.recipeStepIngredientsService.ArchiveHandler)
+			})
+		})
+
+		// RecipeStepIngredients
+		recipeStepCompletionConditionPath := "completion_conditions"
+		recipeStepCompletionConditionsRoute := path.Join(
+			recipePath,
+			recipeIDRouteParam,
+			recipeStepPath,
+			recipeStepIDRouteParam,
+			recipeStepCompletionConditionPath,
+		)
+		recipeStepCompletionConditionsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepCompletionConditionsRoute)
+		recipeStepCompletionConditionIDRouteParam := buildURLVarChunk(recipestepcompletionconditionsservice.RecipeStepCompletionConditionIDURIParamKey, "")
+		v1Router.Route(recipeStepCompletionConditionsRouteWithPrefix, func(recipeStepCompletionConditionsRouter routing.Router) {
+			recipeStepCompletionConditionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepCompletionConditionsPermission)).
+				Post(root, s.recipeStepCompletionConditionsService.CreateHandler)
+			recipeStepCompletionConditionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepCompletionConditionsPermission)).
+				Get(root, s.recipeStepCompletionConditionsService.ListHandler)
+
+			recipeStepCompletionConditionsRouter.Route(recipeStepCompletionConditionIDRouteParam, func(singleRecipeStepCompletionConditionRouter routing.Router) {
+				singleRecipeStepCompletionConditionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepCompletionConditionsPermission)).
+					Get(root, s.recipeStepCompletionConditionsService.ReadHandler)
+				singleRecipeStepCompletionConditionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepCompletionConditionsPermission)).
+					Put(root, s.recipeStepCompletionConditionsService.UpdateHandler)
+				singleRecipeStepCompletionConditionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepCompletionConditionsPermission)).
+					Delete(root, s.recipeStepCompletionConditionsService.ArchiveHandler)
 			})
 		})
 

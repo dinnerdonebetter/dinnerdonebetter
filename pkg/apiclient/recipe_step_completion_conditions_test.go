@@ -112,7 +112,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_GetRecipeStepComple
 }
 
 func (s *recipeStepCompletionConditionsTestSuite) TestClient_GetRecipeStepCompletionConditions() {
-	const expectedPath = "/api/v1/recipes/%s/steps/%s/conditions"
+	const expectedPath = "/api/v1/recipes/%s/steps/%s/completion_conditions"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -181,7 +181,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_GetRecipeStepComple
 }
 
 func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCompletionCondition() {
-	const expectedPath = "/api/v1/recipes/%s/steps/%s/conditions"
+	const expectedPath = "/api/v1/recipes/%s/steps/%s/completion_conditions"
 
 	s.Run("standard", func() {
 		t := s.T()
