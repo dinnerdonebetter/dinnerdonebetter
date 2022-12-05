@@ -11,6 +11,7 @@ SELECT
     valid_preparations.maximum_instrument_count,
     valid_preparations.temperature_required,
     valid_preparations.time_estimate_required,
+    valid_preparations.condition_expression_required,
     valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,

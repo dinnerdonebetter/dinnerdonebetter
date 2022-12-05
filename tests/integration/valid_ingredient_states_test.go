@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -22,7 +23,25 @@ func checkValidIngredientStateEquality(t *testing.T, expected, actual *types.Val
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid ingredient state %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.Equal(t, expected.PastTense, actual.PastTense, "expected PastTense for valid ingredient state %s to be %v, but it was %v", expected.ID, expected.PastTense, actual.PastTense)
 	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for valid ingredient state %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
+	assert.Equal(t, expected.AttributeType, actual.AttributeType, "expected AttributeType for valid ingredient state %s to be %v, but it was %v", expected.ID, expected.AttributeType, actual.AttributeType)
 	assert.NotZero(t, actual.CreatedAt)
+}
+
+func createValidIngredientStateForTest(t *testing.T, ctx context.Context, testClients *testClientWrapper) *types.ValidIngredientState {
+	t.Helper()
+
+	exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
+	exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
+	createdValidIngredientState, err := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
+	require.NoError(t, err)
+	t.Logf("valid ingredient state %q created", createdValidIngredientState.ID)
+	checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
+
+	createdValidIngredientState, err = testClients.admin.GetValidIngredientState(ctx, createdValidIngredientState.ID)
+	requireNotNilAndNoProblems(t, createdValidIngredientState, err)
+	checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
+
+	return createdValidIngredientState
 }
 
 func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
@@ -34,16 +53,7 @@ func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
 			defer span.End()
 
 			t.Log("creating valid ingredient state")
-			exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
-			exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
-			createdValidIngredientState, err := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
-			require.NoError(t, err)
-			t.Logf("valid ingredient state %q created", createdValidIngredientState.ID)
-			checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
-
-			createdValidIngredientState, err = testClients.admin.GetValidIngredientState(ctx, createdValidIngredientState.ID)
-			requireNotNilAndNoProblems(t, createdValidIngredientState, err)
-			checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients)
 
 			t.Log("changing valid ingredient state")
 			newValidIngredientState := fakes.BuildFakeValidIngredientState()

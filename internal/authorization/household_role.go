@@ -13,20 +13,6 @@ type (
 	// HouseholdRolePermissionsChecker checks permissions for one or more household Roles.
 	HouseholdRolePermissionsChecker interface {
 		HasPermission(Permission) bool
-		PermissionSummary() map[string]bool
-
-		CanUpdateHouseholds() bool
-		CanDeleteHouseholds() bool
-		CanAddMemberToHouseholds() bool
-		CanRemoveMemberFromHouseholds() bool
-		CanTransferHouseholdToNewOwner() bool
-		CanCreateWebhooks() bool
-		CanSeeWebhooks() bool
-		CanUpdateWebhooks() bool
-		CanArchiveWebhooks() bool
-		CanCreateAPIClients() bool
-		CanSeeAPIClients() bool
-		CanDeleteAPIClients() bool
 	}
 )
 

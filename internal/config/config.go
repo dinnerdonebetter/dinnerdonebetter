@@ -29,6 +29,7 @@ import (
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	"github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
+	recipestepcompletionconditionsservice "github.com/prixfixeco/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
@@ -97,6 +98,7 @@ type (
 		RecipeStepProducts              recipestepproductsservice.Config              `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
 		RecipeStepInstruments           recipestepinstrumentsservice.Config           `json:"recipeStepInstruments" mapstructure:"recipe_step_instruments" toml:"recipe_step_instruments,omitempty"`
 		RecipeStepIngredients           recipestepingredientsservice.Config           `json:"recipeStepIngredients" mapstructure:"recipe_step_ingredients" toml:"recipe_step_ingredients,omitempty"`
+		RecipeStepCompletionConditions  recipestepcompletionconditionsservice.Config  `json:"recipeStepCompletionConditions" mapstructure:"recipe_step_completion_conditions" toml:"recipe_step_completion_conditions,omitempty"`
 		MealPlans                       mealplansservice.Config                       `json:"mealPlans" mapstructure:"meal_plans" toml:"meal_plans,omitempty"`
 		MealPlanOptions                 mealplanoptionsservice.Config                 `json:"mealPlanOptions" mapstructure:"meal_plan_options" toml:"meal_plan_options,omitempty"`
 		Households                      householdsservice.Config                      `json:"households" mapstructure:"households" toml:"households,omitempty"`
@@ -222,6 +224,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 		if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err), result)
+		}
+
+		if err := cfg.Services.RecipeStepCompletionConditions.ValidateWithContext(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating RecipeStepCompletionConditions service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {

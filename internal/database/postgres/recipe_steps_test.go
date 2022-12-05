@@ -43,6 +43,7 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.Preparation.MaximumInstrumentCount,
 			x.Preparation.TemperatureRequired,
 			x.Preparation.TimeEstimateRequired,
+			x.Preparation.ConditionExpressionRequired,
 			x.Preparation.Slug,
 			x.Preparation.PastTense,
 			x.Preparation.CreatedAt,
@@ -54,6 +55,7 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.MaximumTemperatureInCelsius,
 			x.Notes,
 			x.ExplicitInstructions,
+			x.ConditionExpression,
 			x.Optional,
 			x.CreatedAt,
 			x.LastUpdatedAt,
@@ -222,6 +224,7 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 		exampleRecipeStep.Instruments = nil
 		exampleRecipeStep.Ingredients = nil
 		exampleRecipeStep.Products = nil
+		exampleRecipeStep.CompletionConditions = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -304,6 +307,7 @@ func TestQuerier_getRecipeStepByID(T *testing.T) {
 		exampleRecipeStep.Instruments = nil
 		exampleRecipeStep.Ingredients = nil
 		exampleRecipeStep.Products = nil
+		exampleRecipeStep.CompletionConditions = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -385,6 +389,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 			exampleRecipeStepList.Data[i].Instruments = nil
 			exampleRecipeStepList.Data[i].Ingredients = nil
 			exampleRecipeStepList.Data[i].Products = nil
+			exampleRecipeStepList.Data[i].CompletionConditions = nil
 		}
 
 		ctx := context.Background()
@@ -428,6 +433,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 			exampleRecipeStepList.Data[i].Instruments = nil
 			exampleRecipeStepList.Data[i].Ingredients = nil
 			exampleRecipeStepList.Data[i].Products = nil
+			exampleRecipeStepList.Data[i].CompletionConditions = nil
 		}
 
 		ctx := context.Background()
@@ -502,6 +508,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		exampleRecipeStep.Ingredients = nil
 		exampleRecipeStep.Products = nil
 		exampleRecipeStep.Instruments = nil
+		exampleRecipeStep.CompletionConditions = nil
 		exampleRecipeStep.Preparation = types.ValidPreparation{}
 		exampleInput := converters.ConvertRecipeStepToRecipeStepDatabaseCreationInput(exampleRecipeStep)
 
@@ -518,6 +525,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.ExplicitInstructions,
+			exampleInput.ConditionExpression,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -568,6 +576,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.ExplicitInstructions,
+			exampleInput.ConditionExpression,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -614,6 +623,11 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleRecipeStep.Instruments[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
+		for i := range exampleRecipeStep.CompletionConditions {
+			exampleRecipeStep.CompletionConditions[i].ID = "3"
+			exampleRecipeStep.CompletionConditions[i].BelongsToRecipeStep = exampleRecipeStep.ID
+		}
+
 		exampleInput := converters.ConvertRecipeStepToRecipeStepDatabaseCreationInput(exampleRecipeStep)
 
 		ctx := context.Background()
@@ -629,6 +643,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.ExplicitInstructions,
+			exampleInput.ConditionExpression,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -705,6 +720,32 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				WillReturnResult(newArbitraryDatabaseResult())
 		}
 
+		for _, completionCondition := range exampleInput.CompletionConditions {
+			recipeStepCompletionConditionCreationArgs := []any{
+				completionCondition.ID,
+				completionCondition.BelongsToRecipeStep,
+				completionCondition.IngredientStateID,
+				completionCondition.Optional,
+				completionCondition.Notes,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(recipeStepCompletionConditionCreationQuery)).
+				WithArgs(interfaceToDriverValue(recipeStepCompletionConditionCreationArgs)...).
+				WillReturnResult(newArbitraryDatabaseResult())
+
+			for _, completionConditionIngredient := range completionCondition.Ingredients {
+				recipeStepCompletionConditionIngredientCreationArgs := []any{
+					completionConditionIngredient.ID,
+					completionConditionIngredient.BelongsToRecipeStepCompletionCondition,
+					completionConditionIngredient.RecipeStepIngredient,
+				}
+
+				db.ExpectExec(formatQueryForSQLMock(recipeStepCompletionConditionIngredientCreationQuery)).
+					WithArgs(interfaceToDriverValue(recipeStepCompletionConditionIngredientCreationArgs)...).
+					WillReturnResult(newArbitraryDatabaseResult())
+			}
+		}
+
 		c.timeFunc = func() time.Time {
 			return exampleRecipeStep.CreatedAt
 		}
@@ -743,6 +784,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.ExplicitInstructions,
+			exampleInput.ConditionExpression,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -815,6 +857,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.MaximumTemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.ExplicitInstructions,
+			exampleInput.ConditionExpression,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -900,6 +943,7 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.MaximumTemperatureInCelsius,
 			exampleRecipeStep.Notes,
 			exampleRecipeStep.ExplicitInstructions,
+			exampleRecipeStep.ConditionExpression,
 			exampleRecipeStep.Optional,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
@@ -940,6 +984,7 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.MaximumTemperatureInCelsius,
 			exampleRecipeStep.Notes,
 			exampleRecipeStep.ExplicitInstructions,
+			exampleRecipeStep.ConditionExpression,
 			exampleRecipeStep.Optional,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,

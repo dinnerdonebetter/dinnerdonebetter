@@ -56,6 +56,14 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	t.Logf("valid instrument %q created", createdValidInstrument.ID)
 	checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
+	t.Log("creating valid ingredient state")
+	exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
+	exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
+	createdValidIngredientState, err := adminClient.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
+	require.NoError(t, err)
+	t.Logf("valid instrument %q created", createdValidIngredientState.ID)
+	checkValidIngredientStateEquality(t, createdValidIngredientState, exampleValidIngredientState)
+
 	createdValidMeasurementUnit, err = adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 	requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
@@ -88,6 +96,10 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 
 		for j := range recipeStep.Instruments {
 			recipeStep.Instruments[j].Instrument = createdValidInstrument
+		}
+
+		for j := range recipeStep.CompletionConditions {
+			recipeStep.CompletionConditions[j].IngredientState = *createdValidIngredientState
 		}
 	}
 

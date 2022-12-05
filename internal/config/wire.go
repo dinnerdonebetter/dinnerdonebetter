@@ -51,6 +51,7 @@ var (
 			"MealPlanGroceryListItems",
 			"ValidMeasurementConversions",
 			"ValidIngredientStates",
+			"RecipeStepCompletionConditions",
 			"Auth",
 		),
 	)

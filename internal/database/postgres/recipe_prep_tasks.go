@@ -85,7 +85,7 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning complete meal")
+			return nil, observability.PrepareError(err, span, "scanning complete recipe prep task")
 		}
 
 		if x.ID == "" {

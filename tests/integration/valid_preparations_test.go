@@ -29,6 +29,7 @@ func checkValidPreparationEquality(t *testing.T, expected, actual *types.ValidPr
 	assert.Equal(t, expected.MaximumInstrumentCount, actual.MaximumInstrumentCount, "expected MaximumInstrumentCount for valid preparation %s to be %v, but it was %v", expected.ID, expected.MaximumInstrumentCount, actual.MaximumInstrumentCount)
 	assert.Equal(t, expected.TemperatureRequired, actual.TemperatureRequired, "expected TemperatureRequired for valid preparation %s to be %v, but it was %v", expected.ID, expected.TemperatureRequired, actual.TemperatureRequired)
 	assert.Equal(t, expected.TimeEstimateRequired, actual.TimeEstimateRequired, "expected TimeEstimateRequired for valid preparation %s to be %v, but it was %v", expected.ID, expected.TimeEstimateRequired, actual.TimeEstimateRequired)
+	assert.Equal(t, expected.ConditionExpressionRequired, actual.ConditionExpressionRequired, "expected ConditionExpressionRequired for valid preparation %s to be %v, but it was %v", expected.ID, expected.ConditionExpressionRequired, actual.ConditionExpressionRequired)
 	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for valid preparation %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
 	assert.NotZero(t, actual.CreatedAt)
 }

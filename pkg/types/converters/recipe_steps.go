@@ -18,6 +18,7 @@ func ConvertRecipeStepToRecipeStepUpdateRequestInput(input *types.RecipeStep) *t
 		MaximumEstimatedTimeInSeconds: input.MaximumEstimatedTimeInSeconds,
 		Optional:                      &input.Optional,
 		ExplicitInstructions:          &input.ExplicitInstructions,
+		ConditionExpression:           &input.ConditionExpression,
 	}
 
 	return x
@@ -36,6 +37,7 @@ func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *type
 		Notes:                         input.Notes,
 		Optional:                      input.Optional,
 		ExplicitInstructions:          input.ExplicitInstructions,
+		ConditionExpression:           input.ConditionExpression,
 	}
 
 	x.Ingredients = []*types.RecipeStepIngredientDatabaseCreationInput{}
@@ -79,6 +81,11 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 		products = append(products, ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(product))
 	}
 
+	completionConditions := []*types.RecipeStepCompletionConditionCreationRequestInput{}
+	for _, completionCondition := range recipeStep.CompletionConditions {
+		completionConditions = append(completionConditions, ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(completionCondition))
+	}
+
 	return &types.RecipeStepCreationRequestInput{
 		Optional:                      recipeStep.Optional,
 		Index:                         recipeStep.Index,
@@ -89,9 +96,11 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
 		Notes:                         recipeStep.Notes,
 		ExplicitInstructions:          recipeStep.ExplicitInstructions,
+		ConditionExpression:           recipeStep.ConditionExpression,
 		Products:                      products,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
+		CompletionConditions:          completionConditions,
 	}
 }
 
@@ -112,6 +121,11 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 		products = append(products, ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(p))
 	}
 
+	completionConditions := []*types.RecipeStepCompletionConditionDatabaseCreationInput{}
+	for _, completionCondition := range recipeStep.CompletionConditions {
+		completionConditions = append(completionConditions, ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(completionCondition))
+	}
+
 	return &types.RecipeStepDatabaseCreationInput{
 		ID:                            recipeStep.ID,
 		Index:                         recipeStep.Index,
@@ -123,9 +137,11 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
 		Notes:                         recipeStep.Notes,
 		ExplicitInstructions:          recipeStep.ExplicitInstructions,
+		ConditionExpression:           recipeStep.ConditionExpression,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
 		Products:                      products,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
+		CompletionConditions:          completionConditions,
 	}
 }

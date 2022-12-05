@@ -43,6 +43,7 @@ func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCo
 			x.Preparation.MaximumInstrumentCount,
 			x.Preparation.TemperatureRequired,
 			x.Preparation.TimeEstimateRequired,
+			x.Preparation.ConditionExpressionRequired,
 			x.Preparation.Slug,
 			x.Preparation.PastTense,
 			x.Preparation.CreatedAt,

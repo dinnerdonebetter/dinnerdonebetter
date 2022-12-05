@@ -203,6 +203,17 @@ const (
 	// ArchiveRecipeStepIngredientsPermission is a household user permission.
 	ArchiveRecipeStepIngredientsPermission Permission = "archive.recipe_step_ingredients"
 
+	// CreateRecipeStepCompletionConditionsPermission is a household user permission.
+	CreateRecipeStepCompletionConditionsPermission Permission = "create.recipe_step_completion_conditions"
+	// ReadRecipeStepCompletionConditionsPermission is a household user permission.
+	ReadRecipeStepCompletionConditionsPermission Permission = "read.recipe_step_completion_conditions"
+	// SearchRecipeStepCompletionConditionsPermission is a household user permission.
+	SearchRecipeStepCompletionConditionsPermission Permission = "search.recipe_step_completion_conditions"
+	// UpdateRecipeStepCompletionConditionsPermission is a household user permission.
+	UpdateRecipeStepCompletionConditionsPermission Permission = "update.recipe_step_completion_conditions"
+	// ArchiveRecipeStepCompletionConditionsPermission is a household user permission.
+	ArchiveRecipeStepCompletionConditionsPermission Permission = "archive.recipe_step_completion_conditions"
+
 	// CreateRecipeStepProductsPermission is a household user permission.
 	CreateRecipeStepProductsPermission Permission = "create.recipe_step_products"
 	// ReadRecipeStepProductsPermission is a household user permission.
@@ -400,6 +411,12 @@ var (
 		SearchRecipeStepIngredientsPermission.ID():  SearchRecipeStepIngredientsPermission,
 		UpdateRecipeStepIngredientsPermission.ID():  UpdateRecipeStepIngredientsPermission,
 		ArchiveRecipeStepIngredientsPermission.ID(): ArchiveRecipeStepIngredientsPermission,
+
+		CreateRecipeStepCompletionConditionsPermission.ID():  CreateRecipeStepCompletionConditionsPermission,
+		ReadRecipeStepCompletionConditionsPermission.ID():    ReadRecipeStepCompletionConditionsPermission,
+		SearchRecipeStepCompletionConditionsPermission.ID():  SearchRecipeStepCompletionConditionsPermission,
+		UpdateRecipeStepCompletionConditionsPermission.ID():  UpdateRecipeStepCompletionConditionsPermission,
+		ArchiveRecipeStepCompletionConditionsPermission.ID(): ArchiveRecipeStepCompletionConditionsPermission,
 
 		CreateRecipeStepProductsPermission.ID():  CreateRecipeStepProductsPermission,
 		ReadRecipeStepProductsPermission.ID():    ReadRecipeStepProductsPermission,

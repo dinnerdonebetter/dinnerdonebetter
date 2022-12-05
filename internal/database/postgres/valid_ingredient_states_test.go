@@ -35,6 +35,7 @@ func buildMockRowsFromValidIngredientStates(includeCounts bool, filteredCount ui
 			x.IconPath,
 			x.Slug,
 			x.PastTense,
+			x.AttributeType,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -420,6 +421,7 @@ func TestQuerier_CreateValidIngredientState(T *testing.T) {
 			exampleInput.IconPath,
 			exampleInput.PastTense,
 			exampleInput.Slug,
+			exampleInput.AttributeType,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientStateCreationQuery)).
@@ -465,6 +467,7 @@ func TestQuerier_CreateValidIngredientState(T *testing.T) {
 			exampleInput.IconPath,
 			exampleInput.PastTense,
 			exampleInput.Slug,
+			exampleInput.AttributeType,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientStateCreationQuery)).
@@ -501,6 +504,7 @@ func TestQuerier_UpdateValidIngredientState(T *testing.T) {
 			exampleValidIngredientState.IconPath,
 			exampleValidIngredientState.Slug,
 			exampleValidIngredientState.PastTense,
+			exampleValidIngredientState.AttributeType,
 			exampleValidIngredientState.ID,
 		}
 
@@ -536,6 +540,7 @@ func TestQuerier_UpdateValidIngredientState(T *testing.T) {
 			exampleValidIngredientState.IconPath,
 			exampleValidIngredientState.Slug,
 			exampleValidIngredientState.PastTense,
+			exampleValidIngredientState.AttributeType,
 			exampleValidIngredientState.ID,
 		}
 

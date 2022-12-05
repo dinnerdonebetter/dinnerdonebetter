@@ -39,6 +39,7 @@ type (
 		IconPath      string     `json:"iconPath"`
 		ID            string     `json:"id"`
 		Name          string     `json:"name"`
+		AttributeType string     `json:"attributeType"`
 		Slug          string     `json:"slug"`
 	}
 
@@ -46,33 +47,36 @@ type (
 	ValidIngredientStateCreationRequestInput struct {
 		_ struct{}
 
-		Name        string `json:"name"`
-		Slug        string `json:"slug"`
-		PastTense   string `json:"pastTense"`
-		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		Name          string `json:"name"`
+		Slug          string `json:"slug"`
+		PastTense     string `json:"pastTense"`
+		Description   string `json:"description"`
+		AttributeType string `json:"attributeType"`
+		IconPath      string `json:"iconPath"`
 	}
 
 	// ValidIngredientStateDatabaseCreationInput represents what a user could set as input for creating valid ingredient states.
 	ValidIngredientStateDatabaseCreationInput struct {
-		_           struct{}
-		ID          string
-		Name        string
-		Slug        string
-		PastTense   string
-		Description string
-		IconPath    string
+		_             struct{}
+		ID            string
+		Name          string
+		Slug          string
+		PastTense     string
+		Description   string
+		AttributeType string
+		IconPath      string
 	}
 
 	// ValidIngredientStateUpdateRequestInput represents what a user could set as input for updating valid ingredient states.
 	ValidIngredientStateUpdateRequestInput struct {
 		_ struct{}
 
-		Name        *string `json:"name"`
-		Slug        *string `json:"slug"`
-		PastTense   *string `json:"pastTense"`
-		Description *string `json:"description"`
-		IconPath    *string `json:"iconPath"`
+		Name          *string `json:"name"`
+		Slug          *string `json:"slug"`
+		PastTense     *string `json:"pastTense"`
+		Description   *string `json:"description"`
+		AttributeType *string `json:"attributeType"`
+		IconPath      *string `json:"iconPath"`
 	}
 
 	// ValidIngredientStateDataManager describes a structure capable of storing valid ingredient states permanently.
@@ -117,6 +121,10 @@ func (x *ValidIngredientState) Update(input *ValidIngredientStateUpdateRequestIn
 
 	if input.Slug != nil && *input.Slug != x.Slug {
 		x.Slug = *input.Slug
+	}
+
+	if input.AttributeType != nil && *input.AttributeType != x.AttributeType {
+		x.AttributeType = *input.AttributeType
 	}
 }
 

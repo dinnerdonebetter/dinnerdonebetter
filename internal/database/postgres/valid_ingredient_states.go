@@ -22,6 +22,7 @@ var (
 		"valid_ingredient_states.icon_path",
 		"valid_ingredient_states.slug",
 		"valid_ingredient_states.past_tense",
+		"valid_ingredient_states.attribute_type",
 		"valid_ingredient_states.created_at",
 		"valid_ingredient_states.last_updated_at",
 		"valid_ingredient_states.archived_at",
@@ -42,6 +43,7 @@ func (q *Querier) scanValidIngredientState(ctx context.Context, scan database.Sc
 		&x.IconPath,
 		&x.Slug,
 		&x.PastTense,
+		&x.AttributeType,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -236,6 +238,7 @@ func (q *Querier) CreateValidIngredientState(ctx context.Context, input *types.V
 		input.IconPath,
 		input.PastTense,
 		input.Slug,
+		input.AttributeType,
 	}
 
 	// create the valid preparation.
@@ -244,13 +247,14 @@ func (q *Querier) CreateValidIngredientState(ctx context.Context, input *types.V
 	}
 
 	x := &types.ValidIngredientState{
-		ID:          input.ID,
-		Name:        input.Name,
-		Description: input.Description,
-		IconPath:    input.IconPath,
-		Slug:        input.Slug,
-		PastTense:   input.PastTense,
-		CreatedAt:   q.currentTime(),
+		ID:            input.ID,
+		Name:          input.Name,
+		Description:   input.Description,
+		IconPath:      input.IconPath,
+		Slug:          input.Slug,
+		PastTense:     input.PastTense,
+		AttributeType: input.AttributeType,
+		CreatedAt:     q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientStateIDToSpan(span, x.ID)
@@ -280,6 +284,7 @@ func (q *Querier) UpdateValidIngredientState(ctx context.Context, updated *types
 		updated.IconPath,
 		updated.Slug,
 		updated.PastTense,
+		updated.AttributeType,
 		updated.ID,
 	}
 

@@ -81,6 +81,7 @@ var fullRecipesColumns = []string{
 	"valid_preparations.maximum_instrument_count",
 	"valid_preparations.temperature_required",
 	"valid_preparations.time_estimate_required",
+	"valid_preparations.condition_expression_required",
 	"valid_preparations.slug",
 	"valid_preparations.past_tense",
 	"valid_preparations.created_at",
@@ -92,6 +93,7 @@ var fullRecipesColumns = []string{
 	"recipe_steps.maximum_temperature_in_celsius",
 	"recipe_steps.notes",
 	"recipe_steps.explicit_instructions",
+	"recipe_steps.condition_expression",
 	"recipe_steps.optional",
 	"recipe_steps.created_at",
 	"recipe_steps.last_updated_at",
@@ -129,6 +131,7 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Preparation.MaximumInstrumentCount,
 			&step.Preparation.TemperatureRequired,
 			&step.Preparation.TimeEstimateRequired,
+			&step.Preparation.ConditionExpressionRequired,
 			&step.Preparation.Slug,
 			&step.Preparation.PastTense,
 			&step.Preparation.CreatedAt,
@@ -140,6 +143,7 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.MaximumTemperatureInCelsius,
 			&step.Notes,
 			&step.ExplicitInstructions,
+			&step.ConditionExpression,
 			&step.Optional,
 			&step.CreatedAt,
 			&step.LastUpdatedAt,
@@ -285,10 +289,12 @@ func prepareMockToSuccessfullyGetRecipe(t *testing.T, recipe *types.Recipe, user
 	allIngredients := []*types.RecipeStepIngredient{}
 	allInstruments := []*types.RecipeStepInstrument{}
 	allProducts := []*types.RecipeStepProduct{}
+	allCompletionConditions := []*types.RecipeStepCompletionCondition{}
 	for _, step := range exampleRecipe.Steps {
 		allIngredients = append(allIngredients, step.Ingredients...)
 		allInstruments = append(allInstruments, step.Instruments...)
 		allProducts = append(allProducts, step.Products...)
+		allCompletionConditions = append(allCompletionConditions, step.CompletionConditions...)
 	}
 
 	args := []any{
@@ -341,6 +347,13 @@ func prepareMockToSuccessfullyGetRecipe(t *testing.T, recipe *types.Recipe, user
 	db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
 		WithArgs(interfaceToDriverValue(instrumentsArgs)...).
 		WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
+
+	completionConditionsArgs := []any{
+		exampleRecipe.ID,
+	}
+	db.ExpectQuery(formatQueryForSQLMock(getRecipeStepCompletionConditionsForRecipeQuery)).
+		WithArgs(interfaceToDriverValue(completionConditionsArgs)...).
+		WillReturnRows(buildMockRowsFromRecipeStepCompletionConditions(false, 0, allCompletionConditions...))
 
 	for _, step := range exampleRecipe.Steps {
 		recipeMediaForRecipeStepArgs := []any{
@@ -918,9 +931,15 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			}
 
 			for j := range step.Instruments {
-				exampleRecipe.Steps[i].Instruments[j].ID = "3"
+				exampleRecipe.Steps[i].Instruments[j].ID = "4"
 				exampleRecipe.Steps[i].Instruments[j].Instrument = &types.ValidInstrument{ID: exampleRecipe.Steps[i].Instruments[j].Instrument.ID}
 				exampleRecipe.Steps[i].Instruments[j].BelongsToRecipeStep = "2"
+			}
+
+			for j := range step.CompletionConditions {
+				exampleRecipe.Steps[i].CompletionConditions[j].ID = "5"
+				exampleRecipe.Steps[i].CompletionConditions[j].BelongsToRecipeStep = "2"
+				exampleRecipe.Steps[i].CompletionConditions[j].Ingredients = nil
 			}
 
 			step.Products = nil
@@ -964,6 +983,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				step.MaximumTemperatureInCelsius,
 				step.Notes,
 				step.ExplicitInstructions,
+				step.ConditionExpression,
 				step.Optional,
 				step.BelongsToRecipe,
 			}
@@ -1014,6 +1034,32 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				db.ExpectExec(formatQueryForSQLMock(recipeStepInstrumentCreationQuery)).
 					WithArgs(interfaceToDriverValue(recipeStepInstrumentCreationArgs)...).
 					WillReturnResult(newArbitraryDatabaseResult())
+			}
+
+			for _, completionCondition := range step.CompletionConditions {
+				recipeStepCompletionConditionCreationArgs := []any{
+					completionCondition.ID,
+					completionCondition.BelongsToRecipeStep,
+					completionCondition.IngredientStateID,
+					completionCondition.Optional,
+					completionCondition.Notes,
+				}
+
+				db.ExpectExec(formatQueryForSQLMock(recipeStepCompletionConditionCreationQuery)).
+					WithArgs(interfaceToDriverValue(recipeStepCompletionConditionCreationArgs)...).
+					WillReturnResult(newArbitraryDatabaseResult())
+
+				for _, completionConditionIngredient := range completionCondition.Ingredients {
+					recipeStepCompletionConditionIngredientCreationArgs := []any{
+						completionConditionIngredient.ID,
+						completionConditionIngredient.BelongsToRecipeStepCompletionCondition,
+						completionConditionIngredient.RecipeStepIngredient,
+					}
+
+					db.ExpectExec(formatQueryForSQLMock(recipeStepCompletionConditionIngredientCreationQuery)).
+						WithArgs(interfaceToDriverValue(recipeStepCompletionConditionIngredientCreationArgs)...).
+						WillReturnResult(newArbitraryDatabaseResult())
+				}
 			}
 		}
 
@@ -1071,6 +1117,11 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			for j, instrument := range step.Instruments {
 				instrument.BelongsToRecipeStep = step.ID
 				instrument.CreatedAt = actual.Steps[i].Instruments[j].CreatedAt
+			}
+
+			for j, completionCondition := range step.CompletionConditions {
+				completionCondition.BelongsToRecipeStep = step.ID
+				completionCondition.CreatedAt = actual.Steps[i].CompletionConditions[j].CreatedAt
 			}
 		}
 
@@ -1296,6 +1347,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Steps[0].MaximumTemperatureInCelsius,
 			exampleInput.Steps[0].Notes,
 			exampleInput.Steps[0].ExplicitInstructions,
+			exampleInput.Steps[0].ConditionExpression,
 			exampleInput.Steps[0].Optional,
 			exampleInput.Steps[0].BelongsToRecipe,
 		}
@@ -1659,6 +1711,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 				MaximumTemperatureInCelsius:   step.MaximumTemperatureInCelsius,
 				Notes:                         step.Notes,
 				ExplicitInstructions:          step.ExplicitInstructions,
+				ConditionExpression:           step.ConditionExpression,
 				PreparationID:                 step.Preparation.ID,
 				BelongsToRecipe:               step.BelongsToRecipe,
 				ID:                            step.ID,
@@ -1872,6 +1925,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 				MaximumTemperatureInCelsius:   step.MaximumTemperatureInCelsius,
 				Notes:                         step.Notes,
 				ExplicitInstructions:          step.ExplicitInstructions,
+				ConditionExpression:           step.ConditionExpression,
 				PreparationID:                 step.Preparation.ID,
 				BelongsToRecipe:               step.BelongsToRecipe,
 				ID:                            step.ID,
@@ -2030,6 +2084,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 				MaximumTemperatureInCelsius:   step.MaximumTemperatureInCelsius,
 				Notes:                         step.Notes,
 				ExplicitInstructions:          step.ExplicitInstructions,
+				ConditionExpression:           step.ConditionExpression,
 				PreparationID:                 step.Preparation.ID,
 				BelongsToRecipe:               step.BelongsToRecipe,
 				ID:                            step.ID,
