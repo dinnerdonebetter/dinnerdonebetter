@@ -67,7 +67,7 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedAt)
 
 			// assert recipe step completion condition list functionality works
-			listResponse, err := testClients.user.GetRecipeStepCompletionConditions(ctx, createdRecipe.ID, createdRecipeStep.ID, nil)
+			listResponse, err := testClients.user.GetRecipeStepCompletionConditions(ctx, createdRecipe.ID, createdRecipeStep.ID, types.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,

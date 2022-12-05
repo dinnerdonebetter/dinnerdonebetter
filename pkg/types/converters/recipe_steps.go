@@ -81,6 +81,11 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 		products = append(products, ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(product))
 	}
 
+	completionConditions := []*types.RecipeStepCompletionConditionCreationRequestInput{}
+	for _, completionCondition := range recipeStep.CompletionConditions {
+		completionConditions = append(completionConditions, ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(completionCondition))
+	}
+
 	return &types.RecipeStepCreationRequestInput{
 		Optional:                      recipeStep.Optional,
 		Index:                         recipeStep.Index,
@@ -95,6 +100,7 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 		Products:                      products,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
+		CompletionConditions:          completionConditions,
 	}
 }
 
@@ -115,6 +121,11 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 		products = append(products, ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(p))
 	}
 
+	completionConditions := []*types.RecipeStepCompletionConditionDatabaseCreationInput{}
+	for _, completionCondition := range recipeStep.CompletionConditions {
+		completionConditions = append(completionConditions, ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(completionCondition))
+	}
+
 	return &types.RecipeStepDatabaseCreationInput{
 		ID:                            recipeStep.ID,
 		Index:                         recipeStep.Index,
@@ -131,5 +142,6 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 		Instruments:                   instruments,
 		Products:                      products,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
+		CompletionConditions:          completionConditions,
 	}
 }

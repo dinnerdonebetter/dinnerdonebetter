@@ -35,6 +35,24 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		products = append(products, p)
 	}
 
+	completionConditionID := BuildFakeID()
+	completionConditions := []*types.RecipeStepCompletionCondition{
+		{
+			ID:                  completionConditionID,
+			BelongsToRecipeStep: recipeStepID,
+			IngredientState:     types.ValidIngredientState{},
+			Notes:               buildUniqueString(),
+			Ingredients: []*types.RecipeStepCompletionConditionIngredient{
+				{
+					ID:                                     BuildFakeID(),
+					BelongsToRecipeStepCompletionCondition: completionConditionID,
+					RecipeStepIngredient:                   ingredients[0].ID,
+				},
+			},
+			Optional: false,
+		},
+	}
+
 	return &types.RecipeStep{
 		ID:                            recipeStepID,
 		Index:                         fake.Uint32(),
@@ -52,6 +70,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		ExplicitInstructions:          buildUniqueString(),
 		ConditionExpression:           buildUniqueString(),
 		Instruments:                   instruments,
+		CompletionConditions:          completionConditions,
 	}
 }
 

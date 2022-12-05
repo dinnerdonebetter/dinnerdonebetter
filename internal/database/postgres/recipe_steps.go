@@ -365,6 +365,16 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		x.Instruments = append(x.Instruments, instrument)
 	}
 
+	for i, conditionInput := range input.CompletionConditions {
+		conditionInput.BelongsToRecipeStep = x.ID
+		condition, createErr := q.createRecipeStepCompletionCondition(ctx, db, conditionInput)
+		if createErr != nil {
+			return nil, observability.PrepareError(createErr, span, "creating recipe step completion condition #%d", i+1)
+		}
+
+		x.CompletionConditions = append(x.CompletionConditions, condition)
+	}
+
 	tracing.AttachRecipeStepIDToSpan(span, x.ID)
 
 	return x, nil

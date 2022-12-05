@@ -64,7 +64,7 @@ func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning complete meal")
+			return nil, observability.PrepareError(err, span, "scanning complete recipe prep task step")
 		}
 
 		x.RecipePrepTask.TaskSteps = append(x.RecipePrepTask.TaskSteps, recipePrepTaskStep)
@@ -105,7 +105,7 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning complete meal")
+			return nil, observability.PrepareError(err, span, "scanning complete meal plan task")
 		}
 
 		if lastMealPlanTaskID == "" {

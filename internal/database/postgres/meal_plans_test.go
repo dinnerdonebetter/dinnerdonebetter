@@ -251,6 +251,7 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		exampleMealPlan.Events = []*types.MealPlanEvent{exampleMealPlan.Events[0]}
+
 		for i := range exampleMealPlan.Events[0].Options {
 			exampleMealPlan.Events[0].Options[i].Meal = *fakes.BuildFakeMeal()
 		}
