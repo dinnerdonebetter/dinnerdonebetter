@@ -39,7 +39,7 @@ func TestProvideValidIngredientStateIngredientsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			ValidPreparationIDURIParamKey,
+			ValidIngredientStateIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",

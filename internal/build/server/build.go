@@ -45,6 +45,7 @@ import (
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/backend/internal/services/validingredients"
+	validingredientstateingredientsservice "github.com/prixfixeco/backend/internal/services/validingredientstateingredients"
 	validingredientstatesservice "github.com/prixfixeco/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/prixfixeco/backend/internal/services/validinstruments"
 	validmeasurementconversionsservice "github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
@@ -100,6 +101,7 @@ func Build(
 		mealplanoptionvotesservice.Providers,
 		validmeasurementunits.Providers,
 		validpreparationinstrumentsservice.Providers,
+		validingredientstateingredientsservice.Providers,
 		validingredientmeasurementunitsservice.Providers,
 		mealplantasks.Providers,
 		graphing.Providers,

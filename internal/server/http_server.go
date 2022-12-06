@@ -59,6 +59,7 @@ type (
 		mealPlanGroceryListItemsService        types.MealPlanGroceryListItemDataService
 		validMeasurementConversionsService     types.ValidMeasurementConversionDataService
 		recipeStepCompletionConditionsService  types.RecipeStepCompletionConditionDataService
+		validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
 		router                                 routing.Router
@@ -101,6 +102,7 @@ func ProvideHTTPServer(
 	mealPlanGroceryListItemsService types.MealPlanGroceryListItemDataService,
 	validMeasurementConversionsService types.ValidMeasurementConversionDataService,
 	recipeStepCompletionConditionsService types.RecipeStepCompletionConditionDataService,
+	validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
 	logger logging.Logger,
@@ -150,6 +152,7 @@ func ProvideHTTPServer(
 		validMeasurementConversionsService:     validMeasurementConversionsService,
 		validIngredientStatesService:           validIngredientStatesService,
 		recipeStepCompletionConditionsService:  recipeStepCompletionConditionsService,
+		validIngredientStateIngredientsService: validIngredientStateIngredientsService,
 	}
 
 	srv.setupRouter(ctx, router, metricsHandler)

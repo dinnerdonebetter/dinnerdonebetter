@@ -41,6 +41,7 @@ var (
 		ProvideRecipeMediaDataManager,
 		ProvideValidIngredientStateDataManager,
 		ProvideRecipeStepCompletionConditionDataManager,
+		ProvideValidIngredientStateIngredientDataManager,
 	)
 )
 
@@ -201,5 +202,10 @@ func ProvideValidIngredientStateDataManager(db DataManager) types.ValidIngredien
 
 // ProvideRecipeStepCompletionConditionDataManager is an arbitrary function for dependency injection's sake.
 func ProvideRecipeStepCompletionConditionDataManager(db DataManager) types.RecipeStepCompletionConditionDataManager {
+	return db
+}
+
+// ProvideValidIngredientStateIngredientDataManager is an arbitrary function for dependency injection's sake.
+func ProvideValidIngredientStateIngredientDataManager(db DataManager) types.ValidIngredientStateIngredientDataManager {
 	return db
 }

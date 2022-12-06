@@ -11,24 +11,24 @@ import (
 )
 
 const (
-	validIngredientPreparationsBasePath = "valid_ingredient_preparations"
+	validIngredientStateIngredientsBasePath = "valid_ingredient_state_ingredients"
 )
 
-// BuildGetValidIngredientPreparationRequest builds an HTTP request for fetching a valid ingredient preparation.
-func (b *Builder) BuildGetValidIngredientPreparationRequest(ctx context.Context, validIngredientPreparationID string) (*http.Request, error) {
+// BuildGetValidIngredientStateIngredientRequest builds an HTTP request for fetching a valid ingredient preparation.
+func (b *Builder) BuildGetValidIngredientStateIngredientRequest(ctx context.Context, validIngredientStateIngredientID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if validIngredientPreparationID == "" {
+	if validIngredientStateIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
+	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validIngredientPreparationsBasePath,
-		validIngredientPreparationID,
+		validIngredientStateIngredientsBasePath,
+		validIngredientStateIngredientID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -40,15 +40,15 @@ func (b *Builder) BuildGetValidIngredientPreparationRequest(ctx context.Context,
 	return req, nil
 }
 
-// BuildGetValidIngredientPreparationsRequest builds an HTTP request for fetching a list of valid ingredient preparations.
-func (b *Builder) BuildGetValidIngredientPreparationsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
+// BuildGetValidIngredientStateIngredientsRequest builds an HTTP request for fetching a list of valid ingredient preparations.
+func (b *Builder) BuildGetValidIngredientStateIngredientsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	uri := b.BuildURL(
 		ctx,
 		filter.ToValues(),
-		validIngredientPreparationsBasePath,
+		validIngredientStateIngredientsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -61,8 +61,8 @@ func (b *Builder) BuildGetValidIngredientPreparationsRequest(ctx context.Context
 	return req, nil
 }
 
-// BuildGetValidIngredientPreparationsForIngredientRequest builds an HTTP request for fetching a list of valid ingredient preparations.
-func (b *Builder) BuildGetValidIngredientPreparationsForIngredientRequest(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*http.Request, error) {
+// BuildGetValidIngredientStateIngredientsForIngredientRequest builds an HTTP request for fetching a list of valid ingredient preparations.
+func (b *Builder) BuildGetValidIngredientStateIngredientsForIngredientRequest(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -74,7 +74,7 @@ func (b *Builder) BuildGetValidIngredientPreparationsForIngredientRequest(ctx co
 	uri := b.BuildURL(
 		ctx,
 		filter.ToValues(),
-		validIngredientPreparationsBasePath,
+		validIngredientStateIngredientsBasePath,
 		"by_ingredient",
 		ingredientID,
 	)
@@ -89,22 +89,22 @@ func (b *Builder) BuildGetValidIngredientPreparationsForIngredientRequest(ctx co
 	return req, nil
 }
 
-// BuildGetValidIngredientPreparationsForPreparationRequest builds an HTTP request for fetching a list of valid ingredient preparations.
-func (b *Builder) BuildGetValidIngredientPreparationsForPreparationRequest(ctx context.Context, preparationID string, filter *types.QueryFilter) (*http.Request, error) {
+// BuildGetValidIngredientStateIngredientsForPreparationRequest builds an HTTP request for fetching a list of valid ingredient preparations.
+func (b *Builder) BuildGetValidIngredientStateIngredientsForPreparationRequest(ctx context.Context, ingredientState string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if preparationID == "" {
+	if ingredientState == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationIDToSpan(span, preparationID)
+	tracing.AttachValidIngredientStateIDToSpan(span, ingredientState)
 
 	uri := b.BuildURL(
 		ctx,
 		filter.ToValues(),
-		validIngredientPreparationsBasePath,
-		"by_preparation",
-		preparationID,
+		validIngredientStateIngredientsBasePath,
+		"by_ingredient_state",
+		ingredientState,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -117,8 +117,8 @@ func (b *Builder) BuildGetValidIngredientPreparationsForPreparationRequest(ctx c
 	return req, nil
 }
 
-// BuildCreateValidIngredientPreparationRequest builds an HTTP request for creating a valid ingredient preparation.
-func (b *Builder) BuildCreateValidIngredientPreparationRequest(ctx context.Context, input *types.ValidIngredientPreparationCreationRequestInput) (*http.Request, error) {
+// BuildCreateValidIngredientStateIngredientRequest builds an HTTP request for creating a valid ingredient preparation.
+func (b *Builder) BuildCreateValidIngredientStateIngredientRequest(ctx context.Context, input *types.ValidIngredientStateIngredientCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -133,7 +133,7 @@ func (b *Builder) BuildCreateValidIngredientPreparationRequest(ctx context.Conte
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validIngredientPreparationsBasePath,
+		validIngredientStateIngredientsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -145,25 +145,25 @@ func (b *Builder) BuildCreateValidIngredientPreparationRequest(ctx context.Conte
 	return req, nil
 }
 
-// BuildUpdateValidIngredientPreparationRequest builds an HTTP request for updating a valid ingredient preparation.
-func (b *Builder) BuildUpdateValidIngredientPreparationRequest(ctx context.Context, validIngredientPreparation *types.ValidIngredientPreparation) (*http.Request, error) {
+// BuildUpdateValidIngredientStateIngredientRequest builds an HTTP request for updating a valid ingredient preparation.
+func (b *Builder) BuildUpdateValidIngredientStateIngredientRequest(ctx context.Context, validIngredientStateIngredient *types.ValidIngredientStateIngredient) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if validIngredientPreparation == nil {
+	if validIngredientStateIngredient == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparation.ID)
+	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredient.ID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validIngredientPreparationsBasePath,
-		validIngredientPreparation.ID,
+		validIngredientStateIngredientsBasePath,
+		validIngredientStateIngredient.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := converters.ConvertValidIngredientPreparationToValidIngredientPreparationUpdateRequestInput(validIngredientPreparation)
+	input := converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientUpdateRequestInput(validIngredientStateIngredient)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
@@ -173,21 +173,21 @@ func (b *Builder) BuildUpdateValidIngredientPreparationRequest(ctx context.Conte
 	return req, nil
 }
 
-// BuildArchiveValidIngredientPreparationRequest builds an HTTP request for archiving a valid ingredient preparation.
-func (b *Builder) BuildArchiveValidIngredientPreparationRequest(ctx context.Context, validIngredientPreparationID string) (*http.Request, error) {
+// BuildArchiveValidIngredientStateIngredientRequest builds an HTTP request for archiving a valid ingredient preparation.
+func (b *Builder) BuildArchiveValidIngredientStateIngredientRequest(ctx context.Context, validIngredientStateIngredientID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if validIngredientPreparationID == "" {
+	if validIngredientStateIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
+	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validIngredientPreparationsBasePath,
-		validIngredientPreparationID,
+		validIngredientStateIngredientsBasePath,
+		validIngredientStateIngredientID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 

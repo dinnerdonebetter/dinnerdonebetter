@@ -270,12 +270,12 @@ func TestQuerier_GetValidIngredientStateIngredients(T *testing.T) {
 
 	joins := []string{
 		validIngredientsOnValidIngredientStateIngredientsJoinClause,
-		validPreparationsOnValidIngredientStateIngredientsJoinClause,
+		validIngredientStatesOnValidIngredientStateIngredientsJoinClause,
 	}
 
 	groupBys := []string{
 		"valid_ingredients.id",
-		"valid_preparations.id",
+		"valid_ingredient_states.id",
 		"valid_ingredient_state_ingredients.id",
 	}
 

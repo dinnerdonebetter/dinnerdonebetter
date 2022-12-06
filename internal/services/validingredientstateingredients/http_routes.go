@@ -16,8 +16,8 @@ import (
 const (
 	// ValidIngredientStateIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient preparation IDs with.
 	ValidIngredientStateIngredientIDURIParamKey = "validIngredientStateIngredientID"
-	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
-	ValidPreparationIDURIParamKey = "validPreparationID"
+	// ValidIngredientStateIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
+	ValidIngredientStateIDURIParamKey = "validIngredientStateID"
 	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient IDs with.
 	ValidIngredientIDURIParamKey = "validIngredientID"
 )

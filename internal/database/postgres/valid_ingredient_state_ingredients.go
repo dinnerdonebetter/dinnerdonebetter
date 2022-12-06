@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	validIngredientsOnValidIngredientStateIngredientsJoinClause  = "valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient_id = valid_ingredients.id"
-	validPreparationsOnValidIngredientStateIngredientsJoinClause = "valid_preparations ON valid_ingredient_state_ingredients.valid_preparation_id = valid_preparations.id"
+	validIngredientsOnValidIngredientStateIngredientsJoinClause      = "valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id"
+	validIngredientStatesOnValidIngredientStateIngredientsJoinClause = "valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id"
 )
 
 var (
@@ -217,11 +217,11 @@ func (q *Querier) GetValidIngredientStateIngredient(ctx context.Context, validIn
 		validIngredientStateIngredientID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "validIngredientStateIngredient", getValidIngredientStateIngredientQuery, args)
+	row := q.getOneRow(ctx, q.db, "valid ingredient state ingredient", getValidIngredientStateIngredientQuery, args)
 
 	validIngredientStateIngredient, _, _, err := q.scanValidIngredientStateIngredient(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validIngredientStateIngredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient state ingredient")
 	}
 
 	return validIngredientStateIngredient, nil
@@ -250,12 +250,12 @@ func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter
 
 	joins := []string{
 		validIngredientsOnValidIngredientStateIngredientsJoinClause,
-		validPreparationsOnValidIngredientStateIngredientsJoinClause,
+		validIngredientStatesOnValidIngredientStateIngredientsJoinClause,
 	}
 
 	groupBys := []string{
 		"valid_ingredients.id",
-		"valid_preparations.id",
+		"valid_ingredient_states.id",
 		"valid_ingredient_state_ingredients.id",
 	}
 
@@ -280,7 +280,7 @@ func (q *Querier) buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ct
 	query, args, err := q.sqlBuilder.Select(validIngredientStateIngredientsTableColumns...).
 		From("valid_ingredient_state_ingredients").
 		Join(validIngredientsOnValidIngredientStateIngredientsJoinClause).
-		Join(validPreparationsOnValidIngredientStateIngredientsJoinClause).
+		Join(validIngredientStatesOnValidIngredientStateIngredientsJoinClause).
 		Where(squirrel.Eq{
 			fmt.Sprintf("valid_ingredient_state_ingredients.%s", column): ids,
 			"valid_ingredient_state_ingredients.archived_at":             nil,
@@ -294,7 +294,7 @@ func (q *Querier) buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ct
 }
 
 func (q *Querier) buildGetValidIngredientStateIngredientsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
-	return q.buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
+	return q.buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx, "valid_ingredient_state_id", limit, ids)
 }
 
 // GetValidIngredientStateIngredientsForIngredientState fetches a list of valid ingredient state ingredients from the database that meet a particular filter.

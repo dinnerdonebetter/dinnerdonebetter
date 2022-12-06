@@ -119,6 +119,17 @@ const (
 	// ArchiveValidIngredientPreparationsPermission is a household user permission.
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
 
+	// CreateValidIngredientStateIngredientsPermission is a household user permission.
+	CreateValidIngredientStateIngredientsPermission Permission = "create.valid_ingredient_state_ingredients"
+	// ReadValidIngredientStateIngredientsPermission is a household user permission.
+	ReadValidIngredientStateIngredientsPermission Permission = "read.valid_ingredient_state_ingredients"
+	// SearchValidIngredientStateIngredientsPermission is a household user permission.
+	SearchValidIngredientStateIngredientsPermission Permission = "search.valid_ingredient_state_ingredients"
+	// UpdateValidIngredientStateIngredientsPermission is a household user permission.
+	UpdateValidIngredientStateIngredientsPermission Permission = "update.valid_ingredient_state_ingredients"
+	// ArchiveValidIngredientStateIngredientsPermission is a household user permission.
+	ArchiveValidIngredientStateIngredientsPermission Permission = "archive.valid_ingredient_state_ingredients"
+
 	// CreateValidPreparationInstrumentsPermission is a household user permission.
 	CreateValidPreparationInstrumentsPermission Permission = "create.valid_preparation_instruments"
 	// ReadValidPreparationInstrumentsPermission is a household user permission.
@@ -326,6 +337,10 @@ var (
 		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
 
+		CreateValidIngredientStateIngredientsPermission.ID():  CreateValidIngredientStateIngredientsPermission,
+		UpdateValidIngredientStateIngredientsPermission.ID():  UpdateValidIngredientStateIngredientsPermission,
+		ArchiveValidIngredientStateIngredientsPermission.ID(): ArchiveValidIngredientStateIngredientsPermission,
+
 		CreateValidPreparationInstrumentsPermission.ID():  CreateValidPreparationInstrumentsPermission,
 		UpdateValidPreparationInstrumentsPermission.ID():  UpdateValidPreparationInstrumentsPermission,
 		ArchiveValidPreparationInstrumentsPermission.ID(): ArchiveValidPreparationInstrumentsPermission,
@@ -440,6 +455,9 @@ var (
 
 		ReadValidIngredientPreparationsPermission.ID():   ReadValidIngredientPreparationsPermission,
 		SearchValidIngredientPreparationsPermission.ID(): SearchValidIngredientPreparationsPermission,
+
+		ReadValidIngredientStateIngredientsPermission.ID():   ReadValidIngredientStateIngredientsPermission,
+		SearchValidIngredientStateIngredientsPermission.ID(): SearchValidIngredientStateIngredientsPermission,
 
 		ReadValidPreparationInstrumentsPermission.ID():   ReadValidPreparationInstrumentsPermission,
 		SearchValidPreparationInstrumentsPermission.ID(): SearchValidPreparationInstrumentsPermission,

@@ -1,9 +1,9 @@
 SELECT
     COUNT(id) = $1
 FROM
-    valid_ingredient_preparations
+    valid_ingredient_state_ingredients
 WHERE
-    (valid_ingredient_id, valid_preparation_id) IN (
+    (valid_ingredient_id, valid_ingredient_state_id) IN (
     VALUES
     (
         '29e1aTUQlzwyjy5rMb5cQSybaWq',
