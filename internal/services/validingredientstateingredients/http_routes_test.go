@@ -898,7 +898,7 @@ func TestValidIngredientStateIngredientsService_SearchByPreparationHandler(T *te
 
 		validIngredientStateIngredientDataManager := &mocktypes.ValidIngredientStateIngredientDataManager{}
 		validIngredientStateIngredientDataManager.On(
-			"GetValidIngredientStateIngredientsForPreparation",
+			"GetValidIngredientStateIngredientsForIngredientState",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			testutils.QueryFilterMatcher,
@@ -915,7 +915,7 @@ func TestValidIngredientStateIngredientsService_SearchByPreparationHandler(T *te
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchByIngredientStateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -931,7 +931,7 @@ func TestValidIngredientStateIngredientsService_SearchByPreparationHandler(T *te
 			return nil, errors.New("blah")
 		}
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchByIngredientStateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 	})
@@ -943,14 +943,14 @@ func TestValidIngredientStateIngredientsService_SearchByPreparationHandler(T *te
 
 		validIngredientStateIngredientDataManager := &mocktypes.ValidIngredientStateIngredientDataManager{}
 		validIngredientStateIngredientDataManager.On(
-			"GetValidIngredientStateIngredientsForPreparation",
+			"GetValidIngredientStateIngredientsForIngredientState",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			testutils.QueryFilterMatcher,
 		).Return((*types.QueryFilteredResult[types.ValidIngredientStateIngredient])(nil), errors.New("blah"))
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
 
-		helper.service.SearchByPreparationHandler(helper.res, helper.req)
+		helper.service.SearchByIngredientStateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 

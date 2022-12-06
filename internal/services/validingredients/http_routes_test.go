@@ -439,6 +439,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"SearchForValidIngredients",
 			testutils.ContextMatcher,
 			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleValidIngredientList.Data, nil)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
@@ -496,6 +497,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"SearchForValidIngredients",
 			testutils.ContextMatcher,
 			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
 		).Return([]*types.ValidIngredient{}, sql.ErrNoRows)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
@@ -529,6 +531,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"SearchForValidIngredients",
 			testutils.ContextMatcher,
 			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
 		).Return([]*types.ValidIngredient(nil), errors.New("blah"))
 		helper.service.validIngredientDataManager = validIngredientDataManager
 

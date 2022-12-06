@@ -274,11 +274,8 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 	return x, nil
 }
 
-//go:embed queries/valid_ingredients/get_all_for_ingredient_state.sql
-var validIngredientsForIngredientStateQuery string
-
-// GetValidIngredientsForIngredientState fetches a valid ingredient from the database.
-func (q *Querier) GetValidIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+// SearchForValidIngredientsForIngredientState fetches a valid ingredient from the database.
+func (q *Querier) SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -291,10 +288,10 @@ func (q *Querier) GetValidIngredientsForIngredientState(ctx context.Context, ing
 	tracing.AttachValidIngredientStateIDToSpan(span, ingredientStateID)
 
 	args := []any{
-		ingredientStateID,
+		wrapQueryForILIKE(query),
 	}
 
-	rows, err := q.getRows(ctx, q.db, "valid ingredients search by ingredient state", validIngredientsForIngredientStateQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid ingredients search by ingredient state", validIngredientSearchQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}

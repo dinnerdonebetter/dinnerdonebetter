@@ -15,8 +15,8 @@ type ValidIngredientDataManager struct {
 	mock.Mock
 }
 
-func (m *ValidIngredientDataManager) GetValidIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
-	args := m.Called(ctx, ingredientStateID, filter)
+func (m *ValidIngredientDataManager) SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+	args := m.Called(ctx, ingredientStateID, query, filter)
 	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
 }
 

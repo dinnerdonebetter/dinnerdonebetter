@@ -369,22 +369,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
-		/*
-			validIngredientStateIngredientsByIngredientIDRouteParam := fmt.Sprintf("/by_ingredient_state%s", buildURLVarChunk(validingredientpreparationsservice.ValidIngredientIDURIParamKey, ""))
-			validIngredientStatesRouter.Route(validIngredientStateIngredientsByIngredientIDRouteParam, func(byValidIngredientStateRouter routing.Router) {
-				byValidIngredientStateRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
-					Get(root, s.validIngredientPreparationsService.SearchByIngredientHandler)
-			})
-
-			validIngredientStateIngredientsByPreparationIDRouteParam := fmt.Sprintf("/by_ingredient%s", buildURLVarChunk(validingredientpreparationsservice.ValidPreparationIDURIParamKey, ""))
-			validIngredientStatesRouter.Route(validIngredientStateIngredientsByPreparationIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
-				byValidPreparationIDRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
-					Get(root, s.validIngredientPreparationsService.SearchByPreparationHandler)
-			})
-		*/
-
 		// ValidMeasurementConversions
 		validMeasurementConversionPath := "valid_measurement_conversions"
 		validMeasurementConversionsRouteWithPrefix := fmt.Sprintf("/%s", validMeasurementConversionPath)

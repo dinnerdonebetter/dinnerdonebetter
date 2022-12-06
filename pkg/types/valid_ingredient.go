@@ -201,7 +201,7 @@ type (
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredient], error)
 		SearchForValidIngredients(ctx context.Context, query string, filter *QueryFilter) ([]*ValidIngredient, error)
 		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *QueryFilter) ([]*ValidIngredient, error)
-		GetValidIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *QueryFilter) ([]*ValidIngredient, error)
+		SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *QueryFilter) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error

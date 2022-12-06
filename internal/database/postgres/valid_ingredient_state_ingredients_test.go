@@ -37,6 +37,7 @@ func buildMockRowsFromValidIngredientStateIngredients(includeCounts bool, filter
 			&x.IngredientState.IconPath,
 			&x.IngredientState.Slug,
 			&x.IngredientState.PastTense,
+			&x.IngredientState.AttributeType,
 			&x.IngredientState.CreatedAt,
 			&x.IngredientState.LastUpdatedAt,
 			&x.IngredientState.ArchivedAt,
@@ -275,7 +276,7 @@ func TestQuerier_GetValidIngredientStateIngredients(T *testing.T) {
 	groupBys := []string{
 		"valid_ingredients.id",
 		"valid_preparations.id",
-		"valid_ingredient_preparations.id",
+		"valid_ingredient_state_ingredients.id",
 	}
 
 	T.Run("standard", func(t *testing.T) {
@@ -287,8 +288,7 @@ func TestQuerier_GetValidIngredientStateIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
-
+		query, args := c.buildListQuery(ctx, "valid_ingredient_state_ingredients", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidIngredientStateIngredients(true, exampleValidIngredientStateIngredientList.FilteredCount, exampleValidIngredientStateIngredientList.Data...))
@@ -311,8 +311,7 @@ func TestQuerier_GetValidIngredientStateIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
-
+		query, args := c.buildListQuery(ctx, "valid_ingredient_state_ingredients", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidIngredientStateIngredients(true, exampleValidIngredientStateIngredientList.FilteredCount, exampleValidIngredientStateIngredientList.Data...))
@@ -332,8 +331,7 @@ func TestQuerier_GetValidIngredientStateIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
-
+		query, args := c.buildListQuery(ctx, "valid_ingredient_state_ingredients", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
@@ -353,8 +351,7 @@ func TestQuerier_GetValidIngredientStateIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
-
+		query, args := c.buildListQuery(ctx, "valid_ingredient_state_ingredients", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
