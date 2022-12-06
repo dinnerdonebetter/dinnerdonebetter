@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	// ValidIngredientStateIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient preparation IDs with.
+	// ValidIngredientStateIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient state ingredient IDs with.
 	ValidIngredientStateIngredientIDURIParamKey = "validIngredientStateIngredientID"
 	// ValidIngredientStateIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
 	ValidIngredientStateIDURIParamKey = "validIngredientStateID"
@@ -22,7 +22,7 @@ const (
 	ValidIngredientIDURIParamKey = "validIngredientID"
 )
 
-// CreateHandler is our valid ingredient preparation creation route.
+// CreateHandler is our valid ingredient state ingredient creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -62,7 +62,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	validIngredientStateIngredient, err := s.validIngredientStateIngredientDataManager.CreateValidIngredientStateIngredient(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid ingredient preparation")
+		observability.AcknowledgeError(err, logger, span, "creating valid ingredient state ingredient")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -83,7 +83,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientStateIngredient, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid ingredient preparation.
+// ReadHandler returns a GET handler that returns a valid ingredient state ingredient.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -102,18 +102,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine valid ingredient preparation ID.
+	// determine valid ingredient state ingredient ID.
 	validIngredientStateIngredientID := s.validIngredientStateIngredientIDFetcher(req)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
-	// fetch valid ingredient preparation from database.
+	// fetch valid ingredient state ingredient from database.
 	x, err := s.validIngredientStateIngredientDataManager.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient preparation")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient state ingredient")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -152,7 +152,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		// in the event no rows exist, return an empty list.
 		validIngredientStateIngredients = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{Data: []*types.ValidIngredientStateIngredient{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient preparations")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient state ingredients")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -161,7 +161,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, validIngredientStateIngredients)
 }
 
-// UpdateHandler returns a handler that updates a valid ingredient preparation.
+// UpdateHandler returns a handler that updates a valid ingredient state ingredient.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -194,27 +194,27 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// determine valid ingredient preparation ID.
+	// determine valid ingredient state ingredient ID.
 	validIngredientStateIngredientID := s.validIngredientStateIngredientIDFetcher(req)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
-	// fetch valid ingredient preparation from database.
+	// fetch valid ingredient state ingredient from database.
 	validIngredientStateIngredient, err := s.validIngredientStateIngredientDataManager.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient preparation for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient state ingredient for update")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	// update the valid ingredient preparation.
+	// update the valid ingredient state ingredient.
 	validIngredientStateIngredient.Update(input)
 
 	if err = s.validIngredientStateIngredientDataManager.UpdateValidIngredientStateIngredient(ctx, validIngredientStateIngredient); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid ingredient preparation")
+		observability.AcknowledgeError(err, logger, span, "updating valid ingredient state ingredient")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -236,7 +236,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, validIngredientStateIngredient)
 }
 
-// ArchiveHandler returns a handler that archives a valid ingredient preparation.
+// ArchiveHandler returns a handler that archives a valid ingredient state ingredient.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -255,14 +255,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine valid ingredient preparation ID.
+	// determine valid ingredient state ingredient ID.
 	validIngredientStateIngredientID := s.validIngredientStateIngredientIDFetcher(req)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	exists, existenceCheckErr := s.validIngredientStateIngredientDataManager.ValidIngredientStateIngredientExists(ctx, validIngredientStateIngredientID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid ingredient preparation existence")
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid ingredient state ingredient existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
@@ -271,7 +271,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if err = s.validIngredientStateIngredientDataManager.ArchiveValidIngredientStateIngredient(ctx, validIngredientStateIngredientID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient preparation")
+		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient state ingredient")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -323,7 +323,7 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 
 	validIngredientStateIngredients, err := s.validIngredientStateIngredientDataManager.GetValidIngredientStateIngredientsForIngredient(ctx, validIngredientID, filter)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient state ingredients")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -346,8 +346,8 @@ func (s *service) SearchByIngredientStateHandler(res http.ResponseWriter, req *h
 		WithValue(keys.FilterPageKey, filter.Page).
 		WithValue(keys.FilterSortByKey, filter.SortBy)
 
-	validPreparationID := s.validPreparationIDFetcher(req)
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	validIngredientStateID := s.validIngredientStateIDFetcher(req)
+	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -360,9 +360,9 @@ func (s *service) SearchByIngredientStateHandler(res http.ResponseWriter, req *h
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validIngredientStateIngredients, err := s.validIngredientStateIngredientDataManager.GetValidIngredientStateIngredientsForIngredientState(ctx, validPreparationID, filter)
+	validIngredientStateIngredients, err := s.validIngredientStateIngredientDataManager.GetValidIngredientStateIngredientsForIngredientState(ctx, validIngredientStateID, filter)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient state ingredients")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

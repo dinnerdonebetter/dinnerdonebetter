@@ -26,7 +26,7 @@ type (
 		validIngredientStateIngredientDataManager types.ValidIngredientStateIngredientDataManager
 		validIngredientStateIngredientIDFetcher   func(*http.Request) string
 		validIngredientIDFetcher                  func(*http.Request) string
-		validPreparationIDFetcher                 func(*http.Request) string
+		validIngredientStateIDFetcher             func(*http.Request) string
 		sessionContextDataFetcher                 func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher                      messagequeue.Publisher
 		encoderDecoder                            encoding.ServerEncoderDecoder
@@ -52,7 +52,7 @@ func ProvideService(
 	svc := &service{
 		logger:                                    logging.EnsureLogger(logger).WithName(serviceName),
 		validIngredientStateIngredientIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientStateIngredientIDURIParamKey),
-		validPreparationIDFetcher:                 routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientStateIDURIParamKey),
+		validIngredientStateIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientStateIDURIParamKey),
 		validIngredientIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
 		sessionContextDataFetcher:                 authservice.FetchContextFromRequest,
 		validIngredientStateIngredientDataManager: validIngredientStateIngredientDataManager,

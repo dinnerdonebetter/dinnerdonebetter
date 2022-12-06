@@ -411,7 +411,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					Get(root, s.validIngredientStateIngredientsService.SearchByIngredientHandler)
 			})
 
-			validIngredientStateIngredientsByStateIngredientIDRouteParam := fmt.Sprintf("/by_ingredient_state%s", buildURLVarChunk(validingredientstateingredientsservice.ValidIngredientIDURIParamKey, ""))
+			validIngredientStateIngredientsByStateIngredientIDRouteParam := fmt.Sprintf("/by_ingredient_state%s", buildURLVarChunk(validingredientstateingredientsservice.ValidIngredientStateIDURIParamKey, ""))
 			validIngredientStateIngredientsRouter.Route(validIngredientStateIngredientsByStateIngredientIDRouteParam, func(byValidStateIngredientIDRouter routing.Router) {
 				byValidStateIngredientIDRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientStateIngredientsPermission)).
