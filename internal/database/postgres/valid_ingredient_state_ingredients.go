@@ -294,7 +294,7 @@ func (q *Querier) buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ct
 }
 
 func (q *Querier) buildGetValidIngredientStateIngredientsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
-	return q.buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx, "valid_ingredient_state_id", limit, ids)
+	return q.buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx, "valid_ingredient_state", limit, ids)
 }
 
 // GetValidIngredientStateIngredientsForIngredientState fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
@@ -340,7 +340,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 }
 
 func (q *Querier) buildGetValidIngredientStateIngredientsWithIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
-	return q.buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx, "valid_ingredient_id", limit, ids)
+	return q.buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx, "valid_ingredient", limit, ids)
 }
 
 // GetValidIngredientStateIngredientsForIngredient fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
