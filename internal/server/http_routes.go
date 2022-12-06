@@ -30,6 +30,7 @@ import (
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/backend/internal/services/validingredients"
+	validingredientstateingredientsservice "github.com/prixfixeco/backend/internal/services/validingredientstateingredients"
 	validingredientstatesservice "github.com/prixfixeco/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/prixfixeco/backend/internal/services/validinstruments"
 	validmeasurementconversionsservice "github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
@@ -388,6 +389,45 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleValidMeasurementConversionRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementConversionsPermission)).
 					Delete(root, s.validMeasurementConversionsService.ArchiveHandler)
+			})
+		})
+
+		// ValidIngredientStateIngredients
+		validIngredientStateIngredientPath := "valid_ingredient_state_ingredients"
+		validIngredientStateIngredientsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientStateIngredientPath)
+		validIngredientStateIngredientIDRouteParam := buildURLVarChunk(validingredientstateingredientsservice.ValidIngredientStateIngredientIDURIParamKey, "")
+		v1Router.Route(validIngredientStateIngredientsRouteWithPrefix, func(validIngredientStateIngredientsRouter routing.Router) {
+			validIngredientStateIngredientsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidIngredientStateIngredientsPermission)).
+				Post(root, s.validIngredientStateIngredientsService.CreateHandler)
+			validIngredientStateIngredientsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientStateIngredientsPermission)).
+				Get(root, s.validIngredientStateIngredientsService.ListHandler)
+
+			validIngredientStateIngredientsByIngredientIDRouteParam := fmt.Sprintf("/by_ingredient%s", buildURLVarChunk(validingredientstateingredientsservice.ValidIngredientIDURIParamKey, ""))
+			validIngredientStateIngredientsRouter.Route(validIngredientStateIngredientsByIngredientIDRouteParam, func(byValidIngredientIDRouter routing.Router) {
+				byValidIngredientIDRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientStateIngredientsPermission)).
+					Get(root, s.validIngredientStateIngredientsService.SearchByIngredientHandler)
+			})
+
+			validIngredientStateIngredientsByStateIngredientIDRouteParam := fmt.Sprintf("/by_ingredient_state%s", buildURLVarChunk(validingredientstateingredientsservice.ValidIngredientStateIDURIParamKey, ""))
+			validIngredientStateIngredientsRouter.Route(validIngredientStateIngredientsByStateIngredientIDRouteParam, func(byValidStateIngredientIDRouter routing.Router) {
+				byValidStateIngredientIDRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientStateIngredientsPermission)).
+					Get(root, s.validIngredientStateIngredientsService.SearchByIngredientStateHandler)
+			})
+
+			validIngredientStateIngredientsRouter.Route(validIngredientStateIngredientIDRouteParam, func(singleValidIngredientStateIngredientRouter routing.Router) {
+				singleValidIngredientStateIngredientRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientStateIngredientsPermission)).
+					Get(root, s.validIngredientStateIngredientsService.ReadHandler)
+				singleValidIngredientStateIngredientRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientStateIngredientsPermission)).
+					Put(root, s.validIngredientStateIngredientsService.UpdateHandler)
+				singleValidIngredientStateIngredientRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientStateIngredientsPermission)).
+					Delete(root, s.validIngredientStateIngredientsService.ArchiveHandler)
 			})
 		})
 

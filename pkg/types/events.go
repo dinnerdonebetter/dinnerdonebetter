@@ -62,6 +62,8 @@ type (
 		MealID                           string                          `json:"mealID,omitempty"`
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
 		EventType                        CustomerEventType               `json:"messageType"`
+		ValidIngredientStateIngredient   *ValidIngredientStateIngredient `json:"validIngredientStateIngredient,omitempty"`
+		ValidIngredientStateIngredientID string                          `json:"validIngredientStateIngredientID"`
 		ValidMeasurementConversionID     string                          `json:"validMeasurementConversionID,omitempty"`
 		DataType                         dataType                        `json:"dataType"`
 		ValidIngredientStateID           string                          `json:"validIngredientStateID,omitempty"`

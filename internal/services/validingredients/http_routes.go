@@ -16,6 +16,8 @@ import (
 const (
 	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient IDs with.
 	ValidIngredientIDURIParamKey = "validIngredientID"
+	// ValidIngredientStateIDURIParamKey is a standard string that we'll use to refer to valid ingredient state IDs with.
+	ValidIngredientStateIDURIParamKey = "validIngredientStateID"
 )
 
 // CreateHandler is our valid ingredient creation route.
@@ -184,12 +186,63 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredients(ctx, query)
+	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredients(ctx, query, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validIngredients = []*types.ValidIngredient{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching valid ingredients")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, validIngredients)
+}
+
+// ForValidIngredientStateHandler is our valid ingredient state filter route.
+func (s *service) ForValidIngredientStateHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	query := req.URL.Query().Get(types.SearchQueryKey)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, filter.SortBy).
+		WithValue(keys.SearchQueryKey, query)
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		logger.Error(err, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	// determine valid ingredient ID.
+	validIngredientID := s.validIngredientIDFetcher(req)
+	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+
+	// determine valid ingredient state ID.
+	validIngredientStateID := s.validIngredientStateIDFetcher(req)
+	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
+	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredients(ctx, "help me", filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		validIngredients = []*types.ValidIngredient{}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredients for valid ingredient state")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

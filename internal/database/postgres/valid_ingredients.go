@@ -213,7 +213,7 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 var validIngredientSearchQuery string
 
 // SearchForValidIngredients fetches a valid ingredient from the database.
-func (q *Querier) SearchForValidIngredients(ctx context.Context, query string) ([]*types.ValidIngredient, error) {
+func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -243,7 +243,7 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string) (
 }
 
 // SearchForValidIngredientsForPreparation fetches a valid ingredient from the database.
-func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidIngredient, error) {
+func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -262,6 +262,36 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 	// TODO: find some way to restrict by preparationID
 
 	rows, err := q.getRows(ctx, q.db, "valid ingredients search", validIngredientSearchQuery, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
+	}
+
+	x, _, _, err := q.scanValidIngredients(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
+	}
+
+	return x, nil
+}
+
+// SearchForValidIngredientsForIngredientState fetches a valid ingredient from the database.
+func (q *Querier) SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if ingredientStateID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientStateIDKey, ingredientStateID)
+	tracing.AttachValidIngredientStateIDToSpan(span, ingredientStateID)
+
+	args := []any{
+		wrapQueryForILIKE(query),
+	}
+
+	rows, err := q.getRows(ctx, q.db, "valid ingredients search by ingredient state", validIngredientSearchQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}

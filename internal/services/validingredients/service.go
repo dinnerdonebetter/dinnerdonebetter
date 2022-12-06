@@ -22,13 +22,14 @@ var _ types.ValidIngredientDataService = (*service)(nil)
 type (
 	// service handles valid ingredients.
 	service struct {
-		logger                     logging.Logger
-		validIngredientDataManager types.ValidIngredientDataManager
-		validIngredientIDFetcher   func(*http.Request) string
-		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
-		dataChangesPublisher       messagequeue.Publisher
-		encoderDecoder             encoding.ServerEncoderDecoder
-		tracer                     tracing.Tracer
+		logger                        logging.Logger
+		validIngredientDataManager    types.ValidIngredientDataManager
+		validIngredientIDFetcher      func(*http.Request) string
+		validIngredientStateIDFetcher func(*http.Request) string
+		sessionContextDataFetcher     func(*http.Request) (*types.SessionContextData, error)
+		dataChangesPublisher          messagequeue.Publisher
+		encoderDecoder                encoding.ServerEncoderDecoder
+		tracer                        tracing.Tracer
 	}
 )
 
@@ -48,13 +49,14 @@ func ProvideService(
 	}
 
 	svc := &service{
-		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
-		validIngredientIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
-		sessionContextDataFetcher:  authservice.FetchContextFromRequest,
-		validIngredientDataManager: validIngredientDataManager,
-		dataChangesPublisher:       dataChangesPublisher,
-		encoderDecoder:             encoder,
-		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		logger:                        logging.EnsureLogger(logger).WithName(serviceName),
+		validIngredientIDFetcher:      routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
+		validIngredientStateIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientStateIDURIParamKey),
+		sessionContextDataFetcher:     authservice.FetchContextFromRequest,
+		validIngredientDataManager:    validIngredientDataManager,
+		dataChangesPublisher:          dataChangesPublisher,
+		encoderDecoder:                encoder,
+		tracer:                        tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 
 	return svc, nil

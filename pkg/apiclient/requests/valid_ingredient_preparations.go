@@ -97,7 +97,7 @@ func (b *Builder) BuildGetValidIngredientPreparationsForPreparationRequest(ctx c
 	if preparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientIDToSpan(span, preparationID)
+	tracing.AttachValidPreparationIDToSpan(span, preparationID)
 
 	uri := b.BuildURL(
 		ctx,

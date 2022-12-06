@@ -38,6 +38,7 @@ import (
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/backend/internal/services/validingredients"
+	"github.com/prixfixeco/backend/internal/services/validingredientstateingredients"
 	"github.com/prixfixeco/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/prixfixeco/backend/internal/services/validinstruments"
 	"github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
@@ -111,6 +112,7 @@ type (
 		MealPlanGroceryListItems        mealplangrocerylistitems.Config               `json:"mealPlanGroceryListItems" mapstructure:"meal_plan_grocery_list_items" toml:"meal_plan_grocery_list_items,omitempty"`
 		ValidMeasurementConversions     validmeasurementconversions.Config            `json:"validMeasurementConversions" mapstructure:"valid_measurement_conversions" toml:"valid_measurement_conversions,omitempty"`
 		ValidIngredientStates           validingredientstates.Config                  `json:"validIngredientStates" mapstructure:"valid_ingredient_states" toml:"valid_ingredient_states,omitempty"`
+		ValidIngredientStateIngredients validingredientstateingredients.Config        `json:"validIngredientStateIngredients" mapstructure:"valid_ingredient_state_ingredients" toml:"valid_ingredient_state_ingredients,omitempty"`
 		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )
@@ -200,6 +202,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 		if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err), result)
+		}
+
+		if err := cfg.Services.ValidIngredientStateIngredients.ValidateWithContext(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating ValidIngredientStateIngredients service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidPreparationInstruments.ValidateWithContext(ctx); err != nil {

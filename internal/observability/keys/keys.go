@@ -100,6 +100,9 @@ const (
 	// ValidIngredientStateIDKey is the standard key for referring to a valid ingredient state's ID.
 	ValidIngredientStateIDKey = "valid_ingredient_state.id"
 
+	// ValidIngredientStateIngredientIDKey is the standard key for referring to a valid ingredient state ingredient's ID.
+	ValidIngredientStateIngredientIDKey = "valid_ingredient_state_ingredient.id"
+
 	// ValidIngredientPreparationIDKey is the standard key for referring to a valid ingredient preparation's ID.
 	ValidIngredientPreparationIDKey = "valid_ingredient_preparation.id"
 
@@ -120,9 +123,6 @@ const (
 
 	// RecipePrepTaskIDKey is the standard key for referring to a recipe prep task's ID.
 	RecipePrepTaskIDKey = "recipe_prep_task.id"
-
-	// RecipePrepTaskStepIDKey is the standard key for referring to a recipe prep task step's ID.
-	RecipePrepTaskStepIDKey = "recipe_prep_task_step.id"
 
 	// RecipeStepInstrumentIDKey is the standard key for referring to a recipe step instrument's ID.
 	RecipeStepInstrumentIDKey = "recipe_step_instrument.id"

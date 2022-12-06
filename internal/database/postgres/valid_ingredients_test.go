@@ -306,6 +306,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		filter := types.DefaultQueryFilter()
 
 		args := []any{
 			wrapQueryForILIKE(exampleQuery),
@@ -315,7 +316,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredients.Data...))
 
-		actual, err := c.SearchForValidIngredients(ctx, exampleQuery)
+		actual, err := c.SearchForValidIngredients(ctx, exampleQuery, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredients.Data, actual)
 
@@ -327,8 +328,9 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
+		filter := types.DefaultQueryFilter()
 
-		actual, err := c.SearchForValidIngredients(ctx, "")
+		actual, err := c.SearchForValidIngredients(ctx, "", filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -338,6 +340,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		filter := types.DefaultQueryFilter()
 
 		args := []any{
 			wrapQueryForILIKE(exampleQuery),
@@ -347,7 +350,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.SearchForValidIngredients(ctx, exampleQuery)
+		actual, err := c.SearchForValidIngredients(ctx, exampleQuery, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -359,6 +362,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		filter := types.DefaultQueryFilter()
 
 		args := []any{
 			wrapQueryForILIKE(exampleQuery),
@@ -368,7 +372,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.SearchForValidIngredients(ctx, exampleQuery)
+		actual, err := c.SearchForValidIngredients(ctx, exampleQuery, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -388,6 +392,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		filter := types.DefaultQueryFilter()
 
 		args := []any{
 			wrapQueryForILIKE(exampleQuery),
@@ -397,7 +402,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredients.Data...))
 
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery)
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredients.Data, actual)
 
@@ -409,8 +414,9 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
+		filter := types.DefaultQueryFilter()
 
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", "")
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", "", filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -420,6 +426,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		filter := types.DefaultQueryFilter()
 
 		args := []any{
 			wrapQueryForILIKE(exampleQuery),
@@ -429,7 +436,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery)
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -441,6 +448,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		filter := types.DefaultQueryFilter()
 
 		args := []any{
 			wrapQueryForILIKE(exampleQuery),
@@ -450,7 +458,7 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery)
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

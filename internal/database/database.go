@@ -99,5 +99,6 @@ type (
 		types.RecipeMediaDataManager
 		types.ValidIngredientStateDataManager
 		types.RecipeStepCompletionConditionDataManager
+		types.ValidIngredientStateIngredientDataManager
 	}
 )

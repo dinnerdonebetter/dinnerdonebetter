@@ -47,9 +47,10 @@ import (
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/backend/internal/services/validingredients"
+	validingredientstateingredientsservice "github.com/prixfixeco/backend/internal/services/validingredientstateingredients"
 	validingredientstatesservice "github.com/prixfixeco/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/prixfixeco/backend/internal/services/validinstruments"
-	"github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
+	validmeasurementconversionsservice "github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
 	validmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/backend/internal/services/validpreparations"
@@ -418,6 +419,9 @@ func buildDevConfig() *config.InstanceConfig {
 			ValidMeasurementUnits: validmeasurementunitsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidIngredientStateIngredients: validingredientstateingredientsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -493,7 +497,7 @@ func buildDevConfig() *config.InstanceConfig {
 			MealPlanGroceryListItems: mealplangrocerylistitems.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			ValidMeasurementConversions: validmeasurementconversions.Config{
+			ValidMeasurementConversions: validmeasurementconversionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},
@@ -618,6 +622,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			ValidMeasurementUnits: validmeasurementunitsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidIngredientStateIngredients: validingredientstateingredientsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -687,7 +694,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			MealPlanGroceryListItems: mealplangrocerylistitems.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			ValidMeasurementConversions: validmeasurementconversions.Config{
+			ValidMeasurementConversions: validmeasurementconversionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

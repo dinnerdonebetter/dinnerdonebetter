@@ -330,6 +330,11 @@ var (
 			Description: "recipe step completion conditions",
 			Script:      fetchMigration("00063_recipe_step_conditions"),
 		},
+		{
+			Version:     64,
+			Description: "valid ingredient status ingredient bridge",
+			Script:      fetchMigration("00064_valid_ingredient_status_ingredient_bridge"),
+		},
 	}
 )
 

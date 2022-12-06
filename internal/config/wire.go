@@ -52,6 +52,7 @@ var (
 			"ValidMeasurementConversions",
 			"ValidIngredientStates",
 			"RecipeStepCompletionConditions",
+			"ValidIngredientStateIngredients",
 			"Auth",
 		),
 	)

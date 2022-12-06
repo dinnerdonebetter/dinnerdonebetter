@@ -199,8 +199,9 @@ type (
 		GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error)
 		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredient], error)
-		SearchForValidIngredients(ctx context.Context, query string) ([]*ValidIngredient, error)
-		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*ValidIngredient, error)
+		SearchForValidIngredients(ctx context.Context, query string, filter *QueryFilter) ([]*ValidIngredient, error)
+		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *QueryFilter) ([]*ValidIngredient, error)
+		SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *QueryFilter) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error
@@ -209,6 +210,7 @@ type (
 	// ValidIngredientDataService describes a structure capable of serving traffic related to valid ingredients.
 	ValidIngredientDataService interface {
 		SearchHandler(res http.ResponseWriter, req *http.Request)
+		ForValidIngredientStateHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
