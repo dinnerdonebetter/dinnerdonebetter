@@ -373,11 +373,19 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		// ValidMeasurementConversions
 		validMeasurementConversionPath := "valid_measurement_conversions"
 		validMeasurementConversionsRouteWithPrefix := fmt.Sprintf("/%s", validMeasurementConversionPath)
+		validMeasurementConversionUnitIDRouteParam := buildURLVarChunk(validmeasurementconversionsservice.ValidMeasurementUnitIDURIParamKey, "")
 		validMeasurementConversionIDRouteParam := buildURLVarChunk(validmeasurementconversionsservice.ValidMeasurementConversionIDURIParamKey, "")
 		v1Router.Route(validMeasurementConversionsRouteWithPrefix, func(validMeasurementConversionsRouter routing.Router) {
 			validMeasurementConversionsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidMeasurementConversionsPermission)).
 				Post(root, s.validMeasurementConversionsService.CreateHandler)
+
+			validMeasurementConversionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementConversionsPermission)).
+				Get(path.Join("/from_unit", validMeasurementConversionUnitIDRouteParam), s.validMeasurementConversionsService.FromMeasurementUnitHandler)
+			validMeasurementConversionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementConversionsPermission)).
+				Get(path.Join("/to_unit", validMeasurementConversionUnitIDRouteParam), s.validMeasurementConversionsService.ToMeasurementUnitHandler)
 
 			validMeasurementConversionsRouter.Route(validMeasurementConversionIDRouteParam, func(singleValidMeasurementConversionRouter routing.Router) {
 				singleValidMeasurementConversionRouter.

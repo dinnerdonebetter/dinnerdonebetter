@@ -335,6 +335,11 @@ var (
 			Description: "valid ingredient status ingredient bridge",
 			Script:      fetchMigration("00064_valid_ingredient_status_ingredient_bridge"),
 		},
+		{
+			Version:     65,
+			Description: "valid preparation instrument constraints",
+			Script:      fetchMigration("00065_valid_preparation_instrument_constraints"),
+		},
 	}
 )
 

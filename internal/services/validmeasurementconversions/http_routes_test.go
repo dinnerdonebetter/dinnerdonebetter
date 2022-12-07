@@ -697,3 +697,229 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
+
+func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager.On(
+			"GetValidMeasurementConversionsFromUnit",
+			testutils.ContextMatcher,
+			helper.exampleValidMeasurementUnit.ID,
+		).Return([]*types.ValidMeasurementConversion{helper.exampleValidMeasurementConversion}, nil)
+		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType([]*types.ValidMeasurementConversion{}),
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no such valid measurement conversion in the database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager.On(
+			"GetValidMeasurementConversionsFromUnit",
+			testutils.ContextMatcher,
+			helper.exampleValidMeasurementUnit.ID,
+		).Return([]*types.ValidMeasurementConversion(nil), sql.ErrNoRows)
+		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeNotFoundResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager.On(
+			"GetValidMeasurementConversionsFromUnit",
+			testutils.ContextMatcher,
+			helper.exampleValidMeasurementUnit.ID,
+		).Return([]*types.ValidMeasurementConversion(nil), errors.New("blah"))
+		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+	})
+}
+
+func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager.On(
+			"GetValidMeasurementConversionsToUnit",
+			testutils.ContextMatcher,
+			helper.exampleValidMeasurementUnit.ID,
+		).Return([]*types.ValidMeasurementConversion{helper.exampleValidMeasurementConversion}, nil)
+		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType([]*types.ValidMeasurementConversion{}),
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no such valid measurement conversion in the database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager.On(
+			"GetValidMeasurementConversionsToUnit",
+			testutils.ContextMatcher,
+			helper.exampleValidMeasurementUnit.ID,
+		).Return([]*types.ValidMeasurementConversion(nil), sql.ErrNoRows)
+		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeNotFoundResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager.On(
+			"GetValidMeasurementConversionsToUnit",
+			testutils.ContextMatcher,
+			helper.exampleValidMeasurementUnit.ID,
+		).Return([]*types.ValidMeasurementConversion(nil), errors.New("blah"))
+		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+	})
+}

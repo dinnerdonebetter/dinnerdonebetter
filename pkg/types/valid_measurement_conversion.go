@@ -88,6 +88,8 @@ type (
 
 	// ValidMeasurementConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.
 	ValidMeasurementConversionDataService interface {
+		FromMeasurementUnitHandler(res http.ResponseWriter, req *http.Request)
+		ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
