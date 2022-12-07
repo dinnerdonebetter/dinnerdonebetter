@@ -45,7 +45,7 @@ type (
 		_ struct{}
 
 		Notes                  string `json:"notes"`
-		ValidIngredientStateID string `json:"validPreparationID"`
+		ValidIngredientStateID string `json:"validIngredientStateID"`
 		ValidIngredientID      string `json:"validIngredientID"`
 	}
 
