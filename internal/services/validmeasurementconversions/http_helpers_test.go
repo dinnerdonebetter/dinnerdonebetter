@@ -23,6 +23,7 @@ type validMeasurementConversionsServiceHTTPRoutesTestHelper struct {
 	service                           *service
 	exampleUser                       *types.User
 	exampleHousehold                  *types.Household
+	exampleValidMeasurementUnit       *types.ValidMeasurementUnit
 	exampleValidMeasurementConversion *types.ValidMeasurementConversion
 	exampleCreationInput              *types.ValidMeasurementConversionCreationRequestInput
 	exampleUpdateInput                *types.ValidMeasurementConversionUpdateRequestInput
@@ -38,12 +39,17 @@ func buildTestHelper(t *testing.T) *validMeasurementConversionsServiceHTTPRoutes
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleValidMeasurementUnit = fakes.BuildFakeValidMeasurementUnit()
 	helper.exampleValidMeasurementConversion = fakes.BuildFakeValidMeasurementConversion()
 	helper.exampleCreationInput = converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(helper.exampleValidMeasurementConversion)
 	helper.exampleUpdateInput = converters.ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput(helper.exampleValidMeasurementConversion)
 
 	helper.service.validMeasurementConversionIDFetcher = func(*http.Request) string {
 		return helper.exampleValidMeasurementConversion.ID
+	}
+
+	helper.service.validMeasurementUnitIDFetcher = func(*http.Request) string {
+		return helper.exampleValidMeasurementUnit.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{

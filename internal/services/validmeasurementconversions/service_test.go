@@ -22,6 +22,7 @@ func buildTestService() *service {
 		logger:                                logging.NewNoopLogger(),
 		validMeasurementConversionDataManager: &mocktypes.ValidMeasurementConversionDataManager{},
 		validMeasurementConversionIDFetcher:   func(req *http.Request) string { return "" },
+		validMeasurementUnitIDFetcher:         func(req *http.Request) string { return "" },
 		encoderDecoder:                        mockencoding.NewMockEncoderDecoder(),
 		tracer:                                tracing.NewTracerForTest("test"),
 	}
@@ -40,6 +41,10 @@ func TestProvideValidMeasurementConversionsService(T *testing.T) {
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			ValidMeasurementConversionIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			ValidMeasurementUnitIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := Config{

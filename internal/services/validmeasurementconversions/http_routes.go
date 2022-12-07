@@ -16,6 +16,8 @@ import (
 const (
 	// ValidMeasurementConversionIDURIParamKey is a standard string that we'll use to refer to valid measurement conversion IDs with.
 	ValidMeasurementConversionIDURIParamKey = "validMeasurementConversionID"
+	// ValidMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid measurement unit IDs with.
+	ValidMeasurementUnitIDURIParamKey = "validMeasurementUnitID"
 )
 
 // CreateHandler is our valid measurement conversion creation route.
@@ -247,4 +249,80 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
+}
+
+func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine valid measurement conversion ID.
+	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
+	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+
+	// fetch valid measurement conversion from database.
+	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementConversionsFromUnit(ctx, validMeasurementUnitID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement conversion")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, x)
+}
+
+func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine valid measurement conversion ID.
+	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
+	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+
+	// fetch valid measurement conversion from database.
+	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementConversionsToUnit(ctx, validMeasurementUnitID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement conversion")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

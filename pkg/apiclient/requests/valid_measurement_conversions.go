@@ -40,6 +40,60 @@ func (b *Builder) BuildGetValidMeasurementConversionRequest(ctx context.Context,
 	return req, nil
 }
 
+// BuildGetValidMeasurementConversionsFromUnitRequest builds an HTTP request for fetching a valid measurement conversion.
+func (b *Builder) BuildGetValidMeasurementConversionsFromUnitRequest(ctx context.Context, validMeasurementUnitID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if validMeasurementUnitID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		validMeasurementConversionsBasePath,
+		"from_unit",
+		validMeasurementUnitID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
+// BuildGetValidMeasurementConversionsToUnitRequest builds an HTTP request for fetching a valid measurement conversion.
+func (b *Builder) BuildGetValidMeasurementConversionsToUnitRequest(ctx context.Context, validMeasurementUnitID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if validMeasurementUnitID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		validMeasurementConversionsBasePath,
+		"to_unit",
+		validMeasurementUnitID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
 // BuildCreateValidMeasurementConversionRequest builds an HTTP request for creating a valid measurement conversion.
 func (b *Builder) BuildCreateValidMeasurementConversionRequest(ctx context.Context, input *types.ValidMeasurementConversionCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

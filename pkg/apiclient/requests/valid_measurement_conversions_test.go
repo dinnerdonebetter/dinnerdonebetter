@@ -54,6 +54,94 @@ func TestBuilder_BuildGetValidMeasurementConversionRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildGetValidMeasurementConversionsFromUnitRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/valid_measurement_conversions/from_unit/%s"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleValidMeasurementUnit.ID)
+
+		actual, err := helper.builder.BuildGetValidMeasurementConversionsFromUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid valid preparation ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildGetValidMeasurementConversionsFromUnitRequest(helper.ctx, "")
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+
+		actual, err := helper.builder.BuildGetValidMeasurementConversionsFromUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func TestBuilder_BuildGetValidMeasurementConversionsToUnitRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/valid_measurement_conversions/to_unit/%s"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleValidMeasurementUnit.ID)
+
+		actual, err := helper.builder.BuildGetValidMeasurementConversionsToUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid valid preparation ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildGetValidMeasurementConversionsToUnitRequest(helper.ctx, "")
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+
+		actual, err := helper.builder.BuildGetValidMeasurementConversionsToUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildCreateValidMeasurementConversionRequest(T *testing.T) {
 	T.Parallel()
 
