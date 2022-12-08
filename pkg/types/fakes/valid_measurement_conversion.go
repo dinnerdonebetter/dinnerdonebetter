@@ -48,7 +48,7 @@ func BuildFakeValidMeasurementConversionUpdateRequestInput() *types.ValidMeasure
 	}
 
 	if validMeasurementConversion.OnlyForIngredient != nil {
-		x.ForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
+		x.OnlyForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
 	}
 
 	return x

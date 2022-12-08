@@ -15,7 +15,7 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestI
 	}
 
 	if input.OnlyForIngredient != nil {
-		x.ForIngredient = &input.OnlyForIngredient.ID
+		x.OnlyForIngredient = &input.OnlyForIngredient.ID
 	}
 
 	return x
@@ -24,12 +24,12 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestI
 // ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput creates a ValidMeasurementConversionDatabaseCreationInput from a ValidMeasurementConversionCreationRequestInput.
 func ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput(input *types.ValidMeasurementConversionCreationRequestInput) *types.ValidMeasurementConversionDatabaseCreationInput {
 	x := &types.ValidMeasurementConversionDatabaseCreationInput{
-		ID:            identifiers.New(),
-		From:          input.From,
-		To:            input.To,
-		ForIngredient: input.ForIngredient,
-		Modifier:      input.Modifier,
-		Notes:         input.Notes,
+		ID:                identifiers.New(),
+		From:              input.From,
+		To:                input.To,
+		OnlyForIngredient: input.OnlyForIngredient,
+		Modifier:          input.Modifier,
+		Notes:             input.Notes,
 	}
 
 	return x
@@ -45,7 +45,7 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionCreationReques
 	}
 
 	if validMeasurementConversion.OnlyForIngredient != nil {
-		x.ForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
+		x.OnlyForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
 	}
 
 	return x
@@ -62,7 +62,7 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreati
 	}
 
 	if validMeasurementConversion.OnlyForIngredient != nil {
-		x.ForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
+		x.OnlyForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
 	}
 
 	return x
