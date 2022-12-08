@@ -34,7 +34,7 @@ type (
 		CreatedAt         time.Time            `json:"createdAt"`
 		LastUpdatedAt     *time.Time           `json:"lastUpdatedAt"`
 		ArchivedAt        *time.Time           `json:"archivedAt"`
-		OnlyForIngredient *ValidIngredient     `json:"forIngredient"`
+		OnlyForIngredient *ValidIngredient     `json:"onlyForIngredient"`
 		Notes             string               `json:"notes"`
 		ID                string               `json:"id"`
 		From              ValidMeasurementUnit `json:"from"`
@@ -46,33 +46,33 @@ type (
 	ValidMeasurementConversionCreationRequestInput struct {
 		_ struct{}
 
-		ForIngredient *string `json:"forIngredient"`
-		From          string  `json:"from"`
-		To            string  `json:"to"`
-		Notes         string  `json:"notes"`
-		Modifier      float32 `json:"modifier"`
+		OnlyForIngredient *string `json:"onlyForIngredient"`
+		From              string  `json:"from"`
+		To                string  `json:"to"`
+		Notes             string  `json:"notes"`
+		Modifier          float32 `json:"modifier"`
 	}
 
 	// ValidMeasurementConversionDatabaseCreationInput represents what a user could set as input for creating valid measurement conversions.
 	ValidMeasurementConversionDatabaseCreationInput struct {
-		_             struct{}
-		ForIngredient *string
-		ID            string
-		From          string
-		To            string
-		Notes         string
-		Modifier      float32
+		_                 struct{}
+		OnlyForIngredient *string
+		ID                string
+		From              string
+		To                string
+		Notes             string
+		Modifier          float32
 	}
 
 	// ValidMeasurementConversionUpdateRequestInput represents what a user could set as input for updating valid measurement conversions.
 	ValidMeasurementConversionUpdateRequestInput struct {
 		_ struct{}
 
-		From          *string  `json:"from"`
-		To            *string  `json:"to"`
-		ForIngredient *string  `json:"forIngredient"`
-		Modifier      *float32 `json:"modifier"`
-		Notes         *string  `json:"notes"`
+		From              *string  `json:"from"`
+		To                *string  `json:"to"`
+		OnlyForIngredient *string  `json:"onlyForIngredient"`
+		Modifier          *float32 `json:"modifier"`
+		Notes             *string  `json:"notes"`
 	}
 
 	// ValidMeasurementConversionDataManager describes a structure capable of storing valid measurement conversions permanently.
@@ -107,8 +107,8 @@ func (x *ValidMeasurementConversion) Update(input *ValidMeasurementConversionUpd
 		x.To.ID = *input.To
 	}
 
-	if input.ForIngredient != nil && *input.ForIngredient != x.OnlyForIngredient.ID {
-		x.OnlyForIngredient.ID = *input.ForIngredient
+	if input.OnlyForIngredient != nil && *input.OnlyForIngredient != x.OnlyForIngredient.ID {
+		x.OnlyForIngredient.ID = *input.OnlyForIngredient
 	}
 
 	if input.Modifier != nil && *input.Modifier != x.Modifier {
@@ -130,7 +130,6 @@ func (x *ValidMeasurementConversionCreationRequestInput) ValidateWithContext(ctx
 		validation.Field(&x.From, validation.Required),
 		validation.Field(&x.To, validation.Required),
 		validation.Field(&x.Modifier, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 	)
 }
 
@@ -145,7 +144,6 @@ func (x *ValidMeasurementConversionDatabaseCreationInput) ValidateWithContext(ct
 		validation.Field(&x.From, validation.Required),
 		validation.Field(&x.To, validation.Required),
 		validation.Field(&x.Modifier, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 	)
 }
 
@@ -159,6 +157,5 @@ func (x *ValidMeasurementConversionUpdateRequestInput) ValidateWithContext(ctx c
 		validation.Field(&x.From, validation.Required),
 		validation.Field(&x.To, validation.Required),
 		validation.Field(&x.Modifier, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 	)
 }

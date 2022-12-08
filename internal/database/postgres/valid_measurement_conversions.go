@@ -339,7 +339,7 @@ func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *t
 		input.ID,
 		input.From,
 		input.To,
-		input.ForIngredient,
+		input.OnlyForIngredient,
 		input.Modifier,
 		input.Notes,
 	}
@@ -358,8 +358,8 @@ func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *t
 		CreatedAt: q.currentTime(),
 	}
 
-	if input.ForIngredient != nil {
-		x.OnlyForIngredient = &types.ValidIngredient{ID: *input.ForIngredient}
+	if input.OnlyForIngredient != nil {
+		x.OnlyForIngredient = &types.ValidIngredient{ID: *input.OnlyForIngredient}
 	}
 
 	tracing.AttachValidMeasurementConversionIDToSpan(span, x.ID)

@@ -336,7 +336,7 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.From,
 			exampleInput.To,
-			exampleInput.ForIngredient,
+			exampleInput.OnlyForIngredient,
 			exampleInput.Modifier,
 			exampleInput.Notes,
 		}
@@ -381,7 +381,7 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.From,
 			exampleInput.To,
-			exampleInput.ForIngredient,
+			exampleInput.OnlyForIngredient,
 			exampleInput.Modifier,
 			exampleInput.Notes,
 		}
