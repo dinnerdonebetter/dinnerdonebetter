@@ -298,7 +298,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, 0, exampleValidMeasurementUnits.Data...))
 
-		actual, err := c.SearchForValidMeasurementUnits(ctx, exampleQuery)
+		actual, err := c.SearchForValidMeasurementUnitsByName(ctx, exampleQuery)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidMeasurementUnits.Data, actual)
 
@@ -311,7 +311,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.SearchForValidMeasurementUnits(ctx, "")
+		actual, err := c.SearchForValidMeasurementUnitsByName(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -330,7 +330,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.SearchForValidMeasurementUnits(ctx, exampleQuery)
+		actual, err := c.SearchForValidMeasurementUnitsByName(ctx, exampleQuery)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -351,7 +351,112 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.SearchForValidMeasurementUnits(ctx, exampleQuery)
+		actual, err := c.SearchForValidMeasurementUnitsByName(ctx, exampleQuery)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_ValidMeasurementUnitsForIngredientID(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
+		exampleValidIngredientID := fakes.BuildFakeID()
+		exampleValidMeasurementUnits := fakes.BuildFakeValidMeasurementUnitList()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			exampleValidIngredientID,
+			filter.Limit,
+			filter.QueryOffset(),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validMeasurementUnitSearchByIngredientIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidMeasurementUnits(true, exampleValidMeasurementUnits.FilteredCount, exampleValidMeasurementUnits.Data...))
+
+		actual, err := c.ValidMeasurementUnitsForIngredientID(ctx, exampleValidIngredientID, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidMeasurementUnits, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.ValidMeasurementUnitsForIngredientID(ctx, "", filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
+		exampleValidIngredientID := fakes.BuildFakeID()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			exampleValidIngredientID,
+			filter.Limit,
+			filter.QueryOffset(),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validMeasurementUnitSearchByIngredientIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.ValidMeasurementUnitsForIngredientID(ctx, exampleValidIngredientID, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error scanning response", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
+		exampleValidIngredientID := fakes.BuildFakeID()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			exampleValidIngredientID,
+			filter.Limit,
+			filter.QueryOffset(),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validMeasurementUnitSearchByIngredientIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildErroneousMockRow())
+
+		actual, err := c.ValidMeasurementUnitsForIngredientID(ctx, exampleValidIngredientID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

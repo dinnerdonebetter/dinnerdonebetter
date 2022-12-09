@@ -98,7 +98,8 @@ type (
 		ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (bool, error)
 		GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*ValidMeasurementUnit, error)
 		GetValidMeasurementUnits(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
-		SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*ValidMeasurementUnit, error)
+		SearchForValidMeasurementUnitsByName(ctx context.Context, query string) ([]*ValidMeasurementUnit, error)
+		ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
 		CreateValidMeasurementUnit(ctx context.Context, input *ValidMeasurementUnitDatabaseCreationInput) (*ValidMeasurementUnit, error)
 		UpdateValidMeasurementUnit(ctx context.Context, updated *ValidMeasurementUnit) error
 		ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error
@@ -107,6 +108,7 @@ type (
 	// ValidMeasurementUnitDataService describes a structure capable of serving traffic related to valid measurement units.
 	ValidMeasurementUnitDataService interface {
 		SearchHandler(res http.ResponseWriter, req *http.Request)
+		SearchByIngredientIDHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)

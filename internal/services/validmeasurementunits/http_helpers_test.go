@@ -23,6 +23,7 @@ type validMeasurementUnitsServiceHTTPRoutesTestHelper struct {
 	service                     *service
 	exampleUser                 *types.User
 	exampleHousehold            *types.Household
+	exampleValidIngredient      *types.ValidIngredient
 	exampleValidMeasurementUnit *types.ValidMeasurementUnit
 	exampleCreationInput        *types.ValidMeasurementUnitCreationRequestInput
 	exampleUpdateInput          *types.ValidMeasurementUnitUpdateRequestInput
@@ -38,9 +39,14 @@ func buildTestHelper(t *testing.T) *validMeasurementUnitsServiceHTTPRoutesTestHe
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleValidIngredient = fakes.BuildFakeValidIngredient()
 	helper.exampleValidMeasurementUnit = fakes.BuildFakeValidMeasurementUnit()
 	helper.exampleCreationInput = converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(helper.exampleValidMeasurementUnit)
 	helper.exampleUpdateInput = converters.ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(helper.exampleValidMeasurementUnit)
+
+	helper.service.validIngredientIDFetcher = func(*http.Request) string {
+		return helper.exampleValidIngredient.ID
+	}
 
 	helper.service.validMeasurementUnitIDFetcher = func(*http.Request) string {
 		return helper.exampleValidMeasurementUnit.ID

@@ -122,6 +122,41 @@ func TestBuilder_BuildSearchValidMeasurementUnitsRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildSearchValidMeasurementUnitsByIngredientIDRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPath = "/api/v1/valid_measurement_units/by_ingredient/%s"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		filter := types.DefaultQueryFilter()
+		exampleValidIngredientID := fakes.BuildFakeID()
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidIngredientID)
+
+		actual, err := helper.builder.BuildSearchValidMeasurementUnitsByIngredientIDRequest(helper.ctx, exampleValidIngredientID, filter)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		filter := types.DefaultQueryFilter()
+		exampleValidIngredientID := fakes.BuildFakeID()
+
+		actual, err := helper.builder.BuildSearchValidMeasurementUnitsByIngredientIDRequest(helper.ctx, exampleValidIngredientID, filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildCreateValidMeasurementUnitRequest(T *testing.T) {
 	T.Parallel()
 

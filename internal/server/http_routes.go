@@ -318,6 +318,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		validMeasurementUnitPath := "valid_measurement_units"
 		validMeasurementUnitsRouteWithPrefix := fmt.Sprintf("/%s", validMeasurementUnitPath)
 		validMeasurementUnitIDRouteParam := buildURLVarChunk(validmeasurementunitsservice.ValidMeasurementUnitIDURIParamKey, "")
+		validMeasurementUnitServiceIngredientIDRouteParam := buildURLVarChunk(validmeasurementunitsservice.ValidIngredientIDURIParamKey, "")
 		v1Router.Route(validMeasurementUnitsRouteWithPrefix, func(validMeasurementUnitsRouter routing.Router) {
 			validMeasurementUnitsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidMeasurementUnitsPermission)).
@@ -328,6 +329,10 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			validMeasurementUnitsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchValidMeasurementUnitsPermission)).
 				Get(searchRoot, s.validMeasurementUnitsService.SearchHandler)
+
+			validMeasurementUnitsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchValidMeasurementUnitsPermission)).
+				Get(path.Join("/by_ingredient", validMeasurementUnitServiceIngredientIDRouteParam), s.validMeasurementUnitsService.SearchByIngredientIDHandler)
 
 			validMeasurementUnitsRouter.Route(validMeasurementUnitIDRouteParam, func(singleValidMeasurementUnitRouter routing.Router) {
 				singleValidMeasurementUnitRouter.

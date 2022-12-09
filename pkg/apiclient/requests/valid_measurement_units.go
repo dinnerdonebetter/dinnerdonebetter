@@ -67,6 +67,28 @@ func (b *Builder) BuildSearchValidMeasurementUnitsRequest(ctx context.Context, q
 	return req, nil
 }
 
+// BuildSearchValidMeasurementUnitsByIngredientIDRequest builds an HTTP request for querying valid measurement units for a given valid ingredient ID.
+func (b *Builder) BuildSearchValidMeasurementUnitsByIngredientIDRequest(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	uri := b.BuildURL(
+		ctx,
+		filter.ToValues(),
+		validMeasurementUnitsBasePath,
+		"by_ingredient",
+		validIngredientID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
 // BuildGetValidMeasurementUnitsRequest builds an HTTP request for fetching a list of valid measurement unit.
 func (b *Builder) BuildGetValidMeasurementUnitsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

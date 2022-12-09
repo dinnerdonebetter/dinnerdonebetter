@@ -40,7 +40,6 @@ require (
 	github.com/pquerna/otp v1.3.0
 	github.com/rs/xid v1.2.1
 	github.com/rs/zerolog v1.21.0
-	github.com/segmentio/ksuid v1.0.4
 	github.com/sendgrid/rest v2.6.5+incompatible
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible
 	github.com/spf13/pflag v1.0.5
