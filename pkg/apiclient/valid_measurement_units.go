@@ -65,6 +65,37 @@ func (c *Client) SearchValidMeasurementUnits(ctx context.Context, query string, 
 	return validMeasurementUnits, nil
 }
 
+// SearchValidMeasurementUnitsByIngredientID searches through a list of valid measurement units.
+func (c *Client) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
+	logger := c.logger.Clone()
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if validIngredientID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+
+	req, err := c.requestBuilder.BuildSearchValidMeasurementUnitsByIngredientIDRequest(ctx, validIngredientID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid measurement units request")
+	}
+
+	var validMeasurementUnits *types.QueryFilteredResult[types.ValidMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &validMeasurementUnits); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement units")
+	}
+
+	return validMeasurementUnits, nil
+}
+
 // GetValidMeasurementUnits retrieves a list of valid measurement units.
 func (c *Client) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := c.tracer.StartSpan(ctx)

@@ -436,7 +436,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
 		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnits",
+			"SearchForValidMeasurementUnitsByName",
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(exampleValidMeasurementUnitList.Data, nil)
@@ -493,7 +493,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
 		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnits",
+			"SearchForValidMeasurementUnitsByName",
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidMeasurementUnit{}, sql.ErrNoRows)
@@ -526,7 +526,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
 		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnits",
+			"SearchForValidMeasurementUnitsByName",
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidMeasurementUnit(nil), errors.New("blah"))
@@ -541,6 +541,140 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager, encoderDecoder)
+	})
+}
+
+func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) {
+	T.Parallel()
+
+	exampleQuery := "whatever"
+	exampleLimit := uint8(123)
+	exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager.On(
+			"ValidMeasurementUnitsForIngredientID",
+			testutils.ContextMatcher,
+			helper.exampleValidIngredient.ID,
+			mock.IsType(&types.QueryFilter{}),
+		).Return(exampleValidMeasurementUnitList, nil)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.QueryFilteredResult[types.ValidMeasurementUnit]{}),
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchByIngredientIDHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchByIngredientIDHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no rows returned", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager.On(
+			"ValidMeasurementUnitsForIngredientID",
+			testutils.ContextMatcher,
+			helper.exampleValidIngredient.ID,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.QueryFilteredResult[types.ValidMeasurementUnit]{}),
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchByIngredientIDHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager.On(
+			"ValidMeasurementUnitsForIngredientID",
+			testutils.ContextMatcher,
+			helper.exampleValidIngredient.ID,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchByIngredientIDHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 

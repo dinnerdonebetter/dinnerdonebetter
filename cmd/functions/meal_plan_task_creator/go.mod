@@ -91,7 +91,6 @@ require (
 	github.com/rs/xid v1.2.1 // indirect
 	github.com/rs/zerolog v1.21.0 // indirect
 	github.com/segmentio/backo-go v1.0.0 // indirect
-	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/sendgrid/rest v2.6.5+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible // indirect
 	github.com/stretchr/objx v0.4.0 // indirect

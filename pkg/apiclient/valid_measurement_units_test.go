@@ -184,6 +184,67 @@ func (s *validMeasurementUnitsTestSuite) TestClient_SearchValidMeasurementUnits(
 	})
 }
 
+func (s *validMeasurementUnitsTestSuite) TestClient_SearchValidMeasurementUnitsByIngredientID() {
+	const expectedPath = "/api/v1/valid_measurement_units/by_ingredient/%s"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		filter := types.DefaultQueryFilter()
+		exampleValidIngredientID := fakes.BuildFakeID()
+		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
+
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidIngredientID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidMeasurementUnitList)
+
+		actual, err := c.SearchValidMeasurementUnitsByIngredientID(s.ctx, exampleValidIngredientID, filter)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidMeasurementUnitList, actual)
+	})
+
+	s.Run("with empty query", func() {
+		t := s.T()
+
+		filter := types.DefaultQueryFilter()
+		c, _ := buildSimpleTestClient(t)
+
+		actual, err := c.SearchValidMeasurementUnitsByIngredientID(s.ctx, "", filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		filter := types.DefaultQueryFilter()
+		exampleValidIngredientID := fakes.BuildFakeID()
+		c := buildTestClientWithInvalidURL(t)
+
+		actual, err := c.SearchValidMeasurementUnitsByIngredientID(s.ctx, exampleValidIngredientID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with bad response from server", func() {
+		t := s.T()
+
+		filter := types.DefaultQueryFilter()
+		exampleValidIngredientID := fakes.BuildFakeID()
+
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidIngredientID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+
+		actual, err := c.SearchValidMeasurementUnitsByIngredientID(s.ctx, exampleValidIngredientID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *validMeasurementUnitsTestSuite) TestClient_CreateValidMeasurementUnit() {
 	const expectedPath = "/api/v1/valid_measurement_units"
 

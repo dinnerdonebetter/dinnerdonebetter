@@ -89,6 +89,10 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 			checkValidIngredientMeasurementUnitEquality(t, newValidIngredientMeasurementUnit, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
+			searchedMeasurementUnits, err := testClients.user.SearchValidMeasurementUnitsByIngredientID(ctx, createdValidIngredient.ID, types.DefaultQueryFilter())
+			requireNotNilAndNoProblems(t, searchedMeasurementUnits, err)
+			assert.GreaterOrEqual(t, len(searchedMeasurementUnits.Data), 1)
+
 			t.Log("cleaning up valid ingredient measurement unit")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit.ID))
 

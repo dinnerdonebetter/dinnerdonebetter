@@ -16,6 +16,8 @@ import (
 const (
 	// ValidMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid measurement unit IDs with.
 	ValidMeasurementUnitIDURIParamKey = "validMeasurementUnitID"
+	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid measurement unit IDs with.
+	ValidIngredientIDURIParamKey = "validIngredientID"
 )
 
 // CreateHandler is our valid measurement unit creation route.
@@ -184,12 +186,58 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validMeasurementUnits, err := s.validMeasurementUnitDataManager.SearchForValidMeasurementUnits(ctx, query)
+	validMeasurementUnits, err := s.validMeasurementUnitDataManager.SearchForValidMeasurementUnitsByName(ctx, query)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validMeasurementUnits = []*types.ValidMeasurementUnit{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching valid measurement units")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, validMeasurementUnits)
+}
+
+// SearchByIngredientIDHandler is our search route.
+func (s *service) SearchByIngredientIDHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	query := req.URL.Query().Get(types.SearchQueryKey)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, filter.SortBy).
+		WithValue(keys.SearchQueryKey, query)
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
+	// determine valid ingredient ID.
+	validIngredientID := s.validIngredientIDFetcher(req)
+	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		logger.Error(err, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validMeasurementUnits, err := s.validMeasurementUnitDataManager.ValidMeasurementUnitsForIngredientID(ctx, validIngredientID, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		validMeasurementUnits = &types.QueryFilteredResult[types.ValidMeasurementUnit]{}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching valid measurement units for ingredient ID")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

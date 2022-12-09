@@ -183,8 +183,8 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 //go:embed queries/valid_measurement_units/search.sql
 var validMeasurementUnitSearchQuery string
 
-// SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
-func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
+// SearchForValidMeasurementUnitsByName fetches a valid measurement unit from the database.
+func (q *Querier) SearchForValidMeasurementUnitsByName(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -208,6 +208,58 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 	x, _, _, err := q.scanValidMeasurementUnits(ctx, rows, false)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement units")
+	}
+
+	return x, nil
+}
+
+//go:embed queries/valid_measurement_units/search_by_ingredient_id.sql
+var validMeasurementUnitSearchByIngredientIDQuery string
+
+// ValidMeasurementUnitsForIngredientID fetches a valid measurement unit from the database.
+func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
+	if validIngredientID == "" {
+		return nil, ErrEmptyInputProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+
+	args := []any{
+		filter.CreatedAfter,
+		filter.CreatedBefore,
+		filter.UpdatedAfter,
+		filter.UpdatedBefore,
+		validIngredientID,
+		filter.Limit,
+		filter.QueryOffset(),
+	}
+
+	rows, err := q.getRows(ctx, q.db, "valid measurement units", validMeasurementUnitSearchByIngredientIDQuery, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
+	}
+
+	x := &types.QueryFilteredResult[types.ValidMeasurementUnit]{}
+	x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidMeasurementUnits(ctx, rows, true)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement units")
+	}
+
+	if filter.Page != nil {
+		x.Page = *filter.Page
+	}
+
+	if filter.Limit != nil {
+		x.Limit = *filter.Limit
 	}
 
 	return x, nil
