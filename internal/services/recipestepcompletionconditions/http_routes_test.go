@@ -32,7 +32,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleCreationInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -104,7 +104,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleCreationInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -125,7 +125,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleCreationInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -154,7 +154,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleCreationInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error

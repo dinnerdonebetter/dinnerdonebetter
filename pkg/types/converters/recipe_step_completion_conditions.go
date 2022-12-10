@@ -38,6 +38,39 @@ func ConvertRecipeStepCompletionConditionIngredientCreationRequestInputToRecipeS
 	return x
 }
 
+// ConvertRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput creates a RecipeStepCompletionConditionDatabaseCreationInput from a RecipeStepCompletionConditionForExitingRecipeCreationRequestInput.
+func ConvertRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput(input *types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput) *types.RecipeStepCompletionConditionDatabaseCreationInput {
+	id := identifiers.New()
+
+	var ingredients []*types.RecipeStepCompletionConditionIngredientDatabaseCreationInput
+	for _, i := range input.Ingredients {
+		x := ConvertRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionIngredientDatabaseCreationInput(i)
+		x.BelongsToRecipeStepCompletionCondition = id
+		ingredients = append(ingredients, x)
+	}
+
+	x := &types.RecipeStepCompletionConditionDatabaseCreationInput{
+		ID:                  id,
+		IngredientStateID:   input.IngredientStateID,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		Notes:               input.Notes,
+		Ingredients:         ingredients,
+		Optional:            input.Optional,
+	}
+
+	return x
+}
+
+// ConvertRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionIngredientDatabaseCreationInput creates a RecipeStepCompletionConditionIngredientDatabaseCreationInput from a RecipeStepCompletionConditionCreationRequestInput.
+func ConvertRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionIngredientDatabaseCreationInput(input *types.RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput) *types.RecipeStepCompletionConditionIngredientDatabaseCreationInput {
+	x := &types.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+		ID:                   identifiers.New(),
+		RecipeStepIngredient: input.RecipeStepIngredient,
+	}
+
+	return x
+}
+
 // ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionUpdateRequestInput creates a RecipeStepCompletionConditionUpdateRequestInput from a RecipeStepCompletionCondition.
 func ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionUpdateRequestInput(input *types.RecipeStepCompletionCondition) *types.RecipeStepCompletionConditionUpdateRequestInput {
 	x := &types.RecipeStepCompletionConditionUpdateRequestInput{
@@ -70,6 +103,30 @@ func ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreation
 // ConvertRecipeStepCompletionConditionIngredientToRecipeStepCompletionConditionIngredientCreationRequestInput builds a RecipeStepCompletionConditionIngredientCreationRequestInput from a RecipeStepCompletionCondition.
 func ConvertRecipeStepCompletionConditionIngredientToRecipeStepCompletionConditionIngredientCreationRequestInput(recipeStepCompletionConditionIngredient *types.RecipeStepCompletionConditionIngredient) *types.RecipeStepCompletionConditionIngredientCreationRequestInput {
 	return &types.RecipeStepCompletionConditionIngredientCreationRequestInput{
+		RecipeStepIngredient: recipeStepCompletionConditionIngredient.RecipeStepIngredient,
+	}
+}
+
+// ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionForExistingRecipeCreationRequestInput builds a RecipeStepCompletionConditionCreationRequestInput from a RecipeStepCompletionCondition.
+func ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(recipeStepCompletionCondition *types.RecipeStepCompletionCondition) *types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput {
+	var ingredients []*types.RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput
+	for _, i := range recipeStepCompletionCondition.Ingredients {
+		x := ConvertRecipeStepCompletionConditionIngredientToRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput(i)
+		ingredients = append(ingredients, x)
+	}
+
+	return &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{
+		IngredientStateID:   recipeStepCompletionCondition.IngredientState.ID,
+		BelongsToRecipeStep: recipeStepCompletionCondition.BelongsToRecipeStep,
+		Notes:               recipeStepCompletionCondition.Notes,
+		Ingredients:         ingredients,
+		Optional:            recipeStepCompletionCondition.Optional,
+	}
+}
+
+// ConvertRecipeStepCompletionConditionIngredientToRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput builds a RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput from a RecipeStepCompletionCondition.
+func ConvertRecipeStepCompletionConditionIngredientToRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput(recipeStepCompletionConditionIngredient *types.RecipeStepCompletionConditionIngredient) *types.RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput {
+	return &types.RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput{
 		RecipeStepIngredient: recipeStepCompletionConditionIngredient.RecipeStepIngredient,
 	}
 }

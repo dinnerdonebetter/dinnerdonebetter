@@ -26,7 +26,7 @@ type recipeStepCompletionConditionsServiceHTTPRoutesTestHelper struct {
 	exampleRecipe                        *types.Recipe
 	exampleRecipeStep                    *types.RecipeStep
 	exampleRecipeStepCompletionCondition *types.RecipeStepCompletionCondition
-	exampleCreationInput                 *types.RecipeStepCompletionConditionCreationRequestInput
+	exampleCreationInput                 *types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput
 	exampleUpdateInput                   *types.RecipeStepCompletionConditionUpdateRequestInput
 }
 
@@ -46,7 +46,7 @@ func buildTestHelper(t *testing.T) *recipeStepCompletionConditionsServiceHTTPRou
 	helper.exampleRecipeStep.BelongsToRecipe = helper.exampleRecipe.ID
 	helper.exampleRecipeStepCompletionCondition = fakes.BuildFakeRecipeStepCompletionCondition()
 	helper.exampleRecipeStepCompletionCondition.BelongsToRecipeStep = helper.exampleRecipeStep.ID
-	helper.exampleCreationInput = converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(helper.exampleRecipeStepCompletionCondition)
+	helper.exampleCreationInput = converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(helper.exampleRecipeStepCompletionCondition)
 	helper.exampleUpdateInput = converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionUpdateRequestInput(helper.exampleRecipeStepCompletionCondition)
 
 	helper.service.recipeIDFetcher = func(*http.Request) string {
