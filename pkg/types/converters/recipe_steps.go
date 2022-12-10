@@ -64,14 +64,13 @@ func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *type
 		x.Products = append(x.Products, convertedProduct)
 	}
 
-	// TODO: uncomment me
-	// x.CompletionConditions = []*types.RecipeStepCompletionConditionDatabaseCreationInput{}
-	// for _, product := range input.CompletionConditions {
-	// 	convertedCompletionCondition := ConvertRecipeStepCompletionConditionCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput(product)
-	// 	convertedCompletionCondition.ID = identifiers.New()
-	// 	convertedCompletionCondition.BelongsToRecipeStep = x.ID
-	// 	x.CompletionConditions = append(x.CompletionConditions, convertedCompletionCondition)
-	// }
+	x.CompletionConditions = []*types.RecipeStepCompletionConditionDatabaseCreationInput{}
+	for _, product := range input.CompletionConditions {
+		convertedCompletionCondition := ConvertRecipeStepCompletionConditionCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput(x, product)
+		convertedCompletionCondition.ID = identifiers.New()
+		convertedCompletionCondition.BelongsToRecipeStep = x.ID
+		x.CompletionConditions = append(x.CompletionConditions, convertedCompletionCondition)
+	}
 
 	return x
 }
@@ -95,7 +94,7 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 
 	completionConditions := []*types.RecipeStepCompletionConditionCreationRequestInput{}
 	for _, completionCondition := range recipeStep.CompletionConditions {
-		completionConditions = append(completionConditions, ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(completionCondition))
+		completionConditions = append(completionConditions, ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(recipeStep, completionCondition))
 	}
 
 	return &types.RecipeStepCreationRequestInput{

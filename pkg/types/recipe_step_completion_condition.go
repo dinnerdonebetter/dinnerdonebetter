@@ -73,11 +73,11 @@ type (
 	// RecipeStepCompletionConditionCreationRequestInput represents what a user could set as input for creating recipe step completion conditions.
 	RecipeStepCompletionConditionCreationRequestInput struct {
 		_                   struct{}
-		IngredientStateID   string                                                         `json:"ingredientState"`
-		BelongsToRecipeStep string                                                         `json:"belongsToRecipeStep"`
-		Notes               string                                                         `json:"notes"`
-		Ingredients         []*RecipeStepCompletionConditionIngredientCreationRequestInput `json:"ingredients"`
-		Optional            bool                                                           `json:"optional"`
+		IngredientStateID   string   `json:"ingredientState"`
+		BelongsToRecipeStep string   `json:"belongsToRecipeStep"`
+		Notes               string   `json:"notes"`
+		Ingredients         []uint64 `json:"ingredients"`
+		Optional            bool     `json:"optional"`
 	}
 
 	// RecipeStepCompletionConditionIngredientCreationRequestInput represents what a user could set as input for creating recipe step completion condition ingredient.

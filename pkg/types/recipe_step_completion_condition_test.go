@@ -20,11 +20,7 @@ func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T
 			IngredientStateID:   t.Name(),
 			BelongsToRecipeStep: t.Name(),
 			Optional:            fake.Bool(),
-			Ingredients: []*RecipeStepCompletionConditionIngredientCreationRequestInput{
-				{
-					RecipeStepIngredient: t.Name(),
-				},
-			},
+			Ingredients:         []uint64{123},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
