@@ -9,7 +9,7 @@ INSERT INTO recipe_step_ingredients (
 	quantity_notes,
 	recipe_step_product_id,
 	ingredient_notes,
-    option_index,
-    requires_defrost,
+	option_index,
+	requires_defrost,
 	belongs_to_recipe_step
 ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);

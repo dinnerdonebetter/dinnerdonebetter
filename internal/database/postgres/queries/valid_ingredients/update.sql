@@ -22,8 +22,8 @@ UPDATE valid_ingredients SET
 	minimum_ideal_storage_temperature_in_celsius = $21,
 	maximum_ideal_storage_temperature_in_celsius = $22,
 	storage_instructions = $23,
-    slug = $24,
-    contains_alcohol = $25,
-    shopping_suggestions = $26,
+	slug = $24,
+	contains_alcohol = $25,
+	shopping_suggestions = $26,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL AND id = $27;

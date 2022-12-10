@@ -7,7 +7,7 @@ UPDATE recipe_steps SET
 	maximum_temperature_in_celsius = $6,
 	notes = $7,
 	explicit_instructions = $8,
-    condition_expression = $9,
+	condition_expression = $9,
 	optional = $10,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL

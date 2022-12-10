@@ -5,9 +5,9 @@ UPDATE recipe_step_instruments SET
 	notes = $4,
 	preference_rank = $5,
 	optional = $6,
-    option_index = $7,
+	option_index = $7,
 	minimum_quantity = $8,
-    maximum_quantity = $9,
+	maximum_quantity = $9,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_recipe_step = $10
