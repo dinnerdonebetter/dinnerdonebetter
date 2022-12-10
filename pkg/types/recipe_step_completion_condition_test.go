@@ -22,7 +22,7 @@ func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T
 			Optional:            fake.Bool(),
 			Ingredients: []*RecipeStepCompletionConditionIngredientCreationRequestInput{
 				{
-					IngredientIndex: 0,
+					RecipeStepIngredient: t.Name(),
 				},
 			},
 		}

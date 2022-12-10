@@ -83,7 +83,7 @@ type (
 	RecipeStepCompletionConditionIngredientCreationRequestInput struct {
 		_ struct{}
 
-		IngredientIndex uint64 `json:"recipeStepIngredient"`
+		RecipeStepIngredient string `json:"recipeStepIngredient"`
 	}
 
 	// RecipeStepCompletionConditionDatabaseCreationInput represents what a user could set as input for creating recipe step completion conditions.
@@ -173,7 +173,7 @@ func (x *RecipeStepCompletionConditionIngredientCreationRequestInput) ValidateWi
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.IngredientIndex, validation.Required),
+		validation.Field(&x.RecipeStepIngredient, validation.Required),
 	)
 }
 
