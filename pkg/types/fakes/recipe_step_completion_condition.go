@@ -66,6 +66,8 @@ func BuildFakeRecipeStepCompletionConditionUpdateRequestInput() *types.RecipeSte
 
 // BuildFakeRecipeStepCompletionConditionCreationRequestInput builds a faked RecipeStepCompletionConditionCreationRequestInput.
 func BuildFakeRecipeStepCompletionConditionCreationRequestInput() *types.RecipeStepCompletionConditionCreationRequestInput {
-	recipeStepIngredient := BuildFakeRecipeStepCompletionCondition()
-	return converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(recipeStepIngredient)
+	recipeStepCompletionCondition := BuildFakeRecipeStepCompletionCondition()
+	recipeStep := BuildFakeRecipeStep()
+
+	return converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(recipeStepCompletionCondition, recipeStep)
 }

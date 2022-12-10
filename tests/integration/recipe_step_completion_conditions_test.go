@@ -44,7 +44,7 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 				Optional:            false,
 				Ingredients: []*types.RecipeStepCompletionConditionIngredientCreationRequestInput{
 					{
-						RecipeStepIngredient: createdRecipeStep.Ingredients[0].ID,
+						IngredientIndex: 0,
 					},
 				},
 			}
