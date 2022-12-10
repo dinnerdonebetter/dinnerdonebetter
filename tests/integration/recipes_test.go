@@ -267,53 +267,75 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				},
 			}
 
-			exampleRecipeInput := &types.RecipeCreationRequestInput{
+			expectedInput := &types.RecipeCreationRequestInput{
 				Name:        expected.Name,
 				Description: expected.Description,
+				Steps: []*types.RecipeStepCreationRequestInput{
+					{
+						MinimumTemperatureInCelsius: expected.Steps[0].MinimumTemperatureInCelsius,
+						Products: []*types.RecipeStepProductCreationRequestInput{
+							{
+								Name:              expected.Steps[0].Products[0].Name,
+								Type:              expected.Steps[0].Products[0].Type,
+								MeasurementUnitID: expected.Steps[0].Products[0].MeasurementUnit.ID,
+								QuantityNotes:     expected.Steps[0].Products[0].QuantityNotes,
+								MinimumQuantity:   expected.Steps[0].Products[0].MinimumQuantity,
+							},
+						},
+						Notes:         expected.Steps[0].Notes,
+						PreparationID: expected.Steps[0].Preparation.ID,
+						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
+							{
+								IngredientID:        &expected.Steps[0].Ingredients[0].Ingredient.ID,
+								Name:                expected.Steps[0].Ingredients[0].Name,
+								MeasurementUnitID:   expected.Steps[0].Ingredients[0].MeasurementUnit.ID,
+								MinimumQuantity:     expected.Steps[0].Ingredients[0].MinimumQuantity,
+								ProductOfRecipeStep: expected.Steps[0].Ingredients[0].ProductOfRecipeStep,
+							},
+							{
+								IngredientID:        &expected.Steps[0].Ingredients[1].Ingredient.ID,
+								Name:                expected.Steps[0].Ingredients[1].Name,
+								MeasurementUnitID:   expected.Steps[0].Ingredients[1].MeasurementUnit.ID,
+								MinimumQuantity:     expected.Steps[0].Ingredients[1].MinimumQuantity,
+								ProductOfRecipeStep: expected.Steps[0].Ingredients[1].ProductOfRecipeStep,
+							},
+						},
+						Index: expected.Steps[0].Index,
+					},
+					{
+						MinimumTemperatureInCelsius: expected.Steps[1].MinimumTemperatureInCelsius,
+						Products: []*types.RecipeStepProductCreationRequestInput{
+							{
+								Name:              expected.Steps[1].Products[0].Name,
+								Type:              expected.Steps[1].Products[0].Type,
+								MeasurementUnitID: expected.Steps[1].Products[0].MeasurementUnit.ID,
+								QuantityNotes:     expected.Steps[1].Products[0].QuantityNotes,
+								MinimumQuantity:   expected.Steps[1].Products[0].MinimumQuantity,
+							},
+						},
+						Notes:         expected.Steps[1].Notes,
+						PreparationID: expected.Steps[1].Preparation.ID,
+						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
+							{
+								Name:                expected.Steps[1].Ingredients[0].Name,
+								MeasurementUnitID:   expected.Steps[1].Ingredients[0].MeasurementUnit.ID,
+								MinimumQuantity:     expected.Steps[1].Ingredients[0].MinimumQuantity,
+								ProductOfRecipeStep: expected.Steps[1].Ingredients[0].ProductOfRecipeStep,
+							},
+							{
+								IngredientID:        &expected.Steps[1].Ingredients[1].Ingredient.ID,
+								Name:                expected.Steps[1].Ingredients[1].Name,
+								MeasurementUnitID:   expected.Steps[1].Ingredients[1].MeasurementUnit.ID,
+								MinimumQuantity:     expected.Steps[1].Ingredients[1].MinimumQuantity,
+								ProductOfRecipeStep: expected.Steps[1].Ingredients[1].ProductOfRecipeStep,
+							},
+						},
+						Index: expected.Steps[1].Index,
+					},
+				},
 			}
-			for _, step := range expected.Steps {
-				newStep := &types.RecipeStepCreationRequestInput{
-					MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
-					Notes:                         step.Notes,
-					PreparationID:                 step.Preparation.ID,
-					Index:                         step.Index,
-					MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
-					MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
-					Optional:                      step.Optional,
-				}
 
-				for _, ingredient := range step.Ingredients {
-					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						Name:                ingredient.Name,
-						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
-						QuantityNotes:       ingredient.QuantityNotes,
-						IngredientNotes:     ingredient.IngredientNotes,
-						MinimumQuantity:     ingredient.MinimumQuantity,
-						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
-					}
-
-					if ingredient.Ingredient != nil {
-						newIngredient.IngredientID = &ingredient.Ingredient.ID
-					}
-
-					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
-				}
-
-				for _, product := range step.Products {
-					newProduct := &types.RecipeStepProductCreationRequestInput{
-						Name:              product.Name,
-						Type:              product.Type,
-						MeasurementUnitID: product.MeasurementUnit.ID,
-						QuantityNotes:     product.QuantityNotes,
-						MinimumQuantity:   product.MinimumQuantity,
-					}
-					newStep.Products = append(newStep.Products, newProduct)
-				}
-
-				exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
-			}
-
-			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
+			created, err := testClients.user.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
@@ -336,7 +358,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 	})
 }
 
-func (s *TestSuite) TestRecipes_CompleteLifecycle() {
+func (s *TestSuite) TestRecipes_Updating() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
@@ -727,53 +749,61 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 				},
 			}
 
-			exampleRecipeInput := &types.RecipeCreationRequestInput{
-				Name:        expected.Name,
-				Description: expected.Description,
+			expectedInput := &types.RecipeCreationRequestInput{
+				Name:        "sopa de frijol",
+				Description: "",
+				Steps: []*types.RecipeStepCreationRequestInput{
+					{
+						MinimumTemperatureInCelsius: nil,
+						Products: []*types.RecipeStepProductCreationRequestInput{
+							{
+								Name:              "diced chicken breast",
+								Type:              types.RecipeStepProductIngredientType,
+								MeasurementUnitID: grams.ID,
+								QuantityNotes:     "",
+								MinimumQuantity:   1000,
+							},
+						},
+						Notes:         "first step",
+						PreparationID: dice.ID,
+						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
+							{
+								IngredientID:        &chickenBreast.ID,
+								Name:                "pinto beans",
+								MeasurementUnitID:   grams.ID,
+								MinimumQuantity:     500,
+								ProductOfRecipeStep: false,
+							},
+						},
+						Index: 0,
+					},
+					{
+						MinimumTemperatureInCelsius: nil,
+						Products: []*types.RecipeStepProductCreationRequestInput{
+							{
+								Name:              "final output",
+								Type:              types.RecipeStepProductIngredientType,
+								MeasurementUnitID: grams.ID,
+								QuantityNotes:     "",
+								MinimumQuantity:   1010,
+							},
+						},
+						Notes:         "second step",
+						PreparationID: sautee.ID,
+						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
+							{
+								Name:                "diced chicken breast",
+								MeasurementUnitID:   grams.ID,
+								MinimumQuantity:     1000,
+								ProductOfRecipeStep: true,
+							},
+						},
+						Index: 1,
+					},
+				},
 			}
-			for _, step := range expected.Steps {
-				newStep := &types.RecipeStepCreationRequestInput{
-					MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
-					Notes:                         step.Notes,
-					PreparationID:                 step.Preparation.ID,
-					Index:                         step.Index,
-					MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
-					MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
-					Optional:                      step.Optional,
-				}
 
-				for _, ingredient := range step.Ingredients {
-					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						Name:                ingredient.Name,
-						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
-						QuantityNotes:       ingredient.QuantityNotes,
-						IngredientNotes:     ingredient.IngredientNotes,
-						MinimumQuantity:     ingredient.MinimumQuantity,
-						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
-					}
-
-					if ingredient.Ingredient != nil {
-						newIngredient.IngredientID = &ingredient.Ingredient.ID
-					}
-
-					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
-				}
-
-				for _, product := range step.Products {
-					newProduct := &types.RecipeStepProductCreationRequestInput{
-						Name:              product.Name,
-						Type:              product.Type,
-						MeasurementUnitID: product.MeasurementUnit.ID,
-						QuantityNotes:     product.QuantityNotes,
-						MinimumQuantity:   product.MinimumQuantity,
-					}
-					newStep.Products = append(newStep.Products, newProduct)
-				}
-
-				exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
-			}
-
-			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
+			created, err := testClients.user.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)

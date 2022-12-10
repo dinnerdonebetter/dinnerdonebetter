@@ -54,18 +54,17 @@ type (
 	RecipeStepIngredientCreationRequestInput struct {
 		_ struct{}
 
-		IngredientID        *string                                `json:"ingredientID"`
-		RecipeStepProduct   *RecipeStepProductCreationRequestInput `json:"recipeStepProduct"`
-		Name                string                                 `json:"name"`
-		MeasurementUnitID   string                                 `json:"measurementUnitID"`
-		QuantityNotes       string                                 `json:"quantityNotes"`
-		IngredientNotes     string                                 `json:"ingredientNotes"`
-		MaximumQuantity     float32                                `json:"maximumQuantity"`
-		MinimumQuantity     float32                                `json:"minimumQuantity"`
-		OptionIndex         uint16                                 `json:"optionIndex"`
-		RequiresDefrost     bool                                   `json:"requiresDefrost"`
-		Optional            bool                                   `json:"optional"`
-		ProductOfRecipeStep bool                                   `json:"productOfRecipeStep"`
+		IngredientID        *string `json:"ingredientID"`
+		Name                string  `json:"name"`
+		MeasurementUnitID   string  `json:"measurementUnitID"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
+		MaximumQuantity     float32 `json:"maximumQuantity"`
+		MinimumQuantity     float32 `json:"minimumQuantity"`
+		OptionIndex         uint16  `json:"optionIndex"`
+		RequiresDefrost     bool    `json:"requiresDefrost"`
+		Optional            bool    `json:"optional"`
+		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.

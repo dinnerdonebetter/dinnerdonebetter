@@ -515,11 +515,10 @@ func findCreatedRecipeStepProductsForIngredients(recipe *types.RecipeDatabaseCre
 
 	priorSteps := []*types.RecipeStepDatabaseCreationInput{}
 	for i, s := range recipe.Steps {
-		if i < stepIndex {
-			priorSteps = append(priorSteps, s)
-		} else {
+		if i >= stepIndex {
 			break
 		}
+		priorSteps = append(priorSteps, s)
 	}
 
 	// created products is everything available to the step at the provided stepIndex.
@@ -552,11 +551,10 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 
 	priorSteps := []*types.RecipeStepDatabaseCreationInput{}
 	for i, s := range recipe.Steps {
-		if i < stepIndex {
-			priorSteps = append(priorSteps, s)
-		} else {
+		if i >= stepIndex {
 			break
 		}
+		priorSteps = append(priorSteps, s)
 	}
 
 	// created products is everything available to the step at the provided stepIndex.
