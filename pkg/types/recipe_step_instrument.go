@@ -54,7 +54,7 @@ type (
 		InstrumentID                    *string `json:"instrumentID"`
 		RecipeStepProductID             *string `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
-		ProductOfRecipeStepProductIndex *uint64 `json:"productIndexOfRecipeStep"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
 		Name                            string  `json:"name"`
 		Notes                           string  `json:"notes"`
 		MinimumQuantity                 uint32  `json:"minimumQuantity"`

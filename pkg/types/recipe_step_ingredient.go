@@ -54,7 +54,7 @@ type (
 		_                               struct{}
 		IngredientID                    *string `json:"ingredientID"`
 		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
-		ProductOfRecipeStepProductIndex *uint64 `json:"productIndexOfRecipeStep"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
 		QuantityNotes                   string  `json:"quantityNotes"`
 		IngredientNotes                 string  `json:"ingredientNotes"`
 		MeasurementUnitID               string  `json:"measurementUnitID"`
@@ -72,7 +72,7 @@ type (
 		IngredientID                    *string
 		RecipeStepProductID             *string
 		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
-		ProductOfRecipeStepProductIndex *uint64 `json:"productIndexOfRecipeStep"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
 		BelongsToRecipeStep             string
 		ID                              string
 		QuantityNotes                   string

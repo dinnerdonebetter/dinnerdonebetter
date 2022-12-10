@@ -511,7 +511,10 @@ func findCreatedRecipeStepProductsForIngredients(recipe *types.RecipeDatabaseCre
 	for _, step := range recipe.Steps {
 		for _, ingredient := range step.Ingredients {
 			if ingredient.ProductOfRecipeStepIndex != nil && ingredient.ProductOfRecipeStepProductIndex != nil {
-				if len(recipe.Steps)-1 >= int(*ingredient.ProductOfRecipeStepIndex) && len(recipe.Steps[int(*ingredient.ProductOfRecipeStepIndex)].Products)-1 >= int(*ingredient.ProductOfRecipeStepProductIndex) {
+				enoughSteps := len(recipe.Steps) > int(*ingredient.ProductOfRecipeStepIndex)
+				enoughRecipeStepProducts := len(recipe.Steps[int(*ingredient.ProductOfRecipeStepIndex)].Products) > int(*ingredient.ProductOfRecipeStepProductIndex)
+				relevantProductIsIngredient := recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex].Type == types.RecipeStepProductIngredientType
+				if enoughSteps && enoughRecipeStepProducts && relevantProductIsIngredient {
 					ingredient.RecipeStepProductID = &recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex].ID
 				}
 			}
@@ -523,7 +526,10 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 	for _, step := range recipe.Steps {
 		for _, instrument := range step.Instruments {
 			if instrument.ProductOfRecipeStepIndex != nil && instrument.ProductOfRecipeStepProductIndex != nil {
-				if len(recipe.Steps)-1 >= int(*instrument.ProductOfRecipeStepIndex) && len(recipe.Steps[int(*instrument.ProductOfRecipeStepIndex)].Products)-1 >= int(*instrument.ProductOfRecipeStepProductIndex) {
+				enoughSteps := len(recipe.Steps) > int(*instrument.ProductOfRecipeStepIndex)
+				enoughRecipeStepProducts := len(recipe.Steps[int(*instrument.ProductOfRecipeStepIndex)].Products) > int(*instrument.ProductOfRecipeStepProductIndex)
+				relevantProductIsInstrument := recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].Type == types.RecipeStepProductInstrumentType
+				if enoughSteps && enoughRecipeStepProducts && relevantProductIsInstrument {
 					instrument.RecipeStepProductID = &recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].ID
 				}
 			}

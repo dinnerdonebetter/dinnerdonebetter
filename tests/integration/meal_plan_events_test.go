@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -85,10 +84,6 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 				createdMealPlanEvent, err := testClients.user.CreateMealPlanEvent(ctx, createdMealPlan.ID, exampleMealPlanEventInput)
 				require.NoError(t, err)
 				t.Logf("meal plan event %q created", createdMealPlanEvent.ID)
-
-				rawBytes, err := json.MarshalIndent(createdMealPlanEvent, "", "\t")
-				require.NoError(t, err)
-				t.Log(string(rawBytes))
 
 				checkMealPlanEventEquality(t, exampleMealPlanEvent, createdMealPlanEvent)
 

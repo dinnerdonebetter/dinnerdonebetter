@@ -99,6 +99,9 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 
 		for j := range recipeStep.CompletionConditions {
 			recipeStep.CompletionConditions[j].IngredientState = *createdValidIngredientState
+			for k := range recipeStep.CompletionConditions[j].Ingredients {
+				recipeStep.CompletionConditions[j].Ingredients[k].RecipeStepIngredient = createdValidIngredients[0].ID
+			}
 		}
 	}
 
@@ -522,32 +525,6 @@ func (s *TestSuite) TestRecipes_Listing() {
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
-
-			t.Log("creating prerequisite valid ingredient")
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
-
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-
-			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-
-			t.Log("creating prerequisite valid preparation")
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparation.ID)
-
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			t.Log("creating recipes")
 			var expected []*types.Recipe

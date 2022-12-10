@@ -198,7 +198,7 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 
 	for _, step := range recipe.Steps {
 		for _, ingredient := range step.Ingredients {
-			if ingredient.RecipeStepProductID != nil {
+			if ingredient.RecipeStepProductID == nil {
 				continue
 			}
 
