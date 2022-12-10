@@ -44,7 +44,8 @@ func init() {
 type (
 	// MealPlanEvent represents a meal plan.
 	MealPlanEvent struct {
-		_                 struct{}
+		_ struct{}
+
 		CreatedAt         time.Time         `json:"createdAt"`
 		StartsAt          time.Time         `json:"startsAt"`
 		EndsAt            time.Time         `json:"endsAt"`

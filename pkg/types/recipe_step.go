@@ -33,7 +33,8 @@ func init() {
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		_                             struct{}
+		_ struct{}
+
 		CreatedAt                     time.Time                        `json:"createdAt"`
 		MaximumTemperatureInCelsius   *float32                         `json:"maximumTemperatureInCelsius"`
 		MinimumEstimatedTimeInSeconds *uint32                          `json:"minimumEstimatedTimeInSeconds"`

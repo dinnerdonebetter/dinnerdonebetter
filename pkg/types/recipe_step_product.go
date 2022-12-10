@@ -35,7 +35,8 @@ func init() {
 type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
-		_                                  struct{}
+		_ struct{}
+
 		CreatedAt                          time.Time            `json:"createdAt"`
 		MaximumStorageDurationInSeconds    *uint32              `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius *float32             `json:"minimumStorageTemperatureInCelsius"`

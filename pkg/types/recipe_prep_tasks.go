@@ -40,7 +40,8 @@ func init() {
 type (
 	// RecipePrepTask represents a recipe prep task.
 	RecipePrepTask struct {
-		_                                      struct{}
+		_ struct{}
+
 		CreatedAt                              time.Time             `json:"createdAt"`
 		ArchivedAt                             *time.Time            `json:"archivedAt"`
 		LastUpdatedAt                          *time.Time            `json:"lastUpdatedAt"`

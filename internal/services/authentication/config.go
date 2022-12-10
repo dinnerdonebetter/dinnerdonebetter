@@ -43,7 +43,8 @@ type (
 
 	// Config represents our passwords configuration.
 	Config struct {
-		_                     struct{}
+		_ struct{}
+
 		DataChangesTopicName  string       `json:"dataChanges,omitempty" mapstructure:"data_changes" toml:"data_changes,omitempty"`
 		Cookies               CookieConfig `json:"cookies,omitempty" mapstructure:"cookies" toml:"cookies,omitempty"`
 		PASETO                PASETOConfig `json:"paseto,omitempty" mapstructure:"paseto" toml:"paseto,omitempty"`

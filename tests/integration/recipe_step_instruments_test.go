@@ -24,7 +24,6 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Instrument.ID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
 	}
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep, "expected ProductOfRecipeStep for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep)
 	assert.Equal(t, expected.RecipeStepProductID, actual.RecipeStepProductID, "expected RecipeStepProductID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.RecipeStepProductID, actual.RecipeStepProductID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected PreferenceRank for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.PreferenceRank, actual.PreferenceRank)
@@ -204,7 +203,6 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								Name:                "aluminum foil",
 								MeasurementUnit:     *sheets,
 								MinimumQuantity:     3,
-								ProductOfRecipeStep: false,
 							},
 						},
 						Instruments: []*types.RecipeStepInstrument{
@@ -217,9 +215,8 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 					{
 						Instruments: []*types.RecipeStepInstrument{
 							{
-								Name:                linedBakingSheetName,
-								Instrument:          nil,
-								ProductOfRecipeStep: true,
+								Name:       linedBakingSheetName,
+								Instrument: nil,
 							},
 						},
 						Products: []*types.RecipeStepProduct{
@@ -235,11 +232,10 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 						Preparation: *roast,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								Ingredient:          garlic,
-								Name:                "garlic",
-								MeasurementUnit:     *head,
-								MinimumQuantity:     1,
-								ProductOfRecipeStep: false,
+								Ingredient:      garlic,
+								Name:            "garlic",
+								MeasurementUnit: *head,
+								MinimumQuantity: 1,
 							},
 						},
 						Index: 1,
@@ -264,13 +260,12 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 				for _, ingredient := range step.Ingredients {
 					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						IngredientID:        &ingredient.Ingredient.ID,
-						Name:                ingredient.Name,
-						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
-						QuantityNotes:       ingredient.QuantityNotes,
-						IngredientNotes:     ingredient.IngredientNotes,
-						MinimumQuantity:     ingredient.MinimumQuantity,
-						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+						IngredientID:      &ingredient.Ingredient.ID,
+						Name:              ingredient.Name,
+						MeasurementUnitID: ingredient.MeasurementUnit.ID,
+						QuantityNotes:     ingredient.QuantityNotes,
+						IngredientNotes:   ingredient.IngredientNotes,
+						MinimumQuantity:   ingredient.MinimumQuantity,
 					}
 					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 				}
@@ -291,7 +286,6 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 						Name:                instrument.Name,
 						Notes:               instrument.Notes,
 						RecipeStepProductID: instrument.RecipeStepProductID,
-						ProductOfRecipeStep: instrument.ProductOfRecipeStep,
 						PreferenceRank:      instrument.PreferenceRank,
 					}
 

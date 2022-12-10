@@ -86,7 +86,6 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
 			exampleRecipe.Steps[i].Ingredients[j].Ingredient = createdValidIngredient
-			exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
 			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
 		}
 
@@ -202,7 +201,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				Description: "",
 				Steps: []*types.RecipeStep{
 					{
-						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:            "soaked pinto beans",
@@ -216,26 +214,21 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Preparation: *soak,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								RecipeStepProductID: nil,
-								Ingredient:          pintoBeans,
-								Name:                "pinto beans",
-								MeasurementUnit:     *grams,
-								MinimumQuantity:     500,
-								ProductOfRecipeStep: false,
+								Ingredient:      pintoBeans,
+								Name:            "pinto beans",
+								MeasurementUnit: *grams,
+								MinimumQuantity: 500,
 							},
 							{
-								RecipeStepProductID: nil,
-								Ingredient:          water,
-								Name:                "water",
-								MeasurementUnit:     *cups,
-								MinimumQuantity:     5,
-								ProductOfRecipeStep: false,
+								Ingredient:      water,
+								Name:            "water",
+								MeasurementUnit: *cups,
+								MinimumQuantity: 5,
 							},
 						},
 						Index: 0,
 					},
 					{
-						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:            "final output",
@@ -249,17 +242,15 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Preparation: *mix,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								Name:                "soaked pinto beans",
-								MeasurementUnit:     *grams,
-								MinimumQuantity:     1000,
-								ProductOfRecipeStep: true,
+								Name:            "soaked pinto beans",
+								MeasurementUnit: *grams,
+								MinimumQuantity: 1000,
 							},
 							{
-								Ingredient:          garlicPaste,
-								Name:                "garlic paste",
-								MeasurementUnit:     *grams,
-								MinimumQuantity:     10,
-								ProductOfRecipeStep: false,
+								Ingredient:      garlicPaste,
+								Name:            "garlic paste",
+								MeasurementUnit: *grams,
+								MinimumQuantity: 10,
 							},
 						},
 						Index: 1,
@@ -286,18 +277,16 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						PreparationID: expected.Steps[0].Preparation.ID,
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
 							{
-								IngredientID:        &expected.Steps[0].Ingredients[0].Ingredient.ID,
-								Name:                expected.Steps[0].Ingredients[0].Name,
-								MeasurementUnitID:   expected.Steps[0].Ingredients[0].MeasurementUnit.ID,
-								MinimumQuantity:     expected.Steps[0].Ingredients[0].MinimumQuantity,
-								ProductOfRecipeStep: expected.Steps[0].Ingredients[0].ProductOfRecipeStep,
+								IngredientID:      &expected.Steps[0].Ingredients[0].Ingredient.ID,
+								Name:              expected.Steps[0].Ingredients[0].Name,
+								MeasurementUnitID: expected.Steps[0].Ingredients[0].MeasurementUnit.ID,
+								MinimumQuantity:   expected.Steps[0].Ingredients[0].MinimumQuantity,
 							},
 							{
-								IngredientID:        &expected.Steps[0].Ingredients[1].Ingredient.ID,
-								Name:                expected.Steps[0].Ingredients[1].Name,
-								MeasurementUnitID:   expected.Steps[0].Ingredients[1].MeasurementUnit.ID,
-								MinimumQuantity:     expected.Steps[0].Ingredients[1].MinimumQuantity,
-								ProductOfRecipeStep: expected.Steps[0].Ingredients[1].ProductOfRecipeStep,
+								IngredientID:      &expected.Steps[0].Ingredients[1].Ingredient.ID,
+								Name:              expected.Steps[0].Ingredients[1].Name,
+								MeasurementUnitID: expected.Steps[0].Ingredients[1].MeasurementUnit.ID,
+								MinimumQuantity:   expected.Steps[0].Ingredients[1].MinimumQuantity,
 							},
 						},
 						Index: expected.Steps[0].Index,
@@ -317,17 +306,17 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						PreparationID: expected.Steps[1].Preparation.ID,
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
 							{
-								Name:                expected.Steps[1].Ingredients[0].Name,
-								MeasurementUnitID:   expected.Steps[1].Ingredients[0].MeasurementUnit.ID,
-								MinimumQuantity:     expected.Steps[1].Ingredients[0].MinimumQuantity,
-								ProductOfRecipeStep: expected.Steps[1].Ingredients[0].ProductOfRecipeStep,
+								Name:                            expected.Steps[1].Ingredients[0].Name,
+								MeasurementUnitID:               expected.Steps[1].Ingredients[0].MeasurementUnit.ID,
+								MinimumQuantity:                 expected.Steps[1].Ingredients[0].MinimumQuantity,
+								ProductOfRecipeStepIndex:        pointers.Pointer(uint64(0)),
+								ProductOfRecipeStepProductIndex: pointers.Pointer(uint64(0)),
 							},
 							{
-								IngredientID:        &expected.Steps[1].Ingredients[1].Ingredient.ID,
-								Name:                expected.Steps[1].Ingredients[1].Name,
-								MeasurementUnitID:   expected.Steps[1].Ingredients[1].MeasurementUnit.ID,
-								MinimumQuantity:     expected.Steps[1].Ingredients[1].MinimumQuantity,
-								ProductOfRecipeStep: expected.Steps[1].Ingredients[1].ProductOfRecipeStep,
+								IngredientID:      &expected.Steps[1].Ingredients[1].Ingredient.ID,
+								Name:              expected.Steps[1].Ingredients[1].Name,
+								MeasurementUnitID: expected.Steps[1].Ingredients[1].MeasurementUnit.ID,
+								MinimumQuantity:   expected.Steps[1].Ingredients[1].MinimumQuantity,
 							},
 						},
 						Index: expected.Steps[1].Index,
@@ -474,7 +463,6 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 					createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
 					exampleRecipe.Steps[i].Ingredients[j].Ingredient = createdValidIngredient
-					exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
 					exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
 				}
 
@@ -718,7 +706,6 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Name:                "pinto beans",
 								MeasurementUnit:     *grams,
 								MinimumQuantity:     500,
-								ProductOfRecipeStep: false,
 							},
 						},
 						Index: 0,
@@ -738,10 +725,9 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Preparation: *sautee,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								Name:                "diced chicken breast",
-								MeasurementUnit:     *grams,
-								MinimumQuantity:     1000,
-								ProductOfRecipeStep: true,
+								Name:            "diced chicken breast",
+								MeasurementUnit: *grams,
+								MinimumQuantity: 1000,
 							},
 						},
 						Index: 1,
@@ -768,11 +754,10 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						PreparationID: dice.ID,
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
 							{
-								IngredientID:        &chickenBreast.ID,
-								Name:                "pinto beans",
-								MeasurementUnitID:   grams.ID,
-								MinimumQuantity:     500,
-								ProductOfRecipeStep: false,
+								IngredientID:      &chickenBreast.ID,
+								Name:              "pinto beans",
+								MeasurementUnitID: grams.ID,
+								MinimumQuantity:   500,
 							},
 						},
 						Index: 0,
@@ -792,10 +777,11 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						PreparationID: sautee.ID,
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
 							{
-								Name:                "diced chicken breast",
-								MeasurementUnitID:   grams.ID,
-								MinimumQuantity:     1000,
-								ProductOfRecipeStep: true,
+								Name:                            "diced chicken breast",
+								MeasurementUnitID:               grams.ID,
+								MinimumQuantity:                 1000,
+								ProductOfRecipeStepIndex:        pointers.Pointer(uint64(0)),
+								ProductOfRecipeStepProductIndex: pointers.Pointer(uint64(0)),
 							},
 						},
 						Index: 1,

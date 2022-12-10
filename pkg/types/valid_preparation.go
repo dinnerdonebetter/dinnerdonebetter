@@ -30,7 +30,8 @@ func init() {
 type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
-		_                           struct{}
+		_ struct{}
+
 		CreatedAt                   time.Time  `json:"createdAt"`
 		MaximumInstrumentCount      *int32     `json:"maximumInstrumentCount"`
 		ArchivedAt                  *time.Time `json:"archivedAt"`

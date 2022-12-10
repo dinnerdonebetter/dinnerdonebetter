@@ -159,7 +159,6 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							MinimumQuantity:     900,
 							MaximumQuantity:     900,
 							Optional:            false,
-							ProductOfRecipeStep: false,
 						},
 					},
 					Products: []*types.RecipeStepProduct{

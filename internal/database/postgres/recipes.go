@@ -451,15 +451,12 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		CreatedAt:          q.currentTime(),
 	}
 
+	findCreatedRecipeStepProductsForIngredients(input)
+	findCreatedRecipeStepProductsForInstruments(input)
+
 	for i, stepInput := range input.Steps {
 		stepInput.Index = uint32(i)
 		stepInput.BelongsToRecipe = x.ID
-
-		// we need to go through all the prior steps and see
-		// if the names of a product matches any ingredients
-		// used in this step and not used in prior steps
-		findCreatedRecipeStepProductsForIngredients(input, i)
-		findCreatedRecipeStepProductsForInstruments(input, i)
 
 		s, createErr := q.createRecipeStep(ctx, tx, stepInput)
 		if createErr != nil {
@@ -510,74 +507,26 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 	return x, nil
 }
 
-func findCreatedRecipeStepProductsForIngredients(recipe *types.RecipeDatabaseCreationInput, stepIndex int) {
-	step := recipe.Steps[stepIndex]
-
-	priorSteps := []*types.RecipeStepDatabaseCreationInput{}
-	for i, s := range recipe.Steps {
-		if i >= stepIndex {
-			break
-		}
-		priorSteps = append(priorSteps, s)
-	}
-
-	// created products is everything available to the step at the provided stepIndex.
-	createdProducts := map[string]*types.RecipeStepProductDatabaseCreationInput{}
-	for _, s := range priorSteps {
-		for _, product := range s.Products {
-			if product.Type == types.RecipeStepProductIngredientType {
-				createdProducts[product.Name] = product
+func findCreatedRecipeStepProductsForIngredients(recipe *types.RecipeDatabaseCreationInput) {
+	for _, step := range recipe.Steps {
+		for _, ingredient := range step.Ingredients {
+			if ingredient.ProductOfRecipeStepIndex != nil && ingredient.ProductOfRecipeStepProductIndex != nil {
+				if len(recipe.Steps)-1 >= int(*ingredient.ProductOfRecipeStepIndex) && len(recipe.Steps[int(*ingredient.ProductOfRecipeStepIndex)].Products)-1 >= int(*ingredient.ProductOfRecipeStepProductIndex) {
+					ingredient.RecipeStepProductID = &recipe.Steps[*ingredient.ProductOfRecipeStepIndex].Products[*ingredient.ProductOfRecipeStepProductIndex].ID
+				}
 			}
-		}
-
-		for _, ingredient := range s.Ingredients {
-			if ingredient.ProductOfRecipeStep && ingredient.IngredientID == nil {
-				delete(createdProducts, ingredient.Name)
-			}
-		}
-	}
-
-	for _, ingredient := range step.Ingredients {
-		createdProduct, availableAsACreatedProduct := createdProducts[ingredient.Name]
-
-		if ingredient.ProductOfRecipeStep && availableAsACreatedProduct {
-			ingredient.RecipeStepProductID = &createdProduct.ID
 		}
 	}
 }
 
-func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCreationInput, stepIndex int) {
-	step := recipe.Steps[stepIndex]
-
-	priorSteps := []*types.RecipeStepDatabaseCreationInput{}
-	for i, s := range recipe.Steps {
-		if i >= stepIndex {
-			break
-		}
-		priorSteps = append(priorSteps, s)
-	}
-
-	// created products is everything available to the step at the provided stepIndex.
-	createdProducts := map[string]*types.RecipeStepProductDatabaseCreationInput{}
-	for _, s := range priorSteps {
-		for _, product := range s.Products {
-			if product.Type == types.RecipeStepProductInstrumentType {
-				createdProducts[product.Name] = product
+func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCreationInput) {
+	for _, step := range recipe.Steps {
+		for _, instrument := range step.Instruments {
+			if instrument.ProductOfRecipeStepIndex != nil && instrument.ProductOfRecipeStepProductIndex != nil {
+				if len(recipe.Steps)-1 >= int(*instrument.ProductOfRecipeStepIndex) && len(recipe.Steps[int(*instrument.ProductOfRecipeStepIndex)].Products)-1 >= int(*instrument.ProductOfRecipeStepProductIndex) {
+					instrument.RecipeStepProductID = &recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].ID
+				}
 			}
-		}
-
-		for _, instrument := range s.Instruments {
-			if instrument.RecipeStepProductID == nil {
-				delete(createdProducts, instrument.Name)
-			}
-		}
-	}
-
-	for _, instrument := range step.Instruments {
-		createdProduct, availableAsACreatedProduct := createdProducts[instrument.Name]
-
-		if instrument.ProductOfRecipeStep && availableAsACreatedProduct {
-			instrument.RecipeStepProductID = &createdProduct.ID
 		}
 	}
 }

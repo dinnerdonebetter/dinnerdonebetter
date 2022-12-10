@@ -30,7 +30,8 @@ func init() {
 type (
 	// RecipeMedia represents recipe media.
 	RecipeMedia struct {
-		_                   struct{}
+		_ struct{}
+
 		CreatedAt           time.Time  `json:"createdAt"`
 		ArchivedAt          *time.Time `json:"archivedAt"`
 		LastUpdatedAt       *time.Time `json:"lastUpdatedAt"`

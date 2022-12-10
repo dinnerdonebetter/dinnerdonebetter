@@ -138,7 +138,6 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							MinimumQuantity:     900,
 							MaximumQuantity:     900,
 							Optional:            false,
-							ProductOfRecipeStep: false,
 						},
 					},
 					Products: []*types.RecipeStepProduct{

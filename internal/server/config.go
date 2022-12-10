@@ -10,7 +10,8 @@ import (
 type (
 	// Config describes the settings pertinent to the HTTP serving portion of the service.
 	Config struct {
-		_                       struct{}
+		_ struct{}
+
 		HTTPSCertificateFile    string        `json:"httpsCertificate,omitempty" mapstructure:"https_certificate" toml:"https_certificate,omitempty"`
 		HTTPSCertificateKeyFile string        `json:"httpsCertificateKey,omitempty" mapstructure:"https_certificate_key" toml:"https_certificate_key,omitempty"`
 		StartupDeadline         time.Duration `json:"startupDeadline,omitempty" mapstructure:"startup_deadline" toml:"startup_deadline,omitempty"`

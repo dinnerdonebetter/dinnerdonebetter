@@ -48,7 +48,6 @@ SELECT
 	recipe_step_ingredients.minimum_quantity_value,
 	recipe_step_ingredients.maximum_quantity_value,
 	recipe_step_ingredients.quantity_notes,
-	recipe_step_ingredients.product_of_recipe_step,
 	recipe_step_ingredients.recipe_step_product_id,
     recipe_step_ingredients.ingredient_notes,
     recipe_step_ingredients.option_index,

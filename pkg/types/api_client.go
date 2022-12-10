@@ -23,7 +23,8 @@ const (
 type (
 	// APIClient represents a user-authorized API client.
 	APIClient struct {
-		_             struct{}
+		_ struct{}
+
 		CreatedAt     time.Time  `json:"createdAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time `json:"archivedAt"`

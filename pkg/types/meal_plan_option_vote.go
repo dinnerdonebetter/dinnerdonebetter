@@ -31,7 +31,8 @@ func init() {
 type (
 	// MealPlanOptionVote represents a meal plan option vote.
 	MealPlanOptionVote struct {
-		_                       struct{}
+		_ struct{}
+
 		CreatedAt               time.Time  `json:"createdAt"`
 		ArchivedAt              *time.Time `json:"archivedAt"`
 		LastUpdatedAt           *time.Time `json:"lastUpdatedAt"`

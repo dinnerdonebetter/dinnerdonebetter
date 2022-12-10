@@ -132,7 +132,7 @@ func (g *recipeAnalyzer) makeGraphForRecipe(ctx context.Context, recipe *types.R
 
 	for _, step := range recipe.Steps {
 		for _, ingredient := range step.Ingredients {
-			if !ingredient.ProductOfRecipeStep || ingredient.RecipeStepProductID == nil {
+			if ingredient.RecipeStepProductID == nil {
 				continue
 			}
 
@@ -147,7 +147,7 @@ func (g *recipeAnalyzer) makeGraphForRecipe(ctx context.Context, recipe *types.R
 		}
 
 		for _, instrument := range step.Instruments {
-			if !instrument.ProductOfRecipeStep || instrument.RecipeStepProductID == nil {
+			if instrument.RecipeStepProductID == nil {
 				continue
 			}
 
@@ -198,7 +198,7 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 
 	for _, step := range recipe.Steps {
 		for _, ingredient := range step.Ingredients {
-			if !ingredient.ProductOfRecipeStep {
+			if ingredient.RecipeStepProductID != nil {
 				continue
 			}
 
@@ -213,7 +213,7 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 		}
 
 		for _, instrument := range step.Instruments {
-			if !instrument.ProductOfRecipeStep || instrument.RecipeStepProductID == nil {
+			if instrument.RecipeStepProductID == nil {
 				continue
 			}
 

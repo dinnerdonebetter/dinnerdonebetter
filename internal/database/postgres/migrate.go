@@ -340,6 +340,11 @@ var (
 			Description: "valid preparation instrument constraints",
 			Script:      fetchMigration("00065_valid_preparation_instrument_constraints"),
 		},
+		{
+			Version:     66,
+			Description: "drop product of recipe steps",
+			Script:      fetchMigration("00066_drop_product_of_recipe_steps"),
+		},
 	}
 )
 
@@ -352,8 +357,7 @@ func fetchMigration(name string) string {
 	return string(file)
 }
 
-// BuildMigrationFunc returns a sync.Once compatible function closure that will
-// migrate a postgres database.
+// BuildMigrationFunc returns a sync.Once compatible function closure that will migrate a postgres database.
 func (q *Querier) migrationFunc() {
 	driver := darwin.NewGenericDriver(q.db, darwin.PostgresDialect{})
 	if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {

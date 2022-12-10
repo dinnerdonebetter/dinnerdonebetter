@@ -37,7 +37,8 @@ type (
 
 	// HouseholdInvitationCreationRequestInput represents what a User could set as input for creating household invitations.
 	HouseholdInvitationCreationRequestInput struct {
-		_         struct{}
+		_ struct{}
+
 		ExpiresAt *time.Time `json:"expiresAt"`
 		Note      string     `json:"note"`
 		ToEmail   string     `json:"toEmail"`

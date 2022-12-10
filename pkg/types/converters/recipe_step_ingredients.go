@@ -8,18 +8,19 @@ import (
 // ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
 func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *types.RecipeStepIngredientCreationRequestInput) *types.RecipeStepIngredientDatabaseCreationInput {
 	x := &types.RecipeStepIngredientDatabaseCreationInput{
-		ID:                  identifiers.New(),
-		IngredientID:        input.IngredientID,
-		Name:                input.Name,
-		MeasurementUnitID:   input.MeasurementUnitID,
-		MinimumQuantity:     input.MinimumQuantity,
-		MaximumQuantity:     input.MaximumQuantity,
-		QuantityNotes:       input.QuantityNotes,
-		ProductOfRecipeStep: input.ProductOfRecipeStep,
-		IngredientNotes:     input.IngredientNotes,
-		Optional:            input.Optional,
-		OptionIndex:         input.OptionIndex,
-		RequiresDefrost:     input.RequiresDefrost,
+		ID:                              identifiers.New(),
+		IngredientID:                    input.IngredientID,
+		Name:                            input.Name,
+		MeasurementUnitID:               input.MeasurementUnitID,
+		MinimumQuantity:                 input.MinimumQuantity,
+		MaximumQuantity:                 input.MaximumQuantity,
+		QuantityNotes:                   input.QuantityNotes,
+		IngredientNotes:                 input.IngredientNotes,
+		Optional:                        input.Optional,
+		OptionIndex:                     input.OptionIndex,
+		RequiresDefrost:                 input.RequiresDefrost,
+		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
+		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 	}
 
 	return x
@@ -37,7 +38,6 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
 		MinimumQuantity:     &input.MinimumQuantity,
 		MaximumQuantity:     &input.MaximumQuantity,
-		ProductOfRecipeStep: &input.ProductOfRecipeStep,
 		Optional:            &input.Optional,
 		OptionIndex:         &input.OptionIndex,
 		RequiresDefrost:     &input.RequiresDefrost,
@@ -49,17 +49,16 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 // ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput builds a RecipeStepIngredientCreationRequestInput from a RecipeStepIngredient.
 func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientCreationRequestInput {
 	return &types.RecipeStepIngredientCreationRequestInput{
-		Name:                recipeStepIngredient.Name,
-		Optional:            recipeStepIngredient.Optional,
-		IngredientID:        &recipeStepIngredient.Ingredient.ID,
-		MeasurementUnitID:   recipeStepIngredient.MeasurementUnit.ID,
-		MinimumQuantity:     recipeStepIngredient.MinimumQuantity,
-		MaximumQuantity:     recipeStepIngredient.MaximumQuantity,
-		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
-		OptionIndex:         recipeStepIngredient.OptionIndex,
-		RequiresDefrost:     recipeStepIngredient.RequiresDefrost,
+		Name:              recipeStepIngredient.Name,
+		Optional:          recipeStepIngredient.Optional,
+		IngredientID:      &recipeStepIngredient.Ingredient.ID,
+		MeasurementUnitID: recipeStepIngredient.MeasurementUnit.ID,
+		MinimumQuantity:   recipeStepIngredient.MinimumQuantity,
+		MaximumQuantity:   recipeStepIngredient.MaximumQuantity,
+		QuantityNotes:     recipeStepIngredient.QuantityNotes,
+		IngredientNotes:   recipeStepIngredient.IngredientNotes,
+		OptionIndex:       recipeStepIngredient.OptionIndex,
+		RequiresDefrost:   recipeStepIngredient.RequiresDefrost,
 	}
 }
 
@@ -74,7 +73,6 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(reci
 		MinimumQuantity:     recipeStepIngredient.MinimumQuantity,
 		MaximumQuantity:     recipeStepIngredient.MaximumQuantity,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
 		IngredientNotes:     recipeStepIngredient.IngredientNotes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 		OptionIndex:         recipeStepIngredient.OptionIndex,

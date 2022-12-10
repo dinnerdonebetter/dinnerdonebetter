@@ -13,7 +13,6 @@ SELECT
 	valid_instruments.archived_at,
 	recipe_step_instruments.recipe_step_product_id,
 	recipe_step_instruments.name,
-	recipe_step_instruments.product_of_recipe_step,
 	recipe_step_instruments.notes,
 	recipe_step_instruments.preference_rank,
 	recipe_step_instruments.optional,

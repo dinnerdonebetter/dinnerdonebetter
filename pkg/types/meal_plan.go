@@ -46,7 +46,8 @@ type (
 
 	// MealPlan represents a meal plan.
 	MealPlan struct {
-		_                      struct{}
+		_ struct{}
+
 		CreatedAt              time.Time        `json:"createdAt"`
 		VotingDeadline         time.Time        `json:"votingDeadline"`
 		ArchivedAt             *time.Time       `json:"archivedAt"`

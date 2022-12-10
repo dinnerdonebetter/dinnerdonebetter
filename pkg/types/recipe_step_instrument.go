@@ -30,7 +30,8 @@ func init() {
 type (
 	// RecipeStepInstrument represents a recipe step instrument.
 	RecipeStepInstrument struct {
-		_                   struct{}
+		_ struct{}
+
 		CreatedAt           time.Time        `json:"createdAt"`
 		Instrument          *ValidInstrument `json:"instrument"`
 		LastUpdatedAt       *time.Time       `json:"lastUpdatedAt"`
@@ -43,50 +44,50 @@ type (
 		MinimumQuantity     uint32           `json:"minimumQuantity"`
 		MaximumQuantity     uint32           `json:"maximumQuantity"`
 		OptionIndex         uint16           `json:"optionIndex"`
-		ProductOfRecipeStep bool             `json:"productOfRecipeStep"`
 		PreferenceRank      uint8            `json:"preferenceRank"`
 		Optional            bool             `json:"optional"`
 	}
 
 	// RecipeStepInstrumentCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentCreationRequestInput struct {
-		_ struct{}
-
-		InstrumentID        *string `json:"instrumentID"`
-		RecipeStepProductID *string `json:"recipeStepProductID"`
-		Name                string  `json:"name"`
-		Notes               string  `json:"notes"`
-		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
-		PreferenceRank      uint8   `json:"preferenceRank"`
-		Optional            bool    `json:"optional"`
-		OptionIndex         uint16  `json:"optionIndex"`
-		MinimumQuantity     uint32  `json:"minimumQuantity"`
-		MaximumQuantity     uint32  `json:"maximumQuantity"`
+		_                               struct{}
+		InstrumentID                    *string `json:"instrumentID"`
+		RecipeStepProductID             *string `json:"recipeStepProductID"`
+		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"productIndexOfRecipeStep"`
+		Name                            string  `json:"name"`
+		Notes                           string  `json:"notes"`
+		MinimumQuantity                 uint32  `json:"minimumQuantity"`
+		MaximumQuantity                 uint32  `json:"maximumQuantity"`
+		OptionIndex                     uint16  `json:"optionIndex"`
+		Optional                        bool    `json:"optional"`
+		PreferenceRank                  uint8   `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentDatabaseCreationInput struct {
-		_                   struct{}
-		InstrumentID        *string
-		RecipeStepProductID *string
-		ID                  string
-		Name                string
-		Notes               string
-		BelongsToRecipeStep string
-		ProductOfRecipeStep bool
-		PreferenceRank      uint8
-		Optional            bool
-		MinimumQuantity     uint32
-		OptionIndex         uint16
-		MaximumQuantity     uint32
+		_                               struct{}
+		InstrumentID                    *string
+		RecipeStepProductID             *string
+		ProductOfRecipeStepIndex        *uint64
+		ProductOfRecipeStepProductIndex *uint64
+		Notes                           string
+		BelongsToRecipeStep             string
+		Name                            string
+		ID                              string
+		MinimumQuantity                 uint32
+		MaximumQuantity                 uint32
+		OptionIndex                     uint16
+		Optional                        bool
+		PreferenceRank                  uint8
 	}
 
 	// RecipeStepInstrumentUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
 	RecipeStepInstrumentUpdateRequestInput struct {
-		_                   struct{}
+		_ struct{}
+
 		InstrumentID        *string `json:"instrumentID"`
 		RecipeStepProductID *string `json:"recipeStepProductID"`
-		ProductOfRecipeStep *bool   `json:"productOfRecipeStep"`
 		Notes               *string `json:"notes"`
 		PreferenceRank      *uint8  `json:"preferenceRank"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
@@ -125,10 +126,6 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 
 	if input.RecipeStepProductID != nil && *input.RecipeStepProductID != *x.RecipeStepProductID {
 		x.RecipeStepProductID = input.RecipeStepProductID
-	}
-
-	if input.ProductOfRecipeStep != nil && *input.ProductOfRecipeStep != x.ProductOfRecipeStep {
-		x.ProductOfRecipeStep = *input.ProductOfRecipeStep
 	}
 
 	if input.Name != nil && *input.Name != x.Name {

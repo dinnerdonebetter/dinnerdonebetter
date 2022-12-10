@@ -30,7 +30,8 @@ func init() {
 type (
 	// ValidIngredientStateIngredient represents a valid ingredient state ingredient.
 	ValidIngredientStateIngredient struct {
-		_               struct{}
+		_ struct{}
+
 		CreatedAt       time.Time            `json:"createdAt"`
 		LastUpdatedAt   *time.Time           `json:"lastUpdatedAt"`
 		ArchivedAt      *time.Time           `json:"archivedAt"`
