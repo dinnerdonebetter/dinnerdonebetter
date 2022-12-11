@@ -272,7 +272,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 	x := &types.MealPlan{
 		ID:                 input.ID,
 		Notes:              input.Notes,
-		Status:             status,
+		Status:             string(status),
 		VotingDeadline:     input.VotingDeadline,
 		BelongsToHousehold: input.BelongsToHousehold,
 		ElectionMethod:     input.ElectionMethod,

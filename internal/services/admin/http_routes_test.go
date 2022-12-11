@@ -31,7 +31,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -71,7 +71,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -90,7 +90,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.GoodStandingUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.GoodStandingUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -119,7 +119,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
@@ -167,7 +167,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -198,7 +198,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.TerminatedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.TerminatedUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -230,7 +230,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -249,7 +249,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -279,7 +279,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -309,7 +309,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewStatus = types.BannedUserAccountStatus
+		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error

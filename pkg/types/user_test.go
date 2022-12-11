@@ -45,7 +45,7 @@ func TestUser_IsBanned(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &User{AccountStatus: BannedUserAccountStatus}
+		x := &User{AccountStatus: string(BannedUserAccountStatus)}
 
 		assert.True(t, x.IsBanned())
 	})

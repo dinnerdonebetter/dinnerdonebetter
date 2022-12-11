@@ -10,7 +10,7 @@ import (
 func BuildFakeUserAccountStatusUpdateInput() *types.UserAccountStatusUpdateInput {
 	return &types.UserAccountStatusUpdateInput{
 		TargetUserID: BuildFakeID(),
-		NewStatus:    types.GoodStandingUserAccountStatus,
+		NewStatus:    string(types.GoodStandingUserAccountStatus),
 		Reason:       fake.Sentence(10),
 	}
 }

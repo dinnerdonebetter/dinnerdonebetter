@@ -39,23 +39,23 @@ type (
 	// User represents a User.
 	User struct {
 		_                         struct{}
-		CreatedAt                 time.Time         `json:"createdAt"`
-		PasswordLastChangedAt     *time.Time        `json:"passwordLastChangedAt"`
-		LastUpdatedAt             *time.Time        `json:"lastUpdatedAt"`
-		TwoFactorSecretVerifiedAt *time.Time        `json:"twoFactorSecretVerifiedAt"`
-		AvatarSrc                 *string           `json:"avatar"`
-		Birthday                  *time.Time        `json:"birthday"`
-		ArchivedAt                *time.Time        `json:"archivedAt"`
-		AccountStatusExplanation  string            `json:"accountStatusExplanation"`
-		TwoFactorSecret           string            `json:"-"`
-		HashedPassword            string            `json:"-"`
-		ID                        string            `json:"id"`
-		AccountStatus             userAccountStatus `json:"accountStatus"`
-		Username                  string            `json:"username"`
-		EmailAddress              string            `json:"emailAddress"`
-		EmailAddressVerifiedAt    *time.Time        `json:"emailAddressVerifiedAt"`
-		ServiceRole               string            `json:"serviceRoles"`
-		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
+		CreatedAt                 time.Time  `json:"createdAt"`
+		PasswordLastChangedAt     *time.Time `json:"passwordLastChangedAt"`
+		LastUpdatedAt             *time.Time `json:"lastUpdatedAt"`
+		TwoFactorSecretVerifiedAt *time.Time `json:"twoFactorSecretVerifiedAt"`
+		AvatarSrc                 *string    `json:"avatar"`
+		Birthday                  *time.Time `json:"birthday"`
+		ArchivedAt                *time.Time `json:"archivedAt"`
+		AccountStatusExplanation  string     `json:"accountStatusExplanation"`
+		TwoFactorSecret           string     `json:"-"`
+		HashedPassword            string     `json:"-"`
+		ID                        string     `json:"id"`
+		AccountStatus             string     `json:"accountStatus"`
+		Username                  string     `json:"username"`
+		EmailAddress              string     `json:"emailAddress"`
+		EmailAddressVerifiedAt    *time.Time `json:"emailAddressVerifiedAt"`
+		ServiceRole               string     `json:"serviceRoles"`
+		RequiresPasswordChange    bool       `json:"requiresPasswordChange"`
 	}
 
 	// UserRegistrationInput represents the input required from users to register an account.
@@ -88,16 +88,16 @@ type (
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
 		_               struct{}
-		CreatedAt       time.Time         `json:"createdAt"`
-		Birthday        *time.Time        `json:"birthday"`
-		AvatarSrc       *string           `json:"avatar"`
-		Username        string            `json:"username"`
-		EmailAddress    string            `json:"emailAddress"`
-		TwoFactorQRCode string            `json:"qrCode"`
-		CreatedUserID   string            `json:"createdUserID"`
-		AccountStatus   userAccountStatus `json:"accountStatus"`
-		TwoFactorSecret string            `json:"twoFactorSecret"`
-		IsAdmin         bool              `json:"isAdmin"`
+		CreatedAt       time.Time  `json:"createdAt"`
+		Birthday        *time.Time `json:"birthday"`
+		AvatarSrc       *string    `json:"avatar"`
+		Username        string     `json:"username"`
+		EmailAddress    string     `json:"emailAddress"`
+		TwoFactorQRCode string     `json:"qrCode"`
+		CreatedUserID   string     `json:"createdUserID"`
+		AccountStatus   string     `json:"accountStatus"`
+		TwoFactorSecret string     `json:"twoFactorSecret"`
+		IsAdmin         bool       `json:"isAdmin"`
 	}
 
 	// UserLoginInput represents the payload used to log in a User.
@@ -218,7 +218,7 @@ func IsValidHouseholdStatus(s string) bool {
 
 // IsBanned is a handy helper function.
 func (u *User) IsBanned() bool {
-	return u.AccountStatus == BannedUserAccountStatus
+	return u.AccountStatus == string(BannedUserAccountStatus)
 }
 
 // ValidateWithContext ensures our provided UserRegistrationInput meets expectations.

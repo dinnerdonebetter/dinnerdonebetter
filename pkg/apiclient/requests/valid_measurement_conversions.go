@@ -95,7 +95,7 @@ func (b *Builder) BuildGetValidMeasurementConversionsToUnitRequest(ctx context.C
 }
 
 // BuildCreateValidMeasurementConversionRequest builds an HTTP request for creating a valid measurement conversion.
-func (b *Builder) BuildCreateValidMeasurementConversionRequest(ctx context.Context, input *types.ValidMeasurementConversionCreationRequestInput) (*http.Request, error) {
+func (b *Builder) BuildCreateValidMeasurementConversionRequest(ctx context.Context, input *types.ValidMeasurementUnitConversionCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -123,7 +123,7 @@ func (b *Builder) BuildCreateValidMeasurementConversionRequest(ctx context.Conte
 }
 
 // BuildUpdateValidMeasurementConversionRequest builds an HTTP request for updating a valid measurement conversion.
-func (b *Builder) BuildUpdateValidMeasurementConversionRequest(ctx context.Context, validMeasurementConversion *types.ValidMeasurementConversion) (*http.Request, error) {
+func (b *Builder) BuildUpdateValidMeasurementConversionRequest(ctx context.Context, validMeasurementConversion *types.ValidMeasurementUnitConversion) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 

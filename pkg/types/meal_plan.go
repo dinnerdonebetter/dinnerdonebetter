@@ -51,7 +51,7 @@ type (
 		VotingDeadline         time.Time        `json:"votingDeadline"`
 		ArchivedAt             *time.Time       `json:"archivedAt"`
 		LastUpdatedAt          *time.Time       `json:"lastUpdatedAt"`
-		Status                 MealPlanStatus   `json:"status"`
+		Status                 string           `json:"status"`
 		ID                     string           `json:"id"`
 		Notes                  string           `json:"notes"`
 		ElectionMethod         string           `json:"electionMethod"`

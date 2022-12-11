@@ -150,7 +150,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 			tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 			logger = sessionCtxData.AttachToLogger(logger)
 
-			if sessionCtxData.Requester.AccountStatus == types.BannedUserAccountStatus || sessionCtxData.Requester.AccountStatus == types.TerminatedUserAccountStatus {
+			if sessionCtxData.Requester.AccountStatus == string(types.BannedUserAccountStatus) || sessionCtxData.Requester.AccountStatus == string(types.TerminatedUserAccountStatus) {
 				logger.Info("banned user attempted to make request")
 				http.Redirect(res, req, "/", http.StatusForbidden)
 				return

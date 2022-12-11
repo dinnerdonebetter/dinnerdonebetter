@@ -57,7 +57,7 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 
 			input := &types.UserAccountStatusUpdateInput{
 				TargetUserID: user.ID,
-				NewStatus:    types.BannedUserAccountStatus,
+				NewStatus:    string(types.BannedUserAccountStatus),
 				Reason:       "testing",
 			}
 

@@ -25,8 +25,8 @@ type validMeasurementConversionsBaseSuite struct {
 
 	ctx                                   context.Context
 	exampleValidMeasurementUnit           *types.ValidMeasurementUnit
-	exampleValidMeasurementConversion     *types.ValidMeasurementConversion
-	exampleValidMeasurementConversionList []*types.ValidMeasurementConversion
+	exampleValidMeasurementConversion     *types.ValidMeasurementUnitConversion
+	exampleValidMeasurementConversionList []*types.ValidMeasurementUnitConversion
 }
 
 var _ suite.SetupTestSuite = (*validMeasurementConversionsBaseSuite)(nil)
@@ -35,7 +35,7 @@ func (s *validMeasurementConversionsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidMeasurementUnit = fakes.BuildFakeValidMeasurementUnit()
 	s.exampleValidMeasurementConversion = fakes.BuildFakeValidMeasurementConversion()
-	s.exampleValidMeasurementConversionList = []*types.ValidMeasurementConversion{
+	s.exampleValidMeasurementConversionList = []*types.ValidMeasurementUnitConversion{
 		s.exampleValidMeasurementConversion,
 	}
 }
@@ -172,7 +172,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_CreateValidMeasurement
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		exampleInput := &types.ValidMeasurementConversionCreationRequestInput{}
+		exampleInput := &types.ValidMeasurementUnitConversionCreationRequestInput{}
 
 		actual, err := c.CreateValidMeasurementConversion(s.ctx, exampleInput)
 		assert.Nil(t, actual)

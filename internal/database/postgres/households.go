@@ -384,7 +384,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		ID:            input.ID,
 		Name:          input.Name,
 		BelongsToUser: input.BelongsToUser,
-		BillingStatus: types.UnpaidHouseholdBillingStatus,
+		BillingStatus: string(types.UnpaidHouseholdBillingStatus),
 		ContactEmail:  input.ContactEmail,
 		ContactPhone:  input.ContactPhone,
 		TimeZone:      input.TimeZone,

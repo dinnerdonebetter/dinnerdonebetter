@@ -11,7 +11,7 @@ import (
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
-func checkValidMeasurementConversionEquality(t *testing.T, expected, actual *types.ValidMeasurementConversion) {
+func checkValidMeasurementConversionEquality(t *testing.T, expected, actual *types.ValidMeasurementUnitConversion) {
 	t.Helper()
 
 	require.NotZero(t, actual.ID)

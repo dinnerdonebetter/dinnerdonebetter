@@ -57,16 +57,6 @@ ifndef $(shell command -v scc 2> /dev/null)
 	$(shell GO111MODULE=off go install github.com/boyter/scc@latest)
 endif
 
-ensure_pnpm_installed:
-ifndef $(shell command -v pnpm 2> /dev/null)
-	$(shell npm install -g pnpm)
-endif
-
-.PHONY: ensure_hosts
-ensure_hosts:
-	if [ `cat /etc/hosts | grep api.prixfixe.local | wc -l` -ne 1 ]; then sudo -- sh -c "echo \"127.0.0.1       api.prixfixe.local\" >> /etc/hosts"; fi
-
-
 .PHONY: clean_vendor
 clean_vendor:
 	rm -rf vendor go.sum

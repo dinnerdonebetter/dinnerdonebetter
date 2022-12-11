@@ -347,7 +347,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 		ToEmail:              input.ToEmail,
 		Token:                input.Token,
 		StatusNote:           "",
-		Status:               types.PendingHouseholdInvitationStatus,
+		Status:               string(types.PendingHouseholdInvitationStatus),
 		DestinationHousehold: types.Household{ID: input.DestinationHouseholdID},
 		ExpiresAt:            input.ExpiresAt,
 		CreatedAt:            q.currentTime(),
@@ -518,7 +518,7 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 //go:embed queries/household_invitations/set_status.sql
 var setInvitationStatusQuery string
 
-func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note string, status types.HouseholdInvitationStatus) error {
+func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note, status string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -547,7 +547,7 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 
 // CancelHouseholdInvitation cancels a household invitation by its ID with a note.
 func (q *Querier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error {
-	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.CancelledHouseholdInvitationStatus)
+	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, string(types.CancelledHouseholdInvitationStatus))
 }
 
 // AcceptHouseholdInvitation accepts a household invitation by its ID with a note.
@@ -568,7 +568,7 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.setInvitationStatus(ctx, tx, householdInvitationID, note, types.AcceptedHouseholdInvitationStatus); err != nil {
+	if err = q.setInvitationStatus(ctx, tx, householdInvitationID, note, string(types.AcceptedHouseholdInvitationStatus)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "accepting household invitation")
 	}
@@ -603,7 +603,7 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 
 // RejectHouseholdInvitation rejects a household invitation by its ID with a note.
 func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error {
-	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
+	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, string(types.RejectedHouseholdInvitationStatus))
 }
 
 //go:embed queries/household_invitations/attach_invitations_to_user_id.sql
@@ -667,7 +667,7 @@ func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.
 
 	logger.Debug("created membership via invitation")
 
-	if err := q.setInvitationStatus(ctx, querier, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
+	if err := q.setInvitationStatus(ctx, querier, invitation.ID, "", string(types.AcceptedHouseholdInvitationStatus)); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareAndLogError(err, logger, span, "accepting household invitation")
 	}

@@ -455,7 +455,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.AccountStatus = types.BannedUserAccountStatus
+		helper.exampleUser.AccountStatus = string(types.BannedUserAccountStatus)
 		helper.exampleUser.AccountStatusExplanation = "bad behavior"
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
