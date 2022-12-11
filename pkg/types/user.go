@@ -40,23 +40,23 @@ type (
 	User struct {
 		_ struct{}
 
-		CreatedAt                 time.Time         `json:"createdAt"`
-		PasswordLastChangedAt     *time.Time        `json:"passwordLastChangedAt"`
-		LastUpdatedAt             *time.Time        `json:"lastUpdatedAt"`
-		TwoFactorSecretVerifiedAt *time.Time        `json:"twoFactorSecretVerifiedAt"`
-		AvatarSrc                 *string           `json:"avatar"`
-		Birthday                  *time.Time        `json:"birthday"`
-		ArchivedAt                *time.Time        `json:"archivedAt"`
-		AccountStatusExplanation  string            `json:"accountStatusExplanation"`
-		TwoFactorSecret           string            `json:"-"`
-		HashedPassword            string            `json:"-"`
-		ID                        string            `json:"id"`
-		AccountStatus             userAccountStatus `json:"accountStatus"`
-		Username                  string            `json:"username"`
-		EmailAddress              string            `json:"emailAddress"`
-		EmailAddressVerifiedAt    *time.Time        `json:"emailAddressVerifiedAt"`
-		ServiceRole               string            `json:"serviceRoles"`
-		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
+		CreatedAt                 time.Time  `json:"createdAt"`
+		PasswordLastChangedAt     *time.Time `json:"passwordLastChangedAt"`
+		LastUpdatedAt             *time.Time `json:"lastUpdatedAt"`
+		TwoFactorSecretVerifiedAt *time.Time `json:"twoFactorSecretVerifiedAt"`
+		AvatarSrc                 *string    `json:"avatar"`
+		Birthday                  *time.Time `json:"birthday"`
+		ArchivedAt                *time.Time `json:"archivedAt"`
+		AccountStatusExplanation  string     `json:"accountStatusExplanation"`
+		TwoFactorSecret           string     `json:"-"`
+		HashedPassword            string     `json:"-"`
+		ID                        string     `json:"id"`
+		AccountStatus             string     `json:"accountStatus"`
+		Username                  string     `json:"username"`
+		EmailAddress              string     `json:"emailAddress"`
+		EmailAddressVerifiedAt    *time.Time `json:"emailAddressVerifiedAt"`
+		ServiceRole               string     `json:"serviceRoles"`
+		RequiresPasswordChange    bool       `json:"requiresPasswordChange"`
 	}
 
 	// UserRegistrationInput represents the input required from users to register an account.

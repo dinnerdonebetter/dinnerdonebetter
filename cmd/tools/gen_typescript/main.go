@@ -215,7 +215,7 @@ var (
 		},
 	}
 
-	destinationDirectory = "artifacts/typescript"
+	destinationDirectory = "../frontend/packages/models"
 )
 
 const (
@@ -226,12 +226,12 @@ const (
 )
 
 func main() {
-	if err := os.RemoveAll(destinationDirectory); err != nil {
-		panic(err)
-	}
-	if err := os.MkdirAll(destinationDirectory, os.ModePerm); err != nil {
-		panic(err)
-	}
+	//if err := os.RemoveAll(destinationDirectory); err != nil {
+	//	panic(err)
+	//}
+	//if err := os.MkdirAll(destinationDirectory, os.ModePerm); err != nil {
+	//	panic(err)
+	//}
 
 	var errors *multierror.Error
 
@@ -469,7 +469,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 
 		if numberMatcherRegex.MatchString(field.Type.String()) {
 			fieldType = "number"
-			if !isPointer {
+			if !isPointer && !isSlice {
 				defaultValue = "-1"
 			}
 		}
@@ -511,7 +511,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			sliceDecl = "[]"
 		}
 
-		output += fmt.Sprintf("		%s?: %s%s,\n", line.FieldName, line.FieldType, sliceDecl)
+		output += fmt.Sprintf("		%s?: %s%s\n", line.FieldName, line.FieldType, sliceDecl)
 	}
 
 	output += `	} = {}) {
