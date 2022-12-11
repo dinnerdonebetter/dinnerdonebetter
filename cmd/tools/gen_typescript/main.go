@@ -215,7 +215,7 @@ var (
 		},
 	}
 
-	destinationDirectory = "../frontend/packages/models"
+	destinationDirectory = "avatars/typescript"
 )
 
 const (
@@ -226,16 +226,19 @@ const (
 )
 
 func main() {
-	//if err := os.RemoveAll(destinationDirectory); err != nil {
-	//	panic(err)
-	//}
-	//if err := os.MkdirAll(destinationDirectory, os.ModePerm); err != nil {
-	//	panic(err)
-	//}
+	if os.Getenv("NUKE_OUTPUT_DIR") == "true" {
+		if err := os.RemoveAll(destinationDirectory); err != nil {
+			panic(err)
+		}
+		if err := os.MkdirAll(destinationDirectory, os.ModePerm); err != nil {
+			panic(err)
+		}
+	}
 
-	var errors *multierror.Error
-
-	importMap := map[string]string{}
+	var (
+		errors    *multierror.Error
+		importMap = map[string]string{}
+	)
 	for filename, typesToGenerateFor := range filesToGenerate {
 		fileImports := []string{}
 		for _, typ := range typesToGenerateFor {
