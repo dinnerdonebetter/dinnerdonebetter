@@ -48,7 +48,7 @@ type (
 		LastUpdatedAt              *time.Time                         `json:"lastUpdatedAt"`
 		ArchivedAt                 *time.Time                         `json:"archivedAt"`
 		ContactPhone               string                             `json:"contactPhone"`
-		BillingStatus              HouseholdBillingStatus             `json:"billingStatus"`
+		BillingStatus              string                             `json:"billingStatus"`
 		ContactEmail               string                             `json:"contactEmail"`
 		PaymentProcessorCustomerID string                             `json:"paymentProcessorCustomer"`
 		BelongsToUser              string                             `json:"belongsToUser"`

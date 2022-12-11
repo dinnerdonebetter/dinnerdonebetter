@@ -66,36 +66,36 @@ type (
 	// NullableValidIngredient represents a nullable valid ingredient.
 	NullableValidIngredient struct {
 		_                                       struct{}
-		CreatedAt                               *time.Time `json:"createdAt"`
-		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt                              *time.Time `json:"archivedAt"`
-		ID                                      *string    `json:"id"`
-		Warning                                 *string    `json:"warning"`
-		Description                             *string    `json:"description"`
-		IconPath                                *string    `json:"iconPath"`
-		PluralName                              *string    `json:"pluralName"`
-		StorageInstructions                     *string    `json:"storageInstructions"`
-		Name                                    *string    `json:"name"`
-		MaximumIdealStorageTemperatureInCelsius *float32   `json:"maximumIdealStorageTemperatureInCelsius"`
-		MinimumIdealStorageTemperatureInCelsius *float32   `json:"minimumIdealStorageTemperatureInCelsius"`
-		ContainsShellfish                       *bool      `json:"containsShellfish"`
-		ContainsDairy                           *bool      `json:"containsDairy"`
-		AnimalFlesh                             *bool      `json:"animalFlesh"`
-		IsMeasuredVolumetrically                *bool      `json:"isMeasuredVolumetrically"`
-		IsLiquid                                *bool      `json:"isLiquid"`
-		ContainsPeanut                          *bool      `json:"containsPeanut"`
-		ContainsTreeNut                         *bool      `json:"containsTreeNut"`
-		ContainsEgg                             *bool      `json:"containsEgg"`
-		ContainsWheat                           *bool      `json:"containsWheat"`
-		ContainsSoy                             *bool      `json:"containsSoy"`
-		AnimalDerived                           *bool      `json:"animalDerived"`
-		RestrictToPreparations                  *bool      `json:"restrictToPreparations"`
-		ContainsSesame                          *bool      `json:"containsSesame"`
-		ContainsFish                            *bool      `json:"containsFish"`
-		ContainsGluten                          *bool      `json:"containsGluten"`
-		Slug                                    *string    `json:"slug"`
-		ContainsAlcohol                         *bool      `json:"containsAlcohol"`
-		ShoppingSuggestions                     *string    `json:"shoppingSuggestions"`
+		CreatedAt                               *time.Time
+		LastUpdatedAt                           *time.Time
+		ArchivedAt                              *time.Time
+		ID                                      *string
+		Warning                                 *string
+		Description                             *string
+		IconPath                                *string
+		PluralName                              *string
+		StorageInstructions                     *string
+		Name                                    *string
+		MaximumIdealStorageTemperatureInCelsius *float32
+		MinimumIdealStorageTemperatureInCelsius *float32
+		ContainsShellfish                       *bool
+		ContainsDairy                           *bool
+		AnimalFlesh                             *bool
+		IsMeasuredVolumetrically                *bool
+		IsLiquid                                *bool
+		ContainsPeanut                          *bool
+		ContainsTreeNut                         *bool
+		ContainsEgg                             *bool
+		ContainsWheat                           *bool
+		ContainsSoy                             *bool
+		AnimalDerived                           *bool
+		RestrictToPreparations                  *bool
+		ContainsSesame                          *bool
+		ContainsFish                            *bool
+		ContainsGluten                          *bool
+		Slug                                    *string
+		ContainsAlcohol                         *bool
+		ShoppingSuggestions                     *string
 	}
 
 	// ValidIngredientCreationRequestInput represents what a user could set as input for creating valid ingredients.

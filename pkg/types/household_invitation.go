@@ -60,19 +60,19 @@ type (
 	// HouseholdInvitation represents a household invitation.
 	HouseholdInvitation struct {
 		_                    struct{}
-		CreatedAt            time.Time                 `json:"createdAt"`
-		LastUpdatedAt        *time.Time                `json:"lastUpdatedAt"`
-		ArchivedAt           *time.Time                `json:"archivedAt"`
-		ToUser               *string                   `json:"toUser"`
-		Status               HouseholdInvitationStatus `json:"status"`
-		ToEmail              string                    `json:"toEmail"`
-		StatusNote           string                    `json:"statusNote"`
-		Token                string                    `json:"token"`
-		ID                   string                    `json:"id"`
-		Note                 string                    `json:"note"`
-		ExpiresAt            time.Time                 `json:"expiresAt"`
-		DestinationHousehold Household                 `json:"destinationHousehold"`
-		FromUser             User                      `json:"fromUser"`
+		CreatedAt            time.Time  `json:"createdAt"`
+		LastUpdatedAt        *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt           *time.Time `json:"archivedAt"`
+		ToUser               *string    `json:"toUser"`
+		Status               string     `json:"status"`
+		ToEmail              string     `json:"toEmail"`
+		StatusNote           string     `json:"statusNote"`
+		Token                string     `json:"token"`
+		ID                   string     `json:"id"`
+		Note                 string     `json:"note"`
+		ExpiresAt            time.Time  `json:"expiresAt"`
+		DestinationHousehold Household  `json:"destinationHousehold"`
+		FromUser             User       `json:"fromUser"`
 	}
 
 	// HouseholdInvitationUpdateRequestInput is used by users to update the status of a given household invitation.

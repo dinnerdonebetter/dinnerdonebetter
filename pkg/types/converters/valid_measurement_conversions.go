@@ -5,9 +5,9 @@ import (
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
-// ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput creates a ValidMeasurementConversionUpdateRequestInput from a ValidMeasurementConversion.
-func ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput(input *types.ValidMeasurementConversion) *types.ValidMeasurementConversionUpdateRequestInput {
-	x := &types.ValidMeasurementConversionUpdateRequestInput{
+// ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput creates a ValidMeasurementUnitConversionUpdateRequestInput from a ValidMeasurementUnitConversion.
+func ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput(input *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionUpdateRequestInput {
+	x := &types.ValidMeasurementUnitConversionUpdateRequestInput{
 		From:     &input.From.ID,
 		To:       &input.To.ID,
 		Modifier: &input.Modifier,
@@ -21,8 +21,8 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestI
 	return x
 }
 
-// ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput creates a ValidMeasurementConversionDatabaseCreationInput from a ValidMeasurementConversionCreationRequestInput.
-func ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput(input *types.ValidMeasurementConversionCreationRequestInput) *types.ValidMeasurementConversionDatabaseCreationInput {
+// ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput creates a ValidMeasurementConversionDatabaseCreationInput from a ValidMeasurementUnitConversionCreationRequestInput.
+func ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput(input *types.ValidMeasurementUnitConversionCreationRequestInput) *types.ValidMeasurementConversionDatabaseCreationInput {
 	x := &types.ValidMeasurementConversionDatabaseCreationInput{
 		ID:                identifiers.New(),
 		From:              input.From,
@@ -35,9 +35,9 @@ func ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConv
 	return x
 }
 
-// ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput builds a ValidMeasurementConversionCreationRequestInput from a ValidMeasurementConversion.
-func ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(validMeasurementConversion *types.ValidMeasurementConversion) *types.ValidMeasurementConversionCreationRequestInput {
-	x := &types.ValidMeasurementConversionCreationRequestInput{
+// ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput builds a ValidMeasurementUnitConversionCreationRequestInput from a ValidMeasurementUnitConversion.
+func ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(validMeasurementConversion *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionCreationRequestInput {
+	x := &types.ValidMeasurementUnitConversionCreationRequestInput{
 		From:     validMeasurementConversion.From.ID,
 		To:       validMeasurementConversion.To.ID,
 		Modifier: validMeasurementConversion.Modifier,
@@ -51,8 +51,8 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionCreationReques
 	return x
 }
 
-// ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreationInput builds a ValidMeasurementConversionDatabaseCreationInput from a ValidMeasurementConversion.
-func ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreationInput(validMeasurementConversion *types.ValidMeasurementConversion) *types.ValidMeasurementConversionDatabaseCreationInput {
+// ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreationInput builds a ValidMeasurementConversionDatabaseCreationInput from a ValidMeasurementUnitConversion.
+func ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreationInput(validMeasurementConversion *types.ValidMeasurementUnitConversion) *types.ValidMeasurementConversionDatabaseCreationInput {
 	x := &types.ValidMeasurementConversionDatabaseCreationInput{
 		ID:       validMeasurementConversion.ID,
 		From:     validMeasurementConversion.From.ID,

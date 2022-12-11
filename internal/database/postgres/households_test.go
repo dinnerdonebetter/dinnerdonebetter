@@ -572,7 +572,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		exampleUserID := fakes.BuildFakeID()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BillingStatus = types.UnpaidHouseholdBillingStatus
+		exampleHousehold.BillingStatus = string(types.UnpaidHouseholdBillingStatus)
 		exampleHousehold.PaymentProcessorCustomerID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)

@@ -43,9 +43,9 @@ type (
 	UserHouseholdMembershipInfo struct {
 		_ struct{}
 
-		HouseholdName string `json:"name"`
-		HouseholdID   string `json:"householdID"`
-		HouseholdRole string `json:"-"`
+		HouseholdName string
+		HouseholdID   string
+		HouseholdRole string
 	}
 
 	// SessionContextData represents what we encode in our passwords cookies.
@@ -62,7 +62,7 @@ type (
 		_ struct{}
 
 		ServicePermissions       authorization.ServiceRolePermissionChecker `json:"-"`
-		AccountStatus            userAccountStatus                          `json:"-"`
+		AccountStatus            string                                     `json:"-"`
 		AccountStatusExplanation string                                     `json:"-"`
 		UserID                   string                                     `json:"-"`
 		EmailAddress             string                                     `json:"-"`
@@ -73,10 +73,10 @@ type (
 	UserStatusResponse struct {
 		_ struct{}
 
-		AccountStatus            userAccountStatus `json:"accountStatus,omitempty"`
-		AccountStatusExplanation string            `json:"accountStatusExplanation"`
-		ActiveHousehold          string            `json:"activeHousehold,omitempty"`
-		UserIsAuthenticated      bool              `json:"isAuthenticated"`
+		AccountStatus            string `json:"accountStatus,omitempty"`
+		AccountStatusExplanation string `json:"accountStatusExplanation"`
+		ActiveHousehold          string `json:"activeHousehold,omitempty"`
+		UserIsAuthenticated      bool   `json:"isAuthenticated"`
 	}
 
 	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.

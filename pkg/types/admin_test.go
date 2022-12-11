@@ -15,7 +15,7 @@ func TestUserAccountStatusUpdateInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &UserAccountStatusUpdateInput{
-			NewStatus:    GoodStandingUserAccountStatus,
+			NewStatus:    string(GoodStandingUserAccountStatus),
 			Reason:       t.Name(),
 			TargetUserID: "123",
 		}

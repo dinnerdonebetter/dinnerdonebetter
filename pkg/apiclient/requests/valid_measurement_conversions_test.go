@@ -177,7 +177,7 @@ func TestBuilder_BuildCreateValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateValidMeasurementConversionRequest(helper.ctx, &types.ValidMeasurementConversionCreationRequestInput{})
+		actual, err := helper.builder.BuildCreateValidMeasurementConversionRequest(helper.ctx, &types.ValidMeasurementUnitConversionCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

@@ -168,7 +168,7 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		assert.NoError(t, err)
 
 		assert.Equal(t, true, actual.UserIsAuthenticated, "expected UserIsAuthenticated to equal %v, but got %v", true, actual.UserIsAuthenticated)
-		assert.Equal(t, types.GoodStandingUserAccountStatus, actual.AccountStatus, "expected AccountStatus to equal %v, but got %v", types.GoodStandingUserAccountStatus, actual.AccountStatus)
+		assert.Equal(t, string(types.GoodStandingUserAccountStatus), actual.AccountStatus, "expected AccountStatus to equal %v, but got %v", types.GoodStandingUserAccountStatus, actual.AccountStatus)
 		assert.Equal(t, "", actual.AccountStatusExplanation, "expected AccountStatusExplanation to equal %v, but got %v", "", actual.AccountStatusExplanation)
 		assert.NotZero(t, actual.ActiveHousehold)
 
