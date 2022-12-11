@@ -18,7 +18,7 @@ type (
 		_ struct{}
 
 		HouseholdInvitation              *HouseholdInvitation            `json:"householdInvitation,omitempty"`
-		ValidMeasurementConversion       *ValidMeasurementConversion     `json:"validMeasurementConversion,omitempty"`
+		ValidMeasurementConversion       *ValidMeasurementUnitConversion `json:"validMeasurementConversion,omitempty"`
 		ValidInstrument                  *ValidInstrument                `json:"validInstrument,omitempty"`
 		ValidIngredient                  *ValidIngredient                `json:"validIngredient,omitempty"`
 		ValidPreparation                 *ValidPreparation               `json:"validPreparation,omitempty"`

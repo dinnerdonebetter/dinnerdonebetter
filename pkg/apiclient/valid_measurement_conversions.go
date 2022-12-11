@@ -10,7 +10,7 @@ import (
 )
 
 // GetValidMeasurementConversion gets a valid measurement conversion.
-func (c *Client) GetValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) (*types.ValidMeasurementConversion, error) {
+func (c *Client) GetValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) (*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -27,7 +27,7 @@ func (c *Client) GetValidMeasurementConversion(ctx context.Context, validMeasure
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
 	}
 
-	var validMeasurementConversion *types.ValidMeasurementConversion
+	var validMeasurementConversion *types.ValidMeasurementUnitConversion
 	if err = c.fetchAndUnmarshal(ctx, req, &validMeasurementConversion); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
 	}
@@ -36,7 +36,7 @@ func (c *Client) GetValidMeasurementConversion(ctx context.Context, validMeasure
 }
 
 // GetValidMeasurementConversionsFromUnit gets a valid measurement conversion.
-func (c *Client) GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementConversion, error) {
+func (c *Client) GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -53,7 +53,7 @@ func (c *Client) GetValidMeasurementConversionsFromUnit(ctx context.Context, val
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
 	}
 
-	var validMeasurementConversion []*types.ValidMeasurementConversion
+	var validMeasurementConversion []*types.ValidMeasurementUnitConversion
 	if err = c.fetchAndUnmarshal(ctx, req, &validMeasurementConversion); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
 	}
@@ -62,7 +62,7 @@ func (c *Client) GetValidMeasurementConversionsFromUnit(ctx context.Context, val
 }
 
 // GetValidMeasurementConversionToUnit gets a valid measurement conversion.
-func (c *Client) GetValidMeasurementConversionToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementConversion, error) {
+func (c *Client) GetValidMeasurementConversionToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -79,7 +79,7 @@ func (c *Client) GetValidMeasurementConversionToUnit(ctx context.Context, validM
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
 	}
 
-	var validMeasurementConversion []*types.ValidMeasurementConversion
+	var validMeasurementConversion []*types.ValidMeasurementUnitConversion
 	if err = c.fetchAndUnmarshal(ctx, req, &validMeasurementConversion); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
 	}
@@ -88,7 +88,7 @@ func (c *Client) GetValidMeasurementConversionToUnit(ctx context.Context, validM
 }
 
 // CreateValidMeasurementConversion creates a valid measurement conversion.
-func (c *Client) CreateValidMeasurementConversion(ctx context.Context, input *types.ValidMeasurementConversionCreationRequestInput) (*types.ValidMeasurementConversion, error) {
+func (c *Client) CreateValidMeasurementConversion(ctx context.Context, input *types.ValidMeasurementUnitConversionCreationRequestInput) (*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -107,7 +107,7 @@ func (c *Client) CreateValidMeasurementConversion(ctx context.Context, input *ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid measurement conversion request")
 	}
 
-	var validMeasurementConversion *types.ValidMeasurementConversion
+	var validMeasurementConversion *types.ValidMeasurementUnitConversion
 	if err = c.fetchAndUnmarshal(ctx, req, &validMeasurementConversion); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement conversion")
 	}
@@ -116,7 +116,7 @@ func (c *Client) CreateValidMeasurementConversion(ctx context.Context, input *ty
 }
 
 // UpdateValidMeasurementConversion updates a valid measurement conversion.
-func (c *Client) UpdateValidMeasurementConversion(ctx context.Context, validMeasurementConversion *types.ValidMeasurementConversion) error {
+func (c *Client) UpdateValidMeasurementConversion(ctx context.Context, validMeasurementConversion *types.ValidMeasurementUnitConversion) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 

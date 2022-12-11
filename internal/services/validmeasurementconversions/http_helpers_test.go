@@ -24,9 +24,9 @@ type validMeasurementConversionsServiceHTTPRoutesTestHelper struct {
 	exampleUser                       *types.User
 	exampleHousehold                  *types.Household
 	exampleValidMeasurementUnit       *types.ValidMeasurementUnit
-	exampleValidMeasurementConversion *types.ValidMeasurementConversion
-	exampleCreationInput              *types.ValidMeasurementConversionCreationRequestInput
-	exampleUpdateInput                *types.ValidMeasurementConversionUpdateRequestInput
+	exampleValidMeasurementConversion *types.ValidMeasurementUnitConversion
+	exampleCreationInput              *types.ValidMeasurementUnitConversionCreationRequestInput
+	exampleUpdateInput                *types.ValidMeasurementUnitConversionUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *validMeasurementConversionsServiceHTTPRoutesTestHelper {

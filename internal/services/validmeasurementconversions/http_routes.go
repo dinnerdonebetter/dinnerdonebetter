@@ -40,7 +40,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// read parsed input struct from request body.
-	providedInput := new(types.ValidMeasurementConversionCreationRequestInput)
+	providedInput := new(types.ValidMeasurementUnitConversionCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -140,7 +140,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidMeasurementConversionUpdateRequestInput)
+	input := new(types.ValidMeasurementUnitConversionUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)

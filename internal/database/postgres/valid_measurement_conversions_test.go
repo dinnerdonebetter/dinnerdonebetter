@@ -17,7 +17,7 @@ import (
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
-func buildMockRowsFromValidMeasurementConversions(includeCounts bool, filteredCount uint64, validMeasurementConversions ...*types.ValidMeasurementConversion) *sqlmock.Rows {
+func buildMockRowsFromValidMeasurementConversions(includeCounts bool, filteredCount uint64, validMeasurementConversions ...*types.ValidMeasurementUnitConversion) *sqlmock.Rows {
 	columns := validMeasurementConversionsTableColumns
 
 	if includeCounts {

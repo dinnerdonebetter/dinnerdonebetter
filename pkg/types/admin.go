@@ -17,9 +17,9 @@ type (
 	UserAccountStatusUpdateInput struct {
 		_ struct{}
 
-		NewStatus    userAccountStatus `json:"newStatus"`
-		Reason       string            `json:"reason"`
-		TargetUserID string            `json:"targetUserID"`
+		NewStatus    string `json:"newStatus"`
+		Reason       string `json:"reason"`
+		TargetUserID string `json:"targetUserID"`
 	}
 
 	// FrontendService serves static frontend files.

@@ -89,16 +89,16 @@ type (
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
 		_               struct{}
-		CreatedAt       time.Time         `json:"createdAt"`
-		Birthday        *time.Time        `json:"birthday"`
-		AvatarSrc       *string           `json:"avatar"`
-		Username        string            `json:"username"`
-		EmailAddress    string            `json:"emailAddress"`
-		TwoFactorQRCode string            `json:"qrCode"`
-		CreatedUserID   string            `json:"createdUserID"`
-		AccountStatus   userAccountStatus `json:"accountStatus"`
-		TwoFactorSecret string            `json:"twoFactorSecret"`
-		IsAdmin         bool              `json:"isAdmin"`
+		CreatedAt       time.Time  `json:"createdAt"`
+		Birthday        *time.Time `json:"birthday"`
+		AvatarSrc       *string    `json:"avatar"`
+		Username        string     `json:"username"`
+		EmailAddress    string     `json:"emailAddress"`
+		TwoFactorQRCode string     `json:"qrCode"`
+		CreatedUserID   string     `json:"createdUserID"`
+		AccountStatus   string     `json:"accountStatus"`
+		TwoFactorSecret string     `json:"twoFactorSecret"`
+		IsAdmin         bool       `json:"isAdmin"`
 	}
 
 	// UserLoginInput represents the payload used to log in a User.
@@ -219,7 +219,7 @@ func IsValidHouseholdStatus(s string) bool {
 
 // IsBanned is a handy helper function.
 func (u *User) IsBanned() bool {
-	return u.AccountStatus == BannedUserAccountStatus
+	return u.AccountStatus == string(BannedUserAccountStatus)
 }
 
 // ValidateWithContext ensures our provided UserRegistrationInput meets expectations.

@@ -322,7 +322,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.AccountStatus = types.BannedUserAccountStatus
+		helper.exampleUser.AccountStatus = string(types.BannedUserAccountStatus)
 		helper.setContextFetcher(t)
 
 		sessionCtxData := &types.SessionContextData{

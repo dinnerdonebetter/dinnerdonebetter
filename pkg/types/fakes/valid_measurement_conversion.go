@@ -6,8 +6,8 @@ import (
 )
 
 // BuildFakeValidMeasurementConversion builds a faked valid preparation.
-func BuildFakeValidMeasurementConversion() *types.ValidMeasurementConversion {
-	return &types.ValidMeasurementConversion{
+func BuildFakeValidMeasurementConversion() *types.ValidMeasurementUnitConversion {
+	return &types.ValidMeasurementUnitConversion{
 		ID:                BuildFakeID(),
 		From:              *BuildFakeValidMeasurementUnit(),
 		To:                *BuildFakeValidMeasurementUnit(),
@@ -19,13 +19,13 @@ func BuildFakeValidMeasurementConversion() *types.ValidMeasurementConversion {
 }
 
 // BuildFakeValidMeasurementConversionList builds a faked ValidMeasurementConversionList.
-func BuildFakeValidMeasurementConversionList() *types.QueryFilteredResult[types.ValidMeasurementConversion] {
-	var examples []*types.ValidMeasurementConversion
+func BuildFakeValidMeasurementConversionList() *types.QueryFilteredResult[types.ValidMeasurementUnitConversion] {
+	var examples []*types.ValidMeasurementUnitConversion
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidMeasurementConversion())
 	}
 
-	return &types.QueryFilteredResult[types.ValidMeasurementConversion]{
+	return &types.QueryFilteredResult[types.ValidMeasurementUnitConversion]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
@@ -36,11 +36,11 @@ func BuildFakeValidMeasurementConversionList() *types.QueryFilteredResult[types.
 	}
 }
 
-// BuildFakeValidMeasurementConversionUpdateRequestInput builds a faked ValidMeasurementConversionUpdateRequestInput from a valid preparation.
-func BuildFakeValidMeasurementConversionUpdateRequestInput() *types.ValidMeasurementConversionUpdateRequestInput {
+// BuildFakeValidMeasurementConversionUpdateRequestInput builds a faked ValidMeasurementUnitConversionUpdateRequestInput from a valid preparation.
+func BuildFakeValidMeasurementConversionUpdateRequestInput() *types.ValidMeasurementUnitConversionUpdateRequestInput {
 	validMeasurementConversion := BuildFakeValidMeasurementConversion()
 
-	x := &types.ValidMeasurementConversionUpdateRequestInput{
+	x := &types.ValidMeasurementUnitConversionUpdateRequestInput{
 		From:     &validMeasurementConversion.From.ID,
 		To:       &validMeasurementConversion.To.ID,
 		Modifier: &validMeasurementConversion.Modifier,
@@ -54,8 +54,8 @@ func BuildFakeValidMeasurementConversionUpdateRequestInput() *types.ValidMeasure
 	return x
 }
 
-// BuildFakeValidMeasurementConversionCreationRequestInput builds a faked ValidMeasurementConversionCreationRequestInput.
-func BuildFakeValidMeasurementConversionCreationRequestInput() *types.ValidMeasurementConversionCreationRequestInput {
+// BuildFakeValidMeasurementConversionCreationRequestInput builds a faked ValidMeasurementUnitConversionCreationRequestInput.
+func BuildFakeValidMeasurementConversionCreationRequestInput() *types.ValidMeasurementUnitConversionCreationRequestInput {
 	validMeasurementConversion := BuildFakeValidMeasurementConversion()
 	return converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(validMeasurementConversion)
 }

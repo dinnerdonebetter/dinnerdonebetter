@@ -24,7 +24,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 	return &types.MealPlan{
 		ID:                     mealPlanID,
 		Notes:                  buildUniqueString(),
-		Status:                 types.AwaitingVotesMealPlanStatus,
+		Status:                 string(types.AwaitingVotesMealPlanStatus),
 		VotingDeadline:         now,
 		CreatedAt:              BuildFakeTime(),
 		BelongsToHousehold:     fake.UUID(),

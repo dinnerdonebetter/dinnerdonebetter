@@ -83,11 +83,11 @@ var (
 )
 
 // scanValidMeasurementConversion takes a database Scanner (i.e. *sql.Row) and scans the result into a valid measurement conversion struct.
-func (q *Querier) scanValidMeasurementConversion(ctx context.Context, scan database.Scanner) (x *types.ValidMeasurementConversion, err error) {
+func (q *Querier) scanValidMeasurementConversion(ctx context.Context, scan database.Scanner) (x *types.ValidMeasurementUnitConversion, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.ValidMeasurementConversion{}
+	x = &types.ValidMeasurementUnitConversion{}
 	var (
 		ingredient = &types.NullableValidIngredient{}
 	)
@@ -177,7 +177,7 @@ func (q *Querier) scanValidMeasurementConversion(ctx context.Context, scan datab
 }
 
 // scanValidMeasurementConversions takes some database rows and turns them into a slice of valid measurement conversions.
-func (q *Querier) scanValidMeasurementConversions(ctx context.Context, rows database.ResultIterator) (validMeasurementConversions []*types.ValidMeasurementConversion, err error) {
+func (q *Querier) scanValidMeasurementConversions(ctx context.Context, rows database.ResultIterator) (validMeasurementConversions []*types.ValidMeasurementUnitConversion, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -229,7 +229,7 @@ func (q *Querier) ValidMeasurementConversionExists(ctx context.Context, validMea
 var getValidMeasurementConversionQuery string
 
 // GetValidMeasurementConversion fetches a valid measurement conversion from the database.
-func (q *Querier) GetValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) (*types.ValidMeasurementConversion, error) {
+func (q *Querier) GetValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) (*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -259,7 +259,7 @@ func (q *Querier) GetValidMeasurementConversion(ctx context.Context, validMeasur
 var getValidMeasurementConversionsFromUnitQuery string
 
 // GetValidMeasurementConversionsFromUnit fetches a valid measurement conversions from a given measurement unit.
-func (q *Querier) GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementConversion, error) {
+func (q *Querier) GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -292,7 +292,7 @@ func (q *Querier) GetValidMeasurementConversionsFromUnit(ctx context.Context, va
 var getValidMeasurementConversionsToUnitQuery string
 
 // GetValidMeasurementConversionsToUnit fetches a valid measurement conversions to a given measurement unit.
-func (q *Querier) GetValidMeasurementConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementConversion, error) {
+func (q *Querier) GetValidMeasurementConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -325,7 +325,7 @@ func (q *Querier) GetValidMeasurementConversionsToUnit(ctx context.Context, vali
 var validMeasurementConversionCreationQuery string
 
 // CreateValidMeasurementConversion creates a valid measurement conversion in the database.
-func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *types.ValidMeasurementConversionDatabaseCreationInput) (*types.ValidMeasurementConversion, error) {
+func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *types.ValidMeasurementConversionDatabaseCreationInput) (*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -349,7 +349,7 @@ func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid measurement conversion creation query")
 	}
 
-	x := &types.ValidMeasurementConversion{
+	x := &types.ValidMeasurementUnitConversion{
 		ID:        input.ID,
 		From:      types.ValidMeasurementUnit{ID: input.From},
 		To:        types.ValidMeasurementUnit{ID: input.To},
@@ -372,7 +372,7 @@ func (q *Querier) CreateValidMeasurementConversion(ctx context.Context, input *t
 var updateValidMeasurementConversionQuery string
 
 // UpdateValidMeasurementConversion updates a particular valid measurement conversion.
-func (q *Querier) UpdateValidMeasurementConversion(ctx context.Context, updated *types.ValidMeasurementConversion) error {
+func (q *Querier) UpdateValidMeasurementConversion(ctx context.Context, updated *types.ValidMeasurementUnitConversion) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
