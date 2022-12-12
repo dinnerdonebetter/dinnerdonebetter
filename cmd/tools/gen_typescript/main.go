@@ -215,7 +215,7 @@ var (
 		},
 	}
 
-	destinationDirectory = "avatars/typescript"
+	destinationDirectory = "../frontend/packages/models"
 )
 
 const (
@@ -340,6 +340,7 @@ type CodeLine struct {
 	FieldType    string
 	FieldName    string
 	DefaultValue string
+	IsReadonly   bool
 	IsPointer    bool
 	IsSlice      bool
 	CustomType   bool
@@ -473,7 +474,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 		if numberMatcherRegex.MatchString(field.Type.String()) {
 			fieldType = "number"
 			if !isPointer && !isSlice {
-				defaultValue = "-1"
+				defaultValue = "0"
 			}
 		}
 
