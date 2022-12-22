@@ -22,7 +22,8 @@ const (
 type (
 	// Webhook represents a webhook listener, an endpoint to send an HTTP request to upon an event.
 	Webhook struct {
-		_                  struct{}
+		_ struct{}
+
 		CreatedAt          time.Time              `json:"createdAt"`
 		ArchivedAt         *time.Time             `json:"archivedAt"`
 		LastUpdatedAt      *time.Time             `json:"lastUpdatedAt"`

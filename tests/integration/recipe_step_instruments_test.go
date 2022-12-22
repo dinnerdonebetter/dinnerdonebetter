@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"bytes"
 	"encoding/json"
 	"testing"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
@@ -24,7 +24,6 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Instrument.ID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
 	}
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep, "expected ProductOfRecipeStep for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep)
 	assert.Equal(t, expected.RecipeStepProductID, actual.RecipeStepProductID, "expected RecipeStepProductID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.RecipeStepProductID, actual.RecipeStepProductID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected PreferenceRank for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.PreferenceRank, actual.PreferenceRank)
@@ -182,8 +181,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 
 			t.Log("creating recipe")
 			expected := &types.Recipe{
-				Name:        t.Name(),
-				Description: "",
+				Name: t.Name(),
 				Steps: []*types.RecipeStep{
 					{
 						Products: []*types.RecipeStepProduct{
@@ -204,7 +202,6 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								Name:                "aluminum foil",
 								MeasurementUnit:     *sheets,
 								MinimumQuantity:     3,
-								ProductOfRecipeStep: false,
 							},
 						},
 						Instruments: []*types.RecipeStepInstrument{
@@ -215,11 +212,11 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 						Index: 0,
 					},
 					{
+						Preparation: *roast,
 						Instruments: []*types.RecipeStepInstrument{
 							{
-								Name:                linedBakingSheetName,
-								Instrument:          nil,
-								ProductOfRecipeStep: true,
+								Name:       linedBakingSheetName,
+								Instrument: nil,
 							},
 						},
 						Products: []*types.RecipeStepProduct{
@@ -231,15 +228,13 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 								MinimumQuantity: 1,
 							},
 						},
-						Notes:       "second step",
-						Preparation: *roast,
+						Notes: "second step",
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								Ingredient:          garlic,
-								Name:                "garlic",
-								MeasurementUnit:     *head,
-								MinimumQuantity:     1,
-								ProductOfRecipeStep: false,
+								Ingredient:      garlic,
+								Name:            "garlic",
+								MeasurementUnit: *head,
+								MinimumQuantity: 1,
 							},
 						},
 						Index: 1,
@@ -247,67 +242,9 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 				},
 			}
 
-			exampleRecipeInput := &types.RecipeCreationRequestInput{
-				Name:        expected.Name,
-				Description: expected.Description,
-			}
-			for _, step := range expected.Steps {
-				newStep := &types.RecipeStepCreationRequestInput{
-					MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
-					Notes:                         step.Notes,
-					PreparationID:                 step.Preparation.ID,
-					Index:                         step.Index,
-					MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
-					MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
-					Optional:                      step.Optional,
-				}
-
-				for _, ingredient := range step.Ingredients {
-					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						IngredientID:        &ingredient.Ingredient.ID,
-						Name:                ingredient.Name,
-						MeasurementUnitID:   ingredient.MeasurementUnit.ID,
-						QuantityNotes:       ingredient.QuantityNotes,
-						IngredientNotes:     ingredient.IngredientNotes,
-						MinimumQuantity:     ingredient.MinimumQuantity,
-						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
-					}
-					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
-				}
-
-				for _, product := range step.Products {
-					newProduct := &types.RecipeStepProductCreationRequestInput{
-						Name:              product.Name,
-						Type:              product.Type,
-						MeasurementUnitID: product.MeasurementUnit.ID,
-						QuantityNotes:     product.QuantityNotes,
-						MinimumQuantity:   product.MinimumQuantity,
-					}
-					newStep.Products = append(newStep.Products, newProduct)
-				}
-
-				for _, instrument := range step.Instruments {
-					newInstrument := &types.RecipeStepInstrumentCreationRequestInput{
-						Name:                instrument.Name,
-						Notes:               instrument.Notes,
-						RecipeStepProductID: instrument.RecipeStepProductID,
-						ProductOfRecipeStep: instrument.ProductOfRecipeStep,
-						PreferenceRank:      instrument.PreferenceRank,
-					}
-
-					if instrument.Instrument != nil {
-						newInstrument.InstrumentID = &instrument.Instrument.ID
-					}
-
-					newStep.Instruments = append(newStep.Instruments, newInstrument)
-				}
-
-				exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
-			}
-
-			var b bytes.Buffer
-			require.NoError(t, json.NewEncoder(&b).Encode(exampleRecipeInput))
-			t.Logf("creating recipe with input: %s", b.String())
+			exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInput(expected)
+			exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepIndex = pointers.Pointer(uint64(0))
+			exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepProductIndex = pointers.Pointer(uint64(0))
 
 			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)

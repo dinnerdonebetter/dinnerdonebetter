@@ -24,7 +24,8 @@ const (
 type (
 	// Config contains settings related to .
 	Config struct {
-		_          struct{}
+		_ struct{}
+
 		Prometheus *prometheus.Config `json:"prometheus,omitempty" mapstructure:"prometheus" toml:"prometheus,omitempty"`
 		Provider   string             `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
 	}

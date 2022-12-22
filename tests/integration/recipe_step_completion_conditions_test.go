@@ -37,12 +37,12 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			// create ingredient state
 			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients)
 
-			input := &types.RecipeStepCompletionConditionCreationRequestInput{
+			input := &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{
 				IngredientStateID:   createdValidIngredientState.ID,
 				BelongsToRecipeStep: createdRecipeStep.ID,
 				Notes:               t.Name(),
 				Optional:            false,
-				Ingredients: []*types.RecipeStepCompletionConditionIngredientCreationRequestInput{
+				Ingredients: []*types.RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput{
 					{
 						RecipeStepIngredient: createdRecipeStep.Ingredients[0].ID,
 					},

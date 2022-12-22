@@ -18,7 +18,6 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		MinimumQuantity:     float32(fake.Uint32()),
 		MaximumQuantity:     float32(fake.Uint32()),
 		QuantityNotes:       buildUniqueString(),
-		ProductOfRecipeStep: false,
 		Optional:            fake.Bool(),
 		IngredientNotes:     buildUniqueString(),
 		CreatedAt:           BuildFakeTime(),
@@ -55,7 +54,6 @@ func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredie
 		MinimumQuantity:     &recipeStepIngredient.MinimumQuantity,
 		MaximumQuantity:     &recipeStepIngredient.MaximumQuantity,
 		QuantityNotes:       &recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: &recipeStepIngredient.ProductOfRecipeStep,
 		IngredientNotes:     &recipeStepIngredient.IngredientNotes,
 		BelongsToRecipeStep: &recipeStepIngredient.BelongsToRecipeStep,
 	}

@@ -141,6 +141,14 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
+			t.Log("creating valid ingredient state")
+			exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
+			exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
+			createdValidIngredientState, err := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
+			require.NoError(t, err)
+			t.Logf("valid instrument %q created", createdValidIngredientState.ID)
+			checkValidIngredientStateEquality(t, createdValidIngredientState, exampleValidIngredientState)
+
 			t.Log("creating recipe steps")
 			var expected []*types.RecipeStep
 			for i := 0; i < 5; i++ {
@@ -157,6 +165,13 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 				for j := range exampleRecipeStep.Instruments {
 					exampleRecipeStep.Instruments[j].Instrument = createdValidInstrument
+				}
+
+				for j := range exampleRecipeStep.CompletionConditions {
+					exampleRecipeStep.CompletionConditions[j].IngredientState = *createdValidIngredientState
+					for k := range exampleRecipeStep.CompletionConditions[j].Ingredients {
+						exampleRecipeStep.CompletionConditions[j].Ingredients[k].RecipeStepIngredient = createdValidIngredients[0].ID
+					}
 				}
 
 				exampleRecipeStepInput := converters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)

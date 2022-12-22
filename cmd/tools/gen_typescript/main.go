@@ -215,7 +215,7 @@ var (
 		},
 	}
 
-	destinationDirectory = "artifacts/typescript"
+	destinationDirectory = "../frontend/packages/models"
 )
 
 const (
@@ -226,16 +226,19 @@ const (
 )
 
 func main() {
-	if err := os.RemoveAll(destinationDirectory); err != nil {
-		panic(err)
-	}
-	if err := os.MkdirAll(destinationDirectory, os.ModePerm); err != nil {
-		panic(err)
+	if os.Getenv("NUKE_OUTPUT_DIR") == "true" {
+		if err := os.RemoveAll(destinationDirectory); err != nil {
+			panic(err)
+		}
+		if err := os.MkdirAll(destinationDirectory, os.ModePerm); err != nil {
+			panic(err)
+		}
 	}
 
-	var errors *multierror.Error
-
-	importMap := map[string]string{}
+	var (
+		errors    *multierror.Error
+		importMap = map[string]string{}
+	)
 	for filename, typesToGenerateFor := range filesToGenerate {
 		fileImports := []string{}
 		for _, typ := range typesToGenerateFor {
@@ -337,6 +340,7 @@ type CodeLine struct {
 	FieldType    string
 	FieldName    string
 	DefaultValue string
+	IsReadonly   bool
 	IsPointer    bool
 	IsSlice      bool
 	CustomType   bool
@@ -469,8 +473,8 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 
 		if numberMatcherRegex.MatchString(field.Type.String()) {
 			fieldType = "number"
-			if !isPointer {
-				defaultValue = "-1"
+			if !isPointer && !isSlice {
+				defaultValue = "0"
 			}
 		}
 
@@ -511,7 +515,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			sliceDecl = "[]"
 		}
 
-		output += fmt.Sprintf("		%s?: %s%s,\n", line.FieldName, line.FieldType, sliceDecl)
+		output += fmt.Sprintf("		%s?: %s%s\n", line.FieldName, line.FieldType, sliceDecl)
 	}
 
 	output += `	} = {}) {

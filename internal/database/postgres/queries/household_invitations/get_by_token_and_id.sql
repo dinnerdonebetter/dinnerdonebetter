@@ -17,7 +17,7 @@ SELECT
 	users.id,
 	users.username,
 	users.email_address,
-    users.email_address_verified_at,
+	users.email_address_verified_at,
 	users.avatar_src,
 	users.hashed_password,
 	users.requires_password_change,
@@ -27,7 +27,7 @@ SELECT
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
-    users.birthday,
+	users.birthday,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
@@ -35,7 +35,7 @@ SELECT
 	household_invitations.note,
 	household_invitations.status_note,
 	household_invitations.token,
-    household_invitations.expires_at,
+	household_invitations.expires_at,
 	household_invitations.created_at,
 	household_invitations.last_updated_at,
 	household_invitations.archived_at
@@ -43,6 +43,6 @@ FROM household_invitations
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-    AND household_invitations.expires_at > NOW()
+	AND household_invitations.expires_at > NOW()
 	AND household_invitations.token = $1
 	AND household_invitations.id = $2;

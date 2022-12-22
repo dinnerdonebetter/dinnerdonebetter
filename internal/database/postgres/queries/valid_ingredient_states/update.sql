@@ -3,7 +3,7 @@ SET
 	name = $1,
 	description = $2,
 	icon_path = $3,
-    slug = $4,
+	slug = $4,
 	past_tense = $5,
 	attribute_type = $6,
 	last_updated_at = NOW()

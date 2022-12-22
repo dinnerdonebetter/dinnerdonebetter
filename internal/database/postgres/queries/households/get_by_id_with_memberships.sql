@@ -14,7 +14,7 @@ SELECT
 	users.id,
 	users.username,
 	users.email_address,
-    users.email_address_verified_at,
+	users.email_address_verified_at,
 	users.avatar_src,
 	users.requires_password_change,
 	users.password_last_changed_at,

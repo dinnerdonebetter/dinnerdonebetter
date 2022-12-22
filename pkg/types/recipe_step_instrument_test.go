@@ -18,7 +18,6 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepInstrumentCreationRequestInput{
 			InstrumentID:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Name:                fake.LoremIpsumSentence(exampleQuantity),
-			ProductOfRecipeStep: fake.Bool(),
 			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               fake.LoremIpsumSentence(exampleQuantity),
 			PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
@@ -51,7 +50,6 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			InstrumentID:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Name:                stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			BelongsToRecipeStep: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ProductOfRecipeStep: boolPointer(fake.Bool()),
 			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			PreferenceRank:      uint8Pointer(uint8(fake.Number(1, math.MaxUint8))),

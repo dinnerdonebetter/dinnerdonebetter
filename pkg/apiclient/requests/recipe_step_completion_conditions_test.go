@@ -166,7 +166,7 @@ func TestBuilder_BuildCreateRecipeStepCompletionConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleRecipeID, exampleRecipeStepID)
 
@@ -182,7 +182,7 @@ func TestBuilder_BuildCreateRecipeStepCompletionConditionRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 
 		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, "", exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
@@ -210,7 +210,7 @@ func TestBuilder_BuildCreateRecipeStepCompletionConditionRequest(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, &types.RecipeStepCompletionConditionCreationRequestInput{})
+		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -223,7 +223,7 @@ func TestBuilder_BuildCreateRecipeStepCompletionConditionRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 
 		actual, err := helper.builder.BuildCreateRecipeStepCompletionConditionRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)

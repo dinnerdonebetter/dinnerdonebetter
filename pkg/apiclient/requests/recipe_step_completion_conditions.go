@@ -90,7 +90,7 @@ func (b *Builder) BuildGetRecipeStepCompletionConditionsRequest(ctx context.Cont
 }
 
 // BuildCreateRecipeStepCompletionConditionRequest builds an HTTP request for creating a recipe step completion condition.
-func (b *Builder) BuildCreateRecipeStepCompletionConditionRequest(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepCompletionConditionCreationRequestInput) (*http.Request, error) {
+func (b *Builder) BuildCreateRecipeStepCompletionConditionRequest(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 

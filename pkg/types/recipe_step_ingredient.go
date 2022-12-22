@@ -47,44 +47,43 @@ type (
 		OptionIndex         uint16               `json:"optionIndex"`
 		RequiresDefrost     bool                 `json:"requiresDefrost"`
 		Optional            bool                 `json:"optional"`
-		ProductOfRecipeStep bool                 `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_ struct{}
-
-		IngredientID        *string                                `json:"ingredientID"`
-		RecipeStepProduct   *RecipeStepProductCreationRequestInput `json:"recipeStepProduct"`
-		Name                string                                 `json:"name"`
-		MeasurementUnitID   string                                 `json:"measurementUnitID"`
-		QuantityNotes       string                                 `json:"quantityNotes"`
-		IngredientNotes     string                                 `json:"ingredientNotes"`
-		MaximumQuantity     float32                                `json:"maximumQuantity"`
-		MinimumQuantity     float32                                `json:"minimumQuantity"`
-		OptionIndex         uint16                                 `json:"optionIndex"`
-		RequiresDefrost     bool                                   `json:"requiresDefrost"`
-		Optional            bool                                   `json:"optional"`
-		ProductOfRecipeStep bool                                   `json:"productOfRecipeStep"`
+		_                               struct{}
+		IngredientID                    *string `json:"ingredientID"`
+		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
+		QuantityNotes                   string  `json:"quantityNotes"`
+		IngredientNotes                 string  `json:"ingredientNotes"`
+		MeasurementUnitID               string  `json:"measurementUnitID"`
+		Name                            string  `json:"name"`
+		MinimumQuantity                 float32 `json:"minimumQuantity"`
+		MaximumQuantity                 float32 `json:"maximumQuantity"`
+		OptionIndex                     uint16  `json:"optionIndex"`
+		RequiresDefrost                 bool    `json:"requiresDefrost"`
+		Optional                        bool    `json:"optional"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
-		_                   struct{}
-		IngredientID        *string
-		RecipeStepProductID *string
-		MeasurementUnitID   string
-		Name                string
-		BelongsToRecipeStep string
-		ID                  string
-		QuantityNotes       string
-		IngredientNotes     string
-		MinimumQuantity     float32
-		MaximumQuantity     float32
-		Optional            bool
-		OptionIndex         uint16
-		RequiresDefrost     bool
-		ProductOfRecipeStep bool
+		_                               struct{}
+		IngredientID                    *string
+		RecipeStepProductID             *string
+		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
+		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
+		BelongsToRecipeStep             string
+		ID                              string
+		QuantityNotes                   string
+		Name                            string
+		IngredientNotes                 string
+		MeasurementUnitID               string
+		MaximumQuantity                 float32
+		MinimumQuantity                 float32
+		OptionIndex                     uint16
+		Optional                        bool
+		RequiresDefrost                 bool
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
@@ -101,7 +100,6 @@ type (
 		BelongsToRecipeStep *string  `json:"belongsToRecipeStep"`
 		MinimumQuantity     *float32 `json:"minimumQuantity"`
 		MaximumQuantity     *float32 `json:"maximumQuantity"`
-		ProductOfRecipeStep *bool    `json:"productOfRecipeStep"`
 		OptionIndex         *uint16  `json:"optionIndex"`
 		RequiresDefrost     *bool    `json:"requiresDefrost"`
 	}
@@ -154,10 +152,6 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 
 	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
 		x.QuantityNotes = *input.QuantityNotes
-	}
-
-	if input.ProductOfRecipeStep != nil && *input.ProductOfRecipeStep != x.ProductOfRecipeStep {
-		x.ProductOfRecipeStep = *input.ProductOfRecipeStep
 	}
 
 	if input.IngredientNotes != nil && *input.IngredientNotes != x.IngredientNotes {

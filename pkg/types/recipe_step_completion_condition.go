@@ -73,14 +73,32 @@ type (
 	// RecipeStepCompletionConditionCreationRequestInput represents what a user could set as input for creating recipe step completion conditions.
 	RecipeStepCompletionConditionCreationRequestInput struct {
 		_                   struct{}
-		IngredientStateID   string                                                         `json:"ingredientState"`
-		BelongsToRecipeStep string                                                         `json:"belongsToRecipeStep"`
-		Notes               string                                                         `json:"notes"`
-		Ingredients         []*RecipeStepCompletionConditionIngredientCreationRequestInput `json:"ingredients"`
-		Optional            bool                                                           `json:"optional"`
+		IngredientStateID   string   `json:"ingredientState"`
+		BelongsToRecipeStep string   `json:"belongsToRecipeStep"`
+		Notes               string   `json:"notes"`
+		Ingredients         []uint64 `json:"ingredients"`
+		Optional            bool     `json:"optional"`
 	}
 
+	// RecipeStepCompletionConditionIngredientCreationRequestInput represents what a user could set as input for creating recipe step completion condition ingredient.
 	RecipeStepCompletionConditionIngredientCreationRequestInput struct {
+		_ struct{}
+
+		RecipeStepIngredient string `json:"recipeStepIngredient"`
+	}
+
+	// RecipeStepCompletionConditionForExistingRecipeCreationRequestInput represents what a user could set as input for creating recipe step completion conditions for existing recipes.
+	RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
+		_                   struct{}
+		IngredientStateID   string                                                                          `json:"ingredientState"`
+		BelongsToRecipeStep string                                                                          `json:"belongsToRecipeStep"`
+		Notes               string                                                                          `json:"notes"`
+		Ingredients         []*RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput `json:"ingredients"`
+		Optional            bool                                                                            `json:"optional"`
+	}
+
+	// RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput represents what a user could set as input for creating recipe step completion condition for existing recipes.
+	RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput struct {
 		_ struct{}
 
 		RecipeStepIngredient string `json:"recipeStepIngredient"`
@@ -170,6 +188,29 @@ var _ validation.ValidatableWithContext = (*RecipeStepCompletionConditionIngredi
 
 // ValidateWithContext validates a RecipeStepCompletionConditionIngredientCreationRequestInput.
 func (x *RecipeStepCompletionConditionIngredientCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.RecipeStepIngredient, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*RecipeStepCompletionConditionForExistingRecipeCreationRequestInput)(nil)
+
+// ValidateWithContext validates a RecipeStepCompletionConditionForExistingRecipeCreationRequestInput.
+func (x *RecipeStepCompletionConditionForExistingRecipeCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.IngredientStateID, validation.Required),
+		validation.Field(&x.Ingredients, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput)(nil)
+
+// ValidateWithContext validates a RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput.
+func (x *RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

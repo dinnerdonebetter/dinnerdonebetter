@@ -81,7 +81,7 @@ func (c *Client) GetRecipeStepCompletionConditions(ctx context.Context, recipeID
 }
 
 // CreateRecipeStepCompletionCondition creates a recipe step completion condition.
-func (c *Client) CreateRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepCompletionConditionCreationRequestInput) (*types.RecipeStepCompletionCondition, error) {
+func (c *Client) CreateRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput) (*types.RecipeStepCompletionCondition, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 

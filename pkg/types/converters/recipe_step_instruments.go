@@ -12,7 +12,6 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 		Notes:               &input.Notes,
 		RecipeStepProductID: input.RecipeStepProductID,
 		Name:                &input.Name,
-		ProductOfRecipeStep: &input.ProductOfRecipeStep,
 		PreferenceRank:      &input.PreferenceRank,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
 		Optional:            &input.Optional,
@@ -27,17 +26,18 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 // ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput creates a RecipeStepInstrumentDatabaseCreationInput from a RecipeStepInstrumentCreationRequestInput.
 func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input *types.RecipeStepInstrumentCreationRequestInput) *types.RecipeStepInstrumentDatabaseCreationInput {
 	x := &types.RecipeStepInstrumentDatabaseCreationInput{
-		ID:                  identifiers.New(),
-		InstrumentID:        input.InstrumentID,
-		RecipeStepProductID: input.RecipeStepProductID,
-		Name:                input.Name,
-		ProductOfRecipeStep: input.ProductOfRecipeStep,
-		Notes:               input.Notes,
-		PreferenceRank:      input.PreferenceRank,
-		Optional:            input.Optional,
-		OptionIndex:         input.OptionIndex,
-		MinimumQuantity:     input.MinimumQuantity,
-		MaximumQuantity:     input.MaximumQuantity,
+		ID:                              identifiers.New(),
+		InstrumentID:                    input.InstrumentID,
+		RecipeStepProductID:             input.RecipeStepProductID,
+		Name:                            input.Name,
+		Notes:                           input.Notes,
+		PreferenceRank:                  input.PreferenceRank,
+		Optional:                        input.Optional,
+		OptionIndex:                     input.OptionIndex,
+		MinimumQuantity:                 input.MinimumQuantity,
+		MaximumQuantity:                 input.MaximumQuantity,
+		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
+		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
 	}
 
 	return x
@@ -53,7 +53,6 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recip
 	return &types.RecipeStepInstrumentCreationRequestInput{
 		InstrumentID:        instrumentID,
 		Name:                recipeStepInstrument.Name,
-		ProductOfRecipeStep: recipeStepInstrument.ProductOfRecipeStep,
 		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
 		Notes:               recipeStepInstrument.Notes,
 		PreferenceRank:      recipeStepInstrument.PreferenceRank,
@@ -75,7 +74,6 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(reci
 		ID:                  recipeStepInstrument.ID,
 		InstrumentID:        instrumentID,
 		Name:                recipeStepInstrument.Name,
-		ProductOfRecipeStep: recipeStepInstrument.ProductOfRecipeStep,
 		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
 		Notes:               recipeStepInstrument.Notes,
 		PreferenceRank:      recipeStepInstrument.PreferenceRank,

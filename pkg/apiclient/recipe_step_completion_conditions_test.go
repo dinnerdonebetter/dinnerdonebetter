@@ -186,7 +186,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCom
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepCompletionCondition)
@@ -199,7 +199,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCom
 	s.Run("with invalid recipe ID", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeStepCompletionConditionCreationRequestInput()
+		exampleInput := fakes.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput()
 
 		c, _ := buildSimpleTestClient(t)
 
@@ -222,7 +222,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCom
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		exampleInput := &types.RecipeStepCompletionConditionCreationRequestInput{}
+		exampleInput := &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{}
 
 		actual, err := c.CreateRecipeStepCompletionCondition(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.Nil(t, actual)
@@ -232,7 +232,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCom
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(s.exampleRecipeStepCompletionCondition)
+		exampleInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(s.exampleRecipeStepCompletionCondition)
 
 		c := buildTestClientWithInvalidURL(t)
 
@@ -244,7 +244,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_CreateRecipeStepCom
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionCreationRequestInput(s.exampleRecipeStepCompletionCondition)
+		exampleInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(s.exampleRecipeStepCompletionCondition)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateRecipeStepCompletionCondition(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)

@@ -67,7 +67,8 @@ type (
 
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
-		_             struct{}
+		_ struct{}
+
 		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Email         emailconfig.Config        `json:"email" mapstructure:"email" toml:"email,omitempty"`
 		Analytics     analyticsconfig.Config    `json:"analytics" mapstructure:"analytics" toml:"analytics,omitempty"`
@@ -83,7 +84,8 @@ type (
 
 	// ServicesConfigurations collects the various service configurations.
 	ServicesConfigurations struct {
-		_                               struct{}
+		_ struct{}
+
 		ValidMeasurementUnits           validmeaurementunitsservice.Config            `json:"validMeasurementUnits" mapstructure:"valid_measurement_units" toml:"valid_measurement_units,omitempty"`
 		ValidInstruments                validinstrumentsservice.Config                `json:"validInstruments" mapstructure:"valid_instruments" toml:"valid_instruments,omitempty"`
 		ValidIngredients                validingredientsservice.Config                `json:"validIngredients" mapstructure:"valid_ingredients" toml:"valid_ingredients,omitempty"`

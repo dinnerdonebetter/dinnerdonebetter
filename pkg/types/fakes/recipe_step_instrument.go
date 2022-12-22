@@ -13,7 +13,6 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		ID:                  BuildFakeID(),
 		Instrument:          BuildFakeValidInstrument(),
 		Name:                buildUniqueString(),
-		ProductOfRecipeStep: fake.Bool(),
 		RecipeStepProductID: nil,
 		Notes:               buildUniqueString(),
 		PreferenceRank:      fake.Uint8(),

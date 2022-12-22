@@ -38,7 +38,8 @@ type (
 
 	// User represents a User.
 	User struct {
-		_                         struct{}
+		_ struct{}
+
 		CreatedAt                 time.Time  `json:"createdAt"`
 		PasswordLastChangedAt     *time.Time `json:"passwordLastChangedAt"`
 		LastUpdatedAt             *time.Time `json:"lastUpdatedAt"`

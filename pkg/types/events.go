@@ -15,7 +15,8 @@ type (
 
 	// DataChangeMessage represents an event that asks a worker to write data to the datastore.
 	DataChangeMessage struct {
-		_                                struct{}
+		_ struct{}
+
 		HouseholdInvitation              *HouseholdInvitation            `json:"householdInvitation,omitempty"`
 		ValidMeasurementConversion       *ValidMeasurementUnitConversion `json:"validMeasurementConversion,omitempty"`
 		ValidInstrument                  *ValidInstrument                `json:"validInstrument,omitempty"`
