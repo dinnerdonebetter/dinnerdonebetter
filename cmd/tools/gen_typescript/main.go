@@ -347,7 +347,8 @@ export * from './pagination';
 `
 
 	importMap := buildImportMap()
-	for filename, typesToGenerateFor := range filesToGenerate {
+	for _, filename := range sortedMapKeys(filesToGenerate) {
+		typesToGenerateFor := filesToGenerate[filename]
 		output := ""
 		filesToImportsMapForFile := map[string]map[string]struct{}{}
 
@@ -389,12 +390,13 @@ export * from './pagination';
 		}
 
 		fileOutput := fmt.Sprintf("%s", generatedDisclaimer)
-		for file, imports := range filesToImportsMapForFile {
+		for _, file := range sortedMapKeys(filesToImportsMapForFile) {
+			imports := filesToImportsMapForFile[file]
 			if file == filename {
 				continue
 			}
 
-			fileOutput += fmt.Sprintf("import { %s } from './%s';\n", strings.Join(sortMapKeys(imports), ", "), strings.TrimSuffix(file, ".ts"))
+			fileOutput += fmt.Sprintf("import { %s } from './%s';\n", strings.Join(sortedMapKeys(imports), ", "), strings.TrimSuffix(file, ".ts"))
 		}
 
 		indexOutput += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(filename, ".ts"))
@@ -414,10 +416,10 @@ export * from './pagination';
 	}
 }
 
-func sortMapKeys(m map[string]struct{}) []string {
-	keys := []string{}
+func sortedMapKeys[V any](m map[string]V) []string {
+	keys := make([]string, 0, len(m))
 	for k := range m {
-		keys = append(keys, strings.TrimPrefix(k, "./"))
+		keys = append(keys, k)
 	}
 
 	sort.Strings(keys)
