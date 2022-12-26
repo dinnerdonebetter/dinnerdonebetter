@@ -63,7 +63,7 @@ func main() {
 
 	var errors *multierror.Error
 
-	if err := os.WriteFile(fmt.Sprintf("%s/%s", destinationDirectory, "_unions.ts"), []byte(generatedDisclaimer+buildUnionsFile()), 0o600); err != nil {
+	if err := os.WriteFile(fmt.Sprintf("%s/%s", destinationDirectory, "_unions.ts"), []byte(buildUnionsFile()), 0o600); err != nil {
 		errors = multierror.Append(errors, err)
 	}
 
