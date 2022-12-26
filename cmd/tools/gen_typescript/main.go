@@ -14,6 +14,63 @@ import (
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
+const (
+	destinationDirectory = "../frontend/packages/models"
+
+	timeType            = "time.Time"
+	mapStringToBoolType = "map[string]bool"
+	stringType          = "string"
+	boolType            = "bool"
+
+	// TODO: generate this file programmatically
+	unionsFile = `// valid ingredient state attribute types
+export const ALL_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPES: string[] = [
+  'texture',
+  'consistency',
+  'color',
+  'appearance',
+  'odor',
+  'taste',
+  'sound',
+  'other',
+];
+
+type ValidIngredientStateAttributeTypeTuple = typeof ALL_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPES;
+export type ValidIngredientStateAttributeType = ValidIngredientStateAttributeTypeTuple[number];
+
+// meal plan statuses
+export const ALL_VALID_MEAL_PLAN_STATUSES: string[] = ['awaiting_votes', 'finalized'];
+type ValidMealPlanStatusTypeTuple = typeof ALL_VALID_MEAL_PLAN_STATUSES;
+export type ValidMealPlanStatus = ValidMealPlanStatusTypeTuple[number];
+
+// meal plan election methods
+export const ALL_VALID_MEAL_PLAN_ELECTION_METHODS: string[] = ['schulze', 'instant-runoff'];
+type ValidMealPlanElectionMethodTypeTuple = typeof ALL_VALID_MEAL_PLAN_ELECTION_METHODS;
+export type ValidMealPlanElectionMethod = ValidMealPlanElectionMethodTypeTuple[number];
+
+// recipe step product types
+export const ALL_RECIPE_STEP_PRODUCT_TYPES = ['instrument', 'ingredient'];
+type ValidRecipeStepProductTypeTuple = typeof ALL_RECIPE_STEP_PRODUCT_TYPES;
+export type ValidRecipeStepProductType = ValidRecipeStepProductTypeTuple[number];
+
+// meal component types
+export const ALL_MEAL_COMPONENT_TYPES = [
+  'main',
+  'side',
+  'appetizer',
+  'beverage',
+  'dessert',
+  'soup',
+  'salad',
+  'amuse-bouche',
+  'unspecified',
+];
+
+type MealComponentTypeTuple = typeof ALL_MEAL_COMPONENT_TYPES;
+export type MealComponentType = MealComponentTypeTuple[number];
+`
+)
+
 var (
 	filesToGenerate = map[string][]any{
 		"admin.ts": {
@@ -214,62 +271,6 @@ var (
 			types.WebhookCreationRequestInput{},
 		},
 	}
-
-	destinationDirectory = "../frontend/packages/models"
-)
-
-const (
-	timeType            = "time.Time"
-	mapStringToBoolType = "map[string]bool"
-	stringType          = "string"
-	boolType            = "bool"
-
-	unionsFile = `// valid ingredient state attribute types
-export const ALL_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPES: string[] = [
-  'texture',
-  'consistency',
-  'color',
-  'appearance',
-  'odor',
-  'taste',
-  'sound',
-  'other',
-];
-
-type ValidIngredientStateAttributeTypeTuple = typeof ALL_VALID_INGREDIENT_STATE_ATTRIBUTE_TYPES;
-export type ValidIngredientStateAttributeType = ValidIngredientStateAttributeTypeTuple[number];
-
-// meal plan statuses
-export const ALL_VALID_MEAL_PLAN_STATUSES: string[] = ['awaiting_votes', 'finalized'];
-type ValidMealPlanStatusTypeTuple = typeof ALL_VALID_MEAL_PLAN_STATUSES;
-export type ValidMealPlanStatus = ValidMealPlanStatusTypeTuple[number];
-
-// meal plan election methods
-export const ALL_VALID_MEAL_PLAN_ELECTION_METHODS: string[] = ['schulze', 'instant-runoff'];
-type ValidMealPlanElectionMethodTypeTuple = typeof ALL_VALID_MEAL_PLAN_ELECTION_METHODS;
-export type ValidMealPlanElectionMethod = ValidMealPlanElectionMethodTypeTuple[number];
-
-// recipe step product types
-export const ALL_RECIPE_STEP_PRODUCT_TYPES = ['instrument', 'ingredient'];
-type ValidRecipeStepProductTypeTuple = typeof ALL_RECIPE_STEP_PRODUCT_TYPES;
-export type ValidRecipeStepProductType = ValidRecipeStepProductTypeTuple[number];
-
-// meal component types
-export const ALL_MEAL_COMPONENT_TYPES = [
-  'main',
-  'side',
-  'appetizer',
-  'beverage',
-  'dessert',
-  'soup',
-  'salad',
-  'amuse-bouche',
-  'unspecified',
-];
-
-type MealComponentTypeTuple = typeof ALL_MEAL_COMPONENT_TYPES;
-export type MealComponentType = MealComponentTypeTuple[number];
-`
 )
 
 var (

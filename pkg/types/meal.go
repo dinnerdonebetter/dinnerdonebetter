@@ -82,7 +82,7 @@ type (
 	MealComponentCreationRequestInput struct {
 		_             struct{}
 		RecipeID      string `json:"recipeID"`
-		ComponentType string `json:"mealComponentType"`
+		ComponentType string `json:"componentType"`
 	}
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
@@ -116,7 +116,7 @@ type (
 	MealComponentUpdateRequestInput struct {
 		_             struct{}
 		RecipeID      string `json:"recipeID"`
-		ComponentType string `json:"mealComponentType"`
+		ComponentType string `json:"componentType"`
 	}
 
 	// MealDataManager describes a structure capable of storing meals permanently.
