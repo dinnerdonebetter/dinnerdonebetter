@@ -108,12 +108,14 @@ func (q *Querier) scanValidMeasurementUnits(ctx context.Context, rows database.R
 			uniqueValidMeasurementUnits[validMeasurementUnit.ID] = struct{}{}
 		}
 
-		validMeasurementUnits = []*types.ValidMeasurementUnit{}
+		filteredValidMeasurementUnits := []*types.ValidMeasurementUnit{}
 		for _, validMeasurementUnit := range validMeasurementUnits {
 			if _, ok := uniqueValidMeasurementUnits[validMeasurementUnit.ID]; ok {
-				validMeasurementUnits = append(validMeasurementUnits, validMeasurementUnit)
+				filteredValidMeasurementUnits = append(filteredValidMeasurementUnits, validMeasurementUnit)
 			}
 		}
+
+		validMeasurementUnits = filteredValidMeasurementUnits
 	}
 
 	return validMeasurementUnits, filteredCount, totalCount, nil
