@@ -99,6 +99,25 @@ func (q *Querier) scanValidMeasurementUnits(ctx context.Context, rows database.R
 		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
 	}
 
+	if includeCounts {
+		// when we include the counts, different filter values will return duplicate rows
+		// so we deduplicate them here because it's easier than learning how to write SQL better.
+
+		uniqueValidMeasurementUnits := map[string]struct{}{}
+		for _, validMeasurementUnit := range validMeasurementUnits {
+			uniqueValidMeasurementUnits[validMeasurementUnit.ID] = struct{}{}
+		}
+
+		filteredValidMeasurementUnits := []*types.ValidMeasurementUnit{}
+		for _, validMeasurementUnit := range validMeasurementUnits {
+			if _, ok := uniqueValidMeasurementUnits[validMeasurementUnit.ID]; ok {
+				filteredValidMeasurementUnits = append(filteredValidMeasurementUnits, validMeasurementUnit)
+			}
+		}
+
+		validMeasurementUnits = filteredValidMeasurementUnits
+	}
+
 	return validMeasurementUnits, filteredCount, totalCount, nil
 }
 
