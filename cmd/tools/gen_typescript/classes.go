@@ -8,6 +8,10 @@ import (
 	"text/template"
 )
 
+const (
+	fieldTemplate = `	{{.FieldName}}{{if .IsPointer}}?{{end}}: {{if not .IsPointer}}NonNullable<{{end}}{{if .IsSlice}}Array<{{end}}{{.FieldType}}{{if .IsSlice}}>{{end -}}{{if not .IsPointer}}>{{end -}}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end -}};` + "\n"
+)
+
 func typescriptClass[T any](x T) (out string, imports []string, err error) {
 	typ := reflect.TypeOf(x)
 	fieldsForType := reflect.VisibleFields(typ)
@@ -94,7 +98,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			CustomType:   customType,
 		}
 
-		tmpl := template.Must(template.New("").Parse(`	{{.FieldName}}{{if .IsPointer}}?{{end}}: {{if not .IsPointer}}NonNullable<{{end}}{{if .IsSlice}}Array<{{end}}{{.FieldType}}{{if .IsSlice}}>{{end -}}{{if not .IsPointer}}>{{end -}}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end -}};` + "\n"))
+		tmpl := template.Must(template.New("").Parse(fieldTemplate))
 
 		var b bytes.Buffer
 		if err = tmpl.Execute(&b, line); err != nil {
@@ -106,23 +110,9 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 		parsedLines = append(parsedLines, line)
 	}
 
-	output += `
-	constructor(input: {
-`
-
-	for i := range parsedLines {
-		line := parsedLines[i]
-
-		sliceDecl := ""
-		if line.IsSlice {
-			sliceDecl = "[]"
-		}
-
-		output += fmt.Sprintf("		%s?: %s%s\n", line.FieldName, line.FieldType, sliceDecl)
-	}
-
-	output += `	} = {}) {
-`
+	output += fmt.Sprintf(`
+	constructor(input: Partial<%s> = {}) {
+`, typ.Name())
 
 	for i := range parsedLines {
 		line := parsedLines[i]
@@ -132,12 +122,10 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			dv = fmt.Sprintf(" ?? %s", line.DefaultValue)
 		}
 
-		output += fmt.Sprintf("		this.%s = input.%s%s;\n", line.FieldName, line.FieldName, dv)
+		output += fmt.Sprintf("    this.%s = input.%s%s;\n", line.FieldName, line.FieldName, dv)
 	}
 
-	output += `	}
-}
-`
+	output += "	}\n}\n"
 
 	return output, importedTypes, nil
 }
