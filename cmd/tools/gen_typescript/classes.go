@@ -79,7 +79,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			}
 		}
 
-		if customType && !isSlice {
+		if customType && !isSlice && !isPointer {
 			defaultValue = fmt.Sprintf("new %s()", fieldType)
 		}
 
