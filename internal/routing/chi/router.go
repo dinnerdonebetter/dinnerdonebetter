@@ -50,13 +50,9 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 			if err != nil {
 				return false
 			}
-
 			_, ok := validDomains[u.Hostname()]
 
-			shouldAllowOrigin := ok || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
-			logger.WithValue("origin", origin).WithValue("should_allow_origin", shouldAllowOrigin).Debug("deciding whether to allow origin")
-
-			return shouldAllowOrigin
+			return ok || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
 		},
 		AllowedMethods: []string{
 			http.MethodGet,
