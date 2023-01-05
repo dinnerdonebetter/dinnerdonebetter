@@ -110,7 +110,7 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 
 	c := &Querier{
 		db:         fakeDB,
-		logQueries: true,
+		logQueries: false,
 		logger:     logging.NewNoopLogger(),
 		timeFunc:   defaultTimeFunc,
 		tracer:     tracing.NewTracerForTest("test"),
