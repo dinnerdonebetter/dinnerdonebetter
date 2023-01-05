@@ -43,8 +43,8 @@ SELECT
 	        valid_measurement_units.archived_at IS NULL
 	) as total_count
 FROM valid_measurement_units
-	JOIN valid_ingredient_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+	FULL OUTER JOIN valid_ingredient_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
+	FULL OUTER JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
 WHERE
 	(
 	    valid_ingredient_measurement_units.valid_ingredient_id = $5

@@ -132,7 +132,7 @@ func (x *ValidIngredientMeasurementUnitCreationRequestInput) ValidateWithContext
 		x,
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
-		validation.Field(&x.MinimumAllowableQuantity, validation.Required),
+		validation.Field(&x.MinimumAllowableQuantity, validation.Min(0.01)),
 	)
 }
 
@@ -146,7 +146,7 @@ func (x *ValidIngredientMeasurementUnitDatabaseCreationInput) ValidateWithContex
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
-		validation.Field(&x.MinimumAllowableQuantity, validation.Required),
+		validation.Field(&x.MinimumAllowableQuantity, validation.Min(0.01)),
 	)
 }
 
