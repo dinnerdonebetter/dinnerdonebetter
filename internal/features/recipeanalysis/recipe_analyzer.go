@@ -182,8 +182,7 @@ func (i *RecipeStepIdentifier) ID() string {
 	return fmt.Sprintf("%d", graphIDForStep(i.recipeStep))
 }
 
-// makeDAGForRecipe makes a proper DAG for the provided Recipe. Gonum has the notion of a directed graph, but
-// doesn't seem to really give a rat's ass if it's acyclic, the way that the DAG library does.
+// makeDAGForRecipe makes a proper DAG for the provided Recipe.
 func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Recipe) (*dag.DAG, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
@@ -223,6 +222,11 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 			}
 
 			if err = recipeGraph.AddEdge(fmt.Sprintf("%d", graphIDForStep(step)), toStep); err != nil {
+				var dupeErr dag.EdgeDuplicateError
+				if errors.As(err, &dupeErr) {
+					continue
+				}
+
 				return nil, fmt.Errorf("adding ingredient step %d to graph: %w", step.Index, err)
 			}
 		}
