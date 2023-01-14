@@ -15,6 +15,8 @@ func ConvertValidInstrumentToValidInstrumentUpdateRequestInput(input *types.Vali
 		UsableForStorage:      &input.UsableForStorage,
 		Slug:                  &input.Slug,
 		DisplayInSummaryLists: &input.DisplayInSummaryLists,
+		IsVessel:              &input.IsVessel,
+		IsExclusivelyVessel:   &input.IsExclusivelyVessel,
 	}
 
 	return x
@@ -31,6 +33,8 @@ func ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreation
 		Slug:                  input.Slug,
 		UsableForStorage:      input.UsableForStorage,
 		DisplayInSummaryLists: input.DisplayInSummaryLists,
+		IsVessel:              input.IsVessel,
+		IsExclusivelyVessel:   input.IsExclusivelyVessel,
 	}
 
 	return x
@@ -50,6 +54,8 @@ func ConvertNullableValidInstrumentToValidInstrument(x *types.NullableValidInstr
 		UsableForStorage:      *x.UsableForStorage,
 		Slug:                  *x.Slug,
 		DisplayInSummaryLists: *x.DisplayInSummaryLists,
+		IsVessel:              *x.IsVessel,
+		IsExclusivelyVessel:   *x.IsExclusivelyVessel,
 	}
 }
 
@@ -63,6 +69,8 @@ func ConvertValidInstrumentToValidInstrumentCreationRequestInput(validInstrument
 		UsableForStorage:      validInstrument.UsableForStorage,
 		Slug:                  validInstrument.Slug,
 		DisplayInSummaryLists: validInstrument.DisplayInSummaryLists,
+		IsVessel:              validInstrument.IsVessel,
+		IsExclusivelyVessel:   validInstrument.IsExclusivelyVessel,
 	}
 }
 
@@ -77,5 +85,7 @@ func ConvertValidInstrumentToValidInstrumentDatabaseCreationInput(validInstrumen
 		UsableForStorage:      validInstrument.UsableForStorage,
 		Slug:                  validInstrument.Slug,
 		DisplayInSummaryLists: validInstrument.DisplayInSummaryLists,
+		IsVessel:              validInstrument.IsVessel,
+		IsExclusivelyVessel:   validInstrument.IsExclusivelyVessel,
 	}
 }

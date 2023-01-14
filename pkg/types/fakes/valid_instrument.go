@@ -18,6 +18,8 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 		Slug:                  buildUniqueString(),
 		DisplayInSummaryLists: fake.Bool(),
 		UsableForStorage:      fake.Bool(),
+		IsVessel:              fake.Bool(),
+		IsExclusivelyVessel:   fake.Bool(),
 		CreatedAt:             BuildFakeTime(),
 	}
 }

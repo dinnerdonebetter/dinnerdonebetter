@@ -23,6 +23,8 @@ var (
 		"valid_instruments.icon_path",
 		"valid_instruments.usable_for_storage",
 		"valid_instruments.display_in_summary_lists",
+		"valid_instruments.is_vessel",
+		"valid_instruments.is_exclusively_vessel",
 		"valid_instruments.slug",
 		"valid_instruments.created_at",
 		"valid_instruments.last_updated_at",
@@ -45,6 +47,8 @@ func (q *Querier) scanValidInstrument(ctx context.Context, scan database.Scanner
 		&x.IconPath,
 		&x.UsableForStorage,
 		&x.DisplayInSummaryLists,
+		&x.IsVessel,
+		&x.IsExclusivelyVessel,
 		&x.Slug,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -295,6 +299,8 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 		input.IconPath,
 		input.UsableForStorage,
 		input.DisplayInSummaryLists,
+		input.IsVessel,
+		input.IsExclusivelyVessel,
 		input.Slug,
 	}
 
@@ -312,6 +318,8 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 		UsableForStorage:      input.UsableForStorage,
 		Slug:                  input.Slug,
 		DisplayInSummaryLists: input.DisplayInSummaryLists,
+		IsVessel:              input.IsVessel,
+		IsExclusivelyVessel:   input.IsExclusivelyVessel,
 		CreatedAt:             q.currentTime(),
 	}
 
@@ -343,6 +351,8 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 		updated.IconPath,
 		updated.UsableForStorage,
 		updated.DisplayInSummaryLists,
+		updated.IsVessel,
+		updated.IsExclusivelyVessel,
 		updated.Slug,
 		updated.ID,
 	}

@@ -43,6 +43,7 @@ type (
 		DisplayInSummaryLists bool       `json:"displayInSummaryLists"`
 		UsableForStorage      bool       `json:"usableForStorage"`
 		IsVessel              bool       `json:"isVessel"`
+		IsExclusivelyVessel   bool       `json:"isExclusivelyVessel"`
 	}
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
@@ -59,6 +60,7 @@ type (
 		PluralName            *string
 		UsableForStorage      *bool
 		IsVessel              *bool
+		IsExclusivelyVessel   *bool
 		CreatedAt             *time.Time
 	}
 
@@ -73,6 +75,7 @@ type (
 		Slug                  string `json:"slug"`
 		DisplayInSummaryLists bool   `json:"displayInSummaryLists"`
 		UsableForStorage      bool   `json:"usableForStorage"`
+		IsExclusivelyVessel   bool   `json:"isExclusivelyVessel"`
 		IsVessel              bool   `json:"isVessel"`
 	}
 
@@ -89,6 +92,7 @@ type (
 		DisplayInSummaryLists bool
 		UsableForStorage      bool
 		IsVessel              bool
+		IsExclusivelyVessel   bool
 	}
 
 	// ValidInstrumentUpdateRequestInput represents what a user could set as input for updating valid instruments.
@@ -103,6 +107,7 @@ type (
 		UsableForStorage      *bool   `json:"usableForStorage"`
 		DisplayInSummaryLists *bool   `json:"displayInSummaryLists"`
 		IsVessel              *bool   `json:"isVessel"`
+		IsExclusivelyVessel   *bool   `json:"isExclusivelyVessel"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
@@ -161,6 +166,10 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 
 	if input.IsVessel != nil && *input.IsVessel != x.IsVessel {
 		x.IsVessel = *input.IsVessel
+	}
+
+	if input.IsExclusivelyVessel != nil && *input.IsExclusivelyVessel != x.IsExclusivelyVessel {
+		x.IsExclusivelyVessel = *input.IsExclusivelyVessel
 	}
 }
 
