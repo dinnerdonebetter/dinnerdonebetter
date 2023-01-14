@@ -127,6 +127,9 @@ const (
 	// RecipeStepInstrumentIDKey is the standard key for referring to a recipe step instrument's ID.
 	RecipeStepInstrumentIDKey = "recipe_step_instrument.id"
 
+	// RecipeStepVesselIDKey is the standard key for referring to a recipe step vessel's ID.
+	RecipeStepVesselIDKey = "recipe_step_vessel.id"
+
 	// RecipeStepIngredientIDKey is the standard key for referring to a recipe step ingredient's ID.
 	RecipeStepIngredientIDKey = "recipe_step_ingredient.id"
 
