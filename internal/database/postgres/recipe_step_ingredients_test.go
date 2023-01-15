@@ -87,6 +87,7 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			x.IngredientNotes,
 			x.OptionIndex,
 			x.RequiresDefrost,
+			x.VesselIndex,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -590,6 +591,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			exampleInput.IngredientNotes,
 			exampleInput.OptionIndex,
 			exampleInput.RequiresDefrost,
+			exampleInput.VesselIndex,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -642,6 +644,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			exampleInput.IngredientNotes,
 			exampleInput.OptionIndex,
 			exampleInput.RequiresDefrost,
+			exampleInput.VesselIndex,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -690,6 +693,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 			exampleInput.IngredientNotes,
 			exampleInput.OptionIndex,
 			exampleInput.RequiresDefrost,
+			exampleInput.VesselIndex,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -733,6 +737,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 			exampleRecipeStepIngredient.IngredientNotes,
 			exampleRecipeStepIngredient.OptionIndex,
 			exampleRecipeStepIngredient.RequiresDefrost,
+			exampleRecipeStepIngredient.VesselIndex,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}
@@ -776,6 +781,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 			exampleRecipeStepIngredient.IngredientNotes,
 			exampleRecipeStepIngredient.OptionIndex,
 			exampleRecipeStepIngredient.RequiresDefrost,
+			exampleRecipeStepIngredient.VesselIndex,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}

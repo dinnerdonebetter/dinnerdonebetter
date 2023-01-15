@@ -34,6 +34,7 @@ import (
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
+	recipestepvesselsservice "github.com/prixfixeco/backend/internal/services/recipestepvessels"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
@@ -115,6 +116,7 @@ type (
 		ValidMeasurementConversions     validmeasurementconversions.Config            `json:"validMeasurementConversions" mapstructure:"valid_measurement_conversions" toml:"valid_measurement_conversions,omitempty"`
 		ValidIngredientStates           validingredientstates.Config                  `json:"validIngredientStates" mapstructure:"valid_ingredient_states" toml:"valid_ingredient_states,omitempty"`
 		ValidIngredientStateIngredients validingredientstateingredients.Config        `json:"validIngredientStateIngredients" mapstructure:"valid_ingredient_state_ingredients" toml:"valid_ingredient_state_ingredients,omitempty"`
+		RecipeStepVessels               recipestepvesselsservice.Config               `json:"recipeStepVessels" mapstructure:"recipe_step_vessels" toml:"recipe_step_vessels,omitempty"`
 		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )
@@ -228,6 +230,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 		if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err), result)
+		}
+
+		if err := cfg.Services.RecipeStepVessels.ValidateWithContext(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating RecipeStepVessels service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {

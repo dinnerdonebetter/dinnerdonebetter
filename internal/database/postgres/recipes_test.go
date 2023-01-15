@@ -1015,6 +1015,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.IngredientNotes,
 					ingredient.OptionIndex,
 					ingredient.RequiresDefrost,
+					ingredient.VesselIndex,
 					ingredient.BelongsToRecipeStep,
 				}
 

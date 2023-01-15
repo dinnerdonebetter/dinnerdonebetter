@@ -22,6 +22,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		IngredientNotes:     buildUniqueString(),
 		CreatedAt:           BuildFakeTime(),
 		BelongsToRecipeStep: BuildFakeID(),
+		VesselIndex:         fake.Uint16(),
 	}
 }
 
@@ -46,17 +47,7 @@ func BuildFakeRecipeStepIngredientList() *types.QueryFilteredResult[types.Recipe
 // BuildFakeRecipeStepIngredientUpdateRequestInput builds a faked RecipeStepIngredientUpdateRequestInput from a recipe step ingredient.
 func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredientUpdateRequestInput {
 	recipeStepIngredient := BuildFakeRecipeStepIngredient()
-	return &types.RecipeStepIngredientUpdateRequestInput{
-		Name:                &recipeStepIngredient.Name,
-		Optional:            &recipeStepIngredient.Optional,
-		IngredientID:        &recipeStepIngredient.Ingredient.ID,
-		MeasurementUnitID:   &recipeStepIngredient.MeasurementUnit.ID,
-		MinimumQuantity:     &recipeStepIngredient.MinimumQuantity,
-		MaximumQuantity:     &recipeStepIngredient.MaximumQuantity,
-		QuantityNotes:       &recipeStepIngredient.QuantityNotes,
-		IngredientNotes:     &recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: &recipeStepIngredient.BelongsToRecipeStep,
-	}
+	return converters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(recipeStepIngredient)
 }
 
 // BuildFakeRecipeStepIngredientCreationRequestInput builds a faked RecipeStepIngredientCreationRequestInput.

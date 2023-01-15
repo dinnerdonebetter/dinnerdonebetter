@@ -21,6 +21,7 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 		RequiresDefrost:                 input.RequiresDefrost,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
+		VesselIndex:                     input.VesselIndex,
 	}
 
 	return x
@@ -41,6 +42,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 		Optional:            &input.Optional,
 		OptionIndex:         &input.OptionIndex,
 		RequiresDefrost:     &input.RequiresDefrost,
+		VesselIndex:         &input.VesselIndex,
 	}
 
 	return x
@@ -59,6 +61,7 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(recip
 		IngredientNotes:   recipeStepIngredient.IngredientNotes,
 		OptionIndex:       recipeStepIngredient.OptionIndex,
 		RequiresDefrost:   recipeStepIngredient.RequiresDefrost,
+		VesselIndex:       recipeStepIngredient.VesselIndex,
 	}
 }
 
@@ -77,5 +80,6 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(reci
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 		OptionIndex:         recipeStepIngredient.OptionIndex,
 		RequiresDefrost:     recipeStepIngredient.RequiresDefrost,
+		VesselIndex:         recipeStepIngredient.VesselIndex,
 	}
 }
