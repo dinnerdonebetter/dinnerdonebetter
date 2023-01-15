@@ -36,8 +36,8 @@ type (
 		ArchivedAt    *time.Time       `json:"archivedAt"`
 		Notes         string           `json:"notes"`
 		ID            string           `json:"id"`
-		Preparation   ValidPreparation `json:"preparation"`
 		Ingredient    ValidIngredient  `json:"ingredient"`
+		Preparation   ValidPreparation `json:"preparation"`
 	}
 
 	// ValidIngredientPreparationCreationRequestInput represents what a user could set as input for creating valid ingredient preparations.

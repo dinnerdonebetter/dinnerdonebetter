@@ -33,25 +33,24 @@ func init() {
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		_ struct{}
-
+		_                             struct{}
 		CreatedAt                     time.Time                        `json:"createdAt"`
-		MaximumTemperatureInCelsius   *float32                         `json:"maximumTemperatureInCelsius"`
 		MinimumEstimatedTimeInSeconds *uint32                          `json:"minimumEstimatedTimeInSeconds"`
-		MaximumEstimatedTimeInSeconds *uint32                          `json:"maximumEstimatedTimeInSeconds"`
-		MinimumTemperatureInCelsius   *float32                         `json:"minimumTemperatureInCelsius"`
-		LastUpdatedAt                 *time.Time                       `json:"lastUpdatedAt"`
 		ArchivedAt                    *time.Time                       `json:"archivedAt"`
-		ConditionExpression           string                           `json:"conditionExpression"`
-		ID                            string                           `json:"id"`
-		Notes                         string                           `json:"notes"`
-		BelongsToRecipe               string                           `json:"belongsToRecipe"`
+		LastUpdatedAt                 *time.Time                       `json:"lastUpdatedAt"`
+		MinimumTemperatureInCelsius   *float32                         `json:"minimumTemperatureInCelsius"`
+		MaximumTemperatureInCelsius   *float32                         `json:"maximumTemperatureInCelsius"`
+		MaximumEstimatedTimeInSeconds *uint32                          `json:"maximumEstimatedTimeInSeconds"`
 		ExplicitInstructions          string                           `json:"explicitInstructions"`
-		Ingredients                   []*RecipeStepIngredient          `json:"ingredients"`
+		Notes                         string                           `json:"notes"`
+		ID                            string                           `json:"id"`
+		BelongsToRecipe               string                           `json:"belongsToRecipe"`
+		ConditionExpression           string                           `json:"conditionExpression"`
 		Products                      []*RecipeStepProduct             `json:"products"`
 		Media                         []*RecipeMedia                   `json:"media"`
 		Instruments                   []*RecipeStepInstrument          `json:"instruments"`
 		CompletionConditions          []*RecipeStepCompletionCondition `json:"completionConditions"`
+		Ingredients                   []*RecipeStepIngredient          `json:"ingredients"`
 		Preparation                   ValidPreparation                 `json:"preparation"`
 		Index                         uint32                           `json:"index"`
 		Optional                      bool                             `json:"optional"`

@@ -12,8 +12,12 @@ SET
 	temperature_required = $10,
 	time_estimate_required = $11,
 	condition_expression_required = $12,
-	slug = $13,
-	past_tense = $14,
+    consumes_vessel = $13,
+    only_for_vessels = $14,
+    minimum_vessel_count = $15,
+    maximum_vessel_count = $16,
+	slug = $17,
+	past_tense = $18,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $15;
+	AND id = $19;

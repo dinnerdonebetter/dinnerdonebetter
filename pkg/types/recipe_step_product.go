@@ -17,6 +17,8 @@ const (
 	RecipeStepProductIngredientType = "ingredient"
 	// RecipeStepProductInstrumentType represents one of the valid recipe step product type values.
 	RecipeStepProductInstrumentType = "instrument"
+	// RecipeStepProductVesselType represents one of the valid recipe step product type values.
+	RecipeStepProductVesselType = "vessel"
 
 	// RecipeStepProductCreatedCustomerEventType indicates a recipe step product was created.
 	RecipeStepProductCreatedCustomerEventType CustomerEventType = "recipe_step_product_created"
@@ -198,7 +200,7 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Type, validation.Required),
+		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
 }
@@ -212,7 +214,7 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType)),
+		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 	)
@@ -226,7 +228,7 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Type, validation.Required),
+		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 		validation.Field(&x.MaximumQuantity, validation.Required),
