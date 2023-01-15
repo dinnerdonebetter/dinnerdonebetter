@@ -56,6 +56,8 @@ type (
 		MinimumQuantity                    float32              `json:"minimumQuantity"`
 		IsWaste                            bool                 `json:"isWaste"`
 		IsLiquid                           bool                 `json:"isLiquid"`
+		Index                              uint16               `json:"index"`
+		ContainedInVesselIndex             uint16               `json:"containedInVesselIndex"`
 		Compostable                        bool                 `json:"compostable"`
 	}
 
@@ -76,6 +78,8 @@ type (
 		Compostable                        bool     `json:"compostable"`
 		IsLiquid                           bool     `json:"isLiquid"`
 		IsWaste                            bool     `json:"isWaste"`
+		Index                              uint16   `json:"index"`
+		ContainedInVesselIndex             uint16   `json:"containedInVesselIndex"`
 	}
 
 	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
@@ -96,6 +100,8 @@ type (
 		Compostable                        bool
 		IsLiquid                           bool
 		IsWaste                            bool
+		Index                              uint16
+		ContainedInVesselIndex             uint16
 	}
 
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
@@ -115,6 +121,8 @@ type (
 		StorageInstructions                *string  `json:"storageInstructions"`
 		IsLiquid                           *bool    `json:"isLiquid"`
 		IsWaste                            *bool    `json:"isWaste"`
+		Index                              *uint16  `json:"index"`
+		ContainedInVesselIndex             *uint16  `json:"containedInVesselIndex"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.
@@ -189,6 +197,14 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 
 	if input.IsWaste != nil && *input.IsWaste != x.IsWaste {
 		x.IsWaste = *input.IsWaste
+	}
+
+	if input.Index != nil && *input.Index != x.Index {
+		x.Index = *input.Index
+	}
+
+	if input.ContainedInVesselIndex != nil && *input.ContainedInVesselIndex != x.ContainedInVesselIndex {
+		x.ContainedInVesselIndex = *input.ContainedInVesselIndex
 	}
 }
 

@@ -695,6 +695,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				product.BelongsToRecipeStep,
 				product.IsLiquid,
 				product.IsWaste,
+				product.Index,
+				product.ContainedInVesselIndex,
 			}
 
 			db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
@@ -905,6 +907,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Products[0].BelongsToRecipeStep,
 			exampleInput.Products[0].IsLiquid,
 			exampleInput.Products[0].IsWaste,
+			exampleInput.Products[0].Index,
+			exampleInput.Products[0].ContainedInVesselIndex,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).

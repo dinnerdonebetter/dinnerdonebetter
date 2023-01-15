@@ -1,10 +1,10 @@
 INSERT INTO
 	webhooks (
 	id,
-	name,
+	"name",
 	content_type,
 	url,
-	method,
+	"method",
 	belongs_to_household
 )
 VALUES

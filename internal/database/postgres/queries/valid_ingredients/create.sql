@@ -1,7 +1,7 @@
 INSERT INTO valid_ingredients
 (
 	id,
-	name,
+	"name",
 	description,
 	warning,
 	contains_egg,

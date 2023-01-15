@@ -1,6 +1,6 @@
 INSERT INTO recipe_step_ingredients (
 	id,
-	name,
+	"name",
 	optional,
 	ingredient_id,
 	measurement_unit,

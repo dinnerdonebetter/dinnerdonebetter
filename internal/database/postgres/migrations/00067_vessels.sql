@@ -25,5 +25,6 @@ CREATE TABLE IF NOT EXISTS recipe_step_vessels (
 );
 
 ALTER TABLE recipe_step_products ADD COLUMN "index" INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE recipe_step_products ADD COLUMN "contained_by_vessel_index" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE recipe_step_products ADD COLUMN "contained_in_vessel_index" INTEGER NOT NULL DEFAULT 0;
+
 ALTER TABLE recipe_step_ingredients ADD COLUMN "vessel_index" INTEGER NOT NULL DEFAULT 0;

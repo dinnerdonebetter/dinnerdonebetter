@@ -55,6 +55,8 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.StorageInstructions,
 			x.IsLiquid,
 			x.IsWaste,
+			x.Index,
+			x.ContainedInVesselIndex,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -586,6 +588,8 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.BelongsToRecipeStep,
 			exampleInput.IsLiquid,
 			exampleInput.IsWaste,
+			exampleRecipeStepProduct.Index,
+			exampleRecipeStepProduct.ContainedInVesselIndex,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
@@ -640,6 +644,8 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.BelongsToRecipeStep,
 			exampleInput.IsLiquid,
 			exampleInput.IsWaste,
+			exampleRecipeStepProduct.Index,
+			exampleRecipeStepProduct.ContainedInVesselIndex,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
@@ -684,6 +690,8 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.StorageInstructions,
 			exampleRecipeStepProduct.IsLiquid,
 			exampleRecipeStepProduct.IsWaste,
+			exampleRecipeStepProduct.Index,
+			exampleRecipeStepProduct.ContainedInVesselIndex,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}
@@ -728,6 +736,8 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 			exampleRecipeStepProduct.StorageInstructions,
 			exampleRecipeStepProduct.IsLiquid,
 			exampleRecipeStepProduct.IsWaste,
+			exampleRecipeStepProduct.Index,
+			exampleRecipeStepProduct.ContainedInVesselIndex,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}

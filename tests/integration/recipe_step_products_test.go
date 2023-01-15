@@ -29,6 +29,8 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 	assert.Equal(t, expected.StorageInstructions, actual.StorageInstructions, "expected StorageInstructions for recipe step product %s to be %v, but was %v", expected.ID, expected.StorageInstructions, actual.StorageInstructions)
 	assert.Equal(t, expected.IsLiquid, actual.IsLiquid, "expected IsLiquid for recipe step product %s to be %v, but was %v", expected.ID, expected.IsLiquid, actual.IsLiquid)
 	assert.Equal(t, expected.IsWaste, actual.IsWaste, "expected IsWaste for recipe step product %s to be %v, but was %v", expected.ID, expected.IsWaste, actual.IsWaste)
+	assert.Equal(t, expected.Index, actual.Index, "expected Index for recipe step product %s to be %v, but was %v", expected.ID, expected.Index, actual.Index)
+	assert.Equal(t, expected.ContainedInVesselIndex, actual.ContainedInVesselIndex, "expected ContainedInVesselIndex for recipe step product %s to be %v, but was %v", expected.ID, expected.ContainedInVesselIndex, actual.ContainedInVesselIndex)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
