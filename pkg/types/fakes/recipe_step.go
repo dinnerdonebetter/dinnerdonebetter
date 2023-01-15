@@ -28,6 +28,13 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		instruments = append(instruments, ing)
 	}
 
+	var vessels []*types.RecipeStepVessel
+	for i := 0; i < exampleQuantity; i++ {
+		ing := BuildFakeRecipeStepVessel()
+		ing.BelongsToRecipeStep = recipeStepID
+		vessels = append(vessels, ing)
+	}
+
 	var products []*types.RecipeStepProduct
 	for i := 0; i < exampleQuantity; i++ {
 		p := BuildFakeRecipeStepProduct()
@@ -70,6 +77,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		ExplicitInstructions:          buildUniqueString(),
 		ConditionExpression:           buildUniqueString(),
 		Instruments:                   instruments,
+		Vessels:                       vessels,
 		CompletionConditions:          completionConditions,
 	}
 }

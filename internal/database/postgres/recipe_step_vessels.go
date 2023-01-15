@@ -13,16 +13,16 @@ import (
 )
 
 const (
-	recipeStepsOnRecipeStepVesselsJoinClause      = "recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id"
-	recipeStepVesselsOnValidInstrumentsJoinClause = "valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id"
+	recipeStepsOnRecipeStepVesselsJoinClause      = "recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id"
+	recipeStepVesselsOnValidInstrumentsJoinClause = "valid_instruments ON recipe_step_vessels.instrument_id=valid_instruments.id"
 )
 
 var (
 	_ types.RecipeStepVesselDataManager = (*Querier)(nil)
 
-	// recipeStepVesselsTableColumns are the columns for the recipe_step_instruments table.
+	// recipeStepVesselsTableColumns are the columns for the recipe_step_vessels table.
 	recipeStepVesselsTableColumns = []string{
-		"recipe_step_instruments.id",
+		"recipe_step_vessels.id",
 		"valid_instruments.id",
 		"valid_instruments.name",
 		"valid_instruments.plural_name",
@@ -36,18 +36,17 @@ var (
 		"valid_instruments.created_at",
 		"valid_instruments.last_updated_at",
 		"valid_instruments.archived_at",
-		"recipe_step_instruments.recipe_step_product_id",
-		"recipe_step_instruments.name",
-		"recipe_step_instruments.notes",
-		"recipe_step_instruments.preference_rank",
-		"recipe_step_instruments.optional",
-		"recipe_step_instruments.minimum_quantity",
-		"recipe_step_instruments.maximum_quantity",
-		"recipe_step_instruments.option_index",
-		"recipe_step_instruments.created_at",
-		"recipe_step_instruments.last_updated_at",
-		"recipe_step_instruments.archived_at",
-		"recipe_step_instruments.belongs_to_recipe_step",
+		"recipe_step_vessels.name",
+		"recipe_step_vessels.notes",
+		"recipe_step_vessels.belongs_to_recipe_step",
+		"recipe_step_vessels.recipe_step_product_id",
+		"recipe_step_vessels.vessel_predicate",
+		"recipe_step_vessels.minimum_quantity",
+		"recipe_step_vessels.maximum_quantity",
+		"recipe_step_vessels.unavailable_after_step",
+		"recipe_step_vessels.created_at",
+		"recipe_step_vessels.last_updated_at",
+		"recipe_step_vessels.archived_at",
 	}
 
 	getRecipeStepVesselsJoins = []string{
@@ -139,7 +138,7 @@ func (q *Querier) scanRecipeStepVessels(ctx context.Context, rows database.Resul
 	return recipeStepVessels, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_step_instruments/exists.sql
+//go:embed queries/recipe_step_vessels/exists.sql
 var recipeStepVesselExistenceQuery string
 
 // RecipeStepVesselExists fetches whether a recipe step vessel exists from the database.
@@ -183,7 +182,7 @@ func (q *Querier) RecipeStepVesselExists(ctx context.Context, recipeID, recipeSt
 	return result, nil
 }
 
-//go:embed queries/recipe_step_instruments/get_one.sql
+//go:embed queries/recipe_step_vessels/get_one.sql
 var getRecipeStepVesselQuery string
 
 // GetRecipeStepVessel fetches a recipe step vessel from the database.
@@ -262,7 +261,7 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepVesselsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "recipe step vessels", query, args)
 	if err != nil {
@@ -276,8 +275,7 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 	return x, nil
 }
 
-/*
-//go:embed queries/recipe_step_instruments/get_for_recipe.sql
+//go:embed queries/recipe_step_vessels/get_for_recipe.sql
 var getRecipeStepVesselsForRecipeQuery string
 
 // getRecipeStepVesselsForRecipe fetches a list of recipe step vessels from the database that meet a particular filter.
@@ -309,9 +307,8 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 
 	return recipeStepVessels, nil
 }
-*/
 
-//go:embed queries/recipe_step_instruments/create.sql
+//go:embed queries/recipe_step_vessels/create.sql
 var recipeStepVesselCreationQuery string
 
 // CreateRecipeStepVessel creates a recipe step vessel in the database.
@@ -331,6 +328,7 @@ func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.S
 		input.Notes,
 		input.BelongsToRecipeStep,
 		input.RecipeStepProductID,
+		input.InstrumentID,
 		input.VesselPredicate,
 		input.MinimumQuantity,
 		input.MaximumQuantity,
@@ -370,7 +368,7 @@ func (q *Querier) CreateRecipeStepVessel(ctx context.Context, input *types.Recip
 	return q.createRecipeStepVessel(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_instruments/update.sql
+//go:embed queries/recipe_step_vessels/update.sql
 var updateRecipeStepVesselQuery string
 
 // UpdateRecipeStepVessel updates a particular recipe step vessel.
@@ -413,7 +411,7 @@ func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *types.Rec
 	return nil
 }
 
-//go:embed queries/recipe_step_instruments/archive.sql
+//go:embed queries/recipe_step_vessels/archive.sql
 var archiveRecipeStepVesselQuery string
 
 // ArchiveRecipeStepVessel archives a recipe step vessel from the database by its ID.

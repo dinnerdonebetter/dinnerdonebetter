@@ -373,6 +373,16 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		x.Instruments = append(x.Instruments, instrument)
 	}
 
+	for i, vesselInput := range input.Vessels {
+		vesselInput.BelongsToRecipeStep = x.ID
+		vessel, createErr := q.createRecipeStepVessel(ctx, db, vesselInput)
+		if createErr != nil {
+			return nil, observability.PrepareError(createErr, span, "creating recipe step vessel #%d", i+1)
+		}
+
+		x.Vessels = append(x.Vessels, vessel)
+	}
+
 	for i, conditionInput := range input.CompletionConditions {
 		conditionInput.BelongsToRecipeStep = x.ID
 		condition, createErr := q.createRecipeStepCompletionCondition(ctx, db, conditionInput)

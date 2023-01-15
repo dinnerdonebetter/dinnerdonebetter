@@ -7,6 +7,7 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -49,6 +50,7 @@ type (
 		Products                      []*RecipeStepProduct             `json:"products"`
 		Media                         []*RecipeMedia                   `json:"media"`
 		Instruments                   []*RecipeStepInstrument          `json:"instruments"`
+		Vessels                       []*RecipeStepVessel              `json:"vessels"`
 		CompletionConditions          []*RecipeStepCompletionCondition `json:"completionConditions"`
 		Ingredients                   []*RecipeStepIngredient          `json:"ingredients"`
 		Preparation                   ValidPreparation                 `json:"preparation"`
@@ -71,6 +73,7 @@ type (
 		PreparationID                 string                                               `json:"preparationID"`
 		ExplicitInstructions          string                                               `json:"explicitInstructions"`
 		Instruments                   []*RecipeStepInstrumentCreationRequestInput          `json:"instruments"`
+		Vessels                       []*RecipeStepVesselCreationRequestInput              `json:"vessels"`
 		Products                      []*RecipeStepProductCreationRequestInput             `json:"products"`
 		Ingredients                   []*RecipeStepIngredientCreationRequestInput          `json:"ingredients"`
 		CompletionConditions          []*RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions"`
@@ -93,6 +96,7 @@ type (
 		BelongsToRecipe               string
 		Ingredients                   []*RecipeStepIngredientDatabaseCreationInput
 		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput
+		Vessels                       []*RecipeStepVesselDatabaseCreationInput
 		Products                      []*RecipeStepProductDatabaseCreationInput
 		CompletionConditions          []*RecipeStepCompletionConditionDatabaseCreationInput
 		Index                         uint32
@@ -195,15 +199,33 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 
 var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
 
+//var errOneInstrumentOrVessel = errors.New("at least one instrument or vessel must be specified")
+
 // ValidateWithContext validates a RecipeStepCreationRequestInput.
 func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var err *multierror.Error
+
+	//if len(x.Instruments) == 0 && len(x.Vessels) == 0 {
+	//	err = multierror.Append(err, errOneInstrumentOrVessel)
+	//}
+
+	validationErr := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.PreparationID, validation.Required),
 		validation.Field(&x.Products, validation.Required, validation.Length(1, maxProductsPerStep)),
 		validation.Field(&x.Ingredients, validation.Required, validation.Length(1, maxIngredientsPerStep)),
 	)
+
+	if validationErr != nil {
+		err = multierror.Append(err, validationErr)
+	}
+
+	if err == nil {
+		return nil
+	}
+
+	return err
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepDatabaseCreationInput)(nil)

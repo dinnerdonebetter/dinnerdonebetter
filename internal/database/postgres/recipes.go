@@ -263,6 +263,11 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 		return nil, observability.PrepareError(err, span, "fetching recipe step instruments for recipe")
 	}
 
+	vessels, err := q.getRecipeStepVesselsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching recipe step vessels for recipe")
+	}
+
 	completionConditions, err := q.getRecipeStepCompletionConditionsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step completion conditions for recipe")
@@ -284,6 +289,12 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 		for _, instrument := range instruments {
 			if instrument.BelongsToRecipeStep == step.ID {
 				x.Steps[i].Instruments = append(x.Steps[i].Instruments, instrument)
+			}
+		}
+
+		for _, vessel := range vessels {
+			if vessel.BelongsToRecipeStep == step.ID {
+				x.Steps[i].Vessels = append(x.Steps[i].Vessels, vessel)
 			}
 		}
 

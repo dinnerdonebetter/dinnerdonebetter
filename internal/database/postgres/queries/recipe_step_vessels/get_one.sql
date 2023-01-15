@@ -17,7 +17,6 @@ SELECT
     recipe_step_vessels.notes,
     recipe_step_vessels.belongs_to_recipe_step,
     recipe_step_vessels.recipe_step_product_id,
-    recipe_step_vessels.valid_instrument_id,
     recipe_step_vessels.vessel_predicate,
     recipe_step_vessels.minimum_quantity,
     recipe_step_vessels.maximum_quantity,
@@ -26,7 +25,7 @@ SELECT
     recipe_step_vessels.last_updated_at,
     recipe_step_vessels.archived_at
 FROM recipe_step_vessels
-	LEFT JOIN valid_instruments ON recipe_step_vessels.instrument_id=valid_instruments.id
+	LEFT JOIN valid_instruments ON recipe_step_vessels.valid_instrument_id=valid_instruments.id
 	JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id
 	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_vessels.archived_at IS NULL

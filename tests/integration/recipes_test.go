@@ -96,6 +96,10 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 			recipeStep.Instruments[j].Instrument = createdValidInstrument
 		}
 
+		for j := range recipeStep.Vessels {
+			recipeStep.Vessels[j].Instrument = createdValidInstrument
+		}
+
 		for j := range recipeStep.CompletionConditions {
 			recipeStep.CompletionConditions[j].IngredientState = *createdValidIngredientState
 			for k := range recipeStep.CompletionConditions[j].Ingredients {
