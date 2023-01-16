@@ -345,6 +345,11 @@ var (
 			Description: "drop product of recipe steps",
 			Script:      fetchMigration("00066_drop_product_of_recipe_steps"),
 		},
+		{
+			Version:     67,
+			Description: "vessels",
+			Script:      fetchMigration("00067_vessels"),
+		},
 	}
 )
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -33,25 +34,25 @@ func init() {
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		_ struct{}
-
+		_                             struct{}
 		CreatedAt                     time.Time                        `json:"createdAt"`
-		MaximumTemperatureInCelsius   *float32                         `json:"maximumTemperatureInCelsius"`
 		MinimumEstimatedTimeInSeconds *uint32                          `json:"minimumEstimatedTimeInSeconds"`
-		MaximumEstimatedTimeInSeconds *uint32                          `json:"maximumEstimatedTimeInSeconds"`
-		MinimumTemperatureInCelsius   *float32                         `json:"minimumTemperatureInCelsius"`
-		LastUpdatedAt                 *time.Time                       `json:"lastUpdatedAt"`
 		ArchivedAt                    *time.Time                       `json:"archivedAt"`
-		ConditionExpression           string                           `json:"conditionExpression"`
-		ID                            string                           `json:"id"`
-		Notes                         string                           `json:"notes"`
-		BelongsToRecipe               string                           `json:"belongsToRecipe"`
+		LastUpdatedAt                 *time.Time                       `json:"lastUpdatedAt"`
+		MinimumTemperatureInCelsius   *float32                         `json:"minimumTemperatureInCelsius"`
+		MaximumTemperatureInCelsius   *float32                         `json:"maximumTemperatureInCelsius"`
+		MaximumEstimatedTimeInSeconds *uint32                          `json:"maximumEstimatedTimeInSeconds"`
 		ExplicitInstructions          string                           `json:"explicitInstructions"`
-		Ingredients                   []*RecipeStepIngredient          `json:"ingredients"`
+		Notes                         string                           `json:"notes"`
+		ID                            string                           `json:"id"`
+		BelongsToRecipe               string                           `json:"belongsToRecipe"`
+		ConditionExpression           string                           `json:"conditionExpression"`
 		Products                      []*RecipeStepProduct             `json:"products"`
 		Media                         []*RecipeMedia                   `json:"media"`
 		Instruments                   []*RecipeStepInstrument          `json:"instruments"`
+		Vessels                       []*RecipeStepVessel              `json:"vessels"`
 		CompletionConditions          []*RecipeStepCompletionCondition `json:"completionConditions"`
+		Ingredients                   []*RecipeStepIngredient          `json:"ingredients"`
 		Preparation                   ValidPreparation                 `json:"preparation"`
 		Index                         uint32                           `json:"index"`
 		Optional                      bool                             `json:"optional"`
@@ -72,6 +73,7 @@ type (
 		PreparationID                 string                                               `json:"preparationID"`
 		ExplicitInstructions          string                                               `json:"explicitInstructions"`
 		Instruments                   []*RecipeStepInstrumentCreationRequestInput          `json:"instruments"`
+		Vessels                       []*RecipeStepVesselCreationRequestInput              `json:"vessels"`
 		Products                      []*RecipeStepProductCreationRequestInput             `json:"products"`
 		Ingredients                   []*RecipeStepIngredientCreationRequestInput          `json:"ingredients"`
 		CompletionConditions          []*RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions"`
@@ -94,6 +96,7 @@ type (
 		BelongsToRecipe               string
 		Ingredients                   []*RecipeStepIngredientDatabaseCreationInput
 		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput
+		Vessels                       []*RecipeStepVesselDatabaseCreationInput
 		Products                      []*RecipeStepProductDatabaseCreationInput
 		CompletionConditions          []*RecipeStepCompletionConditionDatabaseCreationInput
 		Index                         uint32
@@ -198,13 +201,25 @@ var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeStepCreationRequestInput.
 func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var err *multierror.Error
+
+	validationErr := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.PreparationID, validation.Required),
 		validation.Field(&x.Products, validation.Required, validation.Length(1, maxProductsPerStep)),
 		validation.Field(&x.Ingredients, validation.Required, validation.Length(1, maxIngredientsPerStep)),
 	)
+
+	if validationErr != nil {
+		err = multierror.Append(err, validationErr)
+	}
+
+	if err == nil {
+		return nil
+	}
+
+	return err
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepDatabaseCreationInput)(nil)

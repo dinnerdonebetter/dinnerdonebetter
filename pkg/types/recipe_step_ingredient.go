@@ -47,6 +47,7 @@ type (
 		OptionIndex         uint16               `json:"optionIndex"`
 		RequiresDefrost     bool                 `json:"requiresDefrost"`
 		Optional            bool                 `json:"optional"`
+		VesselIndex         uint16               `json:"vesselIndex"`
 	}
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
@@ -64,6 +65,7 @@ type (
 		OptionIndex                     uint16  `json:"optionIndex"`
 		RequiresDefrost                 bool    `json:"requiresDefrost"`
 		Optional                        bool    `json:"optional"`
+		VesselIndex                     uint16  `json:"vesselIndex"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
@@ -71,8 +73,8 @@ type (
 		_                               struct{}
 		IngredientID                    *string
 		RecipeStepProductID             *string
-		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
-		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
+		ProductOfRecipeStepIndex        *uint64
+		ProductOfRecipeStepProductIndex *uint64
 		BelongsToRecipeStep             string
 		ID                              string
 		QuantityNotes                   string
@@ -84,6 +86,7 @@ type (
 		OptionIndex                     uint16
 		Optional                        bool
 		RequiresDefrost                 bool
+		VesselIndex                     uint16
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
@@ -102,6 +105,7 @@ type (
 		MaximumQuantity     *float32 `json:"maximumQuantity"`
 		OptionIndex         *uint16  `json:"optionIndex"`
 		RequiresDefrost     *bool    `json:"requiresDefrost"`
+		VesselIndex         *uint16  `json:"vesselIndex"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.
@@ -168,6 +172,10 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 
 	if input.RequiresDefrost != nil && *input.RequiresDefrost != x.RequiresDefrost {
 		x.RequiresDefrost = *input.RequiresDefrost
+	}
+
+	if input.VesselIndex != nil && *input.VesselIndex != x.VesselIndex {
+		x.VesselIndex = *input.VesselIndex
 	}
 }
 

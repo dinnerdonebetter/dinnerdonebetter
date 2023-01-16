@@ -36,6 +36,8 @@ func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64,
 			x.IconPath,
 			x.UsableForStorage,
 			x.DisplayInSummaryLists,
+			x.IsVessel,
+			x.IsExclusivelyVessel,
 			x.Slug,
 			x.CreatedAt,
 			x.LastUpdatedAt,
@@ -552,6 +554,8 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 			exampleInput.IconPath,
 			exampleInput.UsableForStorage,
 			exampleInput.DisplayInSummaryLists,
+			exampleInput.IsVessel,
+			exampleInput.IsExclusivelyVessel,
 			exampleInput.Slug,
 		}
 
@@ -599,6 +603,8 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 			exampleInput.IconPath,
 			exampleInput.UsableForStorage,
 			exampleInput.DisplayInSummaryLists,
+			exampleInput.IsVessel,
+			exampleInput.IsExclusivelyVessel,
 			exampleInput.Slug,
 		}
 
@@ -637,6 +643,8 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 			exampleValidInstrument.IconPath,
 			exampleValidInstrument.UsableForStorage,
 			exampleValidInstrument.DisplayInSummaryLists,
+			exampleValidInstrument.IsVessel,
+			exampleValidInstrument.IsExclusivelyVessel,
 			exampleValidInstrument.Slug,
 			exampleValidInstrument.ID,
 		}
@@ -674,6 +682,8 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 			exampleValidInstrument.IconPath,
 			exampleValidInstrument.UsableForStorage,
 			exampleValidInstrument.DisplayInSummaryLists,
+			exampleValidInstrument.IsVessel,
+			exampleValidInstrument.IsExclusivelyVessel,
 			exampleValidInstrument.Slug,
 			exampleValidInstrument.ID,
 		}

@@ -35,6 +35,10 @@ var (
 		"valid_preparations.temperature_required",
 		"valid_preparations.time_estimate_required",
 		"valid_preparations.condition_expression_required",
+		"valid_preparations.consumes_vessel",
+		"valid_preparations.only_for_vessels",
+		"valid_preparations.minimum_vessel_count",
+		"valid_preparations.maximum_vessel_count",
 		"valid_preparations.slug",
 		"valid_preparations.past_tense",
 		"valid_preparations.created_at",
@@ -83,6 +87,10 @@ func (q *Querier) scanRecipeStep(ctx context.Context, scan database.Scanner, inc
 		&x.Preparation.TemperatureRequired,
 		&x.Preparation.TimeEstimateRequired,
 		&x.Preparation.ConditionExpressionRequired,
+		&x.Preparation.ConsumesVessel,
+		&x.Preparation.OnlyForVessels,
+		&x.Preparation.MinimumVesselCount,
+		&x.Preparation.MaximumVesselCount,
 		&x.Preparation.Slug,
 		&x.Preparation.PastTense,
 		&x.Preparation.CreatedAt,
@@ -363,6 +371,16 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		}
 
 		x.Instruments = append(x.Instruments, instrument)
+	}
+
+	for i, vesselInput := range input.Vessels {
+		vesselInput.BelongsToRecipeStep = x.ID
+		vessel, createErr := q.createRecipeStepVessel(ctx, db, vesselInput)
+		if createErr != nil {
+			return nil, observability.PrepareError(createErr, span, "creating recipe step vessel #%d", i+1)
+		}
+
+		x.Vessels = append(x.Vessels, vessel)
 	}
 
 	for i, conditionInput := range input.CompletionConditions {

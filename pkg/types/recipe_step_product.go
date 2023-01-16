@@ -17,6 +17,8 @@ const (
 	RecipeStepProductIngredientType = "ingredient"
 	// RecipeStepProductInstrumentType represents one of the valid recipe step product type values.
 	RecipeStepProductInstrumentType = "instrument"
+	// RecipeStepProductVesselType represents one of the valid recipe step product type values.
+	RecipeStepProductVesselType = "vessel"
 
 	// RecipeStepProductCreatedCustomerEventType indicates a recipe step product was created.
 	RecipeStepProductCreatedCustomerEventType CustomerEventType = "recipe_step_product_created"
@@ -54,6 +56,8 @@ type (
 		MinimumQuantity                    float32              `json:"minimumQuantity"`
 		IsWaste                            bool                 `json:"isWaste"`
 		IsLiquid                           bool                 `json:"isLiquid"`
+		Index                              uint16               `json:"index"`
+		ContainedInVesselIndex             uint16               `json:"containedInVesselIndex"`
 		Compostable                        bool                 `json:"compostable"`
 	}
 
@@ -74,6 +78,8 @@ type (
 		Compostable                        bool     `json:"compostable"`
 		IsLiquid                           bool     `json:"isLiquid"`
 		IsWaste                            bool     `json:"isWaste"`
+		Index                              uint16   `json:"index"`
+		ContainedInVesselIndex             uint16   `json:"containedInVesselIndex"`
 	}
 
 	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
@@ -94,6 +100,8 @@ type (
 		Compostable                        bool
 		IsLiquid                           bool
 		IsWaste                            bool
+		Index                              uint16
+		ContainedInVesselIndex             uint16
 	}
 
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
@@ -113,6 +121,8 @@ type (
 		StorageInstructions                *string  `json:"storageInstructions"`
 		IsLiquid                           *bool    `json:"isLiquid"`
 		IsWaste                            *bool    `json:"isWaste"`
+		Index                              *uint16  `json:"index"`
+		ContainedInVesselIndex             *uint16  `json:"containedInVesselIndex"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.
@@ -188,6 +198,14 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 	if input.IsWaste != nil && *input.IsWaste != x.IsWaste {
 		x.IsWaste = *input.IsWaste
 	}
+
+	if input.Index != nil && *input.Index != x.Index {
+		x.Index = *input.Index
+	}
+
+	if input.ContainedInVesselIndex != nil && *input.ContainedInVesselIndex != x.ContainedInVesselIndex {
+		x.ContainedInVesselIndex = *input.ContainedInVesselIndex
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepProductCreationRequestInput)(nil)
@@ -198,7 +216,7 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Type, validation.Required),
+		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
 }
@@ -212,7 +230,7 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType)),
+		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 	)
@@ -226,7 +244,7 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Type, validation.Required),
+		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 		validation.Field(&x.MaximumQuantity, validation.Required),

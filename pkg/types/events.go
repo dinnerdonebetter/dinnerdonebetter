@@ -45,6 +45,8 @@ type (
 		ValidMeasurementUnit             *ValidMeasurementUnit           `json:"validMeasurementUnit,omitempty"`
 		UserMembership                   *HouseholdUserMembership        `json:"userMembership,omitempty"`
 		RecipeStepCompletionCondition    *RecipeStepCompletionCondition  `json:"recipeStepCompletionCondition,omitempty"`
+		RecipeStepVessel                 *RecipeStepVessel               `json:"recipeStepVessel,omitempty"`
+		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
 		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
 		HouseholdID                      string                          `json:"householdID,omitempty"`
 		ValidMeasurementUnitID           string                          `json:"validMeasurementUnitID,omitempty"`

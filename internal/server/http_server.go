@@ -60,6 +60,7 @@ type (
 		validMeasurementConversionsService     types.ValidMeasurementConversionDataService
 		recipeStepCompletionConditionsService  types.RecipeStepCompletionConditionDataService
 		validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService
+		recipeStepVesselsService               types.RecipeStepVesselDataService
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
 		router                                 routing.Router
@@ -103,6 +104,7 @@ func ProvideHTTPServer(
 	validMeasurementConversionsService types.ValidMeasurementConversionDataService,
 	recipeStepCompletionConditionsService types.RecipeStepCompletionConditionDataService,
 	validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService,
+	recipeStepVesselsService types.RecipeStepVesselDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
 	logger logging.Logger,
@@ -153,6 +155,7 @@ func ProvideHTTPServer(
 		validIngredientStatesService:           validIngredientStatesService,
 		recipeStepCompletionConditionsService:  recipeStepCompletionConditionsService,
 		validIngredientStateIngredientsService: validIngredientStateIngredientsService,
+		recipeStepVesselsService:               recipeStepVesselsService,
 	}
 
 	srv.setupRouter(ctx, router, metricsHandler)

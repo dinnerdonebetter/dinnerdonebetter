@@ -10,6 +10,10 @@ import (
 
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
+	minIngredients := BuildFakeNumber()
+	minInstruments := BuildFakeNumber()
+	minVessels := BuildFakeNumber()
+
 	return &types.ValidPreparation{
 		ID:                          BuildFakeID(),
 		Name:                        buildUniqueString(),
@@ -20,13 +24,17 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 		Slug:                        buildUniqueString(),
 		PastTense:                   buildUniqueString(),
 		CreatedAt:                   BuildFakeTime(),
-		MinimumIngredientCount:      int32(BuildFakeNumber()),
-		MaximumIngredientCount:      pointers.Int32(int32(BuildFakeNumber())),
-		MinimumInstrumentCount:      int32(BuildFakeNumber()),
-		MaximumInstrumentCount:      pointers.Int32(int32(BuildFakeNumber())),
+		MinimumIngredientCount:      int32(minIngredients),
+		MaximumIngredientCount:      pointers.Int32(int32(minIngredients + 1)),
+		MinimumInstrumentCount:      int32(minInstruments),
+		MaximumInstrumentCount:      pointers.Int32(int32(minInstruments + 1)),
 		TemperatureRequired:         fake.Bool(),
 		TimeEstimateRequired:        fake.Bool(),
 		ConditionExpressionRequired: fake.Bool(),
+		ConsumesVessel:              fake.Bool(),
+		OnlyForVessels:              fake.Bool(),
+		MinimumVesselCount:          int32(minVessels),
+		MaximumVesselCount:          pointers.Int32(int32(minVessels + 1)),
 	}
 }
 

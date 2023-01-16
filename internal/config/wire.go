@@ -53,6 +53,7 @@ var (
 			"ValidIngredientStates",
 			"RecipeStepCompletionConditions",
 			"ValidIngredientStateIngredients",
+			"RecipeStepVessels",
 			"Auth",
 		),
 	)

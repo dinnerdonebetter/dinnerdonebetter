@@ -26,6 +26,8 @@ func ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(input *types.
 		StorageInstructions:                &input.StorageInstructions,
 		IsWaste:                            &input.IsWaste,
 		IsLiquid:                           &input.IsLiquid,
+		Index:                              &input.Index,
+		ContainedInVesselIndex:             &input.ContainedInVesselIndex,
 	}
 
 	return x
@@ -52,6 +54,8 @@ func ConvertRecipeStepProductCreationInputToRecipeStepProductDatabaseCreationInp
 		StorageInstructions:                input.StorageInstructions,
 		IsWaste:                            input.IsWaste,
 		IsLiquid:                           input.IsLiquid,
+		Index:                              input.Index,
+		ContainedInVesselIndex:             input.ContainedInVesselIndex,
 	}
 
 	return x
@@ -73,6 +77,8 @@ func ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(recipeStepP
 		StorageInstructions:                recipeStepProduct.StorageInstructions,
 		IsWaste:                            recipeStepProduct.IsWaste,
 		IsLiquid:                           recipeStepProduct.IsLiquid,
+		Index:                              recipeStepProduct.Index,
+		ContainedInVesselIndex:             recipeStepProduct.ContainedInVesselIndex,
 	}
 }
 
@@ -94,5 +100,7 @@ func ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(recipeStep
 		StorageInstructions:                recipeStepProduct.StorageInstructions,
 		IsWaste:                            recipeStepProduct.IsWaste,
 		IsLiquid:                           recipeStepProduct.IsLiquid,
+		Index:                              recipeStepProduct.Index,
+		ContainedInVesselIndex:             recipeStepProduct.ContainedInVesselIndex,
 	}
 }

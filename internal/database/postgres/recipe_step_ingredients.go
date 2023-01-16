@@ -74,6 +74,7 @@ var (
 		"recipe_step_ingredients.ingredient_notes",
 		"recipe_step_ingredients.option_index",
 		"recipe_step_ingredients.requires_defrost",
+		"recipe_step_ingredients.vessel_index",
 		"recipe_step_ingredients.created_at",
 		"recipe_step_ingredients.last_updated_at",
 		"recipe_step_ingredients.archived_at",
@@ -151,6 +152,7 @@ func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Sc
 		&x.IngredientNotes,
 		&x.OptionIndex,
 		&x.RequiresDefrost,
+		&x.VesselIndex,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -428,6 +430,7 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		input.IngredientNotes,
 		input.OptionIndex,
 		input.RequiresDefrost,
+		input.VesselIndex,
 		input.BelongsToRecipeStep,
 	}
 
@@ -449,6 +452,7 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		RecipeStepProductID: input.RecipeStepProductID,
 		OptionIndex:         input.OptionIndex,
 		RequiresDefrost:     input.RequiresDefrost,
+		VesselIndex:         input.VesselIndex,
 		CreatedAt:           q.currentTime(),
 	}
 
@@ -493,6 +497,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 		updated.IngredientNotes,
 		updated.OptionIndex,
 		updated.RequiresDefrost,
+		updated.VesselIndex,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

@@ -22,6 +22,10 @@ func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *types.Va
 		TemperatureRequired:         &input.TemperatureRequired,
 		TimeEstimateRequired:        &input.TimeEstimateRequired,
 		ConditionExpressionRequired: &input.ConditionExpressionRequired,
+		ConsumesVessel:              &input.ConsumesVessel,
+		OnlyForVessels:              &input.OnlyForVessels,
+		MinimumVesselCount:          &input.MinimumVesselCount,
+		MaximumVesselCount:          input.MaximumVesselCount,
 	}
 
 	return x
@@ -45,6 +49,10 @@ func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreati
 		TemperatureRequired:         input.TemperatureRequired,
 		TimeEstimateRequired:        input.TimeEstimateRequired,
 		ConditionExpressionRequired: input.ConditionExpressionRequired,
+		ConsumesVessel:              input.ConsumesVessel,
+		OnlyForVessels:              input.OnlyForVessels,
+		MinimumVesselCount:          input.MinimumVesselCount,
+		MaximumVesselCount:          input.MaximumVesselCount,
 	}
 
 	return x
@@ -67,6 +75,10 @@ func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparat
 		TemperatureRequired:         validPreparation.TemperatureRequired,
 		TimeEstimateRequired:        validPreparation.TimeEstimateRequired,
 		ConditionExpressionRequired: validPreparation.ConditionExpressionRequired,
+		ConsumesVessel:              validPreparation.ConsumesVessel,
+		OnlyForVessels:              validPreparation.OnlyForVessels,
+		MinimumVesselCount:          validPreparation.MinimumVesselCount,
+		MaximumVesselCount:          validPreparation.MaximumVesselCount,
 	}
 }
 
@@ -88,5 +100,9 @@ func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPrepara
 		TemperatureRequired:         validPreparation.TemperatureRequired,
 		TimeEstimateRequired:        validPreparation.TimeEstimateRequired,
 		ConditionExpressionRequired: validPreparation.ConditionExpressionRequired,
+		ConsumesVessel:              validPreparation.ConsumesVessel,
+		OnlyForVessels:              validPreparation.OnlyForVessels,
+		MinimumVesselCount:          validPreparation.MinimumVesselCount,
+		MaximumVesselCount:          validPreparation.MaximumVesselCount,
 	}
 }

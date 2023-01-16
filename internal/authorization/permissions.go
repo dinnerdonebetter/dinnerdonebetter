@@ -203,6 +203,17 @@ const (
 	// ArchiveRecipeStepInstrumentsPermission is a household user permission.
 	ArchiveRecipeStepInstrumentsPermission Permission = "archive.recipe_step_instruments"
 
+	// CreateRecipeStepVesselsPermission is a household user permission.
+	CreateRecipeStepVesselsPermission Permission = "create.recipe_step_vessels"
+	// ReadRecipeStepVesselsPermission is a household user permission.
+	ReadRecipeStepVesselsPermission Permission = "read.recipe_step_vessels"
+	// SearchRecipeStepVesselsPermission is a household user permission.
+	SearchRecipeStepVesselsPermission Permission = "search.recipe_step_vessels"
+	// UpdateRecipeStepVesselsPermission is a household user permission.
+	UpdateRecipeStepVesselsPermission Permission = "update.recipe_step_vessels"
+	// ArchiveRecipeStepVesselsPermission is a household user permission.
+	ArchiveRecipeStepVesselsPermission Permission = "archive.recipe_step_vessels"
+
 	// CreateRecipeStepIngredientsPermission is a household user permission.
 	CreateRecipeStepIngredientsPermission Permission = "create.recipe_step_ingredients"
 	// ReadRecipeStepIngredientsPermission is a household user permission.
@@ -420,6 +431,12 @@ var (
 		SearchRecipeStepInstrumentsPermission.ID():  SearchRecipeStepInstrumentsPermission,
 		UpdateRecipeStepInstrumentsPermission.ID():  UpdateRecipeStepInstrumentsPermission,
 		ArchiveRecipeStepInstrumentsPermission.ID(): ArchiveRecipeStepInstrumentsPermission,
+
+		CreateRecipeStepVesselsPermission.ID():  CreateRecipeStepVesselsPermission,
+		ReadRecipeStepVesselsPermission.ID():    ReadRecipeStepVesselsPermission,
+		SearchRecipeStepVesselsPermission.ID():  SearchRecipeStepVesselsPermission,
+		UpdateRecipeStepVesselsPermission.ID():  UpdateRecipeStepVesselsPermission,
+		ArchiveRecipeStepVesselsPermission.ID(): ArchiveRecipeStepVesselsPermission,
 
 		CreateRecipeStepIngredientsPermission.ID():  CreateRecipeStepIngredientsPermission,
 		ReadRecipeStepIngredientsPermission.ID():    ReadRecipeStepIngredientsPermission,

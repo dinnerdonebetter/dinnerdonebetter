@@ -56,6 +56,14 @@ func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *type
 		x.Instruments = append(x.Instruments, convertedInstrument)
 	}
 
+	x.Vessels = []*types.RecipeStepVesselDatabaseCreationInput{}
+	for _, vessel := range input.Vessels {
+		convertedVessel := ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(vessel)
+		convertedVessel.ID = identifiers.New()
+		convertedVessel.BelongsToRecipeStep = x.ID
+		x.Vessels = append(x.Vessels, convertedVessel)
+	}
+
 	x.Products = []*types.RecipeStepProductDatabaseCreationInput{}
 	for _, product := range input.Products {
 		convertedProduct := ConvertRecipeStepProductCreationInputToRecipeStepProductDatabaseCreationInput(product)
@@ -87,6 +95,11 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 		instruments = append(instruments, ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(instrument))
 	}
 
+	vessels := []*types.RecipeStepVesselCreationRequestInput{}
+	for _, vessel := range recipeStep.Vessels {
+		vessels = append(vessels, ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(vessel))
+	}
+
 	products := []*types.RecipeStepProductCreationRequestInput{}
 	for _, product := range recipeStep.Products {
 		products = append(products, ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(product))
@@ -111,6 +124,7 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 		Products:                      products,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
+		Vessels:                       vessels,
 		CompletionConditions:          completionConditions,
 	}
 }
@@ -125,6 +139,11 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 	instruments := []*types.RecipeStepInstrumentDatabaseCreationInput{}
 	for _, i := range recipeStep.Instruments {
 		instruments = append(instruments, ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(i))
+	}
+
+	vessels := []*types.RecipeStepVesselDatabaseCreationInput{}
+	for _, v := range recipeStep.Vessels {
+		vessels = append(vessels, ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(v))
 	}
 
 	products := []*types.RecipeStepProductDatabaseCreationInput{}
@@ -152,6 +171,7 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
 		Products:                      products,
+		Vessels:                       vessels,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
 		CompletionConditions:          completionConditions,
 	}

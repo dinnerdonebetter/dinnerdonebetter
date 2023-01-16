@@ -83,6 +83,10 @@ var fullRecipesColumns = []string{
 	"valid_preparations.temperature_required",
 	"valid_preparations.time_estimate_required",
 	"valid_preparations.condition_expression_required",
+	"valid_preparations.consumes_vessel",
+	"valid_preparations.only_for_vessels",
+	"valid_preparations.minimum_vessel_count",
+	"valid_preparations.maximum_vessel_count",
 	"valid_preparations.slug",
 	"valid_preparations.past_tense",
 	"valid_preparations.created_at",
@@ -133,6 +137,10 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Preparation.TemperatureRequired,
 			&step.Preparation.TimeEstimateRequired,
 			&step.Preparation.ConditionExpressionRequired,
+			&step.Preparation.ConsumesVessel,
+			&step.Preparation.OnlyForVessels,
+			&step.Preparation.MinimumVesselCount,
+			&step.Preparation.MaximumVesselCount,
 			&step.Preparation.Slug,
 			&step.Preparation.PastTense,
 			&step.Preparation.CreatedAt,
@@ -289,11 +297,13 @@ func prepareMockToSuccessfullyGetRecipe(t *testing.T, recipe *types.Recipe, user
 
 	allIngredients := []*types.RecipeStepIngredient{}
 	allInstruments := []*types.RecipeStepInstrument{}
+	allVessels := []*types.RecipeStepVessel{}
 	allProducts := []*types.RecipeStepProduct{}
 	allCompletionConditions := []*types.RecipeStepCompletionCondition{}
 	for _, step := range exampleRecipe.Steps {
 		allIngredients = append(allIngredients, step.Ingredients...)
 		allInstruments = append(allInstruments, step.Instruments...)
+		allVessels = append(allVessels, step.Vessels...)
 		allProducts = append(allProducts, step.Products...)
 		allCompletionConditions = append(allCompletionConditions, step.CompletionConditions...)
 	}
@@ -348,6 +358,13 @@ func prepareMockToSuccessfullyGetRecipe(t *testing.T, recipe *types.Recipe, user
 	db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
 		WithArgs(interfaceToDriverValue(instrumentsArgs)...).
 		WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
+
+	vesselsArgs := []any{
+		exampleRecipe.ID,
+	}
+	db.ExpectQuery(formatQueryForSQLMock(getRecipeStepVesselsForRecipeQuery)).
+		WithArgs(interfaceToDriverValue(vesselsArgs)...).
+		WillReturnRows(buildMockRowsFromRecipeStepVessels(false, 0, allVessels...))
 
 	completionConditionsArgs := []any{
 		exampleRecipe.ID,
@@ -937,8 +954,14 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				exampleRecipe.Steps[i].Instruments[j].BelongsToRecipeStep = "2"
 			}
 
+			for j := range step.Vessels {
+				exampleRecipe.Steps[i].Vessels[j].ID = "5"
+				exampleRecipe.Steps[i].Vessels[j].Instrument = &types.ValidInstrument{ID: exampleRecipe.Steps[i].Vessels[j].Instrument.ID}
+				exampleRecipe.Steps[i].Vessels[j].BelongsToRecipeStep = "2"
+			}
+
 			for j := range step.CompletionConditions {
-				exampleRecipe.Steps[i].CompletionConditions[j].ID = "5"
+				exampleRecipe.Steps[i].CompletionConditions[j].ID = "6"
 				exampleRecipe.Steps[i].CompletionConditions[j].BelongsToRecipeStep = "2"
 				exampleRecipe.Steps[i].CompletionConditions[j].Ingredients = nil
 			}
@@ -1007,6 +1030,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.IngredientNotes,
 					ingredient.OptionIndex,
 					ingredient.RequiresDefrost,
+					ingredient.VesselIndex,
 					ingredient.BelongsToRecipeStep,
 				}
 
@@ -1032,6 +1056,25 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 				db.ExpectExec(formatQueryForSQLMock(recipeStepInstrumentCreationQuery)).
 					WithArgs(interfaceToDriverValue(recipeStepInstrumentCreationArgs)...).
+					WillReturnResult(newArbitraryDatabaseResult())
+			}
+
+			for _, vessel := range step.Vessels {
+				recipeStepVesselCreationArgs := []any{
+					vessel.ID,
+					vessel.Name,
+					vessel.Notes,
+					vessel.BelongsToRecipeStep,
+					vessel.RecipeStepProductID,
+					vessel.InstrumentID,
+					vessel.VesselPredicate,
+					vessel.MinimumQuantity,
+					vessel.MaximumQuantity,
+					vessel.UnavailableAfterStep,
+				}
+
+				db.ExpectExec(formatQueryForSQLMock(recipeStepVesselCreationQuery)).
+					WithArgs(interfaceToDriverValue(recipeStepVesselCreationArgs)...).
 					WillReturnResult(newArbitraryDatabaseResult())
 			}
 
@@ -1116,6 +1159,11 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			for j, instrument := range step.Instruments {
 				instrument.BelongsToRecipeStep = step.ID
 				instrument.CreatedAt = actual.Steps[i].Instruments[j].CreatedAt
+			}
+
+			for j, vessel := range step.Vessels {
+				vessel.BelongsToRecipeStep = step.ID
+				vessel.CreatedAt = actual.Steps[i].Vessels[j].CreatedAt
 			}
 
 			for j, completionCondition := range step.CompletionConditions {

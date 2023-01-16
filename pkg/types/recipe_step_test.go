@@ -19,6 +19,12 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		MinimumTemperatureInCelsius:   pointers.Float32(float32(123.45)),
 		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 		ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
+		Instruments: []*RecipeStepInstrumentCreationRequestInput{
+			{
+				Name:            fake.LoremIpsumSentence(exampleQuantity),
+				MinimumQuantity: fake.Uint32(),
+			},
+		},
 		Products: []*RecipeStepProductCreationRequestInput{
 			{
 				Name:              fake.LoremIpsumSentence(exampleQuantity),

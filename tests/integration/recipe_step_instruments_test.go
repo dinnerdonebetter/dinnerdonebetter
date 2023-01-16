@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -254,9 +253,6 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 			created, err = testClients.user.GetRecipe(ctx, created.ID)
 			requireNotNilAndNoProblems(t, created, err)
 			checkRecipeEquality(t, expected, created)
-
-			createdJSON, _ := json.Marshal(created)
-			t.Log(string(createdJSON))
 
 			recipeStepProductIndex := -1
 			for i, ingredient := range created.Steps[1].Instruments {
