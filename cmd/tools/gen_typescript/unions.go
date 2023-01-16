@@ -53,6 +53,7 @@ var (
 			Values: []string{
 				"ingredient",
 				"instrument",
+				"vessel",
 			},
 		},
 		{

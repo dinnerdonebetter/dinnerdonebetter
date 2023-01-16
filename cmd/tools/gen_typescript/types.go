@@ -126,6 +126,11 @@ var (
 			types.RecipeStepInstrumentCreationRequestInput{},
 			types.RecipeStepInstrumentUpdateRequestInput{},
 		},
+		"recipeStepVessels.ts": {
+			types.RecipeStepVessel{},
+			types.RecipeStepVesselCreationRequestInput{},
+			types.RecipeStepVesselUpdateRequestInput{},
+		},
 		"recipeStepProducts.ts": {
 			types.RecipeStepProduct{},
 			types.RecipeStepProductCreationRequestInput{},
