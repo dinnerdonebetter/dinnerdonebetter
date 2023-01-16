@@ -167,6 +167,10 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 					exampleRecipeStep.Instruments[j].Instrument = createdValidInstrument
 				}
 
+				for j := range exampleRecipeStep.Vessels {
+					exampleRecipeStep.Vessels[j].Instrument = createdValidInstrument
+				}
+
 				for j := range exampleRecipeStep.CompletionConditions {
 					exampleRecipeStep.CompletionConditions[j].IngredientState = *createdValidIngredientState
 					for k := range exampleRecipeStep.CompletionConditions[j].Ingredients {

@@ -199,15 +199,9 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 
 var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
 
-//var errOneInstrumentOrVessel = errors.New("at least one instrument or vessel must be specified")
-
 // ValidateWithContext validates a RecipeStepCreationRequestInput.
 func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	var err *multierror.Error
-
-	//if len(x.Instruments) == 0 && len(x.Vessels) == 0 {
-	//	err = multierror.Append(err, errOneInstrumentOrVessel)
-	//}
 
 	validationErr := validation.ValidateStructWithContext(
 		ctx,

@@ -14,7 +14,7 @@ import (
 
 const (
 	recipeStepsOnRecipeStepVesselsJoinClause      = "recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id"
-	recipeStepVesselsOnValidInstrumentsJoinClause = "valid_instruments ON recipe_step_vessels.instrument_id=valid_instruments.id"
+	recipeStepVesselsOnValidInstrumentsJoinClause = "valid_instruments ON recipe_step_vessels.valid_instrument_id=valid_instruments.id"
 )
 
 var (
@@ -261,7 +261,7 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "recipe step vessels", query, args)
 	if err != nil {

@@ -468,6 +468,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 
 	findCreatedRecipeStepProductsForIngredients(input)
 	findCreatedRecipeStepProductsForInstruments(input)
+	findCreatedRecipeStepProductsForVessels(input)
 
 	for i, stepInput := range input.Steps {
 		stepInput.Index = uint32(i)
@@ -545,6 +546,21 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 				enoughRecipeStepProducts := len(recipe.Steps[int(*instrument.ProductOfRecipeStepIndex)].Products) > int(*instrument.ProductOfRecipeStepProductIndex)
 				relevantProductIsInstrument := recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].Type == types.RecipeStepProductInstrumentType
 				if enoughSteps && enoughRecipeStepProducts && relevantProductIsInstrument {
+					instrument.RecipeStepProductID = &recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].ID
+				}
+			}
+		}
+	}
+}
+
+func findCreatedRecipeStepProductsForVessels(recipe *types.RecipeDatabaseCreationInput) {
+	for _, step := range recipe.Steps {
+		for _, instrument := range step.Vessels {
+			if instrument.ProductOfRecipeStepIndex != nil && instrument.ProductOfRecipeStepProductIndex != nil {
+				enoughSteps := len(recipe.Steps) > int(*instrument.ProductOfRecipeStepIndex)
+				enoughRecipeStepProducts := len(recipe.Steps[int(*instrument.ProductOfRecipeStepIndex)].Products) > int(*instrument.ProductOfRecipeStepProductIndex)
+				relevantProductIsVessel := recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].Type == types.RecipeStepProductVesselType
+				if enoughSteps && enoughRecipeStepProducts && relevantProductIsVessel {
 					instrument.RecipeStepProductID = &recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].ID
 				}
 			}

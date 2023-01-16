@@ -193,7 +193,7 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:            linedBakingSheetName,
-								Type:            types.RecipeStepProductInstrumentType,
+								Type:            types.RecipeStepProductVesselType,
 								MeasurementUnit: *unit,
 								QuantityNotes:   "",
 								MinimumQuantity: 1,
@@ -251,6 +251,9 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInput(expected)
 			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointers.Pointer(uint64(0))
 			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointers.Pointer(uint64(0))
+
+			inputJSON, _ := json.Marshal(exampleRecipeInput)
+			t.Log(string(inputJSON))
 
 			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)

@@ -623,22 +623,22 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		}
 
 		for i := range exampleRecipeStep.Products {
-			exampleRecipeStep.Products[i].ID = "3"
+			exampleRecipeStep.Products[i].ID = "4"
 			exampleRecipeStep.Products[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
 		for i := range exampleRecipeStep.Instruments {
-			exampleRecipeStep.Instruments[i].ID = "3"
+			exampleRecipeStep.Instruments[i].ID = "5"
 			exampleRecipeStep.Instruments[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
 		for i := range exampleRecipeStep.Vessels {
-			exampleRecipeStep.Vessels[i].ID = "3"
+			exampleRecipeStep.Vessels[i].ID = "6"
 			exampleRecipeStep.Vessels[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
 		for i := range exampleRecipeStep.CompletionConditions {
-			exampleRecipeStep.CompletionConditions[i].ID = "3"
+			exampleRecipeStep.CompletionConditions[i].ID = "7"
 			exampleRecipeStep.CompletionConditions[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
@@ -742,6 +742,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				vessel.Notes,
 				vessel.BelongsToRecipeStep,
 				vessel.RecipeStepProductID,
+				vessel.InstrumentID,
 				vessel.VesselPredicate,
 				vessel.MinimumQuantity,
 				vessel.MaximumQuantity,

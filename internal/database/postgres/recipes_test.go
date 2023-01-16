@@ -955,13 +955,13 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			}
 
 			for j := range step.Vessels {
-				exampleRecipe.Steps[i].Vessels[j].ID = "4"
+				exampleRecipe.Steps[i].Vessels[j].ID = "5"
 				exampleRecipe.Steps[i].Vessels[j].Instrument = &types.ValidInstrument{ID: exampleRecipe.Steps[i].Vessels[j].Instrument.ID}
 				exampleRecipe.Steps[i].Vessels[j].BelongsToRecipeStep = "2"
 			}
 
 			for j := range step.CompletionConditions {
-				exampleRecipe.Steps[i].CompletionConditions[j].ID = "5"
+				exampleRecipe.Steps[i].CompletionConditions[j].ID = "6"
 				exampleRecipe.Steps[i].CompletionConditions[j].BelongsToRecipeStep = "2"
 				exampleRecipe.Steps[i].CompletionConditions[j].Ingredients = nil
 			}
@@ -1059,17 +1059,18 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					WillReturnResult(newArbitraryDatabaseResult())
 			}
 
-			for _, instrument := range step.Vessels {
+			for _, vessel := range step.Vessels {
 				recipeStepVesselCreationArgs := []any{
-					instrument.ID,
-					instrument.Name,
-					instrument.Notes,
-					instrument.BelongsToRecipeStep,
-					instrument.RecipeStepProductID,
-					instrument.VesselPredicate,
-					instrument.MinimumQuantity,
-					instrument.MaximumQuantity,
-					instrument.UnavailableAfterStep,
+					vessel.ID,
+					vessel.Name,
+					vessel.Notes,
+					vessel.BelongsToRecipeStep,
+					vessel.RecipeStepProductID,
+					vessel.InstrumentID,
+					vessel.VesselPredicate,
+					vessel.MinimumQuantity,
+					vessel.MaximumQuantity,
+					vessel.UnavailableAfterStep,
 				}
 
 				db.ExpectExec(formatQueryForSQLMock(recipeStepVesselCreationQuery)).
