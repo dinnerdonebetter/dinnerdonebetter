@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/Masterminds/squirrel"
 	"os"
 	"path"
 	"regexp"
 	"strings"
+
+	"github.com/Masterminds/squirrel"
 )
 
 const (
@@ -31,23 +32,21 @@ func buildJoinStatement(join, on, to string) string {
 	return fmt.Sprintf("%s ON %s=%s", join, on, to)
 }
 
-func writeFileToPath(path, content string) error {
-	// Create the file if it doesn't exist
-	file, err := os.Create(path)
+func writeFileToPath(filepath, content string) error {
+	// Create the f if it doesn't exist
+	f, err := os.Create(filepath)
 	if err != nil {
-		return fmt.Errorf("failed to create file: %w", err)
+		return fmt.Errorf("failed to create f: %w", err)
 	}
 
-	// Write the content to the file
-	_, err = file.WriteString(content)
-	if err != nil {
-		return fmt.Errorf("failed to write to file: %w", err)
+	// Write the content to the f
+	if _, err = f.WriteString(content); err != nil {
+		return fmt.Errorf("failed to write to f: %w", err)
 	}
 
-	// Close the file
-	err = file.Close()
-	if err != nil {
-		return fmt.Errorf("failed to close file: %w", err)
+	// Close the f
+	if err = f.Close(); err != nil {
+		return fmt.Errorf("failed to close f: %w", err)
 	}
 
 	return nil
@@ -87,14 +86,11 @@ var (
 )
 
 func main() {
-	cwd, _ := os.Getwd()
-	_ = cwd
-
-	sqlBuilder := squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
-
-	if err := os.MkdirAll(destinationPath, 0755); err != nil {
+	if err := os.MkdirAll(destinationPath, os.ModePerm); err != nil {
 		panic(err)
 	}
+
+	sqlBuilder := squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
 
 	for filename, builder := range fileMap {
 		query := formatQuery(builder(sqlBuilder))
