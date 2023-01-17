@@ -12,7 +12,7 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 LOCAL_ADDRESS                 := api.prixfixe.local
 DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
-SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.15.0
+SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.16.0
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 CLOUD_FUNCTIONS               := data_changes meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
 
@@ -32,10 +32,6 @@ clean-$(ARTIFACTS_DIR):
 
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs
-
-.PHONY: configs
-configs:
-	go run github.com/prixfixeco/backend/cmd/tools/gen_configs
 
 ## prerequisites
 
@@ -166,14 +162,22 @@ check_queries:
 
 ## Generated files
 
-gen: configs
+.PHONY: configs
+configs:
+	go run github.com/prixfixeco/backend/cmd/tools/gen_configs
+
+.PHONY: queries
+queries:
+	go run github.com/prixfixeco/backend/cmd/tools/gen_queries
+
+gen: configs queries
 
 clean_ts:
 	rm -rf $(ARTIFACTS_DIR)/typescript
 
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
-	go run cmd/tools/gen_ts/main.go
+	go run github.com/prixfixeco/backend/cmd/tools/gen_ts
 
 ## Integration tests
 
@@ -182,28 +186,7 @@ wipe_docker:
 	@docker stop $(shell docker ps -aq) && docker rm $(shell docker ps -aq)
 
 .PHONY: docker_wipe
-docker_wipe:
-	@docker stop $(shell docker ps -aq) && docker rm $(shell docker ps -aq)
-
-.PHONY: ensure_postgres_is_up
-ensure_postgres_is_up:
-	@echo "waiting for postgres"
-	@until docker exec --interactive --tty postgres psql 'postgres://dbuser:hunter2@localhost:5432/prixfixe?sslmode=disable' -c 'SELECT 1'; do true; done > /dev/null
-
-.PHONY: ensure_elasticsearch_is_up
-ensure_elasticsearch_is_up:
-	@echo "waiting for elasticsearch"
-	@until docker run --interactive --tty --network=host curlimages/curl:7.79.1 curl --head "http://localhost:9200/*" ; do true; done > /dev/null
-
-.PHONY: wipe_local_postgres
-wipe_local_postgres: ensure_postgres_is_up
-	@echo "wiping postgres"
-	@until docker exec --interactive --tty postgres psql 'postgres://dbuser:hunter2@localhost:5432/prixfixe?sslmode=disable' -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'; do true; done > /dev/null
-
-.PHONY: wipe_local_elasticsearch
-wipe_local_elasticsearch:
-	@echo "wiping elasticsearch"
-	@docker run --interactive --tty --network=host curlimages/curl:7.79.1 curl -X DELETE "http://localhost:9200/*"
+docker_wipe: wipe_docker
 
 .PHONY: lintegration_tests # this is just a handy lil' helper I use sometimes
 lintegration_tests: lint clear integration-tests

@@ -1,4 +1,5 @@
-UPDATE webhooks SET
+UPDATE webhooks
+SET
 	last_updated_at = NOW(),
 	archived_at = NOW()
 WHERE archived_at IS NULL

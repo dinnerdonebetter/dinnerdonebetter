@@ -1,5 +1,4 @@
-INSERT INTO
-	webhooks (
+INSERT INTO webhooks (
 	id,
 	"name",
 	content_type,
