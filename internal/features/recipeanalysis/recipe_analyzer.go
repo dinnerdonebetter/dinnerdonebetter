@@ -160,6 +160,21 @@ func (g *recipeAnalyzer) makeGraphForRecipe(ctx context.Context, recipe *types.R
 			to := recipeGraph.Node(graphIDForStep(step))
 			recipeGraph.SetEdge(simple.Edge{F: from, T: to})
 		}
+
+		for _, vessel := range step.Vessels {
+			if vessel.RecipeStepProductID == nil {
+				continue
+			}
+
+			toStep, err := findStepIndexForRecipeStepProductID(recipe, *vessel.RecipeStepProductID)
+			if err != nil {
+				return nil, err
+			}
+
+			from := recipeGraph.Node(toStep)
+			to := recipeGraph.Node(graphIDForStep(step))
+			recipeGraph.SetEdge(simple.Edge{F: from, T: to})
+		}
 	}
 
 	directedCycles := topo.DirectedCyclesIn(recipeGraph)
