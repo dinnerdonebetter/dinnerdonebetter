@@ -13,7 +13,6 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.Recipe
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
 	for _, x := range input.TaskSteps {
 		taskSteps = append(taskSteps, &types.RecipePrepTaskStepUpdateRequestInput{
-			ID:                      x.ID,
 			BelongsToRecipeStep:     &x.BelongsToRecipeStep,
 			BelongsToRecipePrepTask: &x.BelongsToRecipePrepTask,
 			SatisfiesRecipeStep:     &x.SatisfiesRecipeStep,
@@ -171,7 +170,6 @@ func ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInp
 
 func ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepUpdateRequestInput {
 	return &types.RecipePrepTaskStepUpdateRequestInput{
-		ID:                      input.ID,
 		BelongsToRecipeStep:     pointers.String(input.BelongsToRecipeStep),
 		BelongsToRecipePrepTask: pointers.String(input.BelongsToRecipePrepTask),
 		SatisfiesRecipeStep:     pointers.Bool(input.SatisfiesRecipeStep),

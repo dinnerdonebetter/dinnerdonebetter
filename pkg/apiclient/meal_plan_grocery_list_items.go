@@ -98,7 +98,7 @@ func (c *Client) CreateMealPlanGroceryListItem(ctx context.Context, mealPlanID s
 }
 
 // UpdateMealPlanGroceryListItem updates a meal plan grocery list item.
-func (c *Client) UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID string, input *types.MealPlanGroceryListItemUpdateRequestInput) error {
+func (c *Client) UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string, input *types.MealPlanGroceryListItemUpdateRequestInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -118,7 +118,7 @@ func (c *Client) UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID s
 		return observability.PrepareAndLogError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildUpdateMealPlanGroceryListItemRequest(ctx, mealPlanID, input)
+	req, err := c.requestBuilder.BuildUpdateMealPlanGroceryListItemRequest(ctx, mealPlanID, mealPlanGroceryListItemID, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building create meal plan grocery list item request")
 	}

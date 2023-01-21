@@ -147,10 +147,11 @@ func TestBuilder_BuildUpdateMealPlanGroceryListItemRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanGroceryListItemID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanGroceryListItemUpdateRequestInput()
-		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, exampleMealPlanID, exampleInput.ID)
+		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, exampleMealPlanID, exampleMealPlanGroceryListItemID)
 
-		actual, err := helper.builder.BuildUpdateMealPlanGroceryListItemRequest(helper.ctx, exampleMealPlanID, exampleInput)
+		actual, err := helper.builder.BuildUpdateMealPlanGroceryListItemRequest(helper.ctx, exampleMealPlanID, exampleMealPlanGroceryListItemID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -161,8 +162,9 @@ func TestBuilder_BuildUpdateMealPlanGroceryListItemRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanGroceryListItemID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildUpdateMealPlanGroceryListItemRequest(helper.ctx, exampleMealPlanID, nil)
+		actual, err := helper.builder.BuildUpdateMealPlanGroceryListItemRequest(helper.ctx, exampleMealPlanID, exampleMealPlanGroceryListItemID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -174,9 +176,10 @@ func TestBuilder_BuildUpdateMealPlanGroceryListItemRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanGroceryListItemID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanGroceryListItemUpdateRequestInput()
 
-		actual, err := helper.builder.BuildUpdateMealPlanGroceryListItemRequest(helper.ctx, exampleMealPlanID, exampleInput)
+		actual, err := helper.builder.BuildUpdateMealPlanGroceryListItemRequest(helper.ctx, exampleMealPlanID, exampleMealPlanGroceryListItemID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

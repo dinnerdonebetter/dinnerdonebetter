@@ -263,7 +263,6 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 
 		mealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(mealPlanGroceryListItem)
-		exampleInput.ID = helper.exampleMealPlanGroceryListItem.ID
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		expectedPrepStep := helper.exampleMealPlanGroceryListItem
@@ -336,7 +335,6 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 
 		mealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(mealPlanGroceryListItem)
-		exampleInput.ID = helper.exampleMealPlanGroceryListItem.ID
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -373,7 +371,6 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 
 		mealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(mealPlanGroceryListItem)
-		exampleInput.ID = helper.exampleMealPlanGroceryListItem.ID
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		expectedPrepStep := helper.exampleMealPlanGroceryListItem
