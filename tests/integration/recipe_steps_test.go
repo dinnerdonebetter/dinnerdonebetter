@@ -160,7 +160,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				}
 
 				for j := range exampleRecipeStep.Products {
-					exampleRecipeStep.Products[j].MeasurementUnit = *createdValidMeasurementUnit
+					exampleRecipeStep.Products[j].MeasurementUnit = createdValidMeasurementUnit
 				}
 
 				for j := range exampleRecipeStep.Instruments {

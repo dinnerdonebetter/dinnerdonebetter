@@ -1684,7 +1684,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						{
 							ID:                fakes.BuildFakeID(),
 							Name:              productName,
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              types.RecipeStepProductIngredientType,
 						},
 					},
@@ -1710,7 +1710,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Products: []*types.RecipeStepProductDatabaseCreationInput{
 						{
 							Name:              "final output",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              types.RecipeStepProductIngredientType,
 						},
 					},
@@ -1760,7 +1760,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						{
 							ID:                fakes.BuildFakeID(),
 							Name:              productName,
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              types.RecipeStepProductIngredientType,
 						},
 					},
@@ -1786,7 +1786,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Products: []*types.RecipeStepProductDatabaseCreationInput{
 						{
 							Name:              "pressure cooked beans",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              types.RecipeStepProductIngredientType,
 						},
 					},
@@ -1814,7 +1814,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						{
 							ID:                fakes.BuildFakeID(),
 							Name:              productName,
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              types.RecipeStepProductIngredientType,
 						},
 					},
@@ -1840,7 +1840,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Products: []*types.RecipeStepProductDatabaseCreationInput{
 						{
 							Name:              "final output",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              types.RecipeStepProductIngredientType,
 						},
 					},

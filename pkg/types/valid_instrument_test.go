@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestValidInstrumentCreationRequestInput_Validate(T *testing.T) {
@@ -41,9 +43,9 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidInstrumentUpdateRequestInput{
-			Name:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			IconPath:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Description: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			IconPath:    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

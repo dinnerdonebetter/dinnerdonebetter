@@ -52,9 +52,9 @@ type (
 		ID                                     string                `json:"id"`
 		TaskSteps                              []*RecipePrepTaskStep `json:"recipeSteps"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
-		MaximumStorageTemperatureInCelsius     float32               `json:"maximumStorageTemperatureInCelsius"`
-		MaximumTimeBufferBeforeRecipeInSeconds uint32                `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     float32               `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius     float32               `json:"maximumStorageTemperatureInCelsius"`     // TODO: make pointers
+		MaximumTimeBufferBeforeRecipeInSeconds uint32                `json:"maximumTimeBufferBeforeRecipeInSeconds"` // TODO: make pointers
+		MinimumStorageTemperatureInCelsius     float32               `json:"minimumStorageTemperatureInCelsius"`     // TODO: make pointers
 	}
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.

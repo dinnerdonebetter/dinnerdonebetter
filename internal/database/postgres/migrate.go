@@ -350,6 +350,11 @@ var (
 			Description: "vessels",
 			Script:      fetchMigration("00067_vessels"),
 		},
+		{
+			Version:     68,
+			Description: "some nullable fields",
+			Script:      fetchMigration("00068_nullable_fields"),
+		},
 	}
 )
 

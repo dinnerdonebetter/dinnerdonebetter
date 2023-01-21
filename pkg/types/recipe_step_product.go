@@ -37,71 +37,69 @@ func init() {
 type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
-		_ struct{}
-
-		CreatedAt                          time.Time            `json:"createdAt"`
-		MaximumStorageDurationInSeconds    *uint32              `json:"maximumStorageDurationInSeconds"`
-		MinimumStorageTemperatureInCelsius *float32             `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius *float32             `json:"maximumStorageTemperatureInCelsius"`
-		ArchivedAt                         *time.Time           `json:"archivedAt"`
-		LastUpdatedAt                      *time.Time           `json:"lastUpdatedAt"`
-		ID                                 string               `json:"id"`
-		Type                               string               `json:"type"`
-		Name                               string               `json:"name"`
-		StorageInstructions                string               `json:"storageInstructions"`
-		QuantityNotes                      string               `json:"quantityNotes"`
-		BelongsToRecipeStep                string               `json:"belongsToRecipeStep"`
-		MeasurementUnit                    ValidMeasurementUnit `json:"measurementUnit"`
-		MaximumQuantity                    float32              `json:"maximumQuantity"`
-		MinimumQuantity                    float32              `json:"minimumQuantity"`
-		IsWaste                            bool                 `json:"isWaste"`
-		IsLiquid                           bool                 `json:"isLiquid"`
-		Index                              uint16               `json:"index"`
-		ContainedInVesselIndex             uint16               `json:"containedInVesselIndex"`
-		Compostable                        bool                 `json:"compostable"`
+		_                                  struct{}
+		CreatedAt                          time.Time             `json:"createdAt"`
+		MaximumStorageDurationInSeconds    *uint32               `json:"maximumStorageDurationInSeconds"`
+		MinimumStorageTemperatureInCelsius *float32              `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius *float32              `json:"maximumStorageTemperatureInCelsius"`
+		ArchivedAt                         *time.Time            `json:"archivedAt"`
+		LastUpdatedAt                      *time.Time            `json:"lastUpdatedAt"`
+		MinimumQuantity                    *float32              `json:"minimumQuantity"`
+		MeasurementUnit                    *ValidMeasurementUnit `json:"measurementUnit"`
+		MaximumQuantity                    *float32              `json:"maximumQuantity"`
+		Name                               string                `json:"name"`
+		QuantityNotes                      string                `json:"quantityNotes"`
+		BelongsToRecipeStep                string                `json:"belongsToRecipeStep"`
+		Type                               string                `json:"type"`
+		ID                                 string                `json:"id"`
+		StorageInstructions                string                `json:"storageInstructions"`
+		Index                              uint16                `json:"index"`
+		ContainedInVesselIndex             uint16                `json:"containedInVesselIndex"`
+		IsWaste                            bool                  `json:"isWaste"`
+		IsLiquid                           bool                  `json:"isLiquid"`
+		Compostable                        bool                  `json:"compostable"`
 	}
 
 	// RecipeStepProductCreationRequestInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductCreationRequestInput struct {
-		_ struct{}
-
+		_                                  struct{}
+		MinimumQuantity                    *float32 `json:"minimumQuantity"`
 		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
 		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds"`
+		MeasurementUnitID                  *string  `json:"measurementUnitID"`
+		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
+		MaximumQuantity                    *float32 `json:"maximumQuantity"`
 		Type                               string   `json:"type"`
-		MeasurementUnitID                  string   `json:"measurementUnitID"`
 		QuantityNotes                      string   `json:"quantityNotes"`
 		Name                               string   `json:"name"`
 		StorageInstructions                string   `json:"storageInstructions"`
-		MaximumQuantity                    float32  `json:"maximumQuantity"`
-		MinimumQuantity                    float32  `json:"minimumQuantity"`
+		Index                              uint16   `json:"index"`
+		ContainedInVesselIndex             uint16   `json:"containedInVesselIndex"`
 		Compostable                        bool     `json:"compostable"`
 		IsLiquid                           bool     `json:"isLiquid"`
 		IsWaste                            bool     `json:"isWaste"`
-		Index                              uint16   `json:"index"`
-		ContainedInVesselIndex             uint16   `json:"containedInVesselIndex"`
 	}
 
 	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductDatabaseCreationInput struct {
 		_                                  struct{}
+		MinimumQuantity                    *float32
 		MinimumStorageTemperatureInCelsius *float32
 		MaximumStorageTemperatureInCelsius *float32
+		MaximumQuantity                    *float32
+		MeasurementUnitID                  *string
 		MaximumStorageDurationInSeconds    *uint32
 		Type                               string
-		QuantityNotes                      string
 		BelongsToRecipeStep                string
-		MeasurementUnitID                  string
 		Name                               string
-		ID                                 string
 		StorageInstructions                string
-		MaximumQuantity                    float32
-		MinimumQuantity                    float32
+		QuantityNotes                      string
+		ID                                 string
+		Index                              uint16
+		ContainedInVesselIndex             uint16
 		Compostable                        bool
 		IsLiquid                           bool
 		IsWaste                            bool
-		Index                              uint16
-		ContainedInVesselIndex             uint16
 	}
 
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
@@ -156,15 +154,15 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 	}
 
 	if input.MeasurementUnitID != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
-		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.MeasurementUnitID}
+		x.MeasurementUnit = &ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
-	if input.MinimumQuantity != nil && *input.MinimumQuantity != x.MinimumQuantity {
-		x.MinimumQuantity = *input.MinimumQuantity
+	if input.MinimumQuantity != nil && input.MinimumQuantity != x.MinimumQuantity {
+		x.MinimumQuantity = input.MinimumQuantity
 	}
 
-	if input.MaximumQuantity != nil && *input.MaximumQuantity != x.MaximumQuantity {
-		x.MaximumQuantity = *input.MaximumQuantity
+	if input.MaximumQuantity != nil && input.MaximumQuantity != x.MaximumQuantity {
+		x.MaximumQuantity = input.MaximumQuantity
 	}
 
 	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
