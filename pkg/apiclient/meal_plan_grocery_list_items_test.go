@@ -218,7 +218,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_UpdateMealPlanGroceryList
 		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItem)
 
-		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, exampleInput)
+		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID, exampleInput)
 		assert.NoError(t, err)
 	})
 
@@ -227,7 +227,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_UpdateMealPlanGroceryList
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, nil)
+		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID, nil)
 		assert.Error(t, err)
 	})
 
@@ -237,7 +237,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_UpdateMealPlanGroceryList
 		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(s.exampleMealPlanGroceryListItem)
 		c := buildTestClientWithInvalidURL(t)
 
-		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, exampleInput)
+		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID, exampleInput)
 		assert.Error(t, err)
 	})
 
@@ -247,7 +247,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_UpdateMealPlanGroceryList
 		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(s.exampleMealPlanGroceryListItem)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, exampleInput)
+		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID, exampleInput)
 		assert.Error(t, err)
 	})
 }

@@ -106,7 +106,6 @@ type (
 		PurchasedUPC               *string  `json:"purchasedUPC"`
 		PurchasePrice              *float32 `json:"purchasePrice"`
 		Status                     *string  `json:"status"`
-		ID                         string   `json:"-"`
 	}
 
 	// MealPlanGroceryListItemDataManager describes a structure capable of storing meal plan grocery list items permanently.

@@ -105,7 +105,7 @@ func (b *Builder) BuildGetMealPlanGroceryListItemsForMealPlanRequest(ctx context
 }
 
 // BuildUpdateMealPlanGroceryListItemRequest builds an HTTP request for updating a meal plan grocery list item.
-func (b *Builder) BuildUpdateMealPlanGroceryListItemRequest(ctx context.Context, mealPlanID string, input *types.MealPlanGroceryListItemUpdateRequestInput) (*http.Request, error) {
+func (b *Builder) BuildUpdateMealPlanGroceryListItemRequest(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string, input *types.MealPlanGroceryListItemUpdateRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -117,7 +117,7 @@ func (b *Builder) BuildUpdateMealPlanGroceryListItemRequest(ctx context.Context,
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachMealPlanGroceryListItemIDToSpan(span, input.ID)
+	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -125,7 +125,7 @@ func (b *Builder) BuildUpdateMealPlanGroceryListItemRequest(ctx context.Context,
 		mealPlansBasePath,
 		mealPlanID,
 		mealPlanGroceryListItemsBasePath,
-		input.ID,
+		mealPlanGroceryListItemID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 

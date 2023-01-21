@@ -63,6 +63,5 @@ type (
 		SatisfiesRecipeStep     *bool   `json:"satisfiesRecipeStep"`
 		BelongsToRecipeStep     *string `json:"belongsToRecipeStep"`
 		BelongsToRecipePrepTask *string `json:"belongsToRecipeStepTask"`
-		ID                      string  `json:"-"`
 	}
 )

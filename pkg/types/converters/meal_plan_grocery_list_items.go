@@ -74,7 +74,6 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(i
 	}
 
 	return &types.MealPlanGroceryListItemUpdateRequestInput{
-		ID:                         input.ID,
 		BelongsToMealPlan:          &input.BelongsToMealPlan,
 		ValidIngredientID:          &input.Ingredient.ID,
 		ValidMeasurementUnitID:     &input.MeasurementUnit.ID,
