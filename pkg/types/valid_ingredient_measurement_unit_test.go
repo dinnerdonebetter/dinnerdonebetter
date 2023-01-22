@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
@@ -43,11 +45,11 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitUpdateRequestInput{
-			Notes:                    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidMeasurementUnitID:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientID:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MinimumAllowableQuantity: float32Pointer(fake.Float32()),
-			MaximumAllowableQuantity: float32Pointer(fake.Float32()),
+			Notes:                    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidMeasurementUnitID:   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidIngredientID:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			MinimumAllowableQuantity: pointers.Float32(fake.Float32()),
+			MaximumAllowableQuantity: pointers.Float32(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

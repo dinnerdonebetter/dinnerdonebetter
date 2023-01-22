@@ -14,8 +14,8 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 	return &RecipeStepCreationRequestInput{
 		Index:                         fake.Uint32(),
 		PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
-		MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
-		MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
+		MinimumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
+		MaximumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
 		MinimumTemperatureInCelsius:   pointers.Float32(float32(123.45)),
 		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 		ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
@@ -73,8 +73,8 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepCreationRequestInput{
 			Index:                         fake.Uint32(),
 			PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
-			MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
-			MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
+			MinimumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
+			MaximumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
 			MinimumTemperatureInCelsius:   pointers.Float32(float32(123.45)),
 			Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 			ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
@@ -108,13 +108,13 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepUpdateRequestInput{
-			Index:                         uint32Pointer(fake.Uint32()),
+			Index:                         pointers.Uint32(fake.Uint32()),
 			Preparation:                   &ValidPreparation{},
-			MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
-			MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
+			MinimumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
+			MaximumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
 			MinimumTemperatureInCelsius:   pointers.Float32(float32(123.45)),
-			Notes:                         stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ExplicitInstructions:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:                         pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			ExplicitInstructions:          pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

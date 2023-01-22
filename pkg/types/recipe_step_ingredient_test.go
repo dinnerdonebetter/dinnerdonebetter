@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
@@ -15,7 +17,7 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{
-			IngredientID:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			IngredientID:      pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			MeasurementUnitID: fake.LoremIpsumSentence(exampleQuantity),
 			MinimumQuantity:   fake.Float32(),
 			QuantityNotes:     fake.LoremIpsumSentence(exampleQuantity),
@@ -44,12 +46,12 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientUpdateRequestInput{
-			IngredientID:      stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MeasurementUnitID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MinimumQuantity:   float32Pointer(fake.Float32()),
-			QuantityNotes:     stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			IngredientNotes:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Optional:          boolPointer(fake.Bool()),
+			IngredientID:      pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			MeasurementUnitID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			MinimumQuantity:   pointers.Float32(fake.Float32()),
+			QuantityNotes:     pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			IngredientNotes:   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Optional:          pointers.Bool(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

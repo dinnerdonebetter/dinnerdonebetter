@@ -31,7 +31,7 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 			UpdatedAfter:    pointers.Time(time.Now().Truncate(time.Second)),
 			UpdatedBefore:   pointers.Time(time.Now().Truncate(time.Second)),
 			SortBy:          SortDescending,
-			IncludeArchived: boolPointer(true),
+			IncludeArchived: pointers.Bool(true),
 		}
 
 		assert.NotNil(t, qf.AttachToLogger(logger))
@@ -64,7 +64,7 @@ func TestQueryFilter_FromParams(T *testing.T) {
 			UpdatedAfter:    pointers.Time(tt),
 			UpdatedBefore:   pointers.Time(tt),
 			SortBy:          SortDescending,
-			IncludeArchived: boolPointer(true),
+			IncludeArchived: pointers.Bool(true),
 		}
 
 		exampleInput := url.Values{
@@ -137,7 +137,7 @@ func TestQueryFilter_ToValues(T *testing.T) {
 			UpdatedAfter:    pointers.Time(tt),
 			UpdatedBefore:   pointers.Time(tt),
 			SortBy:          SortDescending,
-			IncludeArchived: boolPointer(true),
+			IncludeArchived: pointers.Bool(true),
 		}
 
 		expected := url.Values{

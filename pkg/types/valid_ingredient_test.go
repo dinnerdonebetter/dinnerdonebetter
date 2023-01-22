@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
@@ -34,8 +36,8 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 			PluralName:                              fake.LoremIpsumSentence(exampleQuantity),
 			AnimalDerived:                           fake.Bool(),
 			RestrictToPreparations:                  fake.Bool(),
-			MinimumIdealStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
-			MaximumIdealStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
+			MinimumIdealStorageTemperatureInCelsius: pointers.Float32(fake.Float32()),
+			MaximumIdealStorageTemperatureInCelsius: pointers.Float32(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -59,27 +61,27 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientUpdateRequestInput{
-			Name:                                    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:                             stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Warning:                                 stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ContainsEgg:                             boolPointer(fake.Bool()),
-			ContainsDairy:                           boolPointer(fake.Bool()),
-			ContainsPeanut:                          boolPointer(fake.Bool()),
-			ContainsTreeNut:                         boolPointer(fake.Bool()),
-			ContainsSoy:                             boolPointer(fake.Bool()),
-			ContainsWheat:                           boolPointer(fake.Bool()),
-			ContainsShellfish:                       boolPointer(fake.Bool()),
-			ContainsSesame:                          boolPointer(fake.Bool()),
-			ContainsFish:                            boolPointer(fake.Bool()),
-			ContainsGluten:                          boolPointer(fake.Bool()),
-			AnimalFlesh:                             boolPointer(fake.Bool()),
-			IsMeasuredVolumetrically:                boolPointer(fake.Bool()),
-			IconPath:                                stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PluralName:                              stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			AnimalDerived:                           boolPointer(fake.Bool()),
-			RestrictToPreparations:                  boolPointer(fake.Bool()),
-			MinimumIdealStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
-			MaximumIdealStorageTemperatureInCelsius: float32Pointer(fake.Float32()),
+			Name:                                    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:                             pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Warning:                                 pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			ContainsEgg:                             pointers.Bool(fake.Bool()),
+			ContainsDairy:                           pointers.Bool(fake.Bool()),
+			ContainsPeanut:                          pointers.Bool(fake.Bool()),
+			ContainsTreeNut:                         pointers.Bool(fake.Bool()),
+			ContainsSoy:                             pointers.Bool(fake.Bool()),
+			ContainsWheat:                           pointers.Bool(fake.Bool()),
+			ContainsShellfish:                       pointers.Bool(fake.Bool()),
+			ContainsSesame:                          pointers.Bool(fake.Bool()),
+			ContainsFish:                            pointers.Bool(fake.Bool()),
+			ContainsGluten:                          pointers.Bool(fake.Bool()),
+			AnimalFlesh:                             pointers.Bool(fake.Bool()),
+			IsMeasuredVolumetrically:                pointers.Bool(fake.Bool()),
+			IconPath:                                pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			PluralName:                              pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			AnimalDerived:                           pointers.Bool(fake.Bool()),
+			RestrictToPreparations:                  pointers.Bool(fake.Bool()),
+			MinimumIdealStorageTemperatureInCelsius: pointers.Float32(fake.Float32()),
+			MaximumIdealStorageTemperatureInCelsius: pointers.Float32(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

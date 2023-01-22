@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
@@ -46,14 +48,14 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitUpdateRequestInput{
-			Name:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Volumetric:  boolPointer(fake.Bool()),
-			IconPath:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Universal:   boolPointer(fake.Bool()),
-			Metric:      boolPointer(fake.Bool()),
-			Imperial:    boolPointer(fake.Bool()),
-			PluralName:  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Description: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Volumetric:  pointers.Bool(fake.Bool()),
+			IconPath:    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Universal:   pointers.Bool(fake.Bool()),
+			Metric:      pointers.Bool(fake.Bool()),
+			Imperial:    pointers.Bool(fake.Bool()),
+			PluralName:  pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -102,7 +102,7 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 	}
 
 	if i, err := strconv.ParseUint(params.Get(LimitQueryKey), 10, 64); err == nil {
-		qf.Limit = uint8Pointer(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
+		qf.Limit = pointers.Uint8(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
 	}
 
 	if t, err := time.Parse(time.RFC3339Nano, params.Get(createdBeforeQueryKey)); err == nil {
@@ -223,7 +223,7 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 
 	if qf.Limit != nil {
 		if *qf.Limit == 0 {
-			qf.Limit = uint8Pointer(DefaultLimit)
+			qf.Limit = pointers.Uint8(DefaultLimit)
 		}
 	}
 

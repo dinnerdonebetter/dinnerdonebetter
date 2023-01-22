@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestValidIngredientPreparationCreationRequestInput_Validate(T *testing.T) {
@@ -41,9 +43,9 @@ func TestValidIngredientPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientPreparationUpdateRequestInput{
-			Notes:              stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidPreparationID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientID:  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:              pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidPreparationID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidIngredientID:  pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

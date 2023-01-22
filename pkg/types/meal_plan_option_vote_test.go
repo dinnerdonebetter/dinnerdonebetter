@@ -7,6 +7,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
@@ -42,9 +44,9 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteUpdateRequestInput{
-			Rank:                    uint8Pointer(uint8(fake.Number(1, math.MaxUint8))),
-			Abstain:                 boolPointer(fake.Bool()),
-			Notes:                   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Rank:                    pointers.Uint8(uint8(fake.Number(1, math.MaxUint8))),
+			Abstain:                 pointers.Bool(fake.Bool()),
+			Notes:                   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			BelongsToMealPlanOption: t.Name(),
 		}
 

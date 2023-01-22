@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
@@ -16,7 +18,7 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepVesselCreationRequestInput{
 			Name:                fake.LoremIpsumSentence(exampleQuantity),
-			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			RecipeStepProductID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               fake.LoremIpsumSentence(exampleQuantity),
 			MinimumQuantity:     fake.Uint32(),
 			MaximumQuantity:     fake.Uint32(),
@@ -43,12 +45,12 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVesselUpdateRequestInput{
-			Name:                stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToRecipeStep: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			RecipeStepProductID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:               stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MinimumQuantity:     uint32Pointer(fake.Uint32()),
-			MaximumQuantity:     uint32Pointer(fake.Uint32()),
+			Name:                pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			BelongsToRecipeStep: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			RecipeStepProductID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:               pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			MinimumQuantity:     pointers.Uint32(fake.Uint32()),
+			MaximumQuantity:     pointers.Uint32(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
