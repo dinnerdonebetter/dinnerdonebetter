@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
@@ -15,8 +17,8 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionCreationRequestInput{
-			AssignedCook:       stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			AssignedDishwasher: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedCook:       pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedDishwasher: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			MealID:             fake.LoremIpsumSentence(exampleQuantity),
 			Notes:              fake.LoremIpsumSentence(exampleQuantity),
 		}
@@ -42,11 +44,11 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionUpdateRequestInput{
-			AssignedCook:           stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			AssignedDishwasher:     stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToMealPlanEvent: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MealID:                 stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:                  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedCook:           pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedDishwasher:     pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			BelongsToMealPlanEvent: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			MealID:                 pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:                  pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

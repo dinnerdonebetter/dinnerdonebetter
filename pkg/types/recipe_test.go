@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestRecipeCreationRequestInput_Validate(T *testing.T) {
@@ -18,7 +20,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			Name:               fake.LoremIpsumSentence(exampleQuantity),
 			Source:             fake.LoremIpsumSentence(exampleQuantity),
 			Description:        fake.LoremIpsumSentence(exampleQuantity),
-			InspiredByRecipeID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			InspiredByRecipeID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 			},
@@ -47,12 +49,12 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeUpdateRequestInput{
-			Name:               stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Source:             stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			InspiredByRecipeID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			SealOfApproval:     boolPointer(fake.Bool()),
-			YieldsPortions:     uint8Pointer(fake.Uint8()),
+			Name:               pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Source:             pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			InspiredByRecipeID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			SealOfApproval:     pointers.Bool(fake.Bool()),
+			YieldsPortions:     pointers.Uint8(fake.Uint8()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

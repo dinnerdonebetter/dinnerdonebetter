@@ -6,6 +6,8 @@ import (
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestMealCreationRequestInput_Validate(T *testing.T) {
@@ -46,9 +48,9 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealUpdateRequestInput{
-			Name:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			CreatedByUser: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:          pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			CreatedByUser: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			Components: []*MealComponentUpdateRequestInput{
 				{
 					RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
