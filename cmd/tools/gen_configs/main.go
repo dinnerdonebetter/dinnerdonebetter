@@ -38,8 +38,6 @@ import (
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	recipepreptasksservice "github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
-	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
-	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -462,12 +460,6 @@ func buildDevConfig() *config.InstanceConfig {
 					},
 				},
 			},
-			RecipeStepInstruments: recipestepinstrumentsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
-			RecipeStepIngredients: recipestepingredientsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
 			MealPlans: mealplansservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -652,12 +644,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 						S3Config:   nil,
 					},
 				},
-			},
-			RecipeStepInstruments: recipestepinstrumentsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
-			RecipeStepIngredients: recipestepingredientsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlans: mealplansservice.Config{
 				DataChangesTopicName: dataChangesTopicName,

@@ -36,8 +36,6 @@ import (
 	"github.com/prixfixeco/backend/internal/services/meals"
 	"github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	"github.com/prixfixeco/backend/internal/services/recipes"
-	"github.com/prixfixeco/backend/internal/services/recipestepingredients"
-	"github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	"github.com/prixfixeco/backend/internal/services/recipesteps"
 	"github.com/prixfixeco/backend/internal/services/users"
 	"github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -149,18 +147,6 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	if err != nil {
 		return nil, err
 	}
-	recipestepinstrumentsConfig := &servicesConfigurations.RecipeStepInstruments
-	recipeStepInstrumentDataManager := database.ProvideRecipeStepInstrumentDataManager(dataManager)
-	recipeStepInstrumentDataService, err := recipestepinstruments.ProvideService(logger, recipestepinstrumentsConfig, recipeStepInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
-	if err != nil {
-		return nil, err
-	}
-	recipestepingredientsConfig := &servicesConfigurations.RecipeStepIngredients
-	recipeStepIngredientDataManager := database.ProvideRecipeStepIngredientDataManager(dataManager)
-	recipeStepIngredientDataService, err := recipestepingredients.ProvideService(logger, recipestepingredientsConfig, recipeStepIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
-	if err != nil {
-		return nil, err
-	}
 	mealplansConfig := &servicesConfigurations.MealPlans
 	mealPlanDataManager := database.ProvideMealPlanDataManager(dataManager)
 	mealPlanDataService, err := mealplans.ProvideService(logger, mealplansConfig, mealPlanDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
@@ -248,7 +234,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager, tracerProvider)
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, tracerProvider, routingConfig)
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, validIngredientStateIngredientDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router, tracerProvider, metricsHandler)
+	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, validIngredientStateIngredientDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router, tracerProvider, metricsHandler)
 	if err != nil {
 		return nil, err
 	}

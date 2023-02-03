@@ -34,8 +34,6 @@ var (
 			"Meals",
 			"Recipes",
 			"RecipeSteps",
-			"RecipeStepInstruments",
-			"RecipeStepIngredients",
 			"MealPlans",
 			"MealPlanOptions",
 			"Households",

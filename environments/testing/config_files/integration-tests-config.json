@@ -139,12 +139,6 @@
 				"debug": false
 			}
 		},
-		"recipeStepInstruments": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeStepIngredients": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},

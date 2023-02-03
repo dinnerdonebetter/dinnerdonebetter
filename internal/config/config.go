@@ -29,8 +29,6 @@ import (
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	"github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
-	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
-	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -96,8 +94,6 @@ type (
 		Meals                           mealsservice.Config                           `json:"meals" mapstructure:"meals" toml:"meals,omitempty"`
 		Recipes                         recipesservice.Config                         `json:"recipes" mapstructure:"recipes" toml:"recipes,omitempty"`
 		RecipeSteps                     recipestepsservice.Config                     `json:"recipeSteps" mapstructure:"recipe_steps" toml:"recipe_steps,omitempty"`
-		RecipeStepInstruments           recipestepinstrumentsservice.Config           `json:"recipeStepInstruments" mapstructure:"recipe_step_instruments" toml:"recipe_step_instruments,omitempty"`
-		RecipeStepIngredients           recipestepingredientsservice.Config           `json:"recipeStepIngredients" mapstructure:"recipe_step_ingredients" toml:"recipe_step_ingredients,omitempty"`
 		MealPlans                       mealplansservice.Config                       `json:"mealPlans" mapstructure:"meal_plans" toml:"meal_plans,omitempty"`
 		MealPlanOptions                 mealplanoptionsservice.Config                 `json:"mealPlanOptions" mapstructure:"meal_plan_options" toml:"meal_plan_options,omitempty"`
 		Households                      householdsservice.Config                      `json:"households" mapstructure:"households" toml:"households,omitempty"`
@@ -220,14 +216,6 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 		if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating RecipeSteps service portion of config: %w", err), result)
-		}
-
-		if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err), result)
-		}
-
-		if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {

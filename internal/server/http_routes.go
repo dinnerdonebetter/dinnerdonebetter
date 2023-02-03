@@ -21,8 +21,6 @@ import (
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	recipepreptasksservice "github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
-	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
-	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -681,70 +679,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleRecipeStepRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepsPermission)).
 					Delete(root, s.recipeStepsService.ArchiveHandler)
-			})
-		})
-
-		// RecipeStepInstruments
-		recipeStepInstrumentPath := "instruments"
-		recipeStepInstrumentsRoute := path.Join(
-			recipePath,
-			recipeIDRouteParam,
-			recipeStepPath,
-			recipeStepIDRouteParam,
-			recipeStepInstrumentPath,
-		)
-		recipeStepInstrumentsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepInstrumentsRoute)
-		recipeStepInstrumentIDRouteParam := buildURLVarChunk(recipestepinstrumentsservice.RecipeStepInstrumentIDURIParamKey, "")
-		v1Router.Route(recipeStepInstrumentsRouteWithPrefix, func(recipeStepInstrumentsRouter routing.Router) {
-			recipeStepInstrumentsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepInstrumentsPermission)).
-				Post(root, s.recipeStepInstrumentsService.CreateHandler)
-			recipeStepInstrumentsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepInstrumentsPermission)).
-				Get(root, s.recipeStepInstrumentsService.ListHandler)
-
-			recipeStepInstrumentsRouter.Route(recipeStepInstrumentIDRouteParam, func(singleRecipeStepInstrumentRouter routing.Router) {
-				singleRecipeStepInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepInstrumentsPermission)).
-					Get(root, s.recipeStepInstrumentsService.ReadHandler)
-				singleRecipeStepInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepInstrumentsPermission)).
-					Put(root, s.recipeStepInstrumentsService.UpdateHandler)
-				singleRecipeStepInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepInstrumentsPermission)).
-					Delete(root, s.recipeStepInstrumentsService.ArchiveHandler)
-			})
-		})
-
-		// RecipeStepIngredients
-		recipeStepIngredientPath := "ingredients"
-		recipeStepIngredientsRoute := path.Join(
-			recipePath,
-			recipeIDRouteParam,
-			recipeStepPath,
-			recipeStepIDRouteParam,
-			recipeStepIngredientPath,
-		)
-		recipeStepIngredientsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepIngredientsRoute)
-		recipeStepIngredientIDRouteParam := buildURLVarChunk(recipestepingredientsservice.RecipeStepIngredientIDURIParamKey, "")
-		v1Router.Route(recipeStepIngredientsRouteWithPrefix, func(recipeStepIngredientsRouter routing.Router) {
-			recipeStepIngredientsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepIngredientsPermission)).
-				Post(root, s.recipeStepIngredientsService.CreateHandler)
-			recipeStepIngredientsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepIngredientsPermission)).
-				Get(root, s.recipeStepIngredientsService.ListHandler)
-
-			recipeStepIngredientsRouter.Route(recipeStepIngredientIDRouteParam, func(singleRecipeStepIngredientRouter routing.Router) {
-				singleRecipeStepIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepIngredientsPermission)).
-					Get(root, s.recipeStepIngredientsService.ReadHandler)
-				singleRecipeStepIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepIngredientsPermission)).
-					Put(root, s.recipeStepIngredientsService.UpdateHandler)
-				singleRecipeStepIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepIngredientsPermission)).
-					Delete(root, s.recipeStepIngredientsService.ArchiveHandler)
 			})
 		})
 
