@@ -139,9 +139,6 @@
 				"debug": false
 			}
 		},
-		"recipeStepProducts": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"recipeStepInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},

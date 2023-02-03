@@ -33,7 +33,6 @@ import (
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
-	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -99,7 +98,6 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				RecipeSteps: recipestepsservice.Config{
 					PublicMediaURLPrefix: t.Name(),
 				},
-				RecipeStepProducts:    recipestepproductsservice.Config{},
 				RecipeStepInstruments: recipestepinstrumentsservice.Config{},
 				RecipeStepIngredients: recipestepingredientsservice.Config{},
 				MealPlans:             mealplansservice.Config{},

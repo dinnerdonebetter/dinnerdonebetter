@@ -38,7 +38,6 @@ import (
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
-	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -91,7 +90,6 @@ func Build(
 		mealsservice.Providers,
 		recipesservice.Providers,
 		recipestepsservice.Providers,
-		recipestepproductsservice.Providers,
 		recipestepinstrumentsservice.Providers,
 		recipestepingredientsservice.Providers,
 		mealplansservice.Providers,

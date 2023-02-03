@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -133,15 +132,6 @@ type (
 		CreateRecipeStepProduct(ctx context.Context, input *RecipeStepProductDatabaseCreationInput) (*RecipeStepProduct, error)
 		UpdateRecipeStepProduct(ctx context.Context, updated *RecipeStepProduct) error
 		ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error
-	}
-
-	// RecipeStepProductDataService describes a structure capable of serving traffic related to recipe step products.
-	RecipeStepProductDataService interface {
-		ListHandler(res http.ResponseWriter, req *http.Request)
-		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ReadHandler(res http.ResponseWriter, req *http.Request)
-		UpdateHandler(res http.ResponseWriter, req *http.Request)
-		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

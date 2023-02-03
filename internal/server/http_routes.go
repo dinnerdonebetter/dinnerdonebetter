@@ -23,7 +23,6 @@ import (
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
-	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -746,38 +745,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleRecipeStepIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepIngredientsPermission)).
 					Delete(root, s.recipeStepIngredientsService.ArchiveHandler)
-			})
-		})
-
-		// RecipeStepProducts
-		recipeStepProductPath := "products"
-		recipeStepProductsRoute := path.Join(
-			recipePath,
-			recipeIDRouteParam,
-			recipeStepPath,
-			recipeStepIDRouteParam,
-			recipeStepProductPath,
-		)
-		recipeStepProductsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepProductsRoute)
-		recipeStepProductIDRouteParam := buildURLVarChunk(recipestepproductsservice.RecipeStepProductIDURIParamKey, "")
-		v1Router.Route(recipeStepProductsRouteWithPrefix, func(recipeStepProductsRouter routing.Router) {
-			recipeStepProductsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepProductsPermission)).
-				Post(root, s.recipeStepProductsService.CreateHandler)
-			recipeStepProductsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepProductsPermission)).
-				Get(root, s.recipeStepProductsService.ListHandler)
-
-			recipeStepProductsRouter.Route(recipeStepProductIDRouteParam, func(singleRecipeStepProductRouter routing.Router) {
-				singleRecipeStepProductRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepProductsPermission)).
-					Get(root, s.recipeStepProductsService.ReadHandler)
-				singleRecipeStepProductRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepProductsPermission)).
-					Put(root, s.recipeStepProductsService.UpdateHandler)
-				singleRecipeStepProductRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepProductsPermission)).
-					Delete(root, s.recipeStepProductsService.ArchiveHandler)
 			})
 		})
 
