@@ -36,7 +36,6 @@ import (
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	recipepreptasksservice "github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
-	recipestepcompletionconditionsservice "github.com/prixfixeco/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
@@ -111,7 +110,6 @@ func Build(
 		mealplangrocerylistitems.Providers,
 		validmeasurementconversionsservice.Providers,
 		validingredientstatesservice.Providers,
-		recipestepcompletionconditionsservice.Providers,
 	)
 
 	return nil, nil

@@ -2,8 +2,6 @@ package config
 
 import (
 	"github.com/google/wire"
-
-	"github.com/prixfixeco/backend/internal/database"
 )
 
 var (
@@ -51,22 +49,9 @@ var (
 			"MealPlanGroceryListItems",
 			"ValidMeasurementConversions",
 			"ValidIngredientStates",
-			"RecipeStepCompletionConditions",
 			"ValidIngredientStateIngredients",
 			"RecipeStepVessels",
 			"Auth",
 		),
 	)
 )
-
-// ProvideCloserFunc provides a closer function.
-func ProvideCloserFunc(dbm database.DataManager) func() error {
-	return func() error {
-		db := dbm.DB()
-		if err := db.Close(); err != nil {
-			return err
-		}
-
-		return nil
-	}
-}

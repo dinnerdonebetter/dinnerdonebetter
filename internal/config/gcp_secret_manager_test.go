@@ -31,7 +31,6 @@ import (
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	recipepreptasksservice "github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
-	recipestepcompletionconditionsservice "github.com/prixfixeco/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
@@ -100,19 +99,18 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				RecipeSteps: recipestepsservice.Config{
 					PublicMediaURLPrefix: t.Name(),
 				},
-				RecipeStepProducts:             recipestepproductsservice.Config{},
-				RecipeStepInstruments:          recipestepinstrumentsservice.Config{},
-				RecipeStepIngredients:          recipestepingredientsservice.Config{},
-				MealPlans:                      mealplansservice.Config{},
-				MealPlanOptions:                mealplanoptionsservice.Config{},
-				Households:                     householdsservice.Config{},
-				HouseholdInvitations:           householdinvitationsservice.Config{},
-				Websockets:                     websocketsservice.Config{},
-				Webhooks:                       webhooksservice.Config{},
-				Users:                          usersservice.Config{},
-				RecipePrepTasks:                recipepreptasksservice.Config{},
-				RecipeStepCompletionConditions: recipestepcompletionconditionsservice.Config{},
-				ValidIngredientStates:          validingredientstatesservice.Config{},
+				RecipeStepProducts:    recipestepproductsservice.Config{},
+				RecipeStepInstruments: recipestepinstrumentsservice.Config{},
+				RecipeStepIngredients: recipestepingredientsservice.Config{},
+				MealPlans:             mealplansservice.Config{},
+				MealPlanOptions:       mealplanoptionsservice.Config{},
+				Households:            householdsservice.Config{},
+				HouseholdInvitations:  householdinvitationsservice.Config{},
+				Websockets:            websocketsservice.Config{},
+				Webhooks:              webhooksservice.Config{},
+				Users:                 usersservice.Config{},
+				RecipePrepTasks:       recipepreptasksservice.Config{},
+				ValidIngredientStates: validingredientstatesservice.Config{},
 				Auth: authservice.Config{
 					MinimumPasswordLength: 8,
 					MinimumUsernameLength: 8,

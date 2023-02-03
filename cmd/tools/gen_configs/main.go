@@ -38,7 +38,6 @@ import (
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	recipepreptasksservice "github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
-	recipestepcompletionconditionsservice "github.com/prixfixeco/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/prixfixeco/backend/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
@@ -477,9 +476,6 @@ func buildDevConfig() *config.InstanceConfig {
 			RecipeStepIngredients: recipestepingredientsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			RecipeStepCompletionConditions: recipestepcompletionconditionsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
 			MealPlans: mealplansservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -672,9 +668,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepIngredients: recipestepingredientsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
-			RecipeStepCompletionConditions: recipestepcompletionconditionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepProducts: recipestepproductsservice.Config{
