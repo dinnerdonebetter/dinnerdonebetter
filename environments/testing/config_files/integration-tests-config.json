@@ -197,9 +197,6 @@
 		"validIngredientStateIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepVessels": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"auth": {
 			"dataChanges": "data_changes",
 			"cookies": {

@@ -25,7 +25,6 @@ import (
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
-	recipestepvesselsservice "github.com/prixfixeco/backend/internal/services/recipestepvessels"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
@@ -715,38 +714,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleRecipeStepInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepInstrumentsPermission)).
 					Delete(root, s.recipeStepInstrumentsService.ArchiveHandler)
-			})
-		})
-
-		// RecipeStepVessels
-		recipeStepVesselPath := "vessels"
-		recipeStepVesselsRoute := path.Join(
-			recipePath,
-			recipeIDRouteParam,
-			recipeStepPath,
-			recipeStepIDRouteParam,
-			recipeStepVesselPath,
-		)
-		recipeStepVesselsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepVesselsRoute)
-		recipeStepVesselIDRouteParam := buildURLVarChunk(recipestepvesselsservice.RecipeStepVesselIDURIParamKey, "")
-		v1Router.Route(recipeStepVesselsRouteWithPrefix, func(recipeStepVesselsRouter routing.Router) {
-			recipeStepVesselsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepVesselsPermission)).
-				Post(root, s.recipeStepVesselsService.CreateHandler)
-			recipeStepVesselsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepVesselsPermission)).
-				Get(root, s.recipeStepVesselsService.ListHandler)
-
-			recipeStepVesselsRouter.Route(recipeStepVesselIDRouteParam, func(singleRecipeStepVesselRouter routing.Router) {
-				singleRecipeStepVesselRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepVesselsPermission)).
-					Get(root, s.recipeStepVesselsService.ReadHandler)
-				singleRecipeStepVesselRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepVesselsPermission)).
-					Put(root, s.recipeStepVesselsService.UpdateHandler)
-				singleRecipeStepVesselRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepVesselsPermission)).
-					Delete(root, s.recipeStepVesselsService.ArchiveHandler)
 			})
 		})
 

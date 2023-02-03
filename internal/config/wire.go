@@ -50,7 +50,6 @@ var (
 			"ValidMeasurementConversions",
 			"ValidIngredientStates",
 			"ValidIngredientStateIngredients",
-			"RecipeStepVessels",
 			"Auth",
 		),
 	)
