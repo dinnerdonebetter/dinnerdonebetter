@@ -38,7 +38,8 @@ type (
 
 	// WebhookTriggerEvent represents a webhook trigger event.
 	WebhookTriggerEvent struct {
-		_                struct{}
+		_ struct{}
+
 		CreatedAt        time.Time  `json:"createdAt"`
 		ArchivedAt       *time.Time `json:"archivedAt"`
 		ID               string     `json:"id"`
@@ -48,7 +49,8 @@ type (
 
 	// WebhookCreationRequestInput represents what a User could set as input for creating a webhook.
 	WebhookCreationRequestInput struct {
-		_           struct{}
+		_ struct{}
+
 		Name        string   `json:"name"`
 		ContentType string   `json:"contentType"`
 		URL         string   `json:"url"`
@@ -71,7 +73,8 @@ type (
 
 	// WebhookTriggerEventDatabaseCreationInput is used for creating a webhook trigger event.
 	WebhookTriggerEventDatabaseCreationInput struct {
-		_                struct{}
+		_ struct{}
+
 		ID               string
 		BelongsToWebhook string
 		TriggerEvent     string
