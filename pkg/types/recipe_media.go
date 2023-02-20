@@ -58,7 +58,8 @@ type (
 
 	// RecipeMediaDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	RecipeMediaDatabaseCreationInput struct {
-		_                   struct{}
+		_ struct{}
+
 		ID                  string
 		BelongsToRecipe     *string
 		BelongsToRecipeStep *string

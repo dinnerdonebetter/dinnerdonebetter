@@ -30,7 +30,8 @@ func init() {
 type (
 	// ValidPreparationInstrument represents a valid preparation instrument.
 	ValidPreparationInstrument struct {
-		_             struct{}
+		_ struct{}
+
 		CreatedAt     time.Time        `json:"createdAt"`
 		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time       `json:"archivedAt"`

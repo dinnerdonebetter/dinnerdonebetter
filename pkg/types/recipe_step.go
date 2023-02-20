@@ -34,7 +34,8 @@ func init() {
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		_                             struct{}
+		_ struct{}
+
 		CreatedAt                     time.Time                        `json:"createdAt"`
 		MinimumEstimatedTimeInSeconds *uint32                          `json:"minimumEstimatedTimeInSeconds"`
 		ArchivedAt                    *time.Time                       `json:"archivedAt"`
@@ -63,7 +64,8 @@ type (
 
 	// RecipeStepCreationRequestInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationRequestInput struct {
-		_                             struct{}
+		_ struct{}
+
 		MaximumTemperatureInCelsius   *float32                                             `json:"maximumTemperatureInCelsius"`
 		MinimumTemperatureInCelsius   *float32                                             `json:"minimumTemperatureInCelsius"`
 		MaximumEstimatedTimeInSeconds *uint32                                              `json:"maximumEstimatedTimeInSeconds"`
@@ -83,7 +85,8 @@ type (
 
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
-		_                             struct{}
+		_ struct{}
+
 		MinimumEstimatedTimeInSeconds *uint32
 		MinimumTemperatureInCelsius   *float32
 		MaximumEstimatedTimeInSeconds *uint32
@@ -105,7 +108,8 @@ type (
 
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
-		_                             struct{}
+		_ struct{}
+
 		MinimumTemperatureInCelsius   *float32          `json:"minimumTemperatureInCelsius"`
 		MaximumTemperatureInCelsius   *float32          `json:"maximumTemperatureInCelsius"`
 		Notes                         *string           `json:"notes"`

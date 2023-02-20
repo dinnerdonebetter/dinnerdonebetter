@@ -22,7 +22,8 @@ const (
 type (
 	// HouseholdUserMembership defines a relationship between a user and a household.
 	HouseholdUserMembership struct {
-		_                  struct{}
+		_ struct{}
+
 		CreatedAt          time.Time  `json:"createdAt"`
 		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt         *time.Time `json:"archivedAt"`
@@ -35,7 +36,8 @@ type (
 
 	// HouseholdUserMembershipWithUser defines a relationship between a user and a household.
 	HouseholdUserMembershipWithUser struct {
-		_                  struct{}
+		_ struct{}
+
 		CreatedAt          time.Time  `json:"createdAt"`
 		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
 		BelongsToUser      *User      `json:"belongsToUser"`
