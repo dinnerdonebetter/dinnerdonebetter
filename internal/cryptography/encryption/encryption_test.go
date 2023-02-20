@@ -1,27 +1,35 @@
 package encryption
 
 import (
-	"fmt"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
+	"context"
 	"testing"
+
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/random"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestEncrypt(T *testing.T) {
+func TestStandardEncryptor(T *testing.T) {
 	T.Parallel()
 
 	T.Run("basic operation", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		expected := t.Name()
-		user := fakes.BuildFakeUser()
-		secret := fmt.Sprintf("%s.%s", user.ID, user.CreatedAt.Format("15:04:05.00"))
+		secret, err := random.GenerateRawBytes(ctx, 32)
+		require.NoError(t, err)
 
-		encrypted, err := Encrypt(expected, secret)
+		encryptor := NewStandardEncryptor(tracing.NewNoopTracerProvider(), logging.NewNoopLogger())
+
+		encrypted, err := encryptor.Encrypt(ctx, expected, string(secret))
 		assert.NoError(t, err)
 		assert.NotEmpty(t, encrypted)
 
-		actual, err := Decrypt(encrypted, secret)
+		actual, err := encryptor.Decrypt(ctx, encrypted, string(secret))
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 	})

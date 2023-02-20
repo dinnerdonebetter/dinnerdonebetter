@@ -6,9 +6,9 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
-	"fmt"
 	"io"
 
+	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
@@ -36,21 +36,20 @@ func (e *StandardEncryptor) Encrypt(ctx context.Context, text, secret string) (s
 	defer span.End()
 
 	logger := e.logger.WithValue("text", text).WithValue("secret", secret)
-	logger.Info("attempting to Encrypt")
 
 	aesBlock, err := aes.NewCipher([]byte(secret))
 	if err != nil {
-		return "", fmt.Errorf("failed to create aes cipher: %w", err)
+		return "", observability.PrepareAndLogError(err, logger, span, "creating aes cipher")
 	}
 
 	gcmInstance, err := cipher.NewGCM(aesBlock)
 	if err != nil {
-		return "", fmt.Errorf("failed to create gcm instance: %w", err)
+		return "", observability.PrepareAndLogError(err, logger, span, "creating gcm instance")
 	}
 
 	nonce := make([]byte, gcmInstance.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		return "", fmt.Errorf("failed to generate nonce: %w", err)
+		return "", observability.PrepareAndLogError(err, logger, span, "generating nonce")
 	}
 
 	cipheredText := gcmInstance.Seal(nonce, nonce, []byte(text), nil)
@@ -63,21 +62,20 @@ func (s *StandardEncryptor) Decrypt(ctx context.Context, text, secret string) (s
 	defer span.End()
 
 	logger := s.logger.WithValue("text", text).WithValue("secret", secret)
-	logger.Info("attempting to Decrypt")
 
 	ciphered, err := base64.URLEncoding.DecodeString(text)
 	if err != nil {
-		return "", fmt.Errorf("failed to decode ciphered text: %w", err)
+		return "", observability.PrepareAndLogError(err, logger, span, "decoding ciphered text")
 	}
 
 	aesBlock, err := aes.NewCipher([]byte(secret))
 	if err != nil {
-		return "", fmt.Errorf("failed to create aes cipher: %w", err)
+		return "", observability.PrepareAndLogError(err, logger, span, "creating aes cipher")
 	}
 
 	gcmInstance, err := cipher.NewGCM(aesBlock)
 	if err != nil {
-		return "", fmt.Errorf("failed to create gcm instance: %w", err)
+		return "", observability.PrepareAndLogError(err, logger, span, "creating gcm instance")
 	}
 
 	nonceSize := gcmInstance.NonceSize()
@@ -85,7 +83,7 @@ func (s *StandardEncryptor) Decrypt(ctx context.Context, text, secret string) (s
 
 	originalText, err := gcmInstance.Open(nil, nonce, cipheredText, nil)
 	if err != nil {
-		return "", fmt.Errorf("failed to decrypt ciphered text: %w", err)
+		return "", observability.PrepareAndLogError(err, logger, span, "decrypting ciphered text")
 	}
 
 	return string(originalText), nil
