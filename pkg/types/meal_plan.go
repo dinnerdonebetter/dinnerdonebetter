@@ -64,7 +64,8 @@ type (
 
 	// MealPlanCreationRequestInput represents what a user could set as input for creating meal plans.
 	MealPlanCreationRequestInput struct {
-		_              struct{}
+		_ struct{}
+
 		VotingDeadline time.Time                            `json:"votingDeadline"`
 		Notes          string                               `json:"notes"`
 		ElectionMethod string                               `json:"electionMethod"`
@@ -73,7 +74,8 @@ type (
 
 	// MealPlanDatabaseCreationInput represents what a user could set as input for creating meal plans.
 	MealPlanDatabaseCreationInput struct {
-		_                  struct{}
+		_ struct{}
+
 		VotingDeadline     time.Time
 		BelongsToHousehold string
 		Notes              string
@@ -84,7 +86,8 @@ type (
 
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.
 	MealPlanUpdateRequestInput struct {
-		_                  struct{}
+		_ struct{}
+
 		BelongsToHousehold *string    `json:"-"`
 		Notes              *string    `json:"notes"`
 		VotingDeadline     *time.Time `json:"votingDeadline"`

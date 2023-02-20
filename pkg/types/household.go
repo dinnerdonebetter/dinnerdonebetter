@@ -42,7 +42,8 @@ type (
 
 	// Household represents a household.
 	Household struct {
-		_                          struct{}
+		_ struct{}
+
 		CreatedAt                  time.Time                          `json:"createdAt"`
 		SubscriptionPlanID         *uint64                            `json:"subscriptionPlanID"`
 		LastUpdatedAt              *time.Time                         `json:"lastUpdatedAt"`

@@ -30,7 +30,8 @@ func init() {
 type (
 	// ValidIngredient represents a valid ingredient.
 	ValidIngredient struct {
-		_                                       struct{}
+		_ struct{}
+
 		CreatedAt                               time.Time  `json:"createdAt"`
 		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt                              *time.Time `json:"archivedAt"`
@@ -65,7 +66,8 @@ type (
 
 	// NullableValidIngredient represents a nullable valid ingredient.
 	NullableValidIngredient struct {
-		_                                       struct{}
+		_ struct{}
+
 		CreatedAt                               *time.Time
 		LastUpdatedAt                           *time.Time
 		ArchivedAt                              *time.Time
@@ -132,7 +134,8 @@ type (
 
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
 	ValidIngredientDatabaseCreationInput struct {
-		_                                       struct{}
+		_ struct{}
+
 		MinimumIdealStorageTemperatureInCelsius *float32
 		MaximumIdealStorageTemperatureInCelsius *float32
 		ID                                      string
@@ -164,7 +167,8 @@ type (
 
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.
 	ValidIngredientUpdateRequestInput struct {
-		_                                       struct{}
+		_ struct{}
+
 		Name                                    *string  `json:"name"`
 		Description                             *string  `json:"description"`
 		Warning                                 *string  `json:"warning"`

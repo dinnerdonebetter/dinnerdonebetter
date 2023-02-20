@@ -30,7 +30,8 @@ func init() {
 type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
-		_                   struct{}
+		_ struct{}
+
 		CreatedAt           time.Time            `json:"createdAt"`
 		RecipeStepProductID *string              `json:"recipeStepProductID"`
 		ArchivedAt          *time.Time           `json:"archivedAt"`
@@ -52,7 +53,8 @@ type (
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_                               struct{}
+		_ struct{}
+
 		IngredientID                    *string `json:"ingredientID"`
 		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
@@ -70,7 +72,8 @@ type (
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
-		_                               struct{}
+		_ struct{}
+
 		IngredientID                    *string
 		RecipeStepProductID             *string
 		ProductOfRecipeStepIndex        *uint64

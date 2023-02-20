@@ -51,7 +51,8 @@ func init() {
 type (
 	// Meal represents a meal.
 	Meal struct {
-		_             struct{}
+		_ struct{}
+
 		CreatedAt     time.Time        `json:"createdAt"`
 		ArchivedAt    *time.Time       `json:"archivedAt"`
 		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
@@ -64,7 +65,8 @@ type (
 
 	// MealComponent is a recipe with some extra data attached to it.
 	MealComponent struct {
-		_             struct{}
+		_ struct{}
+
 		ComponentType string `json:"componentType"`
 		Recipe        Recipe `json:"recipe"`
 	}
@@ -80,7 +82,8 @@ type (
 
 	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.
 	MealComponentCreationRequestInput struct {
-		_             struct{}
+		_ struct{}
+
 		RecipeID      string `json:"recipeID"`
 		ComponentType string `json:"componentType"`
 	}
@@ -98,14 +101,16 @@ type (
 
 	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
 	MealComponentDatabaseCreationInput struct {
-		_             struct{}
+		_ struct{}
+
 		RecipeID      string
 		ComponentType string
 	}
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
 	MealUpdateRequestInput struct {
-		_             struct{}
+		_ struct{}
+
 		Name          *string                            `json:"name"`
 		Description   *string                            `json:"description"`
 		CreatedByUser *string                            `json:"-"`
@@ -114,7 +119,8 @@ type (
 
 	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.
 	MealComponentUpdateRequestInput struct {
-		_             struct{}
+		_ struct{}
+
 		RecipeID      string `json:"recipeID"`
 		ComponentType string `json:"componentType"`
 	}

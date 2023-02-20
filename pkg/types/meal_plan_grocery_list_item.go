@@ -41,7 +41,8 @@ func init() {
 type (
 	// MealPlanGroceryListItem represents a meal plan grocery list item.
 	MealPlanGroceryListItem struct {
-		_                        struct{}
+		_ struct{}
+
 		CreatedAt                time.Time             `json:"createdAt"`
 		PurchasedMeasurementUnit *ValidMeasurementUnit `json:"purchasedMeasurementUnit"`
 		LastUpdatedAt            *time.Time            `json:"lastUpdatedAt"`
@@ -61,7 +62,8 @@ type (
 
 	// MealPlanGroceryListItemCreationRequestInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemCreationRequestInput struct {
-		_                          struct{}
+		_ struct{}
+
 		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID"`
 		PurchasedUPC               *string  `json:"purchasedUPC"`
 		PurchasePrice              *float32 `json:"purchasePrice"`
@@ -77,7 +79,8 @@ type (
 
 	// MealPlanGroceryListItemDatabaseCreationInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemDatabaseCreationInput struct {
-		_                          struct{}
+		_ struct{}
+
 		PurchasePrice              *float32
 		PurchasedUPC               *string
 		PurchasedMeasurementUnitID *string
@@ -94,7 +97,8 @@ type (
 
 	// MealPlanGroceryListItemUpdateRequestInput represents what a user could set as input for updating meal plan grocery list items.
 	MealPlanGroceryListItemUpdateRequestInput struct {
-		_                          struct{}
+		_ struct{}
+
 		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded"`
 		BelongsToMealPlan          *string  `json:"belongsToMealPlan"`
 		ValidIngredientID          *string  `json:"validIngredientID"`

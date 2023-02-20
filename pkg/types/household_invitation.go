@@ -60,7 +60,8 @@ type (
 
 	// HouseholdInvitation represents a household invitation.
 	HouseholdInvitation struct {
-		_                    struct{}
+		_ struct{}
+
 		CreatedAt            time.Time  `json:"createdAt"`
 		LastUpdatedAt        *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt           *time.Time `json:"archivedAt"`

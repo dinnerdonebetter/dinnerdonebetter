@@ -30,7 +30,8 @@ func init() {
 type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
-		_                           struct{}
+		_ struct{}
+
 		CreatedAt                   time.Time  `json:"createdAt"`
 		MaximumInstrumentCount      *int32     `json:"maximumInstrumentCount"`
 		ArchivedAt                  *time.Time `json:"archivedAt"`
@@ -57,7 +58,8 @@ type (
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationCreationRequestInput struct {
-		_                           struct{}
+		_ struct{}
+
 		MaximumInstrumentCount      *int32 `json:"maximumInstrumentCount"`
 		MaximumIngredientCount      *int32 `json:"maximumIngredientCount"`
 		MaximumVesselCount          *int32 `json:"maximumVesselCount"`
@@ -80,7 +82,8 @@ type (
 
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationDatabaseCreationInput struct {
-		_                           struct{}
+		_ struct{}
+
 		MaximumInstrumentCount      *int32
 		MaximumIngredientCount      *int32
 		MaximumVesselCount          *int32

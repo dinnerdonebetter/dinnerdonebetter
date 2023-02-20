@@ -47,7 +47,8 @@ func init() {
 type (
 	// RecipeStepCompletionCondition represents a recipe step completion condition. Effectively, this says "Ingredients must be in IngredientState".
 	RecipeStepCompletionCondition struct {
-		_                   struct{}
+		_ struct{}
+
 		CreatedAt           time.Time                                  `json:"createdAt"`
 		ArchivedAt          *time.Time                                 `json:"archivedAt"`
 		LastUpdatedAt       *time.Time                                 `json:"lastUpdatedAt"`
@@ -72,7 +73,8 @@ type (
 
 	// RecipeStepCompletionConditionCreationRequestInput represents what a user could set as input for creating recipe step completion conditions.
 	RecipeStepCompletionConditionCreationRequestInput struct {
-		_                   struct{}
+		_ struct{}
+
 		IngredientStateID   string   `json:"ingredientState"`
 		BelongsToRecipeStep string   `json:"belongsToRecipeStep"`
 		Notes               string   `json:"notes"`
@@ -89,7 +91,8 @@ type (
 
 	// RecipeStepCompletionConditionForExistingRecipeCreationRequestInput represents what a user could set as input for creating recipe step completion conditions for existing recipes.
 	RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
-		_                   struct{}
+		_ struct{}
+
 		IngredientStateID   string                                                                          `json:"ingredientState"`
 		BelongsToRecipeStep string                                                                          `json:"belongsToRecipeStep"`
 		Notes               string                                                                          `json:"notes"`
@@ -106,7 +109,8 @@ type (
 
 	// RecipeStepCompletionConditionDatabaseCreationInput represents what a user could set as input for creating recipe step completion conditions.
 	RecipeStepCompletionConditionDatabaseCreationInput struct {
-		_                   struct{}
+		_ struct{}
+
 		ID                  string
 		IngredientStateID   string
 		BelongsToRecipeStep string
