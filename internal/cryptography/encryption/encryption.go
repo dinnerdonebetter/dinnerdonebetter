@@ -6,12 +6,15 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"io"
 
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
+
+var errSecretNotTheRightLength = errors.New("secret is not the right length")
 
 type Encryptor interface {
 	Encrypt(ctx context.Context, text, secret string) (string, error)
@@ -35,7 +38,11 @@ func (e *StandardEncryptor) Encrypt(ctx context.Context, text, secret string) (s
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := e.logger.WithValue("text", text).WithValue("secret", secret)
+	logger := e.logger.WithValue("text", text)
+
+	if len(secret) != 32 {
+		return "", observability.PrepareAndLogError(errSecretNotTheRightLength, logger, span, "secret is too small")
+	}
 
 	aesBlock, err := aes.NewCipher([]byte(secret))
 	if err != nil {
@@ -61,7 +68,11 @@ func (s *StandardEncryptor) Decrypt(ctx context.Context, text, secret string) (s
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue("text", text).WithValue("secret", secret)
+	logger := s.logger.WithValue("text", text)
+
+	if len(secret) != 32 {
+		return "", observability.PrepareAndLogError(errSecretNotTheRightLength, logger, span, "secret is too small")
+	}
 
 	ciphered, err := base64.URLEncoding.DecodeString(text)
 	if err != nil {
