@@ -25,7 +25,8 @@ func init() {
 type (
 	// RecipePrepTaskStep represents a recipe prep task step.
 	RecipePrepTaskStep struct {
-		_                       struct{}
+		_ struct{}
+
 		ID                      string `json:"id"`
 		BelongsToRecipeStep     string `json:"belongsToRecipeStep"`
 		BelongsToRecipePrepTask string `json:"belongsToRecipeStepTask"`
@@ -50,7 +51,8 @@ type (
 
 	// RecipePrepTaskStepDatabaseCreationInput represents a recipe prep task step.
 	RecipePrepTaskStepDatabaseCreationInput struct {
-		_                       struct{}
+		_ struct{}
+
 		ID                      string
 		BelongsToRecipeStep     string
 		BelongsToRecipePrepTask string
@@ -59,7 +61,8 @@ type (
 
 	// RecipePrepTaskStepUpdateRequestInput represents a recipe prep task step.
 	RecipePrepTaskStepUpdateRequestInput struct {
-		_                       struct{}
+		_ struct{}
+
 		SatisfiesRecipeStep     *bool   `json:"satisfiesRecipeStep"`
 		BelongsToRecipeStep     *string `json:"belongsToRecipeStep"`
 		BelongsToRecipePrepTask *string `json:"belongsToRecipeStepTask"`

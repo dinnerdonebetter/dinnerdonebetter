@@ -42,13 +42,15 @@ type (
 
 	// PasswordResetTokenCreationRequestInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenCreationRequestInput struct {
-		_            struct{}
+		_ struct{}
+
 		EmailAddress string `json:"emailAddress"`
 	}
 
 	// PasswordResetTokenDatabaseCreationInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenDatabaseCreationInput struct {
-		_             struct{}
+		_ struct{}
+
 		ExpiresAt     time.Time
 		ID            string
 		Token         string
@@ -57,7 +59,8 @@ type (
 
 	// PasswordResetTokenRedemptionRequestInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenRedemptionRequestInput struct {
-		_           struct{}
+		_ struct{}
+
 		Token       string `json:"token"`
 		NewPassword string `json:"newPassword"`
 	}

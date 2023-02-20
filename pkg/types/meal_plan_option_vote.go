@@ -46,7 +46,8 @@ type (
 
 	// NullableMealPlanOptionVote represents a fully nullable meal plan option vote.
 	NullableMealPlanOptionVote struct {
-		_                       struct{}
+		_ struct{}
+
 		Rank                    *uint8
 		ID                      *string
 		Notes                   *string
@@ -60,7 +61,8 @@ type (
 
 	// MealPlanOptionVoteCreationInput represents what a user could set as input for creating meal plan option votes.
 	MealPlanOptionVoteCreationInput struct {
-		_                       struct{}
+		_ struct{}
+
 		ID                      string `json:"-"`
 		Notes                   string `json:"notes"`
 		ByUser                  string `json:"-"`
@@ -71,20 +73,23 @@ type (
 
 	// MealPlanOptionVoteCreationRequestInput is a pending container for multiple votes.
 	MealPlanOptionVoteCreationRequestInput struct {
-		_     struct{}
+		_ struct{}
+
 		Votes []*MealPlanOptionVoteCreationInput `json:"votes"`
 	}
 
 	// MealPlanOptionVotesDatabaseCreationInput represents what a user could set as input for creating meal plan option votes.
 	MealPlanOptionVotesDatabaseCreationInput struct {
-		_      struct{}
+		_ struct{}
+
 		ByUser string
 		Votes  []*MealPlanOptionVoteCreationInput
 	}
 
 	// MealPlanOptionVoteUpdateRequestInput represents what a user could set as input for updating meal plan option votes.
 	MealPlanOptionVoteUpdateRequestInput struct {
-		_                       struct{}
+		_ struct{}
+
 		Notes                   *string `json:"notes"`
 		Rank                    *uint8  `json:"rank"`
 		Abstain                 *bool   `json:"abstain"`

@@ -30,7 +30,8 @@ func init() {
 type (
 	// ValidInstrument represents a valid instrument.
 	ValidInstrument struct {
-		_                     struct{}
+		_ struct{}
+
 		CreatedAt             time.Time  `json:"createdAt"`
 		LastUpdatedAt         *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt            *time.Time `json:"archivedAt"`
@@ -48,7 +49,8 @@ type (
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
 	NullableValidInstrument struct {
-		_                     struct{}
+		_ struct{}
+
 		LastUpdatedAt         *time.Time
 		ArchivedAt            *time.Time
 		Description           *string

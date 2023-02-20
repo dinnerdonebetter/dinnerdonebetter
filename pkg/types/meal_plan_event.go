@@ -60,7 +60,8 @@ type (
 
 	// MealPlanEventCreationRequestInput represents what a user could set as input for creating meal plans.
 	MealPlanEventCreationRequestInput struct {
-		_        struct{}
+		_ struct{}
+
 		EndsAt   time.Time                             `json:"endsAt"`
 		StartsAt time.Time                             `json:"startsAt"`
 		Notes    string                                `json:"notes"`
@@ -70,7 +71,8 @@ type (
 
 	// MealPlanEventDatabaseCreationInput represents what a user could set as input for creating meal plans.
 	MealPlanEventDatabaseCreationInput struct {
-		_                 struct{}
+		_ struct{}
+
 		StartsAt          time.Time
 		EndsAt            time.Time
 		BelongsToMealPlan string
@@ -82,7 +84,8 @@ type (
 
 	// MealPlanEventUpdateRequestInput represents what a user could set as input for updating meal plans.
 	MealPlanEventUpdateRequestInput struct {
-		_                 struct{}
+		_ struct{}
+
 		Notes             *string    `json:"notes"`
 		StartsAt          *time.Time `json:"startsAt"`
 		MealName          *string    `json:"mealName"`
