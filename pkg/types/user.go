@@ -61,7 +61,8 @@ type (
 
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
-		_               struct{}
+		_ struct{}
+
 		Birthday        *time.Time `json:"birthday,omitempty"`
 		Password        string     `json:"password"`
 		EmailAddress    string     `json:"emailAddress"`
@@ -73,7 +74,8 @@ type (
 
 	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.
 	UserDatabaseCreationInput struct {
-		_                      struct{}
+		_ struct{}
+
 		Birthday               *time.Time
 		ID                     string
 		AvatarSrc              *string
@@ -88,7 +90,8 @@ type (
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
-		_               struct{}
+		_ struct{}
+
 		CreatedAt       time.Time  `json:"createdAt"`
 		Birthday        *time.Time `json:"birthday"`
 		AvatarSrc       *string    `json:"avatar"`

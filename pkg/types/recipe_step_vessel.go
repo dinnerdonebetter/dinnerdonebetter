@@ -30,7 +30,8 @@ func init() {
 type (
 	// RecipeStepVessel represents a recipe step instrument.
 	RecipeStepVessel struct {
-		_                    struct{}
+		_ struct{}
+
 		CreatedAt            time.Time        `json:"createdAt"`
 		Instrument           *ValidInstrument `json:"instrument"`
 		LastUpdatedAt        *time.Time       `json:"lastUpdatedAt"`
@@ -48,7 +49,8 @@ type (
 
 	// RecipeStepVesselCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepVesselCreationRequestInput struct {
-		_                               struct{}
+		_ struct{}
+
 		RecipeStepProductID             *string `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
@@ -63,7 +65,8 @@ type (
 
 	// RecipeStepVesselDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepVesselDatabaseCreationInput struct {
-		_                               struct{}
+		_ struct{}
+
 		InstrumentID                    *string
 		RecipeStepProductID             *string
 		ProductOfRecipeStepIndex        *uint64

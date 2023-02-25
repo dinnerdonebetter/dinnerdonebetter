@@ -30,7 +30,8 @@ func init() {
 type (
 	// ValidMeasurementUnit represents a valid measurement unit.
 	ValidMeasurementUnit struct {
-		_             struct{}
+		_ struct{}
+
 		CreatedAt     time.Time  `json:"createdAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time `json:"archivedAt"`
@@ -64,7 +65,8 @@ type (
 
 	// ValidMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitDatabaseCreationInput struct {
-		_           struct{}
+		_ struct{}
+
 		CreatedAt   time.Time
 		Name        string
 		Description string
@@ -80,7 +82,8 @@ type (
 
 	// ValidMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid measurement units.
 	ValidMeasurementUnitUpdateRequestInput struct {
-		_           struct{}
+		_ struct{}
+
 		Name        *string    `json:"name"`
 		Description *string    `json:"description"`
 		IconPath    *string    `json:"iconPath"`

@@ -89,7 +89,8 @@ type (
 
 	// RecipePrepTaskDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskDatabaseCreationInput struct {
-		_                                      struct{}
+		_ struct{}
+
 		ID                                     string
 		Notes                                  string
 		ExplicitStorageInstructions            string

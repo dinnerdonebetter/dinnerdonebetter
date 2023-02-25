@@ -55,7 +55,8 @@ type (
 
 	// MealPlanTaskCreationRequestInput represents a meal plan task.
 	MealPlanTaskCreationRequestInput struct {
-		_                   struct{}
+		_ struct{}
+
 		AssignedToUser      *string `json:"assignedToUser"`
 		Status              string  `json:"status"`
 		CreationExplanation string  `json:"creationExplanation"`
@@ -66,7 +67,8 @@ type (
 
 	// MealPlanTaskDatabaseCreationInput represents what a user could set as input for creating meal plan tasks.
 	MealPlanTaskDatabaseCreationInput struct {
-		_                   struct{}
+		_ struct{}
+
 		AssignedToUser      *string
 		CreationExplanation string
 		StatusExplanation   string
@@ -77,7 +79,8 @@ type (
 
 	// MealPlanTaskStatusChangeRequestInput represents what a user could set as input for updating meal plan tasks.
 	MealPlanTaskStatusChangeRequestInput struct {
-		_                 struct{}
+		_ struct{}
+
 		Status            *string `json:"status"`
 		StatusExplanation *string `json:"statusExplanation"`
 		AssignedToUser    *string `json:"assignedToUser"`
@@ -86,7 +89,8 @@ type (
 
 	// MealPlanTaskDatabaseCreationEstimate represents what a user could set as input for creating meal plan tasks.
 	MealPlanTaskDatabaseCreationEstimate struct {
-		_                   struct{}
+		_ struct{}
+
 		CreationExplanation string `json:"creationExplanation"`
 	}
 
