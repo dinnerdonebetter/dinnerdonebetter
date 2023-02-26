@@ -96,17 +96,17 @@ type (
 	MealPlanGroceryListItemUpdateRequestInput struct {
 		_ struct{}
 
-		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded"`
-		BelongsToMealPlan          *string  `json:"belongsToMealPlan"`
-		ValidIngredientID          *string  `json:"validIngredientID"`
-		ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID"`
-		MinimumQuantityNeeded      *float32 `json:"minimumQuantityNeeded"`
-		StatusExplanation          *string  `json:"statusExplanation"`
-		QuantityPurchased          *float32 `json:"quantityPurchased"`
-		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID"`
-		PurchasedUPC               *string  `json:"purchasedUPC"`
-		PurchasePrice              *float32 `json:"purchasePrice"`
-		Status                     *string  `json:"status"`
+		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded,omitempty"`
+		BelongsToMealPlan          *string  `json:"belongsToMealPlan,omitempty"`
+		ValidIngredientID          *string  `json:"validIngredientID,omitempty"`
+		ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID,omitempty"`
+		MinimumQuantityNeeded      *float32 `json:"minimumQuantityNeeded,omitempty"`
+		StatusExplanation          *string  `json:"statusExplanation,omitempty"`
+		QuantityPurchased          *float32 `json:"quantityPurchased,omitempty"`
+		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID,omitempty"`
+		PurchasedUPC               *string  `json:"purchasedUPC,omitempty"`
+		PurchasePrice              *float32 `json:"purchasePrice,omitempty"`
+		Status                     *string  `json:"status,omitempty"`
 	}
 
 	// MealPlanGroceryListItemDataManager describes a structure capable of storing meal plan grocery list items permanently.

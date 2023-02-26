@@ -67,11 +67,11 @@ type (
 	ValidIngredientMeasurementUnitUpdateRequestInput struct {
 		_ struct{}
 
-		Notes                    *string  `json:"notes"`
-		ValidMeasurementUnitID   *string  `json:"validMeasurementUnitID"`
-		ValidIngredientID        *string  `json:"validIngredientID"`
-		MinimumAllowableQuantity *float32 `json:"minimumAllowableQuantity"`
-		MaximumAllowableQuantity *float32 `json:"maximumAllowableQuantity"`
+		Notes                    *string  `json:"notes,omitempty"`
+		ValidMeasurementUnitID   *string  `json:"validMeasurementUnitID,omitempty"`
+		ValidIngredientID        *string  `json:"validIngredientID,omitempty"`
+		MinimumAllowableQuantity *float32 `json:"minimumAllowableQuantity,omitempty"`
+		MaximumAllowableQuantity *float32 `json:"maximumAllowableQuantity,omitempty"`
 	}
 
 	// ValidIngredientMeasurementUnitDataManager describes a structure capable of storing valid ingredient measurement units permanently.

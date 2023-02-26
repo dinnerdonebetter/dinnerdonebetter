@@ -110,16 +110,16 @@ type (
 	RecipeStepUpdateRequestInput struct {
 		_ struct{}
 
-		MinimumTemperatureInCelsius   *float32          `json:"minimumTemperatureInCelsius"`
-		MaximumTemperatureInCelsius   *float32          `json:"maximumTemperatureInCelsius"`
-		Notes                         *string           `json:"notes"`
-		Preparation                   *ValidPreparation `json:"preparation"`
-		Index                         *uint32           `json:"index"`
-		MinimumEstimatedTimeInSeconds *uint32           `json:"minimumEstimatedTimeInSeconds"`
-		MaximumEstimatedTimeInSeconds *uint32           `json:"maximumEstimatedTimeInSeconds"`
-		Optional                      *bool             `json:"optional"`
-		ExplicitInstructions          *string           `json:"explicitInstructions"`
-		ConditionExpression           *string           `json:"conditionExpression"`
+		MinimumTemperatureInCelsius   *float32          `json:"minimumTemperatureInCelsius,omitempty"`
+		MaximumTemperatureInCelsius   *float32          `json:"maximumTemperatureInCelsius,omitempty"`
+		Notes                         *string           `json:"notes,omitempty"`
+		Preparation                   *ValidPreparation `json:"preparation,omitempty"`
+		Index                         *uint32           `json:"index,omitempty"`
+		MinimumEstimatedTimeInSeconds *uint32           `json:"minimumEstimatedTimeInSeconds,omitempty"`
+		MaximumEstimatedTimeInSeconds *uint32           `json:"maximumEstimatedTimeInSeconds,omitempty"`
+		Optional                      *bool             `json:"optional,omitempty"`
+		ExplicitInstructions          *string           `json:"explicitInstructions,omitempty"`
+		ConditionExpression           *string           `json:"conditionExpression,omitempty"`
 		BelongsToRecipe               string            `json:"belongsToRecipe"`
 	}
 

@@ -73,12 +73,12 @@ type (
 	RecipeMediaUpdateRequestInput struct {
 		_ struct{}
 
-		BelongsToRecipe     *string `json:"belongsToRecipe"`
-		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
-		MimeType            *string `json:"mimeType"`
-		InternalPath        *string `json:"internalPath"`
-		ExternalPath        *string `json:"externalPath"`
-		Index               *uint16 `json:"index"`
+		BelongsToRecipe     *string `json:"belongsToRecipe,omitempty"`
+		BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`
+		MimeType            *string `json:"mimeType,omitempty"`
+		InternalPath        *string `json:"internalPath,omitempty"`
+		ExternalPath        *string `json:"externalPath,omitempty"`
+		Index               *uint16 `json:"index,omitempty"`
 	}
 
 	// RecipeMediaDataManager describes a structure capable of storing valid preparations permanently.

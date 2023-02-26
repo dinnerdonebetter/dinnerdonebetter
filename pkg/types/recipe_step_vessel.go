@@ -82,15 +82,15 @@ type (
 	RecipeStepVesselUpdateRequestInput struct {
 		_ struct{}
 
-		RecipeStepProductID  *string `json:"recipeStepProductID"`
-		Name                 *string `json:"name"`
-		Notes                *string `json:"notes"`
-		BelongsToRecipeStep  *string `json:"belongsToRecipeStep"`
-		InstrumentID         *string `json:"instrumentID"`
-		MinimumQuantity      *uint32 `json:"minimumQuantity"`
-		MaximumQuantity      *uint32 `json:"maximumQuantity"`
-		VesselPredicate      *string `json:"vesselPredicate"`
-		UnavailableAfterStep *bool   `json:"unavailableAfterStep"`
+		RecipeStepProductID  *string `json:"recipeStepProductID,omitempty"`
+		Name                 *string `json:"name,omitempty"`
+		Notes                *string `json:"notes,omitempty"`
+		BelongsToRecipeStep  *string `json:"belongsToRecipeStep,omitempty"`
+		InstrumentID         *string `json:"instrumentID,omitempty"`
+		MinimumQuantity      *uint32 `json:"minimumQuantity,omitempty"`
+		MaximumQuantity      *uint32 `json:"maximumQuantity,omitempty"`
+		VesselPredicate      *string `json:"vesselPredicate,omitempty"`
+		UnavailableAfterStep *bool   `json:"unavailableAfterStep,omitempty"`
 	}
 
 	// RecipeStepVesselDataManager describes a structure capable of storing recipe step instruments permanently.

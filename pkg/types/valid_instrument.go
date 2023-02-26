@@ -101,15 +101,15 @@ type (
 	ValidInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		Name                  *string `json:"name"`
-		PluralName            *string `json:"pluralName"`
-		Description           *string `json:"description"`
-		IconPath              *string `json:"iconPath"`
-		Slug                  *string `json:"slug"`
-		UsableForStorage      *bool   `json:"usableForStorage"`
-		DisplayInSummaryLists *bool   `json:"displayInSummaryLists"`
-		IsVessel              *bool   `json:"isVessel"`
-		IsExclusivelyVessel   *bool   `json:"isExclusivelyVessel"`
+		Name                  *string `json:"name,omitempty"`
+		PluralName            *string `json:"pluralName,omitempty"`
+		Description           *string `json:"description,omitempty"`
+		IconPath              *string `json:"iconPath,omitempty"`
+		Slug                  *string `json:"slug,omitempty"`
+		UsableForStorage      *bool   `json:"usableForStorage,omitempty"`
+		DisplayInSummaryLists *bool   `json:"displayInSummaryLists,omitempty"`
+		IsVessel              *bool   `json:"isVessel,omitempty"`
+		IsExclusivelyVessel   *bool   `json:"isExclusivelyVessel,omitempty"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.

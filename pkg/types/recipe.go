@@ -86,14 +86,14 @@ type (
 	RecipeUpdateRequestInput struct {
 		_ struct{}
 
-		Name        *string `json:"name"`
-		Source      *string `json:"source"`
-		Description *string `json:"description"`
+		Name        *string `json:"name,omitempty"`
+		Source      *string `json:"source,omitempty"`
+		Description *string `json:"description,omitempty"`
 		// InspiredByRecipeID is already a pointer, I'm not about to make it a double pointer.
-		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
+		InspiredByRecipeID *string `json:"inspiredByRecipeID,omitempty"`
 		CreatedByUser      *string `json:"-"`
-		SealOfApproval     *bool   `json:"sealOfApproval"`
-		YieldsPortions     *uint8  `json:"yieldsPortions"`
+		SealOfApproval     *bool   `json:"sealOfApproval,omitempty"`
+		YieldsPortions     *uint8  `json:"yieldsPortions,omitempty"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.

@@ -169,32 +169,32 @@ type (
 	ValidIngredientUpdateRequestInput struct {
 		_ struct{}
 
-		Name                                    *string  `json:"name"`
-		Description                             *string  `json:"description"`
-		Warning                                 *string  `json:"warning"`
-		IconPath                                *string  `json:"iconPath"`
-		ContainsDairy                           *bool    `json:"containsDairy"`
-		ContainsPeanut                          *bool    `json:"containsPeanut"`
-		ContainsTreeNut                         *bool    `json:"containsTreeNut"`
-		ContainsEgg                             *bool    `json:"containsEgg"`
-		ContainsWheat                           *bool    `json:"containsWheat"`
-		ContainsShellfish                       *bool    `json:"containsShellfish"`
-		ContainsSesame                          *bool    `json:"containsSesame"`
-		ContainsFish                            *bool    `json:"containsFish"`
-		ContainsGluten                          *bool    `json:"containsGluten"`
-		AnimalFlesh                             *bool    `json:"animalFlesh"`
-		IsMeasuredVolumetrically                *bool    `json:"isMeasuredVolumetrically"`
-		IsLiquid                                *bool    `json:"isLiquid"`
-		ContainsSoy                             *bool    `json:"containsSoy"`
-		PluralName                              *string  `json:"pluralName"`
-		AnimalDerived                           *bool    `json:"animalDerived"`
-		RestrictToPreparations                  *bool    `json:"restrictToPreparations"`
-		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius"`
-		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius"`
-		StorageInstructions                     *string  `json:"storageInstructions"`
-		Slug                                    *string  `json:"slug"`
-		ContainsAlcohol                         *bool    `json:"containsAlcohol"`
-		ShoppingSuggestions                     *string  `json:"shoppingSuggestions"`
+		Name                                    *string  `json:"name,omitempty"`
+		Description                             *string  `json:"description,omitempty"`
+		Warning                                 *string  `json:"warning,omitempty"`
+		IconPath                                *string  `json:"iconPath,omitempty"`
+		ContainsDairy                           *bool    `json:"containsDairy,omitempty"`
+		ContainsPeanut                          *bool    `json:"containsPeanut,omitempty"`
+		ContainsTreeNut                         *bool    `json:"containsTreeNut,omitempty"`
+		ContainsEgg                             *bool    `json:"containsEgg,omitempty"`
+		ContainsWheat                           *bool    `json:"containsWheat,omitempty"`
+		ContainsShellfish                       *bool    `json:"containsShellfish,omitempty"`
+		ContainsSesame                          *bool    `json:"containsSesame,omitempty"`
+		ContainsFish                            *bool    `json:"containsFish,omitempty"`
+		ContainsGluten                          *bool    `json:"containsGluten,omitempty"`
+		AnimalFlesh                             *bool    `json:"animalFlesh,omitempty"`
+		IsMeasuredVolumetrically                *bool    `json:"isMeasuredVolumetrically,omitempty"`
+		IsLiquid                                *bool    `json:"isLiquid,omitempty"`
+		ContainsSoy                             *bool    `json:"containsSoy,omitempty"`
+		PluralName                              *string  `json:"pluralName,omitempty"`
+		AnimalDerived                           *bool    `json:"animalDerived,omitempty"`
+		RestrictToPreparations                  *bool    `json:"restrictToPreparations,omitempty"`
+		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius,omitempty"`
+		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius,omitempty"`
+		StorageInstructions                     *string  `json:"storageInstructions,omitempty"`
+		Slug                                    *string  `json:"slug,omitempty"`
+		ContainsAlcohol                         *bool    `json:"containsAlcohol,omitempty"`
+		ShoppingSuggestions                     *string  `json:"shoppingSuggestions,omitempty"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.

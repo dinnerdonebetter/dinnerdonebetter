@@ -86,10 +86,10 @@ type (
 	MealPlanEventUpdateRequestInput struct {
 		_ struct{}
 
-		Notes             *string    `json:"notes"`
-		StartsAt          *time.Time `json:"startsAt"`
-		MealName          *string    `json:"mealName"`
-		EndsAt            *time.Time `json:"endsAt"`
+		Notes             *string    `json:"notes,omitempty"`
+		StartsAt          *time.Time `json:"startsAt,omitempty"`
+		MealName          *string    `json:"mealName,omitempty"`
+		EndsAt            *time.Time `json:"endsAt,omitempty"`
 		BelongsToMealPlan string     `json:"-"`
 	}
 

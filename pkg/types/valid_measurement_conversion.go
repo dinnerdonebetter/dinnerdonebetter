@@ -70,11 +70,11 @@ type (
 	ValidMeasurementUnitConversionUpdateRequestInput struct {
 		_ struct{}
 
-		From              *string  `json:"from"`
-		To                *string  `json:"to"`
-		OnlyForIngredient *string  `json:"onlyForIngredient"`
-		Modifier          *float32 `json:"modifier"`
-		Notes             *string  `json:"notes"`
+		From              *string  `json:"from,omitempty"`
+		To                *string  `json:"to,omitempty"`
+		OnlyForIngredient *string  `json:"onlyForIngredient,omitempty"`
+		Modifier          *float32 `json:"modifier,omitempty"`
+		Notes             *string  `json:"notes,omitempty"`
 	}
 
 	// ValidMeasurementConversionDataManager describes a structure capable of storing valid measurement conversions permanently.

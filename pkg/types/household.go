@@ -85,10 +85,10 @@ type (
 	HouseholdUpdateRequestInput struct {
 		_ struct{}
 
-		Name          *string `json:"name"`
-		ContactEmail  *string `json:"contactEmail"`
-		ContactPhone  *string `json:"contactPhone"`
-		TimeZone      *string `json:"timeZone"`
+		Name          *string `json:"name,omitempty"`
+		ContactEmail  *string `json:"contactEmail,omitempty"`
+		ContactPhone  *string `json:"contactPhone,omitempty"`
+		TimeZone      *string `json:"timeZone,omitempty"`
 		BelongsToUser string  `json:"-"`
 	}
 

@@ -84,16 +84,16 @@ type (
 	ValidMeasurementUnitUpdateRequestInput struct {
 		_ struct{}
 
-		Name        *string    `json:"name"`
-		Description *string    `json:"description"`
-		IconPath    *string    `json:"iconPath"`
-		CreatedAt   *time.Time `json:"createdAt"`
-		Volumetric  *bool      `json:"volumetric"`
-		Universal   *bool      `json:"universal"`
-		Metric      *bool      `json:"metric"`
-		Imperial    *bool      `json:"imperial"`
-		PluralName  *string    `json:"pluralName"`
-		Slug        *string    `json:"slug"`
+		Name        *string    `json:"name,omitempty"`
+		Description *string    `json:"description,omitempty"`
+		IconPath    *string    `json:"iconPath,omitempty"`
+		CreatedAt   *time.Time `json:"createdAt,omitempty"`
+		Volumetric  *bool      `json:"volumetric,omitempty"`
+		Universal   *bool      `json:"universal,omitempty"`
+		Metric      *bool      `json:"metric,omitempty"`
+		Imperial    *bool      `json:"imperial,omitempty"`
+		PluralName  *string    `json:"pluralName,omitempty"`
+		Slug        *string    `json:"slug,omitempty"`
 	}
 
 	// ValidMeasurementUnitDataManager describes a structure capable of storing valid measurement units permanently.

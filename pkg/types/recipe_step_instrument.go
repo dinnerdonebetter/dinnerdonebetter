@@ -85,16 +85,16 @@ type (
 	RecipeStepInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		InstrumentID        *string `json:"instrumentID"`
-		RecipeStepProductID *string `json:"recipeStepProductID"`
-		Notes               *string `json:"notes"`
-		PreferenceRank      *uint8  `json:"preferenceRank"`
-		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
-		Name                *string `json:"name"`
-		Optional            *bool   `json:"optional"`
-		OptionIndex         *uint16 `json:"optionIndex"`
-		MinimumQuantity     *uint32 `json:"minimumQuantity"`
-		MaximumQuantity     *uint32 `json:"maximumQuantity"`
+		InstrumentID        *string `json:"instrumentID,omitempty"`
+		RecipeStepProductID *string `json:"recipeStepProductID,omitempty"`
+		Notes               *string `json:"notes,omitempty"`
+		PreferenceRank      *uint8  `json:"preferenceRank,omitempty"`
+		BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`
+		Name                *string `json:"name,omitempty"`
+		Optional            *bool   `json:"optional,omitempty"`
+		OptionIndex         *uint16 `json:"optionIndex,omitempty"`
+		MinimumQuantity     *uint32 `json:"minimumQuantity,omitempty"`
+		MaximumQuantity     *uint32 `json:"maximumQuantity,omitempty"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.

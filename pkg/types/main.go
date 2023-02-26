@@ -51,8 +51,8 @@ type (
 	NumberRange struct {
 		_ struct{}
 
-		Min float64  `json:"min"`
 		Max *float64 `json:"max"`
+		Min float64  `json:"min"`
 	}
 )
 

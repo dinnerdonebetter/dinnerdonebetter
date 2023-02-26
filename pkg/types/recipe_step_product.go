@@ -106,22 +106,22 @@ type (
 	RecipeStepProductUpdateRequestInput struct {
 		_ struct{}
 
-		Name                               *string  `json:"name"`
-		Type                               *string  `json:"type"`
-		MeasurementUnitID                  *string  `json:"measurementUnitID"`
-		QuantityNotes                      *string  `json:"quantityNotes"`
-		BelongsToRecipeStep                *string  `json:"belongsToRecipeStep"`
-		MinimumQuantity                    *float32 `json:"minimumQuantity"`
-		MaximumQuantity                    *float32 `json:"maximumQuantity"`
-		Compostable                        *bool    `json:"compostable"`
-		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds"`
-		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
-		StorageInstructions                *string  `json:"storageInstructions"`
-		IsLiquid                           *bool    `json:"isLiquid"`
-		IsWaste                            *bool    `json:"isWaste"`
-		Index                              *uint16  `json:"index"`
-		ContainedInVesselIndex             *uint16  `json:"containedInVesselIndex"`
+		Name                               *string  `json:"name,omitempty"`
+		Type                               *string  `json:"type,omitempty"`
+		MeasurementUnitID                  *string  `json:"measurementUnitID,omitempty"`
+		QuantityNotes                      *string  `json:"quantityNotes,omitempty"`
+		BelongsToRecipeStep                *string  `json:"belongsToRecipeStep,omitempty"`
+		MinimumQuantity                    *float32 `json:"minimumQuantity,omitempty"`
+		MaximumQuantity                    *float32 `json:"maximumQuantity,omitempty"`
+		Compostable                        *bool    `json:"compostable,omitempty"`
+		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds,omitempty"`
+		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius,omitempty"`
+		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius,omitempty"`
+		StorageInstructions                *string  `json:"storageInstructions,omitempty"`
+		IsLiquid                           *bool    `json:"isLiquid,omitempty"`
+		IsWaste                            *bool    `json:"isWaste,omitempty"`
+		Index                              *uint16  `json:"index,omitempty"`
+		ContainedInVesselIndex             *uint16  `json:"containedInVesselIndex,omitempty"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.

@@ -26,6 +26,7 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/websocket v1.5.0
+	github.com/gotidy/copy v0.6.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/heimdalr/dag v1.2.1

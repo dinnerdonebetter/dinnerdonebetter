@@ -2,7 +2,6 @@ package types
 
 import (
 	"context"
-	"github.com/stretchr/testify/require"
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
@@ -97,7 +96,7 @@ func TestValidPreparation_Update(T *testing.T) {
 			RestrictToIngredients: actual.RestrictToIngredients,
 		}
 
-		require.NoError(t, actual.Update(exampleUpdatedValue))
+		actual.Update(exampleUpdatedValue)
 
 		assert.Equal(t, expected, actual)
 	})

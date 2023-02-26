@@ -74,10 +74,10 @@ type (
 	MealPlanOptionUpdateRequestInput struct {
 		_ struct{}
 
-		MealID                 *string `json:"mealID"`
-		Notes                  *string `json:"notes"`
-		AssignedCook           *string `json:"assignedCook"`
-		AssignedDishwasher     *string `json:"assignedDishwasher"`
+		MealID                 *string `json:"mealID,omitempty"`
+		Notes                  *string `json:"notes,omitempty"`
+		AssignedCook           *string `json:"assignedCook,omitempty"`
+		AssignedDishwasher     *string `json:"assignedDishwasher,omitempty"`
 		BelongsToMealPlanEvent *string `json:"-"`
 	}
 

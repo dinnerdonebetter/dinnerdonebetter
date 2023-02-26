@@ -93,19 +93,19 @@ type (
 	RecipeStepIngredientUpdateRequestInput struct {
 		_ struct{}
 		// IngredientID and RecipeStepProductID are already pointers, and I don't feel like making it a double pointer.
-		IngredientID        *string  `json:"ingredientID"`
-		RecipeStepProductID *string  `json:"recipeStepProductID"`
-		Name                *string  `json:"name"`
-		Optional            *bool    `json:"optional"`
-		MeasurementUnitID   *string  `json:"measurementUnitID"`
-		QuantityNotes       *string  `json:"quantityNotes"`
-		IngredientNotes     *string  `json:"ingredientNotes"`
-		BelongsToRecipeStep *string  `json:"belongsToRecipeStep"`
-		MinimumQuantity     *float32 `json:"minimumQuantity"`
-		MaximumQuantity     *float32 `json:"maximumQuantity"`
-		OptionIndex         *uint16  `json:"optionIndex"`
-		RequiresDefrost     *bool    `json:"requiresDefrost"`
-		VesselIndex         *uint16  `json:"vesselIndex"`
+		IngredientID        *string  `json:"ingredientID,omitempty"`
+		RecipeStepProductID *string  `json:"recipeStepProductID,omitempty"`
+		Name                *string  `json:"name,omitempty"`
+		Optional            *bool    `json:"optional,omitempty"`
+		MeasurementUnitID   *string  `json:"measurementUnitID,omitempty"`
+		QuantityNotes       *string  `json:"quantityNotes,omitempty"`
+		IngredientNotes     *string  `json:"ingredientNotes,omitempty"`
+		BelongsToRecipeStep *string  `json:"belongsToRecipeStep,omitempty"`
+		MinimumQuantity     *float32 `json:"minimumQuantity,omitempty"`
+		MaximumQuantity     *float32 `json:"maximumQuantity,omitempty"`
+		OptionIndex         *uint16  `json:"optionIndex,omitempty"`
+		RequiresDefrost     *bool    `json:"requiresDefrost,omitempty"`
+		VesselIndex         *uint16  `json:"vesselIndex,omitempty"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.

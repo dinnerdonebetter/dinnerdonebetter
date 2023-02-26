@@ -64,9 +64,9 @@ type (
 	ValidIngredientStateIngredientUpdateRequestInput struct {
 		_ struct{}
 
-		Notes                  *string `json:"notes"`
-		ValidIngredientStateID *string `json:"validIngredientStateID"`
-		ValidIngredientID      *string `json:"validIngredientID"`
+		Notes                  *string `json:"notes,omitempty"`
+		ValidIngredientStateID *string `json:"validIngredientStateID,omitempty"`
+		ValidIngredientID      *string `json:"validIngredientID,omitempty"`
 	}
 
 	// ValidIngredientStateIngredientDataManager describes a structure capable of storing valid ingredient state ingredients permanently.

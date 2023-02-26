@@ -73,12 +73,12 @@ type (
 	ValidIngredientStateUpdateRequestInput struct {
 		_ struct{}
 
-		Name          *string `json:"name"`
-		Slug          *string `json:"slug"`
-		PastTense     *string `json:"pastTense"`
-		Description   *string `json:"description"`
-		AttributeType *string `json:"attributeType"`
-		IconPath      *string `json:"iconPath"`
+		Name          *string `json:"name,omitempty"`
+		Slug          *string `json:"slug,omitempty"`
+		PastTense     *string `json:"pastTense,omitempty"`
+		Description   *string `json:"description,omitempty"`
+		AttributeType *string `json:"attributeType,omitempty"`
+		IconPath      *string `json:"iconPath,omitempty"`
 	}
 
 	// ValidIngredientStateDataManager describes a structure capable of storing valid ingredient states permanently.

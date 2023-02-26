@@ -44,9 +44,7 @@ func (e *clientEncoder) Unmarshal(ctx context.Context, data []byte, v any) error
 	case ContentTypeXML:
 		unmarshalFunc = xml.Unmarshal
 	case ContentTypeEmoji:
-		unmarshalFunc = func(d []byte, x any) error {
-			return unmarshalEmoji(d, x)
-		}
+		unmarshalFunc = unmarshalEmoji
 	default:
 		unmarshalFunc = json.Unmarshal
 	}
