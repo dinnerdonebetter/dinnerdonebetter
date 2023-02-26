@@ -39,22 +39,22 @@ type (
 	RecipeStepProduct struct {
 		_                                  struct{}
 		CreatedAt                          time.Time             `json:"createdAt"`
+		ContainedInVesselIndex             *uint16               `json:"containedInVesselIndex"`
 		MaximumStorageDurationInSeconds    *uint32               `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius *float32              `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius *float32              `json:"maximumStorageTemperatureInCelsius"`
 		ArchivedAt                         *time.Time            `json:"archivedAt"`
 		LastUpdatedAt                      *time.Time            `json:"lastUpdatedAt"`
 		MinimumQuantity                    *float32              `json:"minimumQuantity"`
 		MeasurementUnit                    *ValidMeasurementUnit `json:"measurementUnit"`
 		MaximumQuantity                    *float32              `json:"maximumQuantity"`
+		MaximumStorageTemperatureInCelsius *float32              `json:"maximumStorageTemperatureInCelsius"`
 		Name                               string                `json:"name"`
-		QuantityNotes                      string                `json:"quantityNotes"`
 		BelongsToRecipeStep                string                `json:"belongsToRecipeStep"`
 		Type                               string                `json:"type"`
 		ID                                 string                `json:"id"`
 		StorageInstructions                string                `json:"storageInstructions"`
+		QuantityNotes                      string                `json:"quantityNotes"`
 		Index                              uint16                `json:"index"`
-		ContainedInVesselIndex             uint16                `json:"containedInVesselIndex"`
 		IsWaste                            bool                  `json:"isWaste"`
 		IsLiquid                           bool                  `json:"isLiquid"`
 		Compostable                        bool                  `json:"compostable"`
@@ -69,12 +69,12 @@ type (
 		MeasurementUnitID                  *string  `json:"measurementUnitID"`
 		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius"`
 		MaximumQuantity                    *float32 `json:"maximumQuantity"`
-		Type                               string   `json:"type"`
+		ContainedInVesselIndex             *uint16  `json:"containedInVesselIndex"`
 		QuantityNotes                      string   `json:"quantityNotes"`
 		Name                               string   `json:"name"`
 		StorageInstructions                string   `json:"storageInstructions"`
+		Type                               string   `json:"type"`
 		Index                              uint16   `json:"index"`
-		ContainedInVesselIndex             uint16   `json:"containedInVesselIndex"`
 		Compostable                        bool     `json:"compostable"`
 		IsLiquid                           bool     `json:"isLiquid"`
 		IsWaste                            bool     `json:"isWaste"`
@@ -83,21 +83,20 @@ type (
 	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductDatabaseCreationInput struct {
 		_                                  struct{}
-    
 		MinimumQuantity                    *float32
 		MinimumStorageTemperatureInCelsius *float32
 		MaximumStorageTemperatureInCelsius *float32
 		MaximumQuantity                    *float32
 		MeasurementUnitID                  *string
 		MaximumStorageDurationInSeconds    *uint32
-		Type                               string
-		BelongsToRecipeStep                string
+		ContainedInVesselIndex             *uint16
 		Name                               string
+		BelongsToRecipeStep                string
 		StorageInstructions                string
 		QuantityNotes                      string
 		ID                                 string
+		Type                               string
 		Index                              uint16
-		ContainedInVesselIndex             uint16
 		Compostable                        bool
 		IsLiquid                           bool
 		IsWaste                            bool
@@ -203,8 +202,8 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.Index = *input.Index
 	}
 
-	if input.ContainedInVesselIndex != nil && *input.ContainedInVesselIndex != x.ContainedInVesselIndex {
-		x.ContainedInVesselIndex = *input.ContainedInVesselIndex
+	if input.ContainedInVesselIndex != nil && x.ContainedInVesselIndex != nil && *input.ContainedInVesselIndex != *x.ContainedInVesselIndex {
+		x.ContainedInVesselIndex = input.ContainedInVesselIndex
 	}
 }
 

@@ -3,6 +3,7 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 )
@@ -16,13 +17,13 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		Ingredient:          BuildFakeValidIngredient(),
 		MeasurementUnit:     *BuildFakeValidMeasurementUnit(),
 		MinimumQuantity:     float32(fake.Uint32()),
-		MaximumQuantity:     float32(fake.Uint32()),
+		MaximumQuantity:     pointers.Float32(float32(fake.Uint32())),
 		QuantityNotes:       buildUniqueString(),
 		Optional:            fake.Bool(),
 		IngredientNotes:     buildUniqueString(),
 		CreatedAt:           BuildFakeTime(),
 		BelongsToRecipeStep: BuildFakeID(),
-		VesselIndex:         fake.Uint16(),
+		VesselIndex:         pointers.Uint16(fake.Uint16()),
 	}
 }
 

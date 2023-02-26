@@ -31,7 +31,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		MaximumStorageTemperatureInCelsius: pointers.Float32(float32(storageTemp + 1)),
 		StorageInstructions:                buildUniqueString(),
 		Index:                              fake.Uint16(),
-		ContainedInVesselIndex:             fake.Uint16(),
+		ContainedInVesselIndex:             pointers.Uint16(fake.Uint16()),
 	}
 }
 

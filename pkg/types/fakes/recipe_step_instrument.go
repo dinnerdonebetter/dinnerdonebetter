@@ -3,6 +3,7 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 )
@@ -21,7 +22,7 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		Optional:            fake.Bool(),
 		OptionIndex:         uint16(fake.Uint8()),
 		MinimumQuantity:     fake.Uint32(),
-		MaximumQuantity:     fake.Uint32(),
+		MaximumQuantity:     pointers.Uint32(fake.Uint32()),
 	}
 }
 

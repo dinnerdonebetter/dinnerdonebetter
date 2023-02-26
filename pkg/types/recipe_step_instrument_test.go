@@ -25,7 +25,7 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
 			Optional:            fake.Bool(),
 			MinimumQuantity:     fake.Uint32(),
-			MaximumQuantity:     fake.Uint32(),
+			MaximumQuantity:     pointers.Uint32(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 )
@@ -14,7 +15,7 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 		Ingredient:               *BuildFakeValidIngredient(),
 		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
 		MinimumQuantityNeeded:    float32(minQty),
-		MaximumQuantityNeeded:    float32(minQty + 1),
+		MaximumQuantityNeeded:    pointers.Float32(float32(minQty + 1)),
 		QuantityPurchased:        nil,
 		PurchasedMeasurementUnit: nil,
 		PurchasedUPC:             nil,

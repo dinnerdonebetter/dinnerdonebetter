@@ -157,7 +157,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     900,
-							MaximumQuantity:     900,
+							MaximumQuantity:     pointers.Float32(900),
 							Optional:            false,
 						},
 					},
@@ -308,7 +308,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							BelongsToRecipeStep: recipeStep1ID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     500,
-							MaximumQuantity:     1000,
+							MaximumQuantity:     pointers.Float32(1000),
 						},
 					},
 					Products: []*types.RecipeStepProduct{
@@ -350,7 +350,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							BelongsToRecipeStep: recipeStep1ID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     500,
-							MaximumQuantity:     1000,
+							MaximumQuantity:     pointers.Float32(1000),
 						},
 					},
 					Products: []*types.RecipeStepProduct{

@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 )
@@ -15,7 +16,7 @@ func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurement
 		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
 		Ingredient:               *BuildFakeValidIngredient(),
 		MinimumAllowableQuantity: float32(minQty),
-		MaximumAllowableQuantity: float32(minQty + 1),
+		MaximumAllowableQuantity: pointers.Float32(float32(minQty + 1)),
 		CreatedAt:                BuildFakeTime(),
 	}
 }
@@ -46,7 +47,7 @@ func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *types.ValidIng
 		ValidMeasurementUnitID:   &validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:        &validIngredientMeasurementUnit.Ingredient.ID,
 		MinimumAllowableQuantity: &validIngredientMeasurementUnit.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: &validIngredientMeasurementUnit.MaximumAllowableQuantity,
+		MaximumAllowableQuantity: validIngredientMeasurementUnit.MaximumAllowableQuantity,
 	}
 }
 

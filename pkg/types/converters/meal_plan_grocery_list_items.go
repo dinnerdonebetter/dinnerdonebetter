@@ -78,7 +78,7 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(i
 		ValidIngredientID:          &input.Ingredient.ID,
 		ValidMeasurementUnitID:     &input.MeasurementUnit.ID,
 		MinimumQuantityNeeded:      &input.MinimumQuantityNeeded,
-		MaximumQuantityNeeded:      &input.MaximumQuantityNeeded,
+		MaximumQuantityNeeded:      input.MaximumQuantityNeeded,
 		QuantityPurchased:          input.QuantityPurchased,
 		PurchasedMeasurementUnitID: purchasedMeasurementUnitID,
 		PurchasedUPC:               input.PurchasedUPC,

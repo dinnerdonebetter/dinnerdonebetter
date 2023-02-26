@@ -5,6 +5,7 @@ import (
 	"image"
 
 	"github.com/stretchr/testify/mock"
+	"gonum.org/v1/gonum/graph/simple"
 
 	"github.com/prixfixeco/backend/pkg/types"
 )
@@ -14,6 +15,13 @@ var _ RecipeAnalyzer = (*MockRecipeAnalyzer)(nil)
 // MockRecipeAnalyzer is a mock RecipeAnalyzer.
 type MockRecipeAnalyzer struct {
 	mock.Mock
+}
+
+// MakeGraphForRecipe implements our interface.
+func (m *MockRecipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
+	returnArgs := m.Called(ctx, recipe)
+
+	return returnArgs.Get(0).(*simple.DirectedGraph), returnArgs.Error(1)
 }
 
 // GenerateMealPlanTasksForRecipe implements our interface.

@@ -21,7 +21,7 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 			RecipeStepProductID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               fake.LoremIpsumSentence(exampleQuantity),
 			MinimumQuantity:     fake.Uint32(),
-			MaximumQuantity:     fake.Uint32(),
+			MaximumQuantity:     pointers.Uint32(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

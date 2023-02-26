@@ -1,11 +1,13 @@
 package integration
 
 import (
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
+
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 func checkRecipeStepCompletionConditionEquality(t *testing.T, expected, actual *types.RecipeStepCompletionCondition) {

@@ -27,7 +27,7 @@ func ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(input *types.
 		IsWaste:                            &input.IsWaste,
 		IsLiquid:                           &input.IsLiquid,
 		Index:                              &input.Index,
-		ContainedInVesselIndex:             &input.ContainedInVesselIndex,
+		ContainedInVesselIndex:             input.ContainedInVesselIndex,
 	}
 
 	return x
