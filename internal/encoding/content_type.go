@@ -5,10 +5,12 @@ import (
 )
 
 var (
-	// ContentTypeJSON is what we use to indicate we want JSON for some reason.
+	// ContentTypeJSON is to indicate we want JSON for some reason.
 	ContentTypeJSON ContentType = buildContentType(contentTypeJSON)
-	// ContentTypeXML is what we use to indicate we want XML for some reason.
+	// ContentTypeXML is to indicate we want XML for some reason.
 	ContentTypeXML ContentType = buildContentType(contentTypeXML)
+	// ContentTypeEmoji is to indicate we want Emoji for some reason.
+	ContentTypeEmoji ContentType = buildContentType(contentTypeEmoji)
 )
 
 type (
@@ -34,6 +36,8 @@ func contentTypeToString(c *contentType) string {
 		return contentTypeJSON
 	case ContentTypeXML:
 		return contentTypeXML
+	case ContentTypeEmoji:
+		return contentTypeEmoji
 	default:
 		return ""
 	}
@@ -45,6 +49,8 @@ func contentTypeFromString(val string) ContentType {
 		return ContentTypeJSON
 	case contentTypeXML:
 		return ContentTypeXML
+	case contentTypeEmoji:
+		return ContentTypeEmoji
 	default:
 		return defaultContentType
 	}

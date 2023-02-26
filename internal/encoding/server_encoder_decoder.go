@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/xml"
+	"io"
 	"net/http"
 
 	"github.com/prixfixeco/backend/internal/observability"
@@ -20,6 +21,7 @@ const (
 	ContentTypeHeaderKey = "RawHTML-type"
 	contentTypeXML       = "application/xml"
 	contentTypeJSON      = "application/json"
+	contentTypeEmoji     = "application/emoji"
 )
 
 var (
@@ -59,6 +61,42 @@ type (
 	}
 )
 
+type emojiEncoder struct {
+	w io.Writer
+}
+
+func newEmojiEncoder(w io.Writer) encoder {
+	return &emojiEncoder{w: w}
+}
+
+func (e *emojiEncoder) Encode(a any) error {
+	encodedContent, err := marshalEmoji(a)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.w.Write(encodedContent)
+
+	return err
+}
+
+type emojiDecoder struct {
+	r io.Reader
+}
+
+func newEmojiDecoder(r io.Reader) decoder {
+	return &emojiDecoder{r: r}
+}
+
+func (e *emojiDecoder) Decode(v any) error {
+	encodedContent, err := io.ReadAll(e.r)
+	if err != nil {
+		return err
+	}
+
+	return unmarshalEmoji(encodedContent, v)
+}
+
 // encodeResponse encodes responses.
 func (e *serverEncoderDecoder) encodeResponse(ctx context.Context, res http.ResponseWriter, v any, statusCode int) {
 	_, span := e.tracer.StartSpan(ctx)
@@ -72,6 +110,9 @@ func (e *serverEncoderDecoder) encodeResponse(ctx context.Context, res http.Resp
 	case ContentTypeXML:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
 		enc = xml.NewEncoder(res)
+	case ContentTypeEmoji:
+		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
+		enc = newEmojiEncoder(res)
 	case ContentTypeJSON:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeJSON)
 		fallthrough
@@ -100,6 +141,9 @@ func (e *serverEncoderDecoder) EncodeErrorResponse(ctx context.Context, res http
 	case ContentTypeXML:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
 		enc = xml.NewEncoder(res)
+	case ContentTypeEmoji:
+		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
+		enc = newEmojiEncoder(res)
 	case ContentTypeJSON:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeJSON)
 		fallthrough
@@ -179,6 +223,8 @@ func (e *serverEncoderDecoder) MustEncode(ctx context.Context, v any) []byte {
 	switch e.contentType {
 	case ContentTypeXML:
 		enc = xml.NewEncoder(&b)
+	case ContentTypeEmoji:
+		enc = newEmojiEncoder(&b)
 	default:
 		enc = json.NewEncoder(&b)
 	}
@@ -216,6 +262,8 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 	switch contentTypeFromString(req.Header.Get(ContentTypeHeaderKey)) {
 	case ContentTypeXML:
 		d = xml.NewDecoder(req.Body)
+	case ContentTypeEmoji:
+		d = newEmojiDecoder(req.Body)
 	default:
 		dec := json.NewDecoder(req.Body)
 

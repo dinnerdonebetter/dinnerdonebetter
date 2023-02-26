@@ -29,6 +29,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/heimdalr/dag v1.2.1
+	github.com/keith-turner/ecoji/v2 v2.0.1
 	github.com/kyleconroy/sqlc v1.15.0
 	github.com/lib/pq v1.10.6
 	github.com/luna-duclos/instrumentedsql v1.1.3

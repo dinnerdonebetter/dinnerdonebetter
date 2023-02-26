@@ -46,6 +46,14 @@ type (
 		Message string `json:"message"`
 		Code    int    `json:"code"`
 	}
+
+	// NumberRange represents a range of numbers.
+	NumberRange struct {
+		_ struct{}
+
+		Min float64  `json:"min"`
+		Max *float64 `json:"max"`
+	}
 )
 
 var _ error = (*APIError)(nil)
