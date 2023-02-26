@@ -109,24 +109,24 @@ type (
 	ValidPreparationUpdateRequestInput struct {
 		_ struct{}
 
-		Name                        *string `json:"name"`
-		Description                 *string `json:"description"`
-		IconPath                    *string `json:"iconPath"`
-		YieldsNothing               *bool   `json:"yieldsNothing"`
-		Slug                        *string `json:"slug"`
-		RestrictToIngredients       *bool   `json:"restrictToIngredients"`
-		PastTense                   *string `json:"pastTense"`
-		MinimumInstrumentCount      *int32  `json:"minimumInstrumentCount"`
-		MaximumInstrumentCount      *int32  `json:"maximumInstrumentCount"`
-		MinimumIngredientCount      *int32  `json:"minimumIngredientCount"`
-		MaximumIngredientCount      *int32  `json:"maximumIngredientCount"`
-		TemperatureRequired         *bool   `json:"temperatureRequired"`
-		TimeEstimateRequired        *bool   `json:"timeEstimateRequired"`
-		ConditionExpressionRequired *bool   `json:"conditionExpressionRequired"`
-		ConsumesVessel              *bool   `json:"consumesVessel"`
-		OnlyForVessels              *bool   `json:"onlyForVessels"`
-		MinimumVesselCount          *int32  `json:"minimumVesselCount"`
-		MaximumVesselCount          *int32  `json:"maximumVesselCount"`
+		Name                        *string `json:"name,omitempty"`
+		Description                 *string `json:"description,omitempty"`
+		IconPath                    *string `json:"iconPath,omitempty"`
+		YieldsNothing               *bool   `json:"yieldsNothing,omitempty"`
+		Slug                        *string `json:"slug,omitempty"`
+		RestrictToIngredients       *bool   `json:"restrictToIngredients,omitempty"`
+		PastTense                   *string `json:"pastTense,omitempty"`
+		MinimumInstrumentCount      *int32  `json:"minimumInstrumentCount,omitempty"`
+		MaximumInstrumentCount      *int32  `json:"maximumInstrumentCount,omitempty"`
+		MinimumIngredientCount      *int32  `json:"minimumIngredientCount,omitempty"`
+		MaximumIngredientCount      *int32  `json:"maximumIngredientCount,omitempty"`
+		TemperatureRequired         *bool   `json:"temperatureRequired,omitempty"`
+		TimeEstimateRequired        *bool   `json:"timeEstimateRequired,omitempty"`
+		ConditionExpressionRequired *bool   `json:"conditionExpressionRequired,omitempty"`
+		ConsumesVessel              *bool   `json:"consumesVessel,omitempty"`
+		OnlyForVessels              *bool   `json:"onlyForVessels,omitempty"`
+		MinimumVesselCount          *int32  `json:"minimumVesselCount,omitempty"`
+		MaximumVesselCount          *int32  `json:"maximumVesselCount,omitempty"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.

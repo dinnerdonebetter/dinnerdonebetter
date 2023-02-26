@@ -89,8 +89,8 @@ type (
 		_ struct{}
 
 		BelongsToHousehold *string    `json:"-"`
-		Notes              *string    `json:"notes"`
-		VotingDeadline     *time.Time `json:"votingDeadline"`
+		Notes              *string    `json:"notes,omitempty"`
+		VotingDeadline     *time.Time `json:"votingDeadline,omitempty"`
 	}
 
 	// FinalizedMealPlanDatabaseResult represents what is returned by the above query.

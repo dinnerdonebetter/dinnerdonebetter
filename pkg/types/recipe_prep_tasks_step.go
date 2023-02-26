@@ -63,8 +63,8 @@ type (
 	RecipePrepTaskStepUpdateRequestInput struct {
 		_ struct{}
 
-		SatisfiesRecipeStep     *bool   `json:"satisfiesRecipeStep"`
-		BelongsToRecipeStep     *string `json:"belongsToRecipeStep"`
-		BelongsToRecipePrepTask *string `json:"belongsToRecipeStepTask"`
+		SatisfiesRecipeStep     *bool   `json:"satisfiesRecipeStep,omitempty"`
+		BelongsToRecipeStep     *string `json:"belongsToRecipeStep,omitempty"`
+		BelongsToRecipePrepTask *string `json:"belongsToRecipeStepTask,omitempty"`
 	}
 )

@@ -30,51 +30,48 @@ func init() {
 type (
 	// ValidIngredientMeasurementUnit represents a valid ingredient measurement unit.
 	ValidIngredientMeasurementUnit struct {
-		_ struct{}
-
+		_                        struct{}
 		CreatedAt                time.Time            `json:"createdAt"`
 		LastUpdatedAt            *time.Time           `json:"lastUpdatedAt"`
 		ArchivedAt               *time.Time           `json:"archivedAt"`
+		MaximumAllowableQuantity *float32             `json:"maximumAllowableQuantity"`
 		Notes                    string               `json:"notes"`
 		ID                       string               `json:"id"`
 		MeasurementUnit          ValidMeasurementUnit `json:"measurementUnit"`
 		Ingredient               ValidIngredient      `json:"ingredient"`
 		MinimumAllowableQuantity float32              `json:"minimumAllowableQuantity"`
-		MaximumAllowableQuantity float32              `json:"maximumAllowableQuantity"`
 	}
 
 	// ValidIngredientMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitCreationRequestInput struct {
-		_ struct{}
-
-		Notes                    string  `json:"notes"`
-		ValidMeasurementUnitID   string  `json:"validMeasurementUnitID"`
-		ValidIngredientID        string  `json:"validIngredientID"`
-		MinimumAllowableQuantity float32 `json:"minimumAllowableQuantity"`
-		MaximumAllowableQuantity float32 `json:"maximumAllowableQuantity"`
+		_                        struct{}
+		MaximumAllowableQuantity *float32 `json:"maximumAllowableQuantity"`
+		Notes                    string   `json:"notes"`
+		ValidMeasurementUnitID   string   `json:"validMeasurementUnitID"`
+		ValidIngredientID        string   `json:"validIngredientID"`
+		MinimumAllowableQuantity float32  `json:"minimumAllowableQuantity"`
 	}
 
 	// ValidIngredientMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitDatabaseCreationInput struct {
-		_ struct{}
-
+		_                        struct{}
+		MaximumAllowableQuantity *float32
 		ID                       string
 		Notes                    string
 		ValidMeasurementUnitID   string
 		ValidIngredientID        string
 		MinimumAllowableQuantity float32
-		MaximumAllowableQuantity float32
 	}
 
 	// ValidIngredientMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitUpdateRequestInput struct {
 		_ struct{}
 
-		Notes                    *string  `json:"notes"`
-		ValidMeasurementUnitID   *string  `json:"validMeasurementUnitID"`
-		ValidIngredientID        *string  `json:"validIngredientID"`
-		MinimumAllowableQuantity *float32 `json:"minimumAllowableQuantity"`
-		MaximumAllowableQuantity *float32 `json:"maximumAllowableQuantity"`
+		Notes                    *string  `json:"notes,omitempty"`
+		ValidMeasurementUnitID   *string  `json:"validMeasurementUnitID,omitempty"`
+		ValidIngredientID        *string  `json:"validIngredientID,omitempty"`
+		MinimumAllowableQuantity *float32 `json:"minimumAllowableQuantity,omitempty"`
+		MaximumAllowableQuantity *float32 `json:"maximumAllowableQuantity,omitempty"`
 	}
 
 	// ValidIngredientMeasurementUnitDataManager describes a structure capable of storing valid ingredient measurement units permanently.
@@ -119,8 +116,8 @@ func (x *ValidIngredientMeasurementUnit) Update(input *ValidIngredientMeasuremen
 		x.MinimumAllowableQuantity = *input.MinimumAllowableQuantity
 	}
 
-	if input.MaximumAllowableQuantity != nil && *input.MaximumAllowableQuantity != x.MaximumAllowableQuantity {
-		x.MaximumAllowableQuantity = *input.MaximumAllowableQuantity
+	if input.MaximumAllowableQuantity != nil && x.MaximumAllowableQuantity != nil && *input.MaximumAllowableQuantity != *x.MaximumAllowableQuantity {
+		x.MaximumAllowableQuantity = input.MaximumAllowableQuantity
 	}
 }
 

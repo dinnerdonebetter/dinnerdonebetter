@@ -94,8 +94,12 @@ rewire: ensure_wire_installed clean_wire wire
 ## formatting
 
 .PHONY: format
-format:
+format: format_imports
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
+
+.PHONY: format_imports
+format_imports:
+	gci write --skip-generated --section standard --section default --section "prefix(github.com/prixfixeco)" --section "prefix(github.com/prixfixeco/backend)" .
 
 .PHONY: terraformat
 terraformat:

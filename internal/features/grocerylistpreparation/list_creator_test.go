@@ -8,6 +8,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
@@ -47,7 +48,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      onion,
 															MinimumQuantity: 100,
-															MaximumQuantity: 100,
+															MaximumQuantity: pointers.Float32(100),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -74,7 +75,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      carrot,
 															MinimumQuantity: 100,
-															MaximumQuantity: 100,
+															MaximumQuantity: pointers.Float32(100),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -101,7 +102,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      celery,
 															MinimumQuantity: 100,
-															MaximumQuantity: 100,
+															MaximumQuantity: pointers.Float32(100),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -128,7 +129,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      salt,
 															MinimumQuantity: 100,
-															MaximumQuantity: 100,
+															MaximumQuantity: pointers.Float32(100),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -155,7 +156,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      onion,
 															MinimumQuantity: 100,
-															MaximumQuantity: 100,
+															MaximumQuantity: pointers.Float32(100),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -180,7 +181,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  200,
-				MaximumQuantityNeeded:  200,
+				MaximumQuantityNeeded:  pointers.Float32(200),
 			},
 			carrot.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
@@ -188,7 +189,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  100,
+				MaximumQuantityNeeded:  pointers.Float32(100),
 			},
 			celery.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
@@ -196,7 +197,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  100,
+				MaximumQuantityNeeded:  pointers.Float32(100),
 			},
 			salt.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
@@ -204,7 +205,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  100,
+				MaximumQuantityNeeded:  pointers.Float32(100),
 			},
 		}
 

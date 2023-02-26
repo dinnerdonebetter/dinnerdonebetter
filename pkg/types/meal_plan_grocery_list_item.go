@@ -41,75 +41,72 @@ func init() {
 type (
 	// MealPlanGroceryListItem represents a meal plan grocery list item.
 	MealPlanGroceryListItem struct {
-		_ struct{}
-
+		_                        struct{}
 		CreatedAt                time.Time             `json:"createdAt"`
-		PurchasedMeasurementUnit *ValidMeasurementUnit `json:"purchasedMeasurementUnit"`
+		MaximumQuantityNeeded    *float32              `json:"maximumQuantityNeeded"`
 		LastUpdatedAt            *time.Time            `json:"lastUpdatedAt"`
 		PurchasePrice            *float32              `json:"purchasePrice"`
 		PurchasedUPC             *string               `json:"purchasedUPC"`
 		ArchivedAt               *time.Time            `json:"archivedAt"`
 		QuantityPurchased        *float32              `json:"quantityPurchased"`
+		PurchasedMeasurementUnit *ValidMeasurementUnit `json:"purchasedMeasurementUnit"`
 		BelongsToMealPlan        string                `json:"belongsToMealPlan"`
-		ID                       string                `json:"id"`
 		Status                   string                `json:"status"`
 		StatusExplanation        string                `json:"statusExplanation"`
+		ID                       string                `json:"id"`
 		MeasurementUnit          ValidMeasurementUnit  `json:"measurementUnit"`
 		Ingredient               ValidIngredient       `json:"ingredient"`
-		MaximumQuantityNeeded    float32               `json:"maximumQuantityNeeded"`
 		MinimumQuantityNeeded    float32               `json:"minimumQuantityNeeded"`
 	}
 
 	// MealPlanGroceryListItemCreationRequestInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemCreationRequestInput struct {
-		_ struct{}
-
+		_                          struct{}
 		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID"`
 		PurchasedUPC               *string  `json:"purchasedUPC"`
 		PurchasePrice              *float32 `json:"purchasePrice"`
 		QuantityPurchased          *float32 `json:"quantityPurchased"`
-		StatusExplanation          string   `json:"statusExplanation"`
+		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded"`
 		Status                     string   `json:"status"`
 		BelongsToMealPlan          string   `json:"belongsToMealPlan"`
 		ValidIngredientID          string   `json:"validIngredientID"`
 		ValidMeasurementUnitID     string   `json:"validMeasurementUnitID"`
+		StatusExplanation          string   `json:"statusExplanation"`
 		MinimumQuantityNeeded      float32  `json:"minimumQuantityNeeded"`
-		MaximumQuantityNeeded      float32  `json:"maximumQuantityNeeded"`
 	}
 
 	// MealPlanGroceryListItemDatabaseCreationInput represents what a user could set as input for creating meal plan grocery list items.
 	MealPlanGroceryListItemDatabaseCreationInput struct {
-		_ struct{}
-
+		_                          struct{}
 		PurchasePrice              *float32
 		PurchasedUPC               *string
 		PurchasedMeasurementUnitID *string
 		QuantityPurchased          *float32
+		MaximumQuantityNeeded      *float32
 		Status                     string
-		StatusExplanation          string
 		ValidMeasurementUnitID     string
 		ValidIngredientID          string
 		BelongsToMealPlan          string
 		ID                         string
+		StatusExplanation          string
 		MinimumQuantityNeeded      float32
-		MaximumQuantityNeeded      float32
 	}
 
 	// MealPlanGroceryListItemUpdateRequestInput represents what a user could set as input for updating meal plan grocery list items.
 	MealPlanGroceryListItemUpdateRequestInput struct {
 		_ struct{}
 
-		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded"`
-		BelongsToMealPlan          *string  `json:"belongsToMealPlan"`
-		ValidIngredientID          *string  `json:"validIngredientID"`
-		ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID"`
-		MinimumQuantityNeeded      *float32 `json:"minimumQuantityNeeded"`
-		StatusExplanation          *string  `json:"statusExplanation"`
-		QuantityPurchased          *float32 `json:"quantityPurchased"`
-		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID"`
-		PurchasedUPC               *string  `json:"purchasedUPC"`
-		PurchasePrice              *float32 `json:"purchasePrice"`
-		Status                     *string  `json:"status"`
+		MaximumQuantityNeeded      *float32 `json:"maximumQuantityNeeded,omitempty"`
+		BelongsToMealPlan          *string  `json:"belongsToMealPlan,omitempty"`
+		ValidIngredientID          *string  `json:"validIngredientID,omitempty"`
+		ValidMeasurementUnitID     *string  `json:"validMeasurementUnitID,omitempty"`
+		MinimumQuantityNeeded      *float32 `json:"minimumQuantityNeeded,omitempty"`
+		StatusExplanation          *string  `json:"statusExplanation,omitempty"`
+		QuantityPurchased          *float32 `json:"quantityPurchased,omitempty"`
+		PurchasedMeasurementUnitID *string  `json:"purchasedMeasurementUnitID,omitempty"`
+		PurchasedUPC               *string  `json:"purchasedUPC,omitempty"`
+		PurchasePrice              *float32 `json:"purchasePrice,omitempty"`
+		Status                     *string  `json:"status,omitempty"`
 	}
 
 	// MealPlanGroceryListItemDataManager describes a structure capable of storing meal plan grocery list items permanently.
@@ -147,8 +144,8 @@ func (x *MealPlanGroceryListItem) Update(input *MealPlanGroceryListItemUpdateReq
 	if input.MinimumQuantityNeeded != nil && *input.MinimumQuantityNeeded != x.MinimumQuantityNeeded {
 		x.MinimumQuantityNeeded = *input.MinimumQuantityNeeded
 	}
-	if input.MaximumQuantityNeeded != nil && *input.MaximumQuantityNeeded != x.MaximumQuantityNeeded {
-		x.MaximumQuantityNeeded = *input.MaximumQuantityNeeded
+	if input.MaximumQuantityNeeded != nil && x.MaximumQuantityNeeded != nil && *input.MaximumQuantityNeeded != *x.MaximumQuantityNeeded {
+		x.MaximumQuantityNeeded = input.MaximumQuantityNeeded
 	}
 	// was nil and now will not be nil
 	if input.QuantityPurchased != nil && ((x.QuantityPurchased == nil) || (x.QuantityPurchased != nil && (*input.QuantityPurchased != *x.QuantityPurchased))) {

@@ -64,9 +64,9 @@ type (
 	ValidPreparationInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		Notes              *string `json:"notes"`
-		ValidPreparationID *string `json:"validPreparationID"`
-		ValidInstrumentID  *string `json:"validInstrumentID"`
+		Notes              *string `json:"notes,omitempty"`
+		ValidPreparationID *string `json:"validPreparationID,omitempty"`
+		ValidInstrumentID  *string `json:"validInstrumentID,omitempty"`
 	}
 
 	// ValidPreparationInstrumentDataManager describes a structure capable of storing valid preparation instruments permanently.

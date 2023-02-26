@@ -12,7 +12,7 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdate
 		ValidMeasurementUnitID:   &input.MeasurementUnit.ID,
 		ValidIngredientID:        &input.Ingredient.ID,
 		MinimumAllowableQuantity: &input.MinimumAllowableQuantity,
-		MaximumAllowableQuantity: &input.MaximumAllowableQuantity,
+		MaximumAllowableQuantity: input.MaximumAllowableQuantity,
 	}
 
 	return x

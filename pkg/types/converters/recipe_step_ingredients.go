@@ -38,11 +38,11 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 		IngredientNotes:     &input.IngredientNotes,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
 		MinimumQuantity:     &input.MinimumQuantity,
-		MaximumQuantity:     &input.MaximumQuantity,
+		MaximumQuantity:     input.MaximumQuantity,
 		Optional:            &input.Optional,
 		OptionIndex:         &input.OptionIndex,
 		RequiresDefrost:     &input.RequiresDefrost,
-		VesselIndex:         &input.VesselIndex,
+		VesselIndex:         input.VesselIndex,
 	}
 
 	return x

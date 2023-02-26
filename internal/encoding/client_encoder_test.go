@@ -51,6 +51,20 @@ func Test_clientEncoder_Unmarshal(T *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 
+	T.Run("with Emoji", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
+
+		expected := &example{Name: "name"}
+		actual := &example{}
+
+		assert.NoError(t, e.Unmarshal(ctx, []byte(`🍃🧁🌆🙍☔🌾🐯🦮💆🚂🚕🏏🧔✊🀄🏏☔🌊🥈🐾👥♓🙌🀄🀄🍧🦖📓♿😱🦨🐶🀄☕
+`), &actual))
+		assert.Equal(t, expected, actual)
+	})
+
 	T.Run("with invalid data", func(t *testing.T) {
 		t.Parallel()
 
@@ -89,6 +103,17 @@ func Test_clientEncoder_Encode(T *testing.T) {
 		assert.NoError(t, e.Encode(ctx, res, &example{Name: t.Name()}))
 	})
 
+	T.Run("with Emoji", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
+
+		res := httptest.NewRecorder()
+
+		assert.NoError(t, e.Encode(ctx, res, &example{Name: t.Name()}))
+	})
+
 	T.Run("with invalid data", func(t *testing.T) {
 		t.Parallel()
 
@@ -121,6 +146,18 @@ func Test_clientEncoder_EncodeReader(T *testing.T) {
 
 		actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
 		assert.NoError(t, err)
+		assert.NotNil(t, actual)
+	})
+
+	T.Run("with Emoji", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
+
+		actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
+		assert.NoError(t, err)
+
 		assert.NotNil(t, actual)
 	})
 

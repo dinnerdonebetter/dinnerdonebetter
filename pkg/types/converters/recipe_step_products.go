@@ -17,8 +17,8 @@ func ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(input *types.
 		MeasurementUnitID:                  &input.MeasurementUnit.ID,
 		QuantityNotes:                      &input.QuantityNotes,
 		BelongsToRecipeStep:                &input.BelongsToRecipeStep,
-		MinimumQuantity:                    &input.MinimumQuantity,
-		MaximumQuantity:                    &input.MaximumQuantity,
+		MinimumQuantity:                    input.MinimumQuantity,
+		MaximumQuantity:                    input.MaximumQuantity,
 		Compostable:                        &input.Compostable,
 		MaximumStorageDurationInSeconds:    input.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: input.MinimumStorageTemperatureInCelsius,
@@ -27,7 +27,7 @@ func ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(input *types.
 		IsWaste:                            &input.IsWaste,
 		IsLiquid:                           &input.IsLiquid,
 		Index:                              &input.Index,
-		ContainedInVesselIndex:             &input.ContainedInVesselIndex,
+		ContainedInVesselIndex:             input.ContainedInVesselIndex,
 	}
 
 	return x
@@ -69,7 +69,7 @@ func ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(recipeStepP
 		MinimumQuantity:                    recipeStepProduct.MinimumQuantity,
 		MaximumQuantity:                    recipeStepProduct.MaximumQuantity,
 		QuantityNotes:                      recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:                  recipeStepProduct.MeasurementUnit.ID,
+		MeasurementUnitID:                  &recipeStepProduct.MeasurementUnit.ID,
 		Compostable:                        recipeStepProduct.Compostable,
 		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,
 		MinimumStorageTemperatureInCelsius: recipeStepProduct.MinimumStorageTemperatureInCelsius,
@@ -91,7 +91,7 @@ func ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(recipeStep
 		MinimumQuantity:                    recipeStepProduct.MinimumQuantity,
 		MaximumQuantity:                    recipeStepProduct.MaximumQuantity,
 		QuantityNotes:                      recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:                  recipeStepProduct.MeasurementUnit.ID,
+		MeasurementUnitID:                  &recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:                recipeStepProduct.BelongsToRecipeStep,
 		Compostable:                        recipeStepProduct.Compostable,
 		MaximumStorageDurationInSeconds:    recipeStepProduct.MaximumStorageDurationInSeconds,

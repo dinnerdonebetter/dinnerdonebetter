@@ -21,7 +21,7 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 			ValidMeasurementUnitID:   fake.LoremIpsumSentence(exampleQuantity),
 			ValidIngredientID:        fake.LoremIpsumSentence(exampleQuantity),
 			MinimumAllowableQuantity: fake.Float32(),
-			MaximumAllowableQuantity: fake.Float32(),
+			MaximumAllowableQuantity: pointers.Float32(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

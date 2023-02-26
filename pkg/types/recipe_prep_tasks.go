@@ -52,9 +52,9 @@ type (
 		ID                                     string                `json:"id"`
 		TaskSteps                              []*RecipePrepTaskStep `json:"recipeSteps"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
-		MaximumStorageTemperatureInCelsius     float32               `json:"maximumStorageTemperatureInCelsius"`
-		MaximumTimeBufferBeforeRecipeInSeconds uint32                `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     float32               `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius     float32               `json:"maximumStorageTemperatureInCelsius"`     // TODO: make pointers
+		MaximumTimeBufferBeforeRecipeInSeconds uint32                `json:"maximumTimeBufferBeforeRecipeInSeconds"` // TODO: make pointers
+		MinimumStorageTemperatureInCelsius     float32               `json:"minimumStorageTemperatureInCelsius"`     // TODO: make pointers
 	}
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.
@@ -107,15 +107,15 @@ type (
 	RecipePrepTaskUpdateRequestInput struct {
 		_ struct{}
 
-		Notes                                  *string                                 `json:"notes"`
-		ExplicitStorageInstructions            *string                                 `json:"explicitStorageInstructions"`
-		MinimumTimeBufferBeforeRecipeInSeconds *uint32                                 `json:"minimumTimeBufferBeforeRecipeInSeconds"`
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                 `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		StorageType                            *string                                 `json:"storageType"`
-		MinimumStorageTemperatureInCelsius     *float32                                `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius     *float32                                `json:"maximumStorageTemperatureInCelsius"`
-		BelongsToRecipe                        *string                                 `json:"belongsToRecipe"`
-		TaskSteps                              []*RecipePrepTaskStepUpdateRequestInput `json:"recipeSteps"`
+		Notes                                  *string                                 `json:"notes,omitempty"`
+		ExplicitStorageInstructions            *string                                 `json:"explicitStorageInstructions,omitempty"`
+		MinimumTimeBufferBeforeRecipeInSeconds *uint32                                 `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                 `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
+		StorageType                            *string                                 `json:"storageType,omitempty"`
+		MinimumStorageTemperatureInCelsius     *float32                                `json:"minimumStorageTemperatureInCelsius,omitempty"`
+		MaximumStorageTemperatureInCelsius     *float32                                `json:"maximumStorageTemperatureInCelsius,omitempty"`
+		BelongsToRecipe                        *string                                 `json:"belongsToRecipe,omitempty"`
+		TaskSteps                              []*RecipePrepTaskStepUpdateRequestInput `json:"recipeSteps,omitempty"`
 	}
 
 	// RecipePrepTaskDataManager describes a structure capable of storing recipes permanently.

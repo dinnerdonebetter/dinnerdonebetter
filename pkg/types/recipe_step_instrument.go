@@ -30,19 +30,18 @@ func init() {
 type (
 	// RecipeStepInstrument represents a recipe step instrument.
 	RecipeStepInstrument struct {
-		_ struct{}
-
+		_                   struct{}
 		CreatedAt           time.Time        `json:"createdAt"`
 		Instrument          *ValidInstrument `json:"instrument"`
 		LastUpdatedAt       *time.Time       `json:"lastUpdatedAt"`
 		RecipeStepProductID *string          `json:"recipeStepProductID"`
 		ArchivedAt          *time.Time       `json:"archivedAt"`
-		Notes               string           `json:"notes"`
+		MaximumQuantity     *uint32          `json:"maximumQuantity"`
 		Name                string           `json:"name"`
 		BelongsToRecipeStep string           `json:"belongsToRecipeStep"`
 		ID                  string           `json:"id"`
+		Notes               string           `json:"notes"`
 		MinimumQuantity     uint32           `json:"minimumQuantity"`
-		MaximumQuantity     uint32           `json:"maximumQuantity"`
 		OptionIndex         uint16           `json:"optionIndex"`
 		PreferenceRank      uint8            `json:"preferenceRank"`
 		Optional            bool             `json:"optional"`
@@ -50,16 +49,15 @@ type (
 
 	// RecipeStepInstrumentCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentCreationRequestInput struct {
-		_ struct{}
-
+		_                               struct{}
 		InstrumentID                    *string `json:"instrumentID"`
 		RecipeStepProductID             *string `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
+		MaximumQuantity                 *uint32 `json:"maximumQuantity"`
 		Name                            string  `json:"name"`
 		Notes                           string  `json:"notes"`
 		MinimumQuantity                 uint32  `json:"minimumQuantity"`
-		MaximumQuantity                 uint32  `json:"maximumQuantity"`
 		OptionIndex                     uint16  `json:"optionIndex"`
 		Optional                        bool    `json:"optional"`
 		PreferenceRank                  uint8   `json:"preferenceRank"`
@@ -67,18 +65,17 @@ type (
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentDatabaseCreationInput struct {
-		_ struct{}
-
+		_                               struct{}
 		InstrumentID                    *string
 		RecipeStepProductID             *string
 		ProductOfRecipeStepIndex        *uint64
 		ProductOfRecipeStepProductIndex *uint64
-		Notes                           string
-		BelongsToRecipeStep             string
+		MaximumQuantity                 *uint32
 		Name                            string
+		BelongsToRecipeStep             string
 		ID                              string
+		Notes                           string
 		MinimumQuantity                 uint32
-		MaximumQuantity                 uint32
 		OptionIndex                     uint16
 		Optional                        bool
 		PreferenceRank                  uint8
@@ -88,16 +85,16 @@ type (
 	RecipeStepInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		InstrumentID        *string `json:"instrumentID"`
-		RecipeStepProductID *string `json:"recipeStepProductID"`
-		Notes               *string `json:"notes"`
-		PreferenceRank      *uint8  `json:"preferenceRank"`
-		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
-		Name                *string `json:"name"`
-		Optional            *bool   `json:"optional"`
-		OptionIndex         *uint16 `json:"optionIndex"`
-		MinimumQuantity     *uint32 `json:"minimumQuantity"`
-		MaximumQuantity     *uint32 `json:"maximumQuantity"`
+		InstrumentID        *string `json:"instrumentID,omitempty"`
+		RecipeStepProductID *string `json:"recipeStepProductID,omitempty"`
+		Notes               *string `json:"notes,omitempty"`
+		PreferenceRank      *uint8  `json:"preferenceRank,omitempty"`
+		BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`
+		Name                *string `json:"name,omitempty"`
+		Optional            *bool   `json:"optional,omitempty"`
+		OptionIndex         *uint16 `json:"optionIndex,omitempty"`
+		MinimumQuantity     *uint32 `json:"minimumQuantity,omitempty"`
+		MaximumQuantity     *uint32 `json:"maximumQuantity,omitempty"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -150,8 +147,8 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 		x.MinimumQuantity = *input.MinimumQuantity
 	}
 
-	if input.MaximumQuantity != nil && *input.MaximumQuantity != x.MaximumQuantity {
-		x.MaximumQuantity = *input.MaximumQuantity
+	if input.MaximumQuantity != nil && x.MaximumQuantity != nil && *input.MaximumQuantity != *x.MaximumQuantity {
+		x.MaximumQuantity = input.MaximumQuantity
 	}
 
 	if input.OptionIndex != nil && *input.OptionIndex != x.OptionIndex {

@@ -194,9 +194,9 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 							{
 								Name:            linedBakingSheetName,
 								Type:            types.RecipeStepProductVesselType,
-								MeasurementUnit: *unit,
+								MeasurementUnit: unit,
 								QuantityNotes:   "",
-								MinimumQuantity: 1,
+								MinimumQuantity: pointers.Float32(1),
 							},
 						},
 						Notes:       "first step",
@@ -229,9 +229,9 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 							{
 								Name:            "roasted garlic",
 								Type:            types.RecipeStepProductIngredientType,
-								MeasurementUnit: *head,
+								MeasurementUnit: head,
 								QuantityNotes:   "",
-								MinimumQuantity: 1,
+								MinimumQuantity: pointers.Float32(1),
 							},
 						},
 						Notes: "second step",

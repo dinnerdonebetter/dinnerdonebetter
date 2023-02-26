@@ -131,10 +131,10 @@ type (
 	RecipeStepCompletionConditionUpdateRequestInput struct {
 		_ struct{}
 
-		IngredientStateID   *string `json:"ingredientState"`
-		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
-		Notes               *string `json:"notes"`
-		Optional            *bool   `json:"optional"`
+		IngredientStateID   *string `json:"ingredientState,omitempty"`
+		BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`
+		Notes               *string `json:"notes,omitempty"`
+		Optional            *bool   `json:"optional,omitempty"`
 	}
 
 	// RecipeStepCompletionConditionDataManager describes a structure capable of storing recipe step completion conditions permanently.

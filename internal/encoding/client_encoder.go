@@ -3,9 +3,13 @@ package encoding
 import (
 	"bytes"
 	"context"
+	"encoding/gob"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io"
+
+	"github.com/keith-turner/ecoji/v2"
 
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
@@ -39,6 +43,8 @@ func (e *clientEncoder) Unmarshal(ctx context.Context, data []byte, v any) error
 	switch e.contentType {
 	case ContentTypeXML:
 		unmarshalFunc = xml.Unmarshal
+	case ContentTypeEmoji:
+		unmarshalFunc = unmarshalEmoji
 	default:
 		unmarshalFunc = json.Unmarshal
 	}
@@ -61,6 +67,13 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data any) er
 	switch e.contentType {
 	case ContentTypeXML:
 		err = xml.NewEncoder(dest).Encode(data)
+	case ContentTypeEmoji:
+		emojiEncoded, emojiEncodeErr := marshalEmoji(data)
+		if emojiEncodeErr != nil {
+			return emojiEncodeErr
+		}
+
+		_, err = dest.Write(emojiEncoded)
 	default:
 		err = json.NewEncoder(dest).Encode(data)
 	}
@@ -72,6 +85,35 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data any) er
 	return nil
 }
 
+func marshalEmoji(v any) ([]byte, error) {
+	var gobWriter bytes.Buffer
+	gobEncoder := gob.NewEncoder(&gobWriter)
+	if err := gobEncoder.Encode(v); err != nil {
+		return nil, fmt.Errorf("encoding to gob: %w", err)
+	}
+
+	gobEncoded := gobWriter.Bytes()
+
+	r := bytes.NewBuffer(gobEncoded)
+	w := bytes.NewBuffer([]byte{})
+
+	if err := ecoji.EncodeV2(r, w, 76); err != nil {
+		return nil, fmt.Errorf("encoding to emoji: %w", err)
+	}
+
+	return w.Bytes(), nil
+}
+
+func unmarshalEmoji(data []byte, v any) error {
+	w := bytes.NewBuffer([]byte{})
+
+	if err := ecoji.Decode(bytes.NewReader(data), w); err != nil {
+		return fmt.Errorf("decoding emoji: %w", err)
+	}
+
+	return gob.NewDecoder(w).Decode(v)
+}
+
 func (e *clientEncoder) EncodeReader(ctx context.Context, data any) (io.Reader, error) {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
@@ -81,6 +123,8 @@ func (e *clientEncoder) EncodeReader(ctx context.Context, data any) (io.Reader, 
 	switch e.contentType {
 	case ContentTypeXML:
 		marshalFunc = xml.Marshal
+	case ContentTypeEmoji:
+		marshalFunc = marshalEmoji
 	default:
 		marshalFunc = json.Marshal
 	}

@@ -60,7 +60,14 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 								} else {
 									if inputs[ingredient.Ingredient.ID].ValidMeasurementUnitID == ingredient.MeasurementUnit.ID {
 										inputs[ingredient.Ingredient.ID].MinimumQuantityNeeded += ingredient.MinimumQuantity
-										inputs[ingredient.Ingredient.ID].MaximumQuantityNeeded += ingredient.MaximumQuantity
+
+										if inputs[ingredient.Ingredient.ID].MaximumQuantityNeeded != nil {
+											if ingredient.MaximumQuantity != nil {
+												*inputs[ingredient.Ingredient.ID].MaximumQuantityNeeded += *ingredient.MaximumQuantity
+											}
+										} else if ingredient.MaximumQuantity != nil {
+											inputs[ingredient.Ingredient.ID].MaximumQuantityNeeded = ingredient.MaximumQuantity
+										}
 									} else {
 										logger.Error(fmt.Errorf("mismatched measurement units: %s and %s", inputs[ingredient.Ingredient.ID].ValidMeasurementUnitID, ingredient.MeasurementUnit.ID), "creating grocery list")
 									}

@@ -17,7 +17,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 		Optional:            &input.Optional,
 		OptionIndex:         &input.OptionIndex,
 		MinimumQuantity:     &input.MinimumQuantity,
-		MaximumQuantity:     &input.MaximumQuantity,
+		MaximumQuantity:     input.MaximumQuantity,
 	}
 
 	return x

@@ -66,7 +66,9 @@ func (q *Querier) scanRecipeStepProduct(ctx context.Context, scan database.Scann
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.RecipeStepProduct{}
+	x = &types.RecipeStepProduct{
+		MeasurementUnit: &types.ValidMeasurementUnit{},
+	}
 
 	targetVars := []any{
 		&x.ID,
@@ -109,6 +111,10 @@ func (q *Querier) scanRecipeStepProduct(ctx context.Context, scan database.Scann
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, span, "")
+	}
+
+	if x.MeasurementUnit != nil && x.MeasurementUnit.ID == "" {
+		x.MeasurementUnit = nil
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -356,7 +362,7 @@ func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQu
 		ID:                                 input.ID,
 		Name:                               input.Name,
 		Type:                               input.Type,
-		MeasurementUnit:                    types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
+		MeasurementUnit:                    &types.ValidMeasurementUnit{ID: *input.MeasurementUnitID},
 		MinimumQuantity:                    input.MinimumQuantity,
 		MaximumQuantity:                    input.MaximumQuantity,
 		QuantityNotes:                      input.QuantityNotes,

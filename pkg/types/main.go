@@ -2,6 +2,8 @@ package types
 
 import (
 	"fmt"
+
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -45,6 +47,14 @@ type (
 
 		Message string `json:"message"`
 		Code    int    `json:"code"`
+	}
+
+	// NumberRange represents a range of numbers.
+	NumberRange struct {
+		_ struct{}
+
+		Max *decimal.Decimal `json:"max"`
+		Min decimal.Decimal  `json:"min"`
 	}
 )
 

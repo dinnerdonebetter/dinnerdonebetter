@@ -89,7 +89,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 		}
 
 		for j := range recipeStep.Products {
-			exampleRecipe.Steps[i].Products[j].MeasurementUnit = *createdValidMeasurementUnit
+			exampleRecipe.Steps[i].Products[j].MeasurementUnit = createdValidMeasurementUnit
 		}
 
 		for j := range recipeStep.Instruments {
@@ -216,9 +216,9 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							{
 								Name:            "soaked pinto beans",
 								Type:            types.RecipeStepProductIngredientType,
-								MeasurementUnit: *grams,
+								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: 1000,
+								MinimumQuantity: pointers.Float32(1000),
 							},
 						},
 						Notes:       "first step",
@@ -244,9 +244,9 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							{
 								Name:            "final output",
 								Type:            types.RecipeStepProductIngredientType,
-								MeasurementUnit: *grams,
+								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: 1010,
+								MinimumQuantity: pointers.Float32(1010),
 							},
 						},
 						Notes:       "second step",
@@ -279,7 +279,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							{
 								Name:              expected.Steps[0].Products[0].Name,
 								Type:              expected.Steps[0].Products[0].Type,
-								MeasurementUnitID: expected.Steps[0].Products[0].MeasurementUnit.ID,
+								MeasurementUnitID: &expected.Steps[0].Products[0].MeasurementUnit.ID,
 								QuantityNotes:     expected.Steps[0].Products[0].QuantityNotes,
 								MinimumQuantity:   expected.Steps[0].Products[0].MinimumQuantity,
 							},
@@ -308,7 +308,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							{
 								Name:              expected.Steps[1].Products[0].Name,
 								Type:              expected.Steps[1].Products[0].Type,
-								MeasurementUnitID: expected.Steps[1].Products[0].MeasurementUnit.ID,
+								MeasurementUnitID: &expected.Steps[1].Products[0].MeasurementUnit.ID,
 								QuantityNotes:     expected.Steps[1].Products[0].QuantityNotes,
 								MinimumQuantity:   expected.Steps[1].Products[0].MinimumQuantity,
 							},
@@ -614,9 +614,9 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 							{
 								Name:            "diced chicken breast",
 								Type:            types.RecipeStepProductIngredientType,
-								MeasurementUnit: *grams,
+								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: 1000,
+								MinimumQuantity: pointers.Float32(1000),
 							},
 						},
 						Notes:       "first step",
@@ -638,9 +638,9 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 							{
 								Name:            "final output",
 								Type:            types.RecipeStepProductIngredientType,
-								MeasurementUnit: *grams,
+								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: 1010,
+								MinimumQuantity: pointers.Float32(1010),
 							},
 						},
 						Notes:       "second step",
@@ -667,9 +667,9 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 							{
 								Name:              "diced chicken breast",
 								Type:              types.RecipeStepProductIngredientType,
-								MeasurementUnitID: grams.ID,
+								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   1000,
+								MinimumQuantity:   pointers.Float32(1000),
 							},
 						},
 						Notes:         "first step",
@@ -690,9 +690,9 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 							{
 								Name:              "final output",
 								Type:              types.RecipeStepProductIngredientType,
-								MeasurementUnitID: grams.ID,
+								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   1010,
+								MinimumQuantity:   pointers.Float32(1010),
 							},
 						},
 						Notes:         "second step",

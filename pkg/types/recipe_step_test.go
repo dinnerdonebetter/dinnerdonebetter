@@ -29,8 +29,8 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 			{
 				Name:              fake.LoremIpsumSentence(exampleQuantity),
 				Type:              RecipeStepProductIngredientType,
-				MeasurementUnitID: fake.LoremIpsumSentence(exampleQuantity),
-				MinimumQuantity:   fake.Float32(),
+				MeasurementUnitID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+				MinimumQuantity:   pointers.Float32(fake.Float32()),
 				QuantityNotes:     fake.LoremIpsumSentence(exampleQuantity),
 			},
 		},

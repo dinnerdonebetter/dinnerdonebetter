@@ -90,9 +90,9 @@ type (
 	MealPlanOptionVoteUpdateRequestInput struct {
 		_ struct{}
 
-		Notes                   *string `json:"notes"`
-		Rank                    *uint8  `json:"rank"`
-		Abstain                 *bool   `json:"abstain"`
+		Notes                   *string `json:"notes,omitempty"`
+		Rank                    *uint8  `json:"rank,omitempty"`
+		Abstain                 *bool   `json:"abstain,omitempty"`
 		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
 	}
 

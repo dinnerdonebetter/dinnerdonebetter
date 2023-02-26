@@ -3,6 +3,7 @@ package encoding
 import (
 	"bytes"
 	"context"
+	"encoding/gob"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -25,10 +26,15 @@ type broken struct {
 	Name json.Number `json:"name" xml:"name"`
 }
 
+func init() {
+	gob.Register(&example{})
+	gob.Register(&broken{})
+}
+
 func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("defaults to JSON", func(t *testing.T) {
 		t.Parallel()
 		expectation := "name"
 		ex := &example{Name: expectation}
@@ -51,10 +57,25 @@ func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 
 		ctx := context.Background()
 		res := httptest.NewRecorder()
-		res.Header().Set(ContentTypeHeaderKey, "application/xml")
+		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
 
 		encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
 		assert.Equal(t, fmt.Sprintf("<example><name>%s</name></example>", expectation), res.Body.String())
+	})
+
+	T.Run("as Emoji", func(t *testing.T) {
+		t.Parallel()
+		expectation := "name"
+		ex := &example{Name: expectation}
+		encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji).(*serverEncoderDecoder)
+		require.True(t, ok)
+
+		ctx := context.Background()
+		res := httptest.NewRecorder()
+		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
+
+		encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
+		assert.Equal(t, "🍃🧁🌆🙍☔🌾🐯🦮💆🚂🚕🏏🧔✊🀄🏏☔🌊🥈🐾👥♓🙌🀄🀄🍧🦖📓♿😱🦨🐶🀄☕\n", res.Body.String())
 	})
 
 	T.Run("with broken structure", func(t *testing.T) {
@@ -99,10 +120,26 @@ func TestServerEncoderDecoder_EncodeErrorResponse(T *testing.T) {
 
 		ctx := context.Background()
 		res := httptest.NewRecorder()
-		res.Header().Set(ContentTypeHeaderKey, "application/xml")
+		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
 
 		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, exampleCode)
 		assert.Equal(t, fmt.Sprintf("<APIError><Message>%s</Message><Code>%d</Code></APIError>", exampleMessage, exampleCode), res.Body.String())
+		assert.Equal(t, exampleCode, res.Code, "expected status code to match")
+	})
+
+	T.Run("as Emoji", func(t *testing.T) {
+		t.Parallel()
+		exampleMessage := "something went awry"
+		exampleCode := http.StatusBadRequest
+
+		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+
+		ctx := context.Background()
+		res := httptest.NewRecorder()
+		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
+
+		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, exampleCode)
+		assert.Equal(t, "🍷🧁🎈🙍☔🍌🌚🌏🏣🚣🍣🤟♊🧁🧋🃏♋♓💤🐶💞🚲🌟🤒☔🎈🀄🏒🧙🙁🧞🏏♓🀄🀄⛳🧔🌆🌊🤠💎😡🐮🌰👶😱💙🌿👦😲🧎🦮💮🚣🔓📏♏📒🀄☕\n", res.Body.String())
 		assert.Equal(t, exampleCode, res.Code, "expected status code to match")
 	})
 }
@@ -250,6 +287,18 @@ func TestServerEncoderDecoder_MustEncode(T *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 
+	T.Run("with Emoji", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
+
+		expected := "🍃🧁🌆🙍☔🌾🐯🦮💆🚂🚕🏏🧔✊🀄🏏☔🌊🥈🐾👥♓🙌🀄🀄🚻🦖📓🎁🐗🐭🤡🐞🔪🍥🩴💚🌜🥈🤜👢🔪🍙🌭👞🙁🧞👃👎🎤🐭🤡🏣😱🎨🤑👥🙂💫👅👲🧬🐬👀👺\U0001faaa🀄☕\n"
+		actual := string(encoderDecoder.MustEncode(ctx, &example{Name: t.Name()}))
+
+		assert.Equal(t, expected, actual)
+	})
+
 	T.Run("with broken struct", func(t *testing.T) {
 		t.Parallel()
 
@@ -289,10 +338,24 @@ func TestServerEncoderDecoder_RespondWithData(T *testing.T) {
 
 		ctx := context.Background()
 		res := httptest.NewRecorder()
-		res.Header().Set(ContentTypeHeaderKey, "application/xml")
+		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
 
 		encoderDecoder.RespondWithData(ctx, res, ex)
 		assert.Equal(t, fmt.Sprintf("<example><name>%s</name></example>", expectation), res.Body.String())
+	})
+
+	T.Run("as Emoji", func(t *testing.T) {
+		t.Parallel()
+		expectation := "name"
+		ex := &example{Name: expectation}
+		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+
+		ctx := context.Background()
+		res := httptest.NewRecorder()
+		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
+
+		encoderDecoder.RespondWithData(ctx, res, ex)
+		assert.Equal(t, "🍃🧁🌆🙍☔🌾🐯🦮💆🚂🚕🏏🧔✊🀄🏏☔🌊🥈🐾👥♓🙌🀄🀄🍧🦖📓♿😱🦨🐶🀄☕\n", res.Body.String())
 	})
 }
 
@@ -365,6 +428,32 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 		)
 		require.NoError(t, err)
 		req.Header.Set(ContentTypeHeaderKey, contentTypeXML)
+
+		var x example
+		assert.NoError(t, encoderDecoder.DecodeRequest(ctx, req, &x))
+		assert.Equal(t, x.Name, e.Name)
+	})
+
+	T.Run("as Emoji", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		expectation := "name"
+		e := &example{Name: expectation}
+		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
+
+		bs, err := marshalEmoji(e)
+		require.NoError(t, err)
+
+		req, err := http.NewRequestWithContext(
+			ctx,
+			http.MethodGet,
+			"https://prixfixe.verygoodsoftwarenotvirus.ru",
+			bytes.NewReader(bs),
+		)
+		require.NoError(t, err)
+		req.Header.Set(ContentTypeHeaderKey, contentTypeEmoji)
 
 		var x example
 		assert.NoError(t, encoderDecoder.DecodeRequest(ctx, req, &x))

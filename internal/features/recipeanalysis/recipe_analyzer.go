@@ -82,6 +82,7 @@ func graphIDForStep(step *types.RecipeStep) int64 {
 
 // RecipeAnalyzer analyzes recipes for insights (ugh).
 type RecipeAnalyzer interface {
+	MakeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error)
 	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
 	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
 }
@@ -107,7 +108,7 @@ func (g *recipeAnalyzer) GenerateDAGDiagramForRecipe(ctx context.Context, recipe
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
-	recipeGraph, err := g.makeGraphForRecipe(ctx, recipe)
+	recipeGraph, err := g.MakeGraphForRecipe(ctx, recipe)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +121,7 @@ func (g *recipeAnalyzer) GenerateDAGDiagramForRecipe(ctx context.Context, recipe
 	return img, nil
 }
 
-func (g *recipeAnalyzer) makeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
+func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 

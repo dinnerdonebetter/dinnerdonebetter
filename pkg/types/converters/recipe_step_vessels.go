@@ -14,7 +14,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *types.Re
 		Name:                 &input.Name,
 		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
 		MinimumQuantity:      &input.MinimumQuantity,
-		MaximumQuantity:      &input.MaximumQuantity,
+		MaximumQuantity:      input.MaximumQuantity,
 		VesselPredicate:      &input.VesselPredicate,
 		UnavailableAfterStep: &input.UnavailableAfterStep,
 	}

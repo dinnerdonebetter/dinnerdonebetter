@@ -54,7 +54,7 @@ func TestRecipeGrapher_makeGraphForRecipe(T *testing.T) {
 			},
 		}
 
-		actual, err := g.makeGraphForRecipe(ctx, r)
+		actual, err := g.MakeGraphForRecipe(ctx, r)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})
@@ -136,7 +136,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     900,
-							MaximumQuantity:     900,
+							MaximumQuantity:     pointers.Float32(900),
 							Optional:            false,
 						},
 					},
@@ -150,10 +150,10 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							BelongsToRecipeStep:                recipeStepID,
 							ID:                                 fakes.BuildFakeID(),
 							QuantityNotes:                      "",
-							MeasurementUnit:                    types.ValidMeasurementUnit{},
+							MeasurementUnit:                    &types.ValidMeasurementUnit{},
 							MaximumStorageDurationInSeconds:    nil,
-							MaximumQuantity:                    0,
-							MinimumQuantity:                    0,
+							MaximumQuantity:                    nil,
+							MinimumQuantity:                    nil,
 							Compostable:                        false,
 						},
 					},
