@@ -329,17 +329,20 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 			Limit: 20,
 		},
 	}
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
+	if filter.Page != nil {
+		x.Page = *filter.Page
+	}
 
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	if filter.Limit != nil {
+		x.Limit = *filter.Limit
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?

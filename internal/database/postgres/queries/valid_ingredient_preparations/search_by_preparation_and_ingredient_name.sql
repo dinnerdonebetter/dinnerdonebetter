@@ -14,10 +14,10 @@ SELECT
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
 	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
@@ -60,5 +60,7 @@ FROM valid_ingredient_preparations
 	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
 	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
 WHERE valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredient_preparations.id = $1
+	AND valid_preparations.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_preparations.id = $1
 	AND valid_ingredients.name ILIKE $2;

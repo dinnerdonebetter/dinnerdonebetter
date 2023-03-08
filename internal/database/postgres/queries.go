@@ -237,7 +237,7 @@ func (q *Querier) buildFilteredCountQueryWithILike(
 }
 
 // BuildListQuery builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,
-// and returns both the query and the relevant args to pass to the query executor.
+// and returns both the query and the relevant args to pass to the query executor. TODO: Deprecate this.
 func (q *Querier) buildListQuery(
 	ctx context.Context,
 	tableName string,
@@ -310,7 +310,7 @@ func (q *Querier) buildListQuery(
 }
 
 // BuildListQueryWithILike builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,
-// and returns both the query and the relevant args to pass to the query executor.
+// and returns both the query and the relevant args to pass to the query executor. TODO: Deprecate this.
 func (q *Querier) buildListQueryWithILike(
 	ctx context.Context,
 	tableName string,

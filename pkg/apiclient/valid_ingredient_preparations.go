@@ -111,6 +111,33 @@ func (c *Client) GetValidIngredientPreparationsForPreparation(ctx context.Contex
 	return validPreparationInstruments, nil
 }
 
+// GetValidIngredientPreparationsForPreparationAndIngredientName retrieves a list of valid ingredient preparations for a given preparation ID and a given ingredient name query.
+func (c *Client) GetValidIngredientPreparationsForPreparationAndIngredientName(ctx context.Context, validPreparationID, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientPreparation], error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.loggerWithFilter(filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if validPreparationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+
+	req, err := c.requestBuilder.BuildGetValidIngredientPreparationsForPreparationAndIngredientNameRequest(ctx, validPreparationID, query, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
+	}
+
+	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientPreparation]
+	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
+	}
+
+	return validPreparationInstruments, nil
+}
+
 // CreateValidIngredientPreparation creates a valid ingredient preparation.
 func (c *Client) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationCreationRequestInput) (*types.ValidIngredientPreparation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

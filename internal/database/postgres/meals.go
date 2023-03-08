@@ -118,6 +118,10 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 		mealComponents = append(mealComponents, &types.MealComponentDatabaseCreationInput{ComponentType: componentType, RecipeID: recipeID})
 	}
 
+	if err = rows.Err(); err != nil {
+		return nil, nil, observability.PrepareError(err, span, "querying for complete meal")
+	}
+
 	return x, mealComponents, nil
 }
 
@@ -165,11 +169,11 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	args := []any{
+	getMealByIDArgs := []any{
 		mealID,
 	}
 
-	rows, err := q.getRows(ctx, q.db, "meal", getMealByIDQuery, args)
+	rows, err := q.getRows(ctx, q.db, "meal", getMealByIDQuery, getMealByIDArgs)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal retrieval query")
 	}

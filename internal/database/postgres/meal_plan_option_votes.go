@@ -229,7 +229,7 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 
 	rows, err := q.getRows(ctx, q.db, "meal plan option votes for meal plan option", getMealPlanOptionVotesForMealPlanOptionQuery, args)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan option votes for meal plan option list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan option votes for meal plan option")
 	}
 
 	x, _, _, err = q.scanMealPlanOptionVotes(ctx, rows, false)

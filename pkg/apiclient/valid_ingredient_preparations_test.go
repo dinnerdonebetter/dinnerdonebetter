@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -240,6 +241,64 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidIngredientPreparationsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredientPreparationsForPreparationAndIngredientName() {
+	const expectedPath = "/api/v1/valid_ingredient_preparations/by_preparation/%s/search"
+
+	exampleValidPreparation := fakes.BuildFakeValidPreparation()
+	exampleQuery := "blah"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientPreparationList()
+
+		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=20&page=1&q=%s&sortBy=asc", exampleQuery), expectedPath, exampleValidPreparation.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		actual, err := c.GetValidIngredientPreparationsForPreparationAndIngredientName(s.ctx, exampleValidPreparation.ID, exampleQuery, filter)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+	})
+
+	s.Run("with invalid ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.GetValidIngredientPreparationsForPreparationAndIngredientName(s.ctx, "", exampleQuery, nil)
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetValidIngredientPreparationsForPreparationAndIngredientName(s.ctx, exampleValidPreparation.ID, exampleQuery, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=20&page=1&q=%s&sortBy=asc", exampleQuery), expectedPath, exampleValidPreparation.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetValidIngredientPreparationsForPreparationAndIngredientName(s.ctx, exampleValidPreparation.ID, exampleQuery, filter)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)

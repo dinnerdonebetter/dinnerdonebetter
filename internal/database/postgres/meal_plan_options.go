@@ -363,7 +363,7 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, input.ID)
 
 	// we're leaving PrepStepsCreated out on purpose since it would be false by default.
-	args := []any{
+	mealPlanOptionCreationArgs := []any{
 		input.ID,
 		input.AssignedCook,
 		input.AssignedDishwasher,
@@ -374,7 +374,7 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 	}
 
 	// create the meal plan option.
-	if err := q.performWriteQuery(ctx, db, "meal plan option creation", mealPlanOptionCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, db, "meal plan option creation", mealPlanOptionCreationQuery, mealPlanOptionCreationArgs); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option")
 	}
 
