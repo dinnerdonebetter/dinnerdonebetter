@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/pkg/types"

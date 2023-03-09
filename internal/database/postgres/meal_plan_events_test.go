@@ -454,7 +454,6 @@ func TestQuerier_GetMealPlanEvents(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
-
 }
 
 func TestQuerier_createMealPlanEvent(T *testing.T) {
