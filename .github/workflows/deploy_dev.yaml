@@ -2,9 +2,9 @@ on: # [pull_request]
   push:
     branches:
       - dev
-name: Deploy
+name: deploy
 jobs:
-  deploy:
+  dev:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
