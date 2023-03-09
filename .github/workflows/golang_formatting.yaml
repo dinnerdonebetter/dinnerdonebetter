@@ -5,9 +5,9 @@ on:
       - cmd/**
       - internal/**
       - tests/**
-name: check formatting
+name: check
 jobs:
-  golang:
+  golang_formatting:
     runs-on: ubuntu-latest
     strategy:
       matrix:
