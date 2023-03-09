@@ -242,33 +242,55 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, f
 	return x, nil
 }
 
-// SearchForValidIngredientsForPreparation fetches a valid ingredient from the database.
-func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+//go:embed queries/valid_ingredients/search_by_preparation_and_ingredient_name.sql
+var searchForIngredientsByPreparationAndIngredientNameQuery string
+
+// SearchForValidIngredientsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
+func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
+	if preparationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
+	tracing.AttachValidIngredientPreparationIDToSpan(span, preparationID)
+
 	if query == "" {
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachValidIngredientIDToSpan(span, query)
+	tracing.AttachSearchQueryToSpan(span, query)
 
-	args := []any{
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+	logger = filter.AttachToLogger(logger)
+
+	x = &types.QueryFilteredResult[types.ValidIngredient]{}
+	if filter.Page != nil {
+		x.Page = *filter.Page
+	}
+
+	if filter.Limit != nil {
+		x.Limit = *filter.Limit
+	}
+
+	searchForIngredientsByPreparationAndIngredientNameArgs := []any{
+		preparationID,
 		wrapQueryForILIKE(query),
 	}
 
-	// TODO: find some way to restrict by preparationID
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredients search", validIngredientSearchQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid ingredient preparations search by ingredient name", searchForIngredientsByPreparationAndIngredientNameQuery, searchForIngredientsByPreparationAndIngredientNameArgs)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations search by ingredient name retrieval query")
 	}
 
-	x, _, _, err := q.scanValidIngredients(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
+	if x.Data, _, _, err = q.scanValidIngredients(ctx, rows, false); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient preparations")
 	}
 
 	return x, nil

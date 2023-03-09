@@ -184,7 +184,7 @@ func TestBuilder_BuildGetValidIngredientPreparationsForPreparationAndIngredientN
 	T.Parallel()
 
 	const exampleQuery = "blah"
-	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/by_preparation/%s/search"
+	const expectedPathFormat = "/api/v1/valid_ingredients/by_preparation/%s"
 
 	examplePreparation := fakes.BuildFakeValidPreparation()
 

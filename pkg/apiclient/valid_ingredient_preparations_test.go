@@ -248,7 +248,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 }
 
 func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredientPreparationsForPreparationAndIngredientName() {
-	const expectedPath = "/api/v1/valid_ingredient_preparations/by_preparation/%s/search"
+	const expectedPath = "/api/v1/valid_ingredients/by_preparation/%s"
 
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
 	exampleQuery := "blah"

@@ -380,43 +380,47 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 	})
 }
 
-func TestSearchForValidIngredientsForPreparation(T *testing.T) {
+func TestQuerier_SearchForValidIngredientsForPreparation(T *testing.T) {
 	T.Parallel()
-
-	exampleQuery := "blah"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 		exampleValidIngredients := fakes.BuildFakeValidIngredientList()
+		exampleValidIngredients.FilteredCount = 0
+		exampleValidIngredients.TotalCount = 0
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		filter := types.DefaultQueryFilter()
 
-		args := []any{
-			wrapQueryForILIKE(exampleQuery),
+		searchByPreparationAndIngredientNameArgs := []any{
+			exampleValidPreparation.ID,
+			wrapQueryForILIKE(exampleValidIngredient.Name),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validIngredientSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
+		db.ExpectQuery(formatQueryForSQLMock(searchForIngredientsByPreparationAndIngredientNameQuery)).
+			WithArgs(interfaceToDriverValue(searchByPreparationAndIngredientNameArgs)...).
 			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredients.Data...))
 
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery, filter)
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, exampleValidPreparation.ID, exampleValidIngredient.Name, nil)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredients.Data, actual)
+		assert.Equal(t, exampleValidIngredients, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
+	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
+
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
-		filter := types.DefaultQueryFilter()
 
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", "", filter)
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, exampleValidPreparation.ID, exampleValidIngredient.Name, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -424,41 +428,22 @@ func TestSearchForValidIngredientsForPreparation(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		filter := types.DefaultQueryFilter()
 
-		args := []any{
-			wrapQueryForILIKE(exampleQuery),
+		searchByPreparationAndIngredientNameArgs := []any{
+			exampleValidPreparation.ID,
+			wrapQueryForILIKE(exampleValidIngredient.Name),
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validIngredientSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
+		db.ExpectQuery(formatQueryForSQLMock(searchForIngredientsByPreparationAndIngredientNameQuery)).
+			WithArgs(interfaceToDriverValue(searchByPreparationAndIngredientNameArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning response", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-		filter := types.DefaultQueryFilter()
-
-		args := []any{
-			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validIngredientSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery, filter)
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, exampleValidPreparation.ID, exampleValidIngredient.Name, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

@@ -74,7 +74,6 @@ type (
 		ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (bool, error)
 		GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*ValidIngredientPreparation, error)
 		GetValidIngredientPreparations(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
-		GetValidIngredientPreparationsForIngredientNameQuery(ctx context.Context, preparationID, query string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
 		GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
 		GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
 		CreateValidIngredientPreparation(ctx context.Context, input *ValidIngredientPreparationDatabaseCreationInput) (*ValidIngredientPreparation, error)
@@ -91,7 +90,6 @@ type (
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 		SearchByIngredientHandler(res http.ResponseWriter, req *http.Request)
 		SearchByPreparationHandler(res http.ResponseWriter, req *http.Request)
-		SearchByPreparationAndIngredientNameHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
