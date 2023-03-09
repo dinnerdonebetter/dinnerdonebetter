@@ -206,7 +206,7 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 	return x, nil
 }
 
-// GetMealPlanEvents fetches a list of mealPlanEvents from the database that meet a particular filter.
+// GetMealPlanEvents fetches a list of meal plan events from the database that meet a particular filter.
 func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlanEvent], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -217,14 +217,19 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
+	if filter.Page != nil {
+		x.Page = *filter.Page
+	}
+
+	if filter.Limit != nil {
+		x.Limit = *filter.Limit
 	}
 
 	query, args := q.buildListQuery(ctx, "meal_plan_events", nil, nil, nil, "", mealPlanEventsTableColumns, "", false, filter)
@@ -299,7 +304,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 	return x, nil
 }
 
-// CreateMealPlanEvent creates a mealPlanEvent in the database.
+// CreateMealPlanEvent creates a meal plan event in the database.
 func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

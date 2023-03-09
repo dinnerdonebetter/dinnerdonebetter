@@ -462,13 +462,9 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 
 		ctx := context.Background()
 		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
+		exampleMealPlanGroceryListItem.PurchasedMeasurementUnit = fakes.BuildFakeValidMeasurementUnit()
 
 		c, db := buildTestClient(t)
-
-		var purchasedMeasurementUnitID *string
-		if exampleMealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
-			purchasedMeasurementUnitID = &exampleMealPlanGroceryListItem.PurchasedMeasurementUnit.ID
-		}
 
 		args := []any{
 			exampleMealPlanGroceryListItem.BelongsToMealPlan,
@@ -477,7 +473,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 			exampleMealPlanGroceryListItem.MinimumQuantityNeeded,
 			exampleMealPlanGroceryListItem.MaximumQuantityNeeded,
 			exampleMealPlanGroceryListItem.QuantityPurchased,
-			purchasedMeasurementUnitID,
+			exampleMealPlanGroceryListItem.PurchasedMeasurementUnit.ID,
 			exampleMealPlanGroceryListItem.PurchasedUPC,
 			exampleMealPlanGroceryListItem.PurchasePrice,
 			exampleMealPlanGroceryListItem.StatusExplanation,

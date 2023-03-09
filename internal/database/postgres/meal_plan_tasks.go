@@ -16,8 +16,8 @@ var (
 	_ types.MealPlanTaskDataManager = (*Querier)(nil)
 )
 
-// scanMealPlanTaskWithRecipes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.MealPlanTask, err error) {
+// scanMealPlanTaskWithRecipePrepTaskSteps takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
+func (q *Querier) scanMealPlanTaskWithRecipePrepTaskSteps(ctx context.Context, rows database.ResultIterator) (x *types.MealPlanTask, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -56,6 +56,7 @@ func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database
 			&recipePrepTaskStep.BelongsToRecipePrepTask,
 			&recipePrepTaskStep.SatisfiesRecipeStep,
 			&x.CreatedAt,
+			&x.LastUpdatedAt,
 			&x.CompletedAt,
 			&x.Status,
 			&x.CreationExplanation,
@@ -73,16 +74,16 @@ func (q *Querier) scanMealPlanTaskWithRecipes(ctx context.Context, rows database
 	return x, nil
 }
 
-// scanMealPlanTasksWithRecipes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows database.ResultIterator) (mealPlanTasks []*types.MealPlanTask, err error) {
+// scanMealPlanTasks takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan task struct.
+func (q *Querier) scanMealPlanTasks(ctx context.Context, rows database.ResultIterator) (mealPlanTasks []*types.MealPlanTask, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	var lastMealPlanTaskID string
 
-	x := &types.MealPlanTask{}
-
 	for rows.Next() {
+		x := &types.MealPlanTask{}
+
 		targetVars := []any{
 			&x.ID,
 			&x.MealPlanOption.ID,
@@ -97,6 +98,7 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 			&x.MealPlanOption.ArchivedAt,
 			&x.MealPlanOption.BelongsToMealPlanEvent,
 			&x.CreatedAt,
+			&x.LastUpdatedAt,
 			&x.CompletedAt,
 			&x.Status,
 			&x.CreationExplanation,
@@ -112,12 +114,8 @@ func (q *Querier) scanMealPlanTasksWithRecipes(ctx context.Context, rows databas
 			lastMealPlanTaskID = x.ID
 		}
 
-		if len(mealPlanTasks) > 0 && lastMealPlanTaskID != mealPlanTasks[len(mealPlanTasks)-1].ID {
-			mealPlanTasks = append(mealPlanTasks, x)
-		}
+		mealPlanTasks = append(mealPlanTasks, x)
 	}
-
-	mealPlanTasks = append(mealPlanTasks, x)
 
 	return mealPlanTasks, nil
 }
@@ -184,7 +182,7 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan task rows")
 	}
 
-	x, err = q.scanMealPlanTaskWithRecipes(ctx, rows)
+	x, err = q.scanMealPlanTaskWithRecipePrepTaskSteps(ctx, rows)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan task")
 	}
@@ -209,7 +207,7 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 	}
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
-	args := []any{
+	createMealPlanTaskArgs := []any{
 		input.ID,
 		types.MealPlanTaskStatusUnfinished,
 		input.StatusExplanation,
@@ -220,7 +218,7 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 	}
 
 	// create the meal plan task.
-	if err := q.performWriteQuery(ctx, querier, "meal plan task creation", createMealPlanTaskQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "meal plan task creation", createMealPlanTaskQuery, createMealPlanTaskArgs); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
@@ -232,6 +230,12 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 		Status:              types.MealPlanTaskStatusUnfinished,
 		CreationExplanation: input.CreationExplanation,
 		StatusExplanation:   input.StatusExplanation,
+		MealPlanOption: types.MealPlanOption{
+			ID: input.MealPlanOptionID,
+		},
+		RecipePrepTask: types.RecipePrepTask{
+			ID: input.RecipePrepTaskID,
+		},
 	}
 
 	tracing.AttachMealPlanIDToSpan(span, x.ID)
@@ -259,6 +263,7 @@ func (q *Querier) CreateMealPlanTask(ctx context.Context, input *types.MealPlanT
 
 	x, err := q.createMealPlanTask(ctx, tx, input)
 	if err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 
@@ -297,7 +302,7 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing meal plan tasks list retrieval query")
 	}
 
-	x, scanErr := q.scanMealPlanTasksWithRecipes(ctx, rows)
+	x, scanErr := q.scanMealPlanTasks(ctx, rows)
 	if scanErr != nil {
 		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning meal plan tasks")
 	}
@@ -323,6 +328,7 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inpu
 	for _, input := range inputs {
 		mealPlanTask, createMealPlanTaskErr := q.createMealPlanTask(ctx, tx, input)
 		if createMealPlanTaskErr != nil {
+			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareAndLogError(createMealPlanTaskErr, logger, span, "creating meal plan task")
 		}
 

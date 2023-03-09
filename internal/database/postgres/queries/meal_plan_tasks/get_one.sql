@@ -28,6 +28,7 @@ SELECT
 	recipe_prep_task_steps.belongs_to_recipe_prep_task,
 	recipe_prep_task_steps.satisfies_recipe_step,
 	meal_plan_tasks.created_at,
+	meal_plan_tasks.last_updated_at,
 	meal_plan_tasks.completed_at,
 	meal_plan_tasks.status,
 	meal_plan_tasks.creation_explanation,
