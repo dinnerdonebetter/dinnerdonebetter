@@ -383,7 +383,7 @@ func TestQuerier_GetMealPlanEvents(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEvents := fakes.BuildFakeMealPlanEventList()
-		for i, _ := range exampleMealPlanEvents.Data {
+		for i := range exampleMealPlanEvents.Data {
 			exampleMealPlanEvents.Data[i].Options = nil
 		}
 
@@ -409,7 +409,7 @@ func TestQuerier_GetMealPlanEvents(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEvents := fakes.BuildFakeMealPlanEventList()
-		for i, _ := range exampleMealPlanEvents.Data {
+		for i := range exampleMealPlanEvents.Data {
 			exampleMealPlanEvents.Data[i].Options = nil
 		}
 
@@ -435,7 +435,7 @@ func TestQuerier_GetMealPlanEvents(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEvents := fakes.BuildFakeMealPlanEventList()
-		for i, _ := range exampleMealPlanEvents.Data {
+		for i := range exampleMealPlanEvents.Data {
 			exampleMealPlanEvents.Data[i].Options = nil
 		}
 

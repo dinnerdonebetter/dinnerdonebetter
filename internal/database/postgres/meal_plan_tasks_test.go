@@ -5,17 +5,17 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"github.com/prixfixeco/backend/pkg/types/converters"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
@@ -802,7 +802,7 @@ func TestQuerier_CreateMealPlanTasksForMealPlanOption(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("wih error beginning transaction", func(t *testing.T) {
+	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanTasks := fakes.BuildFakeMealPlanTaskList()
