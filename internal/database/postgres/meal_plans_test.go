@@ -217,29 +217,47 @@ func prepareMockToSuccessfullyGetMealPlan(t *testing.T, exampleMealPlan *types.M
 		WillReturnRows(buildMockRowsFromMealPlanEvents(false, 0, exampleMealPlan.Events...))
 
 	for _, evt := range exampleMealPlan.Events {
-		getMealPlanOptionsForMealPlanEventsArgs := []any{
-			evt.ID,
-			exampleMealPlan.ID,
-		}
+		prepareMockToSuccessfullyGetMealPlanEvent(t, evt, exampleMealPlan.ID, db, nil)
+	}
+}
 
+func prepareMockToSuccessfullyGetMealPlanEvent(t *testing.T, evt *types.MealPlanEvent, exampleMealPlanID string, db *sqlmockExpecterWrapper, err error) {
+	t.Helper()
+
+	getMealPlanOptionsForMealPlanEventsArgs := []any{
+		evt.ID,
+		exampleMealPlanID,
+	}
+
+	if err == nil {
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventQuery)).
 			WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
 			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, evt.Options...))
 
 		for _, opt := range evt.Options {
-			getMealPlanOptionVotesForMealPlanOptionArgs := []any{
-				exampleMealPlan.ID,
-				evt.ID,
-				opt.ID,
-			}
-
-			db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVotesForMealPlanOptionQuery)).
-				WithArgs(interfaceToDriverValue(getMealPlanOptionVotesForMealPlanOptionArgs)...).
-				WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, opt.Votes...))
-
-			prepareMockToSuccessfullyGetMeal(t, &opt.Meal, db)
+			prepareMockToSuccessfullyGetMealPlanOption(t, evt, exampleMealPlanID, opt, db)
 		}
+	} else {
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionsForMealPlanEventQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanOptionsForMealPlanEventsArgs)...).
+			WillReturnError(err)
 	}
+}
+
+func prepareMockToSuccessfullyGetMealPlanOption(t *testing.T, evt *types.MealPlanEvent, exampleMealPlanID string, opt *types.MealPlanOption, db *sqlmockExpecterWrapper) {
+	t.Helper()
+
+	getMealPlanOptionVotesForMealPlanOptionArgs := []any{
+		exampleMealPlanID,
+		evt.ID,
+		opt.ID,
+	}
+
+	db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVotesForMealPlanOptionQuery)).
+		WithArgs(interfaceToDriverValue(getMealPlanOptionVotesForMealPlanOptionArgs)...).
+		WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, opt.Votes...))
+
+	prepareMockToSuccessfullyGetMeal(t, &opt.Meal, db)
 }
 
 func TestQuerier_GetMealPlan(T *testing.T) {

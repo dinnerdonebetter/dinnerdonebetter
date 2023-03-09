@@ -116,11 +116,11 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	args := []any{
+	mealPlanEventExistenceArgs := []any{
 		mealPlanEventID,
 	}
 
-	result, err := q.performBooleanQuery(ctx, q.db, mealPlanEventExistenceQuery, args)
+	result, err := q.performBooleanQuery(ctx, q.db, mealPlanEventExistenceQuery, mealPlanEventExistenceArgs)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing mealPlanEvent existence check")
 	}
@@ -150,12 +150,12 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEven
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	args := []any{
+	getMealPlanEventByIDArgs := []any{
 		mealPlanEventID,
 		mealPlanID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "meal plan event", getMealPlanEventByIDQuery, args)
+	row := q.getOneRow(ctx, q.db, "meal plan event", getMealPlanEventByIDQuery, getMealPlanEventByIDArgs)
 	m, _, _, err := q.scanMealPlanEvent(ctx, row, false)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan event retrieval query")
@@ -180,11 +180,11 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	args := []any{
+	getMealPlanEventsForMealPlanArgs := []any{
 		mealPlanID,
 	}
 
-	rows, err := q.getRows(ctx, q.db, "meal plan events", getMealPlanEventsForMealPlanQuery, args)
+	rows, err := q.getRows(ctx, q.db, "meal plan events", getMealPlanEventsForMealPlanQuery, getMealPlanEventsForMealPlanArgs)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan events list retrieval query")
 	}
@@ -206,7 +206,7 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 	return x, nil
 }
 
-// GetMealPlanEvents fetches a list of mealPlanEvents from the database that meet a particular filter.
+// GetMealPlanEvents fetches a list of meal plan events from the database that meet a particular filter.
 func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlanEvent], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -217,14 +217,19 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
+	if filter.Page != nil {
+		x.Page = *filter.Page
+	}
+
+	if filter.Limit != nil {
+		x.Limit = *filter.Limit
 	}
 
 	query, args := q.buildListQuery(ctx, "meal_plan_events", nil, nil, nil, "", mealPlanEventsTableColumns, "", false, filter)
@@ -257,7 +262,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 
 	logger := q.logger.WithValue(keys.MealPlanEventIDKey, input.ID)
 
-	args := []any{
+	mealPlanEventCreationArgs := []any{
 		input.ID,
 		input.Notes,
 		input.StartsAt,
@@ -267,7 +272,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 	}
 
 	// create the mealPlanEvent.
-	if err := q.performWriteQuery(ctx, querier, "meal plan event creation", mealPlanEventCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "meal plan event creation", mealPlanEventCreationQuery, mealPlanEventCreationArgs); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan event creation query")
 	}
@@ -299,7 +304,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 	return x, nil
 }
 
-// CreateMealPlanEvent creates a mealPlanEvent in the database.
+// CreateMealPlanEvent creates a meal plan event in the database.
 func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -340,7 +345,7 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 	logger := q.logger.WithValue(keys.MealPlanEventIDKey, updated.ID)
 	tracing.AttachMealPlanEventIDToSpan(span, updated.ID)
 
-	args := []any{
+	updateMealPlanEventArgs := []any{
 		updated.Notes,
 		updated.StartsAt,
 		updated.EndsAt,
@@ -349,7 +354,7 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 		updated.ID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "meal plan event update", updateMealPlanEventQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, q.db, "meal plan event update", updateMealPlanEventQuery, updateMealPlanEventArgs); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event")
 	}
 

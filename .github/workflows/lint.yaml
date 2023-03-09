@@ -5,7 +5,7 @@ on: # [gollum]
       - cmd/**
       - internal/**
       - tests/**
-name: Lint
+name: lint
 jobs:
   golang:
     runs-on: ubuntu-latest

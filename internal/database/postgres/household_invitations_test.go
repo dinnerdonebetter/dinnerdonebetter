@@ -301,6 +301,29 @@ func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleHouseholdID := fakes.BuildFakeID()
+		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleHouseholdInvitation.DestinationHousehold.Members = nil
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{exampleHouseholdID, exampleHouseholdInvitation.ID}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByHouseholdAndIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetHouseholdInvitationByHouseholdAndID(ctx, exampleHouseholdID, exampleHouseholdInvitation.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
 }
 
 func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
@@ -529,6 +552,32 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
+
+	T.Run("with invalid response", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
+		for i := range exampleHouseholdInvitationList.Data {
+			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
+		}
+
+		c, db := buildTestClient(t)
+
+		query, args := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildErroneousMockRow())
+
+		actual, err := c.GetPendingHouseholdInvitationsFromUser(ctx, exampleUserID, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
 }
 
 func TestSQLQuerier_BuildGetPendingHouseholdInvitationsForUserQuery(T *testing.T) {
@@ -603,6 +652,32 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsForUser(T *testing.T) {
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetPendingHouseholdInvitationsForUser(ctx, exampleUserID, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid response", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
+		for i := range exampleHouseholdInvitationList.Data {
+			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
+		}
+
+		c, db := buildTestClient(t)
+
+		query, args := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildErroneousMockRow())
 
 		actual, err := c.GetPendingHouseholdInvitationsForUser(ctx, exampleUserID, filter)
 		assert.Error(t, err)

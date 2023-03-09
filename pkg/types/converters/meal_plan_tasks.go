@@ -5,7 +5,7 @@ import (
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
-// ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
+// ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput creates a MealPlanTaskDatabaseCreationInput from a MealPlanTaskCreationRequestInput.
 func ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(input *types.MealPlanTaskCreationRequestInput) *types.MealPlanTaskDatabaseCreationInput {
 	x := &types.MealPlanTaskDatabaseCreationInput{
 		ID:                  identifiers.New(),
@@ -19,11 +19,23 @@ func ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(
 	return x
 }
 
-// ConvertMealPlanTaskToMealPlanTaskCreationRequestInput builds a meal plan task.
+// ConvertMealPlanTaskToMealPlanTaskCreationRequestInput builds a MealPlanTaskCreationRequestInput.
 func ConvertMealPlanTaskToMealPlanTaskCreationRequestInput(x *types.MealPlanTask) *types.MealPlanTaskCreationRequestInput {
 	return &types.MealPlanTaskCreationRequestInput{
 		Status:              x.Status,
 		StatusExplanation:   x.StatusExplanation,
 		CreationExplanation: x.CreationExplanation,
+	}
+}
+
+// ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput builds a MealPlanTaskDatabaseCreationInput.
+func ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(x *types.MealPlanTask) *types.MealPlanTaskDatabaseCreationInput {
+	return &types.MealPlanTaskDatabaseCreationInput{
+		ID:                  x.ID,
+		AssignedToUser:      x.AssignedToUser,
+		CreationExplanation: x.CreationExplanation,
+		StatusExplanation:   x.StatusExplanation,
+		MealPlanOptionID:    x.MealPlanOption.ID,
+		RecipePrepTaskID:    x.RecipePrepTask.ID,
 	}
 }

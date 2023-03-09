@@ -15,6 +15,7 @@ func BuildFakeMealPlanTask() *types.MealPlanTask {
 		StatusExplanation:   buildUniqueString(),
 		CreationExplanation: buildUniqueString(),
 		CompletedAt:         nil,
+		RecipePrepTask:      *BuildFakeRecipePrepTask(),
 	}
 }
 

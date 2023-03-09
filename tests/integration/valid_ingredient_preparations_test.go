@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -232,6 +233,81 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 
 			t.Log("cleaning up valid ingredient")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+
+			t.Log("cleaning up valid preparation")
+			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+		}
+	})
+
+	s.runForEachClient("should be searchable via preparation ID and ingredient name", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating prerequisite valid preparation")
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", createdValidPreparation.ID)
+
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+			createdValidIngredients := []*types.ValidIngredient{}
+			createdValidIngredientPreparations := []*types.ValidIngredientPreparation{}
+
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			originalName := exampleValidIngredient.Name
+			for i := 0; i < 5; i++ {
+				t.Log("creating prerequisite valid ingredients")
+				exampleValidIngredient.Name = fmt.Sprintf("%s #%d", originalName, i)
+				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
+				createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				require.NoError(t, err)
+
+				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+				createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
+				requireNotNilAndNoProblems(t, createdValidIngredient, err)
+				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
+
+				t.Log("creating valid ingredient preparation")
+				exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+				exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
+				exampleValidIngredientPreparation.Preparation = *createdValidPreparation
+				exampleValidIngredientPreparationInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation)
+				createdValidIngredientPreparation, err := testClients.admin.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
+				require.NoError(t, err)
+				t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparation.ID)
+
+				checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
+
+				createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
+				createdValidIngredientPreparations = append(createdValidIngredientPreparations, createdValidIngredientPreparation)
+			}
+
+			searchQuery := createdValidIngredients[0].Name[0:3]
+			validIngredientMeasurementUnitsForValidIngredient, err := testClients.user.GetValidIngredientPreparationsForPreparationAndIngredientName(ctx, createdValidPreparation.ID, searchQuery, nil)
+			requireNotNilAndNoProblems(t, validIngredientMeasurementUnitsForValidIngredient, err)
+
+			assert.Equal(t, len(validIngredientMeasurementUnitsForValidIngredient.Data), len(createdValidIngredients))
+
+			for _, createdValidIngredientsPreparation := range createdValidIngredientPreparations {
+				t.Log("cleaning up valid ingredient preparation")
+				assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientsPreparation.ID))
+			}
+
+			for _, createdValidIngredient := range createdValidIngredients {
+				t.Log("cleaning up valid ingredient")
+				assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			}
 
 			t.Log("cleaning up valid preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))

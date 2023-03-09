@@ -4,9 +4,9 @@ on: # [gollum]
       - pkg/**
       - cmd/**
       - internal/**
-name: Dependency Injection
+name: check
 jobs:
- check:
+ dependency_injection:
    strategy:
      matrix:
        go-version: [ '1.19.x' ]

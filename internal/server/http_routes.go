@@ -471,6 +471,13 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					Get(root, s.validIngredientPreparationsService.SearchByPreparationHandler)
 			})
 
+			validIngredientPreparationsByPreparationIDSearchRouteParam := fmt.Sprintf("/by_preparation%s/search", buildURLVarChunk(validingredientpreparationsservice.ValidPreparationIDURIParamKey, ""))
+			validIngredientPreparationsRouter.Route(validIngredientPreparationsByPreparationIDSearchRouteParam, func(byValidPreparationIDRouter routing.Router) {
+				byValidPreparationIDRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
+					Get(root, s.validIngredientPreparationsService.SearchByPreparationAndIngredientNameHandler)
+			})
+
 			validIngredientPreparationsRouter.Route(validIngredientPreparationIDRouteParam, func(singleValidIngredientPreparationRouter routing.Router) {
 				singleValidIngredientPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).

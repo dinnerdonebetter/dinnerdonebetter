@@ -35,10 +35,8 @@ sql:
       - "internal/database/postgres/queries/recipe_steps"
       - "internal/database/postgres/queries/webhook_trigger_events"
       # - "internal/database/postgres/queries/webhooks"
-      ##### generated query directories #####
-      # - "internal/database/postgres/generated_queries/webhooks"
     engine: "postgresql"
-    # strict_function_checks: true
+    strict_function_checks: true
     gen:
       go:
         package: "generated"
