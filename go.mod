@@ -144,7 +144,7 @@ require (
 	github.com/segmentio/backo-go v1.0.0 // indirect
 	github.com/smartystreets/goconvey v1.7.2 // indirect
 	github.com/xtgo/uuid v0.0.0-20140804021211-a0b114877d4c // indirect
-	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
+	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
