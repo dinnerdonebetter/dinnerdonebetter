@@ -271,6 +271,13 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
 				Get(randomRoot, s.validIngredientsService.RandomHandler)
 
+			validIngredientsByPreparationIDSearchRouteParam := fmt.Sprintf("/by_preparation%s", buildURLVarChunk(validingredientsservice.ValidPreparationIDURIParamKey, ""))
+			validIngredientsRouter.Route(validIngredientsByPreparationIDSearchRouteParam, func(byValidPreparationIDRouter routing.Router) {
+				byValidPreparationIDRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
+					Get(root, s.validIngredientsService.SearchByPreparationAndIngredientNameHandler)
+			})
+
 			validIngredientsRouter.Route(validIngredientIDRouteParam, func(singleValidIngredientRouter routing.Router) {
 				singleValidIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
@@ -469,13 +476,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				byValidPreparationIDRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
 					Get(root, s.validIngredientPreparationsService.SearchByPreparationHandler)
-			})
-
-			validIngredientPreparationsByPreparationIDSearchRouteParam := fmt.Sprintf("/by_preparation%s/search", buildURLVarChunk(validingredientpreparationsservice.ValidPreparationIDURIParamKey, ""))
-			validIngredientPreparationsRouter.Route(validIngredientPreparationsByPreparationIDSearchRouteParam, func(byValidPreparationIDRouter routing.Router) {
-				byValidPreparationIDRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
-					Get(root, s.validIngredientPreparationsService.SearchByPreparationAndIngredientNameHandler)
 			})
 
 			validIngredientPreparationsRouter.Route(validIngredientPreparationIDRouteParam, func(singleValidIngredientPreparationRouter routing.Router) {

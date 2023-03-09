@@ -44,7 +44,10 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			"BuildRouteParamStringIDFetcher",
 			ValidIngredientStateIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
-
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			ValidPreparationIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 		cfg := &Config{
 			DataChangesTopicName: "data_changes",
 		}

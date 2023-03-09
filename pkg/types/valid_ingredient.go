@@ -204,7 +204,7 @@ type (
 		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredient], error)
 		SearchForValidIngredients(ctx context.Context, query string, filter *QueryFilter) ([]*ValidIngredient, error)
-		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *QueryFilter) ([]*ValidIngredient, error)
+		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *QueryFilter) (x *QueryFilteredResult[ValidIngredient], err error)
 		SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *QueryFilter) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
@@ -221,6 +221,7 @@ type (
 		RandomHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
+		SearchByPreparationAndIngredientNameHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

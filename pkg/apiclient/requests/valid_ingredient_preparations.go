@@ -133,10 +133,9 @@ func (b *Builder) BuildGetValidIngredientPreparationsForPreparationAndIngredient
 	uri := b.BuildURL(
 		ctx,
 		values,
-		validIngredientPreparationsBasePath,
+		validIngredientsBasePath,
 		"by_preparation",
 		preparationID,
-		"search",
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)

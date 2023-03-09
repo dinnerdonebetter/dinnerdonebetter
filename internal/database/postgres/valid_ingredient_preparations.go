@@ -393,60 +393,6 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 	return x, nil
 }
 
-//go:embed queries/valid_ingredient_preparations/search_by_preparation_and_ingredient_name.sql
-var searchByPreparationAndIngredientNameQuery string
-
-// GetValidIngredientPreparationsForIngredientNameQuery fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparationsForIngredientNameQuery(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if preparationID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, preparationID)
-
-	if query == "" {
-		return nil, ErrEmptyInputProvided
-	}
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachSearchQueryToSpan(span, query)
-
-	if filter == nil {
-		filter = types.DefaultQueryFilter()
-	}
-	tracing.AttachQueryFilterToSpan(span, filter)
-	logger = filter.AttachToLogger(logger)
-
-	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{}
-	if filter.Page != nil {
-		x.Page = *filter.Page
-	}
-
-	if filter.Limit != nil {
-		x.Limit = *filter.Limit
-	}
-
-	args := []any{
-		preparationID,
-		wrapQueryForILIKE(query),
-	}
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredient preparations search by ingredient name", searchByPreparationAndIngredientNameQuery, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations search by ingredient name retrieval query")
-	}
-
-	if x.Data, _, _, err = q.scanValidIngredientPreparations(ctx, rows, false); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient preparations")
-	}
-
-	return x, nil
-}
-
 //go:embed queries/valid_ingredient_preparations/create.sql
 var validIngredientPreparationCreationQuery string
 
