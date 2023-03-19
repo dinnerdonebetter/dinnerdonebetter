@@ -355,6 +355,11 @@ var (
 			Description: "some nullable fields",
 			Script:      fetchMigration("00068_nullable_fields"),
 		},
+		{
+			Version:     69,
+			Description: "some miscellaneous fields",
+			Script:      fetchMigration("00069_some_improvements"),
+		},
 	}
 )
 
