@@ -9,6 +9,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/converters"
 )
 
 const (
@@ -69,24 +70,25 @@ func (q *Querier) scanRecipeStepProduct(ctx context.Context, scan database.Scann
 	x = &types.RecipeStepProduct{
 		MeasurementUnit: &types.ValidMeasurementUnit{},
 	}
+	nmu := &types.NullableValidMeasurementUnit{}
 
 	targetVars := []any{
 		&x.ID,
 		&x.Name,
 		&x.Type,
-		&x.MeasurementUnit.ID,
-		&x.MeasurementUnit.Name,
-		&x.MeasurementUnit.Description,
-		&x.MeasurementUnit.Volumetric,
-		&x.MeasurementUnit.IconPath,
-		&x.MeasurementUnit.Universal,
-		&x.MeasurementUnit.Metric,
-		&x.MeasurementUnit.Imperial,
-		&x.MeasurementUnit.Slug,
-		&x.MeasurementUnit.PluralName,
-		&x.MeasurementUnit.CreatedAt,
-		&x.MeasurementUnit.LastUpdatedAt,
-		&x.MeasurementUnit.ArchivedAt,
+		&nmu.ID,
+		&nmu.Name,
+		&nmu.Description,
+		&nmu.Volumetric,
+		&nmu.IconPath,
+		&nmu.Universal,
+		&nmu.Metric,
+		&nmu.Imperial,
+		&nmu.Slug,
+		&nmu.PluralName,
+		&nmu.CreatedAt,
+		&nmu.LastUpdatedAt,
+		&nmu.ArchivedAt,
 		&x.MinimumQuantity,
 		&x.MaximumQuantity,
 		&x.QuantityNotes,
@@ -113,8 +115,8 @@ func (q *Querier) scanRecipeStepProduct(ctx context.Context, scan database.Scann
 		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
-	if x.MeasurementUnit != nil && x.MeasurementUnit.ID == "" {
-		x.MeasurementUnit = nil
+	if nmu.ID != nil {
+		x.MeasurementUnit = converters.ConvertNullableValidMeasurementUnitToValidMeasurementUnit(nmu)
 	}
 
 	return x, filteredCount, totalCount, nil
