@@ -165,6 +165,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&y.Preparation.ConditionExpressionRequired,
 		&y.Preparation.ConsumesVessel,
 		&y.Preparation.OnlyForVessels,
+		&y.Preparation.Universal,
 		&y.Preparation.MinimumVesselCount,
 		&y.Preparation.MaximumVesselCount,
 		&y.Preparation.Slug,

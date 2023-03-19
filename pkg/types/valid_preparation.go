@@ -54,7 +54,7 @@ type (
 		ConsumesVessel              bool       `json:"consumesVessel"`
 		OnlyForVessels              bool       `json:"onlyForVessels"`
 		YieldsNothing               bool       `json:"yieldsNothing"`
-		AppliesToAllIngredients     bool       `json:"appliesToAllIngredients"`
+		Universal                   bool       `json:"universal"`
 	}
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
@@ -79,7 +79,7 @@ type (
 		OnlyForVessels              bool   `json:"onlyForVessels"`
 		RestrictToIngredients       bool   `json:"restrictToIngredients"`
 		YieldsNothing               bool   `json:"yieldsNothing"`
-		AppliesToAllIngredients     bool   `json:"appliesToAllIngredients"`
+		Universal                   bool   `json:"universal"`
 	}
 
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
@@ -105,7 +105,7 @@ type (
 		OnlyForVessels              bool
 		RestrictToIngredients       bool
 		YieldsNothing               bool
-		AppliesToAllIngredients     bool
+		Universal                   bool
 	}
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
@@ -130,7 +130,7 @@ type (
 		OnlyForVessels              *bool   `json:"onlyForVessels,omitempty"`
 		MinimumVesselCount          *int32  `json:"minimumVesselCount,omitempty"`
 		MaximumVesselCount          *int32  `json:"maximumVesselCount,omitempty"`
-		AppliesToAllIngredients     *bool   `json:"appliesToAllIngredients,omitempty"`
+		Universal                   *bool   `json:"universal,omitempty"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -231,8 +231,8 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 		x.MaximumVesselCount = input.MaximumVesselCount
 	}
 
-	if input.AppliesToAllIngredients != nil && *input.AppliesToAllIngredients != x.AppliesToAllIngredients {
-		x.AppliesToAllIngredients = *input.AppliesToAllIngredients
+	if input.Universal != nil && *input.Universal != x.Universal {
+		x.Universal = *input.Universal
 	}
 }
 

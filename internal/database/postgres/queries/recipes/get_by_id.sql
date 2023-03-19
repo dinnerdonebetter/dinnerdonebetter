@@ -27,6 +27,7 @@ SELECT
 	valid_preparations.condition_expression_required,
     valid_preparations.consumes_vessel,
     valid_preparations.only_for_vessels,
+    valid_preparations.universal,
     valid_preparations.minimum_vessel_count,
     valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,

@@ -46,6 +46,7 @@ func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCo
 			x.Preparation.ConditionExpressionRequired,
 			x.Preparation.ConsumesVessel,
 			x.Preparation.OnlyForVessels,
+			x.Preparation.Universal,
 			x.Preparation.MinimumVesselCount,
 			x.Preparation.MaximumVesselCount,
 			x.Preparation.Slug,
