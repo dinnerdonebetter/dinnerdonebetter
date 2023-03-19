@@ -362,7 +362,6 @@ func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQu
 		ID:                                 input.ID,
 		Name:                               input.Name,
 		Type:                               input.Type,
-		MeasurementUnit:                    &types.ValidMeasurementUnit{ID: *input.MeasurementUnitID},
 		MinimumQuantity:                    input.MinimumQuantity,
 		MaximumQuantity:                    input.MaximumQuantity,
 		QuantityNotes:                      input.QuantityNotes,
@@ -377,6 +376,10 @@ func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQu
 		Index:                              input.Index,
 		ContainedInVesselIndex:             input.ContainedInVesselIndex,
 		CreatedAt:                          q.currentTime(),
+	}
+
+	if input.MeasurementUnitID != nil {
+		x.MeasurementUnit = &types.ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)
