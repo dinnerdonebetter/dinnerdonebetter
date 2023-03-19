@@ -70,3 +70,41 @@ func ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput(vali
 		Slug:        validMeasurementUnit.Slug,
 	}
 }
+
+// ConvertNullableValidMeasurementUnitToValidMeasurementUnit produces a ValidMeasurementUnit from a NullableValidMeasurementUnit.
+func ConvertNullableValidMeasurementUnitToValidMeasurementUnit(x *types.NullableValidMeasurementUnit) *types.ValidMeasurementUnit {
+	return &types.ValidMeasurementUnit{
+		CreatedAt:     *x.CreatedAt,
+		LastUpdatedAt: x.LastUpdatedAt,
+		ArchivedAt:    x.ArchivedAt,
+		Name:          *x.Name,
+		IconPath:      *x.IconPath,
+		ID:            *x.ID,
+		Description:   *x.Description,
+		PluralName:    *x.PluralName,
+		Slug:          *x.Slug,
+		Volumetric:    *x.Volumetric,
+		Universal:     *x.Universal,
+		Metric:        *x.Metric,
+		Imperial:      *x.Imperial,
+	}
+}
+
+// ConvertValidMeasurementUnitToNullableValidMeasurementUnit converts a NullableValidMeasurementUnit to a ValidMeasurementUnit.
+func ConvertValidMeasurementUnitToNullableValidMeasurementUnit(input *types.ValidMeasurementUnit) *types.NullableValidMeasurementUnit {
+	return &types.NullableValidMeasurementUnit{
+		CreatedAt:     &input.CreatedAt,
+		LastUpdatedAt: input.LastUpdatedAt,
+		ArchivedAt:    input.ArchivedAt,
+		Name:          &input.Name,
+		IconPath:      &input.IconPath,
+		ID:            &input.ID,
+		Description:   &input.Description,
+		PluralName:    &input.PluralName,
+		Slug:          &input.Slug,
+		Volumetric:    &input.Volumetric,
+		Universal:     &input.Universal,
+		Metric:        &input.Metric,
+		Imperial:      &input.Imperial,
+	}
+}
