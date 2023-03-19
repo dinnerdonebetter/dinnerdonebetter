@@ -12,18 +12,20 @@ import (
 // NOTE: this currently represents a typical recipe step ingredient with a valid ingredient and not a product.
 func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 	return &types.RecipeStepIngredient{
-		ID:                  BuildFakeID(),
-		Name:                buildUniqueString(),
-		Ingredient:          BuildFakeValidIngredient(),
-		MeasurementUnit:     *BuildFakeValidMeasurementUnit(),
-		MinimumQuantity:     float32(fake.Uint32()),
-		MaximumQuantity:     pointers.Float32(float32(fake.Uint32())),
-		QuantityNotes:       buildUniqueString(),
-		Optional:            fake.Bool(),
-		IngredientNotes:     buildUniqueString(),
-		CreatedAt:           BuildFakeTime(),
-		BelongsToRecipeStep: BuildFakeID(),
-		VesselIndex:         pointers.Uint16(fake.Uint16()),
+		ID:                     BuildFakeID(),
+		Name:                   buildUniqueString(),
+		Ingredient:             BuildFakeValidIngredient(),
+		MeasurementUnit:        *BuildFakeValidMeasurementUnit(),
+		MinimumQuantity:        float32(BuildFakeNumber()),
+		MaximumQuantity:        pointers.Float32(float32(BuildFakeNumber())),
+		QuantityNotes:          buildUniqueString(),
+		Optional:               fake.Bool(),
+		IngredientNotes:        buildUniqueString(),
+		CreatedAt:              BuildFakeTime(),
+		BelongsToRecipeStep:    BuildFakeID(),
+		VesselIndex:            pointers.Uint16(fake.Uint16()),
+		ToTaste:                fake.Bool(),
+		ProductPercentageToUse: pointers.Float32(float32(BuildFakeNumber())),
 	}
 }
 
