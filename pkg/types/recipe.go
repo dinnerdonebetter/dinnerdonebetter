@@ -35,31 +35,36 @@ type (
 		_ struct{}
 
 		CreatedAt          time.Time         `json:"createdAt"`
-		ArchivedAt         *time.Time        `json:"archivedAt"`
 		InspiredByRecipeID *string           `json:"inspiredByRecipeID"`
 		LastUpdatedAt      *time.Time        `json:"lastUpdatedAt"`
+		ArchivedAt         *time.Time        `json:"archivedAt"`
+		PortionName        string            `json:"portionName"`
 		Source             string            `json:"source"`
 		Description        string            `json:"description"`
 		Name               string            `json:"name"`
-		CreatedByUser      string            `json:"belongsToUser"`
+		Slug               string            `json:"slug"`
 		ID                 string            `json:"id"`
-		Steps              []*RecipeStep     `json:"steps"`
+		CreatedByUser      string            `json:"belongsToUser"`
+		PluralPortionName  string            `json:"pluralPortionName"`
 		Media              []*RecipeMedia    `json:"media"`
 		PrepTasks          []*RecipePrepTask `json:"prepTasks"`
+		Steps              []*RecipeStep     `json:"steps"`
 		SealOfApproval     bool              `json:"sealOfApproval"`
 		YieldsPortions     uint8             `json:"yieldsPortions"`
 	}
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
-		_ struct{}
-
+		_                  struct{}
 		InspiredByRecipeID *string                                           `json:"inspiredByRecipeID"`
 		Name               string                                            `json:"name"`
+		Slug               string                                            `json:"slug"`
 		Source             string                                            `json:"source"`
 		Description        string                                            `json:"description"`
-		Steps              []*RecipeStepCreationRequestInput                 `json:"steps"`
+		PluralPortionName  string                                            `json:"pluralPortionName"`
+		PortionName        string                                            `json:"portionName"`
 		PrepTasks          []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks"`
+		Steps              []*RecipeStepCreationRequestInput                 `json:"steps"`
 		AlsoCreateMeal     bool                                              `json:"alsoCreateMeal"`
 		SealOfApproval     bool                                              `json:"sealOfApproval"`
 		YieldsPortions     uint8                                             `json:"yieldsPortions"`
@@ -67,16 +72,18 @@ type (
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
-		_ struct{}
-
+		_                  struct{}
 		InspiredByRecipeID *string
+		PortionName        string
 		CreatedByUser      string
 		ID                 string
 		Name               string
+		Slug               string
 		Source             string
 		Description        string
-		Steps              []*RecipeStepDatabaseCreationInput
+		PluralPortionName  string
 		PrepTasks          []*RecipePrepTaskDatabaseCreationInput
+		Steps              []*RecipeStepDatabaseCreationInput
 		AlsoCreateMeal     bool
 		SealOfApproval     bool
 		YieldsPortions     uint8
@@ -86,14 +93,16 @@ type (
 	RecipeUpdateRequestInput struct {
 		_ struct{}
 
-		Name        *string `json:"name,omitempty"`
-		Source      *string `json:"source,omitempty"`
-		Description *string `json:"description,omitempty"`
-		// InspiredByRecipeID is already a pointer, I'm not about to make it a double pointer.
+		Name               *string `json:"name,omitempty"`
+		Slug               *string `json:"slug"`
+		Source             *string `json:"source,omitempty"`
+		Description        *string `json:"description,omitempty"`
 		InspiredByRecipeID *string `json:"inspiredByRecipeID,omitempty"`
 		CreatedByUser      *string `json:"-"`
 		SealOfApproval     *bool   `json:"sealOfApproval,omitempty"`
 		YieldsPortions     *uint8  `json:"yieldsPortions,omitempty"`
+		PortionName        *string `json:"portionName"`
+		PluralPortionName  *string `json:"pluralPortionName"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -154,6 +163,10 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 		x.Name = *input.Name
 	}
 
+	if input.Slug != nil && *input.Slug != x.Slug {
+		x.Slug = *input.Slug
+	}
+
 	if input.Source != nil && *input.Source != x.Source {
 		x.Source = *input.Source
 	}
@@ -172,6 +185,14 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 
 	if input.YieldsPortions != nil && *input.YieldsPortions != x.YieldsPortions {
 		x.YieldsPortions = *input.YieldsPortions
+	}
+
+	if input.PortionName != nil && *input.PortionName != x.PortionName {
+		x.PortionName = *input.PortionName
+	}
+
+	if input.PluralPortionName != nil && *input.PluralPortionName != x.PluralPortionName {
+		x.PluralPortionName = *input.PluralPortionName
 	}
 }
 

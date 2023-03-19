@@ -181,7 +181,7 @@ clean_ts:
 
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
-	go run github.com/prixfixeco/backend/cmd/tools/gen_ts
+	go run github.com/prixfixeco/backend/cmd/tools/gen_typescript
 
 ## Integration tests
 

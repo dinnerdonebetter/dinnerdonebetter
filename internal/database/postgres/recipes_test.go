@@ -34,10 +34,13 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 		rowValues := []driver.Value{
 			x.ID,
 			x.Name,
+			x.Slug,
 			x.Source,
 			x.Description,
 			x.InspiredByRecipeID,
 			x.YieldsPortions,
+			x.PortionName,
+			x.PluralPortionName,
 			x.SealOfApproval,
 			x.CreatedAt,
 			x.LastUpdatedAt,
@@ -59,10 +62,13 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 var fullRecipesColumns = []string{
 	"recipes.id",
 	"recipes.name",
+	"recipes.slug",
 	"recipes.source",
 	"recipes.description",
 	"recipes.inspired_by_recipe_id",
 	"recipes.yields_portions",
+	"recipes.portion_name",
+	"recipes.plural_portion_name",
 	"recipes.seal_of_approval",
 	"recipes.created_at",
 	"recipes.last_updated_at",
@@ -114,10 +120,13 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 		exampleRows.AddRow(
 			&recipe.ID,
 			&recipe.Name,
+			&recipe.Slug,
 			&recipe.Source,
 			&recipe.Description,
 			&recipe.InspiredByRecipeID,
 			&recipe.YieldsPortions,
+			&recipe.PortionName,
+			&recipe.PluralPortionName,
 			&recipe.SealOfApproval,
 			&recipe.CreatedAt,
 			&recipe.LastUpdatedAt,
@@ -986,10 +995,13 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		recipeCreationArgs := []any{
 			exampleRecipe.ID,
 			exampleRecipe.Name,
+			exampleRecipe.Slug,
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
 			exampleRecipe.YieldsPortions,
+			exampleRecipe.PortionName,
+			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 		}
@@ -1207,10 +1219,13 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		recipeCreationArgs := []any{
 			exampleRecipe.ID,
 			exampleRecipe.Name,
+			exampleRecipe.Slug,
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
 			exampleRecipe.YieldsPortions,
+			exampleRecipe.PortionName,
+			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 		}
@@ -1323,10 +1338,13 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.Slug,
 			exampleInput.Source,
 			exampleInput.Description,
 			exampleInput.InspiredByRecipeID,
 			exampleRecipe.YieldsPortions,
+			exampleRecipe.PortionName,
+			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleInput.CreatedByUser,
 		}
@@ -1376,10 +1394,13 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		recipeCreationArgs := []any{
 			exampleRecipe.ID,
 			exampleRecipe.Name,
+			exampleRecipe.Slug,
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
 			exampleRecipe.YieldsPortions,
+			exampleRecipe.PortionName,
+			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 		}
@@ -1435,10 +1456,13 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		args := []any{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.Slug,
 			exampleInput.Source,
 			exampleInput.Description,
 			exampleInput.InspiredByRecipeID,
 			exampleInput.YieldsPortions,
+			exampleInput.PortionName,
+			exampleInput.PluralPortionName,
 			exampleInput.SealOfApproval,
 			exampleInput.CreatedByUser,
 		}
@@ -1482,10 +1506,13 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		recipeCreationArgs := []any{
 			exampleRecipe.ID,
 			exampleRecipe.Name,
+			exampleRecipe.Slug,
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
 			exampleRecipe.YieldsPortions,
+			exampleRecipe.PortionName,
+			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 		}
@@ -1539,10 +1566,13 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 
 		args := []any{
 			exampleRecipe.Name,
+			exampleRecipe.Slug,
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
 			exampleRecipe.YieldsPortions,
+			exampleRecipe.PortionName,
+			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
@@ -1576,10 +1606,13 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 
 		args := []any{
 			exampleRecipe.Name,
+			exampleRecipe.Slug,
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
 			exampleRecipe.YieldsPortions,
+			exampleRecipe.PortionName,
+			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,

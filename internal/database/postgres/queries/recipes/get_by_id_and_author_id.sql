@@ -1,10 +1,13 @@
 SELECT
 	recipes.id,
 	recipes.name,
+	recipes.slug,
 	recipes.source,
 	recipes.description,
 	recipes.inspired_by_recipe_id,
 	recipes.yields_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
 	recipes.seal_of_approval,
 	recipes.created_at,
 	recipes.last_updated_at,
