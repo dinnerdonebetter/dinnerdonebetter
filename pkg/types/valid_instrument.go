@@ -32,84 +32,89 @@ type (
 	ValidInstrument struct {
 		_ struct{}
 
-		CreatedAt             time.Time  `json:"createdAt"`
-		LastUpdatedAt         *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt            *time.Time `json:"archivedAt"`
-		IconPath              string     `json:"iconPath"`
-		ID                    string     `json:"id"`
-		Name                  string     `json:"name"`
-		PluralName            string     `json:"pluralName"`
-		Description           string     `json:"description"`
-		Slug                  string     `json:"slug"`
-		DisplayInSummaryLists bool       `json:"displayInSummaryLists"`
-		UsableForStorage      bool       `json:"usableForStorage"`
-		IsVessel              bool       `json:"isVessel"`
-		IsExclusivelyVessel   bool       `json:"isExclusivelyVessel"`
+		CreatedAt                      time.Time  `json:"createdAt"`
+		LastUpdatedAt                  *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt                     *time.Time `json:"archivedAt"`
+		IconPath                       string     `json:"iconPath"`
+		ID                             string     `json:"id"`
+		Name                           string     `json:"name"`
+		PluralName                     string     `json:"pluralName"`
+		Description                    string     `json:"description"`
+		Slug                           string     `json:"slug"`
+		DisplayInSummaryLists          bool       `json:"displayInSummaryLists"`
+		IncludeInGeneratedInstructions bool       `json:"includeInGeneratedInstructions"`
+		UsableForStorage               bool       `json:"usableForStorage"`
+		IsVessel                       bool       `json:"isVessel"`
+		IsExclusivelyVessel            bool       `json:"isExclusivelyVessel"`
 	}
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
 	NullableValidInstrument struct {
 		_ struct{}
 
-		LastUpdatedAt         *time.Time
-		ArchivedAt            *time.Time
-		Description           *string
-		IconPath              *string
-		ID                    *string
-		Name                  *string
-		Slug                  *string
-		DisplayInSummaryLists *bool
-		PluralName            *string
-		UsableForStorage      *bool
-		IsVessel              *bool
-		IsExclusivelyVessel   *bool
-		CreatedAt             *time.Time
+		LastUpdatedAt                  *time.Time
+		ArchivedAt                     *time.Time
+		Description                    *string
+		IconPath                       *string
+		ID                             *string
+		Name                           *string
+		Slug                           *string
+		DisplayInSummaryLists          *bool
+		IncludeInGeneratedInstructions *bool
+		PluralName                     *string
+		UsableForStorage               *bool
+		IsVessel                       *bool
+		IsExclusivelyVessel            *bool
+		CreatedAt                      *time.Time
 	}
 
 	// ValidInstrumentCreationRequestInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentCreationRequestInput struct {
 		_ struct{}
 
-		Name                  string `json:"name"`
-		PluralName            string `json:"pluralName"`
-		Description           string `json:"description"`
-		IconPath              string `json:"iconPath"`
-		Slug                  string `json:"slug"`
-		DisplayInSummaryLists bool   `json:"displayInSummaryLists"`
-		UsableForStorage      bool   `json:"usableForStorage"`
-		IsExclusivelyVessel   bool   `json:"isExclusivelyVessel"`
-		IsVessel              bool   `json:"isVessel"`
+		Name                           string `json:"name"`
+		PluralName                     string `json:"pluralName"`
+		Description                    string `json:"description"`
+		IconPath                       string `json:"iconPath"`
+		Slug                           string `json:"slug"`
+		DisplayInSummaryLists          bool   `json:"displayInSummaryLists"`
+		IncludeInGeneratedInstructions bool   `json:"includeInGeneratedInstructions"`
+		UsableForStorage               bool   `json:"usableForStorage"`
+		IsExclusivelyVessel            bool   `json:"isExclusivelyVessel"`
+		IsVessel                       bool   `json:"isVessel"`
 	}
 
 	// ValidInstrumentDatabaseCreationInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentDatabaseCreationInput struct {
 		_ struct{}
 
-		ID                    string
-		Name                  string
-		PluralName            string
-		Description           string
-		IconPath              string
-		Slug                  string
-		DisplayInSummaryLists bool
-		UsableForStorage      bool
-		IsVessel              bool
-		IsExclusivelyVessel   bool
+		ID                             string
+		Name                           string
+		PluralName                     string
+		Description                    string
+		IconPath                       string
+		Slug                           string
+		DisplayInSummaryLists          bool
+		UsableForStorage               bool
+		IsVessel                       bool
+		IsExclusivelyVessel            bool
+		IncludeInGeneratedInstructions bool
 	}
 
 	// ValidInstrumentUpdateRequestInput represents what a user could set as input for updating valid instruments.
 	ValidInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		Name                  *string `json:"name,omitempty"`
-		PluralName            *string `json:"pluralName,omitempty"`
-		Description           *string `json:"description,omitempty"`
-		IconPath              *string `json:"iconPath,omitempty"`
-		Slug                  *string `json:"slug,omitempty"`
-		UsableForStorage      *bool   `json:"usableForStorage,omitempty"`
-		DisplayInSummaryLists *bool   `json:"displayInSummaryLists,omitempty"`
-		IsVessel              *bool   `json:"isVessel,omitempty"`
-		IsExclusivelyVessel   *bool   `json:"isExclusivelyVessel,omitempty"`
+		Name                           *string `json:"name,omitempty"`
+		PluralName                     *string `json:"pluralName,omitempty"`
+		Description                    *string `json:"description,omitempty"`
+		IconPath                       *string `json:"iconPath,omitempty"`
+		Slug                           *string `json:"slug,omitempty"`
+		UsableForStorage               *bool   `json:"usableForStorage,omitempty"`
+		DisplayInSummaryLists          *bool   `json:"displayInSummaryLists,omitempty"`
+		IncludeInGeneratedInstructions *bool   `json:"includeInGeneratedInstructions,omitempty"`
+		IsVessel                       *bool   `json:"isVessel,omitempty"`
+		IsExclusivelyVessel            *bool   `json:"isExclusivelyVessel,omitempty"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
@@ -172,6 +177,10 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 
 	if input.IsExclusivelyVessel != nil && *input.IsExclusivelyVessel != x.IsExclusivelyVessel {
 		x.IsExclusivelyVessel = *input.IsExclusivelyVessel
+	}
+
+	if input.IncludeInGeneratedInstructions != nil && *input.IncludeInGeneratedInstructions != x.IncludeInGeneratedInstructions {
+		x.IncludeInGeneratedInstructions = *input.IncludeInGeneratedInstructions
 	}
 }
 

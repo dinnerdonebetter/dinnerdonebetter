@@ -61,6 +61,7 @@ func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCo
 			x.Instrument.IconPath,
 			x.Instrument.UsableForStorage,
 			x.Instrument.DisplayInSummaryLists,
+			x.Instrument.IncludeInGeneratedInstructions,
 			x.Instrument.IsVessel,
 			x.Instrument.IsExclusivelyVessel,
 			x.Instrument.Slug,

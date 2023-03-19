@@ -10,17 +10,18 @@ import (
 // BuildFakeValidInstrument builds a faked valid instrument.
 func BuildFakeValidInstrument() *types.ValidInstrument {
 	return &types.ValidInstrument{
-		ID:                    BuildFakeID(),
-		Name:                  buildUniqueString(),
-		PluralName:            buildUniqueString(),
-		Description:           buildUniqueString(),
-		IconPath:              buildUniqueString(),
-		Slug:                  buildUniqueString(),
-		DisplayInSummaryLists: fake.Bool(),
-		UsableForStorage:      fake.Bool(),
-		IsVessel:              fake.Bool(),
-		IsExclusivelyVessel:   fake.Bool(),
-		CreatedAt:             BuildFakeTime(),
+		ID:                             BuildFakeID(),
+		Name:                           buildUniqueString(),
+		PluralName:                     buildUniqueString(),
+		Description:                    buildUniqueString(),
+		IconPath:                       buildUniqueString(),
+		Slug:                           buildUniqueString(),
+		DisplayInSummaryLists:          fake.Bool(),
+		IncludeInGeneratedInstructions: fake.Bool(),
+		UsableForStorage:               fake.Bool(),
+		IsVessel:                       fake.Bool(),
+		IsExclusivelyVessel:            fake.Bool(),
+		CreatedAt:                      BuildFakeTime(),
 	}
 }
 
