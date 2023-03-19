@@ -32,6 +32,7 @@ func BuildFakeRecipe() *types.Recipe {
 	return &types.Recipe{
 		ID:                 recipeID,
 		Name:               buildUniqueString(),
+		Slug:               buildUniqueString(),
 		Source:             buildUniqueString(),
 		Description:        buildUniqueString(),
 		InspiredByRecipeID: func(x string) *string { return &x }(buildUniqueString()),
@@ -42,6 +43,8 @@ func BuildFakeRecipe() *types.Recipe {
 		SealOfApproval:     false,
 		Media:              recipeMedia,
 		YieldsPortions:     fake.Uint8(),
+		PortionName:        buildUniqueString(),
+		PluralPortionName:  buildUniqueString(),
 	}
 }
 

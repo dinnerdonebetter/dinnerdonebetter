@@ -22,6 +22,7 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid instrument %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.Equal(t, expected.UsableForStorage, actual.UsableForStorage, "expected UsableForStorage for valid instrument %s to be %v, but it was %v", expected.ID, expected.UsableForStorage, actual.UsableForStorage)
 	assert.Equal(t, expected.DisplayInSummaryLists, actual.DisplayInSummaryLists, "expected DisplayInSummaryLists for valid instrument %s to be %v, but it was %v", expected.ID, expected.DisplayInSummaryLists, actual.DisplayInSummaryLists)
+	assert.Equal(t, expected.IncludeInGeneratedInstructions, actual.IncludeInGeneratedInstructions, "expected IncludeInGeneratedInstructions for valid instrument %s to be %v, but it was %v", expected.ID, expected.IncludeInGeneratedInstructions, actual.IncludeInGeneratedInstructions)
 	assert.Equal(t, expected.IsVessel, actual.IsVessel, "expected IsVessel for valid instrument %s to be %v, but it was %v", expected.ID, expected.IsVessel, actual.IsVessel)
 	assert.Equal(t, expected.IsExclusivelyVessel, actual.IsExclusivelyVessel, "expected IsExclusivelyVessel for valid instrument %s to be %v, but it was %v", expected.ID, expected.IsExclusivelyVessel, actual.IsExclusivelyVessel)
 	assert.Equal(t, expected.Slug, actual.Slug, "expected UsableForStorage for valid instrument %s to be %v, but it was %v", expected.ID, expected.UsableForStorage, actual.UsableForStorage)

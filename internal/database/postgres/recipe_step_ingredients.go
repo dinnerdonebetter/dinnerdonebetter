@@ -74,6 +74,8 @@ var (
 		"recipe_step_ingredients.ingredient_notes",
 		"recipe_step_ingredients.option_index",
 		"recipe_step_ingredients.requires_defrost",
+		"recipe_step_ingredients.to_taste",
+		"recipe_step_ingredients.product_percentage_to_use",
 		"recipe_step_ingredients.vessel_index",
 		"recipe_step_ingredients.created_at",
 		"recipe_step_ingredients.last_updated_at",
@@ -152,6 +154,8 @@ func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Sc
 		&x.IngredientNotes,
 		&x.OptionIndex,
 		&x.RequiresDefrost,
+		&x.ToTaste,
+		&x.ProductPercentageToUse,
 		&x.VesselIndex,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -430,6 +434,8 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		input.IngredientNotes,
 		input.OptionIndex,
 		input.RequiresDefrost,
+		input.ToTaste,
+		input.ProductPercentageToUse,
 		input.VesselIndex,
 		input.BelongsToRecipeStep,
 	}
@@ -440,20 +446,22 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 	}
 
 	x := &types.RecipeStepIngredient{
-		ID:                  input.ID,
-		Name:                input.Name,
-		Optional:            input.Optional,
-		MeasurementUnit:     types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
-		MinimumQuantity:     input.MinimumQuantity,
-		MaximumQuantity:     input.MaximumQuantity,
-		QuantityNotes:       input.QuantityNotes,
-		IngredientNotes:     input.IngredientNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		RecipeStepProductID: input.RecipeStepProductID,
-		OptionIndex:         input.OptionIndex,
-		RequiresDefrost:     input.RequiresDefrost,
-		VesselIndex:         input.VesselIndex,
-		CreatedAt:           q.currentTime(),
+		ID:                     input.ID,
+		Name:                   input.Name,
+		Optional:               input.Optional,
+		MeasurementUnit:        types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
+		MinimumQuantity:        input.MinimumQuantity,
+		MaximumQuantity:        input.MaximumQuantity,
+		QuantityNotes:          input.QuantityNotes,
+		IngredientNotes:        input.IngredientNotes,
+		BelongsToRecipeStep:    input.BelongsToRecipeStep,
+		RecipeStepProductID:    input.RecipeStepProductID,
+		OptionIndex:            input.OptionIndex,
+		RequiresDefrost:        input.RequiresDefrost,
+		ToTaste:                input.ToTaste,
+		ProductPercentageToUse: input.ProductPercentageToUse,
+		VesselIndex:            input.VesselIndex,
+		CreatedAt:              q.currentTime(),
 	}
 
 	if input.IngredientID != nil {
@@ -497,6 +505,8 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 		updated.IngredientNotes,
 		updated.OptionIndex,
 		updated.RequiresDefrost,
+		updated.ToTaste,
+		updated.ProductPercentageToUse,
 		updated.VesselIndex,
 		updated.BelongsToRecipeStep,
 		updated.ID,
@@ -539,7 +549,7 @@ func (q *Querier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe step ingredient archive", archiveRecipeStepIngredientQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe step ingredient")
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step ingredient")
 	}
 
 	logger.Info("recipe step ingredient archived")

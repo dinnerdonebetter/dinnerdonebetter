@@ -46,6 +46,7 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.Preparation.ConditionExpressionRequired,
 			x.Preparation.ConsumesVessel,
 			x.Preparation.OnlyForVessels,
+			x.Preparation.Universal,
 			x.Preparation.MinimumVesselCount,
 			x.Preparation.MaximumVesselCount,
 			x.Preparation.Slug,
@@ -680,6 +681,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.IngredientNotes,
 				ingredient.OptionIndex,
 				ingredient.RequiresDefrost,
+				ingredient.ToTaste,
+				ingredient.ProductPercentageToUse,
 				ingredient.VesselIndex,
 				ingredient.BelongsToRecipeStep,
 			}
@@ -840,6 +843,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Ingredients[0].IngredientNotes,
 			exampleInput.Ingredients[0].OptionIndex,
 			exampleInput.Ingredients[0].RequiresDefrost,
+			exampleInput.Ingredients[0].ToTaste,
+			exampleInput.Ingredients[0].ProductPercentageToUse,
 			exampleInput.Ingredients[0].VesselIndex,
 			exampleInput.Ingredients[0].BelongsToRecipeStep,
 		}
@@ -914,6 +919,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.IngredientNotes,
 				ingredient.OptionIndex,
 				ingredient.RequiresDefrost,
+				ingredient.ToTaste,
+				ingredient.ProductPercentageToUse,
 				ingredient.VesselIndex,
 				ingredient.BelongsToRecipeStep,
 			}

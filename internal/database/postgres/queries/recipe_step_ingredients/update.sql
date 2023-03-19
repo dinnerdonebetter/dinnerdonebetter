@@ -10,7 +10,9 @@ UPDATE recipe_step_ingredients SET
 	ingredient_notes = $9,
 	option_index = $10,
 	requires_defrost = $11,
-    vessel_index = $12,
+	to_taste = $12,
+	product_percentage_to_use = $13,
+    vessel_index = $14,
 	last_updated_at = NOW()
-WHERE archived_at IS NULL AND belongs_to_recipe_step = $13
-	AND id = $14;
+WHERE archived_at IS NULL AND belongs_to_recipe_step = $15
+	AND id = $16;

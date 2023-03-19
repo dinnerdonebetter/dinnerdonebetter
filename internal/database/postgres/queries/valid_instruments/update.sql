@@ -6,9 +6,10 @@ SET
 	icon_path = $4,
 	usable_for_storage = $5,
 	display_in_summary_lists = $6,
-    is_vessel = $7,
-    is_exclusively_vessel = $8,
-	slug = $9,
+	include_in_generated_instructions = $7,
+    is_vessel = $8,
+    is_exclusively_vessel = $9,
+	slug = $10,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $10;
+	AND id = $11;

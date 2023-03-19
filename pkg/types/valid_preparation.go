@@ -54,6 +54,7 @@ type (
 		ConsumesVessel              bool       `json:"consumesVessel"`
 		OnlyForVessels              bool       `json:"onlyForVessels"`
 		YieldsNothing               bool       `json:"yieldsNothing"`
+		Universal                   bool       `json:"universal"`
 	}
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
@@ -78,6 +79,7 @@ type (
 		OnlyForVessels              bool   `json:"onlyForVessels"`
 		RestrictToIngredients       bool   `json:"restrictToIngredients"`
 		YieldsNothing               bool   `json:"yieldsNothing"`
+		Universal                   bool   `json:"universal"`
 	}
 
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
@@ -103,6 +105,7 @@ type (
 		OnlyForVessels              bool
 		RestrictToIngredients       bool
 		YieldsNothing               bool
+		Universal                   bool
 	}
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
@@ -127,6 +130,7 @@ type (
 		OnlyForVessels              *bool   `json:"onlyForVessels,omitempty"`
 		MinimumVesselCount          *int32  `json:"minimumVesselCount,omitempty"`
 		MaximumVesselCount          *int32  `json:"maximumVesselCount,omitempty"`
+		Universal                   *bool   `json:"universal,omitempty"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -225,6 +229,10 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 
 	if input.MaximumVesselCount != nil && *input.MaximumVesselCount != *x.MaximumVesselCount {
 		x.MaximumVesselCount = input.MaximumVesselCount
+	}
+
+	if input.Universal != nil && *input.Universal != x.Universal {
+		x.Universal = *input.Universal
 	}
 }
 

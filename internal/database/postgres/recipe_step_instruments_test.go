@@ -37,6 +37,7 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 			x.Instrument.IconPath,
 			x.Instrument.UsableForStorage,
 			x.Instrument.DisplayInSummaryLists,
+			x.Instrument.IncludeInGeneratedInstructions,
 			x.Instrument.IsVessel,
 			x.Instrument.IsExclusivelyVessel,
 			x.Instrument.Slug,

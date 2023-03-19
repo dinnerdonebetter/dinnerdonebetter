@@ -14,10 +14,11 @@ SET
 	condition_expression_required = $12,
     consumes_vessel = $13,
     only_for_vessels = $14,
-    minimum_vessel_count = $15,
-    maximum_vessel_count = $16,
-	slug = $17,
-	past_tense = $18,
+    universal = $15,
+    minimum_vessel_count = $16,
+    maximum_vessel_count = $17,
+	slug = $18,
+	past_tense = $19,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $19;
+	AND id = $20;
