@@ -24,7 +24,6 @@ func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *types.Va
 		ConditionExpressionRequired: &input.ConditionExpressionRequired,
 		ConsumesVessel:              &input.ConsumesVessel,
 		OnlyForVessels:              &input.OnlyForVessels,
-		Universal:                   &input.Universal,
 		MinimumVesselCount:          &input.MinimumVesselCount,
 		MaximumVesselCount:          input.MaximumVesselCount,
 	}
@@ -52,7 +51,6 @@ func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreati
 		ConditionExpressionRequired: input.ConditionExpressionRequired,
 		ConsumesVessel:              input.ConsumesVessel,
 		OnlyForVessels:              input.OnlyForVessels,
-		Universal:                   input.Universal,
 		MinimumVesselCount:          input.MinimumVesselCount,
 		MaximumVesselCount:          input.MaximumVesselCount,
 	}
@@ -79,7 +77,6 @@ func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparat
 		ConditionExpressionRequired: validPreparation.ConditionExpressionRequired,
 		ConsumesVessel:              validPreparation.ConsumesVessel,
 		OnlyForVessels:              validPreparation.OnlyForVessels,
-		Universal:                   validPreparation.Universal,
 		MinimumVesselCount:          validPreparation.MinimumVesselCount,
 		MaximumVesselCount:          validPreparation.MaximumVesselCount,
 	}
@@ -105,7 +102,6 @@ func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPrepara
 		ConditionExpressionRequired: validPreparation.ConditionExpressionRequired,
 		ConsumesVessel:              validPreparation.ConsumesVessel,
 		OnlyForVessels:              validPreparation.OnlyForVessels,
-		Universal:                   validPreparation.Universal,
 		MinimumVesselCount:          validPreparation.MinimumVesselCount,
 		MaximumVesselCount:          validPreparation.MaximumVesselCount,
 	}
