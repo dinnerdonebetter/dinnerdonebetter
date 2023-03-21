@@ -164,7 +164,7 @@ func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx conte
 		ctx,
 		x,
 		validation.Field(&x.InstrumentID, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
+		validation.Field(&x.Name, validation.Required),
 	)
 }
 
