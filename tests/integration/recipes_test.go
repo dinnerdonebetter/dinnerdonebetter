@@ -209,6 +209,14 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			garlicPaste, garlicPasteErr := testClients.admin.CreateValidIngredient(ctx, garlicPasteInput)
 			require.NoError(t, garlicPasteErr)
 
+			t.Log("creating valid instrument")
+			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
+			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			require.NoError(t, err)
+			t.Logf("valid instrument %q created", createdValidInstrument.ID)
+			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+
 			t.Log("creating recipe")
 			expected := &types.Recipe{
 				Name:        "sopa de frijol",
@@ -226,6 +234,12 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						},
 						Notes:       "first step",
 						Preparation: *soak,
+						Instruments: []*types.RecipeStepInstrument{
+							{
+								Name:       "whatever",
+								Instrument: createdValidInstrument,
+							},
+						},
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								Ingredient:      pintoBeans,
@@ -254,6 +268,12 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						},
 						Notes:       "second step",
 						Preparation: *mix,
+						Instruments: []*types.RecipeStepInstrument{
+							{
+								Name:       "whatever",
+								Instrument: createdValidInstrument,
+							},
+						},
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								Name:            "soaked pinto beans",
@@ -289,6 +309,12 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						},
 						Notes:         expected.Steps[0].Notes,
 						PreparationID: expected.Steps[0].Preparation.ID,
+						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
+							{
+								Name:         "whatever",
+								InstrumentID: pointers.String(createdValidInstrument.ID),
+							},
+						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
 							{
 								IngredientID:      &expected.Steps[0].Ingredients[0].Ingredient.ID,
@@ -318,6 +344,12 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						},
 						Notes:         expected.Steps[1].Notes,
 						PreparationID: expected.Steps[1].Preparation.ID,
+						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
+							{
+								Name:         "whatever",
+								InstrumentID: pointers.String(createdValidInstrument.ID),
+							},
+						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
 							{
 								Name:                            expected.Steps[1].Ingredients[0].Name,
@@ -599,6 +631,14 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			chickenBreast, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, chickenBreastInput)
 			require.NoError(t, createdValidIngredientErr)
 
+			t.Log("creating valid instrument")
+			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
+			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			require.NoError(t, err)
+			t.Logf("valid instrument %q created", createdValidInstrument.ID)
+			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+
 			t.Log("creating prerequisite valid preparation")
 			sauteeBase := fakes.BuildFakeValidPreparation()
 			sauteeInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(sauteeBase)
@@ -624,6 +664,12 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						},
 						Notes:       "first step",
 						Preparation: *dice,
+						Instruments: []*types.RecipeStepInstrument{
+							{
+								Name:       "whatever",
+								Instrument: createdValidInstrument,
+							},
+						},
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								RecipeStepProductID: nil,
@@ -648,6 +694,12 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						},
 						Notes:       "second step",
 						Preparation: *sautee,
+						Instruments: []*types.RecipeStepInstrument{
+							{
+								Name:       "whatever",
+								Instrument: createdValidInstrument,
+							},
+						},
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								Name:            "diced chicken breast",
@@ -677,6 +729,12 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						},
 						Notes:         "first step",
 						PreparationID: dice.ID,
+						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
+							{
+								Name:         "whatever",
+								InstrumentID: pointers.String(createdValidInstrument.ID),
+							},
+						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
 							{
 								IngredientID:      &chickenBreast.ID,
@@ -700,6 +758,12 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						},
 						Notes:         "second step",
 						PreparationID: sautee.ID,
+						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
+							{
+								Name:         "whatever",
+								InstrumentID: pointers.String(createdValidInstrument.ID),
+							},
+						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
 							{
 								Name:                            "diced chicken breast",

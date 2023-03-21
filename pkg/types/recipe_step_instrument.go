@@ -3,10 +3,12 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -157,15 +159,30 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepInstrumentCreationRequestInput)(nil)
+var errInstrumentIDOrProductIndicesRequired = errors.New("either instrumentID or productOfRecipeStepIndex and productOfRecipeStepProductIndex must be set")
 
 // ValidateWithContext validates a RecipeStepInstrumentCreationRequestInput.
 func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var err *multierror.Error
+
+	if x.InstrumentID == nil && x.ProductOfRecipeStepIndex == nil && x.ProductOfRecipeStepProductIndex == nil {
+		err = multierror.Append(err, errInstrumentIDOrProductIndicesRequired)
+	}
+
+	validationErr := validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.InstrumentID, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
+		validation.Field(&x.Name, validation.Required),
 	)
+	if validationErr != nil {
+		err = multierror.Append(err, validationErr)
+	}
+
+	if err == nil {
+		return nil
+	}
+
+	return err
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepInstrumentDatabaseCreationInput)(nil)

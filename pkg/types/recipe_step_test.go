@@ -21,6 +21,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
 		Instruments: []*RecipeStepInstrumentCreationRequestInput{
 			{
+				InstrumentID:    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 				Name:            fake.LoremIpsumSentence(exampleQuantity),
 				MinimumQuantity: fake.Uint32(),
 			},
