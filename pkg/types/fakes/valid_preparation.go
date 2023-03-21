@@ -34,7 +34,6 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 		ConsumesVessel:              fake.Bool(),
 		OnlyForVessels:              fake.Bool(),
 		MinimumVesselCount:          int32(minVessels),
-		Universal:                   fake.Bool(),
 		MaximumVesselCount:          pointers.Int32(int32(minVessels + 1)),
 	}
 }

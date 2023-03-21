@@ -360,6 +360,11 @@ var (
 			Description: "some miscellaneous fields",
 			Script:      fetchMigration("00069_some_improvements"),
 		},
+		{
+			Version:     70,
+			Description: "some edits to recent changes",
+			Script:      fetchMigration("00070_further_fixes"),
+		},
 	}
 )
 

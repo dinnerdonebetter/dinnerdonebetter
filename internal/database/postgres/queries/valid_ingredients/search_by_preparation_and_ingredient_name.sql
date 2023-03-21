@@ -1,5 +1,5 @@
 SELECT
-	valid_ingredients.id,
+	DISTINCT(valid_ingredients.id),
 	valid_ingredients.name,
 	valid_ingredients.description,
 	valid_ingredients.warning,
@@ -29,9 +29,10 @@ SELECT
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at
-FROM valid_ingredients
-	JOIN valid_ingredient_preparations ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
+FROM valid_ingredient_preparations
+	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
+	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
 WHERE valid_ingredient_preparations.archived_at IS NULL
     AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_preparations.valid_preparation_id = $1
+	AND (valid_ingredient_preparations.valid_preparation_id = $1 OR valid_preparations.restrict_to_ingredients IS FALSE)
 	AND valid_ingredients.name ILIKE $2;
