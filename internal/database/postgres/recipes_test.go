@@ -1081,7 +1081,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					vessel.BelongsToRecipeStep,
 					vessel.RecipeStepProductID,
 					vessel.InstrumentID,
-					vessel.VesselPredicate,
+					vessel.VesselPreposition,
 					vessel.MinimumQuantity,
 					vessel.MaximumQuantity,
 					vessel.UnavailableAfterStep,

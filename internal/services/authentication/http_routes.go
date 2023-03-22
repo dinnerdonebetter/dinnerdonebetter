@@ -179,8 +179,10 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		http.SetCookie(res, cookie)
 
 		statusResponse := &types.UserStatusResponse{
+			UserID:                   user.ID,
 			UserIsAuthenticated:      true,
 			AccountStatus:            user.AccountStatus,
+			ActiveHousehold:          defaultHouseholdID,
 			AccountStatusExplanation: user.AccountStatusExplanation,
 		}
 
