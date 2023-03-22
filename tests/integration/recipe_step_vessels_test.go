@@ -28,7 +28,7 @@ func checkRecipeStepVesselEquality(t *testing.T, expected, actual *types.RecipeS
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.BelongsToRecipeStep, actual.BelongsToRecipeStep, "expected BelongsToRecipeStep for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.BelongsToRecipeStep, actual.BelongsToRecipeStep)
-	assert.Equal(t, expected.VesselPredicate, actual.VesselPredicate, "expected VesselPredicate for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.VesselPredicate, actual.VesselPredicate)
+	assert.Equal(t, expected.VesselPreposition, actual.VesselPreposition, "expected VesselPreposition for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.VesselPreposition, actual.VesselPreposition)
 	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)
 	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
 	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected UnavailableAfterStep for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.UnavailableAfterStep, actual.UnavailableAfterStep)

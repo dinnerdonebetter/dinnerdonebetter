@@ -73,6 +73,7 @@ type (
 	UserStatusResponse struct {
 		_ struct{}
 
+		UserID                   string `json:"userID"`
 		AccountStatus            string `json:"accountStatus,omitempty"`
 		AccountStatusExplanation string `json:"accountStatusExplanation"`
 		ActiveHousehold          string `json:"activeHousehold,omitempty"`

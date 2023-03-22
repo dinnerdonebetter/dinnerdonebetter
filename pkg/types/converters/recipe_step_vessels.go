@@ -15,7 +15,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *types.Re
 		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
 		MinimumQuantity:      &input.MinimumQuantity,
 		MaximumQuantity:      input.MaximumQuantity,
-		VesselPredicate:      &input.VesselPredicate,
+		VesselPreposition:    &input.VesselPreposition,
 		UnavailableAfterStep: &input.UnavailableAfterStep,
 	}
 
@@ -34,7 +34,7 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 		MaximumQuantity:                 input.MaximumQuantity,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
-		VesselPredicate:                 input.VesselPredicate,
+		VesselPreposition:               input.VesselPreposition,
 		UnavailableAfterStep:            input.UnavailableAfterStep,
 	}
 
@@ -53,7 +53,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(recipeStepIns
 		Name:                 recipeStepInstrument.Name,
 		RecipeStepProductID:  recipeStepInstrument.RecipeStepProductID,
 		Notes:                recipeStepInstrument.Notes,
-		VesselPredicate:      recipeStepInstrument.VesselPredicate,
+		VesselPreposition:    recipeStepInstrument.VesselPreposition,
 		UnavailableAfterStep: recipeStepInstrument.UnavailableAfterStep,
 		MinimumQuantity:      recipeStepInstrument.MinimumQuantity,
 		MaximumQuantity:      recipeStepInstrument.MaximumQuantity,
@@ -74,7 +74,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(recipeStepIn
 		RecipeStepProductID:  recipeStepInstrument.RecipeStepProductID,
 		Notes:                recipeStepInstrument.Notes,
 		BelongsToRecipeStep:  recipeStepInstrument.BelongsToRecipeStep,
-		VesselPredicate:      recipeStepInstrument.VesselPredicate,
+		VesselPreposition:    recipeStepInstrument.VesselPreposition,
 		UnavailableAfterStep: recipeStepInstrument.UnavailableAfterStep,
 		MinimumQuantity:      recipeStepInstrument.MinimumQuantity,
 		MaximumQuantity:      recipeStepInstrument.MaximumQuantity,

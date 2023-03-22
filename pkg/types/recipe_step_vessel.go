@@ -40,7 +40,7 @@ type (
 		ID                   string           `json:"id"`
 		Notes                string           `json:"notes"`
 		BelongsToRecipeStep  string           `json:"belongsToRecipeStep"`
-		VesselPredicate      string           `json:"vesselPredicate"`
+		VesselPreposition    string           `json:"vesselPreposition"`
 		Name                 string           `json:"name"`
 		MinimumQuantity      uint32           `json:"minimumQuantity"`
 		UnavailableAfterStep bool             `json:"unavailableAfterStep"`
@@ -56,7 +56,7 @@ type (
 		MaximumQuantity                 *uint32 `json:"maximumQuantity"`
 		Name                            string  `json:"name"`
 		Notes                           string  `json:"notes"`
-		VesselPredicate                 string  `json:"vesselPredicate"`
+		VesselPreposition               string  `json:"vesselPreposition"`
 		MinimumQuantity                 uint32  `json:"minimumQuantity"`
 		UnavailableAfterStep            bool    `json:"unavailableAfterStep"`
 	}
@@ -72,7 +72,7 @@ type (
 		ID                              string
 		Notes                           string
 		BelongsToRecipeStep             string
-		VesselPredicate                 string
+		VesselPreposition               string
 		Name                            string
 		MinimumQuantity                 uint32
 		UnavailableAfterStep            bool
@@ -89,7 +89,7 @@ type (
 		InstrumentID         *string `json:"instrumentID,omitempty"`
 		MinimumQuantity      *uint32 `json:"minimumQuantity,omitempty"`
 		MaximumQuantity      *uint32 `json:"maximumQuantity,omitempty"`
-		VesselPredicate      *string `json:"vesselPredicate,omitempty"`
+		VesselPreposition    *string `json:"vesselPreposition,omitempty"`
 		UnavailableAfterStep *bool   `json:"unavailableAfterStep,omitempty"`
 	}
 
@@ -130,8 +130,8 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 	if input.MaximumQuantity != nil && x.MaximumQuantity != nil && *input.MaximumQuantity != *x.MaximumQuantity {
 		x.MaximumQuantity = input.MaximumQuantity
 	}
-	if input.VesselPredicate != nil && *input.VesselPredicate != x.VesselPredicate {
-		x.VesselPredicate = *input.VesselPredicate
+	if input.VesselPreposition != nil && *input.VesselPreposition != x.VesselPreposition {
+		x.VesselPreposition = *input.VesselPreposition
 	}
 
 	if input.UnavailableAfterStep != nil && *input.UnavailableAfterStep != x.UnavailableAfterStep {
