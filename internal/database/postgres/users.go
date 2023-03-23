@@ -6,9 +6,8 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"strings"
-
 	"github.com/lib/pq"
+	"strings"
 
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
@@ -382,7 +381,7 @@ var userCreationQuery string
 //go:embed queries/household_user_memberships/create_for_new_user.sql
 var createHouseholdMembershipForNewUserQuery string
 
-// CreateUser creates a user.
+// CreateUser creates a user. TODO: this should return a household as well.
 func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -455,7 +454,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		input.HouseholdName = fmt.Sprintf("%s's cool household", input.Username)
 	}
 
-	if err = q.createHouseholdForUser(ctx, tx, hasValidInvite, input.HouseholdName, user.ID); err != nil {
+	if _, err = q.createHouseholdForUser(ctx, tx, hasValidInvite, input.HouseholdName, user.ID); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 	}
 
@@ -483,7 +482,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	return user, nil
 }
 
-func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, householdName, userID string) error {
+func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, householdName, userID string) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -515,7 +514,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 
 	if writeErr := q.performWriteQuery(ctx, querier, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(writeErr, span, "create household")
+		return nil, observability.PrepareError(writeErr, span, "create household")
 	}
 
 	createHouseholdMembershipForNewUserArgs := []any{
@@ -528,10 +527,20 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 
 	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(err, span, "writing household user membership")
+		return nil, observability.PrepareError(err, span, "writing household user membership")
 	}
 
-	return nil
+	household := &types.Household{
+		CreatedAt:     q.currentTime(),
+		ContactPhone:  householdCreationInput.ContactPhone,
+		ContactEmail:  householdCreationInput.ContactEmail,
+		BelongsToUser: householdCreationInput.BelongsToUser,
+		ID:            householdCreationInput.ID,
+		TimeZone:      householdCreationInput.TimeZone,
+		Name:          householdCreationInput.Name,
+	}
+
+	return household, nil
 }
 
 //go:embed queries/users/update.sql

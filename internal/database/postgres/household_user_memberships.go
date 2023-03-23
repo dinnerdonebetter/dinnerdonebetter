@@ -423,7 +423,7 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 
 	logger.Info("user removed from household")
 
-	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholds(ctx, tx, userID, false, nil)
+	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholdsForUser(ctx, tx, userID, false, nil)
 	if fetchRemainingHouseholdsErr != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(fetchRemainingHouseholdsErr, span, "fetching remaining households")
@@ -433,7 +433,7 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 	logger.Info("remaining households fetched")
 
 	if len(remainingHouseholds.Data) == 0 {
-		if err := q.createHouseholdForUser(ctx, tx, false, "", userID); err != nil {
+		if _, err := q.createHouseholdForUser(ctx, tx, false, "", userID); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 		}
 		return nil

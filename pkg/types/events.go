@@ -25,7 +25,7 @@ type (
 		ValidIngredientState             *ValidIngredientState           `json:"validIngredientState,omitempty"`
 		MealPlanGroceryListItem          *MealPlanGroceryListItem        `json:"mealPlanGroceryListItem,omitempty"`
 		Meal                             *Meal                           `json:"meal,omitempty"`
-		Context                          map[string]string               `json:"context,omitempty"`
+		Context                          map[string]any                  `json:"context,omitempty"`
 		Recipe                           *Recipe                         `json:"recipe,omitempty"`
 		RecipePrepTask                   *RecipePrepTask                 `json:"recipePrepTask,omitempty"`
 		RecipeStep                       *RecipeStep                     `json:"recipeStep,omitempty"`
