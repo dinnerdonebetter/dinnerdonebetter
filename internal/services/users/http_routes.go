@@ -239,10 +239,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			HouseholdID:          defaultHouseholdID,
-			DataType:             types.UserDataType,
-			EventType:            types.UserSignedUpCustomerEventType,
-			AttributableToUserID: user.ID,
+			HouseholdID: defaultHouseholdID,
+			DataType:    types.UserDataType,
+			EventType:   types.UserSignedUpCustomerEventType,
 		}
 
 		if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
@@ -471,9 +470,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.UserDataType,
-			EventType:            types.TwoFactorSecretVerifiedCustomerEventType,
-			AttributableToUserID: user.ID,
+			DataType:  types.UserDataType,
+			EventType: types.TwoFactorSecretVerifiedCustomerEventType,
 		}
 
 		if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {

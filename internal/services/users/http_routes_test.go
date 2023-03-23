@@ -381,6 +381,13 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = db
 
+		db.HouseholdUserMembershipDataManager.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdUserMembershipDataManager = db
+
 		helper.req = helper.req.WithContext(
 			context.WithValue(
 				helper.req.Context(),
@@ -542,6 +549,13 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(exampleHouseholdInvitation, nil)
 		helper.service.userDataManager = db
 		helper.service.householdInvitationDataManager = db
+
+		db.HouseholdUserMembershipDataManager.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdUserMembershipDataManager = db
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(
@@ -739,6 +753,13 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = db
 
+		db.HouseholdUserMembershipDataManager.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdUserMembershipDataManager = db
+
 		sg := &mockrandom.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
@@ -887,6 +908,13 @@ func TestService_CreateHandler(T *testing.T) {
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = db
+
+		db.HouseholdUserMembershipDataManager.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdUserMembershipDataManager = db
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(

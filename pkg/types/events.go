@@ -60,7 +60,6 @@ type (
 		RecipeStepID                     string                          `json:"recipeStepID,omitempty"`
 		RecipePrepTaskID                 string                          `json:"recipePrepTaskID,omitempty"`
 		RecipeID                         string                          `json:"recipeID,omitempty"`
-		AttributableToUserID             string                          `json:"attributableToUserID,omitempty"`
 		MealID                           string                          `json:"mealID,omitempty"`
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
 		EventType                        CustomerEventType               `json:"messageType"`
@@ -78,8 +77,6 @@ type (
 	ChoreMessage struct {
 		_ struct{}
 
-		ChoreType                 choreType `json:"choreType"`
-		MealPlanID                string    `json:"mealPlanID,omitempty"`
-		AttributableToHouseholdID string    `json:"attributableToHouseholdID,omitempty"`
+		ChoreType choreType `json:"choreType"`
 	}
 )

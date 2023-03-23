@@ -65,11 +65,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.WebhookDataType,
-			EventType:            types.WebhookCreatedCustomerEventType,
-			Webhook:              webhook,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			DataType:    types.WebhookDataType,
+			EventType:   types.WebhookCreatedCustomerEventType,
+			Webhook:     webhook,
+			HouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -206,10 +205,9 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.WebhookDataType,
-			EventType:            types.WebhookArchivedCustomerEventType,
-			AttributableToUserID: userID,
-			HouseholdID:          householdID,
+			DataType:    types.WebhookDataType,
+			EventType:   types.WebhookArchivedCustomerEventType,
+			HouseholdID: householdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

@@ -78,12 +78,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.MealPlanDataType,
-			EventType:            types.MealPlanOptionCreatedCustomerEventType,
-			MealPlanID:           mealPlanID,
-			MealPlanOption:       mealPlanOption,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			DataType:       types.MealPlanDataType,
+			EventType:      types.MealPlanOptionCreatedCustomerEventType,
+			MealPlanID:     mealPlanID,
+			MealPlanOption: mealPlanOption,
+			HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -264,12 +263,11 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.MealPlanOptionDataType,
-			EventType:            types.MealPlanOptionUpdatedCustomerEventType,
-			MealPlanID:           mealPlanID,
-			MealPlanOption:       mealPlanOption,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			DataType:       types.MealPlanOptionDataType,
+			EventType:      types.MealPlanOptionUpdatedCustomerEventType,
+			MealPlanID:     mealPlanID,
+			MealPlanOption: mealPlanOption,
+			HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -333,12 +331,11 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.MealPlanOptionDataType,
-			EventType:            types.MealPlanOptionArchivedCustomerEventType,
-			MealPlanID:           mealPlanID,
-			MealPlanOptionID:     mealPlanOptionID,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			DataType:         types.MealPlanOptionDataType,
+			EventType:        types.MealPlanOptionArchivedCustomerEventType,
+			MealPlanID:       mealPlanID,
+			MealPlanOptionID: mealPlanOptionID,
+			HouseholdID:      sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

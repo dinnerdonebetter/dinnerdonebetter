@@ -70,7 +70,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:                   types.ValidMeasurementConversionDataType,
 			EventType:                  types.ValidMeasurementConversionCreatedCustomerEventType,
 			ValidMeasurementConversion: validMeasurementConversion,
-			AttributableToUserID:       sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -183,7 +182,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:                   types.ValidMeasurementConversionDataType,
 			EventType:                  types.ValidMeasurementConversionUpdatedCustomerEventType,
 			ValidMeasurementConversion: validMeasurementConversion,
-			AttributableToUserID:       sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -237,9 +235,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.ValidMeasurementConversionDataType,
-			EventType:            types.ValidMeasurementConversionArchivedCustomerEventType,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
+			DataType:  types.ValidMeasurementConversionDataType,
+			EventType: types.ValidMeasurementConversionArchivedCustomerEventType,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

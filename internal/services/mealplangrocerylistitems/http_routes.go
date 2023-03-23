@@ -76,7 +76,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:               types.MealPlanCreatedCustomerEventType,
 			MealPlanID:              mealPlanID,
 			MealPlanGroceryListItem: mealPlanGroceryListItem,
-			AttributableToUserID:    sessionCtxData.Requester.UserID,
 			HouseholdID:             sessionCtxData.ActiveHouseholdID,
 		}
 
@@ -243,7 +242,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:                 types.MealPlanGroceryListItemUpdatedCustomerEventType,
 			MealPlanGroceryListItem:   mealPlanGroceryListItem,
 			MealPlanGroceryListItemID: mealPlanGroceryListItemID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			HouseholdID:               sessionCtxData.ActiveHouseholdID,
 		}
 
@@ -308,7 +306,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:                  types.MealPlanGroceryListItemDataType,
 			EventType:                 types.MealPlanGroceryListItemArchivedCustomerEventType,
 			MealPlanGroceryListItemID: mealPlanGroceryListItemID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			HouseholdID:               sessionCtxData.ActiveHouseholdID,
 		}
 

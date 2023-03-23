@@ -166,10 +166,9 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 
 		if s.dataChangesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:             types.UserDataType,
-				EventType:            types.UserLoggedInCustomerEventType,
-				HouseholdID:          defaultHouseholdID,
-				AttributableToUserID: user.ID,
+				DataType:    types.UserDataType,
+				EventType:   types.UserLoggedInCustomerEventType,
+				HouseholdID: defaultHouseholdID,
 			}
 
 			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -257,10 +256,9 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.UserDataType,
-			EventType:            types.UserChangedActiveHouseholdCustomerEventType,
-			AttributableToUserID: requesterID,
-			Context: map[string]string{
+			DataType:  types.UserDataType,
+			EventType: types.UserChangedActiveHouseholdCustomerEventType,
+			Context: map[string]any{
 				"old_household_id": sessionCtxData.ActiveHouseholdID,
 			},
 			HouseholdID: householdID,
@@ -326,9 +324,8 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.UserDataType,
-			EventType:            types.UserLoggedOutCustomerEventType,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
+			DataType:  types.UserDataType,
+			EventType: types.UserLoggedOutCustomerEventType,
 		}
 
 		if dataPublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataPublishErr != nil {

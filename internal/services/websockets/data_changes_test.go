@@ -44,7 +44,7 @@ func Test_handleDataChange(T *testing.T) {
 		ctx := context.Background()
 		s := buildTestHelper(t)
 
-		msg := &types.DataChangeMessage{AttributableToUserID: s.exampleUser.ID}
+		msg := &types.DataChangeMessage{HouseholdID: s.exampleHousehold.ID}
 		examplePayload, err := json.Marshal(msg)
 		require.NoError(t, err)
 
@@ -115,7 +115,7 @@ func Test_handleDataChange(T *testing.T) {
 		ctx := context.Background()
 		s := buildTestHelper(t)
 
-		msg := &types.DataChangeMessage{AttributableToUserID: s.exampleUser.ID}
+		msg := &types.DataChangeMessage{HouseholdID: s.exampleHousehold.ID}
 		examplePayload, err := json.Marshal(msg)
 		require.NoError(t, err)
 
@@ -139,7 +139,7 @@ func Test_handleDataChange(T *testing.T) {
 		ctx := context.Background()
 		s := buildTestHelper(t)
 
-		msg := &types.DataChangeMessage{AttributableToUserID: s.exampleUser.ID}
+		msg := &types.DataChangeMessage{HouseholdID: s.exampleHousehold.ID}
 		examplePayload, err := json.Marshal(msg)
 		require.NoError(t, err)
 

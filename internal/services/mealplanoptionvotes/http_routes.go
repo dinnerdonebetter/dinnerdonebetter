@@ -81,7 +81,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				MealPlanOptionID:     vote.BelongsToMealPlanOption,
 				MealPlanOptionVote:   vote,
 				MealPlanOptionVoteID: vote.ID,
-				AttributableToUserID: sessionCtxData.Requester.UserID,
 				HouseholdID:          sessionCtxData.ActiveHouseholdID,
 			}
 
@@ -113,7 +112,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
 				MealPlanOptionVote:   lastVote,
 				MealPlanOptionVoteID: lastVote.ID,
-				AttributableToUserID: sessionCtxData.Requester.UserID,
 				HouseholdID:          sessionCtxData.ActiveHouseholdID,
 			}
 
@@ -138,7 +136,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 					MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
 					MealPlanOptionVote:   lastVote,
 					MealPlanOptionVoteID: lastVote.ID,
-					AttributableToUserID: sessionCtxData.Requester.UserID,
 					HouseholdID:          sessionCtxData.ActiveHouseholdID,
 				}
 				if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
@@ -340,7 +337,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			MealPlanOptionID:     mealPlanOptionID,
 			MealPlanOptionVote:   mealPlanOptionVote,
 			MealPlanOptionVoteID: mealPlanOptionVote.ID,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
 			HouseholdID:          sessionCtxData.ActiveHouseholdID,
 		}
 
@@ -415,7 +411,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			MealPlanID:           mealPlanID,
 			MealPlanOptionID:     mealPlanOptionID,
 			MealPlanOptionVoteID: mealPlanOptionVoteID,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
 			HouseholdID:          sessionCtxData.ActiveHouseholdID,
 		}
 

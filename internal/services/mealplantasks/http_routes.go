@@ -71,12 +71,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.MealPlanDataType,
-			EventType:            types.MealPlanCreatedCustomerEventType,
-			MealPlanID:           mealPlanID,
-			MealPlanTask:         mealPlanTask,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			DataType:     types.MealPlanDataType,
+			EventType:    types.MealPlanCreatedCustomerEventType,
+			MealPlanID:   mealPlanID,
+			MealPlanTask: mealPlanTask,
+			HouseholdID:  sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -239,12 +238,11 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.MealPlanTaskDataType,
-			EventType:            types.MealPlanTaskStatusChangedCustomerEventType,
-			MealPlanTask:         mealPlanTask,
-			MealPlanTaskID:       mealPlanTaskID,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			DataType:       types.MealPlanTaskDataType,
+			EventType:      types.MealPlanTaskStatusChangedCustomerEventType,
+			MealPlanTask:   mealPlanTask,
+			MealPlanTaskID: mealPlanTaskID,
+			HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

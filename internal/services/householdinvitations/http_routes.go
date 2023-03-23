@@ -105,12 +105,10 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.HouseholdInvitationDataType,
-			EventType:            types.HouseholdInvitationCreatedCustomerEventType,
-			HouseholdInvitation:  householdInvitation,
-			AttributableToUserID: requester,
-			HouseholdID:          householdID,
-			HouseholdID:          householdID,
+			DataType:            types.HouseholdInvitationDataType,
+			EventType:           types.HouseholdInvitationCreatedCustomerEventType,
+			HouseholdInvitation: householdInvitation,
+			HouseholdID:         householdID,
 		}
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
@@ -308,8 +306,6 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 		dcm := &types.DataChangeMessage{
 			DataType:              types.HouseholdInvitationDataType,
 			EventType:             types.HouseholdInvitationAcceptedCustomerEventType,
-			AttributableToUserID:  sessionCtxData.Requester.UserID,
-			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdInvitationID: householdInvitationID,
 		}
@@ -381,8 +377,6 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 		dcm := &types.DataChangeMessage{
 			DataType:              types.HouseholdInvitationDataType,
 			EventType:             types.HouseholdInvitationCanceledCustomerEventType,
-			AttributableToUserID:  sessionCtxData.Requester.UserID,
-			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdInvitationID: householdInvitationID,
 		}
@@ -453,8 +447,6 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 		dcm := &types.DataChangeMessage{
 			DataType:              types.HouseholdInvitationDataType,
 			EventType:             types.HouseholdInvitationRejectedCustomerEventType,
-			AttributableToUserID:  sessionCtxData.Requester.UserID,
-			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdInvitationID: householdInvitationID,
 		}

@@ -433,7 +433,7 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 	logger.Info("remaining households fetched")
 
 	if len(remainingHouseholds.Data) == 0 {
-		if _, err := q.createHouseholdForUser(ctx, tx, false, "", userID); err != nil {
+		if err := q.createHouseholdForUser(ctx, tx, false, "", userID); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 		}
 		return nil
