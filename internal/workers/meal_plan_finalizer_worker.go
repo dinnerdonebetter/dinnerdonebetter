@@ -72,12 +72,11 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 			changedCount++
 
 			if dataChangePublishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				DataType:                  types.MealPlanDataType,
-				EventType:                 types.MealPlanFinalizedCustomerEventType,
-				MealPlan:                  mealPlan,
-				MealPlanID:                mealPlan.ID,
-				Context:                   map[string]string{},
-				AttributableToHouseholdID: mealPlan.BelongsToHousehold,
+				DataType:    types.MealPlanDataType,
+				EventType:   types.MealPlanFinalizedCustomerEventType,
+				MealPlan:    mealPlan,
+				MealPlanID:  mealPlan.ID,
+				HouseholdID: mealPlan.BelongsToHousehold,
 			}); dataChangePublishErr != nil {
 				observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message")
 			}

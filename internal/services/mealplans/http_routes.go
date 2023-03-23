@@ -80,11 +80,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanDataType,
-			EventType:                 types.MealPlanCreatedCustomerEventType,
-			MealPlan:                  mealPlan,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:    types.MealPlanDataType,
+			EventType:   types.MealPlanCreatedCustomerEventType,
+			MealPlan:    mealPlan,
+			HouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -234,11 +233,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanDataType,
-			EventType:                 types.MealPlanUpdatedCustomerEventType,
-			MealPlan:                  mealPlan,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:    types.MealPlanDataType,
+			EventType:   types.MealPlanUpdatedCustomerEventType,
+			MealPlan:    mealPlan,
+			HouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -292,11 +290,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanDataType,
-			EventType:                 types.MealPlanArchivedCustomerEventType,
-			MealPlanID:                mealPlanID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:    types.MealPlanDataType,
+			EventType:   types.MealPlanArchivedCustomerEventType,
+			MealPlanID:  mealPlanID,
+			HouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

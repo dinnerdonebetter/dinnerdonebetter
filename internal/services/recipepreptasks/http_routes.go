@@ -75,11 +75,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.RecipePrepTaskDataType,
-			EventType:                 types.RecipePrepTaskCreatedCustomerEventType,
-			RecipePrepTask:            recipePrepTask,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:       types.RecipePrepTaskDataType,
+			EventType:      types.RecipePrepTaskCreatedCustomerEventType,
+			RecipePrepTask: recipePrepTask,
+			HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -243,11 +242,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.RecipePrepTaskDataType,
-			EventType:                 types.RecipePrepTaskUpdatedCustomerEventType,
-			RecipePrepTask:            recipePrepTask,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:       types.RecipePrepTaskDataType,
+			EventType:      types.RecipePrepTaskUpdatedCustomerEventType,
+			RecipePrepTask: recipePrepTask,
+			HouseholdID:    sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -306,10 +304,9 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.RecipePrepTaskDataType,
-			EventType:                 types.RecipePrepTaskArchivedCustomerEventType,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:    types.RecipePrepTaskDataType,
+			EventType:   types.RecipePrepTaskArchivedCustomerEventType,
+			HouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

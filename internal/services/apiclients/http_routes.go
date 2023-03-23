@@ -166,11 +166,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.APIClientDataType,
-			EventType:                 types.APIClientCreatedCustomerEventType,
-			APIClientID:               client.ID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:    types.APIClientDataType,
+			EventType:   types.APIClientCreatedCustomerEventType,
+			APIClientID: client.ID,
+			HouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -264,11 +263,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.APIClientDataType,
-			EventType:                 types.APIClientArchivedCustomerEventType,
-			APIClientID:               apiClientID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:    types.APIClientDataType,
+			EventType:   types.APIClientArchivedCustomerEventType,
+			APIClientID: apiClientID,
+			HouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

@@ -69,10 +69,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.ValidIngredientDataType,
-			EventType:            types.ValidIngredientCreatedCustomerEventType,
-			ValidIngredient:      validIngredient,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
+			DataType:        types.ValidIngredientDataType,
+			EventType:       types.ValidIngredientCreatedCustomerEventType,
+			ValidIngredient: validIngredient,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -356,10 +355,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.ValidIngredientDataType,
-			EventType:            types.ValidIngredientUpdatedCustomerEventType,
-			ValidIngredient:      validIngredient,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
+			DataType:        types.ValidIngredientDataType,
+			EventType:       types.ValidIngredientUpdatedCustomerEventType,
+			ValidIngredient: validIngredient,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -413,9 +411,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.ValidIngredientDataType,
-			EventType:            types.ValidIngredientArchivedCustomerEventType,
-			AttributableToUserID: sessionCtxData.Requester.UserID,
+			DataType:  types.ValidIngredientDataType,
+			EventType: types.ValidIngredientArchivedCustomerEventType,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

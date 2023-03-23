@@ -26,8 +26,9 @@ func (s *service) handleDataChange(ctx context.Context, payload []byte) error {
 
 	s.connectionsHat.RLock()
 	defer s.connectionsHat.RUnlock()
+
 	for userID, connections := range s.connections {
-		if msg.AttributableToUserID != userID {
+		if msg.HouseholdID != userID {
 			continue
 		}
 		logger := s.logger.WithValue(keys.UserIDKey, userID).WithValue("connection_count", len(connections))

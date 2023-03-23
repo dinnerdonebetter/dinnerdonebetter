@@ -25,7 +25,7 @@ type (
 		ValidIngredientState             *ValidIngredientState           `json:"validIngredientState,omitempty"`
 		MealPlanGroceryListItem          *MealPlanGroceryListItem        `json:"mealPlanGroceryListItem,omitempty"`
 		Meal                             *Meal                           `json:"meal,omitempty"`
-		Context                          map[string]string               `json:"context,omitempty"`
+		Context                          map[string]any                  `json:"context,omitempty"`
 		Recipe                           *Recipe                         `json:"recipe,omitempty"`
 		RecipePrepTask                   *RecipePrepTask                 `json:"recipePrepTask,omitempty"`
 		RecipeStep                       *RecipeStep                     `json:"recipeStep,omitempty"`
@@ -60,8 +60,6 @@ type (
 		RecipeStepID                     string                          `json:"recipeStepID,omitempty"`
 		RecipePrepTaskID                 string                          `json:"recipePrepTaskID,omitempty"`
 		RecipeID                         string                          `json:"recipeID,omitempty"`
-		AttributableToUserID             string                          `json:"attributableToUserID,omitempty"`
-		AttributableToHouseholdID        string                          `json:"attributableToHouseholdID,omitempty"`
 		MealID                           string                          `json:"mealID,omitempty"`
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
 		EventType                        CustomerEventType               `json:"messageType"`
@@ -79,8 +77,6 @@ type (
 	ChoreMessage struct {
 		_ struct{}
 
-		ChoreType                 choreType `json:"choreType"`
-		MealPlanID                string    `json:"mealPlanID,omitempty"`
-		AttributableToHouseholdID string    `json:"attributableToHouseholdID,omitempty"`
+		ChoreType choreType `json:"choreType"`
 	}
 )

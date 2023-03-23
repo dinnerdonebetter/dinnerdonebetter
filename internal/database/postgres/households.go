@@ -297,8 +297,8 @@ func (q *Querier) buildGetHouseholdsQuery(ctx context.Context, userID string, fo
 	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), selectArgs...)
 }
 
-// getHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryExecutor, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
+// getHouseholdsForUser fetches a list of households from the database that meet a particular filter.
+func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -336,12 +336,12 @@ func (q *Querier) getHouseholds(ctx context.Context, querier database.SQLQueryEx
 
 // GetHouseholds fetches a list of households from the database that meet a particular filter.
 func (q *Querier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
-	return q.getHouseholds(ctx, q.db, userID, false, filter)
+	return q.getHouseholdsForUser(ctx, q.db, userID, false, filter)
 }
 
 // GetHouseholdsForAdmin fetches a list of households from the database that meet a particular filter for all users.
 func (q *Querier) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
-	return q.getHouseholds(ctx, q.db, userID, true, filter)
+	return q.getHouseholdsForUser(ctx, q.db, userID, true, filter)
 }
 
 //go:embed queries/households/create.sql

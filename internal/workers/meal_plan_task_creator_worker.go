@@ -70,22 +70,18 @@ func (w *MealPlanTaskCreatorWorker) HandleMessage(ctx context.Context, _ []byte)
 	for mealPlanID, steps := range mealPlansAndSteps {
 		l := logger.Clone().WithValue(keys.MealPlanIDKey, mealPlanID).WithValue("creatable_prep_step_qty", len(steps))
 
-		createdSteps, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, steps)
+		createdMealPlanTasks, creationErr := w.dataManager.CreateMealPlanTasksForMealPlanOption(ctx, steps)
 		if creationErr != nil {
 			result = multierror.Append(result, creationErr)
 			observability.AcknowledgeError(creationErr, l, span, "creating meal plan tasks for meal plan option")
 		}
 
-		for _, createdStep := range createdSteps {
+		for _, createdStep := range createdMealPlanTasks {
 			if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
 				DataType:       types.MealPlanTaskDataType,
 				EventType:      types.MealPlanTaskCreatedCustomerEventType,
 				MealPlanTask:   createdStep,
 				MealPlanTaskID: createdStep.ID,
-				Context:        nil,
-				// TODO: attribute these
-				HouseholdID:               "",
-				AttributableToHouseholdID: "",
 			}); publishErr != nil {
 				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
 			}

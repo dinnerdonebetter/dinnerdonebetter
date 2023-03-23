@@ -38,23 +38,24 @@ type (
 
 	// service handles our users.
 	service struct {
-		emailer                        email.Emailer
-		householdDataManager           types.HouseholdDataManager
-		householdInvitationDataManager types.HouseholdInvitationDataManager
-		passwordResetTokenDataManager  types.PasswordResetTokenDataManager
-		tracer                         tracing.Tracer
-		authenticator                  authentication.Authenticator
-		logger                         logging.Logger
-		encoderDecoder                 encoding.ServerEncoderDecoder
-		dataChangesPublisher           messagequeue.Publisher
-		userDataManager                types.UserDataManager
-		secretGenerator                random.Generator
-		imageUploadProcessor           images.MediaUploadProcessor
-		uploadManager                  uploads.UploadManager
-		userIDFetcher                  func(*http.Request) string
-		authSettings                   *authservice.Config
-		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
-		cfg                            Config
+		emailer                            email.Emailer
+		householdDataManager               types.HouseholdDataManager
+		householdUserMembershipDataManager types.HouseholdUserMembershipDataManager
+		householdInvitationDataManager     types.HouseholdInvitationDataManager
+		passwordResetTokenDataManager      types.PasswordResetTokenDataManager
+		tracer                             tracing.Tracer
+		authenticator                      authentication.Authenticator
+		logger                             logging.Logger
+		encoderDecoder                     encoding.ServerEncoderDecoder
+		dataChangesPublisher               messagequeue.Publisher
+		userDataManager                    types.UserDataManager
+		secretGenerator                    random.Generator
+		imageUploadProcessor               images.MediaUploadProcessor
+		uploadManager                      uploads.UploadManager
+		userIDFetcher                      func(*http.Request) string
+		authSettings                       *authservice.Config
+		sessionContextDataFetcher          func(*http.Request) (*types.SessionContextData, error)
+		cfg                                Config
 	}
 )
 
@@ -69,6 +70,7 @@ func ProvideUsersService(
 	userDataManager types.UserDataManager,
 	householdDataManager types.HouseholdDataManager,
 	householdInvitationDataManager types.HouseholdInvitationDataManager,
+	householdUserMembershipDataManager types.HouseholdUserMembershipDataManager,
 	authenticator authentication.Authenticator,
 	encoder encoding.ServerEncoderDecoder,
 	imageUploadProcessor images.MediaUploadProcessor,
@@ -94,23 +96,24 @@ func ProvideUsersService(
 	}
 
 	s := &service{
-		cfg:                            *cfg,
-		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
-		userDataManager:                userDataManager,
-		householdDataManager:           householdDataManager,
-		householdInvitationDataManager: householdInvitationDataManager,
-		authenticator:                  authenticator,
-		userIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
-		encoderDecoder:                 encoder,
-		authSettings:                   authSettings,
-		secretGenerator:                secretGenerator,
-		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
-		imageUploadProcessor:           imageUploadProcessor,
-		uploadManager:                  uploadManager,
-		dataChangesPublisher:           dataChangesPublisher,
-		passwordResetTokenDataManager:  passwordResetTokenDataManager,
-		emailer:                        emailer,
+		cfg:                                *cfg,
+		logger:                             logging.EnsureLogger(logger).WithName(serviceName),
+		userDataManager:                    userDataManager,
+		householdDataManager:               householdDataManager,
+		householdInvitationDataManager:     householdInvitationDataManager,
+		authenticator:                      authenticator,
+		userIDFetcher:                      routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
+		sessionContextDataFetcher:          authservice.FetchContextFromRequest,
+		encoderDecoder:                     encoder,
+		authSettings:                       authSettings,
+		secretGenerator:                    secretGenerator,
+		householdUserMembershipDataManager: householdUserMembershipDataManager,
+		tracer:                             tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		imageUploadProcessor:               imageUploadProcessor,
+		uploadManager:                      uploadManager,
+		dataChangesPublisher:               dataChangesPublisher,
+		passwordResetTokenDataManager:      passwordResetTokenDataManager,
+		emailer:                            emailer,
 	}
 
 	return s, nil

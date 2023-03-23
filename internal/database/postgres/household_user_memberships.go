@@ -423,7 +423,7 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 
 	logger.Info("user removed from household")
 
-	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholds(ctx, tx, userID, false, nil)
+	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholdsForUser(ctx, tx, userID, false, nil)
 	if fetchRemainingHouseholdsErr != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(fetchRemainingHouseholdsErr, span, "fetching remaining households")

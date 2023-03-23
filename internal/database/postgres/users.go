@@ -382,7 +382,7 @@ var userCreationQuery string
 //go:embed queries/household_user_memberships/create_for_new_user.sql
 var createHouseholdMembershipForNewUserQuery string
 
-// CreateUser creates a user.
+// CreateUser creates a user. TODO: this should return a household as well.
 func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

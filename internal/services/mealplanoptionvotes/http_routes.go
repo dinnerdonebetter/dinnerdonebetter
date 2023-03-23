@@ -75,14 +75,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	for _, vote := range mealPlanOptionVotes {
 		if s.dataChangesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                  types.MealPlanOptionVoteDataType,
-				EventType:                 types.MealPlanOptionVoteCreatedCustomerEventType,
-				MealPlanID:                mealPlanID,
-				MealPlanOptionID:          vote.BelongsToMealPlanOption,
-				MealPlanOptionVote:        vote,
-				MealPlanOptionVoteID:      vote.ID,
-				AttributableToUserID:      sessionCtxData.Requester.UserID,
-				AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+				DataType:             types.MealPlanOptionVoteDataType,
+				EventType:            types.MealPlanOptionVoteCreatedCustomerEventType,
+				MealPlanID:           mealPlanID,
+				MealPlanOptionID:     vote.BelongsToMealPlanOption,
+				MealPlanOptionVote:   vote,
+				MealPlanOptionVoteID: vote.ID,
+				HouseholdID:          sessionCtxData.ActiveHouseholdID,
 			}
 
 			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -107,14 +106,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			logger.Debug("meal plan option finalized")
 			// fire event
 			dcm := &types.DataChangeMessage{
-				DataType:                  types.MealPlanOptionDataType,
-				EventType:                 types.MealPlanOptionFinalizedCreatedCustomerEventType,
-				MealPlanID:                mealPlanID,
-				MealPlanOptionID:          lastVote.BelongsToMealPlanOption,
-				MealPlanOptionVote:        lastVote,
-				MealPlanOptionVoteID:      lastVote.ID,
-				AttributableToUserID:      sessionCtxData.Requester.UserID,
-				AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+				DataType:             types.MealPlanOptionDataType,
+				EventType:            types.MealPlanOptionFinalizedCreatedCustomerEventType,
+				MealPlanID:           mealPlanID,
+				MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
+				MealPlanOptionVote:   lastVote,
+				MealPlanOptionVoteID: lastVote.ID,
+				HouseholdID:          sessionCtxData.ActiveHouseholdID,
 			}
 
 			if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
@@ -132,14 +130,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				logger.Debug("meal plan finalized")
 				// fire event
 				dcm = &types.DataChangeMessage{
-					DataType:                  types.MealPlanDataType,
-					EventType:                 types.MealPlanFinalizedCustomerEventType,
-					MealPlanID:                mealPlanID,
-					MealPlanOptionID:          lastVote.BelongsToMealPlanOption,
-					MealPlanOptionVote:        lastVote,
-					MealPlanOptionVoteID:      lastVote.ID,
-					AttributableToUserID:      sessionCtxData.Requester.UserID,
-					AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+					DataType:             types.MealPlanDataType,
+					EventType:            types.MealPlanFinalizedCustomerEventType,
+					MealPlanID:           mealPlanID,
+					MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
+					MealPlanOptionVote:   lastVote,
+					MealPlanOptionVoteID: lastVote.ID,
+					HouseholdID:          sessionCtxData.ActiveHouseholdID,
 				}
 				if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
 					observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message about meal plan finalization")
@@ -334,14 +331,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanOptionVoteDataType,
-			EventType:                 types.MealPlanOptionVoteUpdatedCustomerEventType,
-			MealPlanID:                mealPlanID,
-			MealPlanOptionID:          mealPlanOptionID,
-			MealPlanOptionVote:        mealPlanOptionVote,
-			MealPlanOptionVoteID:      mealPlanOptionVote.ID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:             types.MealPlanOptionVoteDataType,
+			EventType:            types.MealPlanOptionVoteUpdatedCustomerEventType,
+			MealPlanID:           mealPlanID,
+			MealPlanOptionID:     mealPlanOptionID,
+			MealPlanOptionVote:   mealPlanOptionVote,
+			MealPlanOptionVoteID: mealPlanOptionVote.ID,
+			HouseholdID:          sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -410,13 +406,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanOptionVoteDataType,
-			EventType:                 types.MealPlanOptionVoteArchivedCustomerEventType,
-			MealPlanID:                mealPlanID,
-			MealPlanOptionID:          mealPlanOptionID,
-			MealPlanOptionVoteID:      mealPlanOptionVoteID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:             types.MealPlanOptionVoteDataType,
+			EventType:            types.MealPlanOptionVoteArchivedCustomerEventType,
+			MealPlanID:           mealPlanID,
+			MealPlanOptionID:     mealPlanOptionID,
+			MealPlanOptionVoteID: mealPlanOptionVoteID,
+			HouseholdID:          sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
