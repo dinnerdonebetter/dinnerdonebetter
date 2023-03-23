@@ -80,7 +80,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:                     types.RecipeStepCompletionConditionCreatedCustomerEventType,
 			RecipeStepCompletionCondition: recipeStepCompletionCondition,
 			AttributableToUserID:          sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID:     sessionCtxData.ActiveHouseholdID,
+			HouseholdID:                   sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -263,7 +263,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:                     types.RecipeStepCompletionConditionUpdatedCustomerEventType,
 			RecipeStepCompletionCondition: recipeStepCompletionCondition,
 			AttributableToUserID:          sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID:     sessionCtxData.ActiveHouseholdID,
+			HouseholdID:                   sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -327,10 +327,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.RecipeStepCompletionConditionDataType,
-			EventType:                 types.RecipeStepCompletionConditionArchivedCustomerEventType,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:             types.RecipeStepCompletionConditionDataType,
+			EventType:            types.RecipeStepCompletionConditionArchivedCustomerEventType,
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+			HouseholdID:          sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

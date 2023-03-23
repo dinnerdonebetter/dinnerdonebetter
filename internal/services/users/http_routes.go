@@ -190,7 +190,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// generate a two factor secret.
 	tfs, err := s.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating user")
+		observability.AcknowledgeError(err, logger, span, "generating two factor secret")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -227,8 +227,28 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	logger.Debug("user created")
 
+	defaultHouseholdID, err := s.householdUserMembershipDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating user")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "internal error", http.StatusInternalServerError)
+		return
+	}
+
 	// notify the relevant parties.
 	tracing.AttachUserIDToSpan(span, user.ID)
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			HouseholdID:          defaultHouseholdID,
+			DataType:             types.UserDataType,
+			EventType:            types.UserSignedUpCustomerEventType,
+			AttributableToUserID: user.ID,
+		}
+
+		if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+			observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+		}
+	}
 
 	// UserCreationResponse is a struct we can use to notify the user of their two factor secret, but ideally just this once and then never again.
 	ucr := &types.UserCreationResponse{
@@ -239,18 +259,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		TwoFactorSecret: user.TwoFactorSecret,
 		Birthday:        user.Birthday,
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
-	}
-
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:             types.UserDataType,
-			EventType:            types.UserSignedUpCustomerEventType,
-			AttributableToUserID: user.ID,
-		}
-
-		if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-			observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
-		}
 	}
 
 	// encode and peace.

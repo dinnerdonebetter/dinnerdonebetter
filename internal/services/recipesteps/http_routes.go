@@ -85,11 +85,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.RecipeStepDataType,
-			EventType:                 types.RecipeStepCreatedCustomerEventType,
-			RecipeStep:                recipeStep,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:             types.RecipeStepDataType,
+			EventType:            types.RecipeStepCreatedCustomerEventType,
+			RecipeStep:           recipeStep,
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+			HouseholdID:          sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -253,11 +253,11 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.RecipeStepDataType,
-			EventType:                 types.RecipeStepUpdatedCustomerEventType,
-			RecipeStep:                recipeStep,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:             types.RecipeStepDataType,
+			EventType:            types.RecipeStepUpdatedCustomerEventType,
+			RecipeStep:           recipeStep,
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+			HouseholdID:          sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -316,10 +316,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
-			DataType:                  types.RecipeStepDataType,
-			EventType:                 types.RecipeStepArchivedCustomerEventType,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			DataType:             types.RecipeStepDataType,
+			EventType:            types.RecipeStepArchivedCustomerEventType,
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+			HouseholdID:          sessionCtxData.ActiveHouseholdID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

@@ -61,7 +61,6 @@ type (
 		RecipePrepTaskID                 string                          `json:"recipePrepTaskID,omitempty"`
 		RecipeID                         string                          `json:"recipeID,omitempty"`
 		AttributableToUserID             string                          `json:"attributableToUserID,omitempty"`
-		AttributableToHouseholdID        string                          `json:"attributableToHouseholdID,omitempty"`
 		MealID                           string                          `json:"mealID,omitempty"`
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
 		EventType                        CustomerEventType               `json:"messageType"`

@@ -62,9 +62,9 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 
 		ctx := context.Background()
 		exampleInput := &types.ChoreMessage{
-			ChoreType:                 types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType,
-			MealPlanID:                fakes.BuildFakeID(),
-			AttributableToHouseholdID: fakes.BuildFakeID(),
+			ChoreType:   types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType,
+			MealPlanID:  fakes.BuildFakeID(),
+			HouseholdID: fakes.BuildFakeID(),
 		}
 		body, err := json.Marshal(exampleInput)
 		require.NoError(t, err)
