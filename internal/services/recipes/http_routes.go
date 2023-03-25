@@ -77,6 +77,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:   types.RecipeCreatedCustomerEventType,
 			Recipe:      recipe,
 			HouseholdID: sessionCtxData.ActiveHouseholdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		logger.Debug("publishing to data change")
@@ -274,6 +275,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:   types.RecipeUpdatedCustomerEventType,
 			Recipe:      recipe,
 			HouseholdID: sessionCtxData.ActiveHouseholdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -331,6 +333,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:   types.RecipeArchivedCustomerEventType,
 			RecipeID:    recipeID,
 			HouseholdID: sessionCtxData.ActiveHouseholdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

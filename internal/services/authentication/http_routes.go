@@ -169,6 +169,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 				DataType:    types.UserDataType,
 				EventType:   types.UserLoggedInCustomerEventType,
 				HouseholdID: defaultHouseholdID,
+				UserID:      user.ID,
 			}
 
 			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -262,6 +263,7 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 				"old_household_id": sessionCtxData.ActiveHouseholdID,
 			},
 			HouseholdID: householdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -326,6 +328,7 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 		dcm := &types.DataChangeMessage{
 			DataType:  types.UserDataType,
 			EventType: types.UserLoggedOutCustomerEventType,
+			UserID:    sessionCtxData.Requester.UserID,
 		}
 
 		if dataPublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataPublishErr != nil {

@@ -82,6 +82,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				MealPlanOptionVote:   vote,
 				MealPlanOptionVoteID: vote.ID,
 				HouseholdID:          sessionCtxData.ActiveHouseholdID,
+				UserID:               sessionCtxData.Requester.UserID,
 			}
 
 			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -113,6 +114,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				MealPlanOptionVote:   lastVote,
 				MealPlanOptionVoteID: lastVote.ID,
 				HouseholdID:          sessionCtxData.ActiveHouseholdID,
+				UserID:               sessionCtxData.Requester.UserID,
 			}
 
 			if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
@@ -137,6 +139,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 					MealPlanOptionVote:   lastVote,
 					MealPlanOptionVoteID: lastVote.ID,
 					HouseholdID:          sessionCtxData.ActiveHouseholdID,
+					UserID:               sessionCtxData.Requester.UserID,
 				}
 				if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
 					observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message about meal plan finalization")
@@ -338,6 +341,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			MealPlanOptionVote:   mealPlanOptionVote,
 			MealPlanOptionVoteID: mealPlanOptionVote.ID,
 			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			UserID:               sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -412,6 +416,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			MealPlanOptionID:     mealPlanOptionID,
 			MealPlanOptionVoteID: mealPlanOptionVoteID,
 			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			UserID:               sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

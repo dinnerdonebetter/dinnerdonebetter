@@ -170,6 +170,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:   types.APIClientCreatedCustomerEventType,
 			APIClientID: client.ID,
 			HouseholdID: sessionCtxData.ActiveHouseholdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -267,6 +268,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:   types.APIClientArchivedCustomerEventType,
 			APIClientID: apiClientID,
 			HouseholdID: sessionCtxData.ActiveHouseholdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

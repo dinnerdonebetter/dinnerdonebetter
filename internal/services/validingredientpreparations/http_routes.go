@@ -72,6 +72,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:                   types.ValidIngredientPreparationDataType,
 			EventType:                  types.ValidIngredientPreparationCreatedCustomerEventType,
 			ValidIngredientPreparation: validIngredientPreparation,
+			UserID:                     sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -223,6 +224,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:                   types.ValidIngredientPreparationDataType,
 			EventType:                  types.ValidIngredientPreparationUpdatedCustomerEventType,
 			ValidIngredientPreparation: validIngredientPreparation,
+			UserID:                     sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -278,6 +280,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		dcm := &types.DataChangeMessage{
 			DataType:  types.ValidIngredientPreparationDataType,
 			EventType: types.ValidIngredientPreparationArchivedCustomerEventType,
+			UserID:    sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

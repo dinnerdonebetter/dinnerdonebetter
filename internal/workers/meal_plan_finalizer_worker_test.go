@@ -84,12 +84,6 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 				mealPlan.ID,
 				mealPlan.BelongsToHousehold,
 			).Return(true, nil)
-
-			mqm.On(
-				"Publish",
-				testutils.ContextMatcher,
-				mock.AnythingOfType("*types.DataChangeMessage"),
-			).Return(nil)
 		}
 
 		worker := newTestChoresWorker(t)

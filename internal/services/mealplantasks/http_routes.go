@@ -76,6 +76,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			MealPlanID:   mealPlanID,
 			MealPlanTask: mealPlanTask,
 			HouseholdID:  sessionCtxData.ActiveHouseholdID,
+			UserID:       sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -243,6 +244,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 			MealPlanTask:   mealPlanTask,
 			MealPlanTaskID: mealPlanTaskID,
 			HouseholdID:    sessionCtxData.ActiveHouseholdID,
+			UserID:         sessionCtxData.Requester.UserID,
 		}
 
 		if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
