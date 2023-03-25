@@ -77,14 +77,14 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	logger = logger.WithValue("event_type", changeMessage.EventType)
 
 	if changeMessage.EventType == types.UserSignedUpCustomerEventType {
-		if err = analyticsEventReporter.AddUser(ctx, changeMessage.AttributableToUserID, changeMessage.Context); err != nil {
+		if err = analyticsEventReporter.AddUser(ctx, changeMessage.UserID, changeMessage.Context); err != nil {
 			return observability.PrepareError(err, span, "notifying customer data platform")
 		}
 
 		return nil
 	}
 
-	if dataCollectionErr := analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.AttributableToUserID, changeMessage.Context); dataCollectionErr != nil {
+	if dataCollectionErr := analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.UserID, changeMessage.Context); dataCollectionErr != nil {
 		observability.AcknowledgeError(dataCollectionErr, logger, span, "notifying customer data platform")
 	}
 

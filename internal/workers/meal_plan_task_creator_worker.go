@@ -82,6 +82,7 @@ func (w *MealPlanTaskCreatorWorker) HandleMessage(ctx context.Context, _ []byte)
 				EventType:      types.MealPlanTaskCreatedCustomerEventType,
 				MealPlanTask:   createdStep,
 				MealPlanTaskID: createdStep.ID,
+				MealPlanID:     mealPlanID,
 			}); publishErr != nil {
 				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
 			}

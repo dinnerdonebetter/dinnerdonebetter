@@ -69,6 +69,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:   types.WebhookCreatedCustomerEventType,
 			Webhook:     webhook,
 			HouseholdID: sessionCtxData.ActiveHouseholdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -208,6 +209,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:    types.WebhookDataType,
 			EventType:   types.WebhookArchivedCustomerEventType,
 			HouseholdID: householdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

@@ -11,7 +11,6 @@ import (
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // MealPlanFinalizationWorker finalizes meal plans.
@@ -70,16 +69,6 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 
 		if changed {
 			changedCount++
-
-			if dataChangePublishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				DataType:    types.MealPlanDataType,
-				EventType:   types.MealPlanFinalizedCustomerEventType,
-				MealPlan:    mealPlan,
-				MealPlanID:  mealPlan.ID,
-				HouseholdID: mealPlan.BelongsToHousehold,
-			}); dataChangePublishErr != nil {
-				observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message")
-			}
 		}
 	}
 

@@ -72,6 +72,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:                       types.ValidIngredientMeasurementUnitDataType,
 			EventType:                      types.ValidIngredientMeasurementUnitCreatedCustomerEventType,
 			ValidIngredientMeasurementUnit: validIngredientMeasurementUnit,
+			UserID:                         sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -223,6 +224,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:                       types.ValidIngredientMeasurementUnitDataType,
 			EventType:                      types.ValidIngredientMeasurementUnitUpdatedCustomerEventType,
 			ValidIngredientMeasurementUnit: validIngredientMeasurementUnit,
+			UserID:                         sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

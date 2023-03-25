@@ -109,6 +109,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 			EventType:           types.HouseholdInvitationCreatedCustomerEventType,
 			HouseholdInvitation: householdInvitation,
 			HouseholdID:         householdID,
+			UserID:              sessionCtxData.Requester.UserID,
 		}
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
@@ -308,6 +309,7 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 			EventType:             types.HouseholdInvitationAcceptedCustomerEventType,
 			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdInvitationID: householdInvitationID,
+			UserID:                sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -379,6 +381,7 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 			EventType:             types.HouseholdInvitationCanceledCustomerEventType,
 			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdInvitationID: householdInvitationID,
+			UserID:                sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -449,6 +452,7 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 			EventType:             types.HouseholdInvitationRejectedCustomerEventType,
 			HouseholdID:           invitation.DestinationHousehold.ID,
 			HouseholdInvitationID: householdInvitationID,
+			UserID:                sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

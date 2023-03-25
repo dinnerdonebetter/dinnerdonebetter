@@ -75,6 +75,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:            types.RecipeStepInstrumentCreatedCustomerEventType,
 			RecipeStepInstrument: recipeStepInstrument,
 			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			UserID:               sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -259,6 +260,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 			EventType:            types.RecipeStepInstrumentUpdatedCustomerEventType,
 			RecipeStepInstrument: recipeStepInstrument,
 			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			UserID:               sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -325,6 +327,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 			DataType:    types.RecipeStepIngredientDataType,
 			EventType:   types.RecipeStepInstrumentArchivedCustomerEventType,
 			HouseholdID: sessionCtxData.ActiveHouseholdID,
+			UserID:      sessionCtxData.Requester.UserID,
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

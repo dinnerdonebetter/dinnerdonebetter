@@ -48,6 +48,7 @@ type (
 		RecipeStepVessel                 *RecipeStepVessel               `json:"recipeStepVessel,omitempty"`
 		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
 		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
+		UserID                           string                          `json:"userID"`
 		HouseholdID                      string                          `json:"householdID,omitempty"`
 		ValidMeasurementUnitID           string                          `json:"validMeasurementUnitID,omitempty"`
 		APIClientID                      string                          `json:"apiClientID,omitempty"`
