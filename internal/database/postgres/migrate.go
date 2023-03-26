@@ -365,6 +365,11 @@ var (
 			Description: "some edits to recent changes",
 			Script:      fetchMigration("00070_further_fixes"),
 		},
+		{
+			Version:     71,
+			Description: "add field to enum",
+			Script:      fetchMigration("00071_add_field_to_enum"),
+		},
 	}
 )
 

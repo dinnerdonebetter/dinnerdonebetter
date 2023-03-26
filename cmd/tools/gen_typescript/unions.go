@@ -20,6 +20,7 @@ var (
 			Values: []string{
 				"texture",
 				"consistency",
+				"temperature",
 				"color",
 				"appearance",
 				"odor",
