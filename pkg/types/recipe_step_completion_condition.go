@@ -24,6 +24,8 @@ const (
 	IngredientStateAttributeTypeTexture = "texture"
 	// IngredientStateAttributeTypeConsistency represents the ingredient attribute type for consistency.
 	IngredientStateAttributeTypeConsistency = "consistency"
+	// IngredientStateAttributeTypeTemperature represents the ingredient attribute type for temperature.
+	IngredientStateAttributeTypeTemperature = "temperature"
 	// IngredientStateAttributeTypeColor represents the ingredient attribute type for color.
 	IngredientStateAttributeTypeColor = "color"
 	// IngredientStateAttributeTypeAppearance represents the ingredient attribute type for appearance.
