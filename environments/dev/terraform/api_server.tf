@@ -250,7 +250,7 @@ resource "google_cloud_run_service" "api_server" {
 
     metadata {
       annotations = {
-        "autoscaling.knative.dev/minScale"      = "1"
+        "autoscaling.knative.dev/maxScale"      = "1"
         "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.dev.connection_name
       }
     }
