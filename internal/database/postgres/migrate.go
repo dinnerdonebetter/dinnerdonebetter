@@ -370,6 +370,11 @@ var (
 			Description: "add field to enum",
 			Script:      fetchMigration("00071_add_field_to_enum"),
 		},
+		{
+			Version:     72,
+			Description: "add portion range to recipe",
+			Script:      fetchMigration("00072_add_portion_range_to_recipe"),
+		},
 	}
 )
 

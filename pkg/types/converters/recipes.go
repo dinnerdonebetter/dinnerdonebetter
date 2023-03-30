@@ -8,16 +8,17 @@ import (
 // ConvertRecipeToRecipeUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeUpdateRequestInput {
 	x := &types.RecipeUpdateRequestInput{
-		Name:               &input.Name,
-		Slug:               &input.Slug,
-		Source:             &input.Source,
-		Description:        &input.Description,
-		InspiredByRecipeID: input.InspiredByRecipeID,
-		CreatedByUser:      &input.CreatedByUser,
-		SealOfApproval:     &input.SealOfApproval,
-		YieldsPortions:     &input.YieldsPortions,
-		PortionName:        &input.PortionName,
-		PluralPortionName:  &input.PluralPortionName,
+		Name:                     &input.Name,
+		Slug:                     &input.Slug,
+		Source:                   &input.Source,
+		Description:              &input.Description,
+		InspiredByRecipeID:       input.InspiredByRecipeID,
+		CreatedByUser:            &input.CreatedByUser,
+		SealOfApproval:           &input.SealOfApproval,
+		MinimumEstimatedPortions: &input.MinimumEstimatedPortions,
+		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
+		PortionName:              &input.PortionName,
+		PluralPortionName:        &input.PluralPortionName,
 	}
 
 	return x
@@ -26,17 +27,18 @@ func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeU
 // ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *types.RecipeCreationRequestInput) (*types.RecipeDatabaseCreationInput, error) {
 	x := &types.RecipeDatabaseCreationInput{
-		ID:                 identifiers.New(),
-		AlsoCreateMeal:     input.AlsoCreateMeal,
-		Name:               input.Name,
-		Slug:               input.Slug,
-		Source:             input.Source,
-		Description:        input.Description,
-		InspiredByRecipeID: input.InspiredByRecipeID,
-		SealOfApproval:     input.SealOfApproval,
-		YieldsPortions:     input.YieldsPortions,
-		PortionName:        input.PortionName,
-		PluralPortionName:  input.PluralPortionName,
+		ID:                       identifiers.New(),
+		AlsoCreateMeal:           input.AlsoCreateMeal,
+		Name:                     input.Name,
+		Slug:                     input.Slug,
+		Source:                   input.Source,
+		Description:              input.Description,
+		InspiredByRecipeID:       input.InspiredByRecipeID,
+		SealOfApproval:           input.SealOfApproval,
+		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
+		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
+		PortionName:              input.PortionName,
+		PluralPortionName:        input.PluralPortionName,
 	}
 
 	for _, step := range input.Steps {
@@ -70,17 +72,18 @@ func ConvertRecipeToRecipeCreationRequestInput(recipe *types.Recipe) *types.Reci
 	}
 
 	return &types.RecipeCreationRequestInput{
-		Name:               recipe.Name,
-		Slug:               recipe.Slug,
-		Source:             recipe.Source,
-		Description:        recipe.Description,
-		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		SealOfApproval:     recipe.SealOfApproval,
-		YieldsPortions:     recipe.YieldsPortions,
-		PortionName:        recipe.PortionName,
-		PluralPortionName:  recipe.PluralPortionName,
-		Steps:              steps,
-		PrepTasks:          prepTasks,
+		Name:                     recipe.Name,
+		Slug:                     recipe.Slug,
+		Source:                   recipe.Source,
+		Description:              recipe.Description,
+		InspiredByRecipeID:       recipe.InspiredByRecipeID,
+		SealOfApproval:           recipe.SealOfApproval,
+		MinimumEstimatedPortions: recipe.MinimumEstimatedPortions,
+		MaximumEstimatedPortions: recipe.MaximumEstimatedPortions,
+		PortionName:              recipe.PortionName,
+		PluralPortionName:        recipe.PluralPortionName,
+		Steps:                    steps,
+		PrepTasks:                prepTasks,
 	}
 }
 
@@ -97,18 +100,19 @@ func ConvertRecipeToRecipeDatabaseCreationInput(recipe *types.Recipe) *types.Rec
 	}
 
 	return &types.RecipeDatabaseCreationInput{
-		ID:                 recipe.ID,
-		Name:               recipe.Name,
-		Slug:               recipe.Slug,
-		Source:             recipe.Source,
-		Description:        recipe.Description,
-		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		CreatedByUser:      recipe.CreatedByUser,
-		SealOfApproval:     recipe.SealOfApproval,
-		YieldsPortions:     recipe.YieldsPortions,
-		PortionName:        recipe.PortionName,
-		PluralPortionName:  recipe.PluralPortionName,
-		Steps:              steps,
-		PrepTasks:          prepTasks,
+		ID:                       recipe.ID,
+		Name:                     recipe.Name,
+		Slug:                     recipe.Slug,
+		Source:                   recipe.Source,
+		Description:              recipe.Description,
+		InspiredByRecipeID:       recipe.InspiredByRecipeID,
+		CreatedByUser:            recipe.CreatedByUser,
+		SealOfApproval:           recipe.SealOfApproval,
+		MinimumEstimatedPortions: recipe.MinimumEstimatedPortions,
+		MaximumEstimatedPortions: recipe.MaximumEstimatedPortions,
+		PortionName:              recipe.PortionName,
+		PluralPortionName:        recipe.PluralPortionName,
+		Steps:                    steps,
+		PrepTasks:                prepTasks,
 	}
 }

@@ -65,8 +65,7 @@ type (
 
 	// MealComponent is a recipe with some extra data attached to it.
 	MealComponent struct {
-		_ struct{}
-
+		_             struct{}
 		ComponentType string `json:"componentType"`
 		Recipe        Recipe `json:"recipe"`
 	}
