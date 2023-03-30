@@ -1,8 +1,7 @@
 package fakes
 
 import (
-	fake "github.com/brianvoe/gofakeit/v5"
-
+	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 )
@@ -30,21 +29,22 @@ func BuildFakeRecipe() *types.Recipe {
 	}
 
 	return &types.Recipe{
-		ID:                 recipeID,
-		Name:               buildUniqueString(),
-		Slug:               buildUniqueString(),
-		Source:             buildUniqueString(),
-		Description:        buildUniqueString(),
-		InspiredByRecipeID: func(x string) *string { return &x }(buildUniqueString()),
-		CreatedAt:          BuildFakeTime(),
-		CreatedByUser:      BuildFakeID(),
-		Steps:              steps,
-		PrepTasks:          prepTasks,
-		SealOfApproval:     false,
-		Media:              recipeMedia,
-		YieldsPortions:     fake.Uint8(),
-		PortionName:        buildUniqueString(),
-		PluralPortionName:  buildUniqueString(),
+		ID:                       recipeID,
+		Name:                     buildUniqueString(),
+		Slug:                     buildUniqueString(),
+		Source:                   buildUniqueString(),
+		Description:              buildUniqueString(),
+		InspiredByRecipeID:       func(x string) *string { return &x }(buildUniqueString()),
+		CreatedAt:                BuildFakeTime(),
+		CreatedByUser:            BuildFakeID(),
+		Steps:                    steps,
+		PrepTasks:                prepTasks,
+		SealOfApproval:           false,
+		Media:                    recipeMedia,
+		MinimumEstimatedPortions: float32(BuildFakeNumber()),
+		MaximumEstimatedPortions: pointers.Float32(float32(BuildFakeNumber())),
+		PortionName:              buildUniqueString(),
+		PluralPortionName:        buildUniqueString(),
 	}
 }
 

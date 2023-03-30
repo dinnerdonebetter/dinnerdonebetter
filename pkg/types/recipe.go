@@ -32,77 +32,80 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_ struct{}
-
-		CreatedAt          time.Time         `json:"createdAt"`
-		InspiredByRecipeID *string           `json:"inspiredByRecipeID"`
-		LastUpdatedAt      *time.Time        `json:"lastUpdatedAt"`
-		ArchivedAt         *time.Time        `json:"archivedAt"`
-		PortionName        string            `json:"portionName"`
-		Source             string            `json:"source"`
-		Description        string            `json:"description"`
-		Name               string            `json:"name"`
-		Slug               string            `json:"slug"`
-		ID                 string            `json:"id"`
-		CreatedByUser      string            `json:"belongsToUser"`
-		PluralPortionName  string            `json:"pluralPortionName"`
-		Media              []*RecipeMedia    `json:"media"`
-		PrepTasks          []*RecipePrepTask `json:"prepTasks"`
-		Steps              []*RecipeStep     `json:"steps"`
-		SealOfApproval     bool              `json:"sealOfApproval"`
-		YieldsPortions     uint8             `json:"yieldsPortions"`
+		_                        struct{}
+		CreatedAt                time.Time         `json:"createdAt"`
+		InspiredByRecipeID       *string           `json:"inspiredByRecipeID"`
+		LastUpdatedAt            *time.Time        `json:"lastUpdatedAt"`
+		ArchivedAt               *time.Time        `json:"archivedAt"`
+		MaximumEstimatedPortions *float32          `json:"maximumEstimatedPortions"`
+		PluralPortionName        string            `json:"pluralPortionName"`
+		Description              string            `json:"description"`
+		Name                     string            `json:"name"`
+		PortionName              string            `json:"portionName"`
+		ID                       string            `json:"id"`
+		CreatedByUser            string            `json:"belongsToUser"`
+		Source                   string            `json:"source"`
+		Slug                     string            `json:"slug"`
+		Media                    []*RecipeMedia    `json:"media"`
+		PrepTasks                []*RecipePrepTask `json:"prepTasks"`
+		Steps                    []*RecipeStep     `json:"steps"`
+		MinimumEstimatedPortions float32           `json:"minimumEstimatedPortions"`
+		SealOfApproval           bool              `json:"sealOfApproval"`
 	}
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
-		_                  struct{}
-		InspiredByRecipeID *string                                           `json:"inspiredByRecipeID"`
-		Name               string                                            `json:"name"`
-		Slug               string                                            `json:"slug"`
-		Source             string                                            `json:"source"`
-		Description        string                                            `json:"description"`
-		PluralPortionName  string                                            `json:"pluralPortionName"`
-		PortionName        string                                            `json:"portionName"`
-		PrepTasks          []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks"`
-		Steps              []*RecipeStepCreationRequestInput                 `json:"steps"`
-		AlsoCreateMeal     bool                                              `json:"alsoCreateMeal"`
-		SealOfApproval     bool                                              `json:"sealOfApproval"`
-		YieldsPortions     uint8                                             `json:"yieldsPortions"`
+		_                        struct{}
+		InspiredByRecipeID       *string                                           `json:"inspiredByRecipeID"`
+		MaximumEstimatedPortions *float32                                          `json:"maximumEstimatedPortions"`
+		Slug                     string                                            `json:"slug"`
+		Source                   string                                            `json:"source"`
+		Description              string                                            `json:"description"`
+		PluralPortionName        string                                            `json:"pluralPortionName"`
+		Name                     string                                            `json:"name"`
+		PortionName              string                                            `json:"portionName"`
+		PrepTasks                []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks"`
+		Steps                    []*RecipeStepCreationRequestInput                 `json:"steps"`
+		MinimumEstimatedPortions float32                                           `json:"minimumEstimatedPortions"`
+		AlsoCreateMeal           bool                                              `json:"alsoCreateMeal"`
+		SealOfApproval           bool                                              `json:"sealOfApproval"`
 	}
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
-		_                  struct{}
-		InspiredByRecipeID *string
-		PortionName        string
-		CreatedByUser      string
-		ID                 string
-		Name               string
-		Slug               string
-		Source             string
-		Description        string
-		PluralPortionName  string
-		PrepTasks          []*RecipePrepTaskDatabaseCreationInput
-		Steps              []*RecipeStepDatabaseCreationInput
-		AlsoCreateMeal     bool
-		SealOfApproval     bool
-		YieldsPortions     uint8
+		_                        struct{}
+		InspiredByRecipeID       *string
+		MaximumEstimatedPortions *float32
+		PluralPortionName        string
+		ID                       string
+		Name                     string
+		Slug                     string
+		Source                   string
+		PortionName              string
+		CreatedByUser            string
+		Description              string
+		PrepTasks                []*RecipePrepTaskDatabaseCreationInput
+		Steps                    []*RecipeStepDatabaseCreationInput
+		MinimumEstimatedPortions float32
+		AlsoCreateMeal           bool
+		SealOfApproval           bool
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.
 	RecipeUpdateRequestInput struct {
 		_ struct{}
 
-		Name               *string `json:"name,omitempty"`
-		Slug               *string `json:"slug"`
-		Source             *string `json:"source,omitempty"`
-		Description        *string `json:"description,omitempty"`
-		InspiredByRecipeID *string `json:"inspiredByRecipeID,omitempty"`
-		CreatedByUser      *string `json:"-"`
-		SealOfApproval     *bool   `json:"sealOfApproval,omitempty"`
-		YieldsPortions     *uint8  `json:"yieldsPortions,omitempty"`
-		PortionName        *string `json:"portionName"`
-		PluralPortionName  *string `json:"pluralPortionName"`
+		Name                     *string  `json:"name,omitempty"`
+		Slug                     *string  `json:"slug"`
+		Source                   *string  `json:"source,omitempty"`
+		Description              *string  `json:"description,omitempty"`
+		InspiredByRecipeID       *string  `json:"inspiredByRecipeID,omitempty"`
+		CreatedByUser            *string  `json:"-"`
+		SealOfApproval           *bool    `json:"sealOfApproval,omitempty"`
+		MinimumEstimatedPortions *float32 `json:"minimumEstimatedPortions,omitempty"`
+		MaximumEstimatedPortions *float32 `json:"maximumEstimatedPortions,omitempty"`
+		PortionName              *string  `json:"portionName"`
+		PluralPortionName        *string  `json:"pluralPortionName"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -183,8 +186,12 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 		x.SealOfApproval = *input.SealOfApproval
 	}
 
-	if input.YieldsPortions != nil && *input.YieldsPortions != x.YieldsPortions {
-		x.YieldsPortions = *input.YieldsPortions
+	if input.MinimumEstimatedPortions != nil && *input.MinimumEstimatedPortions != x.MinimumEstimatedPortions {
+		x.MinimumEstimatedPortions = *input.MinimumEstimatedPortions
+	}
+
+	if input.MaximumEstimatedPortions != nil && input.MaximumEstimatedPortions != x.MaximumEstimatedPortions {
+		x.MaximumEstimatedPortions = input.MaximumEstimatedPortions
 	}
 
 	if input.PortionName != nil && *input.PortionName != x.PortionName {

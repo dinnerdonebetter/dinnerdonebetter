@@ -24,8 +24,8 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 			},
-			SealOfApproval: fake.Bool(),
-			YieldsPortions: fake.Uint8(),
+			SealOfApproval:           fake.Bool(),
+			MinimumEstimatedPortions: fake.Float32(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -49,12 +49,12 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeUpdateRequestInput{
-			Name:               pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Source:             pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			InspiredByRecipeID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			SealOfApproval:     pointers.Bool(fake.Bool()),
-			YieldsPortions:     pointers.Uint8(fake.Uint8()),
+			Name:                     pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Source:                   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:              pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			InspiredByRecipeID:       pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			SealOfApproval:           pointers.Bool(fake.Bool()),
+			MinimumEstimatedPortions: pointers.Float32(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -4,11 +4,12 @@ UPDATE recipes SET
     source = $3,
     description = $4,
     inspired_by_recipe_id = $5,
-    yields_portions = $6,
-    portion_name = $7,
-    plural_portion_name = $8,
-    seal_of_approval = $9,
+	min_estimated_portions = $6,
+	max_estimated_portions = $7,
+    portion_name = $8,
+    plural_portion_name = $9,
+    seal_of_approval = $10,
     last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND created_by_user = $10
-  AND id = $11;
+  AND created_by_user = $11
+  AND id = $12;
