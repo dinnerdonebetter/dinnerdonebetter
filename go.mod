@@ -33,6 +33,7 @@ require (
 	github.com/kyleconroy/sqlc v1.15.0
 	github.com/lib/pq v1.10.6
 	github.com/luna-duclos/instrumentedsql v1.1.3
+	github.com/mailgun/mailgun-go/v4 v4.8.2
 	github.com/makiuchi-d/gozxing v0.0.0-20210324052758-57132e828831
 	github.com/moul/http2curl v1.0.0
 	github.com/mssola/user_agent v0.5.2
@@ -97,11 +98,13 @@ require (
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/subcommands v1.0.1 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
+	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20171119193500-2bcd89a1743f // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
@@ -110,6 +113,8 @@ require (
 	github.com/launchdarkly/go-semver v1.0.2 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

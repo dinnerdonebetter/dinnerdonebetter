@@ -66,7 +66,7 @@ func main() {
 
 	cfg.Database.RunMigrations = false
 
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
+	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
 	if err != nil {
 		log.Fatal(err)
 	}

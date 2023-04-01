@@ -7,6 +7,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 var (
@@ -17,6 +18,6 @@ var (
 )
 
 // ProvideEmailer provides an email.Emailer from a config.
-func ProvideEmailer(cfg *Config, logger logging.Logger, client *http.Client) (email.Emailer, error) {
-	return cfg.ProvideEmailer(logger, client)
+func ProvideEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (email.Emailer, error) {
+	return cfg.ProvideEmailer(logger, tracerProvider, client)
 }

@@ -52,7 +52,7 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	defer span.End()
 
 	client := tracing.BuildTracedHTTPClient()
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
+	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring emailer")
 	}
