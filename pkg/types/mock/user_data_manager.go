@@ -42,8 +42,7 @@ func (m *UserDataManager) GetUserByEmail(ctx context.Context, email string) (*ty
 
 // MarkUserTwoFactorSecretAsVerified is a mock function.
 func (m *UserDataManager) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error {
-	args := m.Called(ctx, userID)
-	return args.Error(0)
+	return m.Called(ctx, userID).Error(0)
 }
 
 // GetUserByUsername is a mock function.

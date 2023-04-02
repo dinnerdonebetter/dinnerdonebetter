@@ -42,20 +42,8 @@ func (m *IndexManager[T]) Index(ctx context.Context, id string, value any) error
 	return nil
 }
 
-// Wipe implements our IndexManager interface.
-func (m *IndexManager[T]) Wipe(ctx context.Context) error {
-	_, span := m.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if _, err := m.client.ClearObjects(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// search executes search queries.
-func (m *IndexManager[T]) search(ctx context.Context, query string) ([]*T, error) {
+// Search implements our IndexManager interface.
+func (m *IndexManager[T]) Search(ctx context.Context, query string) ([]*T, error) {
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -66,13 +54,12 @@ func (m *IndexManager[T]) search(ctx context.Context, query string) ([]*T, error
 		return nil, ErrEmptyQueryProvided
 	}
 
-	results := []*T{}
-
 	res, err := m.client.Search(query)
 	if err != nil {
 		return nil, err
 	}
 
+	results := []*T{}
 	for _, hit := range res.Hits {
 		var x *T
 
@@ -94,11 +81,6 @@ func (m *IndexManager[T]) search(ctx context.Context, query string) ([]*T, error
 	return results, nil
 }
 
-// Search implements our IndexManager interface.
-func (m *IndexManager[T]) Search(ctx context.Context, query string) ([]*T, error) {
-	return m.search(ctx, query)
-}
-
 // Delete implements our IndexManager interface.
 func (m *IndexManager[T]) Delete(ctx context.Context, id string) error {
 	_, span := m.tracer.StartSpan(ctx)
@@ -106,7 +88,23 @@ func (m *IndexManager[T]) Delete(ctx context.Context, id string) error {
 
 	logger := m.logger.WithValue("id", id)
 
+	if _, err := m.client.DeleteObject(id); err != nil {
+		return err
+	}
+
 	logger.Debug("removed from index")
+
+	return nil
+}
+
+// Wipe implements our IndexManager interface.
+func (m *IndexManager[T]) Wipe(ctx context.Context) error {
+	_, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if _, err := m.client.ClearObjects(); err != nil {
+		return err
+	}
 
 	return nil
 }

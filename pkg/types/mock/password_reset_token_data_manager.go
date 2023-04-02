@@ -31,7 +31,5 @@ func (m *PasswordResetTokenDataManager) CreatePasswordResetToken(ctx context.Con
 
 // RedeemPasswordResetToken implements our interface requirements.
 func (m *PasswordResetTokenDataManager) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {
-	args := m.Called(ctx, passwordResetTokenID)
-
-	return args.Error(0)
+	return m.Called(ctx, passwordResetTokenID).Error(0)
 }

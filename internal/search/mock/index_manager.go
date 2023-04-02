@@ -26,7 +26,7 @@ func (m *IndexManager[T]) Index(ctx context.Context, id string, value any) error
 }
 
 // Search implements our interface.
-func (m *IndexManager[T]) Search(ctx context.Context, query string) (ids []*T, err error) {
+func (m *IndexManager[T]) Search(ctx context.Context, query string) (results []*T, err error) {
 	args := m.Called(ctx, query)
 	return args.Get(0).([]*T), args.Error(1)
 }
