@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/alexedwards/scs/v2"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"github.com/prixfixeco/backend/internal/database"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+
+	"github.com/alexedwards/scs/v2"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (

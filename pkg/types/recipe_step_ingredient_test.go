@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/pointers"
+
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/prixfixeco/backend/internal/pointers"
 )
 
 func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {

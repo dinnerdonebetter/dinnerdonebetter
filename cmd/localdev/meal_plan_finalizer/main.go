@@ -9,8 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "go.uber.org/automaxprocs"
-
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
@@ -20,8 +18,10 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/server/utils"
 	"github.com/prixfixeco/backend/internal/workers"
-	"github.com/prixfixeco/backend/pkg/utils"
+
+	_ "go.uber.org/automaxprocs"
 )
 
 const (
@@ -66,7 +66,7 @@ func main() {
 
 	cfg.Database.RunMigrations = false
 
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
+	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,9 +81,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	urlToUse := utils.DetermineServiceURL().String()
+	urlToUse := serverutils.DetermineServiceURL().String()
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	utils.EnsureServerIsUp(ctx, urlToUse)
+	serverutils.EnsureServerIsUp(ctx, urlToUse)
 	dataManager.IsReady(ctx, 50)
 
 	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.Consumers.RedisConfig)

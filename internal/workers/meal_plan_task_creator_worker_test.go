@@ -5,9 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
@@ -19,6 +16,9 @@ import (
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestProvideMealPlanTaskCreationEnsurerWorker(T *testing.T) {
@@ -28,7 +28,7 @@ func TestProvideMealPlanTaskCreationEnsurerWorker(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(),
+			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -46,7 +46,7 @@ func TestMealPlanTaskCreationEnsurerWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(),
+			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -73,7 +73,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		t.Parallel()
 
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(),
+			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -100,7 +100,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		t.Parallel()
 
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(),
+			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -249,7 +249,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		t.Parallel()
 
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(),
+			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			recipeanalysis.NewRecipeAnalyzer(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&mockpublishers.Publisher{},

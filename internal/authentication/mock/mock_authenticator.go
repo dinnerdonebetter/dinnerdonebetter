@@ -3,9 +3,9 @@ package mockauthn
 import (
 	"context"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/authentication"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ authentication.Authenticator = (*Authenticator)(nil)

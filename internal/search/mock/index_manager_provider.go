@@ -3,10 +3,10 @@ package mocksearch
 import (
 	"context"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/search"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ search.IndexManagerProvider = (*IndexManagerProvider)(nil)

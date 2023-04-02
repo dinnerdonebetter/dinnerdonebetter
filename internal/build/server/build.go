@@ -6,8 +6,6 @@ package server
 import (
 	"context"
 
-	"github.com/google/wire"
-
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
@@ -55,6 +53,8 @@ import (
 	validpreparationsservice "github.com/prixfixeco/backend/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/backend/internal/services/webhooks"
 	"github.com/prixfixeco/backend/internal/uploads/images"
+
+	"github.com/google/wire"
 )
 
 // Build builds a server.

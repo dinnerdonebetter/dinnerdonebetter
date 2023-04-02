@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/email/sendgrid"
 	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {
@@ -50,7 +51,7 @@ func TestConfig_ProvideEmailer(T *testing.T) {
 			Sendgrid: &sendgrid.Config{APIToken: t.Name()},
 		}
 
-		actual, err := cfg.ProvideEmailer(logger, &http.Client{})
+		actual, err := cfg.ProvideEmailer(logger, tracing.NewNoopTracerProvider(), &http.Client{})
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})
@@ -63,7 +64,7 @@ func TestConfig_ProvideEmailer(T *testing.T) {
 			Provider: "",
 		}
 
-		actual, err := cfg.ProvideEmailer(logger, &http.Client{})
+		actual, err := cfg.ProvideEmailer(logger, tracing.NewNoopTracerProvider(), &http.Client{})
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

@@ -12,16 +12,16 @@ import (
 	"syscall"
 	"time"
 
-	secretmanager "cloud.google.com/go/secretmanager/apiv1"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	_ "go.uber.org/automaxprocs"
-
 	"github.com/prixfixeco/backend/internal/build/server"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	_ "go.uber.org/automaxprocs"
 )
 
 const (
@@ -72,8 +72,6 @@ func main() {
 		logger = logging.NewNoopLogger()
 	}
 
-	logger.SetLevel(cfg.Observability.Logging.Level)
-
 	// should make wire do these someday
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
@@ -100,7 +98,7 @@ func main() {
 
 	client := tracing.BuildTracedHTTPClient()
 	// should make wire do these someday
-	emailer, emailerSetupErr := cfg.Email.ProvideEmailer(logger, client)
+	emailer, emailerSetupErr := cfg.Email.ProvideEmailer(logger, tracerProvider, client)
 	if emailerSetupErr != nil {
 		logger.Error(emailerSetupErr, "initializing metrics handler")
 	}

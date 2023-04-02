@@ -11,8 +11,6 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/lib/pq"
-
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
@@ -22,8 +20,10 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	serverutils "github.com/prixfixeco/backend/internal/server/utils"
 	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/utils"
+
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -54,11 +54,11 @@ func init() {
 		log.Fatal(err)
 	}
 
-	parsedURLToUse = utils.DetermineServiceURL()
+	parsedURLToUse = serverutils.DetermineServiceURL()
 	urlToUse = parsedURLToUse.String()
 
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	utils.EnsureServerIsUp(ctx, urlToUse)
+	serverutils.EnsureServerIsUp(ctx, urlToUse)
 
 	dbAddr := os.Getenv("TARGET_DATABASE")
 	if dbAddr == "" {

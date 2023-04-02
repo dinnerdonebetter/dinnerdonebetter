@@ -89,17 +89,12 @@ linters-settings:
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
+      shadow:
+        # Whether to be strict about shadowing; can be noisy.
+        # Default: false
+        strict: true
     # enable or disable analyzers by name
     enable-all: true
-#  goheader:
-#    values:
-#      const:
-#      # define here const type values in format k:v, for example:
-#      # COMPANY: MY COMPANY
-#      regexp:
-#      # define here regexp type values, for example
-#      # AUTHOR: .*@mycompany\.com
-#    template-path: development/header_template.md
   gofmt:
     # simplify code: gofmt with `-s` option, true by default
     simplify: true
@@ -184,9 +179,9 @@ linters-settings:
   gci:
     sections:
       - standard # Standard section: captures all standard packages.
-      - default # Default section: contains all imports that could not be matched to another section type.
-      - prefix(github.com/prixfixeco) # Custom section: groups all imports with the specified Prefix.
       - prefix(github.com/prixfixeco/backend) # Custom section: groups all imports with the specified Prefix.
+      - prefix(github.com/prixfixeco) # Custom section: groups all imports with the specified Prefix.
+      - default # Default section: contains all imports that could not be matched to another section type.
     skip-generated: true
     custom-order: true
 

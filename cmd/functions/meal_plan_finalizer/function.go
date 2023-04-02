@@ -5,12 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
-	"go.opentelemetry.io/otel"
-	_ "go.uber.org/automaxprocs"
-
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
@@ -21,6 +15,12 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/workers"
+
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
+	"go.opentelemetry.io/otel"
+	_ "go.uber.org/automaxprocs"
 )
 
 const (
@@ -34,8 +34,7 @@ func init() {
 
 // FinalizeMealPlans is our cloud function entrypoint.
 func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
-	logger := zerolog.NewZerologLogger()
-	logger.SetLevel(logging.DebugLevel)
+	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
@@ -52,7 +51,7 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	defer span.End()
 
 	client := tracing.BuildTracedHTTPClient()
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
+	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring emailer")
 	}

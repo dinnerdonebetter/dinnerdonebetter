@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/backend/internal/authorization"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddUserToHouseholdInput_ValidateWithContext(T *testing.T) {

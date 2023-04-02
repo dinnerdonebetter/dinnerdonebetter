@@ -8,16 +8,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/prixfixeco/backend/internal/authorization"
+	"github.com/prixfixeco/backend/pkg/types"
+	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+	testutils "github.com/prixfixeco/backend/tests/utils"
+
 	"github.com/google/uuid"
 	"github.com/o1egl/paseto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/pkg/types"
-	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
-	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func buildArbitraryPASETO(t *testing.T, helper *authServiceHTTPRoutesTestHelper, issueTime time.Time, lifetime time.Duration, pasetoData string) *types.PASETOResponse {

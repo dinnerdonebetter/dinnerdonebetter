@@ -3,8 +3,6 @@ package workers
 import (
 	"context"
 
-	"github.com/hashicorp/go-multierror"
-
 	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/encoding"
@@ -15,6 +13,8 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 const (

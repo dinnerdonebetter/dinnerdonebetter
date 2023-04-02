@@ -9,9 +9,6 @@ import (
 	"path"
 	"time"
 
-	"github.com/gorilla/websocket"
-	"github.com/moul/http2curl"
-
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
@@ -20,6 +17,9 @@ import (
 	"github.com/prixfixeco/backend/internal/panicking"
 	"github.com/prixfixeco/backend/pkg/apiclient/requests"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/gorilla/websocket"
+	"github.com/moul/http2curl"
 )
 
 const (

@@ -5,13 +5,13 @@ import (
 	_ "embed"
 	"fmt"
 
-	"github.com/Masterminds/squirrel"
-
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
 )
 
 const (

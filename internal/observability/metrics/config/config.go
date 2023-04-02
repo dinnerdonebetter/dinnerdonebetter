@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/metrics"
 	"github.com/prixfixeco/backend/internal/observability/metrics/prometheus"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (

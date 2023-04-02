@@ -6,11 +6,11 @@ import (
 	"encoding/gob"
 	"net/http"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (

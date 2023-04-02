@@ -3,9 +3,9 @@ package metrics
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/metric"
-
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"go.opentelemetry.io/otel/metric"
 )
 
 var _ UnitCounter = (*unitCounter)(nil)

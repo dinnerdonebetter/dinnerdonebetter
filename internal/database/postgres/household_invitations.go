@@ -7,8 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Masterminds/squirrel"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/identifiers"
@@ -16,6 +14,8 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
 )
 
 const (

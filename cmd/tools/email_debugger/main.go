@@ -6,14 +6,15 @@ import (
 	"os"
 	"time"
 
-	flag "github.com/spf13/pflag"
-
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/email/sendgrid"
 	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	flag "github.com/spf13/pflag"
 )
 
 var (
@@ -30,7 +31,7 @@ func init() {
 
 func main() {
 	ctx := context.Background()
-	logger := zerolog.NewZerologLogger()
+	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if err := os.Setenv("PF_ENVIRONMENT", "dev"); err != nil {
 		panic(err)

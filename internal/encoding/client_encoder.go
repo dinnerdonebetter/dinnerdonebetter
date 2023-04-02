@@ -9,11 +9,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/keith-turner/ecoji/v2"
-
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/keith-turner/ecoji/v2"
 )
 
 type (

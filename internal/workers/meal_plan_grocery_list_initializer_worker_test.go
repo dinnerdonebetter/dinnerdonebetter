@@ -4,20 +4,21 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/features/grocerylistpreparation"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestProvideMealPlanGroceryListInitializer(T *testing.T) {
@@ -27,7 +28,7 @@ func TestProvideMealPlanGroceryListInitializer(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideMealPlanGroceryListInitializer(
-			zerolog.NewZerologLogger(),
+			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -46,7 +47,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		w := ProvideMealPlanGroceryListInitializer(
-			zerolog.NewZerologLogger(),
+			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},

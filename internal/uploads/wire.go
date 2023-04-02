@@ -1,9 +1,9 @@
 package uploads
 
 import (
-	"github.com/google/wire"
-
 	"github.com/prixfixeco/backend/internal/storage"
+
+	"github.com/google/wire"
 )
 
 var (

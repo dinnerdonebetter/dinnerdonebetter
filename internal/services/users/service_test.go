@@ -5,10 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
 	"github.com/prixfixeco/backend/internal/email"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
@@ -23,6 +19,10 @@ import (
 	"github.com/prixfixeco/backend/internal/uploads"
 	"github.com/prixfixeco/backend/internal/uploads/images"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func buildTestService(t *testing.T) *service {

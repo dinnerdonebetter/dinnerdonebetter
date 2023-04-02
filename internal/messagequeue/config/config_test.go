@@ -3,10 +3,11 @@ package config
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
+	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_cleanString(T *testing.T) {
@@ -25,7 +26,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 		cfg := &Config{
 			Consumers: MessageQueueConfig{
 				Provider: ProviderRedis,
@@ -40,7 +41,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 		cfg := &Config{}
 
 		provider, err := ProvideConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
@@ -55,7 +56,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 		cfg := &Config{
 			Publishers: MessageQueueConfig{
 				Provider: ProviderRedis,
@@ -70,7 +71,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 		cfg := &Config{}
 
 		provider, err := ProvidePublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)

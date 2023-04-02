@@ -3,8 +3,6 @@ package admin
 import (
 	"net/http"
 
-	"github.com/alexedwards/scs/v2"
-
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/observability/logging"
@@ -12,6 +10,8 @@ import (
 	"github.com/prixfixeco/backend/internal/routing"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/alexedwards/scs/v2"
 )
 
 const (

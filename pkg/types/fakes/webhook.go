@@ -3,10 +3,10 @@ package fakes
 import (
 	"net/http"
 
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
+
+	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeWebhook builds a faked Webhook.

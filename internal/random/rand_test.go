@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 type erroneousReader struct{}

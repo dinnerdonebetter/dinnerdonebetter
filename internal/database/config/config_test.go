@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	memstore "github.com/alexedwards/scs/v2/memstore"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/backend/internal/database"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+
+	memstore "github.com/alexedwards/scs/v2/memstore"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

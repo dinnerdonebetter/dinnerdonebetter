@@ -6,14 +6,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/prixfixeco/backend/internal/authentication"
+	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
+	testutils "github.com/prixfixeco/backend/tests/utils"
+
 	"github.com/gorilla/securecookie"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/backend/internal/authentication"
-	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
-	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func TestAuthenticationService_getUserIDFromCookie(T *testing.T) {

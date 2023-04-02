@@ -4,10 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alexedwards/scs/v2"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
@@ -16,6 +12,10 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+
+	"github.com/alexedwards/scs/v2"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func buildTestService(t *testing.T) *service {

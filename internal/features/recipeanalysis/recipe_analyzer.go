@@ -7,19 +7,19 @@ import (
 	"image"
 	"strings"
 
-	"github.com/goccy/go-graphviz"
-	"github.com/heimdalr/dag"
-	"gonum.org/v1/gonum/graph"
-	dotencoding "gonum.org/v1/gonum/graph/encoding/dot"
-	"gonum.org/v1/gonum/graph/simple"
-	"gonum.org/v1/gonum/graph/topo"
-
 	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/goccy/go-graphviz"
+	"github.com/heimdalr/dag"
+	"gonum.org/v1/gonum/graph"
+	dotencoding "gonum.org/v1/gonum/graph/encoding/dot"
+	"gonum.org/v1/gonum/graph/simple"
+	"gonum.org/v1/gonum/graph/topo"
 )
 
 var errNotAcyclic = errors.New("recipe is not acyclic")

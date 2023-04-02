@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hashicorp/go-retryablehttp"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/hashicorp/go-retryablehttp"
 )
 
 const (
@@ -88,7 +88,6 @@ func buildErrorHandler(logger logging.Logger) func(res *http.Response, err error
 func buildRetryingClient(client *http.Client, logger logging.Logger, tracer tracing.Tracer) *http.Client {
 	rc := &retryablehttp.Client{
 		HTTPClient:      client,
-		Logger:          logging.EnsureLogger(logger),
 		RetryWaitMin:    minRetryWait,
 		RetryWaitMax:    maxRetryWait,
 		RetryMax:        maxRetryCount,

@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/uploads"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ uploads.UploadManager = (*MockUploadManager)(nil)

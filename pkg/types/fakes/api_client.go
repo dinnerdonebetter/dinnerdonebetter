@@ -3,9 +3,9 @@ package fakes
 import (
 	"fmt"
 
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
+
+	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeAPIClient builds a faked APIClient.

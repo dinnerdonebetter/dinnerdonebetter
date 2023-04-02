@@ -3,11 +3,11 @@ package fakes
 import (
 	"time"
 
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
+
+	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.

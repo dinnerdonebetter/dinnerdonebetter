@@ -8,12 +8,13 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"github.com/googleapis/gax-go/v2"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
-
-	"github.com/prixfixeco/backend/internal/database"
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 )
 
 const (
@@ -46,7 +47,7 @@ type SecretVersionAccessor interface {
 
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
-	logger := zerolog.NewZerologLogger()
+	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 	logger.Debug("setting up secret manager client")
 
 	var cfg *InstanceConfig
@@ -162,7 +163,7 @@ func fetchSecretFromSecretStore(ctx context.Context, client SecretVersionAccesso
 
 // getWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	logger := zerolog.NewZerologLogger()
+	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
 	if secretManagerCreationErr != nil {

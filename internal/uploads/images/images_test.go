@@ -16,12 +16,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	testutils "github.com/prixfixeco/backend/tests/utils"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func newAvatarUploadRequest(t *testing.T, filename string, avatar io.Reader) *http.Request {

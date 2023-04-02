@@ -61,7 +61,7 @@ func (u *Uploader) ServeFiles(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if attrs, err := u.bucket.Attributes(ctx, fileName); attrs != nil && err == nil {
+	if attrs, attrsErr := u.bucket.Attributes(ctx, fileName); attrs != nil && attrsErr == nil {
 		res.Header().Set(encoding.ContentTypeHeaderKey, attrs.ContentType)
 	}
 

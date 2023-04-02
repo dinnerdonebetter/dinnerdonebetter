@@ -3,10 +3,10 @@ package fakes
 import (
 	"fmt"
 
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
+
+	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeRecipeMedia builds a faked valid preparation.

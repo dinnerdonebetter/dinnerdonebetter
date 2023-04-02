@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/prixfixeco/backend/pkg/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/backend/pkg/types"
 )
 
 type testingType struct {

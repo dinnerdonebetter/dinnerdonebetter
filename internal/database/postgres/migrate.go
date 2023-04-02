@@ -5,9 +5,9 @@ import (
 	"embed"
 	"fmt"
 
-	"github.com/GuiaBolso/darwin"
-
 	"github.com/prixfixeco/backend/internal/database"
+
+	"github.com/GuiaBolso/darwin"
 )
 
 var (

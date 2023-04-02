@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/stretchr/testify/mock"
 )
 
 // ContextMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type

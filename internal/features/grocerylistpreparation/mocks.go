@@ -3,9 +3,9 @@ package grocerylistpreparation
 import (
 	"context"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ GroceryListCreator = (*MockGroceryListCreator)(nil)

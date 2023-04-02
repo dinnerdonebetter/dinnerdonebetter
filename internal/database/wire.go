@@ -1,9 +1,9 @@
 package database
 
 import (
-	"github.com/google/wire"
-
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/google/wire"
 )
 
 var (

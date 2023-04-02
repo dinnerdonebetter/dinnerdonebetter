@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/observability/tracing/cloudtrace"
 	"github.com/prixfixeco/backend/internal/observability/tracing/jaeger"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (

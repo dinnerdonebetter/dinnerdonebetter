@@ -4,12 +4,15 @@ import (
 	"context"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/zap"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 )
 
 const (
 	// ProviderZerolog indicates you'd like to use the zerolog Logger.
 	ProviderZerolog = "zerolog"
+	// ProviderZap indicates you'd like to use the zap Logger.
+	ProviderZap = "zap"
 )
 
 type (
@@ -28,12 +31,12 @@ func (cfg *Config) ProvideLogger(_ context.Context) (logging.Logger, error) {
 
 	switch cfg.Provider {
 	case ProviderZerolog:
-		l = zerolog.NewZerologLogger()
+		l = zerolog.NewZerologLogger(cfg.Level)
+	case ProviderZap:
+		l = zap.NewZapLogger(cfg.Level)
 	default:
 		l = logging.NewNoopLogger()
 	}
-
-	l.SetLevel(cfg.Level)
 
 	return l, nil
 }

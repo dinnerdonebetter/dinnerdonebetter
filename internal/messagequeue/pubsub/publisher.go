@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"sync"
 
-	"cloud.google.com/go/pubsub"
-
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"cloud.google.com/go/pubsub"
 )
 
 type (

@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/websocket"
-
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/apiclient/requests"
+
+	"github.com/gorilla/websocket"
 )
 
 type option func(*Client) error
@@ -68,11 +68,6 @@ func UsingLogger(logger logging.Logger) func(*Client) error {
 func UsingDebug(debug bool) func(*Client) error {
 	return func(c *Client) error {
 		c.debug = debug
-
-		if debug {
-			c.logger.SetLevel(logging.DebugLevel)
-		}
-
 		return nil
 	}
 }

@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 
+	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/mock"
-
-	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 )
 
 var _ DataManager = (*MockDatabase)(nil)

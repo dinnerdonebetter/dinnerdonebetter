@@ -7,6 +7,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/routing"
+
 	"github.com/aws/aws-sdk-go/aws/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"gocloud.dev/blob"
@@ -15,10 +19,6 @@ import (
 	"gocloud.dev/blob/memblob"
 	"gocloud.dev/blob/s3blob"
 	"gocloud.dev/gcp"
-
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/routing"
 )
 
 const (

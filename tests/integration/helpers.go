@@ -9,19 +9,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/brianvoe/gofakeit/v5"
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	serverutils "github.com/prixfixeco/backend/internal/server/utils"
 	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
-	"github.com/prixfixeco/backend/pkg/utils"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/brianvoe/gofakeit/v5"
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/require"
 )
 
 func logJSON(t *testing.T, x any) {
@@ -153,14 +153,14 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 	ctx, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	u := utils.DetermineServiceURL()
+	u := serverutils.DetermineServiceURL()
 	urlToUse = u.String()
 
 	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
 	require.NoError(t, err)
 
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	utils.EnsureServerIsUp(ctx, urlToUse)
+	serverutils.EnsureServerIsUp(ctx, urlToUse)
 
 	adminCookie, err := testutils.GetLoginCookie(ctx, urlToUse, premadeAdminUser)
 	require.NoError(t, err)

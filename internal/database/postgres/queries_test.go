@@ -5,14 +5,14 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/Masterminds/squirrel"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
+	"github.com/stretchr/testify/assert"
 )
 
 func buildMockRowsFromIDs(ids ...string) *sqlmock.Rows {

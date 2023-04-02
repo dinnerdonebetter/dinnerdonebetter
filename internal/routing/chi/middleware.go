@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/routing"
+
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 var doNotLog = map[string]struct{}{

@@ -6,13 +6,13 @@ import (
 	"math/rand"
 	"time"
 
-	"resenje.org/schulze"
-
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"resenje.org/schulze"
 )
 
 const (

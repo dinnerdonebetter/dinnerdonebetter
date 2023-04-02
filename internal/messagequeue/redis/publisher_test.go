@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	testutils "github.com/prixfixeco/backend/tests/utils"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 type mockMessagePublisher struct {
@@ -30,7 +31,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
@@ -71,7 +72,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 	T.Run("with error encoding value", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
@@ -104,7 +105,7 @@ func TestProvideRedisPublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
@@ -120,7 +121,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
@@ -136,7 +137,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 	T.Run("with cache hit", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger()
+		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
