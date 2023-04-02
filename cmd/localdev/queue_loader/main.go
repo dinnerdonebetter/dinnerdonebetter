@@ -10,15 +10,15 @@ import (
 	"syscall"
 	"time"
 
-	_ "go.uber.org/automaxprocs"
-
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
+	serverutils "github.com/prixfixeco/backend/internal/server/utils"
 	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/utils"
+
+	_ "go.uber.org/automaxprocs"
 )
 
 const (
@@ -67,9 +67,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	urlToUse := utils.DetermineServiceURL().String()
+	urlToUse := serverutils.DetermineServiceURL().String()
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	utils.EnsureServerIsUp(ctx, urlToUse)
+	serverutils.EnsureServerIsUp(ctx, urlToUse)
 	dataManager.IsReady(ctx, 50)
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)

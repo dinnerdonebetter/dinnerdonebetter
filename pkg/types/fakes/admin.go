@@ -1,9 +1,9 @@
 package fakes
 
 import (
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
+
+	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeUserAccountStatusUpdateInput builds a faked UserAccountStatusUpdateInput.

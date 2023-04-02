@@ -2,8 +2,7 @@ package mailjet
 
 import (
 	"context"
-	"github.com/mailjet/mailjet-apiv3-go/v4"
-	"github.com/stretchr/testify/require"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,6 +11,9 @@ import (
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/mailjet/mailjet-apiv3-go/v4"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewMailjetEmailer(T *testing.T) {
@@ -85,7 +87,7 @@ func TestMailjetEmailer_SendEmail(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			res.WriteHeader(http.StatusOK)
+			json.NewEncoder(res).Encode(&mailjet.ResultsV31{})
 		}))
 
 		config := &Config{SecretKey: t.Name(), PublicKey: t.Name()}

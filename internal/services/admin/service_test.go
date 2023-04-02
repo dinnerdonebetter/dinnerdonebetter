@@ -4,11 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/alexedwards/scs/v2"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/observability/logging"
@@ -16,6 +11,11 @@ import (
 	mockrouting "github.com/prixfixeco/backend/internal/routing/mock"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+
+	"github.com/alexedwards/scs/v2"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func buildTestService(t *testing.T) *service {

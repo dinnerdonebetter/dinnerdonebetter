@@ -3,10 +3,10 @@ package mockrouting
 import (
 	"net/http"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/stretchr/testify/mock"
 )
 
 // NewRouteParamManager returns a new RouteParamManager.

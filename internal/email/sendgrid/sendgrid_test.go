@@ -7,13 +7,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sendgrid/sendgrid-go"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewSendGridEmailer(T *testing.T) {

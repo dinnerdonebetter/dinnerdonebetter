@@ -5,11 +5,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/mailjet/mailjet-apiv3-go/v4"
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/mailjet/mailjet-apiv3-go/v4"
 )
 
 const (

@@ -1,10 +1,10 @@
 package fakes
 
 import (
-	fake "github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
+
+	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeValidMeasurementUnit builds a faked valid ingredient.

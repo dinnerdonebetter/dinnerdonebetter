@@ -94,12 +94,16 @@ rewire: ensure_wire_installed clean_wire wire
 ## formatting
 
 .PHONY: format
-format: format_imports
+format: format_imports format_golang
+
+.PHONY: format_golang
+format_golang:
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
 format_imports:
-	gci write --skip-generated --section standard --section default --section "prefix(github.com/prixfixeco)" --section "prefix(github.com/prixfixeco/backend)" .
+	@# TODO: find some way to use $THIS here instead of hardcoding the path
+	gci write --skip-generated --section standard --section "prefix(github.com/prixfixeco/backend)" --section "prefix(github.com/prixfixeco)" --section default --custom-order .
 
 .PHONY: terraformat
 terraformat:

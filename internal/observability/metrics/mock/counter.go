@@ -3,9 +3,9 @@ package mockmetrics
 import (
 	"context"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/observability/metrics"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ metrics.UnitCounter = (*UnitCounter)(nil)

@@ -3,9 +3,9 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/Masterminds/squirrel"
-
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
 )
 
 // applyFilterToQueryBuilder applies the query filter to a query builder.

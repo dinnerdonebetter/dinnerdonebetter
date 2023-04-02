@@ -6,14 +6,14 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/random"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/secrets"
 	"gocloud.dev/secrets/localsecrets"
-
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/random"
 )
 
 type example struct {

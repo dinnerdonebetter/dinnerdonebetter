@@ -8,12 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/lib/pq"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
 	mockrandom "github.com/prixfixeco/backend/internal/random/mock"
@@ -21,6 +15,12 @@ import (
 	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/lib/pq"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*types.User) *sqlmock.Rows {

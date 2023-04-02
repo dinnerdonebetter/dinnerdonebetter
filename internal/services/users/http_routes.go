@@ -12,11 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/boombuler/barcode"
-	"github.com/boombuler/barcode/qr"
-	"github.com/pquerna/otp/totp"
-	passwordvalidator "github.com/wagslane/go-password-validator"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/email"
@@ -25,6 +20,11 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/boombuler/barcode"
+	"github.com/boombuler/barcode/qr"
+	"github.com/pquerna/otp/totp"
+	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
 const (

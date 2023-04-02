@@ -9,13 +9,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/o1egl/paseto"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/o1egl/paseto"
 )
 
 const (

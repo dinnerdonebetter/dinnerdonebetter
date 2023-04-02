@@ -5,26 +5,27 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/email"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
+	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
 	t.Helper()
 
 	worker := ProvideMealPlanFinalizationWorker(
-		zerolog.NewZerologLogger(),
+		zerolog.NewZerologLogger(logging.DebugLevel),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
 		&email.MockEmailer{},
@@ -43,7 +44,7 @@ func TestProvideChoresWorker(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideMealPlanFinalizationWorker(
-			zerolog.NewZerologLogger(),
+			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
 			&email.MockEmailer{},

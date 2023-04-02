@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/assert"
 )
 
 const (

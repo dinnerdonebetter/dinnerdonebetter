@@ -12,7 +12,6 @@ require (
 	github.com/alexedwards/argon2id v0.0.0-20210326052512-e2135f7c9c77
 	github.com/alexedwards/scs/postgresstore v0.0.0-20210407073823-f445396108a4
 	github.com/alexedwards/scs/v2 v2.4.0
-	github.com/algolia/algoliasearch-client-go/v3 v3.27.0
 	github.com/aws/aws-sdk-go v1.40.43
 	github.com/boombuler/barcode v1.0.1
 	github.com/brianvoe/gofakeit/v5 v5.11.2
@@ -64,6 +63,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v0.26.0
 	go.opentelemetry.io/otel/trace v1.3.0
 	go.uber.org/automaxprocs v1.5.1
+	go.uber.org/zap v1.19.1
 	gocloud.dev v0.23.0
 	golang.org/x/net v0.7.0
 	golang.org/x/tools v0.1.12
@@ -131,6 +131,8 @@ require (
 	github.com/stretchr/objx v0.4.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/otel/internal/metric v0.26.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.7.0 // indirect
 	golang.org/x/exp v0.0.0-20220823124025-807a23277127 // indirect
 	golang.org/x/image v0.5.0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect

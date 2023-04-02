@@ -184,9 +184,9 @@ linters-settings:
   gci:
     sections:
       - standard # Standard section: captures all standard packages.
-      - default # Default section: contains all imports that could not be matched to another section type.
-      - prefix(github.com/prixfixeco) # Custom section: groups all imports with the specified Prefix.
       - prefix(github.com/prixfixeco/backend) # Custom section: groups all imports with the specified Prefix.
+      - prefix(github.com/prixfixeco) # Custom section: groups all imports with the specified Prefix.
+      - default # Default section: contains all imports that could not be matched to another section type.
     skip-generated: true
     custom-order: true
 

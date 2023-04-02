@@ -5,12 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
-	"go.opentelemetry.io/otel"
-	_ "go.uber.org/automaxprocs"
-
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
@@ -22,6 +16,12 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/workers"
+
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
+	"go.opentelemetry.io/otel"
+	_ "go.uber.org/automaxprocs"
 )
 
 const (
@@ -35,8 +35,7 @@ func init() {
 
 // InitializeGroceryListsItemsForMealPlans is our cloud function entrypoint.
 func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event) error {
-	logger := zerolog.NewZerologLogger()
-	logger.SetLevel(logging.DebugLevel)
+	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	cfg, err := config.GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {

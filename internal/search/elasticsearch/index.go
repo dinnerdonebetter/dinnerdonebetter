@@ -9,11 +9,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/elastic/go-elasticsearch/v8/esapi"
-
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
 
 var (

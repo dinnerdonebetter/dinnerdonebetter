@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+
 	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	ld "github.com/launchdarkly/go-server-sdk/v6"
 	"github.com/launchdarkly/go-server-sdk/v6/ldcomponents"
-
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 var (

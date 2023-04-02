@@ -8,10 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
@@ -25,6 +21,10 @@ import (
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_service_InviteMemberHandler(T *testing.T) {

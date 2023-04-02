@@ -8,10 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Masterminds/squirrel"
-	"github.com/alexedwards/scs/postgresstore"
-	"github.com/alexedwards/scs/v2"
-
 	"github.com/prixfixeco/backend/internal/database"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	"github.com/prixfixeco/backend/internal/observability"
@@ -19,6 +15,10 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
+
+	"github.com/Masterminds/squirrel"
+	"github.com/alexedwards/scs/postgresstore"
+	"github.com/alexedwards/scs/v2"
 )
 
 const (
@@ -75,10 +75,6 @@ func ProvideDatabaseClient(
 		connectionURL:   string(cfg.ConnectionDetails),
 		logger:          logging.EnsureLogger(logger).WithName("querier"),
 		sqlBuilder:      squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
-	}
-
-	if cfg.Debug {
-		c.logger.SetLevel(logging.DebugLevel)
 	}
 
 	if cfg.RunMigrations {

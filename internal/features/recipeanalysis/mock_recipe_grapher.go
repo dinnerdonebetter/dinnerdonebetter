@@ -4,10 +4,10 @@ import (
 	"context"
 	"image"
 
+	"github.com/prixfixeco/backend/pkg/types"
+
 	"github.com/stretchr/testify/mock"
 	"gonum.org/v1/gonum/graph/simple"
-
-	"github.com/prixfixeco/backend/pkg/types"
 )
 
 var _ RecipeAnalyzer = (*MockRecipeAnalyzer)(nil)

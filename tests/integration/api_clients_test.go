@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func checkAPIClientEquality(t *testing.T, expected, actual *types.APIClient) {

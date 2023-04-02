@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/routing"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type chiRouteParamManager struct{}

@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/require"
 )
 
 func Test_attachUint8ToSpan(T *testing.T) {

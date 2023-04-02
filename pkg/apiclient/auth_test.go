@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/pkg/types/fakes"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
 )
 
 func TestAuth(t *testing.T) {

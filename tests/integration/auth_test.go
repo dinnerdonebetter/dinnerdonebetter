@@ -10,14 +10,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func (s *TestSuite) TestLogin() {

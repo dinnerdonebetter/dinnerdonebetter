@@ -10,18 +10,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/Masterminds/squirrel"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/config"
 	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 var _ sqlmock.Argument = (*idMatcher)(nil)

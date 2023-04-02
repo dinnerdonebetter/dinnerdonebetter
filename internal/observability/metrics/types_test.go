@@ -3,9 +3,9 @@ package metrics
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEnsureUnitCounter(T *testing.T) {

@@ -3,9 +3,9 @@ package users
 import (
 	"context"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"github.com/prixfixeco/backend/internal/uploads"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (

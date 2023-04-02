@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Masterminds/squirrel"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {

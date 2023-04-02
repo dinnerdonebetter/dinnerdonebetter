@@ -3,11 +3,11 @@ package observability
 import (
 	"context"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	loggingcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
 	metricscfg "github.com/prixfixeco/backend/internal/observability/metrics/config"
 	tracingcfg "github.com/prixfixeco/backend/internal/observability/tracing/config"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (

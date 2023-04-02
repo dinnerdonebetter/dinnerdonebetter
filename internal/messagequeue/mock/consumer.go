@@ -3,9 +3,9 @@ package mockpublishers
 import (
 	"context"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/messagequeue"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ messagequeue.ConsumerProvider = (*ConsumerProvider)(nil)

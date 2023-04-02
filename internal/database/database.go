@@ -7,9 +7,9 @@ import (
 	"io"
 	"time"
 
-	"github.com/alexedwards/scs/v2"
-
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/alexedwards/scs/v2"
 )
 
 var (

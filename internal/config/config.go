@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hashicorp/go-multierror"
-
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
@@ -48,6 +46,8 @@ import (
 	validpreparationsservice "github.com/prixfixeco/backend/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/backend/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/backend/internal/services/websockets"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 const (

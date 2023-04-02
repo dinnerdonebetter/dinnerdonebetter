@@ -3,9 +3,9 @@ package tracing
 import (
 	"context"
 
-	"github.com/luna-duclos/instrumentedsql"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
+
+	"github.com/luna-duclos/instrumentedsql"
 )
 
 // NewInstrumentedSQLTracer wraps a Tracer for instrumentedsql.

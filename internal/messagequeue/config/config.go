@@ -6,14 +6,14 @@ import (
 	"os"
 	"strings"
 
-	ps "cloud.google.com/go/pubsub"
-
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/messagequeue/pubsub"
 	"github.com/prixfixeco/backend/internal/messagequeue/redis"
 	"github.com/prixfixeco/backend/internal/messagequeue/sqs"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	ps "cloud.google.com/go/pubsub"
 )
 
 const (

@@ -3,11 +3,11 @@ package config
 import (
 	"net/http"
 
-	"github.com/google/wire"
-
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/google/wire"
 )
 
 var (

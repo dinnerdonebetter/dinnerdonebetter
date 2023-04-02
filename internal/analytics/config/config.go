@@ -4,12 +4,12 @@ import (
 	"context"
 	"strings"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/analytics/segment"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (

@@ -8,13 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-redis/redis/v8"
-
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/go-redis/redis/v8"
 )
 
 var (

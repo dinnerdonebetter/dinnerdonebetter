@@ -8,14 +8,14 @@ import (
 	"os"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	testutils "github.com/prixfixeco/backend/tests/utils"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/blob/memblob"
-
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	testutils "github.com/prixfixeco/backend/tests/utils"
 )
 
 func TestUploader_ReadFile(T *testing.T) {

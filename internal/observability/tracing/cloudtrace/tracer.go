@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
-
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 type errorHandler struct {

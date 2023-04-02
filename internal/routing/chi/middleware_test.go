@@ -5,10 +5,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/routing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBuildLoggingMiddleware(T *testing.T) {

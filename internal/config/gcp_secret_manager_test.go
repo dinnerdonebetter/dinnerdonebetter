@@ -7,12 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/googleapis/gax-go/v2"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
-
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
@@ -48,6 +42,12 @@ import (
 	webhooksservice "github.com/prixfixeco/backend/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/backend/internal/services/websockets"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/googleapis/gax-go/v2"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
 type mockSecretVersionAccessor struct {

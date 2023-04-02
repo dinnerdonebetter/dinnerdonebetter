@@ -3,9 +3,9 @@ package mocktypes
 import (
 	"context"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ types.HouseholdInvitationDataManager = (*HouseholdInvitationDataManager)(nil)

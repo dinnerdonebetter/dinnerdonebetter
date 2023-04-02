@@ -12,11 +12,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pquerna/otp/totp"
-
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/pquerna/otp/totp"
 )
 
 var (

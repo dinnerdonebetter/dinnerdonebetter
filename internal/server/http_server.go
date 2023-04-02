@@ -9,9 +9,6 @@ import (
 	"os"
 	"time"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"golang.org/x/net/http2"
-
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/metrics"
@@ -19,6 +16,9 @@ import (
 	"github.com/prixfixeco/backend/internal/panicking"
 	"github.com/prixfixeco/backend/internal/routing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"golang.org/x/net/http2"
 )
 
 const (

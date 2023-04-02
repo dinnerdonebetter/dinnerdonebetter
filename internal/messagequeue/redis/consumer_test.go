@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 func Test_provideRedisConsumer(T *testing.T) {

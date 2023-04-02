@@ -1,15 +1,15 @@
 package launchdarkly
 
 import (
+	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	"github.com/stretchr/testify/mock"
-	"gopkg.in/launchdarkly/go-sdk-common.v2/lduser"
 )
 
 type mockClient struct {
 	mock.Mock
 }
 
-func (m *mockClient) BoolVariation(key string, user lduser.User, defaultVal bool) (bool, error) {
-	args := m.Called(key, user, defaultVal)
+func (m *mockClient) BoolVariation(key string, context ldcontext.Context, defaultVal bool) (bool, error) {
+	args := m.Called(key, context, defaultVal)
 	return args.Bool(0), args.Error(1)
 }

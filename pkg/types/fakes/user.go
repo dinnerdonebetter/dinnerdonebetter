@@ -6,12 +6,12 @@ import (
 	"log"
 	"time"
 
-	fake "github.com/brianvoe/gofakeit/v5"
-	"github.com/pquerna/otp/totp"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/pquerna/otp/totp"
 )
 
 // BuildFakeUser builds a faked User.

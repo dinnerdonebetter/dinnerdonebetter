@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCount uint64, validPreparationInstruments ...*types.ValidPreparationInstrument) *sqlmock.Rows {

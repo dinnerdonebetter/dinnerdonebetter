@@ -7,11 +7,11 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/observability/logging"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
-
-	"github.com/prixfixeco/backend/internal/observability/logging"
 )
 
 func Test_buildZerologger(T *testing.T) {
@@ -20,7 +20,7 @@ func Test_buildZerologger(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, buildZerologger())
+		assert.NotNil(t, buildZerologger(logging.DebugLevel))
 	})
 }
 
@@ -30,7 +30,7 @@ func TestNewLogger(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, NewZerologLogger())
+		assert.NotNil(t, NewZerologLogger(logging.DebugLevel))
 	})
 }
 
@@ -40,37 +40,9 @@ func Test_zerologLogger_WithName(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		assert.NotNil(t, l.WithName(t.Name()))
-	})
-}
-
-func Test_zerologLogger_SetLevel(T *testing.T) {
-	T.Parallel()
-
-	T.Run("Info", func(t *testing.T) {
-		t.Parallel()
-
-		NewZerologLogger().SetLevel(logging.InfoLevel)
-	})
-
-	T.Run("Debug", func(t *testing.T) {
-		t.Parallel()
-
-		NewZerologLogger().SetLevel(logging.DebugLevel)
-	})
-
-	T.Run("Error", func(t *testing.T) {
-		t.Parallel()
-
-		NewZerologLogger().SetLevel(logging.ErrorLevel)
-	})
-
-	T.Run("Warn", func(t *testing.T) {
-		t.Parallel()
-
-		NewZerologLogger().SetLevel(logging.WarnLevel)
 	})
 }
 
@@ -80,7 +52,7 @@ func Test_zerologLogger_SetRequestIDFunc(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		l.SetRequestIDFunc(func(*http.Request) string {
 			return ""
@@ -94,7 +66,7 @@ func Test_zerologLogger_Info(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		l.Info(t.Name())
 	})
@@ -106,7 +78,7 @@ func Test_zerologLogger_Debug(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		l.Debug(t.Name())
 	})
@@ -118,21 +90,9 @@ func Test_zerologLogger_Error(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		l.Error(errors.New("blah"), t.Name())
-	})
-}
-
-func Test_zerologLogger_Printf(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		l := NewZerologLogger()
-
-		l.Printf(t.Name())
 	})
 }
 
@@ -142,7 +102,7 @@ func Test_zerologLogger_Clone(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		assert.NotNil(t, l.Clone())
 	})
@@ -154,7 +114,7 @@ func Test_zerologLogger_WithValue(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		assert.NotNil(t, l.WithValue("name", t.Name()))
 	})
@@ -166,7 +126,7 @@ func Test_zerologLogger_WithValues(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		assert.NotNil(t, l.WithValues(map[string]any{"name": t.Name()}))
 	})
@@ -178,7 +138,7 @@ func Test_zerologLogger_WithError(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		assert.NotNil(t, l.WithError(errors.New("blah")))
 	})
@@ -191,7 +151,7 @@ func Test_zerologLogger_WithSpan(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		span := trace.SpanFromContext(ctx)
 
@@ -205,7 +165,7 @@ func Test_zerologLogger_WithRequest(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l, ok := NewZerologLogger().(*zerologLogger)
+		l, ok := NewZerologLogger(logging.DebugLevel).(*zerologLogger)
 		require.True(t, ok)
 
 		l.requestIDFunc = func(*http.Request) string {
@@ -227,7 +187,7 @@ func Test_zerologLogger_WithResponse(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		l := NewZerologLogger()
+		l := NewZerologLogger(logging.DebugLevel)
 
 		assert.NotNil(t, l.WithResponse(&http.Response{}))
 	})

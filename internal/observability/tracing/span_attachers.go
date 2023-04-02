@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/prixfixeco/backend/internal/observability/keys"
+	"github.com/prixfixeco/backend/pkg/types"
+
 	useragent "github.com/mssola/user_agent"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-
-	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // AttachIntToSpan attaches an int to a span.

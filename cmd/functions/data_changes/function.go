@@ -5,18 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 
+	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
+	"github.com/prixfixeco/backend/internal/config"
+	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
+
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
-
-	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
-	"github.com/prixfixeco/backend/internal/config"
-	"github.com/prixfixeco/backend/internal/observability"
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
 )
 
 func init() {
@@ -45,7 +46,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		return fmt.Errorf("event.DataAs: %v", err)
 	}
 
-	logger := zerolog.NewZerologLogger()
+	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	cfg, err := config.GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {

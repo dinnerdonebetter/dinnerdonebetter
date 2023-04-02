@@ -40,9 +40,7 @@ type Logger interface {
 	Info(string)
 	Debug(string)
 	Error(err error, whatWasHappeningWhenErrorOccurred string)
-	Printf(string, ...any)
 
-	SetLevel(Level)
 	SetRequestIDFunc(RequestIDFunc)
 
 	Clone() Logger

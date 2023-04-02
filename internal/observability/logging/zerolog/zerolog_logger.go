@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rs/zerolog"
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
+
+	"github.com/rs/zerolog"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const here = "github.com/prixfixeco/backend/"
@@ -42,13 +42,32 @@ type zerologLogger struct {
 }
 
 // buildZerologger builds a new zerologger.
-func buildZerologger() zerolog.Logger {
-	return zerolog.New(os.Stdout).With().Timestamp().Logger().Level(zerolog.InfoLevel)
+func buildZerologger(level logging.Level) zerolog.Logger {
+	var lvl zerolog.Level
+	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+
+	switch level {
+	case logging.InfoLevel:
+		lvl = zerolog.InfoLevel
+	case logging.DebugLevel:
+		logger = logger.With().Logger()
+		lvl = zerolog.DebugLevel
+	case logging.WarnLevel:
+		logger = logger.With().Caller().Logger()
+		lvl = zerolog.WarnLevel
+	case logging.ErrorLevel:
+		logger = logger.With().Caller().Logger()
+		lvl = zerolog.ErrorLevel
+	default:
+		lvl = zerolog.InfoLevel
+	}
+
+	return logger.Level(lvl)
 }
 
 // NewZerologLogger builds a new zerologLogger.
-func NewZerologLogger() logging.Logger {
-	return &zerologLogger{logger: buildZerologger()}
+func NewZerologLogger(lvl logging.Level) logging.Logger {
+	return &zerologLogger{logger: buildZerologger(lvl)}
 }
 
 // WithName is our obligatory contract fulfillment function.
@@ -56,29 +75,6 @@ func NewZerologLogger() logging.Logger {
 func (l *zerologLogger) WithName(name string) logging.Logger {
 	l2 := l.logger.With().Str(logging.LoggerNameKey, name).Logger()
 	return &zerologLogger{logger: l2}
-}
-
-// SetLevel sets the log level for our zerolog logger.
-func (l *zerologLogger) SetLevel(level logging.Level) {
-	var lvl zerolog.Level
-
-	switch level {
-	case logging.InfoLevel:
-		lvl = zerolog.InfoLevel
-	case logging.DebugLevel:
-		l.logger = l.logger.With().Logger()
-		lvl = zerolog.DebugLevel
-	case logging.WarnLevel:
-		l.logger = l.logger.With().Caller().Logger()
-		lvl = zerolog.WarnLevel
-	case logging.ErrorLevel:
-		l.logger = l.logger.With().Caller().Logger()
-		lvl = zerolog.ErrorLevel
-	default:
-		lvl = zerolog.InfoLevel
-	}
-
-	l.logger = l.logger.Level(lvl)
 }
 
 // SetRequestIDFunc sets the request ID retrieval function.
@@ -103,11 +99,6 @@ func (l *zerologLogger) Error(err error, whatWasHappeningWhenErrorOccurred strin
 	if err != nil {
 		l.logger.Error().Stack().Caller().Msg(fmt.Sprintf("error %s: %s", whatWasHappeningWhenErrorOccurred, err.Error()))
 	}
-}
-
-// Printf satisfies our contract for the logging.Logger Printf method.
-func (l *zerologLogger) Printf(format string, args ...any) {
-	l.logger.Printf(format, args...)
 }
 
 // Clone satisfies our contract for the logging.Logger WithValue method.

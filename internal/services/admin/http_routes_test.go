@@ -7,11 +7,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/alexedwards/scs/v2/mockstore"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/observability/logging"
@@ -19,6 +14,11 @@ import (
 	"github.com/prixfixeco/backend/pkg/types"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/alexedwards/scs/v2/mockstore"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {

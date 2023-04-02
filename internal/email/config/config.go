@@ -2,17 +2,17 @@ package config
 
 import (
 	"context"
-	"github.com/prixfixeco/backend/internal/email/mailjet"
 	"net/http"
 	"strings"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/email/mailgun"
+	"github.com/prixfixeco/backend/internal/email/mailjet"
 	"github.com/prixfixeco/backend/internal/email/sendgrid"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (

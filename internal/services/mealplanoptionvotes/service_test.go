@@ -5,9 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-
 	"github.com/prixfixeco/backend/internal/database"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -17,6 +14,9 @@ import (
 	mealplaneventsservice "github.com/prixfixeco/backend/internal/services/mealplanevents"
 	mealplanoptionsservice "github.com/prixfixeco/backend/internal/services/mealplanoptions"
 	mealplansservice "github.com/prixfixeco/backend/internal/services/mealplans"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func buildTestService() *service {

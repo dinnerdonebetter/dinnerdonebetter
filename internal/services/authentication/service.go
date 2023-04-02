@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/alexedwards/scs/v2"
-	"github.com/gorilla/securecookie"
-
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
@@ -15,6 +12,9 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/alexedwards/scs/v2"
+	"github.com/gorilla/securecookie"
 )
 
 const (

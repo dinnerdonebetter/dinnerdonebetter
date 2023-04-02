@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -123,6 +123,8 @@ func TestMailgunEmailer_SendEmail(T *testing.T) {
 	})
 
 	T.Run("with error executing request", func(t *testing.T) {
+		t.Parallel()
+
 		logger := logging.NewNoopLogger()
 
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
@@ -152,6 +154,8 @@ func TestMailgunEmailer_SendEmail(T *testing.T) {
 	})
 
 	T.Run("with invalid response code", func(t *testing.T) {
+		t.Parallel()
+
 		logger := logging.NewNoopLogger()
 
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {

@@ -18,12 +18,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gorilla/securecookie"
-	"github.com/o1egl/paseto"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/authentication"
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
 	"github.com/prixfixeco/backend/internal/authorization"
@@ -36,6 +30,12 @@ import (
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 	testutils "github.com/prixfixeco/backend/tests/utils"
+
+	"github.com/gorilla/securecookie"
+	"github.com/o1egl/paseto"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_service_determineCookieDomain(T *testing.T) {

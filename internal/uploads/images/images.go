@@ -15,11 +15,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hashicorp/go-multierror"
-
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
