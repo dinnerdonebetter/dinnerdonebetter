@@ -485,6 +485,10 @@ github.com/luna-duclos/instrumentedsql v1.1.3 h1:t7mvC0z1jUt5A0UQ6I/0H31ryymuQRn
 github.com/luna-duclos/instrumentedsql v1.1.3/go.mod h1:9J1njvFds+zN7y85EDhN9XNQLANWwZt2ULeIC8yMNYs=
 github.com/mailgun/mailgun-go/v4 v4.8.2 h1:52uaKBnTAaVtKFGtLwUSnpUzQKX1z8RfwYsBaON0l5s=
 github.com/mailgun/mailgun-go/v4 v4.8.2/go.mod h1:FJlF9rI5cQT+mrwujtJjPMbIVy3Ebor9bKTVsJ0QU40=
+github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 h1:/gjowTurgK4iqLzVAQmjtcldyaW6tbJNA4PzZsuj2Ks=
+github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0/go.mod h1:Nw3mVzRxV0CVDTlzaRcADGKt4PMNbT7gYIyEtjMrVIM=
+github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1 h1:VwdxYT1lPOIBZolqNtN6GcpdOySgHhCFQNsbN5P7uh8=
+github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1/go.mod h1:2SU3t6eh/uK6BSeBmdhpIUau99L4iPlIfbx4o4pAUQs=
 github.com/mailru/easyjson v0.7.6 h1:8yTIVnZgCoiM1TgqoeTl+LfU5Jg6/xL3QhGQnimLYnA=
 github.com/mailru/easyjson v0.7.6/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/makiuchi-d/gozxing v0.0.0-20210324052758-57132e828831 h1:uWRLEm5rFgZ7Jz444Gx0dRzKU29SXbbVhPmCovkDGl8=

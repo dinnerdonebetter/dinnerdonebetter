@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"github.com/prixfixeco/backend/internal/email/mailjet"
 	"net/http"
 	"strings"
 
@@ -19,6 +20,8 @@ const (
 	ProviderSendgrid = "sendgrid"
 	// ProviderMailgun represents Mailgun.
 	ProviderMailgun = "mailgun"
+	// ProviderMailjet represents Mailjet.
+	ProviderMailjet = "mailjet"
 )
 
 type (
@@ -26,6 +29,7 @@ type (
 	Config struct {
 		Sendgrid *sendgrid.Config `json:"sendgrid" mapstructure:"sendgrid" toml:"sendgrid,omitempty"`
 		Mailgun  *mailgun.Config  `json:"mailgun" mapstructure:"mailgun" toml:"mailgun,omitempty"`
+		Mailjet  *mailjet.Config  `json:"mailjet" mapstructure:"mailjet" toml:"mailjet,omitempty"`
 		Provider string           `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
 	}
 )
@@ -46,6 +50,8 @@ func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.
 		return sendgrid.NewSendGridEmailer(cfg.Sendgrid, logger, tracerProvider, client)
 	case ProviderMailgun:
 		return mailgun.NewMailgunEmailer(cfg.Mailgun, logger, tracerProvider, client)
+	case ProviderMailjet:
+		return mailjet.NewMailjetEmailer(cfg.Mailjet, logger, tracerProvider, client)
 	default:
 		logger.Debug("providing noop emailer")
 		return email.NewNoopEmailer()

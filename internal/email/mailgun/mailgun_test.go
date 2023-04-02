@@ -87,7 +87,11 @@ func TestNewMailgunEmailer(T *testing.T) {
 }
 
 func TestMailgunEmailer_SendEmail(T *testing.T) {
+	T.Parallel()
+
 	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
 		logger := logging.NewNoopLogger()
 
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {

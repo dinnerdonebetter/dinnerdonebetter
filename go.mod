@@ -34,6 +34,7 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/luna-duclos/instrumentedsql v1.1.3
 	github.com/mailgun/mailgun-go/v4 v4.8.2
+	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1
 	github.com/makiuchi-d/gozxing v0.0.0-20210324052758-57132e828831
 	github.com/moul/http2curl v1.0.0
 	github.com/mssola/user_agent v0.5.2
@@ -111,6 +112,7 @@ require (
 	github.com/launchdarkly/ccache v1.1.0 // indirect
 	github.com/launchdarkly/eventsource v1.6.2 // indirect
 	github.com/launchdarkly/go-semver v1.0.2 // indirect
+	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
