@@ -43,7 +43,7 @@ ifndef $(shell command -v wire 2> /dev/null)
 	$(shell GO111MODULE=off go install github.com/google/wire/cmd/wire@latest)
 endif
 
-ensure_fieldalign_installed:
+ensure_fieldalignment_installed:
 ifndef $(shell command -v wire 2> /dev/null)
 	$(shell GO111MODULE=off go get -u golang.org/x/tools/...)
 endif
@@ -208,7 +208,7 @@ integration-tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	docker-compose \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(OBSERVE)),integration-tests-with-observability.yaml,integration-tests.yaml) \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml \
 	up \
 	--build \
 	--quiet-pull \

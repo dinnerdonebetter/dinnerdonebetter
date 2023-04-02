@@ -8,10 +8,10 @@
 # Test binary, build with "go test -c"
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
+# Output of the go coverage tool
 *.out
 
-# pretty good IDEs
+# IDEs
 .idea
 .vscode/
 
@@ -23,16 +23,6 @@
 
 # Go
 vendor
-mage_output_file.go
-
-# Python
-.env
-.mypy_cache
-__pycache__
-artifacts
-
-# frontend things
-internal/services/frontend/_vendor_/*
 
 # Log files
 *.log
@@ -41,18 +31,15 @@ internal/services/frontend/_vendor_/*
 *.coverprofile
 *.profile
 
-# Local .terraform directories
+# terraform
 **/.terraform/*
 **/.terraform.lock.hcl
-
-# .tfstate files
 *.tfstate
 *.tfstate.*
 
 # TLS certificates
-environments/testing/certificates
 *.pem
+*.key
 
 cmd/tools/db_initializer/dump.sql
 cmd/playground/*.go
-

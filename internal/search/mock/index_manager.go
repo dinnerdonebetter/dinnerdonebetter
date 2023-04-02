@@ -4,31 +4,34 @@ import (
 	"context"
 
 	"github.com/prixfixeco/backend/internal/search"
+	"github.com/prixfixeco/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 )
 
-var _ search.IndexManager = (*IndexManager)(nil)
+var _ search.IndexManager[types.ValidIngredient] = (*IndexManager[types.ValidIngredient])(nil)
 
 // IndexManager is a mock IndexManager.
-type IndexManager struct {
+type IndexManager[T any] struct {
 	mock.Mock
 }
 
+func (m *IndexManager[T]) Wipe(ctx context.Context) error {
+	return m.Called(ctx).Error(0)
+}
+
 // Index implements our interface.
-func (m *IndexManager) Index(ctx context.Context, id string, value any) error {
-	args := m.Called(ctx, id, value)
-	return args.Error(0)
+func (m *IndexManager[T]) Index(ctx context.Context, id string, value any) error {
+	return m.Called(ctx, id, value).Error(0)
 }
 
 // Search implements our interface.
-func (m *IndexManager) Search(ctx context.Context, byField, query, householdID string) (ids []string, err error) {
-	args := m.Called(ctx, byField, query, householdID)
-	return args.Get(0).([]string), args.Error(1)
+func (m *IndexManager[T]) Search(ctx context.Context, query string) (results []*T, err error) {
+	args := m.Called(ctx, query)
+	return args.Get(0).([]*T), args.Error(1)
 }
 
 // Delete implements our interface.
-func (m *IndexManager) Delete(ctx context.Context, id string) error {
-	args := m.Called(ctx, id)
-	return args.Error(0)
+func (m *IndexManager[T]) Delete(ctx context.Context, id string) error {
+	return m.Called(ctx, id).Error(0)
 }

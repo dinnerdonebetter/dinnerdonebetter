@@ -12,6 +12,7 @@ require (
 	github.com/alexedwards/argon2id v0.0.0-20210326052512-e2135f7c9c77
 	github.com/alexedwards/scs/postgresstore v0.0.0-20210407073823-f445396108a4
 	github.com/alexedwards/scs/v2 v2.4.0
+	github.com/algolia/algoliasearch-client-go/v3 v3.27.0
 	github.com/aws/aws-sdk-go v1.40.43
 	github.com/boombuler/barcode v1.0.1
 	github.com/brianvoe/gofakeit/v5 v5.11.2
@@ -69,7 +70,6 @@ require (
 	golang.org/x/tools v0.1.12
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/genproto v0.0.0-20220518221133-4f43b3371335
-	gopkg.in/launchdarkly/go-sdk-common.v2 v2.5.1
 	gopkg.in/mikespook/gorbac.v2 v2.1.0
 	gopkg.in/segmentio/analytics-go.v3 v3.1.0
 	resenje.org/schulze v0.2.0
@@ -144,7 +144,6 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.46.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/launchdarkly/go-jsonstream.v1 v1.0.1 // indirect
 )
 
 require (

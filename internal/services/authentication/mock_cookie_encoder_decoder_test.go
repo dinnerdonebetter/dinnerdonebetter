@@ -16,6 +16,5 @@ func (m *mockCookieEncoderDecoder) Encode(name string, value any) (string, error
 }
 
 func (m *mockCookieEncoderDecoder) Decode(name, value string, dst any) error {
-	args := m.Called(name, value, dst)
-	return args.Error(0)
+	return m.Called(name, value, dst).Error(0)
 }

@@ -492,7 +492,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB, a, sg)
 	})
 
-	T.Run("with error creating API Client in data store", func(t *testing.T) {
+	T.Run("with error creating API client in data store", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)

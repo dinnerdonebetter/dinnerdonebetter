@@ -3,30 +3,28 @@ package search
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/pkg/types"
 )
 
 type (
-	// IndexPath is a type alias for dependency injection's sake.
-	IndexPath string
-
-	// IndexName is a type alias for dependency injection's sake.
-	IndexName string
+	Searchable interface {
+		types.ValidPreparation |
+			types.ValidIngredient |
+			types.ValidInstrument |
+			types.ValidIngredientState |
+			types.ValidMeasurementUnit
+	}
 
 	// IndexSearcher is our wrapper interface for querying a text search index.
-	IndexSearcher interface {
-		Search(ctx context.Context, byField, query, householdID string) (ids []string, err error)
+	IndexSearcher[T Searchable] interface {
+		Search(ctx context.Context, query string) (ids []*T, err error)
 	}
 
 	// IndexManager is our wrapper interface for a text search index.
-	IndexManager interface {
-		IndexSearcher
+	IndexManager[T Searchable] interface {
+		IndexSearcher[T]
 		Index(ctx context.Context, id string, value any) error
 		Delete(ctx context.Context, id string) (err error)
-	}
-
-	// IndexManagerProvider is a struct that provides a IndexManager for a given index.
-	IndexManagerProvider interface {
-		ProvideIndexManager(ctx context.Context, logger logging.Logger, name IndexName, fields ...string) (IndexManager, error)
+		Wipe(ctx context.Context) error
 	}
 )

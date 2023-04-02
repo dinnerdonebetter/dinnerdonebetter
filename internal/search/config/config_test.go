@@ -1,8 +1,10 @@
-package search
+package config
 
 import (
 	"context"
 	"testing"
+
+	"github.com/prixfixeco/backend/internal/search/elasticsearch"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +18,9 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		ctx := context.Background()
 		cfg := &Config{
 			Provider: ElasticsearchProvider,
-			Address:  IndexPath(t.Name()),
+			Elasticsearch: &elasticsearch.Config{
+				Address: t.Name(),
+			},
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

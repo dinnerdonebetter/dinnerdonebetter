@@ -45,7 +45,7 @@ const (
 	FilterLimitKey = "query_filter.limit"
 	// FilterIsNilKey is the standard key for referring to a types.QueryFilter's null status.
 	FilterIsNilKey = "query_filter.is_nil"
-	// APIClientClientIDKey is the standard key for referring to an API client's Client ID.
+	// APIClientClientIDKey is the standard key for referring to an API client's client ID.
 	APIClientClientIDKey = "api_client.client.id"
 	// APIClientDatabaseIDKey is the standard key for referring to an API client's database ID.
 	APIClientDatabaseIDKey = "api_client.id"

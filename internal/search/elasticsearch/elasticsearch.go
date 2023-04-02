@@ -2,7 +2,6 @@ package elasticsearch
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -12,74 +11,40 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/search"
+	"github.com/prixfixeco/backend/pkg/types"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
 
-var _ search.IndexManager = (*indexManager)(nil)
+var _ search.IndexManager[types.ValidIngredient] = (*indexManager[types.ValidIngredient])(nil)
 
 type (
-	indexManager struct {
-		logger       logging.Logger
-		tracer       tracing.Tracer
-		esclient     *elasticsearch.Client
-		indexName    string
-		searchFields []string
-		timeout      time.Duration
-	}
-
-	indexManagerProvider struct {
-		esclient       *elasticsearch.Client
-		tracerProvider tracing.TracerProvider
-		address        string
+	indexManager[T search.Searchable] struct {
+		logger                logging.Logger
+		tracer                tracing.Tracer
+		esclient              *elasticsearch.Client
+		indexName             string
+		indexOperationTimeout time.Duration
 	}
 )
 
-// NewIndexManagerProvider instantiates an Elasticsearch client.
-func NewIndexManagerProvider(
-	ctx context.Context,
-	logger logging.Logger,
-	cfg *search.Config,
-	tracerProvider tracing.TracerProvider,
-) (search.IndexManagerProvider, error) {
-	if !elasticsearchIsReady(ctx, cfg, logger, 10) {
-		return nil, errors.New("elasticsearch isn't ready")
-	}
-
-	c, err := elasticsearch.NewClient(elasticsearch.Config{
-		Addresses: []string{
-			string(cfg.Address),
-		},
-		Username:             cfg.Username,
-		Password:             cfg.Password,
-		RetryOnStatus:        nil,
-		EnableRetryOnTimeout: true,
-		MaxRetries:           10,
-		Transport:            nil,
-		Logger:               nil,
-	})
+func ProvideIndexManager[T search.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string) (search.IndexManager[T], error) {
+	c, err := cfg.provideElasticsearchClient()
 	if err != nil {
 		return nil, fmt.Errorf("initializing search client: %w", err)
 	}
 
-	im := &indexManagerProvider{
-		esclient:       c,
-		tracerProvider: tracerProvider,
-		address:        string(cfg.Address),
+	if ready := elasticsearchIsReady(ctx, cfg, logger, 10); !ready {
+		return nil, fmt.Errorf("initializing search client: %w", err)
 	}
 
-	return im, nil
-}
-
-func (m *indexManagerProvider) ProvideIndexManager(ctx context.Context, logger logging.Logger, name search.IndexName, fields ...string) (search.IndexManager, error) {
-	im := &indexManager{
-		tracer:       tracing.NewTracer(m.tracerProvider.Tracer(fmt.Sprintf("search_%s", name))),
-		logger:       logging.EnsureLogger(logger).WithName(string(name)).WithValue("address", m.address),
-		searchFields: fields,
-		esclient:     m.esclient,
-		timeout:      30 * time.Second,
-		indexName:    string(name),
+	im := &indexManager[T]{
+		tracer:                tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("search_%s", indexName))),
+		logger:                logging.EnsureLogger(logger).WithName(indexName),
+		esclient:              c,
+		indexOperationTimeout: cfg.IndexOperationTimeout,
+		indexName:             indexName,
 	}
 
 	if indexErr := im.ensureIndices(ctx); indexErr != nil {
@@ -91,7 +56,7 @@ func (m *indexManagerProvider) ProvideIndexManager(ctx context.Context, logger l
 
 func elasticsearchIsReady(
 	ctx context.Context,
-	cfg *search.Config,
+	cfg *Config,
 	l logging.Logger,
 	maxAttempts uint8,
 ) (ready bool) {
@@ -105,20 +70,7 @@ func elasticsearchIsReady(
 	logger.Debug("checking if elasticsearch is ready")
 
 	for !ready {
-		c, err := elasticsearch.NewClient(elasticsearch.Config{
-			Addresses: []string{
-				string(cfg.Address),
-			},
-			Username:             cfg.Username,
-			Password:             cfg.Password,
-			DiscoverNodesOnStart: true,
-			RetryOnStatus:        nil,
-			EnableRetryOnTimeout: true,
-			MaxRetries:           50,
-			RetryBackoff:         func(attempt int) time.Duration { return time.Second },
-			Transport:            tracing.BuildTracedHTTPTransport(10 * time.Second),
-			Logger:               nil,
-		})
+		c, err := cfg.provideElasticsearchClient()
 		if err != nil {
 			logger.WithValue("attempt_count", attemptCount).Debug("client setup failed, waiting for elasticsearch")
 			time.Sleep(time.Second)
@@ -149,7 +101,7 @@ func elasticsearchIsReady(
 	return false
 }
 
-func (sm *indexManager) ensureIndices(ctx context.Context) error {
+func (sm *indexManager[T]) ensureIndices(ctx context.Context) error {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
