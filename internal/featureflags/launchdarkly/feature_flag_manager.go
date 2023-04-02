@@ -2,65 +2,96 @@ package launchdarkly
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
+	"time"
 
-	"gopkg.in/launchdarkly/go-sdk-common.v2/lduser"
-	ld "gopkg.in/launchdarkly/go-server-sdk.v5"
+	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
+	ld "github.com/launchdarkly/go-server-sdk/v6"
+	"github.com/launchdarkly/go-server-sdk/v6/ldcomponents"
 
-	"github.com/prixfixeco/backend/internal/featureflags"
-	"github.com/prixfixeco/backend/internal/featureflags/config"
-	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
 var (
-	_ featureflags.FeatureFlagManager = (*FeatureFlagManager)(nil)
-	_ launchDarklyClient              = (*ld.LDClient)(nil)
+	ErrMissingHTTPClient = errors.New("missing HTTP client")
+	ErrNilConfig         = errors.New("missing config")
+	ErrMissingSDKKey     = errors.New("missing SDK key")
 )
 
 type (
-	launchDarklyClient interface {
-		BoolVariation(key string, user lduser.User, defaultVal bool) (bool, error)
+	Config struct {
+		SDKKey      string        `json:"sdkKey" mapstructure:"sdk_key" toml:"sdk_key"`
+		InitTimeout time.Duration `json:"initTimeout" mapstructure:"init_timeout" toml:"init_timeout"`
 	}
 
-	// FeatureFlagManager implements the feature flag interface.
-	FeatureFlagManager struct {
-		tracer tracing.Tracer
-		logger logging.Logger
+	// FeatureFlagManager manages feature flags.
+	FeatureFlagManager interface {
+		CanUseFeature(ctx context.Context, accountID, feature string) (bool, error)
+	}
+
+	launchDarklyClient interface {
+		BoolVariation(key string, context ldcontext.Context, defaultVal bool) (bool, error)
+	}
+
+	// featureFlagManager implements the feature flag interface.
+	featureFlagManager struct {
 		client launchDarklyClient
+		logger logging.Logger
+		tracer tracing.Tracer
 	}
 )
 
-// NewFeatureFlagManager constructs a new FeatureFlagManager.
-func NewFeatureFlagManager(cfg config.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) (*FeatureFlagManager, error) {
-	client, err := ld.MakeClient(cfg.LaunchDarkly.SDKKey, cfg.LaunchDarkly.InitTimeout)
-	if err != nil {
-		return nil, fmt.Errorf("error initializing Launch Darkly client: %w", err)
+// NewFeatureFlagManager constructs a new featureFlagManager.
+func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, httpClient *http.Client, configModifiers ...func(ld.Config) ld.Config) (FeatureFlagManager, error) {
+	if httpClient == nil {
+		return nil, ErrMissingHTTPClient
 	}
 
-	ffm := &FeatureFlagManager{
-		client: client,
-		logger: logging.EnsureLogger(logger).WithName("launchdarkly_feature_flag_manager"),
+	if cfg == nil {
+		return nil, ErrNilConfig
+	}
+
+	if cfg.SDKKey == "" {
+		return nil, ErrMissingSDKKey
+	}
+
+	if cfg.InitTimeout == time.Duration(0) {
+		cfg.InitTimeout = 5 * time.Second
+	}
+
+	ldConfig := ld.Config{
+		HTTP: ldcomponents.HTTPConfiguration().HTTPClientFactory(func() *http.Client { return httpClient }),
+	}
+
+	for _, modifier := range configModifiers {
+		ldConfig = modifier(ldConfig)
+	}
+
+	client, err := ld.MakeCustomClient(
+		cfg.SDKKey,
+		ldConfig,
+		cfg.InitTimeout,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error initializing LaunchDarkly client: %w", err)
+	}
+
+	ffm := &featureFlagManager{
+		logger: logger,
 		tracer: tracing.NewTracer(tracerProvider.Tracer("launchdarkly_feature_flag_manager")),
+		client: client,
 	}
 
 	return ffm, nil
 }
 
 // CanUseFeature returns whether a user can use a feature or not.
-func (f *FeatureFlagManager) CanUseFeature(ctx context.Context, username, feature string) (bool, error) {
-	_, span := f.tracer.StartSpan(ctx)
+func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature string) (bool, error) {
+	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	user := lduser.NewUserBuilder(username).
-		Name(username).
-		Build()
-
-	showFeature, err := f.client.BoolVariation(feature, user, false)
-	if err != nil {
-		return false, observability.PrepareError(err, span, "fetching variation")
-	}
-
-	return showFeature, nil
+	return f.client.BoolVariation(feature, ldcontext.New(userID), false)
 }

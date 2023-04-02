@@ -1,35 +1,80 @@
 package launchdarkly
 
 import (
-	"context"
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/launchdarkly/go-sdk-common.v2/lduser"
-
+	ld "github.com/launchdarkly/go-server-sdk/v6"
+	"github.com/launchdarkly/go-server-sdk/v6/subsystems"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
+	"github.com/stretchr/testify/require"
+	"net/http"
+	"testing"
 )
 
-func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
+type fakeLaunchDarklyDataSource struct{}
+
+func (f *fakeLaunchDarklyDataSource) Close() error {
+	return nil
+}
+
+func (f *fakeLaunchDarklyDataSource) IsInitialized() bool {
+	return true
+}
+
+func (f *fakeLaunchDarklyDataSource) Start(closeWhenReady chan<- struct{}) {
+	close(closeWhenReady)
+}
+
+type fakeLaunchDarklyDataSourceBuilder struct{}
+
+// Build is called internally by the SDK.
+func (b *fakeLaunchDarklyDataSourceBuilder) Build(subsystems.ClientContext) (subsystems.DataSource, error) {
+	return &fakeLaunchDarklyDataSource{}, nil
+}
+
+func TestNewFeatureFlagManager(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
-		exampleUsername := fakes.BuildFakeUser().Username
+		cfg := &Config{SDKKey: t.Name()}
 
-		ffm := &FeatureFlagManager{logger: logging.NewNoopLogger(), tracer: tracing.NewTracerForTest(t.Name())}
+		actual, err := NewFeatureFlagManager(cfg, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), http.DefaultClient, func(config ld.Config) ld.Config {
+			config.DataSource = &fakeLaunchDarklyDataSourceBuilder{}
+			return config
+		})
+		require.NoError(t, err)
+		require.NotNil(t, actual)
+	})
 
-		fakeClient := &mockClient{}
-		user := lduser.NewUserBuilder(exampleUsername).Name(exampleUsername).Build()
-		fakeClient.On("BoolVariation", t.Name(), user, false).Return(true, nil)
-		ffm.client = fakeClient
+	T.Run("with missing http client", func(t *testing.T) {
+		t.Parallel()
 
-		actual, err := ffm.CanUseFeature(ctx, exampleUsername, t.Name())
-		assert.NoError(t, err)
-		assert.True(t, actual)
+		cfg := &Config{SDKKey: t.Name()}
+
+		actual, err := NewFeatureFlagManager(cfg, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil)
+		require.Error(t, err)
+		require.Nil(t, actual)
+	})
+
+	T.Run("with nil config", func(t *testing.T) {
+		t.Parallel()
+
+		actual, err := NewFeatureFlagManager(nil, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), http.DefaultClient)
+		require.Error(t, err)
+		require.Nil(t, actual)
+	})
+
+	T.Run("with missing SDK key", func(t *testing.T) {
+		t.Parallel()
+
+		cfg := &Config{}
+
+		actual, err := NewFeatureFlagManager(cfg, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), http.DefaultClient, func(config ld.Config) ld.Config {
+			config.DataSource = &fakeLaunchDarklyDataSourceBuilder{}
+			return config
+		})
+		require.Error(t, err)
+		require.Nil(t, actual)
 	})
 }

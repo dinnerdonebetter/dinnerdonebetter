@@ -12,6 +12,7 @@ require (
 	github.com/alexedwards/argon2id v0.0.0-20210326052512-e2135f7c9c77
 	github.com/alexedwards/scs/postgresstore v0.0.0-20210407073823-f445396108a4
 	github.com/alexedwards/scs/v2 v2.4.0
+	github.com/algolia/algoliasearch-client-go/v3 v3.27.0
 	github.com/aws/aws-sdk-go v1.40.43
 	github.com/boombuler/barcode v1.0.1
 	github.com/brianvoe/gofakeit/v5 v5.11.2
@@ -31,6 +32,8 @@ require (
 	github.com/heimdalr/dag v1.2.1
 	github.com/keith-turner/ecoji/v2 v2.0.1
 	github.com/kyleconroy/sqlc v1.15.0
+	github.com/launchdarkly/go-sdk-common/v3 v3.0.1
+	github.com/launchdarkly/go-server-sdk/v6 v6.0.3
 	github.com/lib/pq v1.10.6
 	github.com/luna-duclos/instrumentedsql v1.1.3
 	github.com/mailgun/mailgun-go/v4 v4.8.2
@@ -67,7 +70,6 @@ require (
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/genproto v0.0.0-20220518221133-4f43b3371335
 	gopkg.in/launchdarkly/go-sdk-common.v2 v2.5.1
-	gopkg.in/launchdarkly/go-server-sdk.v5 v5.10.0
 	gopkg.in/mikespook/gorbac.v2 v2.1.0
 	gopkg.in/segmentio/analytics-go.v3 v3.1.0
 	resenje.org/schulze v0.2.0
@@ -106,12 +108,14 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/launchdarkly/ccache v1.1.0 // indirect
 	github.com/launchdarkly/eventsource v1.6.2 // indirect
+	github.com/launchdarkly/go-jsonstream/v3 v3.0.0 // indirect
+	github.com/launchdarkly/go-sdk-events/v2 v2.0.1 // indirect
 	github.com/launchdarkly/go-semver v1.0.2 // indirect
+	github.com/launchdarkly/go-server-sdk-evaluation/v2 v2.0.2 // indirect
 	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
@@ -127,6 +131,7 @@ require (
 	github.com/stretchr/objx v0.4.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.opentelemetry.io/otel/internal/metric v0.26.0 // indirect
+	golang.org/x/exp v0.0.0-20220823124025-807a23277127 // indirect
 	golang.org/x/image v0.5.0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect
@@ -138,8 +143,6 @@ require (
 	google.golang.org/grpc v1.46.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/launchdarkly/go-jsonstream.v1 v1.0.1 // indirect
-	gopkg.in/launchdarkly/go-sdk-events.v1 v1.1.1 // indirect
-	gopkg.in/launchdarkly/go-server-sdk-evaluation.v1 v1.5.0 // indirect
 )
 
 require (
