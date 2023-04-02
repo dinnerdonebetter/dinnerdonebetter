@@ -56,6 +56,11 @@ services:
         - source: '../../../environments/local/config_files/grafana/dashboards'
           target: '/etc/grafana/provisioning/dashboards/dashboards'
           type: 'bind'
+    typesense:
+      image: typesense/typesense:0.24.0
+      entrypoint: sh -c "/opt/typesense-server --data-dir /data --api-key=local-typesense-api-key --enable-cors"
+      ports:
+        - "8108:8108"
     queue_loader:
       environment:
         TARGET_ADDRESS: 'http://api_server:8000'

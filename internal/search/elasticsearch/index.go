@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -21,12 +20,8 @@ var (
 	ErrEmptyQueryProvided = errors.New("empty search query provided")
 )
 
-type idContainer struct {
-	ID string `json:"id"`
-}
-
 // Index implements our IndexManager interface.
-func (sm *indexManager) Index(ctx context.Context, id string, value any) error {
+func (sm *indexManager[T]) Index(ctx context.Context, id string, value any) error {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -42,7 +37,7 @@ func (sm *indexManager) Index(ctx context.Context, id string, value any) error {
 		Index:               sm.indexName,
 		DocumentID:          id,
 		Body:                bytes.NewReader(b),
-		Timeout:             sm.timeout,
+		Timeout:             sm.indexOperationTimeout,
 		Version:             nil,
 		VersionType:         "",
 		WaitForActiveShards: "",
@@ -108,7 +103,7 @@ type esResponse struct {
 }
 
 // search executes search queries.
-func (sm *indexManager) search(ctx context.Context, byField, query, householdID string) (ids []string, err error) {
+func (sm *indexManager[T]) search(ctx context.Context, query string) (results []*T, err error) {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -119,7 +114,7 @@ func (sm *indexManager) search(ctx context.Context, byField, query, householdID 
 		return nil, ErrEmptyQueryProvided
 	}
 
-	resultIDs := []string{}
+	resultIDs := []*T{}
 	q := searchQuery{
 		Query: queryContainer{
 			Bool: should{
@@ -127,22 +122,6 @@ func (sm *indexManager) search(ctx context.Context, byField, query, householdID 
 			},
 		},
 	}
-
-	if householdID != "" {
-		q.Query.Bool.Should = append(q.Query.Bool.Should, condition{
-			Match: map[string]matchCondition{
-				"householdID": {Query: householdID},
-			},
-		})
-	}
-
-	q.Query.Bool.Should = append(q.Query.Bool.Should, condition{
-		Wildcard: &wildcardQuery{
-			byField: wildcardCondition{
-				Value: fmt.Sprintf("*%s*", query),
-			},
-		},
-	})
 
 	queryBody, err := json.Marshal(q)
 	if err != nil {
@@ -181,23 +160,29 @@ func (sm *indexManager) search(ctx context.Context, byField, query, householdID 
 	}
 
 	for _, hit := range r.Hits.Hits {
-		var c *idContainer
+		var c *T
 		if err = json.Unmarshal(hit.Source, &c); err != nil {
 			return nil, observability.PrepareError(err, span, "decoding response")
 		}
-		resultIDs = append(resultIDs, c.ID)
+		resultIDs = append(resultIDs, c)
 	}
 
 	return resultIDs, nil
 }
 
 // Search implements our IndexManager interface.
-func (sm *indexManager) Search(ctx context.Context, byField, query, householdID string) (ids []string, err error) {
-	return sm.search(ctx, byField, query, householdID)
+func (sm *indexManager[T]) Search(ctx context.Context, query string) (ids []*T, err error) {
+	return sm.search(ctx, query)
+}
+
+// Wipe implements our IndexManager interface.
+func (sm *indexManager[T]) Wipe(_ context.Context) (err error) {
+	// TODO: implement
+	return errors.New("unimplemented")
 }
 
 // Delete implements our IndexManager interface.
-func (sm *indexManager) Delete(ctx context.Context, id string) error {
+func (sm *indexManager[T]) Delete(ctx context.Context, id string) error {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
