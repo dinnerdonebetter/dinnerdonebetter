@@ -8,6 +8,7 @@ import (
 	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
+	"github.com/prixfixeco/backend/internal/analytics/segment"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/email/sendgrid"
@@ -74,7 +75,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 			},
 			Analytics: analyticsconfig.Config{
 				Provider: analyticsconfig.ProviderSegment,
-				APIToken: "",
+				Segment:  &segment.Config{},
 			},
 			Encoding: encoding.Config{ContentType: "application/json"},
 			Routing:  routing.Config{},

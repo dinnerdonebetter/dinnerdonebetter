@@ -10,6 +10,22 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 )
 
+// BuildFakeSessionContextData builds a faked HouseholdUserMembershipCreationRequestInput.
+func BuildFakeSessionContextData() *types.SessionContextData {
+	return &types.SessionContextData{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{},
+		Requester: types.RequesterInfo{
+			ServicePermissions:       nil,
+			AccountStatus:            string(types.GoodStandingUserAccountStatus),
+			AccountStatusExplanation: "fake",
+			UserID:                   BuildFakeID(),
+			EmailAddress:             fake.Email(),
+			Username:                 buildUniqueString(),
+		},
+		ActiveHouseholdID: BuildFakeID(),
+	}
+}
+
 // BuildFakeHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
 func BuildFakeHouseholdUserMembershipCreationRequestInput() *types.HouseholdUserMembershipCreationRequestInput {
 	return &types.HouseholdUserMembershipCreationRequestInput{

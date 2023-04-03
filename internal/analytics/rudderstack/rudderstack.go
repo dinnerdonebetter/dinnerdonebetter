@@ -1,4 +1,4 @@
-package segment
+package rudderstack
 
 import (
 	"context"
@@ -9,16 +9,20 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
 
-	segment "gopkg.in/segmentio/analytics-go.v3"
+	rudderstack "github.com/rudderlabs/analytics-go/v4"
 )
 
 const (
-	name = "segment_event_reporter"
+	name = "rudderstack_event_reporter"
 )
 
 var (
+	// ErrNilConfig indicates an nil config was provided.
+	ErrNilConfig = errors.New("nil config")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
 	ErrEmptyAPIToken = errors.New("empty API token")
+	// ErrEmptyDataPlaneURL indicates an empty data plane URL was provided.
+	ErrEmptyDataPlaneURL = errors.New("empty data plane URL")
 )
 
 type (
@@ -26,20 +30,28 @@ type (
 	EventReporter struct {
 		tracer tracing.Tracer
 		logger logging.Logger
-		client segment.Client
+		client rudderstack.Client
 	}
 )
 
-// NewSegmentEventReporter returns a new Segment-backed EventReporter.
-func NewSegmentEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string) (analytics.EventReporter, error) {
-	if apiKey == "" {
+// NewRudderstackEventReporter returns a new Segment-backed EventReporter.
+func NewRudderstackEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config) (analytics.EventReporter, error) {
+	if cfg == nil {
+		return nil, ErrNilConfig
+	}
+
+	if cfg.APIKey == "" {
 		return nil, ErrEmptyAPIToken
+	}
+
+	if cfg.APIKey == "" {
+		return nil, ErrEmptyDataPlaneURL
 	}
 
 	c := &EventReporter{
 		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
 		logger: logging.EnsureLogger(logger).WithName(name),
-		client: segment.New(apiKey),
+		client: rudderstack.New(cfg.APIKey, cfg.DataPlaneURL),
 	}
 
 	return c, nil
@@ -57,14 +69,14 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	t := segment.NewTraits()
+	t := rudderstack.NewTraits()
 	for k, v := range properties {
 		t.Set(k, v)
 	}
 
-	i := segment.NewIntegrations().EnableAll()
+	i := rudderstack.NewIntegrations().EnableAll()
 
-	return c.client.Enqueue(segment.Identify{
+	return c.client.Enqueue(rudderstack.Identify{
 		UserId:       userID,
 		Traits:       t,
 		Integrations: i,
@@ -76,14 +88,14 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event types.CustomerE
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	p := segment.NewProperties()
+	p := rudderstack.NewProperties()
 	for k, v := range properties {
 		p.Set(k, v)
 	}
 
-	i := segment.NewIntegrations().EnableAll()
+	i := rudderstack.NewIntegrations().EnableAll()
 
-	return c.client.Enqueue(segment.Track{
+	return c.client.Enqueue(rudderstack.Track{
 		Event:        string(event),
 		UserId:       userID,
 		Properties:   p,

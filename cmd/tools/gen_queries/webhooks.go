@@ -49,8 +49,8 @@ var (
 	fullWebhooksTableColumns = mergeSlicesAtIndex(rawWebhooksTableColumns, rawWebhookTriggerEventsTableColumns, 5)
 )
 
-func fleshOutVariablesForColumns(columns []string) []interface{} {
-	out := []interface{}{}
+func fleshOutVariablesForColumns(columns []string) []any {
+	out := []any{}
 
 	for range columns {
 		out = append(out, dummyValue)

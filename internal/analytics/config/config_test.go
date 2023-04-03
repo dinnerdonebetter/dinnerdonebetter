@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/analytics/segment"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,7 +17,8 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			APIToken: t.Name(),
+			Provider: ProviderSegment,
+			Segment:  &segment.Config{APIToken: t.Name()},
 		}
 
 		require.NoError(t, cfg.ValidateWithContext(ctx))
@@ -26,7 +29,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			Provider: "segment",
+			Provider: ProviderSegment,
 		}
 
 		require.Error(t, cfg.ValidateWithContext(ctx))

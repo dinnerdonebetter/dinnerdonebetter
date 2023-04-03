@@ -9,6 +9,7 @@ import (
 	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
+	"github.com/prixfixeco/backend/internal/analytics/segment"
 	"github.com/prixfixeco/backend/internal/config"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
@@ -212,7 +213,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 
 	analyticsConfig := analyticsconfig.Config{
 		Provider: analyticsconfig.ProviderSegment,
-		APIToken: "",
+		Segment:  &segment.Config{APIToken: ""},
 	}
 
 	cfg := &config.InstanceConfig{
