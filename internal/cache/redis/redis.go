@@ -53,8 +53,8 @@ func (i *redisCacheImpl[T]) Set(ctx context.Context, key string, value *T) error
 		return err
 	}
 
-	if err := i.client.Set(ctx, key, content, i.expiration).Err(); err != nil {
-		return err
+	if setErr := i.client.Set(ctx, key, content, i.expiration).Err(); setErr != nil {
+		return setErr
 	}
 
 	return nil
