@@ -20,7 +20,7 @@ func Test_newInMemoryCache(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := newInMemoryCache[types.SessionContextData]()
+		actual := NewInMemoryCache[types.SessionContextData]()
 		assert.NotNil(t, actual)
 	})
 }
@@ -32,7 +32,7 @@ func Test_inMemoryCacheImpl_Get(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c := newInMemoryCache[types.SessionContextData]()
+		c := NewInMemoryCache[types.SessionContextData]()
 
 		expected := fakes.BuildFakeSessionContextData()
 		assert.NoError(t, c.Set(ctx, exampleKey, expected))
@@ -50,7 +50,7 @@ func Test_inMemoryCacheImpl_Set(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c := newInMemoryCache[types.SessionContextData]()
+		c := NewInMemoryCache[types.SessionContextData]()
 
 		assert.Len(t, c.(*inMemoryCacheImpl[types.SessionContextData]).cache, 0)
 		assert.NoError(t, c.Set(ctx, exampleKey, fakes.BuildFakeSessionContextData()))
@@ -65,7 +65,7 @@ func Test_inMemoryCacheImpl_Delete(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c := newInMemoryCache[types.SessionContextData]()
+		c := NewInMemoryCache[types.SessionContextData]()
 
 		assert.Len(t, c.(*inMemoryCacheImpl[types.SessionContextData]).cache, 0)
 		assert.NoError(t, c.Set(ctx, exampleKey, fakes.BuildFakeSessionContextData()))

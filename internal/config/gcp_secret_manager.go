@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/prixfixeco/backend/internal/analytics/segment"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
@@ -98,7 +99,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
-	cfg.Analytics.APIToken = os.Getenv(gcpSegmentTokenEnvVarKey)
+	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 
 	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
@@ -180,14 +181,14 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		return nil, encodeErr
 	}
 
-	rawPort := os.Getenv("PORT")
+	rawPort := os.Getenv(gcpPortEnvVarKey)
 	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
 	if portParseErr != nil {
 		return nil, fmt.Errorf("parsing port: %w", portParseErr)
 	}
 	cfg.Server.HTTPPort = uint16(port)
 
-	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
+	socketDir, isSet := os.LookupEnv(gcpDatabaseSocketDirEnvVarKey)
 	if !isSet {
 		socketDir = googleCloudCloudSQLSocket
 	}
@@ -210,7 +211,7 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 	cfg.Events.Publishers.PubSubConfig.TopicName = "data_changes"
 
 	// we don't actually need these, except for validation
-	cfg.Analytics.APIToken = " "
+	cfg.Analytics.Segment = &segment.Config{APIToken: " "}
 	cfg.Email.Sendgrid.APIToken = " "
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
@@ -252,7 +253,7 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 		return nil, encodeErr
 	}
 
-	rawPort := os.Getenv("PORT")
+	rawPort := os.Getenv(gcpPortEnvVarKey)
 	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
 	if portParseErr != nil {
 		return nil, fmt.Errorf("parsing port: %w", portParseErr)
@@ -262,9 +263,10 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	// don't worry about it
 	cfg.Database.ConnectionDetails = " "
 
-	cfg.Email.Sendgrid.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
+	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	// we don't need the HouseholdInviteTemplateID here since we invoke that elsewhere
-	cfg.Analytics.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
+
+	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr

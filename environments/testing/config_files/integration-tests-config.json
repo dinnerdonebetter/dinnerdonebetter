@@ -21,11 +21,14 @@
 	},
 	"email": {
 		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
 		"provider": ""
 	},
 	"analytics": {
 		"provider": "",
-		"apiToken": ""
+		"segment": null,
+		"rudderstack": null
 	},
 	"encoding": {
 		"contentType": "application/json"

@@ -3,8 +3,11 @@ package config
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/prixfixeco/backend/internal/cache"
+	"github.com/prixfixeco/backend/internal/cache/memory"
+	"github.com/prixfixeco/backend/internal/cache/redis"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 
@@ -21,9 +24,9 @@ const (
 type (
 	// Config is the configuration for the cache.
 	Config struct {
-		Provider string   `json:"provider" mapstructure:"provider" toml:"provider"`
-		Memory   struct{} `json:"memory" mapstructure:"memory" toml:"memory"`
-		Redis    struct{} `json:"redis" mapstructure:"redis" toml:"redis"`
+		Memory   struct{}      `json:"memory" mapstructure:"memory" toml:"memory"`
+		Redis    *redis.Config `json:"redis" mapstructure:"redis" toml:"redis"`
+		Provider string        `json:"provider" mapstructure:"provider" toml:"provider"`
 	}
 )
 
@@ -42,9 +45,9 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 func ProvideCache[T cache.Cacheable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config) (cache.Cache[T], error) {
 	switch cfg.Provider {
 	case ProviderMemory:
-		return nil, nil
+		return memory.NewInMemoryCache[T](), nil
 	case ProviderRedis:
-		return nil, nil
+		return redis.NewRedisCache[T](cfg.Redis, time.Hour), nil
 	default:
 		return nil, fmt.Errorf("invalid cache provider: %q", cfg.Provider)
 	}

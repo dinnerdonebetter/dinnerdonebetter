@@ -3,6 +3,7 @@ package config
 import (
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/analytics/segment"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 
@@ -28,7 +29,9 @@ func TestProvideCollector(T *testing.T) {
 
 		cfg := &Config{
 			Provider: ProviderSegment,
-			APIToken: t.Name(),
+			Segment: &segment.Config{
+				APIToken: t.Name(),
+			},
 		}
 		logger := logging.NewNoopLogger()
 

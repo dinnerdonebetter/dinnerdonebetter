@@ -8,12 +8,12 @@ import (
 )
 
 type inMemoryCacheImpl[T cache.Cacheable] struct {
-	cacheHat sync.RWMutex
 	cache    map[string]*T
+	cacheHat sync.RWMutex
 }
 
-// this cache is meant for testing only.
-func newInMemoryCache[T cache.Cacheable]() cache.Cache[T] {
+// NewInMemoryCache builds an in-memory cache.
+func NewInMemoryCache[T cache.Cacheable]() cache.Cache[T] {
 	return &inMemoryCacheImpl[T]{
 		cache: make(map[string]*T),
 	}
