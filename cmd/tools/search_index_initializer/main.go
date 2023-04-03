@@ -13,7 +13,6 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging/zap"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/pointers"
-	"github.com/prixfixeco/backend/internal/search"
 	"github.com/prixfixeco/backend/internal/search/algolia"
 	searchcfg "github.com/prixfixeco/backend/internal/search/config"
 	"github.com/prixfixeco/backend/pkg/types"
@@ -37,7 +36,7 @@ func main() {
 		log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 	}
 
-	if err = wipeIndex(ctx, im); err != nil {
+	if err = im.Wipe(ctx); err != nil {
 		log.Fatal(fmt.Errorf("wiping index: %w", err))
 	}
 
@@ -77,12 +76,4 @@ func main() {
 	}
 
 	log.Println(results)
-}
-
-func wipeIndex(ctx context.Context, im search.IndexManager[types.ValidPreparation]) error {
-	if err := im.Wipe(ctx); err != nil {
-		return fmt.Errorf("deleting index: %w", err)
-	}
-
-	return nil
 }
