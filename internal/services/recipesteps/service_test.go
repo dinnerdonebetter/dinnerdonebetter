@@ -8,11 +8,11 @@ import (
 
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
+	"github.com/prixfixeco/backend/internal/objectstorage"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/backend/internal/routing/mock"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
-	"github.com/prixfixeco/backend/internal/storage"
 	"github.com/prixfixeco/backend/internal/uploads"
 	"github.com/prixfixeco/backend/internal/uploads/images"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
@@ -50,10 +50,10 @@ func TestProvideRecipeStepsService(T *testing.T) {
 		cfg := &Config{
 			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
-				Storage: storage.Config{
-					FilesystemConfig: &storage.FilesystemConfig{RootDirectory: t.Name()},
+				Storage: objectstorage.Config{
+					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
 					BucketName:       t.Name(),
-					Provider:         storage.FilesystemProvider,
+					Provider:         objectstorage.FilesystemProvider,
 				},
 				Debug: false,
 			},
@@ -92,10 +92,10 @@ func TestProvideRecipeStepsService(T *testing.T) {
 		cfg := &Config{
 			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
-				Storage: storage.Config{
-					FilesystemConfig: &storage.FilesystemConfig{RootDirectory: t.Name()},
+				Storage: objectstorage.Config{
+					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
 					BucketName:       t.Name(),
-					Provider:         storage.FilesystemProvider,
+					Provider:         objectstorage.FilesystemProvider,
 				},
 				Debug: false,
 			},

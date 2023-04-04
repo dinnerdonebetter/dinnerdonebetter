@@ -1,4 +1,4 @@
-package storage
+package objectstorage
 
 import (
 	"context"
@@ -115,17 +115,17 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 	case GCPCloudStorageProvider:
 		creds, credsErr := gcp.DefaultCredentials(ctx)
 		if credsErr != nil {
-			return fmt.Errorf("initializing GCP storage: %w", credsErr)
+			return fmt.Errorf("initializing GCP objectstorage: %w", credsErr)
 		}
 
 		client, clientErr := gcp.NewHTTPClient(gcp.DefaultTransport(), creds.TokenSource)
 		if clientErr != nil {
-			return fmt.Errorf("initializing GCP storage: %w", clientErr)
+			return fmt.Errorf("initializing GCP objectstorage: %w", clientErr)
 		}
 
 		u.bucket, err = gcsblob.OpenBucket(ctx, client, cfg.GCPConfig.BucketName, nil)
 		if err != nil {
-			return fmt.Errorf("initializing GCP storage: %w", err)
+			return fmt.Errorf("initializing GCP objectstorage: %w", err)
 		}
 	case MemoryProvider:
 		u.bucket = memblob.OpenBucket(&memblob.Options{})

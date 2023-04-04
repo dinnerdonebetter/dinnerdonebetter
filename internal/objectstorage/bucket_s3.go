@@ -1,4 +1,4 @@
-package storage
+package objectstorage
 
 import (
 	"context"
@@ -12,7 +12,7 @@ const (
 )
 
 type (
-	// S3Config configures an S3-based storage provider.
+	// S3Config configures an S3-based objectstorage provider.
 	S3Config struct {
 		_ struct{}
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/storage"
+	"github.com/prixfixeco/backend/internal/objectstorage"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -17,9 +17,9 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			Storage: storage.Config{
-				FilesystemConfig:  &storage.FilesystemConfig{RootDirectory: "/blah"},
-				S3Config:          &storage.S3Config{BucketName: "blahs"},
+			Storage: objectstorage.Config{
+				FilesystemConfig:  &objectstorage.FilesystemConfig{RootDirectory: "/blah"},
+				S3Config:          &objectstorage.S3Config{BucketName: "blahs"},
 				BucketName:        "blahs",
 				UploadFilenameKey: "blahs",
 				Provider:          "blahs",

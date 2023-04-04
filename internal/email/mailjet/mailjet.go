@@ -37,7 +37,7 @@ type (
 
 	// Config configures Mailjet to send email.
 	Config struct {
-		PublicKey string `json:"publicKey" mapstructure:"public_key" toml:"public_key,omitempty"`
+		APIKey    string `json:"publicKey" mapstructure:"public_key" toml:"public_key,omitempty"`
 		SecretKey string `json:"secretKey" mapstructure:"secret_key" toml:"secret_key,omitempty"`
 	}
 
@@ -59,7 +59,7 @@ func NewMailjetEmailer(cfg *Config, logger logging.Logger, tracerProvider tracin
 		return nil, ErrEmptySecretKey
 	}
 
-	if cfg.PublicKey == "" {
+	if cfg.APIKey == "" {
 		return nil, ErrEmptyPrivateAPIKey
 	}
 
@@ -67,7 +67,7 @@ func NewMailjetEmailer(cfg *Config, logger logging.Logger, tracerProvider tracin
 		return nil, ErrNilHTTPClient
 	}
 
-	mj := mailjet.NewMailjetClient(cfg.PublicKey, cfg.SecretKey)
+	mj := mailjet.NewMailjetClient(cfg.APIKey, cfg.SecretKey)
 	mj.SetClient(client)
 
 	e := &Emailer{

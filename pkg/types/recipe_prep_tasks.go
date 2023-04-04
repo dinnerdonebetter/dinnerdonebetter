@@ -14,13 +14,13 @@ const (
 	// RecipePrepTaskDataType indicates an event is related to a recipe prep task.
 	RecipePrepTaskDataType dataType = "recipe_prep_step"
 
-	// RecipePrepTaskStorageTypeUncovered is a valid storage type for a recipe step task.
+	// RecipePrepTaskStorageTypeUncovered is a valid objectstorage type for a recipe step task.
 	RecipePrepTaskStorageTypeUncovered = "uncovered"
-	// RecipePrepTaskStorageTypeCovered is a valid storage type for a recipe step task.
+	// RecipePrepTaskStorageTypeCovered is a valid objectstorage type for a recipe step task.
 	RecipePrepTaskStorageTypeCovered = "covered"
-	// RecipePrepTaskStorageTypeWireRack is a valid storage type for a recipe step task.
+	// RecipePrepTaskStorageTypeWireRack is a valid objectstorage type for a recipe step task.
 	RecipePrepTaskStorageTypeWireRack = "on a wire rack"
-	// RecipePrepTaskStorageTypeAirtightContainer is a valid storage type for a recipe step task.
+	// RecipePrepTaskStorageTypeAirtightContainer is a valid objectstorage type for a recipe step task.
 	RecipePrepTaskStorageTypeAirtightContainer = "in an airtight container"
 
 	// RecipePrepTaskCreatedCustomerEventType indicates a recipe prep task was created.
@@ -196,7 +196,7 @@ func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Con
 
 	// TODO: uncomment me
 	// if x.MinimumStorageTemperatureInCelsius > x.MaximumStorageTemperatureInCelsius {
-	// 	result = multierror.Append(fmt.Errorf("minimum storage temperature (%d) is greater than maximum storage temperature (%d)", x.MinimumStorageTemperatureInCelsius, x.MaximumStorageTemperatureInCelsius))
+	// 	result = multierror.Append(fmt.Errorf("minimum objectstorage temperature (%d) is greater than maximum objectstorage temperature (%d)", x.MinimumStorageTemperatureInCelsius, x.MaximumStorageTemperatureInCelsius))
 	// }
 
 	if err != nil {

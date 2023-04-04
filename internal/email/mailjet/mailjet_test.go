@@ -24,7 +24,7 @@ func TestNewMailjetEmailer(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		config := &Config{SecretKey: t.Name(), PublicKey: t.Name()}
+		config := &Config{SecretKey: t.Name(), APIKey: t.Name()}
 
 		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{})
 		require.NotNil(t, client)
@@ -46,7 +46,7 @@ func TestNewMailjetEmailer(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		config := &Config{PublicKey: t.Name()}
+		config := &Config{APIKey: t.Name()}
 
 		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{})
 		require.Nil(t, client)
@@ -70,7 +70,7 @@ func TestNewMailjetEmailer(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		config := &Config{SecretKey: t.Name(), PublicKey: t.Name()}
+		config := &Config{SecretKey: t.Name(), APIKey: t.Name()}
 
 		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), nil)
 		require.Nil(t, client)
@@ -90,7 +90,7 @@ func TestMailjetEmailer_SendEmail(T *testing.T) {
 			json.NewEncoder(res).Encode(&mailjet.ResultsV31{})
 		}))
 
-		config := &Config{SecretKey: t.Name(), PublicKey: t.Name()}
+		config := &Config{SecretKey: t.Name(), APIKey: t.Name()}
 
 		c, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), ts.Client())
 		require.NotNil(t, c)
@@ -120,7 +120,7 @@ func TestMailjetEmailer_SendEmail(T *testing.T) {
 			time.Sleep(time.Hour)
 		}))
 
-		config := &Config{SecretKey: t.Name(), PublicKey: t.Name()}
+		config := &Config{SecretKey: t.Name(), APIKey: t.Name()}
 		client := ts.Client()
 
 		c, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), client)

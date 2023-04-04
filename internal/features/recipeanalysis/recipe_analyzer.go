@@ -286,9 +286,9 @@ func frozenIngredientDefrostStepsFilter(recipe *types.Recipe) map[string][]int {
 		for i, ingredient := range recipeStep.Ingredients {
 			// if it's a valid ingredient
 			if ingredient.Ingredient != nil &&
-				// if the ingredient has storage temperature set
+				// if the ingredient has objectstorage temperature set
 				ingredient.Ingredient.MinimumIdealStorageTemperatureInCelsius != nil &&
-				// the ingredient's storage temperature is set to something about freezing temperature.
+				// the ingredient's objectstorage temperature is set to something about freezing temperature.
 				*ingredient.Ingredient.MinimumIdealStorageTemperatureInCelsius <= 3 {
 				ingredientIndices = append(ingredientIndices, i)
 			}
