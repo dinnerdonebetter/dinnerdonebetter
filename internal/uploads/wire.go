@@ -1,7 +1,7 @@
 package uploads
 
 import (
-	"github.com/prixfixeco/backend/internal/storage"
+	"github.com/prixfixeco/backend/internal/objectstorage"
 
 	"github.com/google/wire"
 )
@@ -16,7 +16,7 @@ var (
 	)
 )
 
-// ProvideUploadManager transforms a *storage.Uploader into an UploadManager.
-func ProvideUploadManager(u *storage.Uploader) UploadManager {
+// ProvideUploadManager transforms a *objectstorage.Uploader into an UploadManager.
+func ProvideUploadManager(u *objectstorage.Uploader) UploadManager {
 	return u
 }

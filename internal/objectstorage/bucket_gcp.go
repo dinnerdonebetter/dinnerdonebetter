@@ -1,4 +1,4 @@
-package storage
+package objectstorage
 
 import (
 	"context"
@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	// GCPCloudStorageProvider indicates we'd like to use the GCP adapter for blob storage.
+	// GCPCloudStorageProvider indicates we'd like to use the GCP adapter for blob objectstorage.
 	GCPCloudStorageProvider = "gcp"
 )
 
 type (
-	// GCPConfig configures an GCP-based storage provider.
+	// GCPConfig configures an GCP-based objectstorage provider.
 	GCPConfig struct {
 		_ struct{}
 

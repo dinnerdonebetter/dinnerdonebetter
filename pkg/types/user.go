@@ -152,7 +152,7 @@ type (
 		UpdateUserAccountStatus(ctx context.Context, userID string, input *UserAccountStatusUpdateInput) error
 	}
 
-	// UserDataManager describes a structure which can manage users in permanent storage.
+	// UserDataManager describes a structure which can manage users in permanent objectstorage.
 	UserDataManager interface {
 		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
 		GetUser(ctx context.Context, userID string) (*User, error)

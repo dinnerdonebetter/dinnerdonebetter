@@ -1,4 +1,4 @@
-package storage
+package objectstorage
 
 import "github.com/google/wire"
 

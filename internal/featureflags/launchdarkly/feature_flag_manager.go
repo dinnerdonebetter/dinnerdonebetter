@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/prixfixeco/backend/internal/featureflags"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 
@@ -16,7 +17,7 @@ import (
 )
 
 var (
-	ErrMissingHTTPClient = errors.New("missing HTTP client")
+	ErrMissingHTTPClient = errors.New("missing HTTP launchDarklyClient")
 	ErrNilConfig         = errors.New("missing config")
 	ErrMissingSDKKey     = errors.New("missing SDK key")
 )
@@ -27,25 +28,20 @@ type (
 		InitTimeout time.Duration `json:"initTimeout" mapstructure:"init_timeout" toml:"init_timeout"`
 	}
 
-	// FeatureFlagManager manages feature flags.
-	FeatureFlagManager interface {
-		CanUseFeature(ctx context.Context, accountID, feature string) (bool, error)
-	}
-
 	launchDarklyClient interface {
 		BoolVariation(key string, context ldcontext.Context, defaultVal bool) (bool, error)
 	}
 
 	// featureFlagManager implements the feature flag interface.
 	featureFlagManager struct {
-		client launchDarklyClient
-		logger logging.Logger
-		tracer tracing.Tracer
+		launchDarklyClient launchDarklyClient
+		logger             logging.Logger
+		tracer             tracing.Tracer
 	}
 )
 
 // NewFeatureFlagManager constructs a new featureFlagManager.
-func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, httpClient *http.Client, configModifiers ...func(ld.Config) ld.Config) (FeatureFlagManager, error) {
+func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, httpClient *http.Client, configModifiers ...func(ld.Config) ld.Config) (featureflags.FeatureFlagManager, error) {
 	if httpClient == nil {
 		return nil, ErrMissingHTTPClient
 	}
@@ -76,13 +72,13 @@ func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tr
 		cfg.InitTimeout,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error initializing LaunchDarkly client: %w", err)
+		return nil, fmt.Errorf("error initializing LaunchDarkly launchDarklyClient: %w", err)
 	}
 
 	ffm := &featureFlagManager{
-		logger: logger,
-		tracer: tracing.NewTracer(tracerProvider.Tracer("launchdarkly_feature_flag_manager")),
-		client: client,
+		logger:             logger,
+		tracer:             tracing.NewTracer(tracerProvider.Tracer("launchdarkly_feature_flag_manager")),
+		launchDarklyClient: client,
 	}
 
 	return ffm, nil
@@ -93,5 +89,5 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	return f.client.BoolVariation(feature, ldcontext.New(userID), false)
+	return f.launchDarklyClient.BoolVariation(feature, ldcontext.New(userID), false)
 }

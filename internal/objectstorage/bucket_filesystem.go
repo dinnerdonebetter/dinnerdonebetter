@@ -1,4 +1,4 @@
-package storage
+package objectstorage
 
 import (
 	"context"
@@ -12,7 +12,7 @@ const (
 )
 
 type (
-	// FilesystemConfig configures a filesystem-based storage provider.
+	// FilesystemConfig configures a filesystem-based objectstorage provider.
 	FilesystemConfig struct {
 		_ struct{}
 

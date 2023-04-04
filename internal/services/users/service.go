@@ -10,13 +10,13 @@ import (
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/messagequeue"
+	"github.com/prixfixeco/backend/internal/objectstorage"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/metrics"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/internal/routing"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
-	"github.com/prixfixeco/backend/internal/storage"
 	"github.com/prixfixeco/backend/internal/uploads"
 	"github.com/prixfixeco/backend/internal/uploads/images"
 	"github.com/prixfixeco/backend/pkg/types"
@@ -90,7 +90,7 @@ func ProvideUsersService(
 		return nil, fmt.Errorf("setting up users service data changes publisher: %w", err)
 	}
 
-	uploadManager, err := storage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
+	uploadManager, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
 	if err != nil {
 		return nil, fmt.Errorf("initializing users service upload manager: %w", err)
 	}

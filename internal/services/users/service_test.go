@@ -9,13 +9,13 @@ import (
 	"github.com/prixfixeco/backend/internal/email"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
+	"github.com/prixfixeco/backend/internal/objectstorage"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/internal/routing/chi"
 	mockrouting "github.com/prixfixeco/backend/internal/routing/mock"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
-	"github.com/prixfixeco/backend/internal/storage"
 	"github.com/prixfixeco/backend/internal/uploads"
 	"github.com/prixfixeco/backend/internal/uploads/images"
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
@@ -30,10 +30,10 @@ func buildTestService(t *testing.T) *service {
 
 	cfg := &Config{
 		Uploads: uploads.Config{
-			Storage: storage.Config{
-				FilesystemConfig: &storage.FilesystemConfig{RootDirectory: t.Name()},
+			Storage: objectstorage.Config{
+				FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
 				BucketName:       t.Name(),
-				Provider:         storage.FilesystemProvider,
+				Provider:         objectstorage.FilesystemProvider,
 			},
 			Debug: false,
 		},
@@ -81,10 +81,10 @@ func TestProvideUsersService(T *testing.T) {
 
 		cfg := &Config{
 			Uploads: uploads.Config{
-				Storage: storage.Config{
-					FilesystemConfig: &storage.FilesystemConfig{RootDirectory: t.Name()},
+				Storage: objectstorage.Config{
+					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
 					BucketName:       t.Name(),
-					Provider:         storage.FilesystemProvider,
+					Provider:         objectstorage.FilesystemProvider,
 				},
 				Debug: false,
 			},

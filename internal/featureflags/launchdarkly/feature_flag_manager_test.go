@@ -53,7 +53,7 @@ func TestNewFeatureFlagManager(T *testing.T) {
 		require.NotNil(t, actual)
 	})
 
-	T.Run("with missing http client", func(t *testing.T) {
+	T.Run("with missing http launchDarklyClient", func(t *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{SDKKey: t.Name()}
@@ -104,7 +104,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 
 		fakeClient := &mockClient{}
 		fakeClient.On("BoolVariation", t.Name(), ldcontext.New(exampleUsername), false).Return(true, nil)
-		ffm.(*featureFlagManager).client = fakeClient
+		ffm.(*featureFlagManager).launchDarklyClient = fakeClient
 
 		actual, err := ffm.CanUseFeature(ctx, exampleUsername, t.Name())
 		assert.NoError(t, err)

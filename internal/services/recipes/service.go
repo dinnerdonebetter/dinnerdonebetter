@@ -10,11 +10,11 @@ import (
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	"github.com/prixfixeco/backend/internal/messagequeue"
+	"github.com/prixfixeco/backend/internal/objectstorage"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/routing"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
-	"github.com/prixfixeco/backend/internal/storage"
 	"github.com/prixfixeco/backend/internal/uploads"
 	"github.com/prixfixeco/backend/internal/uploads/images"
 	"github.com/prixfixeco/backend/pkg/types"
@@ -74,7 +74,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up recipe service data changes publisher: %w", err)
 	}
 
-	uploader, err := storage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
+	uploader, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
 	if err != nil {
 		return nil, fmt.Errorf("initializing recipe service upload manager: %w", err)
 	}

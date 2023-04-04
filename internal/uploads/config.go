@@ -3,7 +3,7 @@ package uploads
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/storage"
+	"github.com/prixfixeco/backend/internal/objectstorage"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -12,8 +12,8 @@ import (
 type Config struct {
 	_ struct{}
 
-	Storage storage.Config `json:"storageConfig" mapstructure:"storage_config" toml:"storage_config,omitempty"`
-	Debug   bool           `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
+	Storage objectstorage.Config `json:"storageConfig" mapstructure:"storage_config" toml:"storage_config,omitempty"`
+	Debug   bool                 `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

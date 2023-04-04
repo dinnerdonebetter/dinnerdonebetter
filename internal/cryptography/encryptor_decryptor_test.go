@@ -1,4 +1,4 @@
-package encryption
+package cryptography
 
 import (
 	"context"
@@ -23,7 +23,7 @@ func TestStandardEncryptor(T *testing.T) {
 		secret, err := random.GenerateRawBytes(ctx, 32)
 		require.NoError(t, err)
 
-		encryptor := NewStandardEncryptor(tracing.NewNoopTracerProvider(), logging.NewNoopLogger())
+		encryptor := NewAESEncryptorDecryptor(tracing.NewNoopTracerProvider(), logging.NewNoopLogger())
 
 		encrypted, err := encryptor.Encrypt(ctx, expected, string(secret))
 		assert.NoError(t, err)

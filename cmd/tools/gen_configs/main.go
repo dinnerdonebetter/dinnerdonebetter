@@ -17,6 +17,7 @@ import (
 	"github.com/prixfixeco/backend/internal/encoding"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/messagequeue/redis"
+	"github.com/prixfixeco/backend/internal/objectstorage"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
@@ -58,7 +59,6 @@ import (
 	validpreparationsservice "github.com/prixfixeco/backend/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/backend/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/backend/internal/services/websockets"
-	"github.com/prixfixeco/backend/internal/storage"
 	"github.com/prixfixeco/backend/internal/uploads"
 )
 
@@ -274,12 +274,12 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				PublicMediaURLPrefix: "https://media.prixfixe.dev/avatars",
 				Uploads: uploads.Config{
 					Debug: true,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						UploadFilenameKey: "avatar",
-						Provider:          storage.GCPCloudStorageProvider,
+						Provider:          objectstorage.GCPCloudStorageProvider,
 						BucketName:        "media.prixfixe.dev",
 						BucketPrefix:      "avatars/",
-						GCPConfig: &storage.GCPConfig{
+						GCPConfig: &objectstorage.GCPConfig{
 							BucketName: "media.prixfixe.dev",
 						},
 					},
@@ -290,12 +290,12 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				PublicMediaURLPrefix: "https://media.prixfixe.dev/recipe_media",
 				Uploads: uploads.Config{
 					Debug: true,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						UploadFilenameKey: "recipe_media",
-						Provider:          storage.GCPCloudStorageProvider,
+						Provider:          objectstorage.GCPCloudStorageProvider,
 						BucketName:        "media.prixfixe.dev",
 						BucketPrefix:      "recipe_media/",
-						GCPConfig: &storage.GCPConfig{
+						GCPConfig: &objectstorage.GCPConfig{
 							BucketName: "media.prixfixe.dev",
 						},
 					},
@@ -306,12 +306,12 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				PublicMediaURLPrefix: "https://media.prixfixe.dev/recipe_media",
 				Uploads: uploads.Config{
 					Debug: true,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						UploadFilenameKey: "recipe_media",
-						Provider:          storage.GCPCloudStorageProvider,
+						Provider:          objectstorage.GCPCloudStorageProvider,
 						BucketName:        "media.prixfixe.dev",
 						BucketPrefix:      "recipe_media/",
-						GCPConfig: &storage.GCPConfig{
+						GCPConfig: &objectstorage.GCPConfig{
 							BucketName: "media.prixfixe.dev",
 						},
 					},
@@ -371,11 +371,11 @@ func buildDevConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
 					Debug: true,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						UploadFilenameKey: "avatar",
-						Provider:          storage.FilesystemProvider,
+						Provider:          objectstorage.FilesystemProvider,
 						BucketName:        "avatars",
-						FilesystemConfig: &storage.FilesystemConfig{
+						FilesystemConfig: &objectstorage.FilesystemConfig{
 							RootDirectory: "/uploads",
 						},
 					},
@@ -441,11 +441,11 @@ func buildDevConfig() *config.InstanceConfig {
 				PublicMediaURLPrefix: "https://example.website.lol",
 				Uploads: uploads.Config{
 					Debug: true,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						UploadFilenameKey: "recipe_media",
-						Provider:          storage.FilesystemProvider,
+						Provider:          objectstorage.FilesystemProvider,
 						BucketName:        "recipe_media",
-						FilesystemConfig: &storage.FilesystemConfig{
+						FilesystemConfig: &objectstorage.FilesystemConfig{
 							RootDirectory: "/uploads",
 						},
 					},
@@ -456,11 +456,11 @@ func buildDevConfig() *config.InstanceConfig {
 				PublicMediaURLPrefix: "https://example.website.lol",
 				Uploads: uploads.Config{
 					Debug: true,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						UploadFilenameKey: "recipe_media",
-						Provider:          storage.FilesystemProvider,
+						Provider:          objectstorage.FilesystemProvider,
 						BucketName:        "recipe_media",
-						FilesystemConfig: &storage.FilesystemConfig{
+						FilesystemConfig: &objectstorage.FilesystemConfig{
 							RootDirectory: "/uploads",
 						},
 					},
@@ -573,7 +573,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
 					Debug: false,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						Provider:   "memory",
 						BucketName: "avatars",
 						S3Config:   nil,
@@ -647,7 +647,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				PublicMediaURLPrefix: "https://media.example.website/lol",
 				Uploads: uploads.Config{
 					Debug: false,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						Provider:   "memory",
 						BucketName: "recipes",
 						S3Config:   nil,
@@ -659,7 +659,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				PublicMediaURLPrefix: "https://media.example.website/lol",
 				Uploads: uploads.Config{
 					Debug: false,
-					Storage: storage.Config{
+					Storage: objectstorage.Config{
 						Provider:   "memory",
 						BucketName: "recipes",
 						S3Config:   nil,
