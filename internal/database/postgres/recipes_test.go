@@ -1241,6 +1241,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			&idMatcher{},
 			exampleRecipe.Name,
 			exampleRecipe.Description,
+			exampleRecipe.MinimumEstimatedPortions,
+			exampleRecipe.MaximumEstimatedPortions,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1533,6 +1535,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			&idMatcher{},
 			exampleRecipe.Name,
 			exampleRecipe.Description,
+			exampleRecipe.MinimumEstimatedPortions,
+			exampleRecipe.MaximumEstimatedPortions,
 			exampleRecipe.CreatedByUser,
 		}
 

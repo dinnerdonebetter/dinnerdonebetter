@@ -97,3 +97,148 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 		assert.Error(t, actual)
 	})
 }
+
+func TestValidIngredientCreationRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &ValidIngredientCreationRequestInput{
+			Name: t.Name(),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestValidIngredientDatabaseCreationInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &ValidIngredientDatabaseCreationInput{
+			ID:   t.Name(),
+			Name: t.Name(),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestValidIngredientUpdateRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &ValidIngredientUpdateRequestInput{
+			Name: pointers.String(t.Name()),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestValidIngredient_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		actual := &ValidIngredient{
+			MaximumIdealStorageTemperatureInCelsius: nil,
+			MinimumIdealStorageTemperatureInCelsius: nil,
+			IconPath:                                "",
+			Warning:                                 "",
+			PluralName:                              "",
+			StorageInstructions:                     "",
+			Name:                                    "",
+			Description:                             "",
+			Slug:                                    "",
+			ShoppingSuggestions:                     "",
+			ContainsShellfish:                       false,
+			IsMeasuredVolumetrically:                false,
+			IsLiquid:                                false,
+			ContainsPeanut:                          false,
+			ContainsTreeNut:                         false,
+			ContainsEgg:                             false,
+			ContainsWheat:                           false,
+			ContainsSoy:                             false,
+			AnimalDerived:                           false,
+			RestrictToPreparations:                  false,
+			ContainsSesame:                          false,
+			ContainsFish:                            false,
+			ContainsGluten:                          false,
+			ContainsDairy:                           false,
+			ContainsAlcohol:                         false,
+			AnimalFlesh:                             false,
+		}
+
+		input := &ValidIngredientUpdateRequestInput{
+			MinimumIdealStorageTemperatureInCelsius: pointers.Float32(1.23),
+			MaximumIdealStorageTemperatureInCelsius: pointers.Float32(1.23),
+			IconPath:                                pointers.String(t.Name()),
+			Warning:                                 pointers.String(t.Name()),
+			PluralName:                              pointers.String(t.Name()),
+			StorageInstructions:                     pointers.String(t.Name()),
+			Name:                                    pointers.String(t.Name()),
+			Description:                             pointers.String(t.Name()),
+			Slug:                                    pointers.String(t.Name()),
+			ShoppingSuggestions:                     pointers.String(t.Name()),
+			ContainsShellfish:                       pointers.Bool(true),
+			IsMeasuredVolumetrically:                pointers.Bool(true),
+			IsLiquid:                                pointers.Bool(true),
+			ContainsPeanut:                          pointers.Bool(true),
+			ContainsTreeNut:                         pointers.Bool(true),
+			ContainsEgg:                             pointers.Bool(true),
+			ContainsWheat:                           pointers.Bool(true),
+			ContainsSoy:                             pointers.Bool(true),
+			AnimalDerived:                           pointers.Bool(true),
+			RestrictToPreparations:                  pointers.Bool(true),
+			ContainsSesame:                          pointers.Bool(true),
+			ContainsFish:                            pointers.Bool(true),
+			ContainsGluten:                          pointers.Bool(true),
+			ContainsDairy:                           pointers.Bool(true),
+			ContainsAlcohol:                         pointers.Bool(true),
+			AnimalFlesh:                             pointers.Bool(true),
+		}
+
+		expected := &ValidIngredient{
+			MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
+			MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
+			IconPath:                                *input.IconPath,
+			Warning:                                 *input.Warning,
+			PluralName:                              *input.PluralName,
+			StorageInstructions:                     *input.StorageInstructions,
+			Name:                                    *input.Name,
+			Description:                             *input.Description,
+			Slug:                                    *input.Slug,
+			ShoppingSuggestions:                     *input.ShoppingSuggestions,
+			ContainsShellfish:                       *input.ContainsShellfish,
+			IsMeasuredVolumetrically:                *input.IsMeasuredVolumetrically,
+			IsLiquid:                                *input.IsLiquid,
+			ContainsPeanut:                          *input.ContainsPeanut,
+			ContainsTreeNut:                         *input.ContainsTreeNut,
+			ContainsEgg:                             *input.ContainsEgg,
+			ContainsWheat:                           *input.ContainsWheat,
+			ContainsSoy:                             *input.ContainsSoy,
+			AnimalDerived:                           *input.AnimalDerived,
+			RestrictToPreparations:                  *input.RestrictToPreparations,
+			ContainsSesame:                          *input.ContainsSesame,
+			ContainsFish:                            *input.ContainsFish,
+			ContainsGluten:                          *input.ContainsGluten,
+			ContainsDairy:                           *input.ContainsDairy,
+			ContainsAlcohol:                         *input.ContainsAlcohol,
+			AnimalFlesh:                             *input.AnimalFlesh,
+		}
+
+		actual.Update(input)
+
+		assert.Equal(t, actual, expected)
+	})
+}

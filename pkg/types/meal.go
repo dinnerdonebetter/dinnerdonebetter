@@ -51,16 +51,17 @@ func init() {
 type (
 	// Meal represents a meal.
 	Meal struct {
-		_ struct{}
-
-		CreatedAt     time.Time        `json:"createdAt"`
-		ArchivedAt    *time.Time       `json:"archivedAt"`
-		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
-		ID            string           `json:"id"`
-		Description   string           `json:"description"`
-		CreatedByUser string           `json:"createdByUser"`
-		Name          string           `json:"name"`
-		Components    []*MealComponent `json:"components"`
+		_                        struct{}
+		CreatedAt                time.Time        `json:"createdAt"`
+		ArchivedAt               *time.Time       `json:"archivedAt"`
+		LastUpdatedAt            *time.Time       `json:"lastUpdatedAt"`
+		MaximumEstimatedPortions *float32         `json:"maximumEstimatedPortions"`
+		ID                       string           `json:"id"`
+		Description              string           `json:"description"`
+		CreatedByUser            string           `json:"createdByUser"`
+		Name                     string           `json:"name"`
+		Components               []*MealComponent `json:"components"`
+		MinimumEstimatedPortions float32          `json:"minimumEstimatedPortions"`
 	}
 
 	// MealComponent is a recipe with some extra data attached to it.
@@ -73,11 +74,12 @@ type (
 
 	// MealCreationRequestInput represents what a user could set as input for creating meals.
 	MealCreationRequestInput struct {
-		_ struct{}
-
-		Name        string                               `json:"name"`
-		Description string                               `json:"description"`
-		Components  []*MealComponentCreationRequestInput `json:"recipes"`
+		_                        struct{}
+		MaximumEstimatedPortions *float32                             `json:"maximumEstimatedPortions"`
+		Name                     string                               `json:"name"`
+		Description              string                               `json:"description"`
+		Components               []*MealComponentCreationRequestInput `json:"recipes"`
+		MinimumEstimatedPortions float32                              `json:"minimumEstimatedPortions"`
 	}
 
 	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.
@@ -91,13 +93,14 @@ type (
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
 	MealDatabaseCreationInput struct {
-		_ struct{}
-
-		ID            string
-		Name          string
-		Description   string
-		CreatedByUser string
-		Components    []*MealComponentDatabaseCreationInput
+		_                        struct{}
+		MaximumEstimatedPortions *float32
+		ID                       string
+		Name                     string
+		Description              string
+		CreatedByUser            string
+		Components               []*MealComponentDatabaseCreationInput
+		MinimumEstimatedPortions float32
 	}
 
 	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
@@ -111,12 +114,13 @@ type (
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
 	MealUpdateRequestInput struct {
-		_ struct{}
-
-		Name          *string                            `json:"name,omitempty"`
-		Description   *string                            `json:"description,omitempty"`
-		CreatedByUser *string                            `json:"-"`
-		Components    []*MealComponentUpdateRequestInput `json:"recipes,omitempty"`
+		_                        struct{}
+		Name                     *string                            `json:"name,omitempty"`
+		Description              *string                            `json:"description,omitempty"`
+		CreatedByUser            *string                            `json:"-"`
+		MinimumEstimatedPortions *float32                           `json:"minimumEstimatedPortions"`
+		MaximumEstimatedPortions *float32                           `json:"maximumEstimatedPortions"`
+		Components               []*MealComponentUpdateRequestInput `json:"recipes,omitempty"`
 	}
 
 	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.
@@ -156,6 +160,14 @@ func (x *Meal) Update(input *MealUpdateRequestInput) {
 
 	if input.Description != nil && *input.Description != x.Description {
 		x.Description = *input.Description
+	}
+
+	if input.MinimumEstimatedPortions != nil && *input.MinimumEstimatedPortions != x.MinimumEstimatedPortions {
+		x.MinimumEstimatedPortions = *input.MinimumEstimatedPortions
+	}
+
+	if input.MaximumEstimatedPortions != nil && input.MaximumEstimatedPortions != x.MaximumEstimatedPortions {
+		x.MaximumEstimatedPortions = input.MaximumEstimatedPortions
 	}
 }
 
@@ -220,17 +232,20 @@ func (x *MealComponentCreationRequestInput) ValidateWithContext(ctx context.Cont
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.ComponentType, validation.In(
-			MealComponentTypesUnspecified,
-			MealComponentTypesAmuseBouche,
-			MealComponentTypesAppetizer,
-			MealComponentTypesSoup,
-			MealComponentTypesMain,
-			MealComponentTypesSalad,
-			MealComponentTypesBeverage,
-			MealComponentTypesSide,
-			MealComponentTypesDessert,
-		)),
+		validation.Field(&x.ComponentType,
+			validation.Required,
+			validation.In(
+				MealComponentTypesUnspecified,
+				MealComponentTypesAmuseBouche,
+				MealComponentTypesAppetizer,
+				MealComponentTypesSoup,
+				MealComponentTypesMain,
+				MealComponentTypesSalad,
+				MealComponentTypesBeverage,
+				MealComponentTypesSide,
+				MealComponentTypesDessert,
+			),
+		),
 	)
 }
 

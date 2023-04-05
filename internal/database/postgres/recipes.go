@@ -515,10 +515,12 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 
 	if input.AlsoCreateMeal {
 		_, mealCreateErr := q.createMeal(ctx, tx, &types.MealDatabaseCreationInput{
-			ID:            identifiers.New(),
-			Name:          x.Name,
-			Description:   x.Description,
-			CreatedByUser: x.CreatedByUser,
+			ID:                       identifiers.New(),
+			Name:                     x.Name,
+			Description:              x.Description,
+			MinimumEstimatedPortions: x.MinimumEstimatedPortions,
+			MaximumEstimatedPortions: x.MaximumEstimatedPortions,
+			CreatedByUser:            x.CreatedByUser,
 			Components: []*types.MealComponentDatabaseCreationInput{
 				{
 					RecipeID:      x.ID,

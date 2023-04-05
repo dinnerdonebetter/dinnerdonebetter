@@ -2,6 +2,8 @@ SELECT
 	meals.id,
 	meals.name,
 	meals.description,
+	meals.min_estimated_portions,
+    meals.max_estimated_portions,
 	meals.created_at,
 	meals.last_updated_at,
 	meals.archived_at,

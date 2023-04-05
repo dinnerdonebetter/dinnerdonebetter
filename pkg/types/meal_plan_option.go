@@ -41,8 +41,8 @@ type (
 		Notes                  string                `json:"notes"`
 		BelongsToMealPlanEvent string                `json:"belongsToMealPlanEvent"`
 		ID                     string                `json:"id"`
-		Meal                   Meal                  `json:"meal"`
 		Votes                  []*MealPlanOptionVote `json:"votes"`
+		Meal                   Meal                  `json:"meal"`
 		MealScale              float32               `json:"mealScale"`
 		Chosen                 bool                  `json:"chosen"`
 		TieBroken              bool                  `json:"tieBroken"`

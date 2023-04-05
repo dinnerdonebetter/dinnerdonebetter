@@ -182,7 +182,6 @@ func (x *MealPlanGroceryListItemCreationRequestInput) ValidateWithContext(ctx co
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityNeeded, validation.Required),
-		validation.Field(&x.MaximumQuantityNeeded, validation.Required),
 	)
 }
 
@@ -198,7 +197,6 @@ func (x *MealPlanGroceryListItemDatabaseCreationInput) ValidateWithContext(ctx c
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityNeeded, validation.Required),
-		validation.Field(&x.MaximumQuantityNeeded, validation.Required),
 	)
 }
 
@@ -213,6 +211,5 @@ func (x *MealPlanGroceryListItemUpdateRequestInput) ValidateWithContext(ctx cont
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityNeeded, validation.Required),
-		validation.Field(&x.MaximumQuantityNeeded, validation.Required),
 	)
 }

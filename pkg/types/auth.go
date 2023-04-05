@@ -170,6 +170,7 @@ func (x *SessionContextData) ToBytes() []byte {
 	var b bytes.Buffer
 
 	if err := gob.NewEncoder(&b).Encode(x); err != nil {
+		// this will never happen
 		panic(err)
 	}
 

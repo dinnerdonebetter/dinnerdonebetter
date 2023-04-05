@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/pointers"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +18,13 @@ func TestHousehold_Update(T *testing.T) {
 		x := &Household{}
 		name := t.Name()
 
-		x.Update(&HouseholdUpdateRequestInput{Name: &name})
+		x.Update(&HouseholdUpdateRequestInput{
+			Name:          pointers.String(name),
+			ContactEmail:  pointers.String(name),
+			ContactPhone:  pointers.String(name),
+			TimeZone:      pointers.String(name),
+			BelongsToUser: name,
+		})
 	})
 }
 

@@ -68,3 +68,47 @@ func TestWebhookCreationInput_Validate(T *testing.T) {
 		assert.Error(t, exampleInput.ValidateWithContext(context.Background()))
 	})
 }
+
+func TestWebhookCreationRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		name := t.Name()
+		ctx := context.Background()
+		x := &WebhookCreationRequestInput{
+			Name:        name,
+			ContentType: "application/json",
+			URL:         "https://pkg.go.dev",
+			Method:      http.MethodPatch,
+			Events:      []string{name},
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestWebhookDatabaseCreationInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		name := t.Name()
+		ctx := context.Background()
+		x := &WebhookDatabaseCreationInput{
+			ID:          name,
+			Name:        name,
+			ContentType: "application/json",
+			URL:         "https://pkg.go.dev",
+			Method:      http.MethodPatch,
+			Events: []*WebhookTriggerEventDatabaseCreationInput{
+				{},
+			},
+			BelongsToHousehold: name,
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}

@@ -61,3 +61,68 @@ func TestValidPreparationInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		assert.Error(t, actual)
 	})
 }
+
+func TestValidPreparationInstrumentCreationRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &ValidPreparationInstrumentCreationRequestInput{
+			ValidPreparationID: t.Name(),
+			ValidInstrumentID:  t.Name(),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestValidPreparationInstrumentDatabaseCreationInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &ValidPreparationInstrumentDatabaseCreationInput{
+			ID:                 t.Name(),
+			ValidPreparationID: t.Name(),
+			ValidInstrumentID:  t.Name(),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestValidPreparationInstrumentUpdateRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &ValidPreparationInstrumentUpdateRequestInput{
+			ValidPreparationID: pointers.String(t.Name()),
+			ValidInstrumentID:  pointers.String(t.Name()),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestValidPreparationInstrument_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidPreparationInstrument{}
+
+		x.Update(&ValidPreparationInstrumentUpdateRequestInput{
+			Notes:              pointers.String(t.Name()),
+			ValidPreparationID: pointers.String(t.Name()),
+			ValidInstrumentID:  pointers.String(t.Name()),
+		})
+	})
+}
