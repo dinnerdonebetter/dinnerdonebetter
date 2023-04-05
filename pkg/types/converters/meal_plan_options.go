@@ -9,6 +9,7 @@ func ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(input *types.MealPl
 	x := &types.MealPlanOptionUpdateRequestInput{
 		MealID:                 &input.Meal.ID,
 		Notes:                  &input.Notes,
+		MealScale:              &input.MealScale,
 		BelongsToMealPlanEvent: &input.BelongsToMealPlanEvent,
 	}
 
@@ -18,8 +19,9 @@ func ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(input *types.MealPl
 // ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput creates a MealPlanOptionDatabaseCreationInput from a MealPlanOptionCreationRequestInput.
 func ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input *types.MealPlanOptionCreationRequestInput) *types.MealPlanOptionDatabaseCreationInput {
 	x := &types.MealPlanOptionDatabaseCreationInput{
-		MealID: input.MealID,
-		Notes:  input.Notes,
+		MealID:    input.MealID,
+		MealScale: input.MealScale,
+		Notes:     input.Notes,
 	}
 
 	return x
@@ -65,6 +67,7 @@ func ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(mealPlanOption *t
 		Notes:              mealPlanOption.Notes,
 		AssignedCook:       mealPlanOption.AssignedCook,
 		AssignedDishwasher: mealPlanOption.AssignedDishwasher,
+		MealScale:          mealPlanOption.MealScale,
 	}
 }
 
@@ -77,5 +80,6 @@ func ConvertMealPlanOptionToMealPlanOptionDatabaseCreationInput(mealPlanOption *
 		AssignedCook:           mealPlanOption.AssignedCook,
 		AssignedDishwasher:     mealPlanOption.AssignedDishwasher,
 		BelongsToMealPlanEvent: mealPlanOption.BelongsToMealPlanEvent,
+		MealScale:              mealPlanOption.MealScale,
 	}
 }

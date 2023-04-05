@@ -68,6 +68,7 @@ func buildTracingMiddleware(tracer tracing.Tracer) func(next http.Handler) http.
 				ctx, span := tracer.StartCustomSpan(req.Context(), fmt.Sprintf("%s %s", req.Method, req.URL.Path))
 				defer span.End()
 
+				tracing.AttachRequestToSpan(span, req)
 				req = req.WithContext(ctx)
 			}
 

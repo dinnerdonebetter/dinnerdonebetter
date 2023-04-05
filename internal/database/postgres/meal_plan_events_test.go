@@ -502,6 +502,7 @@ func TestQuerier_createMealPlanEvent(T *testing.T) {
 				option.AssignedDishwasher,
 				option.MealID,
 				option.Notes,
+				option.MealScale,
 				option.BelongsToMealPlanEvent,
 				false,
 			}
@@ -578,6 +579,7 @@ func TestQuerier_createMealPlanEvent(T *testing.T) {
 			exampleInput.Options[0].AssignedDishwasher,
 			exampleInput.Options[0].MealID,
 			exampleInput.Options[0].Notes,
+			exampleInput.Options[0].MealScale,
 			exampleInput.Options[0].BelongsToMealPlanEvent,
 			false,
 		}
@@ -637,6 +639,7 @@ func TestQuerier_CreateMealPlanEvent(T *testing.T) {
 				option.AssignedDishwasher,
 				option.MealID,
 				option.Notes,
+				option.MealScale,
 				option.BelongsToMealPlanEvent,
 				false,
 			}
@@ -775,6 +778,7 @@ func TestQuerier_CreateMealPlanEvent(T *testing.T) {
 				option.AssignedDishwasher,
 				option.MealID,
 				option.Notes,
+				option.MealScale,
 				option.BelongsToMealPlanEvent,
 				false,
 			}

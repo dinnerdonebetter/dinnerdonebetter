@@ -1,1 +1,1 @@
-INSERT INTO meals (id,"name",description,created_by_user) VALUES ($1,$2,$3,$4);
+INSERT INTO meals (id,"name",description,min_estimated_portions,max_estimated_portions,created_by_user) VALUES ($1,$2,$3,$4,$5,$6);

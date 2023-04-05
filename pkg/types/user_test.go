@@ -3,6 +3,9 @@ package types
 import (
 	"context"
 	"testing"
+	"time"
+
+	"github.com/prixfixeco/backend/internal/pointers"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -27,11 +30,13 @@ func TestUser_Update(T *testing.T) {
 			Username:        "old_username",
 			HashedPassword:  "hashed_pass",
 			TwoFactorSecret: "two factor secret",
+			Birthday:        pointers.Pointer[time.Time](time.Now()),
 		}
 		exampleInput := User{
 			Username:        "new_username",
 			HashedPassword:  "updated_hashed_pass",
 			TwoFactorSecret: "new fancy secret",
+			Birthday:        pointers.Pointer[time.Time](time.Now()),
 		}
 
 		actual.Update(&exampleInput)

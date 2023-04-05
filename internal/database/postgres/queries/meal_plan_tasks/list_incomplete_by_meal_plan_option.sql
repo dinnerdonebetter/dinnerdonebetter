@@ -5,6 +5,7 @@ SELECT
 	meal_plan_options.assigned_dishwasher,
 	meal_plan_options.chosen,
 	meal_plan_options.tiebroken,
+    meal_plan_options.meal_scale,
 	meal_plan_options.meal_id,
 	meal_plan_options.notes,
 	meal_plan_options.created_at,

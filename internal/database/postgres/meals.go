@@ -23,6 +23,8 @@ var (
 		"meals.id",
 		"meals.name",
 		"meals.description",
+		"meals.min_estimated_portions",
+		"meals.max_estimated_portions",
 		"meals.created_at",
 		"meals.last_updated_at",
 		"meals.archived_at",
@@ -41,6 +43,8 @@ func (q *Querier) scanMeal(ctx context.Context, scan database.Scanner, includeCo
 		&x.ID,
 		&x.Name,
 		&x.Description,
+		&x.MinimumEstimatedPortions,
+		&x.MaximumEstimatedPortions,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -99,23 +103,27 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 	for rows.Next() {
 		var (
 			recipeID, componentType string
+			recipeScale             float32
 		)
 		targetVars := []any{
 			&x.ID,
 			&x.Name,
 			&x.Description,
+			&x.MinimumEstimatedPortions,
+			&x.MaximumEstimatedPortions,
 			&x.CreatedAt,
 			&x.LastUpdatedAt,
 			&x.ArchivedAt,
 			&x.CreatedByUser,
 			&recipeID,
+			&recipeScale,
 			&componentType,
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
 			return nil, nil, observability.PrepareError(err, span, "scanning complete meal")
 		}
-		mealComponents = append(mealComponents, &types.MealComponentDatabaseCreationInput{ComponentType: componentType, RecipeID: recipeID})
+		mealComponents = append(mealComponents, &types.MealComponentDatabaseCreationInput{ComponentType: componentType, RecipeScale: recipeScale, RecipeID: recipeID})
 	}
 
 	if err = rows.Err(); err != nil {
@@ -195,6 +203,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 
 		m.Components = append(m.Components, &types.MealComponent{
 			ComponentType: mealComponent.ComponentType,
+			RecipeScale:   mealComponent.RecipeScale,
 			Recipe:        *r,
 		})
 	}
@@ -291,6 +300,8 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 		input.ID,
 		input.Name,
 		input.Description,
+		input.MinimumEstimatedPortions,
+		input.MaximumEstimatedPortions,
 		input.CreatedByUser,
 	}
 
@@ -301,11 +312,13 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 	}
 
 	x := &types.Meal{
-		ID:            input.ID,
-		Name:          input.Name,
-		Description:   input.Description,
-		CreatedByUser: input.CreatedByUser,
-		CreatedAt:     q.currentTime(),
+		ID:                       input.ID,
+		Name:                     input.Name,
+		Description:              input.Description,
+		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
+		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
+		CreatedByUser:            input.CreatedByUser,
+		CreatedAt:                q.currentTime(),
 	}
 
 	for _, recipeID := range input.Components {
@@ -372,6 +385,7 @@ func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQ
 		mealID,
 		input.RecipeID,
 		input.ComponentType,
+		input.RecipeScale,
 	}
 
 	// create the meal.

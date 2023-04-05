@@ -39,7 +39,7 @@ require (
 	github.com/mailgun/mailgun-go/v4 v4.8.2
 	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1
 	github.com/moul/http2curl v1.0.0
-	github.com/mssola/user_agent v0.5.2
+	github.com/mssola/useragent v1.0.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/o1egl/paseto v1.0.0
 	github.com/pquerna/otp v1.3.0

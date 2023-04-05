@@ -32,18 +32,18 @@ func init() {
 type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
-		_ struct{}
-
-		Meal                   Meal                  `json:"meal"`
+		_                      struct{}
 		CreatedAt              time.Time             `json:"createdAt"`
+		LastUpdatedAt          *time.Time            `json:"lastUpdatedAt"`
 		AssignedCook           *string               `json:"assignedCook"`
 		ArchivedAt             *time.Time            `json:"archivedAt"`
-		LastUpdatedAt          *time.Time            `json:"lastUpdatedAt"`
 		AssignedDishwasher     *string               `json:"assignedDishwasher"`
 		Notes                  string                `json:"notes"`
 		BelongsToMealPlanEvent string                `json:"belongsToMealPlanEvent"`
 		ID                     string                `json:"id"`
 		Votes                  []*MealPlanOptionVote `json:"votes"`
+		Meal                   Meal                  `json:"meal"`
+		MealScale              float32               `json:"mealScale"`
 		Chosen                 bool                  `json:"chosen"`
 		TieBroken              bool                  `json:"tieBroken"`
 	}
@@ -56,6 +56,7 @@ type (
 		AssignedDishwasher *string `json:"assignedDishwasher"`
 		MealID             string  `json:"mealID"`
 		Notes              string  `json:"notes"`
+		MealScale          float32 `json:"mealScale"`
 	}
 
 	// MealPlanOptionDatabaseCreationInput represents what a user could set as input for creating meal plan options.
@@ -68,17 +69,19 @@ type (
 		AssignedCook           *string
 		AssignedDishwasher     *string
 		BelongsToMealPlanEvent string
+		MealScale              float32
 	}
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
 	MealPlanOptionUpdateRequestInput struct {
 		_ struct{}
 
-		MealID                 *string `json:"mealID,omitempty"`
-		Notes                  *string `json:"notes,omitempty"`
-		AssignedCook           *string `json:"assignedCook,omitempty"`
-		AssignedDishwasher     *string `json:"assignedDishwasher,omitempty"`
-		BelongsToMealPlanEvent *string `json:"-"`
+		MealID                 *string  `json:"mealID,omitempty"`
+		Notes                  *string  `json:"notes,omitempty"`
+		AssignedCook           *string  `json:"assignedCook,omitempty"`
+		AssignedDishwasher     *string  `json:"assignedDishwasher,omitempty"`
+		MealScale              *float32 `json:"mealScale,omitempty"`
+		BelongsToMealPlanEvent *string  `json:"-"`
 	}
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.
@@ -119,6 +122,10 @@ func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
 
 	if input.AssignedDishwasher != nil && input.AssignedDishwasher != x.AssignedDishwasher {
 		x.AssignedDishwasher = input.AssignedDishwasher
+	}
+
+	if input.MealScale != nil && *input.MealScale != x.MealScale {
+		x.MealScale = *input.MealScale
 	}
 }
 

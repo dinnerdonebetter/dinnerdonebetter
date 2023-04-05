@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMealCreationRequestInput_Validate(T *testing.T) {
+func TestMealCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -27,8 +27,7 @@ func TestMealCreationRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, x.ValidateWithContext(context.Background()))
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -36,8 +35,21 @@ func TestMealCreationRequestInput_Validate(T *testing.T) {
 
 		x := &MealCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
-		assert.Error(t, actual)
+		assert.Error(t, x.ValidateWithContext(context.Background()))
+	})
+
+	T.Run("with invalid component", func(t *testing.T) {
+		t.Parallel()
+
+		x := &MealCreationRequestInput{
+			Name:        fake.LoremIpsumSentence(exampleQuantity),
+			Description: fake.LoremIpsumSentence(exampleQuantity),
+			Components: []*MealComponentCreationRequestInput{
+				{},
+			},
+		}
+
+		assert.Error(t, x.ValidateWithContext(context.Background()))
 	})
 }
 
@@ -53,8 +65,9 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 			CreatedByUser: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
-					ComponentType: MealComponentTypesAmuseBouche,
+					RecipeID:      pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+					RecipeScale:   pointers.Float32(exampleQuantity),
+					ComponentType: pointers.String(MealComponentTypesAmuseBouche),
 				},
 			},
 		}
@@ -70,5 +83,85 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)
+	})
+}
+
+func TestMealComponentCreationRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &MealComponentCreationRequestInput{
+			RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
+			RecipeScale:   exampleQuantity,
+			ComponentType: MealComponentTypesAmuseBouche,
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Nil(t, actual)
+	})
+}
+
+func TestMealDatabaseCreationInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &MealDatabaseCreationInput{
+			Name: t.Name(),
+			Components: []*MealComponentDatabaseCreationInput{
+				{
+					RecipeID: t.Name(),
+				},
+			},
+			CreatedByUser: t.Name(),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestMealUpdateRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &MealUpdateRequestInput{
+			Name:        pointers.String(t.Name()),
+			Description: pointers.String(t.Name()),
+			Components: []*MealComponentUpdateRequestInput{
+				{
+					RecipeID: pointers.String(t.Name()),
+				},
+			},
+			CreatedByUser: pointers.String(t.Name()),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestMealComponent_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		// TODO: testme
+	})
+}
+
+func TestMeal_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		// TODO: testme
 	})
 }
