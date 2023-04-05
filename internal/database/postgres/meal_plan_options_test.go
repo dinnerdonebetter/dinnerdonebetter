@@ -35,6 +35,7 @@ func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, 
 			x.AssignedDishwasher,
 			x.Chosen,
 			x.TieBroken,
+			x.MealScale,
 			x.Meal.ID,
 			x.Notes,
 			x.CreatedAt,
@@ -502,6 +503,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			exampleInput.AssignedDishwasher,
 			exampleInput.MealID,
 			exampleInput.Notes,
+			exampleInput.MealScale,
 			exampleInput.BelongsToMealPlanEvent,
 			false,
 		}
@@ -549,6 +551,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			exampleInput.AssignedDishwasher,
 			exampleInput.MealID,
 			exampleInput.Notes,
+			exampleInput.MealScale,
 			exampleInput.BelongsToMealPlanEvent,
 			false,
 		}
@@ -586,6 +589,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 			exampleMealPlanOption.AssignedDishwasher,
 			exampleMealPlanOption.Meal.ID,
 			exampleMealPlanOption.Notes,
+			exampleMealPlanOption.MealScale,
 			exampleMealPlanOption.BelongsToMealPlanEvent,
 			exampleMealPlanOption.ID,
 		}
@@ -621,6 +625,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 			exampleMealPlanOption.AssignedDishwasher,
 			exampleMealPlanOption.Meal.ID,
 			exampleMealPlanOption.Notes,
+			exampleMealPlanOption.MealScale,
 			exampleMealPlanOption.BelongsToMealPlanEvent,
 			exampleMealPlanOption.ID,
 		}

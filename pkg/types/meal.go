@@ -66,8 +66,9 @@ type (
 	// MealComponent is a recipe with some extra data attached to it.
 	MealComponent struct {
 		_             struct{}
-		ComponentType string `json:"componentType"`
-		Recipe        Recipe `json:"recipe"`
+		ComponentType string  `json:"componentType"`
+		Recipe        Recipe  `json:"recipe"`
+		RecipeScale   float32 `json:"recipeScale"`
 	}
 
 	// MealCreationRequestInput represents what a user could set as input for creating meals.
@@ -83,8 +84,9 @@ type (
 	MealComponentCreationRequestInput struct {
 		_ struct{}
 
-		RecipeID      string `json:"recipeID"`
-		ComponentType string `json:"componentType"`
+		RecipeID      string  `json:"recipeID"`
+		ComponentType string  `json:"componentType"`
+		RecipeScale   float32 `json:"recipeScale"`
 	}
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
@@ -104,6 +106,7 @@ type (
 
 		RecipeID      string
 		ComponentType string
+		RecipeScale   float32
 	}
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
@@ -120,8 +123,9 @@ type (
 	MealComponentUpdateRequestInput struct {
 		_ struct{}
 
-		RecipeID      string `json:"recipeID"`
-		ComponentType string `json:"componentType"`
+		RecipeID      *string  `json:"recipeID"`
+		ComponentType *string  `json:"componentType"`
+		RecipeScale   *float32 `json:"recipeScale"`
 	}
 
 	// MealDataManager describes a structure capable of storing meals permanently.
@@ -152,6 +156,21 @@ func (x *Meal) Update(input *MealUpdateRequestInput) {
 
 	if input.Description != nil && *input.Description != x.Description {
 		x.Description = *input.Description
+	}
+}
+
+// Update merges an MealComponentUpdateRequestInput with a meal.
+func (x *MealComponent) Update(input *MealComponentUpdateRequestInput) {
+	if input.RecipeID != nil && *input.RecipeID != x.Recipe.ID {
+		x.Recipe = Recipe{ID: *input.RecipeID}
+	}
+
+	if input.ComponentType != nil && *input.ComponentType != x.ComponentType {
+		x.ComponentType = *input.ComponentType
+	}
+
+	if input.RecipeScale != nil && *input.RecipeScale != x.RecipeScale {
+		x.RecipeScale = *input.RecipeScale
 	}
 }
 

@@ -53,8 +53,9 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 			CreatedByUser: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
-					ComponentType: MealComponentTypesAmuseBouche,
+					RecipeID:      pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+					RecipeScale:   pointers.Float32(exampleQuantity),
+					ComponentType: pointers.String(MealComponentTypesAmuseBouche),
 				},
 			},
 		}

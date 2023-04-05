@@ -29,6 +29,7 @@ var (
 		"meal_plan_options.assigned_dishwasher",
 		"meal_plan_options.chosen",
 		"meal_plan_options.tiebroken",
+		"meal_plan_options.meal_scale",
 		"meal_plan_options.meal_id",
 		"meal_plan_options.notes",
 		"meal_plan_options.created_at",
@@ -70,6 +71,7 @@ func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner,
 		&x.AssignedDishwasher,
 		&x.Chosen,
 		&x.TieBroken,
+		&x.MealScale,
 		&x.Meal.ID,
 		&x.Notes,
 		&x.CreatedAt,
@@ -369,6 +371,7 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 		input.AssignedDishwasher,
 		input.MealID,
 		input.Notes,
+		input.MealScale,
 		input.BelongsToMealPlanEvent,
 		markAsChosen,
 	}
@@ -385,6 +388,7 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 		Notes:                  input.Notes,
 		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
 		CreatedAt:              q.currentTime(),
+		MealScale:              input.MealScale,
 		Votes:                  []*types.MealPlanOptionVote{},
 	}
 
@@ -419,6 +423,7 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 		updated.AssignedDishwasher,
 		updated.Meal.ID,
 		updated.Notes,
+		updated.MealScale,
 		updated.BelongsToMealPlanEvent,
 		updated.ID,
 	}

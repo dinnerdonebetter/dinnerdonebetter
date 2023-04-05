@@ -50,6 +50,7 @@ func ConvertMealToMealCreationRequestInput(meal *types.Meal) *types.MealCreation
 func ConvertMealComponentToMealComponentCreationRequestInput(input *types.MealComponent) *types.MealComponentCreationRequestInput {
 	x := &types.MealComponentCreationRequestInput{
 		RecipeID:      input.Recipe.ID,
+		RecipeScale:   input.RecipeScale,
 		ComponentType: input.ComponentType,
 	}
 
@@ -76,6 +77,7 @@ func ConvertMealToMealDatabaseCreationInput(meal *types.Meal) *types.MealDatabas
 func ConvertMealComponentToMealComponentDatabaseCreationInput(input *types.MealComponent) *types.MealComponentDatabaseCreationInput {
 	x := &types.MealComponentDatabaseCreationInput{
 		RecipeID:      input.Recipe.ID,
+		RecipeScale:   input.RecipeScale,
 		ComponentType: input.ComponentType,
 	}
 
@@ -100,8 +102,9 @@ func ConvertMealToMealUpdateRequestInput(meal *types.Meal) *types.MealUpdateRequ
 // ConvertMealComponentToMealComponentUpdateRequestInput creates a MealComponentUpdateRequestInput from a MealComponent.
 func ConvertMealComponentToMealComponentUpdateRequestInput(input *types.MealComponent) *types.MealComponentUpdateRequestInput {
 	x := &types.MealComponentUpdateRequestInput{
-		RecipeID:      input.Recipe.ID,
-		ComponentType: input.ComponentType,
+		RecipeID:      &input.Recipe.ID,
+		RecipeScale:   &input.RecipeScale,
+		ComponentType: &input.ComponentType,
 	}
 
 	return x

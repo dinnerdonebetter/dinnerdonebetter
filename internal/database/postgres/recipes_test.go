@@ -1253,6 +1253,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			&idMatcher{},
 			exampleRecipe.ID,
 			types.MealComponentTypesMain,
+			1.0,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -1544,11 +1545,12 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			&idMatcher{},
 			exampleRecipe.ID,
 			types.MealComponentTypesMain,
+			1.0,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
 			WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
-			WillReturnError(errors.New("fart"))
+			WillReturnError(errors.New("blah"))
 
 		db.ExpectRollback()
 

@@ -99,6 +99,7 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 	for rows.Next() {
 		var (
 			recipeID, componentType string
+			recipeScale             float32
 		)
 		targetVars := []any{
 			&x.ID,
@@ -109,13 +110,14 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 			&x.ArchivedAt,
 			&x.CreatedByUser,
 			&recipeID,
+			&recipeScale,
 			&componentType,
 		}
 
 		if err = rows.Scan(targetVars...); err != nil {
 			return nil, nil, observability.PrepareError(err, span, "scanning complete meal")
 		}
-		mealComponents = append(mealComponents, &types.MealComponentDatabaseCreationInput{ComponentType: componentType, RecipeID: recipeID})
+		mealComponents = append(mealComponents, &types.MealComponentDatabaseCreationInput{ComponentType: componentType, RecipeScale: recipeScale, RecipeID: recipeID})
 	}
 
 	if err = rows.Err(); err != nil {
@@ -195,6 +197,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 
 		m.Components = append(m.Components, &types.MealComponent{
 			ComponentType: mealComponent.ComponentType,
+			RecipeScale:   mealComponent.RecipeScale,
 			Recipe:        *r,
 		})
 	}
@@ -372,6 +375,7 @@ func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQ
 		mealID,
 		input.RecipeID,
 		input.ComponentType,
+		input.RecipeScale,
 	}
 
 	// create the meal.

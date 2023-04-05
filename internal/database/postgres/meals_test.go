@@ -59,6 +59,7 @@ func buildMockFullRowsFromMeal(meal *types.Meal) *sqlmock.Rows {
 		"meals.archived_at",
 		"meals.created_by_user",
 		"meal_components.recipe_id",
+		"meal_components.scale",
 		"meal_components.meal_component_type",
 	})
 
@@ -72,6 +73,7 @@ func buildMockFullRowsFromMeal(meal *types.Meal) *sqlmock.Rows {
 			&meal.ArchivedAt,
 			&meal.CreatedByUser,
 			&mealComponent.Recipe.ID,
+			&mealComponent.RecipeScale,
 			&mealComponent.ComponentType,
 		)
 	}
@@ -544,6 +546,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 				exampleMeal.ID,
 				component.RecipeID,
 				component.ComponentType,
+				component.RecipeScale,
 			}
 
 			db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -659,6 +662,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			exampleMeal.ID,
 			exampleInput.Components[0].RecipeID,
 			exampleInput.Components[0].ComponentType,
+			exampleInput.Components[0].RecipeScale,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -708,6 +712,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 				exampleMeal.ID,
 				component.RecipeID,
 				component.ComponentType,
+				component.RecipeScale,
 			}
 
 			db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -745,6 +750,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 			exampleMeal.ID,
 			exampleMeal.Components[0].Recipe.ID,
 			exampleMeal.Components[0].ComponentType,
+			exampleMeal.Components[0].RecipeScale,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
@@ -806,6 +812,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 			exampleMeal.ID,
 			exampleMeal.Components[0].Recipe.ID,
 			exampleMeal.Components[0].ComponentType,
+			exampleMeal.Components[0].RecipeScale,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).

@@ -375,6 +375,11 @@ var (
 			Description: "add portion range to recipe",
 			Script:      fetchMigration("00072_add_portion_range_to_recipe"),
 		},
+		{
+			Version:     73,
+			Description: "add meal plan scaling",
+			Script:      fetchMigration("00073_meal_plan_scaling"),
+		},
 	}
 )
 

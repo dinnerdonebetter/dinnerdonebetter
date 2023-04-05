@@ -9,8 +9,9 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/pkg/types"
 
-	useragent "github.com/mssola/user_agent"
+	"github.com/mssola/useragent"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -167,11 +168,12 @@ func AttachRequestURIToSpan(span trace.Span, uri string) {
 	AttachStringToSpan(span, keys.RequestURIKey, uri)
 }
 
-// AttachRequestToSpan attaches a given *http.Request to a span.
+// AttachRequestToSpan attaches a given HTTP request to a span.
 func AttachRequestToSpan(span trace.Span, req *http.Request) {
 	if req != nil {
 		AttachStringToSpan(span, keys.RequestURIKey, req.URL.String())
 		AttachStringToSpan(span, keys.RequestMethodKey, req.Method)
+		AttachUserAgentDataToSpan(span, req)
 
 		for k, v := range req.Header {
 			AttachSliceOfStringsToSpan(span, fmt.Sprintf("%s.%s", keys.RequestHeadersKey, k), v)
@@ -195,6 +197,7 @@ func AttachResponseToSpan(span trace.Span, res *http.Response) {
 // AttachErrorToSpan attaches a given error to a span.
 func AttachErrorToSpan(span trace.Span, description string, err error) {
 	if err != nil {
+		span.SetStatus(codes.Error, description)
 		span.RecordError(
 			err,
 			trace.WithTimestamp(time.Now()),
@@ -254,7 +257,10 @@ func AttachSearchQueryToSpan(span trace.Span, query string) {
 }
 
 // AttachUserAgentDataToSpan attaches a given search query to a span.
-func AttachUserAgentDataToSpan(span trace.Span, ua *useragent.UserAgent) {
+func AttachUserAgentDataToSpan(span trace.Span, req *http.Request) {
+	header := req.Header.Get("User-Agent")
+	ua := useragent.New(header)
+
 	if ua != nil {
 		AttachStringToSpan(span, keys.UserAgentOSKey, ua.OS())
 		AttachBooleanToSpan(span, keys.UserAgentMobileKey, ua.Mobile())

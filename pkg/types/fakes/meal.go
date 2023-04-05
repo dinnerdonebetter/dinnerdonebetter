@@ -26,6 +26,7 @@ func BuildFakeMeal() *types.Meal {
 func BuildFakeMealComponent() *types.MealComponent {
 	return &types.MealComponent{
 		Recipe:        *BuildFakeRecipe(),
+		RecipeScale:   float32(1.0),
 		ComponentType: types.MealComponentTypesMain,
 	}
 }

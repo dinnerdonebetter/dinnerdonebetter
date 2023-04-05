@@ -522,6 +522,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 			Components: []*types.MealComponentDatabaseCreationInput{
 				{
 					RecipeID:      x.ID,
+					RecipeScale:   1.0,
 					ComponentType: types.MealComponentTypesMain,
 				},
 			},
