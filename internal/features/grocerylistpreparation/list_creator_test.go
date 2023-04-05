@@ -28,7 +28,6 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		carrot := fakes.BuildFakeValidIngredient()
 		celery := fakes.BuildFakeValidIngredient()
 		salt := fakes.BuildFakeValidIngredient()
-
 		grams := fakes.BuildFakeValidMeasurementUnit()
 
 		expectedMealPlan := &types.MealPlan{
@@ -37,10 +36,12 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*types.MealPlanOption{
 						{
-							Chosen: true,
+							Chosen:    true,
+							MealScale: 1.0,
 							Meal: types.Meal{
 								Components: []*types.MealComponent{
 									{
+										RecipeScale: 1.0,
 										Recipe: types.Recipe{
 											Steps: []*types.RecipeStep{
 												{
@@ -64,10 +65,12 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*types.MealPlanOption{
 						{
-							Chosen: true,
+							Chosen:    true,
+							MealScale: 1.0,
 							Meal: types.Meal{
 								Components: []*types.MealComponent{
 									{
+										RecipeScale: 1.0,
 										Recipe: types.Recipe{
 											Steps: []*types.RecipeStep{
 												{
@@ -91,10 +94,12 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*types.MealPlanOption{
 						{
-							Chosen: true,
+							Chosen:    true,
+							MealScale: 1.0,
 							Meal: types.Meal{
 								Components: []*types.MealComponent{
 									{
+										RecipeScale: 1.0,
 										Recipe: types.Recipe{
 											Steps: []*types.RecipeStep{
 												{
@@ -118,10 +123,12 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*types.MealPlanOption{
 						{
-							Chosen: true,
+							Chosen:    true,
+							MealScale: 1.0,
 							Meal: types.Meal{
 								Components: []*types.MealComponent{
 									{
+										RecipeScale: 1.0,
 										Recipe: types.Recipe{
 											Steps: []*types.RecipeStep{
 												{
@@ -145,10 +152,12 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				{
 					Options: []*types.MealPlanOption{
 						{
-							Chosen: true,
+							Chosen:    true,
+							MealScale: 1.0,
 							Meal: types.Meal{
 								Components: []*types.MealComponent{
 									{
+										RecipeScale: 1.0,
 										Recipe: types.Recipe{
 											Steps: []*types.RecipeStep{
 												{
@@ -174,7 +183,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		ctx := context.Background()
 
-		expectedGroceryListItemInputs := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
+		expectedMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
@@ -215,9 +224,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		actualMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{}
 		for i := range actual {
 			actualMap[actual[i].ValidIngredientID] = actual[i]
-			expectedGroceryListItemInputs[actual[i].ValidIngredientID].ID = actual[i].ID
+			expectedMap[actual[i].ValidIngredientID].ID = actual[i].ID
 		}
 
-		assert.Equal(t, expectedGroceryListItemInputs, actualMap)
+		assert.Equal(t, expectedMap, actualMap)
 	})
 }

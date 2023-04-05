@@ -9,6 +9,8 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/shopspring/decimal"
 )
 
 // GroceryListCreator creates meal plan grocery lists for a given meal plan.
@@ -39,8 +41,10 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 		logger = logger.WithValue(keys.MealPlanEventIDKey, event.ID)
 		for _, option := range event.Options {
 			if option.Chosen {
+				mealScale := decimal.NewFromFloat32(option.MealScale)
 				logger = logger.WithValue(keys.MealPlanOptionIDKey, option.ID)
 				for _, component := range option.Meal.Components {
+					recipeScale := decimal.NewFromFloat32(component.RecipeScale).Mul(mealScale)
 					logger = logger.WithValue(keys.RecipeIDKey, component.Recipe.ID)
 					for _, step := range component.Recipe.Steps {
 						logger = logger.WithValue(keys.RecipeStepIDKey, step.ID)
@@ -48,14 +52,21 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 							if ingredient.Ingredient != nil {
 								logger = logger.WithValue(keys.RecipeStepIngredientIDKey, ingredient.ID)
 								if _, ok := inputs[ingredient.Ingredient.ID]; !ok {
+									minQty := float32(recipeScale.Mul(decimal.NewFromFloat32(ingredient.MinimumQuantity)).Truncate(2).InexactFloat64())
+									var maxQty *float32
+									if ingredient.MaximumQuantity != nil {
+										max := float32(recipeScale.Mul(decimal.NewFromFloat32(*ingredient.MaximumQuantity)).Truncate(2).InexactFloat64())
+										maxQty = &max
+									}
+
 									inputs[ingredient.Ingredient.ID] = &types.MealPlanGroceryListItemDatabaseCreationInput{
 										Status:                 types.MealPlanGroceryListItemStatusUnknown,
 										ValidMeasurementUnitID: ingredient.MeasurementUnit.ID,
 										ValidIngredientID:      ingredient.Ingredient.ID,
 										BelongsToMealPlan:      mealPlan.ID,
 										ID:                     identifiers.New(),
-										MinimumQuantityNeeded:  ingredient.MinimumQuantity,
-										MaximumQuantityNeeded:  ingredient.MaximumQuantity,
+										MinimumQuantityNeeded:  minQty,
+										MaximumQuantityNeeded:  maxQty,
 									}
 								} else {
 									if inputs[ingredient.Ingredient.ID].ValidMeasurementUnitID == ingredient.MeasurementUnit.ID {
