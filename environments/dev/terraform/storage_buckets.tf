@@ -60,4 +60,5 @@ resource "cloudflare_record" "api_media" {
   type    = "CNAME"
   proxied = true
   ttl     = 1
+  comment = "Managed by Terraform"
 }
