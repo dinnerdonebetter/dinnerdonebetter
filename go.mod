@@ -1,6 +1,6 @@
 module github.com/prixfixeco/backend
 
-go 1.19
+go 1.20
 
 require (
 	cloud.google.com/go/pubsub v1.10.3

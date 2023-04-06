@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.19-buster
+FROM golang:1.20-buster
 
 WORKDIR /go/src/github.com/prixfixeco/backend
 ENV SKIP_PASETO_TESTS=FALSE
