@@ -14,6 +14,7 @@ LOCAL_ADDRESS                 := api.prixfixe.local
 DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.16.0
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
+LINTER_IMAGE                  := golangci/golangci-lint:v1.52.2
 CLOUD_FUNCTIONS               := data_changes meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
 
 ## non-PHONY folders/files
@@ -140,12 +141,12 @@ querier: queries_lint
 
 .PHONY: golang_lint
 golang_lint:
-	@docker pull golangci/golangci-lint:v1.50
+	@docker pull $(LINTER_IMAGE)
 	docker run \
 		--rm \
 		--volume $(PWD):$(PWD) \
 		--workdir=$(PWD) \
-		golangci/golangci-lint:v1.50 golangci-lint run --config=.golangci.yml ./...
+		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml ./...
 
 .PHONY: lint
 lint: docker_lint queries_lint golang_lint # terraform_lint
