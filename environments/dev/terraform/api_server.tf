@@ -277,4 +277,5 @@ resource "cloudflare_record" "api_cname_record" {
   value   = "ghs.googlehosted.com"
   ttl     = 1
   proxied = true
+  comment = "Managed by Terraform"
 }
