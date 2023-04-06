@@ -79,7 +79,6 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		}
 
 		actual.FromParams(exampleInput)
-		actual.CreatedAfter.Location()
 
 		assert.Equal(t, expected, actual)
 

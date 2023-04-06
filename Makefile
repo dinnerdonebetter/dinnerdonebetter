@@ -15,6 +15,7 @@ DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.16.0
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 LINTER_IMAGE                  := golangci/golangci-lint:v1.52.2
+CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
 CLOUD_FUNCTIONS               := data_changes meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
 
 ## non-PHONY folders/files
@@ -128,8 +129,8 @@ pre_lint:
 
 .PHONY: docker_lint
 docker_lint:
-	@docker pull openpolicyagent/conftest:v0.28.3
-	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) openpolicyagent/conftest:v0.21.0 test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
+	@docker pull $(CONTAINER_LINTER_IMAGE)
+	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:

@@ -288,7 +288,6 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 
 	logger := q.logger.Clone()
 
-	x = []*types.MealPlanTask{}
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
