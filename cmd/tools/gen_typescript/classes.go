@@ -101,8 +101,8 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 		tmpl := template.Must(template.New("").Parse(fieldTemplate))
 
 		var b bytes.Buffer
-		if err = tmpl.Execute(&b, line); err != nil {
-			return "", nil, nil
+		if tmplExecErr := tmpl.Execute(&b, line); tmplExecErr != nil {
+			return "", nil, tmplExecErr
 		}
 
 		thisLine := b.String()

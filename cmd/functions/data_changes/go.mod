@@ -1,6 +1,6 @@
 module github.com/prixfixeco/backend/cmd/functions/data_changes
 
-go 1.19
+go 1.20
 
 replace github.com/prixfixeco/backend => ../../../
 

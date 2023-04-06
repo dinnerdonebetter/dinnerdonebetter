@@ -51,7 +51,7 @@ func (c *Client) fetchAuthTokenForAPIClient(ctx context.Context, httpClient *htt
 		return "", observability.PrepareAndLogError(err, logger, span, "building request")
 	}
 
-	// use the default client here because we want a transport that doesn't worry about cookies or tokens.
+	// use the default client here because we want an HTTP transport that doesn't worry about cookies or tokens.
 	res, err := c.fetchResponseToRequest(ctx, httpClient, req)
 	if err != nil {
 		return "", observability.PrepareAndLogError(err, logger, span, "executing request")
@@ -65,6 +65,10 @@ func (c *Client) fetchAuthTokenForAPIClient(ctx context.Context, httpClient *htt
 
 	if err = c.unmarshalBody(ctx, res, &tokenRes); err != nil {
 		return "", observability.PrepareAndLogError(err, logger, span, "unmarshalling body")
+	}
+
+	if err = res.Body.Close(); err != nil {
+		return "", observability.PrepareAndLogError(err, logger, span, "closing response body")
 	}
 
 	logger.Debug("auth token received")

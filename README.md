@@ -4,7 +4,7 @@
 
 The following tools are prerequisites for development work:
 
-- [go](https://golang.org/) 1.19
+- [go](https://golang.org/) 1.20
 - [docker](https://docs.docker.com/get-docker/) &&  [docker-compose](https://docs.docker.com/compose/install/)
 - [wire](https://github.com/google/wire) for dependency management
 - [make](https://www.gnu.org/software/make/) for task running

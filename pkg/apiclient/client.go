@@ -279,6 +279,10 @@ func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, htt
 		}
 	}
 
+	if err = res.Body.Close(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "closing response body")
+	}
+
 	return nil
 }
 

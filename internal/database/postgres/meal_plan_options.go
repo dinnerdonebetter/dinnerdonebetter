@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"math/rand"
-	"time"
 
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/observability"
@@ -53,10 +52,6 @@ var (
 		mealPlansOnMealPlanEventsJoinClause,
 	}
 )
-
-func init() {
-	rand.Seed(time.Now().Unix())
-}
 
 // scanMealPlanOption takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan option struct.
 func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanOption, filteredCount, totalCount uint64, err error) {

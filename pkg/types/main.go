@@ -58,8 +58,6 @@ type (
 	}
 )
 
-var _ error = (*APIError)(nil)
-
 func (e *APIError) Error() string {
 	return fmt.Sprintf("%d: %s", e.Code, e.Message)
 }

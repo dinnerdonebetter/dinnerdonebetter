@@ -223,8 +223,6 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	x = []*types.MealPlanGroceryListItem{}
-
 	getMealPlanGroceryListItemsForMealPlanArgs := []any{
 		mealPlanID,
 	}

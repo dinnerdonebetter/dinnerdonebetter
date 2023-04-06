@@ -67,8 +67,8 @@ func typescriptInterface[T any](x T) (out string, imports []string, err error) {
 		tmpl := template.Must(template.New("").Parse(`	{{.FieldName}}{{if .IsPointer}}?{{end}}: {{if not .IsPointer}}NonNullable<{{end}}{{if .IsSlice}}Array<{{end}}{{.FieldType}}{{if .IsSlice}}>{{end -}}{{if not .IsPointer}}>{{end -}};` + "\n"))
 
 		var b bytes.Buffer
-		if err = tmpl.Execute(&b, line); err != nil {
-			return "", nil, nil
+		if tmplExecErr := tmpl.Execute(&b, line); tmplExecErr != nil {
+			return "", nil, tmplExecErr
 		}
 
 		output += b.String()
