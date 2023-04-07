@@ -20,6 +20,9 @@ CLOUD_FUNCTIONS               := data_changes meal_plan_finalizer meal_plan_groc
 
 ## non-PHONY folders/files
 
+regit:
+	(rm -rf .git && cd ../ && rm -rf backend2 && git clone git@github.com:prixfixeco/backend backend2 && cp -rf backend2/.git backend/.git && rm -rf backend2)
+
 clear:
 	@printf "\033[2J\033[3J\033[1;1H"
 
