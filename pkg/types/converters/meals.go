@@ -29,6 +29,7 @@ func ConvertMealComponentCreationRequestInputToMealComponentDatabaseCreationInpu
 	x := &types.MealComponentDatabaseCreationInput{
 		RecipeID:      input.RecipeID,
 		ComponentType: input.ComponentType,
+		RecipeScale:   input.RecipeScale,
 	}
 
 	return x
