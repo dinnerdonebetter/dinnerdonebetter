@@ -191,7 +191,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal retrieval query")
 	}
 
-	if m == nil {
+	if m == nil || m.ID == "" || len(mealComponents) == 0 {
 		return nil, sql.ErrNoRows
 	}
 
