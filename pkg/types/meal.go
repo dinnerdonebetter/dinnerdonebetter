@@ -51,7 +51,8 @@ func init() {
 type (
 	// Meal represents a meal.
 	Meal struct {
-		_                        struct{}
+		_ struct{}
+
 		CreatedAt                time.Time        `json:"createdAt"`
 		ArchivedAt               *time.Time       `json:"archivedAt"`
 		LastUpdatedAt            *time.Time       `json:"lastUpdatedAt"`
@@ -74,7 +75,8 @@ type (
 
 	// MealCreationRequestInput represents what a user could set as input for creating meals.
 	MealCreationRequestInput struct {
-		_                        struct{}
+		_ struct{}
+
 		MaximumEstimatedPortions *float32                             `json:"maximumEstimatedPortions"`
 		Name                     string                               `json:"name"`
 		Description              string                               `json:"description"`
@@ -93,7 +95,8 @@ type (
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
 	MealDatabaseCreationInput struct {
-		_                        struct{}
+		_ struct{}
+
 		MaximumEstimatedPortions *float32
 		ID                       string
 		Name                     string
@@ -114,7 +117,8 @@ type (
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
 	MealUpdateRequestInput struct {
-		_                        struct{}
+		_ struct{}
+
 		Name                     *string                            `json:"name,omitempty"`
 		Description              *string                            `json:"description,omitempty"`
 		CreatedByUser            *string                            `json:"-"`
