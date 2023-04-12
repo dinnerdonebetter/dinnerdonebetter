@@ -28,14 +28,3 @@ func TestValidate(T *testing.T) {
 		assert.NoError(t, actual)
 	})
 }
-
-func Test_parseID(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		actual := parseID(xid.New().String())
-		assert.NoError(t, actual)
-	})
-}

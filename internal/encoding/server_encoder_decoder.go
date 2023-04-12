@@ -12,7 +12,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/panicking"
+	"github.com/prixfixeco/backend/internal/pkg/panicking"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
@@ -290,4 +290,9 @@ func ProvideServerEncoderDecoder(logger logging.Logger, tracerProvider tracing.T
 		panicker:    panicking.NewProductionPanicker(),
 		contentType: contentType,
 	}
+}
+
+// QuickJSONEncoderDecoder provides a ServerEncoderDecoder.
+func QuickJSONEncoderDecoder() ServerEncoderDecoder {
+	return ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 }

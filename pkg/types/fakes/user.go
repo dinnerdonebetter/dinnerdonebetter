@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/internal/pointers"
+	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 
 	fake "github.com/brianvoe/gofakeit/v5"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/prixfixeco/backend/internal/identifiers"
-	"github.com/prixfixeco/backend/internal/pointers"
+	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
