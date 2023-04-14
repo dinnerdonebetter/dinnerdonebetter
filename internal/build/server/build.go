@@ -5,12 +5,12 @@ package server
 
 import (
 	"context"
-	"github.com/prixfixeco/backend/internal/database/postgres"
 
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
+	"github.com/prixfixeco/backend/internal/database/postgres"
 	emailcfg "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/encoding"
 	featureflagscfg "github.com/prixfixeco/backend/internal/featureflags/config"

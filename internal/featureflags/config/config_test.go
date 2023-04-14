@@ -2,8 +2,9 @@ package config
 
 import (
 	"context"
-	"github.com/prixfixeco/backend/internal/featureflags/launchdarkly"
 	"testing"
+
+	"github.com/prixfixeco/backend/internal/featureflags/launchdarkly"
 
 	"github.com/stretchr/testify/assert"
 )

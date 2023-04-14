@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/prixfixeco/backend/internal/cache"
 	"github.com/prixfixeco/backend/internal/cache/memory"
 	"github.com/prixfixeco/backend/internal/cache/redis"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (

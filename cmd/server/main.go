@@ -11,11 +11,12 @@ import (
 	"syscall"
 	"time"
 
-	secretmanager "cloud.google.com/go/secretmanager/apiv1"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/prixfixeco/backend/internal/build/server"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/observability"
+
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	_ "go.uber.org/automaxprocs"
 )
 

@@ -3,10 +3,10 @@ package config
 import (
 	"context"
 
-	"github.com/google/wire"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+
+	"github.com/google/wire"
 )
 
 var (
