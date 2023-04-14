@@ -1287,12 +1287,50 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 func TestQuerier_FetchMissingVotesForMealPlan(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with no missing votes", func(t *testing.T) {
 		t.Parallel()
 
+		user1, user2 := fakes.BuildFakeUser(), fakes.BuildFakeUser()
+
 		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+			{
+				BelongsToUser:      user1,
+				BelongsToHousehold: exampleHousehold.ID,
+				HouseholdRole:      "user",
+				DefaultHousehold:   true,
+			},
+			{
+				BelongsToUser:      user2,
+				BelongsToHousehold: exampleHousehold.ID,
+				HouseholdRole:      "user",
+				DefaultHousehold:   true,
+			},
+		}
+
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		exampleMealPlan.Events = []*types.MealPlanEvent{exampleMealPlan.Events[0]}
+		exampleMealPlan.Events[0].Options = []*types.MealPlanOption{exampleMealPlan.Events[0].Options[0], exampleMealPlan.Events[0].Options[1]}
+		exampleMealPlan.Events[0].Options[0].Votes = []*types.MealPlanOptionVote{
+			{
+				ByUser: user1.ID,
+				Rank:   0,
+			},
+			{
+				ByUser: user2.ID,
+				Rank:   1,
+			},
+		}
+		exampleMealPlan.Events[0].Options[1].Votes = []*types.MealPlanOptionVote{
+			{
+				ByUser: user1.ID,
+				Rank:   1,
+			},
+			{
+				ByUser: user2.ID,
+				Rank:   0,
+			},
+		}
 
 		for i := range exampleMealPlan.Events[0].Options {
 			exampleMealPlan.Events[0].Options[i].Meal = *fakes.BuildFakeMeal()
@@ -1313,7 +1351,108 @@ func TestQuerier_FetchMissingVotesForMealPlan(T *testing.T) {
 
 		actual, err := c.FetchMissingVotesForMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
 		assert.NoError(t, err)
-		assert.NotNil(t, actual) // TODO: actually test the validity of this function
+		assert.Empty(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with missing votes", func(t *testing.T) {
+		t.Parallel()
+
+		user1, user2 := fakes.BuildFakeUser(), fakes.BuildFakeUser()
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
+			{
+				BelongsToUser:      user1,
+				BelongsToHousehold: exampleHousehold.ID,
+				HouseholdRole:      "user",
+				DefaultHousehold:   true,
+			},
+			{
+				BelongsToUser:      user2,
+				BelongsToHousehold: exampleHousehold.ID,
+				HouseholdRole:      "user",
+				DefaultHousehold:   true,
+			},
+		}
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		exampleMealPlan.Events = []*types.MealPlanEvent{exampleMealPlan.Events[0]}
+		exampleMealPlan.Events[0].Options = []*types.MealPlanOption{exampleMealPlan.Events[0].Options[0], exampleMealPlan.Events[0].Options[1]}
+		exampleMealPlan.Events[0].Options[0].Votes = []*types.MealPlanOptionVote{
+			{
+				ByUser: user1.ID,
+				Rank:   0,
+			},
+			{
+				ByUser: user2.ID,
+				Rank:   1,
+			},
+		}
+		exampleMealPlan.Events[0].Options[1].Votes = []*types.MealPlanOptionVote{
+			{
+				ByUser: user1.ID,
+				Rank:   1,
+			},
+		}
+
+		for i := range exampleMealPlan.Events[0].Options {
+			exampleMealPlan.Events[0].Options[i].Meal = *fakes.BuildFakeMeal()
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+
+		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)
+
+		expected := []*types.MissingVote{
+			{
+				UserID:   user2.ID,
+				OptionID: exampleMealPlan.Events[0].Options[1].ID,
+				EventID:  exampleMealPlan.Events[0].ID,
+			},
+		}
+
+		actual, err := c.FetchMissingVotesForMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with missing meal plan ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+		exampleHousehold := fakes.BuildFakeHousehold()
+
+		actual, err := c.FetchMissingVotesForMealPlan(ctx, "", exampleHousehold.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with missing household ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+
+		actual, err := c.FetchMissingVotesForMealPlan(ctx, exampleMealPlan.ID, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
