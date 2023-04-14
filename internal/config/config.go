@@ -44,6 +44,7 @@ import (
 	validmeaurementunitsservice "github.com/prixfixeco/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/backend/internal/services/validpreparations"
+	vendorproxyservice "github.com/prixfixeco/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/prixfixeco/backend/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/backend/internal/services/websockets"
 
@@ -118,6 +119,7 @@ type (
 		ValidIngredientStateIngredients validingredientstateingredients.Config        `json:"validIngredientStateIngredients" mapstructure:"valid_ingredient_state_ingredients" toml:"valid_ingredient_state_ingredients,omitempty"`
 		RecipeStepVessels               recipestepvesselsservice.Config               `json:"recipeStepVessels" mapstructure:"recipe_step_vessels" toml:"recipe_step_vessels,omitempty"`
 		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
+		VendorProxy                     vendorproxyservice.Config                     `json:"vendorProxy" mapstructure:"vendor_proxy" toml:"vendor_proxy,omitempty"`
 	}
 )
 
@@ -273,6 +275,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.ValidIngredientStates.ValidateWithContext(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating ValidIngredientStates service portion of config: %w", err), result)
+		}
+
+		if err := cfg.Services.VendorProxy.ValidateWithContext(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating ValidIngredientStates service portion of config: %w", err), result)
 		}
 	}

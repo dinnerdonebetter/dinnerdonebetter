@@ -5,18 +5,21 @@ package server
 
 import (
 	"context"
+	"github.com/prixfixeco/backend/internal/database/postgres"
 
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
 	dbconfig "github.com/prixfixeco/backend/internal/database/config"
-	"github.com/prixfixeco/backend/internal/email"
+	emailcfg "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/encoding"
+	featureflagscfg "github.com/prixfixeco/backend/internal/featureflags/config"
 	graphing "github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
+	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	tracingcfg "github.com/prixfixeco/backend/internal/observability/tracing/config"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/internal/routing/chi"
 	"github.com/prixfixeco/backend/internal/server"
@@ -51,6 +54,7 @@ import (
 	validmeasurementunits "github.com/prixfixeco/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/backend/internal/services/validpreparations"
+	vendorproxyservice "github.com/prixfixeco/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/prixfixeco/backend/internal/services/webhooks"
 	"github.com/prixfixeco/backend/internal/uploads/images"
 
@@ -62,11 +66,6 @@ func Build(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *config.InstanceConfig,
-	tracerProvider tracing.TracerProvider,
-	unitCounterProvider metrics.UnitCounterProvider,
-	metricsHandler metrics.Handler,
-	dataManager database.DataManager,
-	emailer email.Emailer,
 ) (*server.HTTPServer, error) {
 	wire.Build(
 		config.Providers,
@@ -112,6 +111,13 @@ func Build(
 		validmeasurementconversionsservice.Providers,
 		validingredientstatesservice.Providers,
 		recipestepcompletionconditionsservice.Providers,
+		featureflagscfg.Providers,
+		vendorproxyservice.Providers,
+		tracing.Providers,
+		emailcfg.Providers,
+		tracingcfg.Providers,
+		observability.Providers,
+		postgres.Providers,
 	)
 
 	return nil, nil

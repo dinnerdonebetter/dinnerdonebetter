@@ -56,7 +56,7 @@ func (q *Querier) scanMealPlan(ctx context.Context, scan database.Scanner, inclu
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
+		return nil, 0, 0, observability.PrepareError(err, span, "scanning meal plan")
 	}
 
 	return x, filteredCount, totalCount, nil

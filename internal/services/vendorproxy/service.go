@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/featureflags"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -30,6 +31,7 @@ type (
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
 		encoderDecoder            encoding.ServerEncoderDecoder
+		featureFlagManager        featureflags.FeatureFlagManager
 		featureFlagURLFetcher     func(*http.Request) string
 		tracer                    tracing.Tracer
 	}
@@ -43,6 +45,7 @@ func ProvideService(
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
+	featureFlagManager featureflags.FeatureFlagManager,
 ) (Service, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -56,6 +59,7 @@ func ProvideService(
 		encoderDecoder:            encoder,
 		featureFlagURLFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(FeatureFlagURIParamKey),
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		featureFlagManager:        featureFlagManager,
 	}
 
 	return svc, nil

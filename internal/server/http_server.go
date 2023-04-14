@@ -5,16 +5,17 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/prixfixeco/backend/internal/database"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/pkg/panicking"
 	"github.com/prixfixeco/backend/internal/routing"
+	"github.com/prixfixeco/backend/internal/services/vendorproxy"
 	"github.com/prixfixeco/backend/pkg/types"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -61,12 +62,15 @@ type (
 		recipeStepCompletionConditionsService  types.RecipeStepCompletionConditionDataService
 		validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService
 		recipeStepVesselsService               types.RecipeStepVesselDataService
+		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
 		router                                 routing.Router
 		tracer                                 tracing.Tracer
 		panicker                               panicking.Panicker
 		httpServer                             *http.Server
+		dataManager                            database.DataManager
+		tracerProvider                         tracing.TracerProvider
 		config                                 Config
 	}
 )
@@ -107,21 +111,24 @@ func ProvideHTTPServer(
 	recipeStepVesselsService types.RecipeStepVesselDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
+	dataManager database.DataManager,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	router routing.Router,
 	tracerProvider tracing.TracerProvider,
-	metricsHandler metrics.Handler,
+	vendorProxyService vendorproxy.Service,
 ) (*HTTPServer, error) {
 	srv := &HTTPServer{
 		config: serverSettings,
 
 		// infra things,
-		tracer:     tracing.NewTracer(tracerProvider.Tracer(loggerName)),
-		encoder:    encoder,
-		logger:     logging.EnsureLogger(logger).WithName(loggerName),
-		panicker:   panicking.NewProductionPanicker(),
-		httpServer: provideHTTPServer(serverSettings.HTTPPort),
+		tracer:         tracing.NewTracer(tracerProvider.Tracer(loggerName)),
+		encoder:        encoder,
+		logger:         logging.EnsureLogger(logger).WithName(loggerName),
+		panicker:       panicking.NewProductionPanicker(),
+		httpServer:     provideHTTPServer(serverSettings.HTTPPort),
+		dataManager:    dataManager,
+		tracerProvider: tracerProvider,
 
 		// services,
 		adminService:                           adminService,
@@ -156,9 +163,10 @@ func ProvideHTTPServer(
 		recipeStepCompletionConditionsService:  recipeStepCompletionConditionsService,
 		validIngredientStateIngredientsService: validIngredientStateIngredientsService,
 		recipeStepVesselsService:               recipeStepVesselsService,
+		vendorProxyService:                     vendorProxyService,
 	}
 
-	srv.setupRouter(ctx, router, metricsHandler)
+	srv.setupRouter(ctx, router)
 
 	logger.Debug("HTTP server successfully constructed")
 
@@ -167,6 +175,12 @@ func ProvideHTTPServer(
 
 // Shutdown shuts down the server.
 func (s *HTTPServer) Shutdown(ctx context.Context) error {
+	s.dataManager.Close()
+
+	if flushErr := s.tracerProvider.ForceFlush(ctx); flushErr != nil {
+		s.logger.Error(flushErr, "flushing traces")
+	}
+
 	return s.httpServer.Shutdown(ctx)
 }
 

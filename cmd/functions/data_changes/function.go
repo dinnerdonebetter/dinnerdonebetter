@@ -53,7 +53,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		return fmt.Errorf("error getting config: %w", err)
 	}
 
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
+	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}

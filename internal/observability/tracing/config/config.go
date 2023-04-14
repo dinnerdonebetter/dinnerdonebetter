@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
@@ -31,8 +30,8 @@ type (
 	}
 )
 
-// Initialize provides an instrumentation handler.
-func (c *Config) Initialize(ctx context.Context, l logging.Logger) (traceProvider tracing.TracerProvider, err error) {
+// ProvideTracerProvider provides an instrumentation handler.
+func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (traceProvider tracing.TracerProvider, err error) {
 	logger := l.WithValue("tracing_provider", c.Provider)
 	logger.Info("setting tracing provider")
 
@@ -43,11 +42,9 @@ func (c *Config) Initialize(ctx context.Context, l logging.Logger) (traceProvide
 		return jaeger.SetupJaeger(ctx, c.Jaeger)
 	case ProviderCloudTrace:
 		return cloudtrace.SetupCloudTrace(ctx, c.CloudTrace)
-	case "":
-		return tracing.NewNoopTracerProvider(), nil
 	default:
 		logger.Debug("invalid tracing provider")
-		return nil, fmt.Errorf("invalid tracing provider: %q", p)
+		return tracing.NewNoopTracerProvider(), nil
 	}
 }
 

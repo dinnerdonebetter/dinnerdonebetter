@@ -8,3 +8,14 @@ type (
 		CanUseFeature(ctx context.Context, username, feature string) (bool, error)
 	}
 )
+
+func NewNoopFeatureFlagManager() FeatureFlagManager {
+	return &NoopFeatureFlagManager{}
+}
+
+// NoopFeatureFlagManager is a no-op FeatureFlagManager
+type NoopFeatureFlagManager struct{}
+
+func (*NoopFeatureFlagManager) CanUseFeature(_ context.Context, _, _ string) (bool, error) {
+	return false, nil
+}
