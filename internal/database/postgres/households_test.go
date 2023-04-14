@@ -9,7 +9,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
-	"github.com/prixfixeco/backend/internal/pointers"
+	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
@@ -134,7 +134,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, exampleUserID)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleHousehold, actual)
 
@@ -152,7 +152,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHousehold(ctx, "", exampleUserID)
+		actual, err := c.GetHousehold(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -168,7 +168,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, "")
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -192,7 +192,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, exampleUserID)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -218,7 +218,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, exampleUserID)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -246,7 +246,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows(columns))
 
-		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, exampleUserID)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

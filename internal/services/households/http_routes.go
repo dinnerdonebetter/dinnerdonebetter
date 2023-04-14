@@ -175,7 +175,7 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	// fetch household from database.
-	household, err := s.householdDataManager.GetHousehold(ctx, householdID, requester)
+	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Info("household ID is invalid")
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
@@ -222,7 +222,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {
 		household, err = s.householdDataManager.GetHouseholdByID(ctx, householdID)
 	} else {
-		household, err = s.householdDataManager.GetHousehold(ctx, householdID, requester)
+		household, err = s.householdDataManager.GetHousehold(ctx, householdID)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -297,7 +297,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {
 		household, err = s.householdDataManager.GetHouseholdByID(ctx, householdID)
 	} else {
-		household, err = s.householdDataManager.GetHousehold(ctx, householdID, requester)
+		household, err = s.householdDataManager.GetHousehold(ctx, householdID)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {

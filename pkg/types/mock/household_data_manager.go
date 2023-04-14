@@ -22,8 +22,8 @@ func (m *HouseholdDataManager) HouseholdExists(ctx context.Context, householdID,
 }
 
 // GetHousehold is a mock function.
-func (m *HouseholdDataManager) GetHousehold(ctx context.Context, householdID, userID string) (*types.Household, error) {
-	args := m.Called(ctx, householdID, userID)
+func (m *HouseholdDataManager) GetHousehold(ctx context.Context, householdID string) (*types.Household, error) {
+	args := m.Called(ctx, householdID)
 	return args.Get(0).(*types.Household), args.Error(1)
 }
 

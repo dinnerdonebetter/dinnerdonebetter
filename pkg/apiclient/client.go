@@ -14,7 +14,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/panicking"
+	"github.com/prixfixeco/backend/internal/pkg/panicking"
 	"github.com/prixfixeco/backend/pkg/apiclient/requests"
 	"github.com/prixfixeco/backend/pkg/types"
 

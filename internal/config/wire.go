@@ -21,6 +21,7 @@ var (
 			"Server",
 			"Routing",
 			"Services",
+			"FeatureFlags",
 		),
 		wire.FieldsOf(
 			new(*ServicesConfigurations),
@@ -55,6 +56,7 @@ var (
 			"ValidIngredientStateIngredients",
 			"RecipeStepVessels",
 			"Auth",
+			"VendorProxy",
 		),
 	)
 )

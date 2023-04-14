@@ -318,7 +318,6 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
@@ -372,7 +371,6 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
@@ -401,7 +399,6 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
@@ -434,7 +431,6 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
@@ -488,7 +484,6 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
@@ -517,7 +512,6 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
@@ -559,7 +553,6 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold, nil)
 		householdDataManager.On(
 			"UpdateHousehold",
@@ -658,7 +651,6 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
@@ -688,7 +680,6 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
@@ -721,7 +712,6 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold, nil)
 		householdDataManager.On(
 			"UpdateHousehold",
@@ -756,7 +746,6 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 			"GetHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold, nil)
 		householdDataManager.On(
 			"UpdateHousehold",

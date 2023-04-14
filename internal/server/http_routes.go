@@ -7,7 +7,6 @@ import (
 	"path"
 
 	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
 	"github.com/prixfixeco/backend/internal/routing"
 	apiclientsservice "github.com/prixfixeco/backend/internal/services/apiclients"
 	householdinvitationsservice "github.com/prixfixeco/backend/internal/services/householdinvitations"
@@ -55,11 +54,9 @@ func buildURLVarChunk(key, pattern string) string {
 }
 
 //nolint:maintidx // this thing is just gonna be how it is
-func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, metricsHandler metrics.Handler) {
+func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := s.logger.WithSpan(span)
 
 	router.Route("/_meta_", func(metaRouter routing.Router) {
 		// Expose a readiness check on /ready
@@ -67,11 +64,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			res.WriteHeader(http.StatusOK)
 		})
 	})
-
-	if metricsHandler != nil {
-		logger.Info("setting up metrics handler")
-		router.Get("/metrics", metricsHandler.ServeHTTP)
-	}
 
 	router.Post("/paseto", s.authService.PASETOHandler)
 

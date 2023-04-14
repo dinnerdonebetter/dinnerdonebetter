@@ -8,18 +8,20 @@ package server
 
 import (
 	"context"
-
+	config7 "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
-	config2 "github.com/prixfixeco/backend/internal/database/config"
-	"github.com/prixfixeco/backend/internal/email"
+	config3 "github.com/prixfixeco/backend/internal/database/config"
+	"github.com/prixfixeco/backend/internal/database/postgres"
+	config5 "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/encoding"
+	config6 "github.com/prixfixeco/backend/internal/featureflags/config"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
-	config3 "github.com/prixfixeco/backend/internal/messagequeue/config"
+	config4 "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	config2 "github.com/prixfixeco/backend/internal/observability/tracing/config"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/internal/routing/chi"
 	"github.com/prixfixeco/backend/internal/server"
@@ -54,6 +56,7 @@ import (
 	"github.com/prixfixeco/backend/internal/services/validmeasurementunits"
 	"github.com/prixfixeco/backend/internal/services/validpreparationinstruments"
 	"github.com/prixfixeco/backend/internal/services/validpreparations"
+	"github.com/prixfixeco/backend/internal/services/vendorproxy"
 	"github.com/prixfixeco/backend/internal/services/webhooks"
 	"github.com/prixfixeco/backend/internal/uploads/images"
 )
@@ -61,28 +64,45 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider tracing.TracerProvider, unitCounterProvider metrics.UnitCounterProvider, metricsHandler metrics.Handler, dataManager database.DataManager, emailer email.Emailer) (*server.HTTPServer, error) {
+func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig) (*server.HTTPServer, error) {
 	serverConfig := cfg.Server
 	servicesConfigurations := &cfg.Services
 	authenticationConfig := &servicesConfigurations.Auth
+	observabilityConfig := &cfg.Observability
+	configConfig := &observabilityConfig.Tracing
+	tracerProvider, err := config2.ProvideTracerProvider(ctx, configConfig, logger)
+	if err != nil {
+		return nil, err
+	}
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
+	config8 := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config8, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
 	userDataManager := database.ProvideUserDataManager(dataManager)
 	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
 	cookieConfig := authenticationConfig.Cookies
-	sessionManager, err := config2.ProvideSessionManager(cookieConfig, dataManager)
+	sessionManager, err := config3.ProvideSessionManager(cookieConfig, dataManager)
 	if err != nil {
 		return nil, err
 	}
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	configConfig := &cfg.Events
-	publisherProvider, err := config3.ProvidePublisherProvider(logger, tracerProvider, configConfig)
+	config9 := &cfg.Events
+	publisherProvider, err := config4.ProvidePublisherProvider(logger, tracerProvider, config9)
 	if err != nil {
 		return nil, err
 	}
 	generator := random.NewGenerator(logger, tracerProvider)
+	config10 := &cfg.Email
+	client := tracing.BuildTracedHTTPClient()
+	emailer, err := config5.ProvideEmailer(config10, logger, tracerProvider, client)
+	if err != nil {
+		return nil, err
+	}
 	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer)
 	if err != nil {
 		return nil, err
@@ -242,9 +262,9 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	if err != nil {
 		return nil, err
 	}
-	config4 := &servicesConfigurations.RecipeStepCompletionConditions
+	config11 := &servicesConfigurations.RecipeStepCompletionConditions
 	recipeStepCompletionConditionDataManager := database.ProvideRecipeStepCompletionConditionDataManager(dataManager)
-	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config4, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config11, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -270,7 +290,22 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager, tracerProvider)
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, tracerProvider, routingConfig)
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router, tracerProvider, metricsHandler)
+	vendorproxyConfig := &servicesConfigurations.VendorProxy
+	config12 := &cfg.FeatureFlags
+	featureFlagManager, err := config6.ProvideFeatureFlagManager(config12, logger, tracerProvider, client)
+	if err != nil {
+		return nil, err
+	}
+	config13 := &cfg.Analytics
+	eventReporter, err := config7.ProvideEventReporter(config13, logger, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	service, err := vendorproxy.ProvideService(logger, vendorproxyConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, featureFlagManager, eventReporter)
+	if err != nil {
+		return nil, err
+	}
+	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, dataManager, logger, serverEncoderDecoder, router, tracerProvider, service)
 	if err != nil {
 		return nil, err
 	}

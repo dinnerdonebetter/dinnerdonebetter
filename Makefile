@@ -103,6 +103,7 @@ format: format_imports format_golang
 
 .PHONY: format_golang
 format_golang:
+	fieldalignment -fix ./...
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports

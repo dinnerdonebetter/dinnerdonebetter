@@ -26,9 +26,9 @@
 		"provider": ""
 	},
 	"analytics": {
-		"provider": "",
 		"segment": null,
-		"rudderstack": null
+		"rudderstack": null,
+		"provider": ""
 	},
 	"encoding": {
 		"contentType": "application/json"
@@ -223,6 +223,9 @@
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
+		},
+		"vendorProxy": {
+			"dataChangesTopicName": "data_changes"
 		}
 	}
 }

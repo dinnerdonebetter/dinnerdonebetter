@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/backend/internal/featureflags/launchdarkly"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +17,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			LaunchDarkly: &LaunchDarklyConfig{
+			LaunchDarkly: &launchdarkly.Config{
 				SDKKey:      t.Name(),
 				InitTimeout: 123,
 			},

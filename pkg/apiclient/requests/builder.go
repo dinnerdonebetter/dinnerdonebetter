@@ -11,7 +11,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/panicking"
+	"github.com/prixfixeco/backend/internal/pkg/panicking"
 )
 
 const (

@@ -59,7 +59,7 @@ func main() {
 
 	cfg.Observability.Tracing.Jaeger.ServiceName = "meal_plan_finalizer_workers"
 
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
+	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}

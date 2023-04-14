@@ -57,6 +57,7 @@ import (
 	validmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/backend/internal/services/validpreparations"
+	"github.com/prixfixeco/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/prixfixeco/backend/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/backend/internal/services/websockets"
 	"github.com/prixfixeco/backend/internal/uploads"
@@ -505,6 +506,9 @@ func buildDevConfig() *config.InstanceConfig {
 			ValidMeasurementConversions: validmeasurementconversionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			VendorProxy: vendorproxy.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -703,6 +707,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidMeasurementConversions: validmeasurementconversionsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			VendorProxy: vendorproxy.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

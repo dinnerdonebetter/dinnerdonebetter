@@ -12,7 +12,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zap"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/pointers"
+	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/internal/search/algolia"
 	searchcfg "github.com/prixfixeco/backend/internal/search/config"
 	"github.com/prixfixeco/backend/pkg/types"

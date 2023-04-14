@@ -94,7 +94,7 @@ type (
 
 	// HouseholdDataManager describes a structure capable of storing households permanently.
 	HouseholdDataManager interface {
-		GetHousehold(ctx context.Context, householdID, userID string) (*Household, error)
+		GetHousehold(ctx context.Context, householdID string) (*Household, error)
 		GetHouseholdByID(ctx context.Context, householdID string) (*Household, error)
 		GetHouseholds(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Household], error)
 		GetHouseholdsForAdmin(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Household], error)

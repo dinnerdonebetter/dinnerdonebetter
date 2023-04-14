@@ -2,7 +2,12 @@ package config
 
 import (
 	"context"
-	"time"
+	"net/http"
+
+	"github.com/prixfixeco/backend/internal/featureflags"
+	"github.com/prixfixeco/backend/internal/featureflags/launchdarkly"
+	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -13,15 +18,9 @@ const (
 )
 
 type (
-	// LaunchDarklyConfig configures our launch darkly implementation.
-	LaunchDarklyConfig struct {
-		SDKKey      string
-		InitTimeout time.Duration
-	}
-
 	// Config configures our feature flag managers.
 	Config struct {
-		LaunchDarkly *LaunchDarklyConfig
+		LaunchDarkly *launchdarkly.Config
 		Provider     string
 	}
 )
@@ -34,4 +33,13 @@ func (c *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&c.Provider, validation.In(ProviderLaunchDarkly)),
 		validation.Field(&c.LaunchDarkly, validation.When(c.Provider == ProviderLaunchDarkly, validation.Required)),
 	)
+}
+
+func (c *Config) ProvideFeatureFlagManager(logger logging.Logger, tracerProvider tracing.TracerProvider, httpClient *http.Client) (featureflags.FeatureFlagManager, error) {
+	switch c.Provider {
+	case ProviderLaunchDarkly:
+		return launchdarkly.NewFeatureFlagManager(c.LaunchDarkly, logger, tracerProvider, httpClient)
+	default:
+		return featureflags.NewNoopFeatureFlagManager(), nil
+	}
 }

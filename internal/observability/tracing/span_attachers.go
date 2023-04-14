@@ -200,6 +200,7 @@ func AttachErrorToSpan(span trace.Span, description string, err error) {
 		span.SetStatus(codes.Error, description)
 		span.RecordError(
 			err,
+			trace.WithStackTrace(true),
 			trace.WithTimestamp(time.Now()),
 			trace.WithAttributes(attribute.String("error.description", description)),
 		)
