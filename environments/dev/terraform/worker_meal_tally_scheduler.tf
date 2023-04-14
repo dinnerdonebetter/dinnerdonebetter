@@ -33,7 +33,7 @@ resource "google_cloud_scheduler_job" "meal_plan_tally_schedule_job" {
 }
 
 resource "google_pubsub_topic" "meal_plan_tally_scheduling_topic" {
-  name = "meal_plan_tally_scheduling"
+  name = "meal_plan_tallies"
 }
 
 resource "google_storage_bucket" "meal_plan_tally_scheduler_bucket" {
@@ -55,7 +55,7 @@ resource "google_storage_bucket_object" "meal_plan_tally_scheduler_archive" {
 }
 
 resource "google_service_account" "meal_plan_tally_scheduler_user_service_account" {
-  account_id   = "meal-plan-tally-scheduler-worker"
+  account_id   = "meal-plan-tally-scheduler"
   display_name = "Meal Plans Tally Scheduler"
 }
 
