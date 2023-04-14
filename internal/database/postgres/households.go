@@ -167,16 +167,14 @@ func (q *Querier) scanHouseholds(ctx context.Context, rows database.ResultIterat
 var getHouseholdAndMembershipsByIDQuery string
 
 // GetHousehold fetches a household from the database.
-func (q *Querier) GetHousehold(ctx context.Context, householdID, userID string) (*types.Household, error) {
+func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == "" || userID == "" {
+	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-
 	tracing.AttachHouseholdIDToSpan(span, householdID)
-	tracing.AttachUserIDToSpan(span, userID)
 
 	args := []any{
 		householdID,

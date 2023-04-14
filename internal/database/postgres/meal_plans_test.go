@@ -1283,3 +1283,38 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 }
+
+func TestQuerier_FetchMissingVotesForMealPlan(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		exampleMealPlan.Events = []*types.MealPlanEvent{exampleMealPlan.Events[0]}
+
+		for i := range exampleMealPlan.Events[0].Options {
+			exampleMealPlan.Events[0].Options[i].Meal = *fakes.BuildFakeMeal()
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdAndMembershipsByIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+
+		prepareMockToSuccessfullyGetMealPlan(t, exampleMealPlan, exampleHousehold.ID, db, false)
+
+		actual, err := c.FetchMissingVotesForMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		assert.NoError(t, err)
+		assert.NotNil(t, actual) // TODO: actually test the validity of this function
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}

@@ -96,6 +96,13 @@ type (
 		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
 	}
 
+	// MissingVote represents missing votes in a meal plan
+	MissingVote struct {
+		EventID  string `json:"eventID"`
+		OptionID string `json:"optionID"`
+		UserID   string `json:"userID"`
+	}
+
 	// MealPlanOptionVoteDataManager describes a structure capable of storing meal plan option votes permanently.
 	MealPlanOptionVoteDataManager interface {
 		MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (bool, error)

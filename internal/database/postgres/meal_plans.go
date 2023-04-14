@@ -592,3 +592,58 @@ func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context
 
 	return mealPlans, nil
 }
+
+// FetchMissingVotesForMealPlan determines the missing votes for a given meal plan.
+func (q *Querier) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanID, householdID string) ([]*types.MissingVote, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
+	household, err := q.GetHousehold(ctx, householdID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household to determine missing votes")
+	}
+
+	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan to determine missing votes")
+	}
+
+	var missingVotes []*types.MissingVote
+	for _, event := range mealPlan.Events {
+		for _, option := range event.Options {
+			for _, membership := range household.Members {
+				voteFoundForMemberForOption := false
+				for _, vote := range option.Votes {
+					if vote.ByUser == membership.BelongsToUser.ID {
+						voteFoundForMemberForOption = true
+						break
+					}
+				}
+
+				if !voteFoundForMemberForOption {
+					missingVotes = append(missingVotes, &types.MissingVote{
+						EventID:  event.ID,
+						OptionID: option.ID,
+						UserID:   membership.BelongsToUser.ID,
+					})
+				}
+			}
+		}
+	}
+
+	return missingVotes, nil
+}
