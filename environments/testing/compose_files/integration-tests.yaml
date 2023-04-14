@@ -42,7 +42,7 @@ services:
     meal_plan_finalizer:
         logging:
             driver: none
-        container_name: meal_plan_finalizer
+        container_name: meal_plan_tallier
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/config'

@@ -13,41 +13,41 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
-// MealPlanFinalizationWorker finalizes meal plans.
-type MealPlanFinalizationWorker struct {
+// MealPlanTallyScheduler finalizes meal plans.
+type MealPlanTallyScheduler struct {
 	logger                 logging.Logger
 	tracer                 tracing.Tracer
 	encoder                encoding.ClientEncoder
 	dataManager            database.DataManager
-	postUpdatesPublisher   messagequeue.Publisher
+	tallyQueuePublisher    messagequeue.Publisher
 	emailSender            email.Emailer
 	analyticsEventReporter analytics.EventReporter
 }
 
-// ProvideMealPlanFinalizationWorker provides a MealPlanFinalizationWorker.
-func ProvideMealPlanFinalizationWorker(
+// ProvideMealPlanTallyScheduler provides a MealPlanTallyScheduler.
+func ProvideMealPlanTallyScheduler(
 	logger logging.Logger,
 	dataManager database.DataManager,
-	postUpdatesPublisher messagequeue.Publisher,
+	tallyQueuePublisher messagequeue.Publisher,
 	emailSender email.Emailer,
 	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
-) *MealPlanFinalizationWorker {
-	n := "meal_plan_finalizer"
+) *MealPlanTallyScheduler {
+	n := "meal_plan_tally_queueing_worker"
 
-	return &MealPlanFinalizationWorker{
+	return &MealPlanTallyScheduler{
 		logger:                 logging.EnsureLogger(logger).WithName(n),
 		tracer:                 tracing.NewTracer(tracerProvider.Tracer(n)),
 		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataManager:            dataManager,
-		postUpdatesPublisher:   postUpdatesPublisher,
+		tallyQueuePublisher:    tallyQueuePublisher,
 		emailSender:            emailSender,
 		analyticsEventReporter: analyticsEventReporter,
 	}
 }
 
-// finalizeExpiredMealPlans handles a message ordering the finalization of expired meal plans.
-func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Context) (int, error) {
+// ScheduleMealPlanTallies handles a message ordering the finalization of expired meal plans.
+func (w *MealPlanTallyScheduler) ScheduleMealPlanTallies(ctx context.Context, _ []byte) error {
 	_, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -55,33 +55,19 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 
 	mealPlans, fetchMealPlansErr := w.dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 	if fetchMealPlansErr != nil {
-		return -1, observability.PrepareAndLogError(fetchMealPlansErr, logger, span, "fetching unfinalized and expired meal plan")
+		return observability.PrepareAndLogError(fetchMealPlansErr, logger, span, "fetching unfinalized and expired meal plan")
 	}
 
 	logger.WithValue("quantity", len(mealPlans)).Info("finalizing expired meal plans")
 
-	var changedCount int
 	for _, mealPlan := range mealPlans {
-		changed, err := w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
-		if err != nil {
-			return -1, observability.PrepareError(err, span, "finalizing meal plan")
-		}
-
-		if changed {
-			changedCount++
+		if err := w.tallyQueuePublisher.Publish(ctx, &MealPlanTallyRequest{
+			MealPlanID:  mealPlan.ID,
+			HouseholdID: mealPlan.BelongsToHousehold,
+		}); err != nil {
+			observability.AcknowledgeError(err, logger, span, "queueing tally request for meal plan")
 		}
 	}
 
-	return changedCount, nil
-}
-
-// FinalizeExpiredMealPlans handles a message ordering the finalization of expired meal plans.
-func (w *MealPlanFinalizationWorker) FinalizeExpiredMealPlans(ctx context.Context, _ []byte) (int, error) {
-	return w.finalizeExpiredMealPlans(ctx)
-}
-
-// FinalizeExpiredMealPlansWithoutReturningCount handles a message ordering the finalization of expired meal plans.
-func (w *MealPlanFinalizationWorker) FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context, _ []byte) error {
-	_, err := w.finalizeExpiredMealPlans(ctx)
-	return err
+	return nil
 }

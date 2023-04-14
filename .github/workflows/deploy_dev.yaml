@@ -47,7 +47,10 @@ jobs:
         run: ./scripts/build_cloud_function.sh data_changes
 
       - name: Build meal plan finalizer cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
+        run: ./scripts/build_cloud_function.sh meal_plan_tallier
+
+      - name: Build meal plan finalizer cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_plan_tally_scheduler
 
       - name: Build meal plan task creator cloud function directory
         run: ./scripts/build_cloud_function.sh meal_plan_task_creator

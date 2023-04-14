@@ -1,4 +1,4 @@
-package mealplanfinalizerfunction
+package mealplantallyqueuerfunction
 
 import (
 	"context"
@@ -24,16 +24,16 @@ import (
 )
 
 const (
-	dataChangesTopicName = "data_changes"
+	mealPlanTallyRequestsTopicName = "meal_plan_tallies"
 )
 
 func init() {
 	// Register a CloudEvent function with the Functions Framework
-	functions.CloudEvent("FinalizeMealPlans", FinalizeMealPlans)
+	functions.CloudEvent("ScheduleMealPlanTallies", ScheduleMealPlanTallies)
 }
 
-// FinalizeMealPlans is our cloud function entrypoint.
-func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
+// ScheduleMealPlanTallies is our cloud function entrypoint.
+func ScheduleMealPlanTallies(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
@@ -81,29 +81,24 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	tallyRequestPublisher, err := publisherProvider.ProviderPublisher(mealPlanTallyRequestsTopicName)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}
 
-	defer dataChangesPublisher.Stop()
+	defer tallyRequestPublisher.Stop()
 
-	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
+	mealPlanFinalizationWorker := workers.ProvideMealPlanTallyScheduler(
 		logger,
 		dataManager,
-		dataChangesPublisher,
+		tallyRequestPublisher,
 		emailer,
 		analyticsEventReporter,
 		tracerProvider,
 	)
 
-	changedCount, err := mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx, nil)
-	if err != nil {
+	if err = mealPlanFinalizationWorker.ScheduleMealPlanTallies(ctx, nil); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "finalizing meal plans: %w")
-	}
-
-	if changedCount > 0 {
-		logger.WithValue("count", changedCount).Info("finalized meal plans")
 	}
 
 	return nil

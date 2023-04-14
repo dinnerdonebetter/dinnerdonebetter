@@ -1,4 +1,4 @@
-module github.com/prixfixeco/backend/cmd/functions/meal_plan_finalizer
+module github.com/prixfixeco/backend/cmd/functions/meal_plan_tallier
 
 go 1.20
 

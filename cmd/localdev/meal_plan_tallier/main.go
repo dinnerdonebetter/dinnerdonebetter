@@ -26,7 +26,7 @@ import (
 
 const (
 	dataChangesTopicName      = "data_changes"
-	mealPlanFinalizationTopic = "meal_plan_finalizer"
+	mealPlanFinalizationTopic = "meal_plan_tallier"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
@@ -98,7 +98,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
+	mealPlanFinalizationWorker := workers.ProvideMealPlanTallyingWorker(
 		logger,
 		dataManager,
 		dataChangesPublisher,
@@ -107,7 +107,7 @@ func main() {
 		tracerProvider,
 	)
 
-	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, mealPlanFinalizationWorker.FinalizeExpiredMealPlansWithoutReturningCount)
+	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, mealPlanFinalizationWorker.TallyMealPlanVotes)
 	if err != nil {
 		log.Fatal(err)
 	}

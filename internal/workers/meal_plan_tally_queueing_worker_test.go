@@ -21,10 +21,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
+func newTestTallyQueueingWorker(t *testing.T) *MealPlanTallyScheduler {
 	t.Helper()
 
-	worker := ProvideMealPlanFinalizationWorker(
+	worker := ProvideMealPlanTallyScheduler(
 		zerolog.NewZerologLogger(logging.DebugLevel),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
@@ -37,13 +37,13 @@ func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
 	return worker
 }
 
-func TestProvideChoresWorker(T *testing.T) {
+func TestProvideMealPlanTallyQueueingWorker(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideMealPlanFinalizationWorker(
+		actual := ProvideMealPlanTallyScheduler(
 			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
@@ -55,7 +55,7 @@ func TestProvideChoresWorker(T *testing.T) {
 	})
 }
 
-func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T) {
+func TestMealPlanTallyQueueingWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -79,19 +79,17 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		mqm := &mockpublishers.Publisher{}
 
 		for _, mealPlan := range exampleMealPlans {
-			dbm.MealPlanDataManager.On(
-				"AttemptToFinalizeMealPlan",
-				testutils.ContextMatcher,
-				mealPlan.ID,
-				mealPlan.BelongsToHousehold,
-			).Return(true, nil)
+			mqm.On("Publish", testutils.ContextMatcher, &MealPlanTallyRequest{
+				MealPlanID:  mealPlan.ID,
+				HouseholdID: mealPlan.BelongsToHousehold,
+			}).Return(nil)
 		}
 
-		worker := newTestChoresWorker(t)
+		worker := newTestTallyQueueingWorker(t)
 		worker.dataManager = dbm
-		worker.postUpdatesPublisher = mqm
+		worker.tallyQueuePublisher = mqm
 
-		assert.NoError(t, worker.FinalizeExpiredMealPlansWithoutReturningCount(ctx, body))
+		assert.NoError(t, worker.ScheduleMealPlanTallies(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbm, mqm)
 	})

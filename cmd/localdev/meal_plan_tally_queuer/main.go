@@ -8,22 +8,25 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
+	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
+	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
+	"github.com/prixfixeco/backend/internal/messagequeue/redis"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
-	serverutils "github.com/prixfixeco/backend/internal/server/utils"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/server/utils"
+	"github.com/prixfixeco/backend/internal/workers"
 
 	_ "go.uber.org/automaxprocs"
 )
 
 const (
-	mealPlanFinalizationTopic = "meal_plan_tallier"
-	mealPlanTaskCreationTopic = "meal_plan_task_creation"
+	dataChangesTopicName      = "data_changes"
+	mealPlanFinalizationTopic = "meal_plan_voting_expirations"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
@@ -35,7 +38,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logger.Info("starting queue loader...")
+	logger.Info("starting meal plan finalizer workers...")
+	client := tracing.BuildTracedHTTPClient()
 
 	// find and validate our configuration filepath.
 	configFilepath := os.Getenv(configFilepathEnvVar)
@@ -53,7 +57,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.Observability.Tracing.Jaeger.ServiceName = "queue_loader"
+	cfg.Observability.Tracing.Jaeger.ServiceName = "meal_plan_finalizer_workers"
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {
@@ -61,6 +65,16 @@ func main() {
 	}
 
 	cfg.Database.RunMigrations = false
+
+	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cdp, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
@@ -72,38 +86,33 @@ func main() {
 	serverutils.EnsureServerIsUp(ctx, urlToUse)
 	dataManager.IsReady(ctx, 50)
 
+	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.Consumers.RedisConfig)
+
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mealPlanFinalizationTicker := time.Tick(time.Second)
-	mealPlanFinalizerPublisher, err := publisherProvider.ProviderPublisher(mealPlanFinalizationTopic)
+	tallyRequestPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	go func() {
-		for range mealPlanFinalizationTicker {
-			if err = mealPlanFinalizerPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType}); err != nil {
-				log.Fatal(err)
-			}
-		}
-	}()
+	mealPlanFinalizationWorker := workers.ProvideMealPlanTallyScheduler(
+		logger,
+		dataManager,
+		tallyRequestPublisher,
+		emailer,
+		cdp,
+		tracerProvider,
+	)
 
-	mealPlanTaskCreationTicker := time.Tick(time.Second)
-	mealPlanTaskCreationPublisher, err := publisherProvider.ProviderPublisher(mealPlanTaskCreationTopic)
+	mealPlanFinalizerConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanFinalizationTopic, mealPlanFinalizationWorker.ScheduleMealPlanTallies)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	go func() {
-		for range mealPlanTaskCreationTicker {
-			if err = mealPlanTaskCreationPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.CreateMealPlanTasksChoreType}); err != nil {
-				log.Fatal(err)
-			}
-		}
-	}()
+	go mealPlanFinalizerConsumer.Consume(nil, nil)
 
 	logger.Info("working...")
 
