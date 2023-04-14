@@ -25,3 +25,19 @@ TODO: validate the above stuff
 
 - meal plan finalizer is the only thing that runs on a cron, it triggers the other two things to run on the back of the meal plan it finalizes
 - etc...
+
+
+```mermaid
+flowchart TD
+    VoteSubmitted(Vote is submitted)
+    DeadlineExpires(Deadline expires)
+    VoteSubmitted(Vote is submitted) ---> CheckForRemainingVotes(Check for remaining votes)
+    CheckForRemainingVotes(Check for remaining votes) ---> VotesNeeded(Not all votes in) --> Wait
+    CheckForRemainingVotes(Check for remaining votes) ---> BallotSatisfied(All votes in) --> TallyingScheduled(Schedule meal plan tallying)
+    DeadlineExpires(Deadline expires) ---> TallyingScheduled(Schedule meal plan tallying)
+    Finalize
+    TallyingScheduled(Schedule meal plan tallying) ---> Tally
+    Tally ---> Finalize
+    Finalize ---> GroceryListInitialization(Initialize grocery lists)
+    Finalize ---> MealPlanPrepTaskCreation(Create meal plan prep tasks)
+```
