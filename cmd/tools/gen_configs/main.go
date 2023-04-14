@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"github.com/prixfixeco/backend/internal/services/vendorproxy"
 	"log"
 	"os"
 	"path/filepath"
@@ -505,6 +506,9 @@ func buildDevConfig() *config.InstanceConfig {
 			ValidMeasurementConversions: validmeasurementconversionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			VendorProxy: vendorproxy.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -703,6 +707,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidMeasurementConversions: validmeasurementconversionsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			VendorProxy: vendorproxy.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

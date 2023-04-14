@@ -224,6 +224,8 @@
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
 		},
-		"vendorProxy": {}
+		"vendorProxy": {
+			"dataChangesTopicName": "data_changes"
+		}
 	}
 }

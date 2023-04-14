@@ -279,7 +279,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.VendorProxy.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating ValidIngredientStates service portion of config: %w", err), result)
+			result = multierror.Append(fmt.Errorf("error validating VendorProxy service portion of config: %w", err), result)
 		}
 	}
 
