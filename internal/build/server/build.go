@@ -6,6 +6,7 @@ package server
 import (
 	"context"
 
+	analyticscfg "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
@@ -118,6 +119,7 @@ func Build(
 		tracingcfg.Providers,
 		observability.Providers,
 		postgres.Providers,
+		analyticscfg.Providers,
 	)
 
 	return nil, nil

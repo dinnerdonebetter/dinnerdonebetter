@@ -13,8 +13,8 @@ type (
 	NoopEventReporter struct{}
 )
 
-// NewNoopCollector returns a new no-op EventReporter.
-func NewNoopCollector() EventReporter {
+// NewNoopEventReporter returns a new no-op EventReporter.
+func NewNoopEventReporter() EventReporter {
 	return &NoopEventReporter{}
 }
 

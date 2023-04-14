@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/featureflags"
 	"github.com/prixfixeco/backend/internal/messagequeue"
@@ -21,7 +22,7 @@ const (
 type (
 	// Service is the interface for the vendor proxy service.
 	Service interface {
-		FeatureFlagHandler(res http.ResponseWriter, req *http.Request)
+		FeatureFlagStatusHandler(res http.ResponseWriter, req *http.Request)
 		AnalyticsTrackHandler(res http.ResponseWriter, req *http.Request)
 	}
 
@@ -34,6 +35,7 @@ type (
 		featureFlagManager        featureflags.FeatureFlagManager
 		featureFlagURLFetcher     func(*http.Request) string
 		tracer                    tracing.Tracer
+		eventReporter             analytics.EventReporter
 	}
 )
 
@@ -46,6 +48,7 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 	featureFlagManager featureflags.FeatureFlagManager,
+	eventReporter analytics.EventReporter,
 ) (Service, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -60,6 +63,7 @@ func ProvideService(
 		featureFlagURLFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(FeatureFlagURIParamKey),
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		featureFlagManager:        featureFlagManager,
+		eventReporter:             eventReporter,
 	}
 
 	return svc, nil

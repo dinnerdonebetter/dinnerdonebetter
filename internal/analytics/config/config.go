@@ -48,6 +48,6 @@ func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracin
 	case ProviderRudderstack:
 		return rudderstack.NewRudderstackEventReporter(logger, tracerProvider, cfg.Rudderstack)
 	default:
-		return analytics.NewNoopCollector(), nil
+		return analytics.NewNoopEventReporter(), nil
 	}
 }

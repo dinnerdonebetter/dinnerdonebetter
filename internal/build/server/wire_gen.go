@@ -8,6 +8,7 @@ package server
 
 import (
 	"context"
+	config7 "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
@@ -74,8 +75,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	config7 := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config7, tracerProvider)
+	config8 := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config8, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -90,15 +91,15 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	config8 := &cfg.Events
-	publisherProvider, err := config4.ProvidePublisherProvider(logger, tracerProvider, config8)
+	config9 := &cfg.Events
+	publisherProvider, err := config4.ProvidePublisherProvider(logger, tracerProvider, config9)
 	if err != nil {
 		return nil, err
 	}
 	generator := random.NewGenerator(logger, tracerProvider)
-	config9 := &cfg.Email
+	config10 := &cfg.Email
 	client := tracing.BuildTracedHTTPClient()
-	emailer, err := config5.ProvideEmailer(config9, logger, tracerProvider, client)
+	emailer, err := config5.ProvideEmailer(config10, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}
@@ -261,9 +262,9 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	if err != nil {
 		return nil, err
 	}
-	config10 := &servicesConfigurations.RecipeStepCompletionConditions
+	config11 := &servicesConfigurations.RecipeStepCompletionConditions
 	recipeStepCompletionConditionDataManager := database.ProvideRecipeStepCompletionConditionDataManager(dataManager)
-	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config10, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config11, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -290,12 +291,17 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, tracerProvider, routingConfig)
 	vendorproxyConfig := &servicesConfigurations.VendorProxy
-	config11 := &cfg.FeatureFlags
-	featureFlagManager, err := config6.ProvideFeatureFlagManager(config11, logger, tracerProvider, client)
+	config12 := &cfg.FeatureFlags
+	featureFlagManager, err := config6.ProvideFeatureFlagManager(config12, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}
-	service, err := vendorproxy.ProvideService(logger, vendorproxyConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, featureFlagManager)
+	config13 := &cfg.Analytics
+	eventReporter, err := config7.ProvideEventReporter(config13, logger, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	service, err := vendorproxy.ProvideService(logger, vendorproxyConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, featureFlagManager, eventReporter)
 	if err != nil {
 		return nil, err
 	}
