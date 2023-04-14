@@ -96,7 +96,7 @@ type (
 		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
 	}
 
-	// MissingVote represents missing votes in a meal plan
+	// MissingVote represents missing votes in a meal plan.
 	MissingVote struct {
 		EventID  string `json:"eventID"`
 		OptionID string `json:"optionID"`
