@@ -13,7 +13,7 @@ func NewNoopFeatureFlagManager() FeatureFlagManager {
 	return &NoopFeatureFlagManager{}
 }
 
-// NoopFeatureFlagManager is a no-op FeatureFlagManager
+// NoopFeatureFlagManager is a no-op FeatureFlagManager.
 type NoopFeatureFlagManager struct{}
 
 func (*NoopFeatureFlagManager) CanUseFeature(_ context.Context, _, _ string) (bool, error) {

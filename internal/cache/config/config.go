@@ -5,13 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/prixfixeco/backend/internal/cache"
 	"github.com/prixfixeco/backend/internal/cache/memory"
 	"github.com/prixfixeco/backend/internal/cache/redis"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
@@ -41,8 +38,8 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-// ProvideCache validates a Config struct.
-func ProvideCache[T cache.Cacheable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config) (cache.Cache[T], error) {
+// ProvideCache provides a Cache.
+func ProvideCache[T cache.Cacheable](cfg *Config) (cache.Cache[T], error) {
 	switch cfg.Provider {
 	case ProviderMemory:
 		return memory.NewInMemoryCache[T](), nil

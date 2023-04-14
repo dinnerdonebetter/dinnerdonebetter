@@ -7,6 +7,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	"github.com/prixfixeco/backend/internal/featureflags"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -53,6 +54,7 @@ func TestProvideService(T *testing.T) {
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			featureflags.NewNoopFeatureFlagManager(),
 		)
 
 		assert.NotNil(t, s)
@@ -80,6 +82,7 @@ func TestProvideService(T *testing.T) {
 			nil,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			featureflags.NewNoopFeatureFlagManager(),
 		)
 
 		assert.Nil(t, s)
