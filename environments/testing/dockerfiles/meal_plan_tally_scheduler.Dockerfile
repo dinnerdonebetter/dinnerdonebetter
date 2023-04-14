@@ -10,6 +10,6 @@ COPY vendor vendor
 COPY go.mod go.mod
 COPY go.sum go.sum
 
-RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /meal_plan_tallier github.com/prixfixeco/backend/cmd/localdev/meal_plan_tallier
+RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /meal_plan_tally_scheduler github.com/prixfixeco/backend/cmd/localdev/meal_plan_tally_scheduler
 
-ENTRYPOINT /meal_plan_finalizer
+ENTRYPOINT /meal_plan_tally_scheduler

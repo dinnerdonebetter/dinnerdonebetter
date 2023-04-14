@@ -162,7 +162,7 @@ resource "google_cloudfunctions2_function" "meal_plan_tally_scheduler" {
   event_trigger {
     trigger_region        = local.gcp_region
     event_type            = local.pubsub_topic_publish_event
-    pubsub_topic          = google_pubsub_topic.meal_plan_topic.id
+    pubsub_topic          = google_pubsub_topic.meal_plan_tally_scheduling_topic.id
     retry_policy          = "RETRY_POLICY_RETRY"
     service_account_email = google_service_account.meal_plan_tally_scheduler_user_service_account.email
   }
