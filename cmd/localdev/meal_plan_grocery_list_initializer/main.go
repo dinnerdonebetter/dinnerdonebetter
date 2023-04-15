@@ -16,9 +16,7 @@ import (
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/messagequeue/redis"
-	"github.com/prixfixeco/backend/internal/observability/keys"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
-	"github.com/prixfixeco/backend/internal/server/utils"
 	"github.com/prixfixeco/backend/internal/workers"
 
 	_ "go.uber.org/automaxprocs"
@@ -33,7 +31,7 @@ const (
 
 func main() {
 	ctx := context.Background()
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,13 +73,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	urlToUse := serverutils.DetermineServiceURL().String()
-	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	serverutils.EnsureServerIsUp(ctx, urlToUse)
-	dataManager.IsReady(ctx, 50)
+	if ready := dataManager.IsReady(ctx, 50); !ready {
+		log.Fatal("database not ready")
+	}
 
 	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.Consumers.RedisConfig)
-
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
 		log.Fatal(err)

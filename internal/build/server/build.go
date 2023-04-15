@@ -18,7 +18,7 @@ import (
 	graphing "github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability"
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	tracingcfg "github.com/prixfixeco/backend/internal/observability/tracing/config"
 	"github.com/prixfixeco/backend/internal/random"
@@ -65,7 +65,6 @@ import (
 // Build builds a server.
 func Build(
 	ctx context.Context,
-	logger logging.Logger,
 	cfg *config.InstanceConfig,
 ) (*server.HTTPServer, error) {
 	wire.Build(
@@ -120,6 +119,7 @@ func Build(
 		observability.Providers,
 		postgres.Providers,
 		analyticscfg.Providers,
+		logcfg.Providers,
 	)
 
 	return nil, nil

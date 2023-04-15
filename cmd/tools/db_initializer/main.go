@@ -60,7 +60,7 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	if err != nil {
 		log.Fatal(err)
 	}

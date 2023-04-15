@@ -1,8 +1,6 @@
 package config
 
 import (
-	"context"
-
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zap"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
@@ -26,7 +24,7 @@ type (
 )
 
 // ProvideLogger builds a Logger according to the provided config.
-func (cfg *Config) ProvideLogger(_ context.Context) (logging.Logger, error) {
+func (cfg *Config) ProvideLogger() (logging.Logger, error) {
 	var l logging.Logger
 
 	switch cfg.Provider {

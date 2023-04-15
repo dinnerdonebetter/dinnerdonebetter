@@ -8,20 +8,20 @@ package server
 
 import (
 	"context"
-	config7 "github.com/prixfixeco/backend/internal/analytics/config"
+	config8 "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
-	config3 "github.com/prixfixeco/backend/internal/database/config"
+	config4 "github.com/prixfixeco/backend/internal/database/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
-	config5 "github.com/prixfixeco/backend/internal/email/config"
+	config6 "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/encoding"
-	config6 "github.com/prixfixeco/backend/internal/featureflags/config"
+	config7 "github.com/prixfixeco/backend/internal/featureflags/config"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
-	config4 "github.com/prixfixeco/backend/internal/messagequeue/config"
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	config5 "github.com/prixfixeco/backend/internal/messagequeue/config"
+	config2 "github.com/prixfixeco/backend/internal/observability/logging/config"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	config2 "github.com/prixfixeco/backend/internal/observability/tracing/config"
+	config3 "github.com/prixfixeco/backend/internal/observability/tracing/config"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/internal/routing/chi"
 	"github.com/prixfixeco/backend/internal/server"
@@ -64,19 +64,24 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig) (*server.HTTPServer, error) {
+func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer, error) {
 	serverConfig := cfg.Server
+	observabilityConfig := &cfg.Observability
+	configConfig := &observabilityConfig.Logging
+	logger, err := config2.ProvideLogger(configConfig)
+	if err != nil {
+		return nil, err
+	}
 	servicesConfigurations := &cfg.Services
 	authenticationConfig := &servicesConfigurations.Auth
-	observabilityConfig := &cfg.Observability
-	configConfig := &observabilityConfig.Tracing
-	tracerProvider, err := config2.ProvideTracerProvider(ctx, configConfig, logger)
+	config9 := &observabilityConfig.Tracing
+	tracerProvider, err := config3.ProvideTracerProvider(ctx, config9, logger)
 	if err != nil {
 		return nil, err
 	}
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	config8 := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config8, tracerProvider)
+	config10 := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config10, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -84,22 +89,22 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
 	cookieConfig := authenticationConfig.Cookies
-	sessionManager, err := config3.ProvideSessionManager(cookieConfig, dataManager)
+	sessionManager, err := config4.ProvideSessionManager(cookieConfig, dataManager)
 	if err != nil {
 		return nil, err
 	}
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	config9 := &cfg.Events
-	publisherProvider, err := config4.ProvidePublisherProvider(logger, tracerProvider, config9)
+	config11 := &cfg.Events
+	publisherProvider, err := config5.ProvidePublisherProvider(logger, tracerProvider, config11)
 	if err != nil {
 		return nil, err
 	}
 	generator := random.NewGenerator(logger, tracerProvider)
-	config10 := &cfg.Email
+	config12 := &cfg.Email
 	client := tracing.BuildTracedHTTPClient()
-	emailer, err := config5.ProvideEmailer(config10, logger, tracerProvider, client)
+	emailer, err := config6.ProvideEmailer(config12, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}
@@ -262,9 +267,9 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	if err != nil {
 		return nil, err
 	}
-	config11 := &servicesConfigurations.RecipeStepCompletionConditions
+	config13 := &servicesConfigurations.RecipeStepCompletionConditions
 	recipeStepCompletionConditionDataManager := database.ProvideRecipeStepCompletionConditionDataManager(dataManager)
-	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config11, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config13, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -291,13 +296,13 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, tracerProvider, routingConfig)
 	vendorproxyConfig := &servicesConfigurations.VendorProxy
-	config12 := &cfg.FeatureFlags
-	featureFlagManager, err := config6.ProvideFeatureFlagManager(config12, logger, tracerProvider, client)
+	config14 := &cfg.FeatureFlags
+	featureFlagManager, err := config7.ProvideFeatureFlagManager(config14, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}
-	config13 := &cfg.Analytics
-	eventReporter, err := config7.ProvideEventReporter(config13, logger, tracerProvider)
+	config15 := &cfg.Analytics
+	eventReporter, err := config8.ProvideEventReporter(config15, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

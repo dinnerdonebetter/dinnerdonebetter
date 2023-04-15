@@ -18,7 +18,7 @@ func TestProvideLogger(T *testing.T) {
 			Provider: ProviderZerolog,
 		}
 
-		l, err := cfg.ProvideLogger(ctx)
+		l, err := cfg.ProvideLogger()
 
 		assert.NotNil(t, l)
 		assert.NoError(t, err)
@@ -30,7 +30,7 @@ func TestProvideLogger(T *testing.T) {
 		ctx := context.Background()
 		cfg := &Config{}
 
-		l, err := cfg.ProvideLogger(ctx)
+		l, err := cfg.ProvideLogger()
 
 		assert.NotNil(t, l)
 		assert.NoError(t, err)
