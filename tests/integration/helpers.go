@@ -86,7 +86,7 @@ func initializeCookiePoweredClient(ctx context.Context, cookie *http.Cookie) (*a
 		panic("url not set!")
 	}
 
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +156,7 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 	u := serverutils.DetermineServiceURL()
 	urlToUse = u.String()
 
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	require.NoError(t, err)
 
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")

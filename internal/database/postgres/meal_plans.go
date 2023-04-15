@@ -626,7 +626,7 @@ func (q *Querier) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanID, 
 	for _, event := range mealPlan.Events {
 		for _, option := range event.Options {
 			for _, membership := range household.Members {
-				voteFoundForMemberForOption := false
+				var voteFoundForMemberForOption bool
 				for _, vote := range option.Votes {
 					if vote.ByUser == membership.BelongsToUser.ID {
 						voteFoundForMemberForOption = true

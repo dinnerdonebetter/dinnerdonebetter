@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,10 +12,8 @@ import (
 
 	"github.com/prixfixeco/backend/internal/build/server"
 	"github.com/prixfixeco/backend/internal/config"
-	"github.com/prixfixeco/backend/internal/observability"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -55,27 +52,16 @@ func getConfig(ctx context.Context) *config.InstanceConfig {
 }
 
 func main() {
-	ctx := context.Background()
-	cfg := getConfig(ctx)
-
-	// find and validate our configuration filepath.
-	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	logger.SetRequestIDFunc(func(req *http.Request) string {
-		return chimiddleware.GetReqID(req.Context())
-	})
+	rootCtx := context.Background()
+	cfg := getConfig(rootCtx)
 
 	// only allow initialization to take so long.
-	ctx, cancel := context.WithTimeout(ctx, cfg.Server.StartupDeadline)
+	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
 
 	// build our server struct.
-	srv, err := server.Build(ctx, logger, cfg)
+	srv, err := server.Build(buildCtx, cfg)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, nil, "initializing HTTP server")
-		return
+		panic(err)
 	}
 
 	cancel()
@@ -100,13 +86,11 @@ func main() {
 		<-signalChan
 	}()
 
-	_, cancelShutdown := context.WithTimeout(context.Background(), 10*time.Second)
+	cancelCtx, cancelShutdown := context.WithTimeout(rootCtx, 10*time.Second)
 	defer cancelShutdown()
 
 	// Gracefully shutdown the server by waiting on existing requests (except websockets).
-	if err = srv.Shutdown(ctx); err != nil {
-		observability.AcknowledgeError(err, logger, nil, "server shutdown failed")
+	if err = srv.Shutdown(cancelCtx); err != nil {
+		panic(err)
 	}
-
-	cancel()
 }

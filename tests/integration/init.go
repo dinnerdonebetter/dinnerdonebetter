@@ -49,7 +49,7 @@ func init() {
 	ctx, span := tracing.StartSpan(context.Background())
 	defer span.End()
 
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	if err != nil {
 		log.Fatal(err)
 	}
