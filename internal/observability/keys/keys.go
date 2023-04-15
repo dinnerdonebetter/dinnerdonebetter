@@ -1,8 +1,6 @@
 package keys
 
 const (
-	// HouseholdSubscriptionPlanIDKey is the standard key for referring to a household subscription plan ID.
-	HouseholdSubscriptionPlanIDKey = "household_subscription_plan.id"
 	// RequesterIDKey is the standard key for referring to a requesting user's ID.
 	RequesterIDKey = "request.made_by"
 	// HouseholdIDKey is the standard key for referring to a household ID.

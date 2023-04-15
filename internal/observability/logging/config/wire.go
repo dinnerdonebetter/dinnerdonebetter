@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/google/wire"
 	"github.com/prixfixeco/backend/internal/observability/logging"
+
+	"github.com/google/wire"
 )
 
 var (
