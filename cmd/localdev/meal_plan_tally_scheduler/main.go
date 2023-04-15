@@ -26,7 +26,7 @@ import (
 
 const (
 	dataChangesTopicName      = "data_changes"
-	mealPlanFinalizationTopic = "meal_plan_voting_expirations"
+	mealPlanFinalizationTopic = "meal_plan_tally_scheduler"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )

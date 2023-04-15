@@ -12,7 +12,6 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
 
@@ -62,10 +61,7 @@ func TestMealPlanTallyQueueingWorker_FinalizeExpiredMealPlansWithoutReturningCou
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleInput := &types.ChoreMessage{
-			ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType,
-		}
-		body, err := json.Marshal(exampleInput)
+		body, err := json.Marshal(&struct{}{})
 		require.NoError(t, err)
 
 		exampleMealPlans := fakes.BuildFakeMealPlanList().Data

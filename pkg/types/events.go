@@ -1,8 +1,6 @@
 package types
 
 const (
-	// FinalizeMealPlansWithExpiredVotingPeriodsChoreType asks the worker to finalize meal plans with expired voting periods.
-	FinalizeMealPlansWithExpiredVotingPeriodsChoreType choreType = "finalize_meal_plans_with_expired_voting_periods"
 	// CreateMealPlanTasksChoreType asks the worker to finalize meal plans with expired voting periods.
 	CreateMealPlanTasksChoreType choreType = "create_meal_plan_tasks"
 )

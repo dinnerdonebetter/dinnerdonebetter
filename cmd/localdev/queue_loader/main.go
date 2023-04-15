@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	mealPlanFinalizationTopic = "meal_plan_tallier"
-	mealPlanTaskCreationTopic = "meal_plan_task_creation"
+	mealPlanTallySchedulerTopic = "meal_plan_tally_scheduler"
+	mealPlanTaskCreationTopic   = "meal_plan_task_creation"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
@@ -77,15 +77,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mealPlanFinalizationTicker := time.Tick(time.Second)
-	mealPlanFinalizerPublisher, err := publisherProvider.ProviderPublisher(mealPlanFinalizationTopic)
+	mealPlanTallySchedulerTicker := time.Tick(time.Second)
+	mealPlanTallySchedulerPublisher, err := publisherProvider.ProviderPublisher(mealPlanTallySchedulerTopic)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	go func() {
-		for range mealPlanFinalizationTicker {
-			if err = mealPlanFinalizerPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType}); err != nil {
+		for range mealPlanTallySchedulerTicker {
+			if err = mealPlanTallySchedulerPublisher.Publish(ctx, &struct{}{}); err != nil {
 				log.Fatal(err)
 			}
 		}
