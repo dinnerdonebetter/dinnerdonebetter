@@ -70,6 +70,8 @@ services:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/meal_plan_tallier.Dockerfile'
     meal_plan_grocery_list_initializer:
+        logging:
+            driver: none
         container_name: meal_plan_grocery_list_initializer
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
@@ -86,6 +88,8 @@ services:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile'
     meal_plan_task_creator:
+        logging:
+            driver: none
         container_name: meal_plan_task_creator
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
@@ -102,6 +106,8 @@ services:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/meal_plan_task_creator.Dockerfile'
     prixfixe_api_server:
+        logging:
+            driver: none
         hostname: api_server
         container_name: integration_tests_server
         depends_on:
@@ -123,6 +129,8 @@ services:
               target: '/etc/config'
               type: 'bind'
     test:
+        logging:
+            driver: none
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable'
