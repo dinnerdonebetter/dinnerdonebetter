@@ -158,7 +158,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 
 			if _, authorizedForHousehold := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID]; !authorizedForHousehold {
 				logger.Info("user trying to access household they are not authorized for")
-				http.Redirect(res, req, "/", http.StatusUnauthorized)
+				http.Redirect(res, req, "/", http.StatusForbidden)
 				return
 			}
 
@@ -166,8 +166,8 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		logger.Info("no user attached to request")
-		http.Redirect(res, req, "/users/login", http.StatusUnauthorized)
+		logger.Debug("no user attached to request")
+		http.Redirect(res, req, "/users/login", http.StatusTemporaryRedirect)
 	})
 }
 
