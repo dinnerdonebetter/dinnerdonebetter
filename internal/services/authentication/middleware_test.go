@@ -373,7 +373,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 		mh := &testutils.MockHTTPHandler{}
 		helper.service.AuthorizationMiddleware(mh).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusTemporaryRedirect, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mh)
 	})
@@ -403,7 +403,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		helper.service.AuthorizationMiddleware(&testutils.MockHTTPHandler{}).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusForbidden, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 	})
 }
 
