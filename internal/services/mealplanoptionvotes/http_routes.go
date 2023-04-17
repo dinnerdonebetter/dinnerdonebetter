@@ -56,6 +56,22 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	eligible, err := s.dataManager.MealPlanEventIsEligibleForVoting(ctx, mealPlanID, mealPlanEventID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "checking event vote eligibility")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+	if !eligible {
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "meal plan event is not eligible for voting", http.StatusBadRequest)
+		return
+	}
 
 	input := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput(providedInput)
 	for i := range input.Votes {

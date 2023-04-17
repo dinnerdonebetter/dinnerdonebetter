@@ -248,6 +248,41 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 	return x, nil
 }
 
+//go:embed queries/meal_plan_events/eligible_for_voting.sql
+var mealPlanEventEligibleForVotingQuery string
+
+// MealPlanEventIsEligibleForVoting returns whether or not a meal plan can be voted on.
+func (q *Querier) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanEventID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
+	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+
+	mealPlanEventExistenceArgs := []any{
+		mealPlanID,
+		mealPlanEventID,
+	}
+
+	result, err := q.performBooleanQuery(ctx, q.db, mealPlanEventEligibleForVotingQuery, mealPlanEventExistenceArgs)
+	if err != nil {
+		return false, observability.PrepareAndLogError(err, logger, span, "performing mealPlanEvent existence check")
+	}
+
+	return result, nil
+}
+
 //go:embed queries/meal_plan_events/create.sql
 var mealPlanEventCreationQuery string
 

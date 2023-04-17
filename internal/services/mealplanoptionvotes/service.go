@@ -26,6 +26,7 @@ var _ types.MealPlanOptionVoteDataService = (*service)(nil)
 type (
 	dataManager interface {
 		types.MealPlanDataManager
+		types.MealPlanEventDataManager
 		types.MealPlanOptionDataManager
 		types.MealPlanOptionVoteDataManager
 	}

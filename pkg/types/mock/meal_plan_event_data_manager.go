@@ -15,6 +15,12 @@ type MealPlanEventDataManager struct {
 	mock.Mock
 }
 
+// MealPlanEventIsEligibleForVoting is a mock function.
+func (m *MealPlanEventDataManager) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanEventID)
+	return args.Bool(0), args.Error(1)
+}
+
 // MealPlanEventExists is a mock function.
 func (m *MealPlanEventDataManager) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error) {
 	args := m.Called(ctx, mealPlanID, mealPlanEventID)
