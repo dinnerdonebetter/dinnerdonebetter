@@ -98,6 +98,7 @@ type (
 		MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error)
 		GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*MealPlanEvent, error)
 		GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *QueryFilter) (*QueryFilteredResult[MealPlanEvent], error)
+		MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error)
 		CreateMealPlanEvent(ctx context.Context, input *MealPlanEventDatabaseCreationInput) (*MealPlanEvent, error)
 		UpdateMealPlanEvent(ctx context.Context, updated *MealPlanEvent) error
 		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error

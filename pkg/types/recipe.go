@@ -210,9 +210,13 @@ var _ validation.ValidatableWithContext = (*RecipeCreationRequestInput)(nil)
 
 // ValidateWithContext validates a RecipeCreationRequestInput.
 func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	stepIndicesMentionedInPrepTasks := map[uint32]bool{}
-
 	var errResult *multierror.Error
+
+	if len(x.Steps) < 2 {
+		errResult = multierror.Append(fmt.Errorf("recipe must have at least 2 steps"), errResult)
+	}
+
+	stepIndicesMentionedInPrepTasks := map[uint32]bool{}
 	for i, task := range x.PrepTasks {
 		for j, step := range task.TaskSteps {
 			if _, ok := stepIndicesMentionedInPrepTasks[step.BelongsToRecipeStepIndex]; ok {

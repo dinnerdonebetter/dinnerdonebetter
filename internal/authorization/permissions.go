@@ -324,6 +324,8 @@ var (
 		ReadUserPermission.ID():          ReadUserPermission,
 		SearchUserPermission.ID():        SearchUserPermission,
 
+		CreateRecipesPermission.ID(): CreateRecipesPermission,
+
 		CreateValidInstrumentsPermission.ID():  CreateValidInstrumentsPermission,
 		UpdateValidInstrumentsPermission.ID():  UpdateValidInstrumentsPermission,
 		ArchiveValidInstrumentsPermission.ID(): ArchiveValidInstrumentsPermission,
@@ -409,7 +411,6 @@ var (
 		UpdateMealsPermission.ID():  UpdateMealsPermission,
 		ArchiveMealsPermission.ID(): ArchiveMealsPermission,
 
-		CreateRecipesPermission.ID():  CreateRecipesPermission,
 		ReadRecipesPermission.ID():    ReadRecipesPermission,
 		SearchRecipesPermission.ID():  SearchRecipesPermission,
 		UpdateRecipesPermission.ID():  UpdateRecipesPermission,

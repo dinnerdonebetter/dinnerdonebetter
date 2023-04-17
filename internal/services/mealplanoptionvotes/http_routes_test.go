@@ -40,6 +40,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(true, nil)
+
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -127,6 +134,66 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
+	T.Run("without being eligible for voting", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(false, nil)
+		helper.service.dataManager = dbManager
+
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, dbManager)
+	})
+
+	T.Run("with error checking voting eligibility", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(false, errors.New("blah"))
+		helper.service.dataManager = dbManager
+
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, dbManager)
+	})
+
 	T.Run("with error writing create to database", func(t *testing.T) {
 		t.Parallel()
 
@@ -142,6 +209,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(true, nil)
+
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -171,6 +245,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(true, nil)
+
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -236,6 +317,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(true, nil)
+
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -285,6 +373,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(true, nil)
+
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -350,6 +445,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(true, nil)
+
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -410,6 +512,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanEventDataManager.On(
+			"MealPlanEventIsEligibleForVoting",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanEvent.ID,
+		).Return(true, nil)
+
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,

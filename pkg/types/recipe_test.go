@@ -23,6 +23,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			InspiredByRecipeID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
+				buildValidRecipeStepCreationRequestInput(),
 			},
 			SealOfApproval:           fake.Bool(),
 			MinimumEstimatedPortions: fake.Float32(),
