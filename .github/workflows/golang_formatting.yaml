@@ -1,10 +1,10 @@
-on:
-  pull_request:
-    paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
-      - tests/**
+on: [pull_request]
+#  pull_request:
+#    paths:
+#      - pkg/**
+#      - cmd/**
+#      - internal/**
+#      - tests/**
 name: check
 jobs:
   golang_formatting:
@@ -14,12 +14,12 @@ jobs:
         go: [ '1.20.x' ]
     steps:
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: check formatting
         run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi

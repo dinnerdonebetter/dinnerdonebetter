@@ -1,7 +1,7 @@
-on:
-  pull_request:
-    paths:
-      - environments/dev/terraform/**
+on: [pull_request]
+#  pull_request:
+#    paths:
+#      - environments/dev/terraform/**
 name: Lint Terraform code
 jobs:
   terraform:
@@ -11,10 +11,10 @@ jobs:
         go: [ '1.20.x' ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
 

@@ -1,16 +1,16 @@
-on: # [gollum]
-  pull_request:
-    paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
-      - tests/**
+on: [pull_request]
+#  pull_request:
+#    paths:
+#      - pkg/**
+#      - cmd/**
+#      - internal/**
+#      - tests/**
 name: lint
 jobs:
   golang:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - run: make lint
