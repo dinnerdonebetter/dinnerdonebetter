@@ -49,10 +49,9 @@ type (
 	}
 
 	APIResponse[T any] struct {
-		_ struct{}
-
-		Meta APIMeta `json:"meta"`
+		_    struct{}
 		Data *T      `json:"data"`
+		Meta APIMeta `json:"meta"`
 	}
 
 	// APIError represents a response we might send to the User in the event of an error.
