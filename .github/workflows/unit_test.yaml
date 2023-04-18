@@ -1,8 +1,8 @@
-on: [pull_request]
-#  pull_request:
-#    paths:
-#      - pkg/**
-#      - internal/**
+on: # [pull_request]
+  pull_request:
+    paths:
+      - pkg/**
+      - internal/**
 name: tests
 jobs:
  unit:

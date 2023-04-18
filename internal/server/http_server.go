@@ -205,24 +205,24 @@ func (s *HTTPServer) Serve() {
 	if s.config.HTTPSCertificateFile != "" && s.config.HTTPSCertificateKeyFile != "" {
 		// returns ErrServerClosed on graceful close.
 		if err := s.httpServer.ListenAndServeTLS(s.config.HTTPSCertificateFile, s.config.HTTPSCertificateKeyFile); err != nil {
-			s.logger.Error(err, "server shutting down")
-
 			if errors.Is(err, http.ErrServerClosed) {
 				// NOTE: there is a chance that next line won't have time to run,
 				// as main() doesn't wait for this goroutine to stop.
 				os.Exit(0)
 			}
+
+			s.logger.Error(err, "shutting server down")
 		}
 	} else {
 		// returns ErrServerClosed on graceful close.
 		if err := s.httpServer.ListenAndServe(); err != nil {
-			s.logger.Error(err, "server shutting down")
-
 			if errors.Is(err, http.ErrServerClosed) {
 				// NOTE: there is a chance that next line won't have time to run,
 				// as main() doesn't wait for this goroutine to stop.
 				os.Exit(0)
 			}
+
+			s.logger.Error(err, "shutting server down")
 		}
 	}
 }
