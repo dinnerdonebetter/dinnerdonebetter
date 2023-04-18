@@ -19,7 +19,7 @@ locals {
 }
 
 resource "google_pubsub_topic" "meal_plan_finalizer_topic" {
-  name = "meal_plan_task_creation_work"
+  name = "meal_plan_finalization_work"
 }
 
 resource "google_cloud_scheduler_job" "meal_plan_finalization" {
