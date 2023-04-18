@@ -250,7 +250,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 
 	prepTasks, err := q.getRecipePrepTasksForRecipe(ctx, recipeID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
+		return nil, observability.PrepareError(err, span, "fetching recipe step prep tasks for recipe")
 	}
 	x.PrepTasks = prepTasks
 
