@@ -1,4 +1,4 @@
-on: # [gollum]
+on: # [pull_request]
   pull_request:
     paths:
       - pkg/**
@@ -12,12 +12,12 @@ jobs:
    runs-on: ubuntu-latest
    steps:
      - name: Install Go
-       uses: actions/setup-go@v2
+       uses: actions/setup-go@v4
        with:
          go-version: ${{ matrix.go-version }}
 
      - name: Checkout code
-       uses: actions/checkout@v2
+       uses: actions/checkout@v3
 
      - name: Test build
        run: go build `go list ./... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
