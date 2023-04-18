@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -96,6 +97,9 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		defer span.End()
 
 		logger := s.logger.WithRequest(req).WithValue("cookie", req.Header[s.config.Cookies.Name])
+		for _, cookie := range req.Cookies() {
+			logger = logger.WithValue(fmt.Sprintf("cookie.%s", cookie.Name), cookie.Value)
+		}
 
 		// handle cookies if relevant.
 		if cookieContext, userID, err := s.getUserIDFromCookie(ctx, req); err == nil && userID != "" {
