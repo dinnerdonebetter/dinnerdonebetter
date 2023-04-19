@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
@@ -63,11 +64,15 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 
 	defer analyticsEventReporter.Close()
 
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
+	// manual db timeout until I find out what's wrong
+	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
+	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, &cfg.Database, tracerProvider)
 	if err != nil {
+		cancel()
 		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
 	}
 
+	cancel()
 	defer dataManager.Close()
 
 	if !dataManager.IsReady(ctx, 50) {

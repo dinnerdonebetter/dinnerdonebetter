@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -178,8 +179,12 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		return nil, fmt.Errorf("fetching config from secret store: %w", configFetchErr)
 	}
 
-	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
+	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil {
 		return nil, encodeErr
+	}
+
+	if cfg == nil {
+		return nil, errors.New("config is nil")
 	}
 
 	rawPort := os.Getenv(gcpPortEnvVarKey)
@@ -265,8 +270,6 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	cfg.Database.ConnectionDetails = " "
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
-	// we don't need the HouseholdInviteTemplateID here since we invoke that elsewhere
-
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
