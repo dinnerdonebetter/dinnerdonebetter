@@ -41,6 +41,19 @@ type (
 		Pagination
 	}
 
+	APIMeta struct {
+		_ struct{}
+
+		UserID      string `json:"userID"`
+		HouseholdID string `json:"householdID"`
+	}
+
+	APIResponse[T any] struct {
+		_    struct{}
+		Data *T      `json:"data"`
+		Meta APIMeta `json:"meta"`
+	}
+
 	// APIError represents a response we might send to the User in the event of an error.
 	APIError struct {
 		_ struct{}

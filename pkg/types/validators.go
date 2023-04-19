@@ -9,8 +9,7 @@ import (
 )
 
 var (
-	errInvalidType     = errors.New("unexpected type received")
-	errDurationTooLong = errors.New("duration too long")
+	errInvalidType = errors.New("unexpected type received")
 )
 
 var _ validation.Rule = (*stringDurationValidator)(nil)
@@ -31,7 +30,7 @@ func (v *stringDurationValidator) Validate(value any) error {
 	}
 
 	if d > v.maxDuration {
-		return fmt.Errorf("%w: %v", errDurationTooLong, d)
+		return fmt.Errorf("duration too long: %s", d.String())
 	}
 
 	return nil

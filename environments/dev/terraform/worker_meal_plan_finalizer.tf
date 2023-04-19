@@ -18,6 +18,10 @@ locals {
   meal_plan_finalizer_database_username = "meal_plan_finalizer_db_user"
 }
 
+resource "google_pubsub_topic" "meal_plan_finalizer_topic" {
+  name = "meal_plan_finalization_work"
+}
+
 resource "google_cloud_scheduler_job" "meal_plan_finalization" {
   project = local.project_id
   region  = local.gcp_region
@@ -27,13 +31,9 @@ resource "google_cloud_scheduler_job" "meal_plan_finalization" {
   time_zone = "America/Chicago"
 
   pubsub_target {
-    topic_name = google_pubsub_topic.meal_plan_topic.id
+    topic_name = google_pubsub_topic.meal_plan_finalizer_topic.id
     data       = base64encode("{}")
   }
-}
-
-resource "google_pubsub_topic" "meal_plan_topic" {
-  name = "meal_plan_finalization_work"
 }
 
 resource "google_storage_bucket" "meal_plan_finalizer_bucket" {
@@ -59,6 +59,12 @@ resource "google_service_account" "meal_plan_finalizer_user_service_account" {
   display_name = "Meal Plans Finalizer"
 }
 
+resource "google_project_iam_member" "meal_plan_finalizer_user" {
+  project = local.project_id
+  role    = google_project_iam_custom_role.meal_plan_finalizer_role.id
+  member  = format("serviceAccount:%s", google_service_account.meal_plan_finalizer_user_service_account.email)
+}
+
 resource "random_password" "meal_plan_finalizer_user_database_password" {
   length           = 64
   special          = true
@@ -73,22 +79,17 @@ resource "google_secret_manager_secret" "meal_plan_finalizer_user_database_passw
   }
 }
 
-resource "google_secret_manager_secret_version" "meal_plan_finalizer_user_database_password" {
-  secret = google_secret_manager_secret.meal_plan_finalizer_user_database_password.id
 
-  secret_data = random_password.meal_plan_finalizer_user_database_password.result
-}
-
-resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_user" {
+resource "google_sql_user" "meal_plan_finalizer_user" {
   name     = local.meal_plan_finalizer_database_username
   instance = google_sql_database_instance.dev.name
   password = random_password.meal_plan_finalizer_user_database_password.result
 }
 
-resource "google_project_iam_member" "meal_plan_finalizer_user" {
-  project = local.project_id
-  role    = google_project_iam_custom_role.meal_plan_finalizer_role.id
-  member  = format("serviceAccount:%s", google_service_account.meal_plan_finalizer_user_service_account.email)
+resource "google_secret_manager_secret_version" "meal_plan_finalizer_user_database_password" {
+  secret = google_secret_manager_secret.meal_plan_finalizer_user_database_password.id
+
+  secret_data = random_password.meal_plan_finalizer_user_database_password.result
 }
 
 # Permissions on the service account used by the function and Eventarc trigger
@@ -121,6 +122,14 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   name        = "meal-plan-finalizer"
   description = "Meal Plan Finalizer"
   location    = local.gcp_region
+
+  event_trigger {
+    trigger_region        = local.gcp_region
+    event_type            = local.pubsub_topic_publish_event
+    pubsub_topic          = google_pubsub_topic.meal_plan_finalizer_topic.id
+    retry_policy          = "RETRY_POLICY_RETRY"
+    service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
+  }
 
   build_config {
     runtime     = local.go_runtime
@@ -157,13 +166,5 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
       secret     = google_secret_manager_secret.api_user_database_password.secret_id
       version    = "latest"
     }
-  }
-
-  event_trigger {
-    trigger_region        = local.gcp_region
-    event_type            = local.pubsub_topic_publish_event
-    pubsub_topic          = google_pubsub_topic.meal_plan_topic.id
-    retry_policy          = "RETRY_POLICY_RETRY"
-    service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
   }
 }
