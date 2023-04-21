@@ -273,9 +273,8 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				MinimumPasswordLength: 8,
 			},
 			Users: usersservice.Config{
-				DataChangesTopicName:    dataChangesTopicName,
-				OutboundEmailsTopicName: outboundEmailsTopicName,
-				PublicMediaURLPrefix:    "https://media.prixfixe.dev/avatars",
+				DataChangesTopicName: dataChangesTopicName,
+				PublicMediaURLPrefix: "https://media.prixfixe.dev/avatars",
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
@@ -372,8 +371,7 @@ func buildDevConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfigurations{
 			Users: usersservice.Config{
-				DataChangesTopicName:    dataChangesTopicName,
-				OutboundEmailsTopicName: outboundEmailsTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
@@ -390,8 +388,7 @@ func buildDevConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				DataChangesTopicName:    dataChangesTopicName,
-				OutboundEmailsTopicName: outboundEmailsTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
@@ -579,8 +576,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfigurations{
 			Users: usersservice.Config{
-				DataChangesTopicName:    dataChangesTopicName,
-				OutboundEmailsTopicName: outboundEmailsTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
 					Debug: false,
 					Storage: objectstorage.Config{
@@ -594,8 +590,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				DataChangesTopicName:    dataChangesTopicName,
-				OutboundEmailsTopicName: outboundEmailsTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{

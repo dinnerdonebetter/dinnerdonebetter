@@ -36,9 +36,8 @@ const (
 	/* #nosec G101 */
 	gcpSegmentTokenEnvVarKey = "PRIXFIXE_SEGMENT_API_TOKEN"
 
-	outboundEmailsTopicAccessName = "outbound_emails_topic_name"
-	dataChangesTopicAccessName    = "data_changes_topic_name"
-	googleCloudCloudSQLSocket     = "/cloudsql"
+	dataChangesTopicAccessName = "data_changes_topic_name"
+	googleCloudCloudSQLSocket  = "/cloudsql"
 )
 
 // SecretVersionAccessor is an interface abstraction of the GCP Secret Manager API call we use during config hydration.
@@ -96,14 +95,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	if err != nil {
 		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)
 	}
-
-	outboundEmailsTopic, err := fetchSecretFromSecretStore(ctx, client, outboundEmailsTopicAccessName)
-	if err != nil {
-		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)
-	}
-
 	dataChangesTopicName := string(changesTopic)
-	outboundEmailsTopicName := string(outboundEmailsTopic)
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
@@ -129,9 +121,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.MealPlanTasks.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Households.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.HouseholdInvitations.OutboundEmailsTopicName = outboundEmailsTopicName
 	cfg.Services.Users.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Users.OutboundEmailsTopicName = outboundEmailsTopicName
 	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Auth.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.RecipePrepTasks.DataChangesTopicName = dataChangesTopicName

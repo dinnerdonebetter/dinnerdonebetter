@@ -45,13 +45,11 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
-			DataChangesTopicName:    "data_changes",
-			OutboundEmailsTopicName: "outbound_emails",
+			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
-		pp.On("ProviderPublisher", cfg.OutboundEmailsTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),

@@ -157,21 +157,6 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 			nil,
 		)
 
-		client.On(
-			"AccessSecretVersion",
-			testutils.ContextMatcher,
-			&secretmanagerpb.AccessSecretVersionRequest{Name: buildSecretPathForSecretStore(outboundEmailsTopicAccessName)},
-			[]gax.CallOption(nil),
-		).Return(
-			&secretmanagerpb.AccessSecretVersionResponse{
-				Name: dataChangesTopicAccessName,
-				Payload: &secretmanagerpb.SecretPayload{
-					Data: []byte("this_is_the_big_secret"),
-				},
-			},
-			nil,
-		)
-
 		cfg, err := GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx, client)
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)
