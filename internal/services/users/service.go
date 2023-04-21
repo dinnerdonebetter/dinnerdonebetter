@@ -7,12 +7,10 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/backend/internal/authentication"
-	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/objectstorage"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/internal/routing"
@@ -23,9 +21,7 @@ import (
 )
 
 const (
-	serviceName        = "users_service"
-	counterDescription = "number of users managed by the users service"
-	counterName        = metrics.CounterName("users")
+	serviceName = "users_service"
 )
 
 var _ types.UserDataService = (*service)(nil)
@@ -38,7 +34,6 @@ type (
 
 	// service handles our users.
 	service struct {
-		emailer                            email.Emailer
 		householdDataManager               types.HouseholdDataManager
 		householdUserMembershipDataManager types.HouseholdUserMembershipDataManager
 		householdInvitationDataManager     types.HouseholdInvitationDataManager
@@ -55,11 +50,12 @@ type (
 		userIDFetcher                      func(*http.Request) string
 		authSettings                       *authservice.Config
 		sessionContextDataFetcher          func(*http.Request) (*types.SessionContextData, error)
-		cfg                                Config
+		cfg                                *Config
 	}
 )
 
-var errNoConfig = errors.New("nil config provided")
+// ErrNilConfig is returned when you provide a nil configuration to the users service constructor.
+var ErrNilConfig = errors.New("nil config provided")
 
 // ProvideUsersService builds a new UsersService.
 func ProvideUsersService(
@@ -79,10 +75,9 @@ func ProvideUsersService(
 	publisherProvider messagequeue.PublisherProvider,
 	secretGenerator random.Generator,
 	passwordResetTokenDataManager types.PasswordResetTokenDataManager,
-	emailer email.Emailer,
 ) (types.UserDataService, error) {
 	if cfg == nil {
-		return nil, errNoConfig
+		return nil, ErrNilConfig
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
@@ -96,7 +91,7 @@ func ProvideUsersService(
 	}
 
 	s := &service{
-		cfg:                                *cfg,
+		cfg:                                cfg,
 		logger:                             logging.EnsureLogger(logger).WithName(serviceName),
 		userDataManager:                    userDataManager,
 		householdDataManager:               householdDataManager,
@@ -113,7 +108,6 @@ func ProvideUsersService(
 		uploadManager:                      uploadManager,
 		dataChangesPublisher:               dataChangesPublisher,
 		passwordResetTokenDataManager:      passwordResetTokenDataManager,
-		emailer:                            emailer,
 	}
 
 	return s, nil

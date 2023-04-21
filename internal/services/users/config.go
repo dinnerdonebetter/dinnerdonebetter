@@ -11,9 +11,10 @@ import (
 type (
 	// Config configures the users service.
 	Config struct {
-		DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
-		PublicMediaURLPrefix string         `json:"publicMediaURLPrefix" mapstructure:"public_media_url_prefix" toml:"public_media_url_prefix"`
-		Uploads              uploads.Config `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
+		OutboundEmailsTopicName string         `json:"outboundEmailsTopicName,omitempty" mapstructure:"outbound_emails_topic_name" toml:"outbound_emails_topic_name,omitempty"`
+		DataChangesTopicName    string         `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
+		PublicMediaURLPrefix    string         `json:"publicMediaURLPrefix" mapstructure:"public_media_url_prefix" toml:"public_media_url_prefix"`
+		Uploads                 uploads.Config `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
 	}
 )
 
@@ -25,6 +26,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		ctx,
 		cfg,
 		validation.Field(&cfg.DataChangesTopicName, validation.Required),
+		validation.Field(&cfg.OutboundEmailsTopicName, validation.Required),
 		validation.Field(&cfg.Uploads, validation.Required),
 	)
 }

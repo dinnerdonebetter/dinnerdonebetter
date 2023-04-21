@@ -46,6 +46,7 @@ type (
 		UserMembership                   *HouseholdUserMembership        `json:"userMembership,omitempty"`
 		RecipeStepCompletionCondition    *RecipeStepCompletionCondition  `json:"recipeStepCompletionCondition,omitempty"`
 		RecipeStepVessel                 *RecipeStepVessel               `json:"recipeStepVessel,omitempty"`
+		PasswordResetToken *PasswordResetToken             `json:"passwordResetToken,omitempty"`
 		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
 		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
 		UserID                           string                          `json:"userID"`

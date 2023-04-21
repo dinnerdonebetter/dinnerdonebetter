@@ -34,6 +34,7 @@ type (
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		emailer                        email.Emailer
 		secretGenerator                random.Generator
+		outboundEmailsPublisher        messagequeue.Publisher
 		dataChangesPublisher           messagequeue.Publisher
 		householdIDFetcher             func(*http.Request) string
 		householdInvitationIDFetcher   func(*http.Request) string
@@ -59,11 +60,17 @@ func ProvideHouseholdInvitationsService(
 		return nil, fmt.Errorf("setting up household invitations service data changes publisher: %w", err)
 	}
 
+	outboundEmailsPublisher, err := publisherProvider.ProviderPublisher(cfg.OutboundEmailsTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up household invitations service data changes publisher: %w", err)
+	}
+
 	s := &service{
 		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
 		userDataManager:                userDataManager,
 		householdInvitationDataManager: householdInvitationDataManager,
 		encoderDecoder:                 encoder,
+		outboundEmailsPublisher:        outboundEmailsPublisher,
 		dataChangesPublisher:           dataChangesPublisher,
 		emailer:                        emailer,
 		secretGenerator:                secretGenerator,

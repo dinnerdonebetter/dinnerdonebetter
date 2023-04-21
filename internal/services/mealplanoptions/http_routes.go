@@ -76,19 +76,17 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:       types.MealPlanDataType,
-			EventType:      types.MealPlanOptionCreatedCustomerEventType,
-			MealPlanID:     mealPlanID,
-			MealPlanOption: mealPlanOption,
-			HouseholdID:    sessionCtxData.ActiveHouseholdID,
-			UserID:         sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:       types.MealPlanDataType,
+		EventType:      types.MealPlanOptionCreatedCustomerEventType,
+		MealPlanID:     mealPlanID,
+		MealPlanOption: mealPlanOption,
+		HouseholdID:    sessionCtxData.ActiveHouseholdID,
+		UserID:         sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanOption, http.StatusCreated)
@@ -262,19 +260,17 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:       types.MealPlanOptionDataType,
-			EventType:      types.MealPlanOptionUpdatedCustomerEventType,
-			MealPlanID:     mealPlanID,
-			MealPlanOption: mealPlanOption,
-			HouseholdID:    sessionCtxData.ActiveHouseholdID,
-			UserID:         sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:       types.MealPlanOptionDataType,
+		EventType:      types.MealPlanOptionUpdatedCustomerEventType,
+		MealPlanID:     mealPlanID,
+		MealPlanOption: mealPlanOption,
+		HouseholdID:    sessionCtxData.ActiveHouseholdID,
+		UserID:         sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.
@@ -331,19 +327,17 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:         types.MealPlanOptionDataType,
-			EventType:        types.MealPlanOptionArchivedCustomerEventType,
-			MealPlanID:       mealPlanID,
-			MealPlanOptionID: mealPlanOptionID,
-			HouseholdID:      sessionCtxData.ActiveHouseholdID,
-			UserID:           sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:         types.MealPlanOptionDataType,
+		EventType:        types.MealPlanOptionArchivedCustomerEventType,
+		MealPlanID:       mealPlanID,
+		MealPlanOptionID: mealPlanOptionID,
+		HouseholdID:      sessionCtxData.ActiveHouseholdID,
+		UserID:           sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.

@@ -43,7 +43,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-// ProvideEmailer provides an emailer.
+// ProvideEmailer provides an outbound_emailer.
 func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (email.Emailer, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSendgrid:
@@ -53,7 +53,7 @@ func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.
 	case ProviderMailjet:
 		return mailjet.NewMailjetEmailer(cfg.Mailjet, logger, tracerProvider, client)
 	default:
-		logger.Debug("providing noop emailer")
+		logger.Debug("providing noop outbound_emailer")
 		return email.NewNoopEmailer()
 	}
 }

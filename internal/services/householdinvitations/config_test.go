@@ -16,7 +16,9 @@ func TestConfig_Validate(T *testing.T) {
 		ctx := context.Background()
 
 		cfg := &Config{
-			Debug: false,
+			Debug:                   false,
+			DataChangesTopicName:    "data_changes",
+			OutboundEmailsTopicName: "outbound_emails",
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

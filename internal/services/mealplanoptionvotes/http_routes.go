@@ -89,21 +89,19 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	for _, vote := range mealPlanOptionVotes {
-		if s.dataChangesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:             types.MealPlanOptionVoteDataType,
-				EventType:            types.MealPlanOptionVoteCreatedCustomerEventType,
-				MealPlanID:           mealPlanID,
-				MealPlanOptionID:     vote.BelongsToMealPlanOption,
-				MealPlanOptionVote:   vote,
-				MealPlanOptionVoteID: vote.ID,
-				HouseholdID:          sessionCtxData.ActiveHouseholdID,
-				UserID:               sessionCtxData.Requester.UserID,
-			}
+		dcm := &types.DataChangeMessage{
+			DataType:             types.MealPlanOptionVoteDataType,
+			EventType:            types.MealPlanOptionVoteCreatedCustomerEventType,
+			MealPlanID:           mealPlanID,
+			MealPlanOptionID:     vote.BelongsToMealPlanOption,
+			MealPlanOptionVote:   vote,
+			MealPlanOptionVoteID: vote.ID,
+			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			UserID:               sessionCtxData.Requester.UserID,
+		}
 
-			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-				observability.AcknowledgeError(err, logger, span, "publishing data change message about meal plan option vote")
-			}
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message about meal plan option vote")
 		}
 	}
 
@@ -348,21 +346,19 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:             types.MealPlanOptionVoteDataType,
-			EventType:            types.MealPlanOptionVoteUpdatedCustomerEventType,
-			MealPlanID:           mealPlanID,
-			MealPlanOptionID:     mealPlanOptionID,
-			MealPlanOptionVote:   mealPlanOptionVote,
-			MealPlanOptionVoteID: mealPlanOptionVote.ID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
-			UserID:               sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:             types.MealPlanOptionVoteDataType,
+		EventType:            types.MealPlanOptionVoteUpdatedCustomerEventType,
+		MealPlanID:           mealPlanID,
+		MealPlanOptionID:     mealPlanOptionID,
+		MealPlanOptionVote:   mealPlanOptionVote,
+		MealPlanOptionVoteID: mealPlanOptionVote.ID,
+		HouseholdID:          sessionCtxData.ActiveHouseholdID,
+		UserID:               sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.
@@ -424,20 +420,18 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:             types.MealPlanOptionVoteDataType,
-			EventType:            types.MealPlanOptionVoteArchivedCustomerEventType,
-			MealPlanID:           mealPlanID,
-			MealPlanOptionID:     mealPlanOptionID,
-			MealPlanOptionVoteID: mealPlanOptionVoteID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
-			UserID:               sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:             types.MealPlanOptionVoteDataType,
+		EventType:            types.MealPlanOptionVoteArchivedCustomerEventType,
+		MealPlanID:           mealPlanID,
+		MealPlanOptionID:     mealPlanOptionID,
+		MealPlanOptionVoteID: mealPlanOptionVoteID,
+		HouseholdID:          sessionCtxData.ActiveHouseholdID,
+		UserID:               sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.

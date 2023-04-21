@@ -2,12 +2,12 @@ package mealplanfinalizerfunction
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
@@ -54,7 +54,7 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	client := tracing.BuildTracedHTTPClient()
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring emailer")
+		return observability.PrepareAndLogError(err, logger, span, "configuring outbound_emailer")
 	}
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
@@ -76,7 +76,7 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	defer dataManager.Close()
 
 	if !dataManager.IsReady(ctx, 50) {
-		return observability.PrepareAndLogError(errors.New("database is not ready"), logger, span, "pinging database")
+		return observability.PrepareAndLogError(database.ErrDatabaseNotReady, logger, span, "pinging database")
 	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)

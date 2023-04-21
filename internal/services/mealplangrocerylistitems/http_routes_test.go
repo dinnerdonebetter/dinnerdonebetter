@@ -436,6 +436,14 @@ func TestMealPlanGroceryListItemsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.mealPlanGroceryListItemDataManager = mealPlanGroceryListItemDataManager
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)

@@ -11,7 +11,6 @@ import (
 
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
 	"github.com/prixfixeco/backend/internal/database"
-	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -721,6 +720,8 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, auth)
 	})
 
 	T.Run("with error generating two factor secret", func(t *testing.T) {
@@ -2527,13 +2528,13 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 			exampleInput.EmailAddress,
 		).Return(helper.exampleUser, nil)
 
-		emailer := &email.MockEmailer{}
-		emailer.On(
-			"SendEmail",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
-		helper.service.emailer = emailer
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.userDataManager = mockDB
 		helper.service.passwordResetTokenDataManager = mockDB
@@ -2542,7 +2543,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, emailer)
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
 
 	T.Run("with missing input", func(t *testing.T) {
@@ -2642,7 +2643,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
-	T.Run("with error sending email", func(t *testing.T) {
+	T.Run("with error publishing email message", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -2663,13 +2664,13 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 			exampleInput.EmailAddress,
 		).Return(helper.exampleUser, nil)
 
-		emailer := &email.MockEmailer{}
-		emailer.On(
-			"SendEmail",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
-		).Return(errors.New("blah"))
-		helper.service.emailer = emailer
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.userDataManager = mockDB
 		helper.service.passwordResetTokenDataManager = mockDB
@@ -2678,7 +2679,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, emailer)
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
 }
 
@@ -2722,13 +2723,13 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 			mock.MatchedBy(func(x *types.PasswordResetTokenDatabaseCreationInput) bool { return true }),
 		).Return(exampleToken, nil)
 
-		emailer := &email.MockEmailer{}
-		emailer.On(
-			"SendEmail",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
-		helper.service.emailer = emailer
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.userDataManager = mockDB
 		helper.service.passwordResetTokenDataManager = mockDB
@@ -2737,7 +2738,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, sg, mockDB, emailer)
+		mock.AssertExpectationsForObjects(t, sg, mockDB, dataChangesPublisher)
 	})
 
 	T.Run("with missing input", func(t *testing.T) {
@@ -2933,7 +2934,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, sg, mockDB)
 	})
 
-	T.Run("with error sending email", func(t *testing.T) {
+	T.Run("with error publishing outbound email request", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -2970,13 +2971,13 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 			mock.MatchedBy(func(x *types.PasswordResetTokenDatabaseCreationInput) bool { return true }),
 		).Return(exampleToken, nil)
 
-		emailer := &email.MockEmailer{}
-		emailer.On(
-			"SendEmail",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
-		).Return(errors.New("blah"))
-		helper.service.emailer = emailer
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.userDataManager = mockDB
 		helper.service.passwordResetTokenDataManager = mockDB
@@ -2985,7 +2986,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, sg, mockDB, emailer)
+		mock.AssertExpectationsForObjects(t, sg, mockDB, dataChangesPublisher)
 	})
 }
 
@@ -3043,13 +3044,13 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 			exampleToken.ID,
 		).Return(nil)
 
-		emailer := &email.MockEmailer{}
-		emailer.On(
-			"SendEmail",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
-		helper.service.emailer = emailer
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.userDataManager = mockDB
 		helper.service.passwordResetTokenDataManager = mockDB
@@ -3058,7 +3059,7 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, emailer)
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher, auth)
 	})
 
 	T.Run("with missing input", func(t *testing.T) {
@@ -3408,7 +3409,7 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
-	T.Run("with error sending email", func(t *testing.T) {
+	T.Run("with error publishing outbound email request", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -3459,13 +3460,13 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 			exampleToken.ID,
 		).Return(nil)
 
-		emailer := &email.MockEmailer{}
-		emailer.On(
-			"SendEmail",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
-		).Return(errors.New("blah"))
-		helper.service.emailer = emailer
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.userDataManager = mockDB
 		helper.service.passwordResetTokenDataManager = mockDB
@@ -3474,6 +3475,6 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, emailer)
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher, auth)
 	})
 }

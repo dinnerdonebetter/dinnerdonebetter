@@ -10,13 +10,17 @@ import (
 type Config struct {
 	_ struct{}
 
-	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
-	Debug                bool   `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
+	OutboundEmailsTopicName string `json:"outboundEmailsTopicName,omitempty" mapstructure:"outbound_emails_topic_name" toml:"outbound_emails_topic_name,omitempty"`
+	DataChangesTopicName    string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
+	Debug                   bool   `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
 
 // ValidateWithContext validates a Config struct.
 func (cfg Config) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(ctx, &cfg)
+	return validation.ValidateStructWithContext(ctx, &cfg,
+		validation.Field(&cfg.DataChangesTopicName, validation.Required),
+		validation.Field(&cfg.OutboundEmailsTopicName, validation.Required),
+	)
 }

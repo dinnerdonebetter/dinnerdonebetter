@@ -130,7 +130,7 @@ resource "google_cloud_run_service" "api_server" {
 
         env {
           name  = "PF_ENVIRONMENT"
-          value = "dev"
+          value = local.environment
         }
 
         env {

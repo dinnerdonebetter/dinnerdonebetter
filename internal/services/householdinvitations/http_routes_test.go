@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/prixfixeco/backend/internal/database"
-	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
@@ -76,18 +75,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		emailer := &email.MockEmailer{}
-		emailer.On(
-			"SendEmail",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
-		).Return(nil)
-		helper.service.emailer = emailer
-
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher, emailer)
+		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -364,7 +355,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
 	})
 
-	T.Run("with error sending email", func(t *testing.T) {
+	T.Run("with error publishing email request", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -410,18 +401,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		emailer := &email.MockEmailer{}
-		emailer.On(
-			"SendEmail",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
-		).Return(errors.New("blah"))
-		helper.service.emailer = emailer
-
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher, emailer)
+		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
 	})
 }
 

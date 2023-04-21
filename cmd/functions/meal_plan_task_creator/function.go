@@ -2,11 +2,11 @@ package mealplanfinalizerfunction
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
@@ -71,7 +71,7 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 	defer dataManager.Close()
 
 	if !dataManager.IsReady(ctx, 50) {
-		return observability.PrepareAndLogError(errors.New("database is not ready"), logger, span, "pinging database")
+		return observability.PrepareAndLogError(database.ErrDatabaseNotReady, logger, span, "pinging database")
 	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
