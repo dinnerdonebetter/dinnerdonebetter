@@ -24,10 +24,24 @@ resource "google_secret_manager_secret" "data_changes_topic_name" {
   }
 }
 
+resource "google_secret_manager_secret" "outbound_emails_topic_name" {
+  secret_id = "outbound_emails_topic_name"
+
+  replication {
+    automatic = true
+  }
+}
+
 resource "google_secret_manager_secret_version" "data_changes_topic_name" {
   secret = google_secret_manager_secret.data_changes_topic_name.id
 
   secret_data = google_pubsub_topic.data_changes_topic.name
+}
+
+resource "google_secret_manager_secret_version" "outbound_emails_topic_name" {
+  secret = google_secret_manager_secret.outbound_emails_topic_name.id
+
+  secret_data = google_pubsub_topic.outbound_emails_topic.name
 }
 
 # API server cookie hash key
