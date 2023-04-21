@@ -43,7 +43,7 @@ func TestProvideWebhooksService(T *testing.T) {
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		actual, err := ProvideWebhooksService(
 			logging.NewNoopLogger(),
@@ -69,7 +69,7 @@ func TestProvideWebhooksService(T *testing.T) {
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		actual, err := ProvideWebhooksService(
 			logging.NewNoopLogger(),

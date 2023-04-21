@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
@@ -20,10 +21,6 @@ import (
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
-)
-
-const (
-	outboundEmailsTopicName = "outbound_emails"
 )
 
 func init() {
@@ -82,7 +79,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	defer publisherProvider.Close()
 
-	outboundEmailsPublisher, err := publisherProvider.ProviderPublisher(outboundEmailsTopicName)
+	outboundEmailsPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("OUTBOUND_EMAILS_TOPIC_NAME"))
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}

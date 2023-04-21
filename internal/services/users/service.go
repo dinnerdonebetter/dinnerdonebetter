@@ -80,7 +80,7 @@ func ProvideUsersService(
 		return nil, ErrNilConfig
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up users service data changes publisher: %w", err)
 	}

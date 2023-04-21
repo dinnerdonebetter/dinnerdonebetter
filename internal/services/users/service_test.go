@@ -39,7 +39,7 @@ func buildTestService(t *testing.T) *service {
 	}
 
 	pp := &mockpublishers.ProducerProvider{}
-	pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	s, err := ProvideUsersService(
 		context.Background(),
@@ -94,7 +94,7 @@ func TestProvideUsersService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideUsersService(
 			context.Background(),

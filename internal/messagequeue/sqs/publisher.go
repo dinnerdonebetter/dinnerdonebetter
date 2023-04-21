@@ -97,8 +97,11 @@ func ProvideSQSPublisherProvider(logger logging.Logger, tracerProvider tracing.T
 	}
 }
 
-// ProviderPublisher returns a Publisher for a given topic.
-func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
+// ProvidePublisher returns a Publisher for a given topic.
+func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
+	if topic == "" {
+		return nil, messagequeue.ErrEmptyTopicName
+	}
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	p.publisherCacheHat.Lock()

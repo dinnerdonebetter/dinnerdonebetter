@@ -2,6 +2,7 @@ package messagequeue
 
 import (
 	"context"
+	"errors"
 )
 
 type (
@@ -14,8 +15,13 @@ type (
 	// PublisherProvider is a function that provides a Publisher for a given topic.
 	PublisherProvider interface {
 		Close()
-		ProviderPublisher(topic string) (Publisher, error)
+		ProvidePublisher(topic string) (Publisher, error)
 	}
+)
+
+var (
+	// ErrEmptyTopicName is returned when a topic name is empty.
+	ErrEmptyTopicName = errors.New("empty topic name")
 )
 
 type noopPublisher struct{}
@@ -33,8 +39,8 @@ func NewNoopPublisher() Publisher {
 
 type noopPublisherProvider struct{}
 
-// ProviderPublisher does nothing.
-func (n *noopPublisherProvider) ProviderPublisher(_ string) (Publisher, error) {
+// ProvidePublisher does nothing.
+func (n *noopPublisherProvider) ProvidePublisher(_ string) (Publisher, error) {
 	return NewNoopPublisher(), nil
 }
 

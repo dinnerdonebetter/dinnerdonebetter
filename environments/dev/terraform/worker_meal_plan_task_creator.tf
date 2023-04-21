@@ -158,6 +158,7 @@ resource "google_cloudfunctions2_function" "meal_plan_task_creator" {
       PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
       GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
+      DATA_CHANGES_TOPIC_NAME      = google_pubsub_topic.data_changes_topic.name
     }
 
     secret_environment_variables {

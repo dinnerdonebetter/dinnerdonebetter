@@ -71,7 +71,7 @@ func ProvideService(
 		hashKey = securecookie.GenerateRandomKey(cookieSecretSize)
 	}
 
-	dataChangesPublisher, publisherProviderErr := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, publisherProviderErr := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if publisherProviderErr != nil {
 		return nil, fmt.Errorf("setting up auth service data changes publisher: %w", publisherProviderErr)
 	}

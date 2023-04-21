@@ -50,7 +50,7 @@ func ProvideService(
 	featureFlagManager featureflags.FeatureFlagManager,
 	eventReporter analytics.EventReporter,
 ) (Service, error) {
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up vendor proxy service data changes publisher: %w", err)
 	}

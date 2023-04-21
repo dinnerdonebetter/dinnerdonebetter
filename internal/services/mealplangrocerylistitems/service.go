@@ -46,7 +46,7 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 ) (types.MealPlanGroceryListItemDataService, error) {
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up meal plans service data changes publisher: %w", err)
 	}

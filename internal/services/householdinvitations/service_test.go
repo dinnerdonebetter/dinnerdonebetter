@@ -49,7 +49,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),
@@ -78,7 +78,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),

@@ -3,6 +3,7 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
@@ -22,10 +23,6 @@ import (
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
-)
-
-const (
-	dataChangesTopicName = "data_changes"
 )
 
 func init() {
@@ -86,7 +83,7 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DATA_CHANGES_TOPIC_NAME"))
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}

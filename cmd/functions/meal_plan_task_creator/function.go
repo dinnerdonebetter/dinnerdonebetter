@@ -3,6 +3,7 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
+	"os"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
@@ -27,10 +28,6 @@ func init() {
 	// Register a CloudEvent function with the Functions Framework
 	functions.CloudEvent("CreateMealPlanTasks", CreateMealPlanTasks)
 }
-
-const (
-	dataChangesTopicName = "data_changes"
-)
 
 // PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
 // https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
@@ -81,7 +78,7 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DATA_CHANGES_TOPIC_NAME"))
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}

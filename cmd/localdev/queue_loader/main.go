@@ -63,7 +63,7 @@ func main() {
 	}
 
 	mealPlanFinalizationTicker := time.Tick(time.Second)
-	mealPlanFinalizerPublisher, err := publisherProvider.ProviderPublisher(mealPlanFinalizationTopic)
+	mealPlanFinalizerPublisher, err := publisherProvider.ProvidePublisher(mealPlanFinalizationTopic)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,7 +77,7 @@ func main() {
 	}()
 
 	mealPlanTaskCreationTicker := time.Tick(time.Second)
-	mealPlanTaskCreationPublisher, err := publisherProvider.ProviderPublisher(mealPlanTaskCreationTopic)
+	mealPlanTaskCreationPublisher, err := publisherProvider.ProvidePublisher(mealPlanTaskCreationTopic)
 	if err != nil {
 		log.Fatal(err)
 	}
