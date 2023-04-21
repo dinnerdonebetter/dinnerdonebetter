@@ -78,7 +78,8 @@ const (
 	testingEnv     = "testing"
 
 	// message provider topics.
-	dataChangesTopicName = "data_changes"
+	dataChangesTopicName    = "data_changes"
+	outboundEmailsTopicName = "outbound_emails"
 
 	pasetoSecretSize      = 32
 	maxAttempts           = 50
@@ -272,7 +273,9 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				MinimumPasswordLength: 8,
 			},
 			Users: usersservice.Config{
-				PublicMediaURLPrefix: "https://media.prixfixe.dev/avatars",
+				DataChangesTopicName:    dataChangesTopicName,
+				OutboundEmailsTopicName: outboundEmailsTopicName,
+				PublicMediaURLPrefix:    "https://media.prixfixe.dev/avatars",
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
@@ -369,7 +372,8 @@ func buildDevConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfigurations{
 			Users: usersservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+				DataChangesTopicName:    dataChangesTopicName,
+				OutboundEmailsTopicName: outboundEmailsTopicName,
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
@@ -386,7 +390,8 @@ func buildDevConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+				DataChangesTopicName:    dataChangesTopicName,
+				OutboundEmailsTopicName: outboundEmailsTopicName,
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
@@ -574,7 +579,8 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfigurations{
 			Users: usersservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+				DataChangesTopicName:    dataChangesTopicName,
+				OutboundEmailsTopicName: outboundEmailsTopicName,
 				Uploads: uploads.Config{
 					Debug: false,
 					Storage: objectstorage.Config{
@@ -588,7 +594,8 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+				DataChangesTopicName:    dataChangesTopicName,
+				OutboundEmailsTopicName: outboundEmailsTopicName,
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
