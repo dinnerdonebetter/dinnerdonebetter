@@ -102,7 +102,7 @@ resource "google_cloudfunctions2_function" "data_changes" {
     environment_variables = {
       GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
-      OUTBOUND_EMAILS_TOPIC_NAME      = google_pubsub_topic.outbound_emails_topic.name
+      OUTBOUND_EMAILS_TOPIC_NAME       = google_pubsub_topic.outbound_emails_topic.name
     }
 
     secret_environment_variables {
