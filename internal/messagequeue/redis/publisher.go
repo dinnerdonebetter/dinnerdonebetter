@@ -104,13 +104,13 @@ func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing
 	}
 }
 
-// ProviderPublisher returns a Publisher for a given topic.
-func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
-	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
-
+// ProvidePublisher returns a Publisher for a given topic.
+func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
 	if topic == "" {
-		return nil, ErrEmptyInputProvided
+		return nil, messagequeue.ErrEmptyTopicName
 	}
+
+	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	p.publisherCacheHat.Lock()
 	defer p.publisherCacheHat.Unlock()

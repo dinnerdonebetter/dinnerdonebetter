@@ -4,9 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
+	"github.com/prixfixeco/backend/internal/email"
+	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
@@ -69,6 +72,20 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	defer analyticsEventReporter.Close()
 
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
+	}
+
+	defer publisherProvider.Close()
+
+	outboundEmailsPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("OUTBOUND_EMAILS_TOPIC_NAME"))
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
+	}
+
+	defer outboundEmailsPublisher.Stop()
+
 	var changeMessage types.DataChangeMessage
 	if err = json.Unmarshal(msg.Message.Data, &changeMessage); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
@@ -77,16 +94,72 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	logger = logger.WithValue("event_type", changeMessage.EventType)
 
-	if changeMessage.EventType == types.UserSignedUpCustomerEventType {
+	if dataCollectionErr := analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.UserID, changeMessage.Context); dataCollectionErr != nil {
+		observability.AcknowledgeError(dataCollectionErr, logger, span, "notifying customer data platform")
+	}
+
+	switch changeMessage.EventType {
+	case types.UserSignedUpCustomerEventType:
 		if err = analyticsEventReporter.AddUser(ctx, changeMessage.UserID, changeMessage.Context); err != nil {
 			return observability.PrepareError(err, span, "notifying customer data platform")
 		}
 
-		return nil
-	}
+		break
+	case types.MealPlanCreatedCustomerEventType:
+		// TODO: handle meal plan created event
+		break
+	case types.PasswordResetTokenCreatedEventType:
+		if changeMessage.PasswordResetToken == nil {
+			return observability.PrepareError(fmt.Errorf("password reset token is nil"), span, "publishing password reset token redemption email")
+		}
 
-	if dataCollectionErr := analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.UserID, changeMessage.Context); dataCollectionErr != nil {
-		observability.AcknowledgeError(dataCollectionErr, logger, span, "notifying customer data platform")
+		edr := &email.DeliveryRequest{
+			UserID:             changeMessage.UserID,
+			Template:           email.TemplateTypePasswordReset,
+			PasswordResetToken: changeMessage.PasswordResetToken,
+		}
+		if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing password reset token redemption email")
+		}
+
+		break
+
+	case types.UsernameReminderRequestedEventType:
+		edr := &email.DeliveryRequest{
+			UserID:   changeMessage.UserID,
+			Template: email.TemplateTypeUsernameReminder,
+		}
+		if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing password reset token redemption email")
+		}
+
+		break
+
+	case types.PasswordResetTokenRedeemedEventType:
+		edr := &email.DeliveryRequest{
+			UserID:   changeMessage.UserID,
+			Template: email.TemplateTypePasswordResetTokenRedeemed,
+		}
+		if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing password reset token redemption email")
+		}
+
+		break
+	case types.HouseholdInvitationCreatedCustomerEventType:
+		if changeMessage.HouseholdInvitation == nil {
+			return observability.PrepareError(fmt.Errorf("household invitation is nil"), span, "publishing password reset token redemption email")
+		}
+
+		edr := &email.DeliveryRequest{
+			UserID:     changeMessage.UserID,
+			Template:   email.TemplateTypeInvite,
+			Invitation: changeMessage.HouseholdInvitation,
+		}
+		if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing outbound email")
+		}
+
+		break
 	}
 
 	return nil

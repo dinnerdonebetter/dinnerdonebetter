@@ -164,17 +164,15 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		if s.dataChangesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:    types.UserDataType,
-				EventType:   types.UserLoggedInCustomerEventType,
-				HouseholdID: defaultHouseholdID,
-				UserID:      user.ID,
-			}
+		dcm := &types.DataChangeMessage{
+			DataType:    types.UserDataType,
+			EventType:   types.UserLoggedInCustomerEventType,
+			HouseholdID: defaultHouseholdID,
+			UserID:      user.ID,
+		}
 
-			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-				observability.AcknowledgeError(err, logger, span, "publishing data change message")
-			}
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
 
 		http.SetCookie(res, cookie)
@@ -255,20 +253,18 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:  types.UserDataType,
-			EventType: types.UserChangedActiveHouseholdCustomerEventType,
-			Context: map[string]any{
-				"old_household_id": sessionCtxData.ActiveHouseholdID,
-			},
-			HouseholdID: householdID,
-			UserID:      sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:  types.UserDataType,
+		EventType: types.UserChangedActiveHouseholdCustomerEventType,
+		Context: map[string]any{
+			"old_household_id": sessionCtxData.ActiveHouseholdID,
+		},
+		HouseholdID: householdID,
+		UserID:      sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	logger.Info("successfully changed active session household")
@@ -324,16 +320,14 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 
 	http.SetCookie(res, newCookie)
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:  types.UserDataType,
-			EventType: types.UserLoggedOutCustomerEventType,
-			UserID:    sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:  types.UserDataType,
+		EventType: types.UserLoggedOutCustomerEventType,
+		UserID:    sessionCtxData.Requester.UserID,
+	}
 
-		if dataPublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataPublishErr != nil {
-			observability.AcknowledgeError(dataPublishErr, logger, span, "publishing data change message")
-		}
+	if dataPublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataPublishErr != nil {
+		observability.AcknowledgeError(dataPublishErr, logger, span, "publishing data change message")
 	}
 
 	logger.Debug("user logged out")

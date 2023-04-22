@@ -173,5 +173,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		require.NoError(t, os.Unsetenv(gcpPASETOLocalKeyEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpSendgridTokenEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpSegmentTokenEnvVarKey))
+
+		mock.AssertExpectationsForObjects(t, client)
 	})
 }

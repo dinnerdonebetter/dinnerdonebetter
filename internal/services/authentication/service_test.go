@@ -38,7 +38,7 @@ func buildTestService(t *testing.T) *service {
 	}
 
 	pp := &mockpublishers.ProducerProvider{}
-	pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	s, err := ProvideService(
 		logger,
@@ -75,7 +75,7 @@ func TestProvideService(T *testing.T) {
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			logger,
@@ -109,7 +109,7 @@ func TestProvideService(T *testing.T) {
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			logger,

@@ -67,17 +67,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:                       types.ValidIngredientStateIngredientDataType,
-			EventType:                      types.ValidIngredientStateIngredientCreatedCustomerEventType,
-			ValidIngredientStateIngredient: validIngredientStateIngredient,
-			UserID:                         sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:                       types.ValidIngredientStateIngredientDataType,
+		EventType:                      types.ValidIngredientStateIngredientCreatedCustomerEventType,
+		ValidIngredientStateIngredient: validIngredientStateIngredient,
+		UserID:                         sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientStateIngredient, http.StatusCreated)
@@ -219,17 +217,15 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:                       types.ValidIngredientStateIngredientDataType,
-			EventType:                      types.ValidIngredientStateIngredientUpdatedCustomerEventType,
-			ValidIngredientStateIngredient: validIngredientStateIngredient,
-			UserID:                         sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:                       types.ValidIngredientStateIngredientDataType,
+		EventType:                      types.ValidIngredientStateIngredientUpdatedCustomerEventType,
+		ValidIngredientStateIngredient: validIngredientStateIngredient,
+		UserID:                         sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.
@@ -276,16 +272,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:  types.ValidIngredientStateIngredientDataType,
-			EventType: types.ValidIngredientStateIngredientArchivedCustomerEventType,
-			UserID:    sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:  types.ValidIngredientStateIngredientDataType,
+		EventType: types.ValidIngredientStateIngredientArchivedCustomerEventType,
+		UserID:    sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.

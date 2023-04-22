@@ -69,19 +69,17 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:     types.MealPlanDataType,
-			EventType:    types.MealPlanCreatedCustomerEventType,
-			MealPlanID:   mealPlanID,
-			MealPlanTask: mealPlanTask,
-			HouseholdID:  sessionCtxData.ActiveHouseholdID,
-			UserID:       sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:     types.MealPlanDataType,
+		EventType:    types.MealPlanCreatedCustomerEventType,
+		MealPlanID:   mealPlanID,
+		MealPlanTask: mealPlanTask,
+		HouseholdID:  sessionCtxData.ActiveHouseholdID,
+		UserID:       sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanTask, http.StatusCreated)
@@ -237,19 +235,17 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:       types.MealPlanTaskDataType,
-			EventType:      types.MealPlanTaskStatusChangedCustomerEventType,
-			MealPlanTask:   mealPlanTask,
-			MealPlanTaskID: mealPlanTaskID,
-			HouseholdID:    sessionCtxData.ActiveHouseholdID,
-			UserID:         sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:       types.MealPlanTaskDataType,
+		EventType:      types.MealPlanTaskStatusChangedCustomerEventType,
+		MealPlanTask:   mealPlanTask,
+		MealPlanTaskID: mealPlanTaskID,
+		HouseholdID:    sessionCtxData.ActiveHouseholdID,
+		UserID:         sessionCtxData.Requester.UserID,
+	}
 
-		if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	s.encoderDecoder.RespondWithData(ctx, res, mealPlanTask)

@@ -118,7 +118,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer,
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	routeParamManager := chi.NewRouteParamManager()
 	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
-	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, authenticator, serverEncoderDecoder, mediaUploadProcessor, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
+	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, authenticator, serverEncoderDecoder, mediaUploadProcessor, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager)
 	if err != nil {
 		return nil, err
 	}

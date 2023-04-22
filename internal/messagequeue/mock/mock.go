@@ -30,8 +30,8 @@ type ProducerProvider struct {
 	mock.Mock
 }
 
-// ProviderPublisher implements our interface.
-func (m *ProducerProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
+// ProvidePublisher implements our interface.
+func (m *ProducerProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
 	args := m.Called(topic)
 
 	return args.Get(0).(messagequeue.Publisher), args.Error(1)

@@ -71,8 +71,12 @@ func (p *publisherProvider) Close() {
 	}
 }
 
-// ProviderPublisher returns a publisher for a given topic.
-func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
+// ProvidePublisher returns a publisher for a given topic.
+func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
+	if topic == "" {
+		return nil, messagequeue.ErrEmptyTopicName
+	}
+
 	logger := logging.EnsureLogger(p.logger.Clone())
 
 	p.publisherCacheHat.Lock()

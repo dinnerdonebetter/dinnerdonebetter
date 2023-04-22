@@ -90,7 +90,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(dataChangesTopicName)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -164,18 +164,16 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// notify interested parties.
 	tracing.AttachAPIClientDatabaseIDToSpan(span, client.ID)
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:    types.APIClientDataType,
-			EventType:   types.APIClientCreatedCustomerEventType,
-			APIClientID: client.ID,
-			HouseholdID: sessionCtxData.ActiveHouseholdID,
-			UserID:      sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:    types.APIClientDataType,
+		EventType:   types.APIClientCreatedCustomerEventType,
+		APIClientID: client.ID,
+		HouseholdID: sessionCtxData.ActiveHouseholdID,
+		UserID:      sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	resObj := &types.APIClientCreationResponse{
@@ -262,18 +260,16 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:    types.APIClientDataType,
-			EventType:   types.APIClientArchivedCustomerEventType,
-			APIClientID: apiClientID,
-			HouseholdID: sessionCtxData.ActiveHouseholdID,
-			UserID:      sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:    types.APIClientDataType,
+		EventType:   types.APIClientArchivedCustomerEventType,
+		APIClientID: apiClientID,
+		HouseholdID: sessionCtxData.ActiveHouseholdID,
+		UserID:      sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.

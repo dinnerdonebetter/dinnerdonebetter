@@ -2,12 +2,13 @@ package mealplanfinalizerfunction
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
@@ -22,10 +23,6 @@ import (
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
-)
-
-const (
-	dataChangesTopicName = "data_changes"
 )
 
 func init() {
@@ -54,7 +51,7 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	client := tracing.BuildTracedHTTPClient()
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring emailer")
+		return observability.PrepareAndLogError(err, logger, span, "configuring outbound_emailer")
 	}
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
@@ -76,7 +73,7 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	defer dataManager.Close()
 
 	if !dataManager.IsReady(ctx, 50) {
-		return observability.PrepareAndLogError(errors.New("database is not ready"), logger, span, "pinging database")
+		return observability.PrepareAndLogError(database.ErrDatabaseNotReady, logger, span, "pinging database")
 	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
@@ -86,7 +83,7 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DATA_CHANGES_TOPIC_NAME"))
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}

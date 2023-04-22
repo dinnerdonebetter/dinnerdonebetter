@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
-	"github.com/prixfixeco/backend/internal/email"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/objectstorage"
@@ -40,7 +39,7 @@ func buildTestService(t *testing.T) *service {
 	}
 
 	pp := &mockpublishers.ProducerProvider{}
-	pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	s, err := ProvideUsersService(
 		context.Background(),
@@ -59,7 +58,6 @@ func buildTestService(t *testing.T) *service {
 		pp,
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		&mocktypes.PasswordResetTokenDataManager{},
-		&email.MockEmailer{},
 	)
 
 	require.NoError(t, err)
@@ -96,7 +94,7 @@ func TestProvideUsersService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideUsersService(
 			context.Background(),
@@ -115,7 +113,6 @@ func TestProvideUsersService(T *testing.T) {
 			pp,
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&mocktypes.PasswordResetTokenDataManager{},
-			&email.MockEmailer{},
 		)
 
 		assert.NotNil(t, s)

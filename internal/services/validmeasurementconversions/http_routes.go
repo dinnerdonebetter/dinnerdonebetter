@@ -65,17 +65,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:                   types.ValidMeasurementConversionDataType,
-			EventType:                  types.ValidMeasurementConversionCreatedCustomerEventType,
-			ValidMeasurementConversion: validMeasurementConversion,
-			UserID:                     sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:                   types.ValidMeasurementConversionDataType,
+		EventType:                  types.ValidMeasurementConversionCreatedCustomerEventType,
+		ValidMeasurementConversion: validMeasurementConversion,
+		UserID:                     sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validMeasurementConversion, http.StatusCreated)
@@ -178,17 +176,15 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:                   types.ValidMeasurementConversionDataType,
-			EventType:                  types.ValidMeasurementConversionUpdatedCustomerEventType,
-			ValidMeasurementConversion: validMeasurementConversion,
-			UserID:                     sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:                   types.ValidMeasurementConversionDataType,
+		EventType:                  types.ValidMeasurementConversionUpdatedCustomerEventType,
+		ValidMeasurementConversion: validMeasurementConversion,
+		UserID:                     sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.
@@ -235,16 +231,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:  types.ValidMeasurementConversionDataType,
-			EventType: types.ValidMeasurementConversionArchivedCustomerEventType,
-			UserID:    sessionCtxData.Requester.UserID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:  types.ValidMeasurementConversionDataType,
+		EventType: types.ValidMeasurementConversionArchivedCustomerEventType,
+		UserID:    sessionCtxData.Requester.UserID,
+	}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// encode our response and peace.

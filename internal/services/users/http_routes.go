@@ -14,7 +14,6 @@ import (
 
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
-	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
@@ -237,17 +236,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// notify the relevant parties.
 	tracing.AttachUserIDToSpan(span, user.ID)
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			HouseholdID: defaultHouseholdID,
-			DataType:    types.UserDataType,
-			EventType:   types.UserSignedUpCustomerEventType,
-			UserID:      user.ID,
-		}
+	dcm := &types.DataChangeMessage{
+		HouseholdID: defaultHouseholdID,
+		DataType:    types.UserDataType,
+		EventType:   types.UserSignedUpCustomerEventType,
+		UserID:      user.ID,
+	}
 
-		if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-			observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
-		}
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
 	}
 
 	// UserCreationResponse is a struct we can use to notify the user of their two factor secret, but ideally just this once and then never again.
@@ -469,16 +466,14 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:  types.UserDataType,
-			EventType: types.TwoFactorSecretVerifiedCustomerEventType,
-			UserID:    user.ID,
-		}
+	dcm := &types.DataChangeMessage{
+		DataType:  types.UserDataType,
+		EventType: types.TwoFactorSecretVerifiedCustomerEventType,
+		UserID:    user.ID,
+	}
 
-		if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-			observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
-		}
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -767,13 +762,14 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		return
 	}
 
-	msg, emailGenerationErr := email.BuildUsernameReminderEmail(u.EmailAddress, u.Username)
-	if emailGenerationErr != nil {
-		observability.AcknowledgeError(emailGenerationErr, logger, span, "building username reminder email")
+	dcm := &types.DataChangeMessage{
+		DataType:  types.UserDataType,
+		EventType: types.UsernameReminderRequestedEventType,
+		UserID:    u.ID,
 	}
 
-	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
-		observability.AcknowledgeError(emailSendErr, logger, span, "sending username reminder email")
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -831,13 +827,15 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		return
 	}
 
-	msg, emailGenerationErr := email.BuildGeneratedPasswordResetTokenEmail(u.EmailAddress, t)
-	if emailGenerationErr != nil {
-		observability.AcknowledgeError(emailGenerationErr, logger, span, "building password reset token email")
+	dcm := &types.DataChangeMessage{
+		DataType:           types.UserDataType,
+		EventType:          types.PasswordResetTokenCreatedEventType,
+		UserID:             u.ID,
+		PasswordResetToken: t,
 	}
 
-	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
-		observability.AcknowledgeError(emailSendErr, logger, span, "sending password reset token email")
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -909,13 +907,14 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		return
 	}
 
-	msg, emailGenerationErr := email.BuildPasswordResetTokenRedeemedEmail(u.EmailAddress)
-	if emailGenerationErr != nil {
-		observability.AcknowledgeError(emailGenerationErr, logger, span, "building password reset token redemption email")
+	dcm := &types.DataChangeMessage{
+		DataType:  types.UserDataType,
+		EventType: types.PasswordResetTokenRedeemedEventType,
+		UserID:    t.BelongsToUser,
 	}
 
-	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
-		observability.AcknowledgeError(emailSendErr, logger, span, "sending password reset token redemption email")
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)

@@ -78,7 +78,8 @@ const (
 	testingEnv     = "testing"
 
 	// message provider topics.
-	dataChangesTopicName = "data_changes"
+	dataChangesTopicName    = "data_changes"
+	outboundEmailsTopicName = "outbound_emails"
 
 	pasetoSecretSize      = 32
 	maxAttempts           = 50
@@ -272,6 +273,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				MinimumPasswordLength: 8,
 			},
 			Users: usersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
 				PublicMediaURLPrefix: "https://media.prixfixe.dev/avatars",
 				Uploads: uploads.Config{
 					Debug: true,

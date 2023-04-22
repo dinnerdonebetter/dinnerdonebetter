@@ -3,39 +3,55 @@ package email
 import (
 	"bytes"
 	_ "embed"
+	"errors"
 	"fmt"
 	"html/template"
-	"os"
 	"sync"
 
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
-const defaultEnv = "testing"
+const (
+	companyName = "PrixFixe"
 
-var (
-	urlMapHat sync.Mutex
-	urlMap    = map[string]string{
-		"dev":      "https://www.prixfixe.dev",
-		defaultEnv: "https://not.real.lol",
+	defaultEnv = "testing"
+
+	// SentEventType indicates a recipe step was created.
+	SentEventType types.CustomerEventType = "email_sent"
+
+	// TemplateTypeInvite is used to indicate the invite template.
+	TemplateTypeInvite = "invite"
+	// TemplateTypeUsernameReminder is used to indicate the username_reminder template.
+	TemplateTypeUsernameReminder = "username_reminder"
+	// TemplateTypePasswordReset is used to indicate the password_reset template.
+	TemplateTypePasswordReset = "password_reset"
+	// TemplateTypePasswordResetTokenRedeemed is used to indicate the password_reset_token_redeemed template.
+	TemplateTypePasswordResetTokenRedeemed = "password_reset_token_redeemed"
+)
+
+type (
+	// DeliveryRequest is the type to use when requesting emails within the service.
+	DeliveryRequest struct {
+		_                  struct{}
+		TemplateParams     map[string]any             `json:"templateParams"`
+		Invitation         *types.HouseholdInvitation `json:"invitation,omitempty"`
+		PasswordResetToken *types.PasswordResetToken  `json:"passwordResetToken,omitempty"`
+		UserID             string                     `json:"forUserId"`
+		Template           string                     `json:"template"`
 	}
 
-	emailsMapHat sync.Mutex
-	emailsMap    = map[string]struct{ outboundInvites, passwordResetCreation, passwordResetRedemption string }{
-		"dev": {
-			outboundInvites:         "invites@prixfixe.dev",
-			passwordResetCreation:   "noreply.auth@prixfixe.dev",
-			passwordResetRedemption: "noreply.auth@prixfixe.dev",
-		},
-		defaultEnv: {
-			outboundInvites:         "not@real.lol",
-			passwordResetCreation:   "not@real.lol",
-			passwordResetRedemption: "not@real.lol",
-		},
+	// EnvironmentConfig is the configuration for a given environment.
+	EnvironmentConfig struct {
+		baseURL,
+		outboundInvitesEmailAddress,
+		passwordResetCreationEmailAddress,
+		passwordResetRedemptionEmailAddress string
 	}
 )
 
 var (
+	ErrMissingEnvCfg = errors.New("missing environment configuration")
+
 	//go:embed templates/invite.tmpl
 	outgoingInviteTemplate string
 	//go:embed templates/username_reminder.tmpl
@@ -44,15 +60,49 @@ var (
 	passwordResetTemplate string
 	//go:embed templates/password_reset_token_redeemed.tmpl
 	passwordResetTokenRedeemedTemplate string
+
+	envConfigsMapHat sync.Mutex
+	envConfigsMap    = map[string]*EnvironmentConfig{
+		"dev": {
+			baseURL:                             "https://www.prixfixe.dev",
+			outboundInvitesEmailAddress:         "invites@prixfixe.dev",
+			passwordResetCreationEmailAddress:   "noreply.auth@prixfixe.dev",
+			passwordResetRedemptionEmailAddress: "noreply.auth@prixfixe.dev",
+		},
+		defaultEnv: {
+			baseURL:                             "https://not.real.lol",
+			outboundInvitesEmailAddress:         "not@real.lol",
+			passwordResetCreationEmailAddress:   "not@real.lol",
+			passwordResetRedemptionEmailAddress: "not@real.lol",
+		},
+	}
 )
 
-func determineEnv() string {
-	env := os.Getenv("PF_ENVIRONMENT")
-	if env == "" {
-		env = defaultEnv
-	}
+// BaseURL returns the BaseURL field.
+func (c *EnvironmentConfig) BaseURL() string {
+	return c.baseURL
+}
 
-	return env
+// OutboundInvitesEmailAddress returns the OutboundInvitesEmailAddress field.
+func (c *EnvironmentConfig) OutboundInvitesEmailAddress() string {
+	return c.outboundInvitesEmailAddress
+}
+
+// PasswordResetCreationEmailAddress returns the PasswordResetCreationEmailAddress field.
+func (c *EnvironmentConfig) PasswordResetCreationEmailAddress() string {
+	return c.passwordResetCreationEmailAddress
+}
+
+// PasswordResetRedemptionEmailAddress returns the PasswordResetRedemptionEmailAddress field.
+func (c *EnvironmentConfig) PasswordResetRedemptionEmailAddress() string {
+	return c.passwordResetRedemptionEmailAddress
+}
+
+func GetConfigForEnvironment(env string) *EnvironmentConfig {
+	envConfigsMapHat.Lock()
+	defer envConfigsMapHat.Unlock()
+
+	return envConfigsMap[env]
 }
 
 type inviteContent struct {
@@ -63,25 +113,13 @@ type inviteContent struct {
 }
 
 // BuildInviteMemberEmail builds an email notifying a user that they've been invited to join a household.
-func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*OutboundEmailMessage, error) {
-	env := determineEnv()
-
-	urlMapHat.Lock()
-	envAddr, ok := urlMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available URL for environment")
+func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+	if envCfg == nil {
+		return nil, ErrMissingEnvCfg
 	}
-	urlMapHat.Unlock()
-
-	emailsMapHat.Lock()
-	emails, ok := emailsMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available email for environment")
-	}
-	emailsMapHat.Unlock()
 
 	content := &inviteContent{
-		WebAppURL:    envAddr,
+		WebAppURL:    envCfg.baseURL,
 		Token:        householdInvitation.Token,
 		InvitationID: householdInvitation.ID,
 		Note:         householdInvitation.Note,
@@ -96,9 +134,9 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*Ou
 	msg := &OutboundEmailMessage{
 		ToAddress:   householdInvitation.ToEmail,
 		ToName:      "",
-		FromAddress: emails.outboundInvites,
-		FromName:    "PrixFixe",
-		Subject:     "You've been invited to join a household on PrixFixe!",
+		FromAddress: envCfg.outboundInvitesEmailAddress,
+		FromName:    companyName,
+		Subject:     fmt.Sprintf("You've been invited to join a household on %s!", companyName),
 		HTMLContent: b.String(),
 	}
 
@@ -111,25 +149,13 @@ type resetContent struct {
 }
 
 // BuildGeneratedPasswordResetTokenEmail builds an email notifying a user that they've been invited to join a household.
-func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *types.PasswordResetToken) (*OutboundEmailMessage, error) {
-	env := determineEnv()
-
-	urlMapHat.Lock()
-	envAddr, ok := urlMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available URL for environment")
+func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *types.PasswordResetToken, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+	if envCfg == nil {
+		return nil, ErrMissingEnvCfg
 	}
-	urlMapHat.Unlock()
-
-	emailsMapHat.Lock()
-	emails, ok := emailsMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available email for environment")
-	}
-	emailsMapHat.Unlock()
 
 	content := &resetContent{
-		WebAppURL: envAddr,
+		WebAppURL: envCfg.BaseURL(),
 		Token:     passwordResetToken.Token,
 	}
 
@@ -142,9 +168,9 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
 		ToName:      "",
-		FromAddress: emails.passwordResetCreation,
-		FromName:    "PrixFixe",
-		Subject:     "A password reset link was requested for your PrixFixe account",
+		FromAddress: envCfg.passwordResetCreationEmailAddress,
+		FromName:    companyName,
+		Subject:     fmt.Sprintf("A password reset link was requested for your %s account", companyName),
 		HTMLContent: b.String(),
 	}
 
@@ -157,25 +183,13 @@ type usernameReminderContent struct {
 }
 
 // BuildUsernameReminderEmail builds an email notifying a user that they've been invited to join a household.
-func BuildUsernameReminderEmail(toEmail, username string) (*OutboundEmailMessage, error) {
-	env := determineEnv()
-
-	urlMapHat.Lock()
-	envAddr, ok := urlMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available URL for environment")
+func BuildUsernameReminderEmail(toEmail, username string, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+	if envCfg == nil {
+		return nil, ErrMissingEnvCfg
 	}
-	urlMapHat.Unlock()
-
-	emailsMapHat.Lock()
-	emails, ok := emailsMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available email for environment")
-	}
-	emailsMapHat.Unlock()
 
 	content := &usernameReminderContent{
-		WebAppURL: envAddr,
+		WebAppURL: envCfg.baseURL,
 		Username:  username,
 	}
 
@@ -187,10 +201,9 @@ func BuildUsernameReminderEmail(toEmail, username string) (*OutboundEmailMessage
 
 	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
-		ToName:      "",
-		FromAddress: emails.passwordResetCreation,
-		FromName:    "PrixFixe",
-		Subject:     "A password reset link was requested for your PrixFixe account",
+		FromAddress: envCfg.passwordResetCreationEmailAddress,
+		FromName:    companyName,
+		Subject:     fmt.Sprintf("A password reset link was requested for your %s account", companyName),
 		HTMLContent: b.String(),
 	}
 
@@ -202,25 +215,13 @@ type redemptionContent struct {
 }
 
 // BuildPasswordResetTokenRedeemedEmail builds an email notifying a user that they've been invited to join a household.
-func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundEmailMessage, error) {
-	env := determineEnv()
-
-	urlMapHat.Lock()
-	envAddr, ok := urlMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available URL for environment")
+func BuildPasswordResetTokenRedeemedEmail(toEmail string, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+	if envCfg == nil {
+		return nil, ErrMissingEnvCfg
 	}
-	urlMapHat.Unlock()
-
-	emailsMapHat.Lock()
-	emails, ok := emailsMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available email for environment")
-	}
-	emailsMapHat.Unlock()
 
 	content := &redemptionContent{
-		WebAppURL: envAddr,
+		WebAppURL: envCfg.baseURL,
 	}
 
 	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(passwordResetTokenRedeemedTemplate))
@@ -231,10 +232,9 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundEmailMessage
 
 	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
-		ToName:      "",
-		FromAddress: emails.passwordResetRedemption,
-		FromName:    "PrixFixe",
-		Subject:     "Your PrixFixe account password has been changed.",
+		FromAddress: envCfg.passwordResetRedemptionEmailAddress,
+		FromName:    companyName,
+		Subject:     fmt.Sprintf("Your %s account password has been changed.", companyName),
 		HTMLContent: b.String(),
 	}
 

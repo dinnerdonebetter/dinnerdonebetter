@@ -143,11 +143,14 @@ resource "google_cloudfunctions2_function" "meal_plan_grocery_list_initializer" 
       # TODO: use the meal_plan_grocery_list_initializer_user for this, currently it has permission denied for accessing tables
       # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
       # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
-      PRIXFIXE_DATABASE_USER                     = google_sql_user.api_user.name,
-      PRIXFIXE_DATABASE_NAME                     = local.database_name,
+      PRIXFIXE_DATABASE_USER = google_sql_user.api_user.name,
+      PRIXFIXE_DATABASE_NAME = local.database_name,
+      // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
+      // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
       PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
       GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
+      DATA_CHANGES_TOPIC_NAME                    = google_pubsub_topic.data_changes_topic.name
     }
 
     secret_environment_variables {

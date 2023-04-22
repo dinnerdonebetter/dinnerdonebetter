@@ -60,7 +60,7 @@ func ProvideService(
 		return nil, errors.New("nil config provided to recipe steps service")
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up recipe steps service data changes publisher: %w", err)
 	}

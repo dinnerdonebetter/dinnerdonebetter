@@ -91,17 +91,16 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
 
-	changesTopic, dataChangesNameFetchErr := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
-	if dataChangesNameFetchErr != nil {
-		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", dataChangesNameFetchErr)
+	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
+	if err != nil {
+		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)
 	}
-
 	dataChangesTopicName := string(changesTopic)
-	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 
+	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName

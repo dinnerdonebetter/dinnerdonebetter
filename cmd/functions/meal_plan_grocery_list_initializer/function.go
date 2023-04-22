@@ -2,11 +2,12 @@ package mealplanfinalizerfunction
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"os"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
+	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	"github.com/prixfixeco/backend/internal/features/grocerylistpreparation"
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
@@ -22,10 +23,6 @@ import (
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
-)
-
-const (
-	dataChangesTopicName = "data_changes"
 )
 
 func init() {
@@ -66,7 +63,7 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event)
 	defer dataManager.Close()
 
 	if !dataManager.IsReady(ctx, 50) {
-		return observability.PrepareAndLogError(errors.New("database is not ready"), logger, span, "pinging database")
+		return observability.PrepareAndLogError(database.ErrDatabaseNotReady, logger, span, "pinging database")
 	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
@@ -76,7 +73,7 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event)
 
 	defer publisherProvider.Close()
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("DATA_CHANGES_TOPIC_NAME"))
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
 	}

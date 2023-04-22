@@ -39,7 +39,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
-		a, err := provider.ProviderPublisher(t.Name())
+		a, err := provider.ProvidePublisher(t.Name())
 		assert.NotNil(t, a)
 		assert.NoError(t, err)
 
@@ -80,7 +80,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
-		a, err := provider.ProviderPublisher(t.Name())
+		a, err := provider.ProvidePublisher(t.Name())
 		assert.NotNil(t, a)
 		assert.NoError(t, err)
 
@@ -115,7 +115,7 @@ func TestProvideRedisPublisherProvider(T *testing.T) {
 	})
 }
 
-func Test_publisherProvider_ProviderPublisher(T *testing.T) {
+func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -129,7 +129,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
-		actual, err := provider.ProviderPublisher(t.Name())
+		actual, err := provider.ProvidePublisher(t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})
@@ -145,11 +145,11 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
-		actual, err := provider.ProviderPublisher(t.Name())
+		actual, err := provider.ProvidePublisher(t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
-		actual, err = provider.ProviderPublisher(t.Name())
+		actual, err = provider.ProvidePublisher(t.Name())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})
