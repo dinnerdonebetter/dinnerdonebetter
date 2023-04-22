@@ -39,14 +39,14 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		Slug:                                    buildUniqueString(),
 		ContainsAlcohol:                         fake.Bool(),
 		ShoppingSuggestions:                     buildUniqueString(),
-		//IsStarch: fake.Bool(),
-		//IsProtein: fake.Bool(),
-		//IsGrain: fake.Bool(),
-		//IsFruit: fake.Bool(),
-		//IsSalt: fake.Bool(),
-		//IsFat: fake.Bool(),
-		//IsAcid: fake.Bool(),
-		//IsHeat: fake.Bool(),
+		IsStarch:                                fake.Bool(),
+		IsProtein:                               fake.Bool(),
+		IsGrain:                                 fake.Bool(),
+		IsFruit:                                 fake.Bool(),
+		IsSalt:                                  fake.Bool(),
+		IsFat:                                   fake.Bool(),
+		IsAcid:                                  fake.Bool(),
+		IsHeat:                                  fake.Bool(),
 	}
 }
 

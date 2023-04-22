@@ -43,6 +43,14 @@ var (
 		"valid_ingredients.slug",
 		"valid_ingredients.contains_alcohol",
 		"valid_ingredients.shopping_suggestions",
+		"valid_ingredients.is_starch",
+		"valid_ingredients.is_protein",
+		"valid_ingredients.is_grain",
+		"valid_ingredients.is_fruit",
+		"valid_ingredients.is_salt",
+		"valid_ingredients.is_fat",
+		"valid_ingredients.is_acid",
+		"valid_ingredients.is_heat",
 		"valid_ingredients.created_at",
 		"valid_ingredients.last_updated_at",
 		"valid_ingredients.archived_at",
@@ -84,6 +92,14 @@ func (q *Querier) scanValidIngredient(ctx context.Context, scan database.Scanner
 		&x.Slug,
 		&x.ContainsAlcohol,
 		&x.ShoppingSuggestions,
+		&x.IsStarch,
+		&x.IsProtein,
+		&x.IsGrain,
+		&x.IsFruit,
+		&x.IsSalt,
+		&x.IsFat,
+		&x.IsAcid,
+		&x.IsHeat,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -403,6 +419,14 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 		input.Slug,
 		input.ContainsAlcohol,
 		input.ShoppingSuggestions,
+		input.IsStarch,
+		input.IsProtein,
+		input.IsGrain,
+		input.IsFruit,
+		input.IsSalt,
+		input.IsFat,
+		input.IsAcid,
+		input.IsHeat,
 	}
 
 	// create the valid ingredient.
@@ -431,6 +455,14 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 		IconPath:                                input.IconPath,
 		AnimalDerived:                           input.AnimalDerived,
 		PluralName:                              input.PluralName,
+		IsStarch:                                input.IsStarch,
+		IsProtein:                               input.IsProtein,
+		IsGrain:                                 input.IsGrain,
+		IsFruit:                                 input.IsFruit,
+		IsSalt:                                  input.IsSalt,
+		IsFat:                                   input.IsFat,
+		IsAcid:                                  input.IsAcid,
+		IsHeat:                                  input.IsHeat,
 		RestrictToPreparations:                  input.RestrictToPreparations,
 		MinimumIdealStorageTemperatureInCelsius: input.MinimumIdealStorageTemperatureInCelsius,
 		MaximumIdealStorageTemperatureInCelsius: input.MaximumIdealStorageTemperatureInCelsius,
@@ -489,6 +521,14 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 		updated.Slug,
 		updated.ContainsAlcohol,
 		updated.ShoppingSuggestions,
+		updated.IsStarch,
+		updated.IsProtein,
+		updated.IsGrain,
+		updated.IsFruit,
+		updated.IsSalt,
+		updated.IsFat,
+		updated.IsAcid,
+		updated.IsHeat,
 		updated.ID,
 	}
 
@@ -522,7 +562,7 @@ func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID 
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient archive", archiveValidIngredientQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient")
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
 	}
 
 	logger.Info("valid ingredient archived")

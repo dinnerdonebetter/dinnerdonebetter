@@ -40,66 +40,62 @@ func init() {
 type (
 	// RecipePrepTask represents a recipe prep task.
 	RecipePrepTask struct {
-		_ struct{}
-
+		_                                      struct{}
 		CreatedAt                              time.Time             `json:"createdAt"`
+		MaximumStorageTemperatureInCelsius     *float32              `json:"maximumStorageTemperatureInCelsius"`
 		ArchivedAt                             *time.Time            `json:"archivedAt"`
 		LastUpdatedAt                          *time.Time            `json:"lastUpdatedAt"`
-		Notes                                  string                `json:"notes"`
-		ExplicitStorageInstructions            string                `json:"explicitStorageInstructions"`
+		MinimumStorageTemperatureInCelsius     *float32              `json:"minimumStorageTemperatureInCelsius"`
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32               `json:"maximumTimeBufferBeforeRecipeInSeconds"`
 		StorageType                            string                `json:"storageType"`
-		BelongsToRecipe                        string                `json:"belongsToRecipe"`
 		ID                                     string                `json:"id"`
+		BelongsToRecipe                        string                `json:"belongsToRecipe"`
+		ExplicitStorageInstructions            string                `json:"explicitStorageInstructions"`
+		Notes                                  string                `json:"notes"`
 		TaskSteps                              []*RecipePrepTaskStep `json:"recipeSteps"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
-		MaximumStorageTemperatureInCelsius     *float32              `json:"maximumStorageTemperatureInCelsius"`     // TODO: make pointers
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32               `json:"maximumTimeBufferBeforeRecipeInSeconds"` // TODO: make pointers
-		MinimumStorageTemperatureInCelsius     *float32              `json:"minimumStorageTemperatureInCelsius"`     // TODO: make pointers
 	}
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskCreationRequestInput struct {
-		_ struct{}
-
+		_                                      struct{}
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                   `json:"maximumTimeBufferBeforeRecipeInSeconds"`
+		MinimumStorageTemperatureInCelsius     *float32                                  `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius     *float32                                  `json:"maximumStorageTemperatureInCelsius"`
 		Notes                                  string                                    `json:"notes"`
 		ExplicitStorageInstructions            string                                    `json:"explicitStorageInstructions"`
 		StorageType                            string                                    `json:"storageType"`
 		BelongsToRecipe                        string                                    `json:"belongsToRecipe"`
 		TaskSteps                              []*RecipePrepTaskStepCreationRequestInput `json:"recipeSteps"`
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                   `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     *float32                                  `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius     *float32                                  `json:"maximumStorageTemperatureInCelsius"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                                    `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 	}
 
 	// RecipePrepTaskWithinRecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskWithinRecipeCreationRequestInput struct {
-		_ struct{}
-
+		_                                      struct{}
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                               `json:"maximumTimeBufferBeforeRecipeInSeconds"`
+		MinimumStorageTemperatureInCelsius     *float32                                              `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius     *float32                                              `json:"maximumStorageTemperatureInCelsius"`
 		Notes                                  string                                                `json:"notes"`
 		ExplicitStorageInstructions            string                                                `json:"explicitStorageInstructions"`
 		StorageType                            string                                                `json:"storageType"`
 		BelongsToRecipe                        string                                                `json:"belongsToRecipe"`
 		TaskSteps                              []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps"`
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                               `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     *float32                                              `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius     *float32                                              `json:"maximumStorageTemperatureInCelsius"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                                                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 	}
 
 	// RecipePrepTaskDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskDatabaseCreationInput struct {
-		_ struct{}
-
+		_                                      struct{}
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32
+		MinimumStorageTemperatureInCelsius     *float32
+		MaximumStorageTemperatureInCelsius     *float32
 		ID                                     string
 		Notes                                  string
 		ExplicitStorageInstructions            string
 		StorageType                            string
 		BelongsToRecipe                        string
 		TaskSteps                              []*RecipePrepTaskStepDatabaseCreationInput
-		MaximumTimeBufferBeforeRecipeInSeconds *uint32
-		MinimumStorageTemperatureInCelsius     *float32
-		MaximumStorageTemperatureInCelsius     *float32
 		MinimumTimeBufferBeforeRecipeInSeconds uint32
 	}
 
