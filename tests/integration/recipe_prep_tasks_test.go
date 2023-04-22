@@ -80,7 +80,7 @@ func (s *TestSuite) TestRecipePrepTasks_CompleteLifecycle() {
 			newRecipePrepTask.BelongsToRecipe = createdRecipe.ID
 			newRecipePrepTask.TaskSteps = actual.TaskSteps
 			actual.Update(converters.ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(newRecipePrepTask))
-			require.NoError(t, testClients.user.UpdateRecipePrepTask(ctx, actual))
+			require.NoError(t, testClients.admin.UpdateRecipePrepTask(ctx, actual))
 
 			t.Log("fetching changed recipe prep task")
 			actual, err := testClients.user.GetRecipePrepTask(ctx, createdRecipe.ID, actual.ID)
@@ -131,12 +131,12 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 
 				exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-				createdRecipePrepTask, err := testClients.user.CreateRecipePrepTask(ctx, exampleInput)
+				createdRecipePrepTask, err := testClients.admin.CreateRecipePrepTask(ctx, exampleInput)
 				requireNotNilAndNoProblems(t, createdRecipePrepTask, err)
 
 				exampleRecipePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(exampleRecipePrepTask)
 
-				createdRecipePrepTask, createdRecipePrepTaskErr := testClients.user.CreateRecipePrepTask(ctx, exampleRecipePrepTaskInput)
+				createdRecipePrepTask, createdRecipePrepTaskErr := testClients.admin.CreateRecipePrepTask(ctx, exampleRecipePrepTaskInput)
 				require.NoError(t, createdRecipePrepTaskErr)
 				t.Logf("recipe prep task %q created", createdRecipePrepTask.ID)
 

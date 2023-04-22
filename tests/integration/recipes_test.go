@@ -370,7 +370,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				},
 			}
 
-			created, err := testClients.user.CreateRecipe(ctx, expectedInput)
+			created, err := testClients.admin.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
@@ -406,7 +406,7 @@ func (s *TestSuite) TestRecipes_Updating() {
 			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
-			assert.NoError(t, testClients.user.UpdateRecipe(ctx, createdRecipe))
+			assert.NoError(t, testClients.admin.UpdateRecipe(ctx, createdRecipe))
 
 			t.Log("fetching changed recipe")
 			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
@@ -435,7 +435,7 @@ func (s *TestSuite) TestRecipes_ContentUploading() {
 			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
-			assert.NoError(t, testClients.user.UpdateRecipe(ctx, createdRecipe))
+			assert.NoError(t, testClients.admin.UpdateRecipe(ctx, createdRecipe))
 
 			t.Log("fetching changed recipe")
 			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
@@ -527,7 +527,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+				assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
 		}
 	})
@@ -591,7 +591,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 
 			t.Log("cleaning up")
 			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+				assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
 		}
 	})
@@ -778,7 +778,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 				},
 			}
 
-			created, err := testClients.user.CreateRecipe(ctx, expectedInput)
+			created, err := testClients.admin.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)

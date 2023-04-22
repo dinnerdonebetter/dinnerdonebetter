@@ -56,7 +56,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			updateInput := converters.ConvertRecipeStepToRecipeStepUpdateRequestInput(newRecipeStep)
 			updateInput.Preparation = createdValidPreparation
 			createdRecipeStep.Update(updateInput)
-			assert.NoError(t, testClients.user.UpdateRecipeStep(ctx, createdRecipeStep))
+			assert.NoError(t, testClients.admin.UpdateRecipeStep(ctx, createdRecipeStep))
 
 			t.Log("fetching changed recipe step")
 			actual, err := testClients.user.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
@@ -181,7 +181,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStepInput := converters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)
 				exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
 
-				createdRecipeStep, createdRecipeStepErr := testClients.user.CreateRecipeStep(ctx, createdRecipe.ID, exampleRecipeStepInput)
+				createdRecipeStep, createdRecipeStepErr := testClients.admin.CreateRecipeStep(ctx, createdRecipe.ID, exampleRecipeStepInput)
 				require.NoError(t, createdRecipeStepErr)
 				t.Logf("recipe step %q created", createdRecipeStep.ID)
 

@@ -52,13 +52,13 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			}
 
 			t.Log("fetching recipe step completion condition")
-			createdRecipeStepCompletionCondition, err := testClients.user.CreateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, input)
+			createdRecipeStepCompletionCondition, err := testClients.admin.CreateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, input)
 			requireNotNilAndNoProblems(t, createdRecipeStepCompletionCondition, err)
 
 			t.Log("changing recipe step completion condition")
 			createdRecipeStepCompletionCondition.Notes = t.Name() + " updated"
 
-			require.NoError(t, testClients.user.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
+			require.NoError(t, testClients.admin.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
 
 			t.Log("fetching changed recipe step completion condition")
 			actual, err := testClients.user.GetRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID)

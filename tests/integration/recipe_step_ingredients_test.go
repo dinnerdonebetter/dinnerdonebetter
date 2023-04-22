@@ -76,7 +76,7 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 
 			createdRecipeStepIngredient.Update(converters.ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(newRecipeStepIngredient))
 
-			require.NoError(t, testClients.user.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
+			require.NoError(t, testClients.admin.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
 
 			t.Log("fetching changed recipe step ingredient")
 			actual, err := testClients.user.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
@@ -139,7 +139,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 				exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 
 				exampleRecipeStepIngredientInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
-				createdRecipeStepIngredient, createdRecipeStepIngredientErr := testClients.user.CreateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepIngredientInput)
+				createdRecipeStepIngredient, createdRecipeStepIngredientErr := testClients.admin.CreateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepIngredientInput)
 				require.NoError(t, createdRecipeStepIngredientErr)
 
 				t.Logf("recipe step ingredient %q created", createdRecipeStepIngredient.ID)

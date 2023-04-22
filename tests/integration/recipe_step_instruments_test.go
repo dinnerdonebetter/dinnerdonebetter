@@ -61,7 +61,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepInstrument.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
 			exampleRecipeStepInstrumentInput := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
-			createdRecipeStepInstrument, err := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepInstrumentInput)
+			createdRecipeStepInstrument, err := testClients.admin.CreateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("recipe step instrument %q created", createdRecipeStepInstrument.ID)
 
@@ -88,7 +88,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			newRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepInstrument.Instrument = newValidInstrument
 			createdRecipeStepInstrument.Update(converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(newRecipeStepInstrument))
-			assert.NoError(t, testClients.user.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
+			assert.NoError(t, testClients.admin.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
 
 			t.Log("fetching changed recipe step instrument")
 			actual, err := testClients.user.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrument.ID)
@@ -245,7 +245,7 @@ func (s *TestSuite) TestRecipeStepInstruments_AsRecipeStepProducts() {
 			exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepIndex = pointers.Pointer(uint64(0))
 			exampleRecipeInput.Steps[1].Instruments[0].ProductOfRecipeStepProductIndex = pointers.Pointer(uint64(0))
 
-			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
+			created, err := testClients.admin.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
@@ -299,7 +299,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 				exampleRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepInstrument.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
 				exampleRecipeStepInstrumentInput := converters.ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(exampleRecipeStepInstrument)
-				createdRecipeStepInstrument, createdRecipeStepInstrumentErr := testClients.user.CreateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepInstrumentInput)
+				createdRecipeStepInstrument, createdRecipeStepInstrumentErr := testClients.admin.CreateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepInstrumentInput)
 				require.NoError(t, createdRecipeStepInstrumentErr)
 				t.Logf("recipe step instrument %q created", createdRecipeStepInstrument.ID)
 				checkRecipeStepInstrumentEquality(t, exampleRecipeStepInstrument, createdRecipeStepInstrument, false)
