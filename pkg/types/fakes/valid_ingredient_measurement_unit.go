@@ -16,7 +16,7 @@ func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurement
 		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
 		Ingredient:               *BuildFakeValidIngredient(),
 		MinimumAllowableQuantity: float32(minQty),
-		MaximumAllowableQuantity: pointers.Float32(float32(minQty + 1)),
+		MaximumAllowableQuantity: pointers.Pointer(float32(minQty + 1)),
 		CreatedAt:                BuildFakeTime(),
 	}
 }

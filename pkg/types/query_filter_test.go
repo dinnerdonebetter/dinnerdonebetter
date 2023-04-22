@@ -24,14 +24,14 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		qf := &QueryFilter{
-			Page:            pointers.Uint16(100),
-			Limit:           pointers.Uint8(MaxLimit),
-			CreatedAfter:    pointers.Time(time.Now().Truncate(time.Second)),
-			CreatedBefore:   pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedAfter:    pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedBefore:   pointers.Time(time.Now().Truncate(time.Second)),
+			Page:            pointers.Pointer(uint16(100)),
+			Limit:           pointers.Pointer(uint8(MaxLimit)),
+			CreatedAfter:    pointers.Pointer(time.Now().Truncate(time.Second)),
+			CreatedBefore:   pointers.Pointer(time.Now().Truncate(time.Second)),
+			UpdatedAfter:    pointers.Pointer(time.Now().Truncate(time.Second)),
+			UpdatedBefore:   pointers.Pointer(time.Now().Truncate(time.Second)),
 			SortBy:          SortDescending,
-			IncludeArchived: pointers.Bool(true),
+			IncludeArchived: pointers.Pointer(true),
 		}
 
 		assert.NotNil(t, qf.AttachToLogger(logger))
@@ -57,14 +57,14 @@ func TestQueryFilter_FromParams(T *testing.T) {
 
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
-			Page:            pointers.Uint16(100),
-			Limit:           pointers.Uint8(MaxLimit),
-			CreatedAfter:    pointers.Time(tt),
-			CreatedBefore:   pointers.Time(tt),
-			UpdatedAfter:    pointers.Time(tt),
-			UpdatedBefore:   pointers.Time(tt),
+			Page:            pointers.Pointer(uint16(100)),
+			Limit:           pointers.Pointer(uint8(MaxLimit)),
+			CreatedAfter:    pointers.Pointer(tt),
+			CreatedBefore:   pointers.Pointer(tt),
+			UpdatedAfter:    pointers.Pointer(tt),
+			UpdatedBefore:   pointers.Pointer(tt),
 			SortBy:          SortDescending,
-			IncludeArchived: pointers.Bool(true),
+			IncludeArchived: pointers.Pointer(true),
 		}
 
 		exampleInput := url.Values{
@@ -109,8 +109,8 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 		qf := &QueryFilter{
-			Limit: pointers.Uint8(10),
-			Page:  pointers.Uint16(11),
+			Limit: pointers.Pointer(uint8(10)),
+			Page:  pointers.Pointer(uint16(11)),
 		}
 		expected := uint16(100)
 		actual := qf.QueryOffset()
@@ -129,14 +129,14 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		require.NoError(t, err)
 
 		qf := &QueryFilter{
-			Page:            pointers.Uint16(100),
-			Limit:           pointers.Uint8(MaxLimit),
-			CreatedAfter:    pointers.Time(tt),
-			CreatedBefore:   pointers.Time(tt),
-			UpdatedAfter:    pointers.Time(tt),
-			UpdatedBefore:   pointers.Time(tt),
+			Page:            pointers.Pointer(uint16(100)),
+			Limit:           pointers.Pointer(uint8(MaxLimit)),
+			CreatedAfter:    pointers.Pointer(tt),
+			CreatedBefore:   pointers.Pointer(tt),
+			UpdatedAfter:    pointers.Pointer(tt),
+			UpdatedBefore:   pointers.Pointer(tt),
 			SortBy:          SortDescending,
-			IncludeArchived: pointers.Bool(true),
+			IncludeArchived: pointers.Pointer(true),
 		}
 
 		expected := url.Values{
@@ -175,12 +175,12 @@ func TestExtractQueryFilter(T *testing.T) {
 		require.NoError(t, err)
 
 		expected := &QueryFilter{
-			Page:          pointers.Uint16(100),
-			Limit:         pointers.Uint8(MaxLimit),
-			CreatedAfter:  pointers.Time(tt),
-			CreatedBefore: pointers.Time(tt),
-			UpdatedAfter:  pointers.Time(tt),
-			UpdatedBefore: pointers.Time(tt),
+			Page:          pointers.Pointer(uint16(100)),
+			Limit:         pointers.Pointer(uint8(MaxLimit)),
+			CreatedAfter:  pointers.Pointer(tt),
+			CreatedBefore: pointers.Pointer(tt),
+			UpdatedAfter:  pointers.Pointer(tt),
+			UpdatedBefore: pointers.Pointer(tt),
 			SortBy:        SortDescending,
 		}
 		exampleInput := url.Values{

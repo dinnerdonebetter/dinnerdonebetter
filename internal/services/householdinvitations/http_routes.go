@@ -67,7 +67,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	if providedInput.ExpiresAt == nil {
-		providedInput.ExpiresAt = pointers.Time(time.Now().Add((time.Hour * 24) * 7))
+		providedInput.ExpiresAt = pointers.Pointer(time.Now().Add((time.Hour * 24) * 7))
 	}
 
 	input := converters.ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput(providedInput)

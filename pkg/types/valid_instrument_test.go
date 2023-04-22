@@ -43,9 +43,9 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidInstrumentUpdateRequestInput{
-			Name:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Description: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			IconPath:    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			IconPath:    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -17,15 +17,15 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		Ingredient:             BuildFakeValidIngredient(),
 		MeasurementUnit:        *BuildFakeValidMeasurementUnit(),
 		MinimumQuantity:        float32(BuildFakeNumber()),
-		MaximumQuantity:        pointers.Float32(float32(BuildFakeNumber())),
+		MaximumQuantity:        pointers.Pointer(float32(BuildFakeNumber())),
 		QuantityNotes:          buildUniqueString(),
 		Optional:               fake.Bool(),
 		IngredientNotes:        buildUniqueString(),
 		CreatedAt:              BuildFakeTime(),
 		BelongsToRecipeStep:    BuildFakeID(),
-		VesselIndex:            pointers.Uint16(fake.Uint16()),
+		VesselIndex:            pointers.Pointer(fake.Uint16()),
 		ToTaste:                fake.Bool(),
-		ProductPercentageToUse: pointers.Float32(float32(BuildFakeNumber())),
+		ProductPercentageToUse: pointers.Pointer(float32(BuildFakeNumber())),
 	}
 }
 

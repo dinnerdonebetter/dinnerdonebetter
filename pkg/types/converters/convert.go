@@ -1,21 +1,18 @@
 package converters
 
 import (
-	"fmt"
-	"reflect"
+	"github.com/jinzhu/copier"
 )
 
-func Convert[X, Y any](x X, y Y) {
-	//nolint:gocritic // I don't control this function
-	for _, field := range reflect.VisibleFields(reflect.TypeOf(x)) {
-		if !field.IsExported() {
-			continue
-		}
+var copyOpt = copier.Option{
+	IgnoreEmpty: true,
+	DeepCopy:    true,
+	Converters:  []copier.TypeConverter{
+		//
+	},
+}
 
-		fmt.Println(field.Name)
-
-		newValue := reflect.ValueOf(y).FieldByName(field.Name)
-		f := reflect.ValueOf(x).FieldByName(field.Name)
-		f.Set(newValue)
-	}
+// Merge will copy fields from the second variable into the first.
+func Merge(into, from any) error {
+	return copier.CopyWithOption(into, from, copyOpt)
 }

@@ -60,14 +60,14 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealUpdateRequestInput{
-			Name:          pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			CreatedByUser: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:          pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:   pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			CreatedByUser: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID:      pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-					RecipeScale:   pointers.Float32(exampleQuantity),
-					ComponentType: pointers.String(MealComponentTypesAmuseBouche),
+					RecipeID:      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+					RecipeScale:   pointers.Pointer(float32(exampleQuantity)),
+					ComponentType: pointers.Pointer(MealComponentTypesAmuseBouche),
 				},
 			},
 		}
@@ -132,14 +132,14 @@ func TestMealUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &MealUpdateRequestInput{
-			Name:        pointers.String(t.Name()),
-			Description: pointers.String(t.Name()),
+			Name:        pointers.Pointer(t.Name()),
+			Description: pointers.Pointer(t.Name()),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID: pointers.String(t.Name()),
+					RecipeID: pointers.Pointer(t.Name()),
 				},
 			},
-			CreatedByUser: pointers.String(t.Name()),
+			CreatedByUser: pointers.Pointer(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

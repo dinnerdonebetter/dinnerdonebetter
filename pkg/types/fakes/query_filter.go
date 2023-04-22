@@ -8,12 +8,12 @@ import (
 // BuildFleshedOutQueryFilter builds a fully fleshed out QueryFilter.
 func BuildFleshedOutQueryFilter() *types.QueryFilter {
 	return &types.QueryFilter{
-		Page:          pointers.Uint16(10),
-		Limit:         pointers.Uint8(20),
-		CreatedAfter:  pointers.Time(BuildFakeTime()),
-		CreatedBefore: pointers.Time(BuildFakeTime()),
-		UpdatedAfter:  pointers.Time(BuildFakeTime()),
-		UpdatedBefore: pointers.Time(BuildFakeTime()),
+		Page:          pointers.Pointer(uint16(10)),
+		Limit:         pointers.Pointer(uint8(20)),
+		CreatedAfter:  pointers.Pointer(BuildFakeTime()),
+		CreatedBefore: pointers.Pointer(BuildFakeTime()),
+		UpdatedAfter:  pointers.Pointer(BuildFakeTime()),
+		UpdatedBefore: pointers.Pointer(BuildFakeTime()),
 		SortBy:        types.SortAscending,
 	}
 }

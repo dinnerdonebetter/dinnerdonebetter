@@ -42,7 +42,7 @@ func BuildFakeRecipe() *types.Recipe {
 		SealOfApproval:           false,
 		Media:                    recipeMedia,
 		MinimumEstimatedPortions: float32(BuildFakeNumber()),
-		MaximumEstimatedPortions: pointers.Float32(float32(BuildFakeNumber())),
+		MaximumEstimatedPortions: pointers.Pointer(float32(BuildFakeNumber())),
 		PortionName:              buildUniqueString(),
 		PluralPortionName:        buildUniqueString(),
 	}

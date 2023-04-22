@@ -19,7 +19,7 @@ func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
 		CreatedAt:            BuildFakeTime(),
 		BelongsToRecipeStep:  fake.UUID(),
 		MinimumQuantity:      fake.Uint32(),
-		MaximumQuantity:      pointers.Uint32(fake.Uint32()),
+		MaximumQuantity:      pointers.Pointer(fake.Uint32()),
 		VesselPreposition:    buildUniqueString(),
 		UnavailableAfterStep: fake.Bool(),
 	}

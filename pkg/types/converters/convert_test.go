@@ -3,6 +3,9 @@ package converters
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
@@ -14,18 +17,23 @@ func TestConvert(T *testing.T) {
 		t.Parallel()
 
 		original := types.ValidPreparation{
-			Name:        "Name",
-			Description: "Description",
+			Name:           "Name",
+			Description:    "Description",
+			OnlyForVessels: true,
 		}
 		updateInput := types.ValidPreparationUpdateRequestInput{
-			Slug: pointers.Pointer("Slug"),
+			Slug:      pointers.Pointer("Slug"),
+			PastTense: pointers.Pointer("PastTense"),
 		}
 		updated := types.ValidPreparation{
-			Name:        "Name",
-			Description: "Description",
-			Slug:        "Slug",
+			Name:           "Name",
+			Description:    "Description",
+			Slug:           "Slug",
+			OnlyForVessels: true,
 		}
 
-		_, _, _ = original, updateInput, updated
+		require.NoError(t, Merge(&original, &updateInput))
+
+		assert.Equal(t, updated, original)
 	})
 }

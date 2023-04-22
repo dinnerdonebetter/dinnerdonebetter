@@ -50,7 +50,7 @@ func main() {
 	}
 
 	filter := types.DefaultQueryFilter()
-	filter.Limit = pointers.Uint8(50)
+	filter.Limit = pointers.Pointer(uint8(50))
 
 	var thresholdMet bool
 	for !thresholdMet {

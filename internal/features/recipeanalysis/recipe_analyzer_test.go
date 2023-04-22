@@ -125,7 +125,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							RecipeStepProductID: nil,
 							Ingredient: &types.ValidIngredient{
 								MaximumIdealStorageTemperatureInCelsius: nil,
-								MinimumIdealStorageTemperatureInCelsius: pointers.Float32(2.5),
+								MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(2.5)),
 								PluralName:                              "chicken breasts",
 								StorageInstructions:                     "keep frozen",
 								Name:                                    "chicken breast",
@@ -136,7 +136,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     900,
-							MaximumQuantity:     pointers.Float32(900),
+							MaximumQuantity:     pointers.Pointer(float32(900)),
 							Optional:            false,
 						},
 					},

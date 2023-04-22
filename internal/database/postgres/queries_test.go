@@ -130,7 +130,7 @@ func TestPostgres_buildListQuery(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 		filter := fakes.BuildFleshedOutQueryFilter()
-		filter.IncludeArchived = pointers.Bool(true)
+		filter.IncludeArchived = pointers.Pointer(true)
 
 		expectedQuery := "SELECT column_ate, column_two, column_three, (SELECT COUNT(example_table.id) FROM example_table WHERE example_table.created_at > $1 AND example_table.created_at < $2 AND example_table.last_updated_at > $3 AND example_table.last_updated_at < $4) as filtered_count, (SELECT COUNT(example_table.id) FROM example_table) as total_count FROM example_table WHERE example_table.created_at > $5 AND example_table.created_at < $6 AND example_table.last_updated_at > $7 AND example_table.last_updated_at < $8 GROUP BY example_table.id ORDER BY example_table.id LIMIT 20 OFFSET 180"
 		expectedArgs := []any{
@@ -254,7 +254,7 @@ func TestPostgres_buildListQueryWithILike(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 		filter := fakes.BuildFleshedOutQueryFilter()
-		filter.IncludeArchived = pointers.Bool(true)
+		filter.IncludeArchived = pointers.Pointer(true)
 
 		expectedQuery := "SELECT column_ate, column_two, column_three, (SELECT COUNT(example_table.id) FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $1 AND example_table.created_at > $2 AND example_table.created_at < $3 AND example_table.last_updated_at > $4 AND example_table.last_updated_at < $5) as filtered_count, (SELECT COUNT(example_table.id) FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $6) as total_count FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $7 AND (1=1) AND example_table.created_at > $8 AND example_table.created_at < $9 AND example_table.last_updated_at > $10 AND example_table.last_updated_at < $11 GROUP BY example_table.id ORDER BY example_table.id LIMIT 20 OFFSET 180"
 		expectedArgs := []any{

@@ -229,7 +229,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1000),
+								MinimumQuantity: pointers.Pointer(float32(1000)),
 							},
 						},
 						Notes:       "first step",
@@ -263,7 +263,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1010),
+								MinimumQuantity: pointers.Pointer(float32(1010)),
 							},
 						},
 						Notes:       "second step",
@@ -312,7 +312,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.String(createdValidInstrument.ID),
+								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -347,7 +347,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.String(createdValidInstrument.ID),
+								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -627,7 +627,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			t.Log("creating prerequisite valid ingredient")
 			chickenBreastBase := fakes.BuildFakeValidIngredient()
 			chickenBreastInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(chickenBreastBase)
-			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Float32(2.5)
+			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Pointer(float32(2.5))
 			chickenBreast, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, chickenBreastInput)
 			require.NoError(t, createdValidIngredientErr)
 
@@ -659,7 +659,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1000),
+								MinimumQuantity: pointers.Pointer(float32(1000)),
 							},
 						},
 						Notes:       "first step",
@@ -689,7 +689,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1010),
+								MinimumQuantity: pointers.Pointer(float32(1010)),
 							},
 						},
 						Notes:       "second step",
@@ -724,7 +724,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:              types.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   pointers.Float32(1000),
+								MinimumQuantity:   pointers.Pointer(float32(1000)),
 							},
 						},
 						Notes:         "first step",
@@ -732,7 +732,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.String(createdValidInstrument.ID),
+								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -753,7 +753,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:              types.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   pointers.Float32(1010),
+								MinimumQuantity:   pointers.Pointer(float32(1010)),
 							},
 						},
 						Notes:         "second step",
@@ -761,7 +761,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.String(createdValidInstrument.ID),
+								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{

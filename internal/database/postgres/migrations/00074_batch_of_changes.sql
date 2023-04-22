@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS valid_settings (
     "name" TEXT NOT NULL DEFAULT '',
     "type" setting_type NOT NULL DEFAULT 'user',
     "description" TEXT NOT NULL DEFAULT '',
+    "default_value" TEXT,
+    "admins_only" BOOLEAN NOT NULL DEFAULT 'true',
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,

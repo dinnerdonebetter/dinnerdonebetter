@@ -48,14 +48,14 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitUpdateRequestInput{
-			Name:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Description: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Volumetric:  pointers.Bool(fake.Bool()),
-			IconPath:    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Universal:   pointers.Bool(fake.Bool()),
-			Metric:      pointers.Bool(fake.Bool()),
-			Imperial:    pointers.Bool(fake.Bool()),
-			PluralName:  pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Volumetric:  pointers.Pointer(fake.Bool()),
+			IconPath:    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Universal:   pointers.Pointer(fake.Bool()),
+			Metric:      pointers.Pointer(fake.Bool()),
+			Imperial:    pointers.Pointer(fake.Bool()),
+			PluralName:  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

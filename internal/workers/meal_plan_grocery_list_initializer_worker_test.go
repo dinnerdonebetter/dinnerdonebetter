@@ -82,7 +82,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient:      onion,
 																MinimumQuantity: 100,
-																MaximumQuantity: pointers.Float32(100),
+																MaximumQuantity: pointers.Pointer(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -109,7 +109,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient:      carrot,
 																MinimumQuantity: 100,
-																MaximumQuantity: pointers.Float32(100),
+																MaximumQuantity: pointers.Pointer(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -136,7 +136,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient:      celery,
 																MinimumQuantity: 100,
-																MaximumQuantity: pointers.Float32(100),
+																MaximumQuantity: pointers.Pointer(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -163,7 +163,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient:      salt,
 																MinimumQuantity: 100,
-																MaximumQuantity: pointers.Float32(100),
+																MaximumQuantity: pointers.Pointer(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -190,7 +190,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 															{
 																Ingredient:      onion,
 																MinimumQuantity: 100,
-																MaximumQuantity: pointers.Float32(100),
+																MaximumQuantity: pointers.Pointer(float32(100)),
 																MeasurementUnit: *grams,
 															},
 														},
@@ -219,7 +219,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
 				MinimumQuantityNeeded:  200,
-				MaximumQuantityNeeded:  pointers.Float32(200),
+				MaximumQuantityNeeded:  pointers.Pointer(float32(200)),
 			},
 			{
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
@@ -227,7 +227,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointers.Float32(100),
+				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
 			},
 			{
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
@@ -235,7 +235,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointers.Float32(100),
+				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
 			},
 			{
 				Status:                 types.MealPlanGroceryListItemStatusUnknown,
@@ -243,7 +243,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointers.Float32(100),
+				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
 			},
 		}
 

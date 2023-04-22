@@ -25,12 +25,12 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Page:          pointers.Uint16(100),
-			Limit:         pointers.Uint8(50),
-			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
-			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			Page:          pointers.Pointer(uint16(100)),
+			Limit:         pointers.Pointer(uint8(50)),
+			CreatedAfter:  pointers.Pointer(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Pointer(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Pointer(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Pointer(time.Now().Truncate(time.Second)),
 			SortBy:        types.SortDescending,
 		}
 
@@ -59,8 +59,8 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Limit: pointers.Uint8(15),
-			Page:  pointers.Uint16(2),
+			Limit: pointers.Pointer(uint8(15)),
+			Page:  pointers.Pointer(uint16(2)),
 		}
 
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 LIMIT 15 OFFSET 15"
@@ -76,12 +76,12 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Limit:         pointers.Uint8(20),
-			Page:          pointers.Uint16(6),
-			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
-			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			Limit:         pointers.Pointer(uint8(20)),
+			Page:          pointers.Pointer(uint16(6)),
+			CreatedAfter:  pointers.Pointer(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Pointer(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Pointer(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Pointer(time.Now().Truncate(time.Second)),
 		}
 
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 AND stuff.created_at > $2 AND stuff.created_at < $3 AND stuff.last_updated_at > $4 AND stuff.last_updated_at < $5 LIMIT 20 OFFSET 100"
@@ -97,8 +97,8 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Limit: pointers.Uint8(0),
-			Page:  pointers.Uint16(1),
+			Limit: pointers.Pointer(uint8(0)),
+			Page:  pointers.Pointer(uint16(1)),
 		}
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 LIMIT 250"
 		x := applyFilterToQueryBuilder(qf, exampleTableName, baseQueryBuilder)
@@ -119,12 +119,12 @@ func TestQueryFilter_ApplyFilterToSubCountQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &types.QueryFilter{
-			Page:          pointers.Uint16(100),
-			Limit:         pointers.Uint8(50),
-			CreatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
-			CreatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedAfter:  pointers.Time(time.Now().Truncate(time.Second)),
-			UpdatedBefore: pointers.Time(time.Now().Truncate(time.Second)),
+			Page:          pointers.Pointer(uint16(100)),
+			Limit:         pointers.Pointer(uint8(50)),
+			CreatedAfter:  pointers.Pointer(time.Now().Truncate(time.Second)),
+			CreatedBefore: pointers.Pointer(time.Now().Truncate(time.Second)),
+			UpdatedAfter:  pointers.Pointer(time.Now().Truncate(time.Second)),
+			UpdatedBefore: pointers.Pointer(time.Now().Truncate(time.Second)),
 			SortBy:        types.SortDescending,
 		}
 

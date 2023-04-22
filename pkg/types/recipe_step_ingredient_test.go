@@ -17,7 +17,7 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{
-			IngredientID:      pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			IngredientID:      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			MeasurementUnitID: fake.LoremIpsumSentence(exampleQuantity),
 			MinimumQuantity:   fake.Float32(),
 			QuantityNotes:     fake.LoremIpsumSentence(exampleQuantity),
@@ -46,12 +46,12 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientUpdateRequestInput{
-			IngredientID:      pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			MeasurementUnitID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			MinimumQuantity:   pointers.Float32(fake.Float32()),
-			QuantityNotes:     pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			IngredientNotes:   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Optional:          pointers.Bool(fake.Bool()),
+			IngredientID:      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MeasurementUnitID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MinimumQuantity:   pointers.Pointer(fake.Float32()),
+			QuantityNotes:     pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			IngredientNotes:   pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Optional:          pointers.Pointer(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

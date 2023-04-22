@@ -18,14 +18,14 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentCreationRequestInput{
-			InstrumentID:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			InstrumentID:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Name:                fake.LoremIpsumSentence(exampleQuantity),
-			RecipeStepProductID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			RecipeStepProductID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Notes:               fake.LoremIpsumSentence(exampleQuantity),
 			PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
 			Optional:            fake.Bool(),
 			MinimumQuantity:     fake.Uint32(),
-			MaximumQuantity:     pointers.Uint32(fake.Uint32()),
+			MaximumQuantity:     pointers.Pointer(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -49,15 +49,15 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentUpdateRequestInput{
-			InstrumentID:        pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Name:                pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToRecipeStep: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			RecipeStepProductID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:               pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			PreferenceRank:      pointers.Uint8(uint8(fake.Number(1, math.MaxUint8))),
-			Optional:            pointers.Bool(fake.Bool()),
-			MinimumQuantity:     pointers.Uint32(fake.Uint32()),
-			MaximumQuantity:     pointers.Uint32(fake.Uint32()),
+			InstrumentID:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			BelongsToRecipeStep: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			RecipeStepProductID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:               pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			PreferenceRank:      pointers.Pointer(uint8(fake.Number(1, math.MaxUint8))),
+			Optional:            pointers.Pointer(fake.Bool()),
+			MinimumQuantity:     pointers.Pointer(fake.Uint32()),
+			MaximumQuantity:     pointers.Pointer(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

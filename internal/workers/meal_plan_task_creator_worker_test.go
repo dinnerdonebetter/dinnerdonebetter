@@ -146,7 +146,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							RecipeStepProductID: nil,
 							Ingredient: &types.ValidIngredient{
 								MaximumIdealStorageTemperatureInCelsius: nil,
-								MinimumIdealStorageTemperatureInCelsius: pointers.Float32(2.5),
+								MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(2.5)),
 								PluralName:                              "chicken breasts",
 								StorageInstructions:                     "keep frozen",
 								Name:                                    "chicken breast",
@@ -157,7 +157,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     900,
-							MaximumQuantity:     pointers.Float32(900),
+							MaximumQuantity:     pointers.Pointer(float32(900)),
 							Optional:            false,
 						},
 					},
@@ -308,7 +308,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							BelongsToRecipeStep: recipeStep1ID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     500,
-							MaximumQuantity:     pointers.Float32(1000),
+							MaximumQuantity:     pointers.Pointer(float32(1000)),
 						},
 					},
 					Products: []*types.RecipeStepProduct{
@@ -324,7 +324,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							MeasurementUnit: &types.ValidMeasurementUnit{
 								Name: "gram", PluralName: "gram",
 							},
-							MaximumStorageDurationInSeconds: pointers.Uint32(259200),
+							MaximumStorageDurationInSeconds: pointers.Pointer(uint32(259200)),
 							MaximumQuantity:                 nil,
 							MinimumQuantity:                 nil,
 							Compostable:                     false,
@@ -343,14 +343,14 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 					Preparation:                   types.ValidPreparation{Name: "sautee"},
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: pointers.String(recipeStep2ID),
+							RecipeStepProductID: pointers.Pointer(recipeStep2ID),
 							Ingredient:          nil,
 							Name:                "massaged kale",
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStep1ID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     500,
-							MaximumQuantity:     pointers.Float32(1000),
+							MaximumQuantity:     pointers.Pointer(float32(1000)),
 						},
 					},
 					Products: []*types.RecipeStepProduct{
