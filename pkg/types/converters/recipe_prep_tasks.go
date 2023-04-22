@@ -22,10 +22,10 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.Recipe
 		Notes:                                  &input.Notes,
 		ExplicitStorageInstructions:            &input.ExplicitStorageInstructions,
 		MinimumTimeBufferBeforeRecipeInSeconds: &input.MinimumTimeBufferBeforeRecipeInSeconds,
-		MaximumTimeBufferBeforeRecipeInSeconds: &input.MaximumTimeBufferBeforeRecipeInSeconds,
+		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
 		StorageType:                            &input.StorageType,
-		MinimumStorageTemperatureInCelsius:     &input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     &input.MaximumStorageTemperatureInCelsius,
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
 		BelongsToRecipe:                        &input.BelongsToRecipe,
 		TaskSteps:                              taskSteps,
 	}

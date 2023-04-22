@@ -52,9 +52,9 @@ type (
 		ID                                     string                `json:"id"`
 		TaskSteps                              []*RecipePrepTaskStep `json:"recipeSteps"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
-		MaximumStorageTemperatureInCelsius     float32               `json:"maximumStorageTemperatureInCelsius"`     // TODO: make pointers
-		MaximumTimeBufferBeforeRecipeInSeconds uint32                `json:"maximumTimeBufferBeforeRecipeInSeconds"` // TODO: make pointers
-		MinimumStorageTemperatureInCelsius     float32               `json:"minimumStorageTemperatureInCelsius"`     // TODO: make pointers
+		MaximumStorageTemperatureInCelsius     *float32              `json:"maximumStorageTemperatureInCelsius"`     // TODO: make pointers
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32               `json:"maximumTimeBufferBeforeRecipeInSeconds"` // TODO: make pointers
+		MinimumStorageTemperatureInCelsius     *float32              `json:"minimumStorageTemperatureInCelsius"`     // TODO: make pointers
 	}
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.
@@ -66,9 +66,9 @@ type (
 		StorageType                            string                                    `json:"storageType"`
 		BelongsToRecipe                        string                                    `json:"belongsToRecipe"`
 		TaskSteps                              []*RecipePrepTaskStepCreationRequestInput `json:"recipeSteps"`
-		MaximumTimeBufferBeforeRecipeInSeconds uint32                                    `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     float32                                   `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius     float32                                   `json:"maximumStorageTemperatureInCelsius"`
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                   `json:"maximumTimeBufferBeforeRecipeInSeconds"`
+		MinimumStorageTemperatureInCelsius     *float32                                  `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius     *float32                                  `json:"maximumStorageTemperatureInCelsius"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                                    `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 	}
 
@@ -81,9 +81,9 @@ type (
 		StorageType                            string                                                `json:"storageType"`
 		BelongsToRecipe                        string                                                `json:"belongsToRecipe"`
 		TaskSteps                              []*RecipePrepTaskStepWithinRecipeCreationRequestInput `json:"recipeSteps"`
-		MaximumTimeBufferBeforeRecipeInSeconds uint32                                                `json:"maximumTimeBufferBeforeRecipeInSeconds"`
-		MinimumStorageTemperatureInCelsius     float32                                               `json:"minimumStorageTemperatureInCelsius"`
-		MaximumStorageTemperatureInCelsius     float32                                               `json:"maximumStorageTemperatureInCelsius"`
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                               `json:"maximumTimeBufferBeforeRecipeInSeconds"`
+		MinimumStorageTemperatureInCelsius     *float32                                              `json:"minimumStorageTemperatureInCelsius"`
+		MaximumStorageTemperatureInCelsius     *float32                                              `json:"maximumStorageTemperatureInCelsius"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                                                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 	}
 
@@ -97,9 +97,9 @@ type (
 		StorageType                            string
 		BelongsToRecipe                        string
 		TaskSteps                              []*RecipePrepTaskStepDatabaseCreationInput
-		MaximumTimeBufferBeforeRecipeInSeconds uint32
-		MinimumStorageTemperatureInCelsius     float32
-		MaximumStorageTemperatureInCelsius     float32
+		MaximumTimeBufferBeforeRecipeInSeconds *uint32
+		MinimumStorageTemperatureInCelsius     *float32
+		MaximumStorageTemperatureInCelsius     *float32
 		MinimumTimeBufferBeforeRecipeInSeconds uint32
 	}
 
@@ -156,20 +156,20 @@ func (x *RecipePrepTask) Update(input *RecipePrepTaskUpdateRequestInput) {
 		x.MinimumTimeBufferBeforeRecipeInSeconds = *input.MinimumTimeBufferBeforeRecipeInSeconds
 	}
 
-	if input.MaximumTimeBufferBeforeRecipeInSeconds != nil && *input.MaximumTimeBufferBeforeRecipeInSeconds != x.MaximumTimeBufferBeforeRecipeInSeconds {
-		x.MaximumTimeBufferBeforeRecipeInSeconds = *input.MaximumTimeBufferBeforeRecipeInSeconds
+	if input.MaximumTimeBufferBeforeRecipeInSeconds != nil && input.MaximumTimeBufferBeforeRecipeInSeconds != x.MaximumTimeBufferBeforeRecipeInSeconds {
+		x.MaximumTimeBufferBeforeRecipeInSeconds = input.MaximumTimeBufferBeforeRecipeInSeconds
 	}
 
 	if input.StorageType != nil && *input.StorageType != x.StorageType {
 		x.StorageType = *input.StorageType
 	}
 
-	if input.MinimumStorageTemperatureInCelsius != nil && *input.MinimumStorageTemperatureInCelsius != x.MinimumStorageTemperatureInCelsius {
-		x.MinimumStorageTemperatureInCelsius = *input.MinimumStorageTemperatureInCelsius
+	if input.MinimumStorageTemperatureInCelsius != nil && input.MinimumStorageTemperatureInCelsius != x.MinimumStorageTemperatureInCelsius {
+		x.MinimumStorageTemperatureInCelsius = input.MinimumStorageTemperatureInCelsius
 	}
 
-	if input.MaximumStorageTemperatureInCelsius != nil && *input.MaximumStorageTemperatureInCelsius != x.MaximumStorageTemperatureInCelsius {
-		x.MaximumStorageTemperatureInCelsius = *input.MaximumStorageTemperatureInCelsius
+	if input.MaximumStorageTemperatureInCelsius != nil && input.MaximumStorageTemperatureInCelsius != x.MaximumStorageTemperatureInCelsius {
+		x.MaximumStorageTemperatureInCelsius = input.MaximumStorageTemperatureInCelsius
 	}
 
 	if input.BelongsToRecipe != nil && *input.BelongsToRecipe != x.BelongsToRecipe {
@@ -195,8 +195,8 @@ func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Con
 	)
 
 	// TODO: uncomment me
-	// if x.MinimumStorageTemperatureInCelsius > x.MaximumStorageTemperatureInCelsius {
-	// 	result = multierror.Append(fmt.Errorf("minimum objectstorage temperature (%d) is greater than maximum objectstorage temperature (%d)", x.MinimumStorageTemperatureInCelsius, x.MaximumStorageTemperatureInCelsius))
+	// if x.MinimumStorageTemperatureInCelsius != nil && x.MaximumStorageTemperatureInCelsius != nil && *x.MinimumStorageTemperatureInCelsius > *x.MaximumStorageTemperatureInCelsius {
+	// 	result = multierror.Append(fmt.Errorf("minimum storage temperature (%d) is greater than maximum storage temperature (%d)", x.MinimumStorageTemperatureInCelsius, x.MaximumStorageTemperatureInCelsius))
 	// }
 
 	if err != nil {

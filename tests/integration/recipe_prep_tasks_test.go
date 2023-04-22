@@ -94,7 +94,7 @@ func (s *TestSuite) TestRecipePrepTasks_CompleteLifecycle() {
 			assert.NoError(t, testClients.user.ArchiveRecipePrepTask(ctx, createdRecipe.ID, actual.ID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -171,7 +171,7 @@ func (s *TestSuite) TestRecipePrepTasks_Listing() {
 			}
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

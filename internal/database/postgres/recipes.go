@@ -657,7 +657,7 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe archive", archiveRecipeQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe")
 	}
 
 	logger.Info("recipe archived")

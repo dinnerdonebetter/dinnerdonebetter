@@ -132,7 +132,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	}
 
 	t.Log("creating recipe")
-	createdRecipe, err := client.CreateRecipe(ctx, exampleRecipeInput)
+	createdRecipe, err := adminClient.CreateRecipe(ctx, exampleRecipeInput)
 	require.NoError(t, err)
 	t.Logf("recipe %q created", createdRecipe.ID)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
@@ -417,7 +417,7 @@ func (s *TestSuite) TestRecipes_Updating() {
 			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -458,7 +458,7 @@ func (s *TestSuite) TestRecipes_ContentUploading() {
 			require.NoError(t, testClients.user.UploadRecipeMedia(ctx, files, actual.ID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -493,7 +493,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 			require.NotEmpty(t, foundMealID)
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -806,7 +806,7 @@ func (s *TestSuite) TestRecipes_DAGGeneration() {
 			requireNotNilAndNoProblems(t, actual, err)
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

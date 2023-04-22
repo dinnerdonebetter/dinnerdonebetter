@@ -111,7 +111,7 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -345,7 +345,7 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

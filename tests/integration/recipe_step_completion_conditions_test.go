@@ -86,7 +86,7 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

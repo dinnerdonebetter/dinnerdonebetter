@@ -62,6 +62,14 @@ type (
 		ContainsDairy                           bool       `json:"containsDairy"`
 		ContainsAlcohol                         bool       `json:"containsAlcohol"`
 		AnimalFlesh                             bool       `json:"animalFlesh"`
+		//IsStarch                                bool       `json:"is_starch"`
+		//IsProtein                               bool       `json:"is_protein"`
+		//IsGrain                                 bool       `json:"is_grain"`
+		//IsFruit                                 bool       `json:"is_fruit"`
+		//IsSalt                                  bool       `json:"is_salt"`
+		//IsFat                                   bool       `json:"is_fat"`
+		//IsAcid                                  bool       `json:"is_acid"`
+		//IsHeat                                  bool       `json:"is_heat"`
 	}
 
 	// NullableValidIngredient represents a nullable valid ingredient.
@@ -98,6 +106,14 @@ type (
 		Slug                                    *string
 		ContainsAlcohol                         *bool
 		ShoppingSuggestions                     *string
+		//IsStarch                                *bool
+		//IsProtein                               *bool
+		//IsGrain                                 *bool
+		//IsFruit                                 *bool
+		//IsSalt                                  *bool
+		//IsFat                                   *bool
+		//IsAcid                                  *bool
+		//IsHeat                                  *bool
 	}
 
 	// ValidIngredientCreationRequestInput represents what a user could set as input for creating valid ingredients.
@@ -130,6 +146,14 @@ type (
 		ContainsWheat                           bool     `json:"containsWheat"`
 		ContainsAlcohol                         bool     `json:"containsAlcohol"`
 		ContainsGluten                          bool     `json:"containsGluten"`
+		//IsStarch                                bool     `json:"is_starch"`
+		//IsProtein                               bool     `json:"is_protein"`
+		//IsGrain                                 bool     `json:"is_grain"`
+		//IsFruit                                 bool     `json:"is_fruit"`
+		//IsSalt                                  bool     `json:"is_salt"`
+		//IsFat                                   bool     `json:"is_fat"`
+		//IsAcid                                  bool     `json:"is_acid"`
+		//IsHeat                                  bool     `json:"is_heat"`
 	}
 
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
@@ -163,6 +187,14 @@ type (
 		ContainsWheat                           bool
 		ContainsAlcohol                         bool
 		ContainsGluten                          bool
+		//IsStarch                                bool
+		//IsProtein                               bool
+		//IsGrain                                 bool
+		//IsFruit                                 bool
+		//IsSalt                                  bool
+		//IsFat                                   bool
+		//IsAcid                                  bool
+		//IsHeat                                  bool
 	}
 
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.
@@ -195,6 +227,14 @@ type (
 		Slug                                    *string  `json:"slug,omitempty"`
 		ContainsAlcohol                         *bool    `json:"containsAlcohol,omitempty"`
 		ShoppingSuggestions                     *string  `json:"shoppingSuggestions,omitempty"`
+		//IsStarch                                *bool    `json:"is_starch"`
+		//IsProtein                               *bool    `json:"is_protein"`
+		//IsGrain                                 *bool    `json:"is_grain"`
+		//IsFruit                                 *bool    `json:"is_fruit"`
+		//IsSalt                                  *bool    `json:"is_salt"`
+		//IsFat                                   *bool    `json:"is_fat"`
+		//IsAcid                                  *bool    `json:"is_acid"`
+		//IsHeat                                  *bool    `json:"is_heat"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
@@ -330,6 +370,38 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 	if input.ShoppingSuggestions != nil && *input.ShoppingSuggestions != x.ShoppingSuggestions {
 		x.ShoppingSuggestions = *input.ShoppingSuggestions
 	}
+
+	//if input.IsStarch != nil && *input.IsStarch != x.IsStarch {
+	//	x.IsStarch = *input.IsStarch
+	//}
+	//
+	//if input.IsProtein != nil && *input.IsProtein != x.IsProtein {
+	//	x.IsProtein = *input.IsProtein
+	//}
+	//
+	//if input.IsGrain != nil && *input.IsGrain != x.IsGrain {
+	//	x.IsGrain = *input.IsGrain
+	//}
+	//
+	//if input.IsFruit != nil && *input.IsFruit != x.IsFruit {
+	//	x.IsFruit = *input.IsFruit
+	//}
+	//
+	//if input.IsSalt != nil && *input.IsSalt != x.IsSalt {
+	//	x.IsSalt = *input.IsSalt
+	//}
+	//
+	//if input.IsFat != nil && *input.IsFat != x.IsFat {
+	//	x.IsFat = *input.IsFat
+	//}
+	//
+	//if input.IsAcid != nil && *input.IsAcid != x.IsAcid {
+	//	x.IsAcid = *input.IsAcid
+	//}
+	//
+	//if input.IsHeat != nil && *input.IsHeat != x.IsHeat {
+	//	x.IsHeat = *input.IsHeat
+	//}
 }
 
 var _ validation.ValidatableWithContext = (*ValidIngredientCreationRequestInput)(nil)
