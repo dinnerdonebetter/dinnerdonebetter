@@ -17,8 +17,8 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionCreationRequestInput{
-			AssignedCook:       pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			AssignedDishwasher: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedCook:       pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedDishwasher: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			MealID:             fake.LoremIpsumSentence(exampleQuantity),
 			Notes:              fake.LoremIpsumSentence(exampleQuantity),
 		}
@@ -44,11 +44,11 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionUpdateRequestInput{
-			AssignedCook:           pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			AssignedDishwasher:     pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToMealPlanEvent: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			MealID:                 pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:                  pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedCook:           pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedDishwasher:     pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			BelongsToMealPlanEvent: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MealID:                 pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

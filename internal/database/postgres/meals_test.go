@@ -35,6 +35,7 @@ func buildMockRowsFromMeals(includeCounts bool, filteredCount uint64, meals ...*
 			x.Description,
 			x.MinimumEstimatedPortions,
 			x.MaximumEstimatedPortions,
+			x.EligibleForMealPlans,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -58,6 +59,7 @@ func buildMockFullRowsFromMeal(meal *types.Meal) *sqlmock.Rows {
 		"meals.description",
 		"meals.min_estimated_portions",
 		"meals.max_estimated_portions",
+		"meals.eligible_for_meal_plans",
 		"meals.created_at",
 		"meals.last_updated_at",
 		"meals.archived_at",
@@ -74,6 +76,7 @@ func buildMockFullRowsFromMeal(meal *types.Meal) *sqlmock.Rows {
 			&meal.Description,
 			&meal.MinimumEstimatedPortions,
 			&meal.MaximumEstimatedPortions,
+			&meal.EligibleForMealPlans,
 			&meal.CreatedAt,
 			&meal.LastUpdatedAt,
 			&meal.ArchivedAt,
@@ -541,6 +544,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			exampleMeal.Description,
 			exampleMeal.MinimumEstimatedPortions,
 			exampleMeal.MaximumEstimatedPortions,
+			exampleMeal.EligibleForMealPlans,
 			exampleMeal.CreatedByUser,
 		}
 
@@ -627,6 +631,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			exampleMeal.Description,
 			exampleMeal.MinimumEstimatedPortions,
 			exampleMeal.MaximumEstimatedPortions,
+			exampleMeal.EligibleForMealPlans,
 			exampleMeal.CreatedByUser,
 		}
 
@@ -662,6 +667,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			exampleMeal.Description,
 			exampleMeal.MinimumEstimatedPortions,
 			exampleMeal.MaximumEstimatedPortions,
+			exampleMeal.EligibleForMealPlans,
 			exampleMeal.CreatedByUser,
 		}
 
@@ -713,6 +719,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 			exampleMeal.Description,
 			exampleMeal.MinimumEstimatedPortions,
 			exampleMeal.MaximumEstimatedPortions,
+			exampleMeal.EligibleForMealPlans,
 			exampleMeal.CreatedByUser,
 		}
 

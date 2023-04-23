@@ -9,7 +9,8 @@ UPDATE recipes SET
     portion_name = $8,
     plural_portion_name = $9,
     seal_of_approval = $10,
+    eligible_for_meals = $11,
     last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND created_by_user = $11
-  AND id = $12;
+  AND created_by_user = $12
+  AND id = $13;

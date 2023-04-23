@@ -22,10 +22,10 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.Recipe
 		Notes:                                  &input.Notes,
 		ExplicitStorageInstructions:            &input.ExplicitStorageInstructions,
 		MinimumTimeBufferBeforeRecipeInSeconds: &input.MinimumTimeBufferBeforeRecipeInSeconds,
-		MaximumTimeBufferBeforeRecipeInSeconds: &input.MaximumTimeBufferBeforeRecipeInSeconds,
+		MaximumTimeBufferBeforeRecipeInSeconds: input.MaximumTimeBufferBeforeRecipeInSeconds,
 		StorageType:                            &input.StorageType,
-		MinimumStorageTemperatureInCelsius:     &input.MinimumStorageTemperatureInCelsius,
-		MaximumStorageTemperatureInCelsius:     &input.MaximumStorageTemperatureInCelsius,
+		MinimumStorageTemperatureInCelsius:     input.MinimumStorageTemperatureInCelsius,
+		MaximumStorageTemperatureInCelsius:     input.MaximumStorageTemperatureInCelsius,
 		BelongsToRecipe:                        &input.BelongsToRecipe,
 		TaskSteps:                              taskSteps,
 	}
@@ -170,9 +170,9 @@ func ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInp
 
 func ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepUpdateRequestInput {
 	return &types.RecipePrepTaskStepUpdateRequestInput{
-		BelongsToRecipeStep:     pointers.String(input.BelongsToRecipeStep),
-		BelongsToRecipePrepTask: pointers.String(input.BelongsToRecipePrepTask),
-		SatisfiesRecipeStep:     pointers.Bool(input.SatisfiesRecipeStep),
+		BelongsToRecipeStep:     pointers.Pointer(input.BelongsToRecipeStep),
+		BelongsToRecipePrepTask: pointers.Pointer(input.BelongsToRecipePrepTask),
+		SatisfiesRecipeStep:     pointers.Pointer(input.SatisfiesRecipeStep),
 	}
 }
 

@@ -69,7 +69,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
 			exampleRecipeStepProductInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
-			createdRecipeStepProduct, err := testClients.user.CreateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepProductInput)
+			createdRecipeStepProduct, err := testClients.admin.CreateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepProductInput)
 			require.NoError(t, err)
 			t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 
@@ -86,7 +86,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			newRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
 			createdRecipeStepProduct.Update(converters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(newRecipeStepProduct))
 
-			require.NoError(t, testClients.user.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepProduct))
+			require.NoError(t, testClients.admin.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepProduct))
 
 			t.Log("fetching changed recipe step product")
 			actual, err := testClients.user.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID)
@@ -103,7 +103,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -145,7 +145,7 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
 				exampleRecipeStepProductInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
-				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.user.CreateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepProductInput)
+				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.admin.CreateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepProductInput)
 				require.NoError(t, createdRecipeStepProductErr)
 				t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 
@@ -178,7 +178,7 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

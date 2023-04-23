@@ -19,6 +19,7 @@ func ConvertRecipeStepToRecipeStepUpdateRequestInput(input *types.RecipeStep) *t
 		Optional:                      &input.Optional,
 		ExplicitInstructions:          &input.ExplicitInstructions,
 		ConditionExpression:           &input.ConditionExpression,
+		StartTimerAutomatically:       &input.StartTimerAutomatically,
 	}
 
 	return x
@@ -38,6 +39,7 @@ func ConvertRecipeStepCreationInputToRecipeStepDatabaseCreationInput(input *type
 		Optional:                      input.Optional,
 		ExplicitInstructions:          input.ExplicitInstructions,
 		ConditionExpression:           input.ConditionExpression,
+		StartTimerAutomatically:       input.StartTimerAutomatically,
 	}
 
 	x.Ingredients = []*types.RecipeStepIngredientDatabaseCreationInput{}
@@ -121,6 +123,7 @@ func ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep *types.RecipeS
 		Notes:                         recipeStep.Notes,
 		ExplicitInstructions:          recipeStep.ExplicitInstructions,
 		ConditionExpression:           recipeStep.ConditionExpression,
+		StartTimerAutomatically:       recipeStep.StartTimerAutomatically,
 		Products:                      products,
 		Ingredients:                   ingredients,
 		Instruments:                   instruments,
@@ -165,6 +168,7 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 		MaximumEstimatedTimeInSeconds: recipeStep.MaximumEstimatedTimeInSeconds,
 		MinimumTemperatureInCelsius:   recipeStep.MinimumTemperatureInCelsius,
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
+		StartTimerAutomatically:       recipeStep.StartTimerAutomatically,
 		Notes:                         recipeStep.Notes,
 		ExplicitInstructions:          recipeStep.ExplicitInstructions,
 		ConditionExpression:           recipeStep.ConditionExpression,

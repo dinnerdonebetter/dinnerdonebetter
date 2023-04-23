@@ -25,5 +25,13 @@ UPDATE valid_ingredients SET
 	slug = $24,
 	contains_alcohol = $25,
 	shopping_suggestions = $26,
+    is_starch = $27,
+    is_protein = $28,
+    is_grain = $29,
+    is_fruit = $30,
+    is_salt = $31,
+    is_fat = $32,
+    is_acid = $33,
+    is_heat = $34,
 	last_updated_at = NOW()
-WHERE archived_at IS NULL AND id = $27;
+WHERE archived_at IS NULL AND id = $35;

@@ -15,7 +15,7 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 		Ingredient:               *BuildFakeValidIngredient(),
 		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
 		MinimumQuantityNeeded:    float32(minQty),
-		MaximumQuantityNeeded:    pointers.Float32(float32(minQty + 1)),
+		MaximumQuantityNeeded:    pointers.Pointer(float32(minQty + 1)),
 		QuantityPurchased:        nil,
 		PurchasedMeasurementUnit: nil,
 		PurchasedUPC:             nil,

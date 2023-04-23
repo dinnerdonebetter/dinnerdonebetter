@@ -44,9 +44,9 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteUpdateRequestInput{
-			Rank:                    pointers.Uint8(uint8(fake.Number(1, math.MaxUint8))),
-			Abstain:                 pointers.Bool(fake.Bool()),
-			Notes:                   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Rank:                    pointers.Pointer(uint8(fake.Number(1, math.MaxUint8))),
+			Abstain:                 pointers.Pointer(fake.Bool()),
+			Notes:                   pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			BelongsToMealPlanOption: t.Name(),
 		}
 

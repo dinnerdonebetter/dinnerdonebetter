@@ -39,8 +39,8 @@ func init() {
 type (
 	// MealPlanTask represents a meal plan task.
 	MealPlanTask struct {
-		_ struct{}
-
+		_                   struct{}
+		RecipePrepTask      RecipePrepTask `json:"recipePrepTask"`
 		CreatedAt           time.Time      `json:"createdAt"`
 		LastUpdatedAt       *time.Time     `json:"lastUpdatedAt"`
 		CompletedAt         *time.Time     `json:"completedAt"`
@@ -50,7 +50,6 @@ type (
 		CreationExplanation string         `json:"creationExplanation"`
 		StatusExplanation   string         `json:"statusExplanation"`
 		MealPlanOption      MealPlanOption `json:"mealPlanOption"`
-		RecipePrepTask      RecipePrepTask `json:"recipePrepTask"`
 	}
 
 	// MealPlanTaskCreationRequestInput represents a meal plan task.

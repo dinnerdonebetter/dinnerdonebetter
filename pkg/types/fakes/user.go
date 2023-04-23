@@ -22,7 +22,7 @@ func BuildFakeUser() *types.User {
 		ID:                        BuildFakeID(),
 		EmailAddress:              fake.Email(),
 		Username:                  fake.Password(true, true, true, false, false, 32),
-		Birthday:                  pointers.Time(BuildFakeTime()),
+		Birthday:                  pointers.Pointer(BuildFakeTime()),
 		AccountStatus:             string(types.GoodStandingUserAccountStatus),
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedAt: &fakeDate,

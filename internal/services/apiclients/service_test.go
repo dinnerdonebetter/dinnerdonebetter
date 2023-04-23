@@ -7,6 +7,7 @@ import (
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
 	"github.com/prixfixeco/backend/internal/database"
 	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
@@ -48,18 +49,27 @@ func TestProvideAPIClientsService(T *testing.T) {
 			APIClientIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		s := ProvideAPIClientsService(
+		cfg := &Config{
+			dataChangesTopicName: t.Name(),
+		}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProvidePublisher", cfg.dataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+
+		s, err := ProvideAPIClientsService(
 			logging.NewNoopLogger(),
 			mockAPIClientDataManager,
 			&mocktypes.UserDataManager{},
 			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
-			&Config{},
+			cfg,
 			tracing.NewNoopTracerProvider(),
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+			pp,
 		)
 		assert.NotNil(t, s)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mockAPIClientDataManager, rpm)
 	})

@@ -43,9 +43,9 @@ func TestValidPreparationInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationInstrumentUpdateRequestInput{
-			Notes:              pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidPreparationID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidInstrumentID:  pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:              pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidPreparationID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidInstrumentID:  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -103,8 +103,8 @@ func TestValidPreparationInstrumentUpdateRequestInput_ValidateWithContext(T *tes
 
 		ctx := context.Background()
 		x := &ValidPreparationInstrumentUpdateRequestInput{
-			ValidPreparationID: pointers.String(t.Name()),
-			ValidInstrumentID:  pointers.String(t.Name()),
+			ValidPreparationID: pointers.Pointer(t.Name()),
+			ValidInstrumentID:  pointers.Pointer(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -120,9 +120,9 @@ func TestValidPreparationInstrument_Update(T *testing.T) {
 		x := &ValidPreparationInstrument{}
 
 		x.Update(&ValidPreparationInstrumentUpdateRequestInput{
-			Notes:              pointers.String(t.Name()),
-			ValidPreparationID: pointers.String(t.Name()),
-			ValidInstrumentID:  pointers.String(t.Name()),
+			Notes:              pointers.Pointer(t.Name()),
+			ValidPreparationID: pointers.Pointer(t.Name()),
+			ValidInstrumentID:  pointers.Pointer(t.Name()),
 		})
 	})
 }

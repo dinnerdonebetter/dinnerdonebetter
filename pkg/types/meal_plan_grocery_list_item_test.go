@@ -40,7 +40,7 @@ func TestMealPlanGroceryListItemDatabaseCreationInput_ValidateWithContext(T *tes
 			ValidIngredientID:      t.Name(),
 			ValidMeasurementUnitID: t.Name(),
 			MinimumQuantityNeeded:  1.23,
-			MaximumQuantityNeeded:  pointers.Float32(1.23),
+			MaximumQuantityNeeded:  pointers.Pointer(float32(1.23)),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -55,11 +55,11 @@ func TestMealPlanGroceryListItemUpdateRequestInput_ValidateWithContext(T *testin
 
 		ctx := context.Background()
 		x := &MealPlanGroceryListItemUpdateRequestInput{
-			BelongsToMealPlan:      pointers.String(t.Name()),
-			ValidIngredientID:      pointers.String(t.Name()),
-			ValidMeasurementUnitID: pointers.String(t.Name()),
-			MinimumQuantityNeeded:  pointers.Float32(1.23),
-			MaximumQuantityNeeded:  pointers.Float32(1.23),
+			BelongsToMealPlan:      pointers.Pointer(t.Name()),
+			ValidIngredientID:      pointers.Pointer(t.Name()),
+			ValidMeasurementUnitID: pointers.Pointer(t.Name()),
+			MinimumQuantityNeeded:  pointers.Pointer(float32(1.23)),
+			MaximumQuantityNeeded:  pointers.Pointer(float32(1.23)),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

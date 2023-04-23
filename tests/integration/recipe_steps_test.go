@@ -25,6 +25,8 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for recipe step %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.ConditionExpression, actual.ConditionExpression, "expected StatusExplanation for recipe step %s to be %v, but it was %v", expected.ID, expected.ConditionExpression, actual.ConditionExpression)
 	assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected ExplicitInstructions for recipe step %s to be %v, but it was %v", expected.ID, expected.ExplicitInstructions, actual.ExplicitInstructions)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step %s to be %v, but it was %v", expected.ID, expected.Optional, actual.Optional)
+	assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected StartTimerAutomatically for recipe step %s to be %v, but it was %v", expected.ID, expected.StartTimerAutomatically, actual.StartTimerAutomatically)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -56,7 +58,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			updateInput := converters.ConvertRecipeStepToRecipeStepUpdateRequestInput(newRecipeStep)
 			updateInput.Preparation = createdValidPreparation
 			createdRecipeStep.Update(updateInput)
-			assert.NoError(t, testClients.user.UpdateRecipeStep(ctx, createdRecipeStep))
+			assert.NoError(t, testClients.admin.UpdateRecipeStep(ctx, createdRecipeStep))
 
 			t.Log("fetching changed recipe step")
 			actual, err := testClients.user.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
@@ -70,7 +72,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -106,7 +108,7 @@ func (s *TestSuite) TestRecipeSteps_ContentUploading() {
 			require.NoError(t, testClients.user.UploadRecipeMediaForStep(ctx, files, createdRecipe.ID, createdRecipeStep.ID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -181,7 +183,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStepInput := converters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)
 				exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
 
-				createdRecipeStep, createdRecipeStepErr := testClients.user.CreateRecipeStep(ctx, createdRecipe.ID, exampleRecipeStepInput)
+				createdRecipeStep, createdRecipeStepErr := testClients.admin.CreateRecipeStep(ctx, createdRecipe.ID, exampleRecipeStepInput)
 				require.NoError(t, createdRecipeStepErr)
 				t.Logf("recipe step %q created", createdRecipeStep.ID)
 
@@ -211,7 +213,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			}
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

@@ -34,6 +34,14 @@ func ConvertValidIngredientToValidIngredientUpdateRequestInput(input *types.Vali
 		Slug:                                    &input.Slug,
 		ContainsAlcohol:                         &input.ContainsAlcohol,
 		ShoppingSuggestions:                     &input.ShoppingSuggestions,
+		IsStarch:                                &input.IsStarch,
+		IsProtein:                               &input.IsProtein,
+		IsGrain:                                 &input.IsGrain,
+		IsFruit:                                 &input.IsFruit,
+		IsSalt:                                  &input.IsSalt,
+		IsFat:                                   &input.IsFat,
+		IsAcid:                                  &input.IsAcid,
+		IsHeat:                                  &input.IsHeat,
 	}
 
 	return x
@@ -69,6 +77,14 @@ func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreation
 		Slug:                                    input.Slug,
 		ContainsAlcohol:                         input.ContainsAlcohol,
 		ShoppingSuggestions:                     input.ShoppingSuggestions,
+		IsStarch:                                input.IsStarch,
+		IsProtein:                               input.IsProtein,
+		IsGrain:                                 input.IsGrain,
+		IsFruit:                                 input.IsFruit,
+		IsSalt:                                  input.IsSalt,
+		IsFat:                                   input.IsFat,
+		IsAcid:                                  input.IsAcid,
+		IsHeat:                                  input.IsHeat,
 	}
 
 	return x
@@ -103,10 +119,18 @@ func ConvertValidIngredientToValidIngredientCreationRequestInput(validIngredient
 		Slug:                                    validIngredient.Slug,
 		ContainsAlcohol:                         validIngredient.ContainsAlcohol,
 		ShoppingSuggestions:                     validIngredient.ShoppingSuggestions,
+		IsStarch:                                validIngredient.IsStarch,
+		IsProtein:                               validIngredient.IsProtein,
+		IsGrain:                                 validIngredient.IsGrain,
+		IsFruit:                                 validIngredient.IsFruit,
+		IsSalt:                                  validIngredient.IsSalt,
+		IsFat:                                   validIngredient.IsFat,
+		IsAcid:                                  validIngredient.IsAcid,
+		IsHeat:                                  validIngredient.IsHeat,
 	}
 }
 
-// ConvertValidIngredientToValidIngredientDatabaseCreationInput builds a ValidIngredientDatabaseCreationInput from a Ingredient.
+// ConvertValidIngredientToValidIngredientDatabaseCreationInput builds a ValidIngredientDatabaseCreationInput from a ValidIngredient.
 func ConvertValidIngredientToValidIngredientDatabaseCreationInput(validIngredient *types.ValidIngredient) *types.ValidIngredientDatabaseCreationInput {
 	return &types.ValidIngredientDatabaseCreationInput{
 		ID:                                      validIngredient.ID,
@@ -136,6 +160,14 @@ func ConvertValidIngredientToValidIngredientDatabaseCreationInput(validIngredien
 		Slug:                                    validIngredient.Slug,
 		ContainsAlcohol:                         validIngredient.ContainsAlcohol,
 		ShoppingSuggestions:                     validIngredient.ShoppingSuggestions,
+		IsStarch:                                validIngredient.IsStarch,
+		IsProtein:                               validIngredient.IsProtein,
+		IsGrain:                                 validIngredient.IsGrain,
+		IsFruit:                                 validIngredient.IsFruit,
+		IsSalt:                                  validIngredient.IsSalt,
+		IsFat:                                   validIngredient.IsFat,
+		IsAcid:                                  validIngredient.IsAcid,
+		IsHeat:                                  validIngredient.IsHeat,
 	}
 }
 
@@ -172,6 +204,14 @@ func ConvertNullableValidIngredientToValidIngredient(input *types.NullableValidI
 		Slug:                                    *input.Slug,
 		ContainsAlcohol:                         *input.ContainsAlcohol,
 		ShoppingSuggestions:                     *input.ShoppingSuggestions,
+		IsStarch:                                *input.IsStarch,
+		IsProtein:                               *input.IsProtein,
+		IsGrain:                                 *input.IsGrain,
+		IsFruit:                                 *input.IsFruit,
+		IsSalt:                                  *input.IsSalt,
+		IsFat:                                   *input.IsFat,
+		IsAcid:                                  *input.IsAcid,
+		IsHeat:                                  *input.IsHeat,
 	}
 }
 
@@ -208,5 +248,13 @@ func ConvertValidIngredientToNullableValidIngredient(input *types.ValidIngredien
 		Slug:                                    &input.Slug,
 		ContainsAlcohol:                         &input.ContainsAlcohol,
 		ShoppingSuggestions:                     &input.ShoppingSuggestions,
+		IsStarch:                                &input.IsStarch,
+		IsProtein:                               &input.IsProtein,
+		IsGrain:                                 &input.IsGrain,
+		IsFruit:                                 &input.IsFruit,
+		IsSalt:                                  &input.IsSalt,
+		IsFat:                                   &input.IsFat,
+		IsAcid:                                  &input.IsAcid,
+		IsHeat:                                  &input.IsHeat,
 	}
 }

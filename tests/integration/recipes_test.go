@@ -30,6 +30,7 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 	assert.Equal(t, expected.PortionName, actual.PortionName, "expected PortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PortionName, actual.PortionName)
 	assert.Equal(t, expected.PluralPortionName, actual.PluralPortionName, "expected PluralPortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PluralPortionName, actual.PluralPortionName)
 	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
+	assert.Equal(t, expected.EligibleForMeals, actual.EligibleForMeals, "expected EligibleForMeals for recipe %s to be %v, but it was %v", expected.ID, expected.EligibleForMeals, actual.EligibleForMeals)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -132,7 +133,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	}
 
 	t.Log("creating recipe")
-	createdRecipe, err := client.CreateRecipe(ctx, exampleRecipeInput)
+	createdRecipe, err := adminClient.CreateRecipe(ctx, exampleRecipeInput)
 	require.NoError(t, err)
 	t.Logf("recipe %q created", createdRecipe.ID)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
@@ -229,7 +230,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1000),
+								MinimumQuantity: pointers.Pointer(float32(1000)),
 							},
 						},
 						Notes:       "first step",
@@ -263,7 +264,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1010),
+								MinimumQuantity: pointers.Pointer(float32(1010)),
 							},
 						},
 						Notes:       "second step",
@@ -312,7 +313,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.String(createdValidInstrument.ID),
+								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -347,7 +348,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.String(createdValidInstrument.ID),
+								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -370,7 +371,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				},
 			}
 
-			created, err := testClients.user.CreateRecipe(ctx, expectedInput)
+			created, err := testClients.admin.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
@@ -406,7 +407,7 @@ func (s *TestSuite) TestRecipes_Updating() {
 			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
-			assert.NoError(t, testClients.user.UpdateRecipe(ctx, createdRecipe))
+			assert.NoError(t, testClients.admin.UpdateRecipe(ctx, createdRecipe))
 
 			t.Log("fetching changed recipe")
 			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
@@ -417,7 +418,7 @@ func (s *TestSuite) TestRecipes_Updating() {
 			assert.NotNil(t, actual.LastUpdatedAt)
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -435,7 +436,7 @@ func (s *TestSuite) TestRecipes_ContentUploading() {
 			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
-			assert.NoError(t, testClients.user.UpdateRecipe(ctx, createdRecipe))
+			assert.NoError(t, testClients.admin.UpdateRecipe(ctx, createdRecipe))
 
 			t.Log("fetching changed recipe")
 			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
@@ -458,7 +459,7 @@ func (s *TestSuite) TestRecipes_ContentUploading() {
 			require.NoError(t, testClients.user.UploadRecipeMedia(ctx, files, actual.ID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -493,7 +494,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 			require.NotEmpty(t, foundMealID)
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -527,7 +528,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+				assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
 		}
 	})
@@ -591,7 +592,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 
 			t.Log("cleaning up")
 			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+				assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
 		}
 	})
@@ -627,7 +628,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			t.Log("creating prerequisite valid ingredient")
 			chickenBreastBase := fakes.BuildFakeValidIngredient()
 			chickenBreastInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(chickenBreastBase)
-			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Float32(2.5)
+			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Pointer(float32(2.5))
 			chickenBreast, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, chickenBreastInput)
 			require.NoError(t, createdValidIngredientErr)
 
@@ -659,7 +660,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1000),
+								MinimumQuantity: pointers.Pointer(float32(1000)),
 							},
 						},
 						Notes:       "first step",
@@ -689,7 +690,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1010),
+								MinimumQuantity: pointers.Pointer(float32(1010)),
 							},
 						},
 						Notes:       "second step",
@@ -724,7 +725,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:              types.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   pointers.Float32(1000),
+								MinimumQuantity:   pointers.Pointer(float32(1000)),
 							},
 						},
 						Notes:         "first step",
@@ -732,7 +733,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.String(createdValidInstrument.ID),
+								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -753,7 +754,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:              types.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   pointers.Float32(1010),
+								MinimumQuantity:   pointers.Pointer(float32(1010)),
 							},
 						},
 						Notes:         "second step",
@@ -761,7 +762,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.String(createdValidInstrument.ID),
+								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -778,7 +779,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 				},
 			}
 
-			created, err := testClients.user.CreateRecipe(ctx, expectedInput)
+			created, err := testClients.admin.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
@@ -806,7 +807,7 @@ func (s *TestSuite) TestRecipes_DAGGeneration() {
 			requireNotNilAndNoProblems(t, actual, err)
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

@@ -16,6 +16,7 @@ SELECT
 	meals.description,
 	meals.min_estimated_portions,
 	meals.max_estimated_portions,
+    meals.eligible_for_meal_plans,
 	meals.created_at,
 	meals.last_updated_at,
 	meals.archived_at,

@@ -19,6 +19,7 @@ func ConvertMealCreationRequestInputToMealDatabaseCreationInput(input *types.Mea
 		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
 		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
 		Components:               convertedComponents,
+		EligibleForMealPlans:     input.EligibleForMealPlans,
 	}
 
 	return x
@@ -48,6 +49,7 @@ func ConvertMealToMealCreationRequestInput(meal *types.Meal) *types.MealCreation
 		MinimumEstimatedPortions: meal.MinimumEstimatedPortions,
 		MaximumEstimatedPortions: meal.MaximumEstimatedPortions,
 		Components:               convertedComponents,
+		EligibleForMealPlans:     meal.EligibleForMealPlans,
 	}
 }
 
@@ -77,6 +79,7 @@ func ConvertMealToMealDatabaseCreationInput(meal *types.Meal) *types.MealDatabas
 		MaximumEstimatedPortions: meal.MaximumEstimatedPortions,
 		CreatedByUser:            meal.CreatedByUser,
 		Components:               convertedComponents,
+		EligibleForMealPlans:     meal.EligibleForMealPlans,
 	}
 }
 
@@ -105,6 +108,7 @@ func ConvertMealToMealUpdateRequestInput(meal *types.Meal) *types.MealUpdateRequ
 		MaximumEstimatedPortions: meal.MaximumEstimatedPortions,
 		CreatedByUser:            &meal.CreatedByUser,
 		Components:               convertedComponents,
+		EligibleForMealPlans:     &meal.EligibleForMealPlans,
 	}
 }
 

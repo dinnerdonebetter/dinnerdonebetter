@@ -43,6 +43,7 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 			x.PortionName,
 			x.PluralPortionName,
 			x.SealOfApproval,
+			x.EligibleForMeals,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -72,6 +73,7 @@ var fullRecipesColumns = []string{
 	"recipes.portion_name",
 	"recipes.plural_portion_name",
 	"recipes.seal_of_approval",
+	"recipes.eligible_for_meals",
 	"recipes.created_at",
 	"recipes.last_updated_at",
 	"recipes.archived_at",
@@ -108,6 +110,7 @@ var fullRecipesColumns = []string{
 	"recipe_steps.explicit_instructions",
 	"recipe_steps.condition_expression",
 	"recipe_steps.optional",
+	"recipe_steps.start_timer_automatically",
 	"recipe_steps.created_at",
 	"recipe_steps.last_updated_at",
 	"recipe_steps.archived_at",
@@ -130,6 +133,7 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&recipe.PortionName,
 			&recipe.PluralPortionName,
 			&recipe.SealOfApproval,
+			&recipe.EligibleForMeals,
 			&recipe.CreatedAt,
 			&recipe.LastUpdatedAt,
 			&recipe.ArchivedAt,
@@ -166,6 +170,7 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.ExplicitInstructions,
 			&step.ConditionExpression,
 			&step.Optional,
+			&step.StartTimerAutomatically,
 			&step.CreatedAt,
 			&step.LastUpdatedAt,
 			&step.ArchivedAt,
@@ -1005,6 +1010,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PortionName,
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1025,6 +1031,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				step.ExplicitInstructions,
 				step.ConditionExpression,
 				step.Optional,
+				step.StartTimerAutomatically,
 				step.BelongsToRecipe,
 			}
 
@@ -1230,6 +1237,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PortionName,
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1243,6 +1251,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Description,
 			exampleRecipe.MinimumEstimatedPortions,
 			exampleRecipe.MaximumEstimatedPortions,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1353,6 +1362,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PortionName,
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
+			exampleRecipe.EligibleForMeals,
 			exampleInput.CreatedByUser,
 		}
 
@@ -1410,6 +1420,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PortionName,
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1429,6 +1440,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Steps[0].ExplicitInstructions,
 			exampleInput.Steps[0].ConditionExpression,
 			exampleInput.Steps[0].Optional,
+			exampleInput.Steps[0].StartTimerAutomatically,
 			exampleInput.Steps[0].BelongsToRecipe,
 		}
 
@@ -1473,6 +1485,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.PortionName,
 			exampleInput.PluralPortionName,
 			exampleInput.SealOfApproval,
+			exampleInput.EligibleForMeals,
 			exampleInput.CreatedByUser,
 		}
 
@@ -1524,6 +1537,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PortionName,
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1537,6 +1551,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Description,
 			exampleRecipe.MinimumEstimatedPortions,
 			exampleRecipe.MaximumEstimatedPortions,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1588,6 +1603,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.PortionName,
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
 		}
@@ -1629,6 +1645,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.PortionName,
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
 		}

@@ -20,6 +20,7 @@ func BuildFakeMeal() *types.Meal {
 		CreatedAt:                BuildFakeTime(),
 		CreatedByUser:            BuildFakeID(),
 		Components:               recipes,
+		EligibleForMealPlans:     true,
 	}
 }
 

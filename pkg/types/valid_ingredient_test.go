@@ -36,8 +36,8 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 			PluralName:                              fake.LoremIpsumSentence(exampleQuantity),
 			AnimalDerived:                           fake.Bool(),
 			RestrictToPreparations:                  fake.Bool(),
-			MinimumIdealStorageTemperatureInCelsius: pointers.Float32(fake.Float32()),
-			MaximumIdealStorageTemperatureInCelsius: pointers.Float32(fake.Float32()),
+			MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
+			MaximumIdealStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -61,27 +61,27 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientUpdateRequestInput{
-			Name:                                    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:                             pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Warning:                                 pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			ContainsEgg:                             pointers.Bool(fake.Bool()),
-			ContainsDairy:                           pointers.Bool(fake.Bool()),
-			ContainsPeanut:                          pointers.Bool(fake.Bool()),
-			ContainsTreeNut:                         pointers.Bool(fake.Bool()),
-			ContainsSoy:                             pointers.Bool(fake.Bool()),
-			ContainsWheat:                           pointers.Bool(fake.Bool()),
-			ContainsShellfish:                       pointers.Bool(fake.Bool()),
-			ContainsSesame:                          pointers.Bool(fake.Bool()),
-			ContainsFish:                            pointers.Bool(fake.Bool()),
-			ContainsGluten:                          pointers.Bool(fake.Bool()),
-			AnimalFlesh:                             pointers.Bool(fake.Bool()),
-			IsMeasuredVolumetrically:                pointers.Bool(fake.Bool()),
-			IconPath:                                pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			PluralName:                              pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			AnimalDerived:                           pointers.Bool(fake.Bool()),
-			RestrictToPreparations:                  pointers.Bool(fake.Bool()),
-			MinimumIdealStorageTemperatureInCelsius: pointers.Float32(fake.Float32()),
-			MaximumIdealStorageTemperatureInCelsius: pointers.Float32(fake.Float32()),
+			Name:                                    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:                             pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Warning:                                 pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ContainsEgg:                             pointers.Pointer(fake.Bool()),
+			ContainsDairy:                           pointers.Pointer(fake.Bool()),
+			ContainsPeanut:                          pointers.Pointer(fake.Bool()),
+			ContainsTreeNut:                         pointers.Pointer(fake.Bool()),
+			ContainsSoy:                             pointers.Pointer(fake.Bool()),
+			ContainsWheat:                           pointers.Pointer(fake.Bool()),
+			ContainsShellfish:                       pointers.Pointer(fake.Bool()),
+			ContainsSesame:                          pointers.Pointer(fake.Bool()),
+			ContainsFish:                            pointers.Pointer(fake.Bool()),
+			ContainsGluten:                          pointers.Pointer(fake.Bool()),
+			AnimalFlesh:                             pointers.Pointer(fake.Bool()),
+			IsMeasuredVolumetrically:                pointers.Pointer(fake.Bool()),
+			IconPath:                                pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			PluralName:                              pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AnimalDerived:                           pointers.Pointer(fake.Bool()),
+			RestrictToPreparations:                  pointers.Pointer(fake.Bool()),
+			MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
+			MaximumIdealStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -137,7 +137,7 @@ func TestValidIngredientUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &ValidIngredientUpdateRequestInput{
-			Name: pointers.String(t.Name()),
+			Name: pointers.Pointer(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -180,32 +180,32 @@ func TestValidIngredient_Update(T *testing.T) {
 		}
 
 		input := &ValidIngredientUpdateRequestInput{
-			MinimumIdealStorageTemperatureInCelsius: pointers.Float32(1.23),
-			MaximumIdealStorageTemperatureInCelsius: pointers.Float32(1.23),
-			IconPath:                                pointers.String(t.Name()),
-			Warning:                                 pointers.String(t.Name()),
-			PluralName:                              pointers.String(t.Name()),
-			StorageInstructions:                     pointers.String(t.Name()),
-			Name:                                    pointers.String(t.Name()),
-			Description:                             pointers.String(t.Name()),
-			Slug:                                    pointers.String(t.Name()),
-			ShoppingSuggestions:                     pointers.String(t.Name()),
-			ContainsShellfish:                       pointers.Bool(true),
-			IsMeasuredVolumetrically:                pointers.Bool(true),
-			IsLiquid:                                pointers.Bool(true),
-			ContainsPeanut:                          pointers.Bool(true),
-			ContainsTreeNut:                         pointers.Bool(true),
-			ContainsEgg:                             pointers.Bool(true),
-			ContainsWheat:                           pointers.Bool(true),
-			ContainsSoy:                             pointers.Bool(true),
-			AnimalDerived:                           pointers.Bool(true),
-			RestrictToPreparations:                  pointers.Bool(true),
-			ContainsSesame:                          pointers.Bool(true),
-			ContainsFish:                            pointers.Bool(true),
-			ContainsGluten:                          pointers.Bool(true),
-			ContainsDairy:                           pointers.Bool(true),
-			ContainsAlcohol:                         pointers.Bool(true),
-			AnimalFlesh:                             pointers.Bool(true),
+			MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(1.23)),
+			MaximumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(1.23)),
+			IconPath:                                pointers.Pointer(t.Name()),
+			Warning:                                 pointers.Pointer(t.Name()),
+			PluralName:                              pointers.Pointer(t.Name()),
+			StorageInstructions:                     pointers.Pointer(t.Name()),
+			Name:                                    pointers.Pointer(t.Name()),
+			Description:                             pointers.Pointer(t.Name()),
+			Slug:                                    pointers.Pointer(t.Name()),
+			ShoppingSuggestions:                     pointers.Pointer(t.Name()),
+			ContainsShellfish:                       pointers.Pointer(true),
+			IsMeasuredVolumetrically:                pointers.Pointer(true),
+			IsLiquid:                                pointers.Pointer(true),
+			ContainsPeanut:                          pointers.Pointer(true),
+			ContainsTreeNut:                         pointers.Pointer(true),
+			ContainsEgg:                             pointers.Pointer(true),
+			ContainsWheat:                           pointers.Pointer(true),
+			ContainsSoy:                             pointers.Pointer(true),
+			AnimalDerived:                           pointers.Pointer(true),
+			RestrictToPreparations:                  pointers.Pointer(true),
+			ContainsSesame:                          pointers.Pointer(true),
+			ContainsFish:                            pointers.Pointer(true),
+			ContainsGluten:                          pointers.Pointer(true),
+			ContainsDairy:                           pointers.Pointer(true),
+			ContainsAlcohol:                         pointers.Pointer(true),
+			AnimalFlesh:                             pointers.Pointer(true),
 		}
 
 		expected := &ValidIngredient{

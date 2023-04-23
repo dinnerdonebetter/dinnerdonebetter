@@ -14,14 +14,14 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 	return &RecipeStepCreationRequestInput{
 		Index:                         fake.Uint32(),
 		PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
-		MinimumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
-		MaximumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
-		MinimumTemperatureInCelsius:   pointers.Float32(float32(123.45)),
+		MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
+		MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
+		MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
 		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 		ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
 		Instruments: []*RecipeStepInstrumentCreationRequestInput{
 			{
-				InstrumentID:    pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+				InstrumentID:    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 				Name:            fake.LoremIpsumSentence(exampleQuantity),
 				MinimumQuantity: fake.Uint32(),
 			},
@@ -30,8 +30,8 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 			{
 				Name:              fake.LoremIpsumSentence(exampleQuantity),
 				Type:              RecipeStepProductIngredientType,
-				MeasurementUnitID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-				MinimumQuantity:   pointers.Float32(fake.Float32()),
+				MeasurementUnitID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+				MinimumQuantity:   pointers.Pointer(fake.Float32()),
 				QuantityNotes:     fake.LoremIpsumSentence(exampleQuantity),
 			},
 		},
@@ -74,9 +74,9 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 		x := &RecipeStepCreationRequestInput{
 			Index:                         fake.Uint32(),
 			PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
-			MinimumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
-			MaximumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
-			MinimumTemperatureInCelsius:   pointers.Float32(float32(123.45)),
+			MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
+			MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
+			MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
 			Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 			ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
 			Products: []*RecipeStepProductCreationRequestInput{
@@ -109,13 +109,13 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepUpdateRequestInput{
-			Index:                         pointers.Uint32(fake.Uint32()),
+			Index:                         pointers.Pointer(fake.Uint32()),
 			Preparation:                   &ValidPreparation{},
-			MinimumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
-			MaximumEstimatedTimeInSeconds: pointers.Uint32(fake.Uint32()),
-			MinimumTemperatureInCelsius:   pointers.Float32(float32(123.45)),
-			Notes:                         pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			ExplicitInstructions:          pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
+			MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
+			MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
+			Notes:                         pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ExplicitInstructions:          pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

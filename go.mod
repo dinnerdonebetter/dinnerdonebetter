@@ -30,6 +30,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/heimdalr/dag v1.2.1
+	github.com/jinzhu/copier v0.3.5
 	github.com/keith-turner/ecoji/v2 v2.0.1
 	github.com/kyleconroy/sqlc v1.15.0
 	github.com/launchdarkly/go-sdk-common/v3 v3.0.1

@@ -380,6 +380,11 @@ var (
 			Description: "add meal plan scaling",
 			Script:      fetchMigration("00073_meal_plan_scaling"),
 		},
+		{
+			Version:     74,
+			Description: "batch of changes",
+			Script:      fetchMigration("00074_batch_of_changes"),
+		},
 	}
 )
 

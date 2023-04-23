@@ -17,8 +17,8 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		ID:                                 BuildFakeID(),
 		Name:                               buildUniqueString(),
 		Type:                               types.RecipeStepProductIngredientType,
-		MinimumQuantity:                    pointers.Float32(minQty),
-		MaximumQuantity:                    pointers.Float32(minQty + 1),
+		MinimumQuantity:                    pointers.Pointer(minQty),
+		MaximumQuantity:                    pointers.Pointer(minQty + 1),
 		QuantityNotes:                      buildUniqueString(),
 		MeasurementUnit:                    BuildFakeValidMeasurementUnit(),
 		CreatedAt:                          BuildFakeTime(),
@@ -26,12 +26,12 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		Compostable:                        fake.Bool(),
 		IsLiquid:                           fake.Bool(),
 		IsWaste:                            fake.Bool(),
-		MaximumStorageDurationInSeconds:    pointers.Uint32(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius: pointers.Float32(float32(storageTemp)),
-		MaximumStorageTemperatureInCelsius: pointers.Float32(float32(storageTemp + 1)),
+		MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
+		MinimumStorageTemperatureInCelsius: pointers.Pointer(float32(storageTemp)),
+		MaximumStorageTemperatureInCelsius: pointers.Pointer(float32(storageTemp + 1)),
 		StorageInstructions:                buildUniqueString(),
 		Index:                              fake.Uint16(),
-		ContainedInVesselIndex:             pointers.Uint16(fake.Uint16()),
+		ContainedInVesselIndex:             pointers.Pointer(fake.Uint16()),
 	}
 }
 

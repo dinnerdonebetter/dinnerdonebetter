@@ -43,9 +43,9 @@ func TestValidIngredientPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientPreparationUpdateRequestInput{
-			Notes:              pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidPreparationID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientID:  pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:              pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidPreparationID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ValidIngredientID:  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

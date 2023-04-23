@@ -133,7 +133,10 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer,
 		return nil, err
 	}
 	apiclientsConfig := apiclients.ProvideConfig(authenticationConfig)
-	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, routeParamManager, apiclientsConfig, tracerProvider, generator)
+	apiClientDataService, err := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, routeParamManager, apiclientsConfig, tracerProvider, generator, publisherProvider)
+	if err != nil {
+		return nil, err
+	}
 	validinstrumentsConfig := &servicesConfigurations.ValidInstruments
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
 	validInstrumentDataService, err := validinstruments.ProvideService(logger, validinstrumentsConfig, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)

@@ -985,7 +985,7 @@ func TestQuerier_buildGetHouseholdsQuery(T *testing.T) {
 		}
 
 		filter := types.DefaultQueryFilter()
-		filter.IncludeArchived = pointers.Bool(true)
+		filter.IncludeArchived = pointers.Pointer(true)
 
 		actualQuery, actualArgs := c.buildGetHouseholdsQuery(ctx, exampleUserID, false, filter)
 

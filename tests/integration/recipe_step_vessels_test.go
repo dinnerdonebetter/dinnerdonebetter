@@ -66,7 +66,7 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepVessel.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
 			exampleRecipeStepVesselInput := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
-			createdRecipeStepVessel, err := testClients.user.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
+			createdRecipeStepVessel, err := testClients.admin.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
 			require.NoError(t, err)
 			t.Logf("recipe step vessel %q created", createdRecipeStepVessel.ID)
 
@@ -94,7 +94,7 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			newRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepVessel.Instrument = newValidInstrument
 			createdRecipeStepVessel.Update(converters.ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(newRecipeStepVessel))
-			assert.NoError(t, testClients.user.UpdateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepVessel))
+			assert.NoError(t, testClients.admin.UpdateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepVessel))
 
 			t.Log("fetching changed recipe step vessel")
 			actual, err := testClients.user.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
@@ -111,7 +111,7 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
@@ -196,7 +196,7 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductVesselType,
 								MeasurementUnit: unit,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1),
+								MinimumQuantity: pointers.Pointer(float32(1)),
 							},
 						},
 						Notes:       "first step",
@@ -231,7 +231,7 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: head,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Float32(1),
+								MinimumQuantity: pointers.Pointer(float32(1)),
 							},
 						},
 						Notes: "second step",
@@ -255,7 +255,7 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			inputJSON, _ := json.Marshal(exampleRecipeInput)
 			t.Log(string(inputJSON))
 
-			created, err := testClients.user.CreateRecipe(ctx, exampleRecipeInput)
+			created, err := testClients.admin.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
 			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
@@ -313,7 +313,7 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 				exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepVessel.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
 				exampleRecipeStepVesselInput := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
-				createdRecipeStepVessel, createdRecipeStepVesselErr := testClients.user.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
+				createdRecipeStepVessel, createdRecipeStepVesselErr := testClients.admin.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
 				require.NoError(t, createdRecipeStepVesselErr)
 				t.Logf("recipe step vessel %q created", createdRecipeStepVessel.ID)
 				checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
@@ -345,7 +345,7 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
 			t.Log("cleaning up recipe")
-			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

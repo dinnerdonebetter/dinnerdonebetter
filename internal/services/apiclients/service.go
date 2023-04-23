@@ -1,13 +1,13 @@
 package apiclients
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/random"
 	"github.com/prixfixeco/backend/internal/routing"
@@ -16,16 +16,15 @@ import (
 )
 
 const (
-	counterName        metrics.CounterName = "api_clients"
-	counterDescription string              = "number of API clients managed by the API client service"
-	serviceName        string              = "api_clients_service"
+	serviceName string = "api_clients_service"
 )
 
 var _ types.APIClientDataService = (*service)(nil)
 
 type (
-	// Config manages our body valdation.
+	// Config manages our body validation.
 	Config struct {
+		dataChangesTopicName string
 		minimumUsernameLength,
 		minimumPasswordLength uint8
 	}
@@ -57,8 +56,14 @@ func ProvideAPIClientsService(
 	cfg *Config,
 	tracerProvider tracing.TracerProvider,
 	secretGenerator random.Generator,
-) types.APIClientDataService {
-	return &service{
+	publisherProvider messagequeue.PublisherProvider,
+) (types.APIClientDataService, error) {
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.dataChangesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up api clients service data changes publisher: %w", err)
+	}
+
+	s := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		cfg:                       cfg,
 		apiClientDataManager:      clientDataManager,
@@ -68,6 +73,9 @@ func ProvideAPIClientsService(
 		urlClientIDExtractor:      routeParamManager.BuildRouteParamStringIDFetcher(APIClientIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		secretGenerator:           secretGenerator,
+		dataChangesPublisher:      dataChangesPublisher,
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
+
+	return s, nil
 }

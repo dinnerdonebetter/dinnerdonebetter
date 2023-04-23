@@ -44,9 +44,9 @@ func TestRecipeStepCompletionConditionUpdateRequestInput_Validate(T *testing.T) 
 		t.Parallel()
 
 		x := &RecipeStepCompletionConditionUpdateRequestInput{
-			IngredientStateID:   pointers.String(t.Name()),
-			BelongsToRecipeStep: pointers.String(t.Name()),
-			Optional:            pointers.Bool(fake.Bool()),
+			IngredientStateID:   pointers.Pointer(t.Name()),
+			BelongsToRecipeStep: pointers.Pointer(t.Name()),
+			Optional:            pointers.Pointer(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

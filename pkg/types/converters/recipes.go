@@ -19,6 +19,7 @@ func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeU
 		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
 		PortionName:              &input.PortionName,
 		PluralPortionName:        &input.PluralPortionName,
+		EligibleForMeals:         &input.EligibleForMeals,
 	}
 
 	return x
@@ -39,6 +40,7 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *types
 		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
 		PortionName:              input.PortionName,
 		PluralPortionName:        input.PluralPortionName,
+		EligibleForMeals:         input.EligibleForMeals,
 	}
 
 	for _, step := range input.Steps {
@@ -84,6 +86,7 @@ func ConvertRecipeToRecipeCreationRequestInput(recipe *types.Recipe) *types.Reci
 		PluralPortionName:        recipe.PluralPortionName,
 		Steps:                    steps,
 		PrepTasks:                prepTasks,
+		EligibleForMeals:         recipe.EligibleForMeals,
 	}
 }
 
@@ -114,5 +117,6 @@ func ConvertRecipeToRecipeDatabaseCreationInput(recipe *types.Recipe) *types.Rec
 		PluralPortionName:        recipe.PluralPortionName,
 		Steps:                    steps,
 		PrepTasks:                prepTasks,
+		EligibleForMeals:         recipe.EligibleForMeals,
 	}
 }

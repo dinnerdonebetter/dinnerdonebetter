@@ -52,6 +52,7 @@ type (
 		Steps                    []*RecipeStep     `json:"steps"`
 		MinimumEstimatedPortions float32           `json:"minimumEstimatedPortions"`
 		SealOfApproval           bool              `json:"sealOfApproval"`
+		EligibleForMeals         bool              `json:"eligibleForMeals"`
 	}
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
@@ -71,6 +72,7 @@ type (
 		MinimumEstimatedPortions float32                                           `json:"minimumEstimatedPortions"`
 		AlsoCreateMeal           bool                                              `json:"alsoCreateMeal"`
 		SealOfApproval           bool                                              `json:"sealOfApproval"`
+		EligibleForMeals         bool                                              `json:"eligibleForMeals"`
 	}
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
@@ -92,6 +94,7 @@ type (
 		MinimumEstimatedPortions float32
 		AlsoCreateMeal           bool
 		SealOfApproval           bool
+		EligibleForMeals         bool
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.
@@ -109,6 +112,7 @@ type (
 		MaximumEstimatedPortions *float32 `json:"maximumEstimatedPortions,omitempty"`
 		PortionName              *string  `json:"portionName"`
 		PluralPortionName        *string  `json:"pluralPortionName"`
+		EligibleForMeals         *bool    `json:"eligibleForMeals"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -203,6 +207,10 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 
 	if input.PluralPortionName != nil && *input.PluralPortionName != x.PluralPortionName {
 		x.PluralPortionName = *input.PluralPortionName
+	}
+
+	if input.EligibleForMeals != nil && *input.EligibleForMeals != x.EligibleForMeals {
+		x.EligibleForMeals = *input.EligibleForMeals
 	}
 }
 

@@ -20,7 +20,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			Name:               fake.LoremIpsumSentence(exampleQuantity),
 			Source:             fake.LoremIpsumSentence(exampleQuantity),
 			Description:        fake.LoremIpsumSentence(exampleQuantity),
-			InspiredByRecipeID: pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
+			InspiredByRecipeID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 				buildValidRecipeStepCreationRequestInput(),
@@ -50,12 +50,12 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeUpdateRequestInput{
-			Name:                     pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Source:                   pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:              pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			InspiredByRecipeID:       pointers.String(fake.LoremIpsumSentence(exampleQuantity)),
-			SealOfApproval:           pointers.Bool(fake.Bool()),
-			MinimumEstimatedPortions: pointers.Float32(fake.Float32()),
+			Name:                     pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Source:                   pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:              pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			InspiredByRecipeID:       pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			SealOfApproval:           pointers.Pointer(fake.Bool()),
+			MinimumEstimatedPortions: pointers.Pointer(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

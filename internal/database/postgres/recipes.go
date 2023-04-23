@@ -31,6 +31,7 @@ var (
 		"recipes.portion_name",
 		"recipes.plural_portion_name",
 		"recipes.seal_of_approval",
+		"recipes.eligible_for_meals",
 		"recipes.created_at",
 		"recipes.last_updated_at",
 		"recipes.archived_at",
@@ -57,6 +58,7 @@ func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, include
 		&x.PortionName,
 		&x.PluralPortionName,
 		&x.SealOfApproval,
+		&x.EligibleForMeals,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -156,6 +158,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&x.PortionName,
 		&x.PluralPortionName,
 		&x.SealOfApproval,
+		&x.EligibleForMeals,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -192,6 +195,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&y.ExplicitInstructions,
 		&y.ConditionExpression,
 		&y.Optional,
+		&y.StartTimerAutomatically,
 		&y.CreatedAt,
 		&y.LastUpdatedAt,
 		&y.ArchivedAt,
@@ -227,7 +231,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 
 	rows, err := q.getRows(ctx, q.db, "get recipe", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipe")
+		return nil, observability.PrepareError(err, span, "fetching recipe data")
 	}
 
 	var x *types.Recipe
@@ -461,6 +465,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		input.PortionName,
 		input.PluralPortionName,
 		input.SealOfApproval,
+		input.EligibleForMeals,
 		input.CreatedByUser,
 	}
 
@@ -481,6 +486,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
 		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
 		SealOfApproval:           input.SealOfApproval,
+		EligibleForMeals:         input.EligibleForMeals,
 		PortionName:              input.PortionName,
 		PluralPortionName:        input.PluralPortionName,
 		CreatedAt:                q.currentTime(),
@@ -520,6 +526,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 			Description:              x.Description,
 			MinimumEstimatedPortions: x.MinimumEstimatedPortions,
 			MaximumEstimatedPortions: x.MaximumEstimatedPortions,
+			EligibleForMealPlans:     x.EligibleForMeals,
 			CreatedByUser:            x.CreatedByUser,
 			Components: []*types.MealComponentDatabaseCreationInput{
 				{
@@ -618,6 +625,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 		updated.PortionName,
 		updated.PluralPortionName,
 		updated.SealOfApproval,
+		updated.EligibleForMeals,
 		updated.CreatedByUser,
 		updated.ID,
 	}
@@ -657,7 +665,7 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "recipe archive", archiveRecipeQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe")
 	}
 
 	logger.Info("recipe archived")
