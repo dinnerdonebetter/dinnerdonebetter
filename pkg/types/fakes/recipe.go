@@ -45,6 +45,7 @@ func BuildFakeRecipe() *types.Recipe {
 		MaximumEstimatedPortions: pointers.Pointer(float32(BuildFakeNumber())),
 		PortionName:              buildUniqueString(),
 		PluralPortionName:        buildUniqueString(),
+		EligibleForMeals:         true,
 	}
 }
 

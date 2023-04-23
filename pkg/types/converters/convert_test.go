@@ -3,11 +3,11 @@ package converters
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestConvert(T *testing.T) {
@@ -29,6 +29,7 @@ func TestConvert(T *testing.T) {
 			Name:           "Name",
 			Description:    "Description",
 			Slug:           "Slug",
+			PastTense:      "PastTense",
 			OnlyForVessels: true,
 		}
 

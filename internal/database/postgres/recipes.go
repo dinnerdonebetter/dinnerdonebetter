@@ -31,6 +31,7 @@ var (
 		"recipes.portion_name",
 		"recipes.plural_portion_name",
 		"recipes.seal_of_approval",
+		"recipes.eligible_for_meals",
 		"recipes.created_at",
 		"recipes.last_updated_at",
 		"recipes.archived_at",
@@ -57,6 +58,7 @@ func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, include
 		&x.PortionName,
 		&x.PluralPortionName,
 		&x.SealOfApproval,
+		&x.EligibleForMeals,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -156,6 +158,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&x.PortionName,
 		&x.PluralPortionName,
 		&x.SealOfApproval,
+		&x.EligibleForMeals,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -461,6 +464,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		input.PortionName,
 		input.PluralPortionName,
 		input.SealOfApproval,
+		input.EligibleForMeals,
 		input.CreatedByUser,
 	}
 
@@ -481,6 +485,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
 		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
 		SealOfApproval:           input.SealOfApproval,
+		EligibleForMeals:         input.EligibleForMeals,
 		PortionName:              input.PortionName,
 		PluralPortionName:        input.PluralPortionName,
 		CreatedAt:                q.currentTime(),
@@ -618,6 +623,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 		updated.PortionName,
 		updated.PluralPortionName,
 		updated.SealOfApproval,
+		updated.EligibleForMeals,
 		updated.CreatedByUser,
 		updated.ID,
 	}
