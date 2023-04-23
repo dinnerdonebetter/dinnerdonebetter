@@ -9,7 +9,8 @@ UPDATE recipe_steps SET
 	explicit_instructions = $8,
 	condition_expression = $9,
 	optional = $10,
+	start_timer_automatically = $11,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_recipe = $11
-	AND id = $12;
+	AND belongs_to_recipe = $12
+	AND id = $13;

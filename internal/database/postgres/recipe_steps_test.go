@@ -61,6 +61,7 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.ExplicitInstructions,
 			x.ConditionExpression,
 			x.Optional,
+			x.StartTimerAutomatically,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -536,6 +537,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.ExplicitInstructions,
 			exampleInput.ConditionExpression,
 			exampleInput.Optional,
+			exampleInput.StartTimerAutomatically,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -587,6 +589,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.ExplicitInstructions,
 			exampleInput.ConditionExpression,
 			exampleInput.Optional,
+			exampleInput.StartTimerAutomatically,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -659,6 +662,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.ExplicitInstructions,
 			exampleInput.ConditionExpression,
 			exampleInput.Optional,
+			exampleInput.StartTimerAutomatically,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -822,6 +826,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.ExplicitInstructions,
 			exampleInput.ConditionExpression,
 			exampleInput.Optional,
+			exampleInput.StartTimerAutomatically,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -897,6 +902,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.ExplicitInstructions,
 			exampleInput.ConditionExpression,
 			exampleInput.Optional,
+			exampleInput.StartTimerAutomatically,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -987,6 +993,7 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.ExplicitInstructions,
 			exampleRecipeStep.ConditionExpression,
 			exampleRecipeStep.Optional,
+			exampleRecipeStep.StartTimerAutomatically,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
 		}
@@ -1028,6 +1035,7 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.ExplicitInstructions,
 			exampleRecipeStep.ConditionExpression,
 			exampleRecipeStep.Optional,
+			exampleRecipeStep.StartTimerAutomatically,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
 		}

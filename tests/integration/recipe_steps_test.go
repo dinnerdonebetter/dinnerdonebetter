@@ -25,6 +25,8 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 	assert.Equal(t, expected.Notes, actual.Notes, "expected StatusExplanation for recipe step %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.ConditionExpression, actual.ConditionExpression, "expected StatusExplanation for recipe step %s to be %v, but it was %v", expected.ID, expected.ConditionExpression, actual.ConditionExpression)
 	assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected ExplicitInstructions for recipe step %s to be %v, but it was %v", expected.ID, expected.ExplicitInstructions, actual.ExplicitInstructions)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step %s to be %v, but it was %v", expected.ID, expected.Optional, actual.Optional)
+	assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected StartTimerAutomatically for recipe step %s to be %v, but it was %v", expected.ID, expected.StartTimerAutomatically, actual.StartTimerAutomatically)
 	assert.NotZero(t, actual.CreatedAt)
 }
 

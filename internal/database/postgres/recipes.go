@@ -195,6 +195,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&y.ExplicitInstructions,
 		&y.ConditionExpression,
 		&y.Optional,
+		&y.StartTimerAutomatically,
 		&y.CreatedAt,
 		&y.LastUpdatedAt,
 		&y.ArchivedAt,
@@ -230,7 +231,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 
 	rows, err := q.getRows(ctx, q.db, "get recipe", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipe")
+		return nil, observability.PrepareError(err, span, "fetching recipe data")
 	}
 
 	var x *types.Recipe

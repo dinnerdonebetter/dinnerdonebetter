@@ -79,6 +79,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		Instruments:                   instruments,
 		Vessels:                       vessels,
 		CompletionConditions:          completionConditions,
+		StartTimerAutomatically:       fake.Bool(),
 	}
 }
 

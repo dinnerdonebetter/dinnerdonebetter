@@ -52,6 +52,7 @@ var (
 		"recipe_steps.explicit_instructions",
 		"recipe_steps.condition_expression",
 		"recipe_steps.optional",
+		"recipe_steps.start_timer_automatically",
 		"recipe_steps.created_at",
 		"recipe_steps.last_updated_at",
 		"recipe_steps.archived_at",
@@ -104,6 +105,7 @@ func (q *Querier) scanRecipeStep(ctx context.Context, scan database.Scanner, inc
 		&x.ExplicitInstructions,
 		&x.ConditionExpression,
 		&x.Optional,
+		&x.StartTimerAutomatically,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -319,6 +321,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		input.ExplicitInstructions,
 		input.ConditionExpression,
 		input.Optional,
+		input.StartTimerAutomatically,
 		input.BelongsToRecipe,
 	}
 
@@ -340,6 +343,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		ConditionExpression:           input.ConditionExpression,
 		Optional:                      input.Optional,
 		BelongsToRecipe:               input.BelongsToRecipe,
+		StartTimerAutomatically:       input.StartTimerAutomatically,
 		CreatedAt:                     q.currentTime(),
 	}
 
@@ -429,6 +433,7 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 		updated.ExplicitInstructions,
 		updated.ConditionExpression,
 		updated.Optional,
+		updated.StartTimerAutomatically,
 		updated.BelongsToRecipe,
 		updated.ID,
 	}
