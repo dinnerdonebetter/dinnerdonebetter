@@ -1248,6 +1248,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Description,
 			exampleRecipe.MinimumEstimatedPortions,
 			exampleRecipe.MaximumEstimatedPortions,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1546,6 +1547,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Description,
 			exampleRecipe.MinimumEstimatedPortions,
 			exampleRecipe.MaximumEstimatedPortions,
+			exampleRecipe.EligibleForMeals,
 			exampleRecipe.CreatedByUser,
 		}
 

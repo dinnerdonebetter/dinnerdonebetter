@@ -63,6 +63,7 @@ type (
 		Name                     string           `json:"name"`
 		Components               []*MealComponent `json:"components"`
 		MinimumEstimatedPortions float32          `json:"minimumEstimatedPortions"`
+		EligibleForMealPlans     bool             `json:"elibigleForMealPlans"`
 	}
 
 	// MealComponent is a recipe with some extra data attached to it.
@@ -82,6 +83,7 @@ type (
 		Description              string                               `json:"description"`
 		Components               []*MealComponentCreationRequestInput `json:"recipes"`
 		MinimumEstimatedPortions float32                              `json:"minimumEstimatedPortions"`
+		EligibleForMealPlans     bool                                 `json:"elibigleForMealPlans"`
 	}
 
 	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.
@@ -104,6 +106,7 @@ type (
 		CreatedByUser            string
 		Components               []*MealComponentDatabaseCreationInput
 		MinimumEstimatedPortions float32
+		EligibleForMealPlans     bool
 	}
 
 	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
@@ -117,13 +120,13 @@ type (
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
 	MealUpdateRequestInput struct {
-		_ struct{}
-
+		_                        struct{}
 		Name                     *string                            `json:"name,omitempty"`
 		Description              *string                            `json:"description,omitempty"`
 		CreatedByUser            *string                            `json:"-"`
 		MinimumEstimatedPortions *float32                           `json:"minimumEstimatedPortions"`
 		MaximumEstimatedPortions *float32                           `json:"maximumEstimatedPortions"`
+		EligibleForMealPlans     *bool                              `json:"elibigleForMealPlans"`
 		Components               []*MealComponentUpdateRequestInput `json:"recipes,omitempty"`
 	}
 
@@ -172,6 +175,10 @@ func (x *Meal) Update(input *MealUpdateRequestInput) {
 
 	if input.MaximumEstimatedPortions != nil && input.MaximumEstimatedPortions != x.MaximumEstimatedPortions {
 		x.MaximumEstimatedPortions = input.MaximumEstimatedPortions
+	}
+
+	if input.EligibleForMealPlans != nil && *input.EligibleForMealPlans != x.EligibleForMealPlans {
+		x.EligibleForMealPlans = *input.EligibleForMealPlans
 	}
 }
 

@@ -25,6 +25,7 @@ var (
 		"meals.description",
 		"meals.min_estimated_portions",
 		"meals.max_estimated_portions",
+		"meals.eligible_for_meal_plans",
 		"meals.created_at",
 		"meals.last_updated_at",
 		"meals.archived_at",
@@ -45,6 +46,7 @@ func (q *Querier) scanMeal(ctx context.Context, scan database.Scanner, includeCo
 		&x.Description,
 		&x.MinimumEstimatedPortions,
 		&x.MaximumEstimatedPortions,
+		&x.EligibleForMealPlans,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -111,6 +113,7 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 			&x.Description,
 			&x.MinimumEstimatedPortions,
 			&x.MaximumEstimatedPortions,
+			&x.EligibleForMealPlans,
 			&x.CreatedAt,
 			&x.LastUpdatedAt,
 			&x.ArchivedAt,
@@ -302,6 +305,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 		input.Description,
 		input.MinimumEstimatedPortions,
 		input.MaximumEstimatedPortions,
+		input.EligibleForMealPlans,
 		input.CreatedByUser,
 	}
 
@@ -317,6 +321,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 		Description:              input.Description,
 		MinimumEstimatedPortions: input.MinimumEstimatedPortions,
 		MaximumEstimatedPortions: input.MaximumEstimatedPortions,
+		EligibleForMealPlans:     input.EligibleForMealPlans,
 		CreatedByUser:            input.CreatedByUser,
 		CreatedAt:                q.currentTime(),
 	}

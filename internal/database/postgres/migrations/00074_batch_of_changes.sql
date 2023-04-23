@@ -8,7 +8,7 @@ ALTER TABLE valid_ingredients ADD COLUMN "is_acid" BOOLEAN NOT NULL DEFAULT FALS
 ALTER TABLE valid_ingredients ADD COLUMN "is_heat" BOOLEAN NOT NULL DEFAULT FALSE;
 
 ALTER TABLE recipes ADD COLUMN "eligible_for_meals" BOOLEAN NOT NULL DEFAULT TRUE;
-ALTER TABLE meals ADD COLUMN "eligible_for_meals_plans" BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE meals ADD COLUMN "eligible_for_meal_plans" BOOLEAN NOT NULL DEFAULT TRUE;
 ALTER TABLE recipe_steps ADD COLUMN "start_timer_automatically" BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE recipe_step_ingredients ADD COLUMN "product_of_recipe_id" TEXT REFERENCES recipes("id") ON DELETE CASCADE;
 

@@ -525,6 +525,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 			Description:              x.Description,
 			MinimumEstimatedPortions: x.MinimumEstimatedPortions,
 			MaximumEstimatedPortions: x.MaximumEstimatedPortions,
+			EligibleForMealPlans:     x.EligibleForMeals,
 			CreatedByUser:            x.CreatedByUser,
 			Components: []*types.MealComponentDatabaseCreationInput{
 				{
