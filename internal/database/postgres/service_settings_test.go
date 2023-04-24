@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -35,6 +36,7 @@ func buildMockRowsFromServiceSettings(includeCounts bool, filteredCount uint64, 
 			x.Description,
 			x.DefaultValue,
 			x.AdminsOnly,
+			strings.Join(x.Enumeration, serviceSettingsEnumDelimiter),
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -420,6 +422,7 @@ func TestQuerier_CreateServiceSetting(T *testing.T) {
 			exampleInput.Description,
 			exampleInput.DefaultValue,
 			exampleInput.AdminsOnly,
+			strings.Join(exampleInput.Enumeration, serviceSettingsEnumDelimiter),
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(serviceSettingCreationQuery)).
@@ -465,6 +468,7 @@ func TestQuerier_CreateServiceSetting(T *testing.T) {
 			exampleInput.Description,
 			exampleInput.DefaultValue,
 			exampleInput.AdminsOnly,
+			strings.Join(exampleInput.Enumeration, serviceSettingsEnumDelimiter),
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(serviceSettingCreationQuery)).
@@ -501,6 +505,7 @@ func TestQuerier_UpdateServiceSetting(T *testing.T) {
 			exampleServiceSetting.Description,
 			exampleServiceSetting.DefaultValue,
 			exampleServiceSetting.AdminsOnly,
+			strings.Join(exampleServiceSetting.Enumeration, serviceSettingsEnumDelimiter),
 			exampleServiceSetting.ID,
 		}
 
@@ -536,6 +541,7 @@ func TestQuerier_UpdateServiceSetting(T *testing.T) {
 			exampleServiceSetting.Description,
 			exampleServiceSetting.DefaultValue,
 			exampleServiceSetting.AdminsOnly,
+			strings.Join(exampleServiceSetting.Enumeration, serviceSettingsEnumDelimiter),
 			exampleServiceSetting.ID,
 		}
 

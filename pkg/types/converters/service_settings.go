@@ -13,6 +13,7 @@ func ConvertServiceSettingToServiceSettingUpdateRequestInput(input *types.Servic
 		Description:  &input.Description,
 		DefaultValue: input.DefaultValue,
 		AdminsOnly:   &input.AdminsOnly,
+		Enumeration:  input.Enumeration,
 	}
 
 	return x
@@ -27,6 +28,7 @@ func ConvertServiceSettingCreationRequestInputToServiceSettingDatabaseCreationIn
 		Description:  input.Description,
 		DefaultValue: input.DefaultValue,
 		AdminsOnly:   input.AdminsOnly,
+		Enumeration:  input.Enumeration,
 	}
 
 	return x
@@ -40,6 +42,7 @@ func ConvertServiceSettingToServiceSettingCreationRequestInput(input *types.Serv
 		Description:  input.Description,
 		DefaultValue: input.DefaultValue,
 		AdminsOnly:   input.AdminsOnly,
+		Enumeration:  input.Enumeration,
 	}
 }
 
@@ -52,5 +55,6 @@ func ConvertServiceSettingToServiceSettingDatabaseCreationInput(input *types.Ser
 		Description:  input.Description,
 		DefaultValue: input.DefaultValue,
 		AdminsOnly:   input.AdminsOnly,
+		Enumeration:  input.Enumeration,
 	}
 }

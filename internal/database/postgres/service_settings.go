@@ -3,12 +3,17 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"strings"
 
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
+)
+
+const (
+	serviceSettingsEnumDelimiter = "|"
 )
 
 var (
@@ -22,6 +27,7 @@ var (
 		"service_settings.description",
 		"service_settings.default_value",
 		"service_settings.admins_only",
+		"service_settings.enumeration",
 		"service_settings.created_at",
 		"service_settings.last_updated_at",
 		"service_settings.archived_at",
@@ -35,6 +41,7 @@ func (q *Querier) scanServiceSetting(ctx context.Context, scan database.Scanner,
 
 	x = &types.ServiceSetting{}
 
+	var joinedEnum string
 	targetVars := []any{
 		&x.ID,
 		&x.Name,
@@ -42,6 +49,7 @@ func (q *Querier) scanServiceSetting(ctx context.Context, scan database.Scanner,
 		&x.Description,
 		&x.DefaultValue,
 		&x.AdminsOnly,
+		&joinedEnum,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -53,6 +61,13 @@ func (q *Querier) scanServiceSetting(ctx context.Context, scan database.Scanner,
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, span, "")
+	}
+
+	x.Enumeration = []string{}
+	for _, y := range strings.Split(joinedEnum, serviceSettingsEnumDelimiter) {
+		if y != "" {
+			x.Enumeration = append(x.Enumeration, y)
+		}
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -236,6 +251,7 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 		input.Description,
 		input.DefaultValue,
 		input.AdminsOnly,
+		strings.Join(input.Enumeration, serviceSettingsEnumDelimiter),
 	}
 
 	// create the service setting.
@@ -249,6 +265,7 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 		Description:  input.Description,
 		Type:         input.Type,
 		DefaultValue: input.DefaultValue,
+		Enumeration:  input.Enumeration,
 		AdminsOnly:   input.AdminsOnly,
 		CreatedAt:    q.currentTime(),
 	}
@@ -280,6 +297,7 @@ func (q *Querier) UpdateServiceSetting(ctx context.Context, updated *types.Servi
 		updated.Description,
 		updated.DefaultValue,
 		updated.AdminsOnly,
+		strings.Join(updated.Enumeration, serviceSettingsEnumDelimiter),
 		updated.ID,
 	}
 

@@ -13,6 +13,7 @@ func BuildFakeServiceSetting() *types.ServiceSetting {
 		Name:         buildUniqueString(),
 		Type:         "user",
 		Description:  buildUniqueString(),
+		Enumeration:  []string{},
 		DefaultValue: pointers.Pointer(buildUniqueString()),
 		AdminsOnly:   true,
 		CreatedAt:    BuildFakeTime(),

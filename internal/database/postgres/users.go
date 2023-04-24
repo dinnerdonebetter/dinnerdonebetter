@@ -581,13 +581,12 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
+	tracing.AttachUserIDToSpan(span, userID)
+	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	if newHash == "" {
 		return ErrEmptyInputProvided
 	}
-
-	tracing.AttachUserIDToSpan(span, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	args := []any{
 		newHash,

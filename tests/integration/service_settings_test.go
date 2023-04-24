@@ -21,6 +21,7 @@ func checkServiceSettingEquality(t *testing.T, expected, actual *types.ServiceSe
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for service setting to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for service setting to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Type, actual.Type, "expected Type for service setting to be %v, but it was %v", expected.ID, expected.Type, actual.Type)
+	assert.Equal(t, expected.Enumeration, actual.Enumeration, "expected Enumeration for service setting to be %v, but it was %v", expected.ID, expected.Enumeration, actual.Enumeration)
 	assert.Equal(t, expected.DefaultValue, actual.DefaultValue, "expected DefaultValue for service setting to be %v, but it was %v", expected.ID, expected.DefaultValue, actual.DefaultValue)
 	assert.Equal(t, expected.AdminsOnly, actual.AdminsOnly, "expected AdminsOnly for service setting to be %v, but it was %v", expected.ID, expected.AdminsOnly, actual.AdminsOnly)
 
