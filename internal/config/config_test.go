@@ -12,7 +12,7 @@ import (
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/metrics/config"
-	server "github.com/prixfixeco/backend/internal/server"
+	"github.com/prixfixeco/backend/internal/server"
 	authservice "github.com/prixfixeco/backend/internal/services/authentication"
 
 	"github.com/stretchr/testify/assert"
@@ -42,7 +42,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 					Provider: "",
 				},
 			},
-			Services: ServicesConfigurations{
+			Services: ServicesConfig{
 				Auth: authservice.Config{
 					Cookies: authservice.CookieConfig{
 						Name:     "prixfixecookie",

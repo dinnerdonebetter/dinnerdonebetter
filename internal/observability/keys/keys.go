@@ -163,4 +163,7 @@ const (
 
 	// RecipeMediaIDKey is the standard key for referring to a recipe media's ID.
 	RecipeMediaIDKey = "recipe_media.id"
+
+	// ServiceSettingIDKey is the standard key for referring to a service setting's ID.
+	ServiceSettingIDKey = "service_setting.id"
 )

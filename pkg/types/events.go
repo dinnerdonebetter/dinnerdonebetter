@@ -15,8 +15,7 @@ type (
 
 	// DataChangeMessage represents an event that asks a worker to write data to the datastore.
 	DataChangeMessage struct {
-		_ struct{}
-
+		_                                struct{}
 		HouseholdInvitation              *HouseholdInvitation            `json:"householdInvitation,omitempty"`
 		ValidMeasurementConversion       *ValidMeasurementUnitConversion `json:"validMeasurementConversion,omitempty"`
 		ValidInstrument                  *ValidInstrument                `json:"validInstrument,omitempty"`
@@ -47,6 +46,8 @@ type (
 		RecipeStepCompletionCondition    *RecipeStepCompletionCondition  `json:"recipeStepCompletionCondition,omitempty"`
 		RecipeStepVessel                 *RecipeStepVessel               `json:"recipeStepVessel,omitempty"`
 		PasswordResetToken               *PasswordResetToken             `json:"passwordResetToken,omitempty"`
+		ValidIngredientStateIngredient   *ValidIngredientStateIngredient `json:"validIngredientStateIngredient,omitempty"`
+		ServiceSetting                   *ServiceSetting                 `json:"serviceSetting,omitempty"`
 		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
 		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
 		UserID                           string                          `json:"userID"`
@@ -65,7 +66,6 @@ type (
 		MealID                           string                          `json:"mealID,omitempty"`
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
 		EventType                        CustomerEventType               `json:"messageType"`
-		ValidIngredientStateIngredient   *ValidIngredientStateIngredient `json:"validIngredientStateIngredient,omitempty"`
 		ValidIngredientStateIngredientID string                          `json:"validIngredientStateIngredientID"`
 		ValidMeasurementConversionID     string                          `json:"validMeasurementConversionID,omitempty"`
 		DataType                         dataType                        `json:"dataType"`

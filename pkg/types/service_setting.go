@@ -134,7 +134,6 @@ type (
 	ServiceSettingDataManager interface {
 		ServiceSettingExists(ctx context.Context, validPreparationID string) (bool, error)
 		GetServiceSetting(ctx context.Context, validPreparationID string) (*ServiceSetting, error)
-		GetRandomServiceSetting(ctx context.Context) (*ServiceSetting, error)
 		GetServiceSettings(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ServiceSetting], error)
 		SearchForServiceSettings(ctx context.Context, query string) ([]*ServiceSetting, error)
 		CreateServiceSetting(ctx context.Context, input *ServiceSettingDatabaseCreationInput) (*ServiceSetting, error)
@@ -148,7 +147,6 @@ type (
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
-		RandomHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}

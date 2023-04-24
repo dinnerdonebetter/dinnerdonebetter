@@ -90,16 +90,16 @@
 		"debug": false
 	},
 	"services": {
-		"recipeStepCompletionConditions": {
+		"validInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepVessels": {
+		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validPreparations": {
+		"validIngredientPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanEvents": {
@@ -111,7 +111,7 @@
 		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validPreparationInstruments": {
+		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstrumentMeasurementUnits": {
@@ -129,22 +129,22 @@
 		"recipeStepProducts": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepInstruments": {
+		"households": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"vendorProxy": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validInstruments": {
+		"recipeStepCompletionConditions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validIngredientPreparations": {
+		"validPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanOptions": {
+		"recipeStepVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"households": {
+		"recipeStepInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientStateIngredients": {
@@ -168,17 +168,8 @@
 		"mealPlanGroceryListItems": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"users": {
-			"outboundEmailsTopicName": "outbound_emails",
-			"dataChangesTopicName": "data_changes",
-			"publicMediaURLPrefix": "",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "avatars",
-					"provider": "memory"
-				},
-				"debug": false
-			}
+		"serviceSettings": {
+			"dataChangesTopicName": "data_changes"
 		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",
@@ -202,12 +193,22 @@
 				"debug": false
 			}
 		},
+		"users": {
+			"dataChangesTopicName": "data_changes",
+			"publicMediaURLPrefix": "",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "avatars",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
 		"webhooks": {
 			"dataChangesTopicName": "data_changes",
 			"debug": false
 		},
 		"householdInvitations": {
-			"outboundEmailsTopicName": "outbound_emails",
 			"dataChangesTopicName": "data_changes",
 			"debug": false
 		},

@@ -46,6 +46,7 @@ import (
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/prixfixeco/backend/internal/services/recipestepvessels"
+	"github.com/prixfixeco/backend/internal/services/servicesettings"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
@@ -260,7 +261,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				},
 			},
 		},
-		Services: config.ServicesConfigurations{
+		Services: config.ServicesConfig{
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
 					Issuer:   pasteoIssuer,
@@ -369,7 +370,7 @@ func buildDevConfig() *config.InstanceConfig {
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
-		Services: config.ServicesConfigurations{
+		Services: config.ServicesConfig{
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -511,6 +512,9 @@ func buildDevConfig() *config.InstanceConfig {
 			VendorProxy: vendorproxy.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ServiceSettings: servicesettings.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -574,7 +578,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
-		Services: config.ServicesConfigurations{
+		Services: config.ServicesConfig{
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -712,6 +716,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			VendorProxy: vendorproxy.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ServiceSettings: servicesettings.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

@@ -46,6 +46,7 @@ func ConvertServiceSettingToServiceSettingCreationRequestInput(input *types.Serv
 // ConvertServiceSettingToServiceSettingDatabaseCreationInput builds a ServiceSettingDatabaseCreationInput from a ServiceSetting.
 func ConvertServiceSettingToServiceSettingDatabaseCreationInput(input *types.ServiceSetting) *types.ServiceSettingDatabaseCreationInput {
 	return &types.ServiceSettingDatabaseCreationInput{
+		ID:           input.ID,
 		Name:         input.Name,
 		Type:         input.Type,
 		Description:  input.Description,
