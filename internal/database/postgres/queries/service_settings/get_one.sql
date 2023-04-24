@@ -7,7 +7,7 @@ SELECT
     service_settings.admins_only,
     service_settings.created_at,
     service_settings.last_updated_at,
-    service_settings.archived_at,
+    service_settings.archived_at
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
 	AND service_settings.id = $1;

@@ -11,7 +11,7 @@ func BuildFakeServiceSetting() *types.ServiceSetting {
 	return &types.ServiceSetting{
 		ID:           BuildFakeID(),
 		Name:         buildUniqueString(),
-		Type:         buildUniqueString(),
+		Type:         "user",
 		Description:  buildUniqueString(),
 		DefaultValue: pointers.Pointer(buildUniqueString()),
 		AdminsOnly:   true,

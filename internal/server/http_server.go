@@ -62,7 +62,7 @@ type (
 		recipeStepCompletionConditionsService  types.RecipeStepCompletionConditionDataService
 		validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService
 		recipeStepVesselsService               types.RecipeStepVesselDataService
-		serviceSettingDataService              types.ServiceSettingDataService
+		serviceSettingsService                 types.ServiceSettingDataService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -166,7 +166,7 @@ func ProvideHTTPServer(
 		validIngredientStateIngredientsService: validIngredientStateIngredientsService,
 		recipeStepVesselsService:               recipeStepVesselsService,
 		vendorProxyService:                     vendorProxyService,
-		serviceSettingDataService:              serviceSettingDataService,
+		serviceSettingsService:                 serviceSettingDataService,
 	}
 
 	srv.setupRouter(ctx, router)
