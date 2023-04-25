@@ -16,14 +16,14 @@ type ServiceSettingDataManager struct {
 }
 
 // ServiceSettingExists is a mock function.
-func (m *ServiceSettingDataManager) ServiceSettingExists(ctx context.Context, validPreparationID string) (bool, error) {
-	args := m.Called(ctx, validPreparationID)
+func (m *ServiceSettingDataManager) ServiceSettingExists(ctx context.Context, serviceSettingID string) (bool, error) {
+	args := m.Called(ctx, serviceSettingID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetServiceSetting is a mock function.
-func (m *ServiceSettingDataManager) GetServiceSetting(ctx context.Context, validPreparationID string) (*types.ServiceSetting, error) {
-	args := m.Called(ctx, validPreparationID)
+func (m *ServiceSettingDataManager) GetServiceSetting(ctx context.Context, serviceSettingID string) (*types.ServiceSetting, error) {
+	args := m.Called(ctx, serviceSettingID)
 	return args.Get(0).(*types.ServiceSetting), args.Error(1)
 }
 
@@ -57,6 +57,6 @@ func (m *ServiceSettingDataManager) UpdateServiceSetting(ctx context.Context, up
 }
 
 // ArchiveServiceSetting is a mock function.
-func (m *ServiceSettingDataManager) ArchiveServiceSetting(ctx context.Context, validPreparationID string) error {
-	return m.Called(ctx, validPreparationID).Error(0)
+func (m *ServiceSettingDataManager) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
+	return m.Called(ctx, serviceSettingID).Error(0)
 }

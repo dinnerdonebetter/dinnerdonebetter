@@ -44,6 +44,7 @@ import (
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/prixfixeco/backend/internal/services/recipestepvessels"
+	"github.com/prixfixeco/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/prixfixeco/backend/internal/services/servicesettings"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -122,6 +123,7 @@ func Build(
 		analyticscfg.Providers,
 		logcfg.Providers,
 		servicesettingsservice.Providers,
+		servicesettingconfigurations.Providers,
 	)
 
 	return nil, nil

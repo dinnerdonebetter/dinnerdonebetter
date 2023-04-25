@@ -56,6 +56,7 @@ var (
 			"Auth",
 			"VendorProxy",
 			"ServiceSettings",
+			"ServiceSettingConfigurations",
 		),
 	)
 )

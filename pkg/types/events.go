@@ -48,6 +48,7 @@ type (
 		PasswordResetToken               *PasswordResetToken             `json:"passwordResetToken,omitempty"`
 		ValidIngredientStateIngredient   *ValidIngredientStateIngredient `json:"validIngredientStateIngredient,omitempty"`
 		ServiceSetting                   *ServiceSetting                 `json:"serviceSetting,omitempty"`
+		ServiceSettingConfiguration      *ServiceSettingConfiguration    `json:"serviceSettingConfiguration,omitempty"`
 		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
 		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
 		UserID                           string                          `json:"userID"`

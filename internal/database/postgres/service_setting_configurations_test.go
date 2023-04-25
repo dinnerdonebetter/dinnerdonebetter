@@ -177,6 +177,68 @@ func TestQuerier_ServiceSettingConfigurationExists(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetServiceSettingConfiguration(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleServiceSettingConfiguration.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getServiceSettingConfigurationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromServiceSettingConfigurations(false, 0, exampleServiceSettingConfiguration))
+
+		actual, err := c.GetServiceSettingConfiguration(ctx, exampleServiceSettingConfiguration.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleServiceSettingConfiguration, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid service setting ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.GetServiceSettingConfiguration(ctx, exampleServiceSettingConfiguration.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleServiceSettingConfiguration.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getServiceSettingConfigurationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetServiceSettingConfiguration(ctx, exampleServiceSettingConfiguration.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_GetServiceSettingConfigurationForUserByName(T *testing.T) {
 	T.Parallel()
 

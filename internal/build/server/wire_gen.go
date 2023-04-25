@@ -45,6 +45,7 @@ import (
 	"github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	"github.com/prixfixeco/backend/internal/services/recipesteps"
 	"github.com/prixfixeco/backend/internal/services/recipestepvessels"
+	"github.com/prixfixeco/backend/internal/services/servicesettingconfigurations"
 	"github.com/prixfixeco/backend/internal/services/servicesettings"
 	"github.com/prixfixeco/backend/internal/services/users"
 	"github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -320,7 +321,13 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer,
 	if err != nil {
 		return nil, err
 	}
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, dataManager, logger, serverEncoderDecoder, router, tracerProvider, service, serviceSettingDataService)
+	servicesettingconfigurationsConfig := &servicesConfig.ServiceSettingConfigurations
+	serviceSettingConfigurationDataManager := database.ProvideServiceSettingConfigurationDataManager(dataManager)
+	serviceSettingConfigurationDataService, err := servicesettingconfigurations.ProvideService(logger, servicesettingconfigurationsConfig, serviceSettingConfigurationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, dataManager, logger, serverEncoderDecoder, router, tracerProvider, service, serviceSettingDataService, serviceSettingConfigurationDataService)
 	if err != nil {
 		return nil, err
 	}

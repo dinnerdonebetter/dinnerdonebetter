@@ -144,6 +144,36 @@ func (q *Querier) ServiceSettingConfigurationExists(ctx context.Context, service
 	return result, nil
 }
 
+//go:embed queries/service_setting_configurations/get_by_id.sql
+var getServiceSettingConfigurationQuery string
+
+// GetServiceSettingConfiguration fetches a service setting configuration from the database.
+func (q *Querier) GetServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) (*types.ServiceSettingConfiguration, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if serviceSettingConfigurationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+
+	args := []any{
+		serviceSettingConfigurationID,
+	}
+
+	row := q.getOneRow(ctx, q.db, "service settings for user by name", getServiceSettingConfigurationQuery, args)
+
+	serviceSettingConfiguration, _, _, err := q.scanServiceSettingConfiguration(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service setting configuration")
+	}
+
+	return serviceSettingConfiguration, nil
+}
+
 //go:embed queries/service_setting_configurations/get_for_user_by_setting_name.sql
 var getServiceSettingConfigurationForUserByNameQuery string
 

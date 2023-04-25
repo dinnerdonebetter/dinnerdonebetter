@@ -31,6 +31,7 @@ import (
 	recipestepinstrumentsservice "github.com/prixfixeco/backend/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
+	"github.com/prixfixeco/backend/internal/services/servicesettingconfigurations"
 	"github.com/prixfixeco/backend/internal/services/servicesettings"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -116,6 +117,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				RecipeStepCompletionConditions: recipestepcompletionconditionsservice.Config{},
 				ValidIngredientStates:          validingredientstatesservice.Config{},
 				ServiceSettings:                servicesettings.Config{},
+				ServiceSettingConfigurations:   servicesettingconfigurations.Config{},
 				Auth: authservice.Config{
 					MinimumPasswordLength: 8,
 					MinimumUsernameLength: 8,

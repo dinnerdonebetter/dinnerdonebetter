@@ -229,6 +229,9 @@
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
+		},
+		"serviceSettingConfigurations": {
+			"dataChangesTopicName": "data_changes"
 		}
 	}
 }

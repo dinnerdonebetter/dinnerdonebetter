@@ -63,6 +63,7 @@ type (
 		validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService
 		recipeStepVesselsService               types.RecipeStepVesselDataService
 		serviceSettingsService                 types.ServiceSettingDataService
+		serviceSettingConfigurationsService    types.ServiceSettingConfigurationDataService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -119,6 +120,7 @@ func ProvideHTTPServer(
 	tracerProvider tracing.TracerProvider,
 	vendorProxyService vendorproxy.Service,
 	serviceSettingDataService types.ServiceSettingDataService,
+	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
 ) (*HTTPServer, error) {
 	srv := &HTTPServer{
 		config: serverSettings,
@@ -167,6 +169,7 @@ func ProvideHTTPServer(
 		recipeStepVesselsService:               recipeStepVesselsService,
 		vendorProxyService:                     vendorProxyService,
 		serviceSettingsService:                 serviceSettingDataService,
+		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
 	}
 
 	srv.setupRouter(ctx, router)

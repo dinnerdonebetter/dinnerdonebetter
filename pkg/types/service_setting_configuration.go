@@ -3,6 +3,7 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -79,6 +80,7 @@ type (
 	// ServiceSettingConfigurationDataManager describes a structure capable of storing settings permanently.
 	ServiceSettingConfigurationDataManager interface {
 		ServiceSettingConfigurationExists(ctx context.Context, serviceSettingConfigurationID string) (bool, error)
+		GetServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) (*ServiceSettingConfiguration, error)
 		GetServiceSettingConfigurationForUserByName(ctx context.Context, userID, serviceSettingConfigurationID string) (*ServiceSettingConfiguration, error)
 		GetServiceSettingConfigurationForHouseholdByName(ctx context.Context, householdID, serviceSettingConfigurationID string) (*ServiceSettingConfiguration, error)
 		GetServiceSettingConfigurationsForUser(ctx context.Context, userID string) (*QueryFilteredResult[ServiceSettingConfiguration], error)
@@ -90,7 +92,11 @@ type (
 
 	// ServiceSettingConfigurationDataService describes a structure capable of serving traffic related to service settings.
 	ServiceSettingConfigurationDataService interface {
-		// TODO: define methods
+		CreateHandler(http.ResponseWriter, *http.Request)
+		ForUserHandler(http.ResponseWriter, *http.Request)
+		ForHouseholdHandler(http.ResponseWriter, *http.Request)
+		UpdateHandler(http.ResponseWriter, *http.Request)
+		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

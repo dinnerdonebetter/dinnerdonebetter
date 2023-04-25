@@ -102,5 +102,6 @@ type (
 		types.ValidIngredientStateIngredientDataManager
 		types.RecipeStepVesselDataManager
 		types.ServiceSettingDataManager
+		types.ServiceSettingConfigurationDataManager
 	}
 )
