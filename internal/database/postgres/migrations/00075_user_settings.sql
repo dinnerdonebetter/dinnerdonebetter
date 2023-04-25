@@ -28,5 +28,5 @@ CREATE TABLE IF NOT EXISTS service_setting_configurations (
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-    UNIQUE("user_id", "household_id", "service_setting_id")
+    UNIQUE("belongs_to_user", "belongs_to_household", "service_setting_id")
 );

@@ -152,11 +152,11 @@ func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string
 		serviceSettingID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "serviceSetting", getServiceSettingQuery, args)
+	row := q.getOneRow(ctx, q.db, "service setting", getServiceSettingQuery, args)
 
 	serviceSetting, _, _, err := q.scanServiceSetting(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning serviceSetting")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service setting")
 	}
 
 	return serviceSetting, nil
