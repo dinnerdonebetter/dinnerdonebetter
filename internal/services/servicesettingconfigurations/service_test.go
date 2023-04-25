@@ -42,6 +42,10 @@ func TestProvideServiceSettingConfigurationsService(T *testing.T) {
 			"BuildRouteParamStringIDFetcher",
 			ServiceSettingConfigurationIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			ServiceSettingConfigurationNameURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)

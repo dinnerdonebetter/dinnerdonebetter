@@ -1,10 +1,12 @@
 package integration
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/apiclient"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/converters"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
@@ -28,6 +30,25 @@ func checkServiceSettingEquality(t *testing.T, expected, actual *types.ServiceSe
 	assert.NotZero(t, actual.CreatedAt)
 }
 
+func buildServiceSettingForTest(t *testing.T, adminClient *apiclient.Client, settingType string, ctx context.Context) *types.ServiceSetting {
+	t.Helper()
+
+	t.Log("creating service setting")
+	exampleServiceSetting := fakes.BuildFakeServiceSetting()
+	exampleServiceSetting.Type = settingType
+	exampleServiceSettingInput := converters.ConvertServiceSettingToServiceSettingCreationRequestInput(exampleServiceSetting)
+	createdServiceSetting, err := adminClient.CreateServiceSetting(ctx, exampleServiceSettingInput)
+	require.NoError(t, err)
+	t.Logf("service setting %q created", createdServiceSetting.ID)
+	checkServiceSettingEquality(t, exampleServiceSetting, createdServiceSetting)
+
+	createdServiceSetting, err = adminClient.GetServiceSetting(ctx, createdServiceSetting.ID)
+	requireNotNilAndNoProblems(t, createdServiceSetting, err)
+	checkServiceSettingEquality(t, exampleServiceSetting, createdServiceSetting)
+
+	return createdServiceSetting
+}
+
 func (s *TestSuite) TestServiceSettings_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -36,17 +57,7 @@ func (s *TestSuite) TestServiceSettings_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating service setting")
-			exampleServiceSetting := fakes.BuildFakeServiceSetting()
-			exampleServiceSettingInput := converters.ConvertServiceSettingToServiceSettingCreationRequestInput(exampleServiceSetting)
-			createdServiceSetting, err := testClients.admin.CreateServiceSetting(ctx, exampleServiceSettingInput)
-			require.NoError(t, err)
-			t.Logf("service setting %q created", createdServiceSetting.ID)
-			checkServiceSettingEquality(t, exampleServiceSetting, createdServiceSetting)
-
-			createdServiceSetting, err = testClients.admin.GetServiceSetting(ctx, createdServiceSetting.ID)
-			requireNotNilAndNoProblems(t, createdServiceSetting, err)
-			checkServiceSettingEquality(t, exampleServiceSetting, createdServiceSetting)
+			createdServiceSetting := buildServiceSettingForTest(t, testClients.admin, "user", s.ctx)
 
 			t.Log("changing service setting")
 			newServiceSetting := fakes.BuildFakeServiceSetting()

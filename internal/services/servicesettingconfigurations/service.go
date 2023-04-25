@@ -25,6 +25,7 @@ type (
 		logger                                 logging.Logger
 		serviceSettingConfigurationDataManager types.ServiceSettingConfigurationDataManager
 		serviceSettingConfigurationIDFetcher   func(*http.Request) string
+		serviceSettingNameFetcher              func(*http.Request) string
 		sessionContextDataFetcher              func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher                   messagequeue.Publisher
 		encoderDecoder                         encoding.ServerEncoderDecoder
@@ -50,6 +51,7 @@ func ProvideService(
 	svc := &service{
 		logger:                                 logging.EnsureLogger(logger).WithName(serviceName),
 		serviceSettingConfigurationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ServiceSettingConfigurationIDURIParamKey),
+		serviceSettingNameFetcher:              routeParamManager.BuildRouteParamStringIDFetcher(ServiceSettingConfigurationNameURIParamKey),
 		sessionContextDataFetcher:              authservice.FetchContextFromRequest,
 		serviceSettingConfigurationDataManager: serviceSettingConfigurationDataManager,
 		dataChangesPublisher:                   dataChangesPublisher,

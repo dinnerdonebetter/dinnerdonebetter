@@ -205,7 +205,7 @@ func (q *Querier) GetServiceSettingConfigurationForUserByName(ctx context.Contex
 
 	serviceSettingConfiguration, _, _, err := q.scanServiceSettingConfiguration(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service setting configuration")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service setting configuration for user by name")
 	}
 
 	return serviceSettingConfiguration, nil
@@ -242,7 +242,7 @@ func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.C
 
 	serviceSettingConfiguration, _, _, err := q.scanServiceSettingConfiguration(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service setting configuration")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service setting configuration for household by name")
 	}
 
 	return serviceSettingConfiguration, nil

@@ -26,6 +26,7 @@ import (
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/prixfixeco/backend/internal/services/recipestepvessels"
+	servicesettingconfigurationsservice "github.com/prixfixeco/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/prixfixeco/backend/internal/services/servicesettings"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
@@ -1051,6 +1052,20 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 				singleServiceSettingRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveServiceSettingsPermission)).
 					Delete(root, s.serviceSettingsService.ArchiveHandler)
+			})
+
+			serviceSettingConfigurationIDRouteParam := buildURLVarChunk(servicesettingconfigurationsservice.ServiceSettingConfigurationIDURIParamKey, "")
+			serviceSettingsRouter.Route("/configurations", func(settingConfigurationRouter routing.Router) {
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateServiceSettingsPermission)).
+					Post(root, s.serviceSettingsService.CreateHandler)
+
+				settingConfigurationRouter.Post(root, s.serviceSettingConfigurationsService.CreateHandler)
+				settingConfigurationRouter.Get("/user"+buildURLVarChunk(servicesettingconfigurationsservice.ServiceSettingConfigurationNameURIParamKey, ""), s.serviceSettingConfigurationsService.ForUserByNameHandler)
+				settingConfigurationRouter.Get("/user", s.serviceSettingConfigurationsService.ForUserHandler)
+				settingConfigurationRouter.Get("/household", s.serviceSettingConfigurationsService.ForHouseholdHandler)
+				settingConfigurationRouter.Put(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.UpdateHandler)
+				settingConfigurationRouter.Delete(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.ArchiveHandler)
 			})
 		})
 	})

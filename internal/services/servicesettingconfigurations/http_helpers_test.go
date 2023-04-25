@@ -48,6 +48,10 @@ func buildTestHelper(t *testing.T) *serviceSettingConfigurationsServiceHTTPRoute
 		return helper.exampleServiceSettingConfiguration.ID
 	}
 
+	helper.service.serviceSettingNameFetcher = func(*http.Request) string {
+		return helper.exampleServiceSettingConfiguration.ServiceSetting.Name
+	}
+
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                   helper.exampleUser.ID,

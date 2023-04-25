@@ -14,8 +14,10 @@ import (
 )
 
 const (
-	// ServiceSettingConfigurationIDURIParamKey is a standard string that we'll use to refer to service setting IDs with.
+	// ServiceSettingConfigurationIDURIParamKey is a standard string that we'll use to refer to service setting configuration IDs with.
 	ServiceSettingConfigurationIDURIParamKey = "serviceSettingConfigurationID"
+	// ServiceSettingConfigurationNameURIParamKey is a standard string that we'll use to refer to service setting configuration names with.
+	ServiceSettingConfigurationNameURIParamKey = "serviceSettingConfigurationName"
 )
 
 // CreateHandler is our service setting creation route.
@@ -44,6 +46,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
+	providedInput.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	providedInput.BelongsToUser = sessionCtxData.Requester.UserID
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
@@ -77,7 +81,44 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, serviceSettingConfiguration, http.StatusCreated)
 }
 
-// ForUserHandler returns a GET handler that returns a service setting.
+// ByNameHandler returns a GET handler that returns a service setting configuration.
+func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	settingName := s.serviceSettingNameFetcher(req)
+	tracing.AttachServiceSettingNameToSpan(span, settingName)
+
+	// fetch service setting configurations from database.
+	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationForUserByName(ctx, sessionCtxData.Requester.UserID, settingName)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving service setting")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, x)
+}
+
+// ForUserHandler returns a GET handler that returns a service setting configuration.
 func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -111,7 +152,7 @@ func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, x)
 }
 
-// ForHouseholdHandler returns a GET handler that returns a service setting.
+// ForHouseholdHandler returns a GET handler that returns a service setting configuration.
 func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -150,7 +191,7 @@ func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request
 	s.encoderDecoder.RespondWithData(ctx, res, x)
 }
 
-// UpdateHandler returns a handler that updates a service setting.
+// UpdateHandler returns a handler that updates a service setting configuration.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -199,7 +240,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// update the service setting.
+	// update the service setting configuration.
 	serviceSettingConfiguration.Update(input)
 
 	if err = s.serviceSettingConfigurationDataManager.UpdateServiceSettingConfiguration(ctx, serviceSettingConfiguration); err != nil {
@@ -223,7 +264,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, serviceSettingConfiguration)
 }
 
-// ArchiveHandler returns a handler that archives a service setting.
+// ArchiveHandler returns a handler that archives a service setting configuration.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

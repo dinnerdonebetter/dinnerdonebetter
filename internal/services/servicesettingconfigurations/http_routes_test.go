@@ -186,6 +186,122 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 	})
 }
 
+func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager.On(
+			"GetServiceSettingConfigurationForUserByName",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			helper.exampleServiceSettingConfiguration.ServiceSetting.Name,
+		).Return(helper.exampleServiceSettingConfiguration, nil)
+		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			helper.exampleServiceSettingConfiguration,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.ForUserByNameHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.ForUserByNameHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no such service setting configuration in the database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager.On(
+			"GetServiceSettingConfigurationForUserByName",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			helper.exampleServiceSettingConfiguration.ServiceSetting.Name,
+		).Return((*types.ServiceSettingConfiguration)(nil), sql.ErrNoRows)
+		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeNotFoundResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.ForUserByNameHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager.On(
+			"GetServiceSettingConfigurationForUserByName",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			helper.exampleServiceSettingConfiguration.ServiceSetting.Name,
+		).Return((*types.ServiceSettingConfiguration)(nil), errors.New("blah"))
+		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.ForUserByNameHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+	})
+}
+
 func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 	T.Parallel()
 

@@ -315,6 +315,15 @@ const (
 	UpdateServiceSettingsPermission Permission = "update.service_settings"
 	// ArchiveServiceSettingsPermission is an admin user permission.
 	ArchiveServiceSettingsPermission Permission = "archive.service_settings"
+
+	// CreateServiceSettingConfigurationsPermission is an admin user permission.
+	CreateServiceSettingConfigurationsPermission Permission = "create.service_setting_configurations"
+	// ReadServiceSettingConfigurationsPermission is an admin user permission.
+	ReadServiceSettingConfigurationsPermission Permission = "read.service_setting_configurations"
+	// UpdateServiceSettingConfigurationsPermission is an admin user permission.
+	UpdateServiceSettingConfigurationsPermission Permission = "update.service_setting_configurations"
+	// ArchiveServiceSettingConfigurationsPermission is an admin user permission.
+	ArchiveServiceSettingConfigurationsPermission Permission = "archive.service_setting_configurations"
 )
 
 // ID implements the gorbac Permission interface.
@@ -520,6 +529,11 @@ var (
 		SearchMealPlanOptionVotesPermission.ID():  SearchMealPlanOptionVotesPermission,
 		UpdateMealPlanOptionVotesPermission.ID():  UpdateMealPlanOptionVotesPermission,
 		ArchiveMealPlanOptionVotesPermission.ID(): ArchiveMealPlanOptionVotesPermission,
+
+		CreateServiceSettingConfigurationsPermission.ID():  CreateServiceSettingConfigurationsPermission,
+		ReadServiceSettingConfigurationsPermission.ID():    ReadServiceSettingConfigurationsPermission,
+		UpdateServiceSettingConfigurationsPermission.ID():  UpdateServiceSettingConfigurationsPermission,
+		ArchiveServiceSettingConfigurationsPermission.ID(): ArchiveServiceSettingConfigurationsPermission,
 
 		ReadMealPlanTasksPermission.ID():   ReadMealPlanTasksPermission,
 		UpdateMealPlanTasksPermission.ID(): UpdateMealPlanTasksPermission,

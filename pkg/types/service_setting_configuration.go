@@ -81,8 +81,8 @@ type (
 	ServiceSettingConfigurationDataManager interface {
 		ServiceSettingConfigurationExists(ctx context.Context, serviceSettingConfigurationID string) (bool, error)
 		GetServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) (*ServiceSettingConfiguration, error)
-		GetServiceSettingConfigurationForUserByName(ctx context.Context, userID, serviceSettingConfigurationID string) (*ServiceSettingConfiguration, error)
-		GetServiceSettingConfigurationForHouseholdByName(ctx context.Context, householdID, serviceSettingConfigurationID string) (*ServiceSettingConfiguration, error)
+		GetServiceSettingConfigurationForUserByName(ctx context.Context, userID, serviceSettingConfigurationName string) (*ServiceSettingConfiguration, error)
+		GetServiceSettingConfigurationForHouseholdByName(ctx context.Context, householdID, serviceSettingConfigurationName string) (*ServiceSettingConfiguration, error)
 		GetServiceSettingConfigurationsForUser(ctx context.Context, userID string) (*QueryFilteredResult[ServiceSettingConfiguration], error)
 		GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string) (*QueryFilteredResult[ServiceSettingConfiguration], error)
 		CreateServiceSettingConfiguration(ctx context.Context, input *ServiceSettingConfigurationDatabaseCreationInput) (*ServiceSettingConfiguration, error)
@@ -95,6 +95,7 @@ type (
 		CreateHandler(http.ResponseWriter, *http.Request)
 		ForUserHandler(http.ResponseWriter, *http.Request)
 		ForHouseholdHandler(http.ResponseWriter, *http.Request)
+		ForUserByNameHandler(http.ResponseWriter, *http.Request)
 		UpdateHandler(http.ResponseWriter, *http.Request)
 		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
