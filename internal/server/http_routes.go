@@ -1060,12 +1060,24 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateServiceSettingsPermission)).
 					Post(root, s.serviceSettingsService.CreateHandler)
 
-				settingConfigurationRouter.Post(root, s.serviceSettingConfigurationsService.CreateHandler)
-				settingConfigurationRouter.Get("/user"+buildURLVarChunk(servicesettingconfigurationsservice.ServiceSettingConfigurationNameURIParamKey, ""), s.serviceSettingConfigurationsService.ForUserByNameHandler)
-				settingConfigurationRouter.Get("/user", s.serviceSettingConfigurationsService.ForUserHandler)
-				settingConfigurationRouter.Get("/household", s.serviceSettingConfigurationsService.ForHouseholdHandler)
-				settingConfigurationRouter.Put(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.UpdateHandler)
-				settingConfigurationRouter.Delete(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.ArchiveHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateServiceSettingConfigurationsPermission)).
+					Post(root, s.serviceSettingConfigurationsService.CreateHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingConfigurationsPermission)).
+					Get("/user"+buildURLVarChunk(servicesettingconfigurationsservice.ServiceSettingConfigurationNameURIParamKey, ""), s.serviceSettingConfigurationsService.ForUserByNameHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingConfigurationsPermission)).
+					Get("/user", s.serviceSettingConfigurationsService.ForUserHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingConfigurationsPermission)).
+					Get("/household", s.serviceSettingConfigurationsService.ForHouseholdHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateServiceSettingConfigurationsPermission)).
+					Put(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.UpdateHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveServiceSettingConfigurationsPermission)).
+					Delete(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.ArchiveHandler)
 			})
 		})
 	})
