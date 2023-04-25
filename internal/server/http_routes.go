@@ -26,6 +26,8 @@ import (
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/prixfixeco/backend/internal/services/recipestepvessels"
+	servicesettingconfigurationsservice "github.com/prixfixeco/backend/internal/services/servicesettingconfigurations"
+	servicesettingsservice "github.com/prixfixeco/backend/internal/services/servicesettings"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
@@ -1022,6 +1024,60 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 				singleMealPlanOptionVoteRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionVotesPermission)).
 					Delete(root, s.mealPlanOptionVotesService.ArchiveHandler)
+			})
+		})
+
+		// ServiceSettings
+		serviceSettingPath := "settings"
+		serviceSettingsRouteWithPrefix := fmt.Sprintf("/%s", serviceSettingPath)
+		serviceSettingIDRouteParam := buildURLVarChunk(servicesettingsservice.ServiceSettingIDURIParamKey, "")
+		v1Router.Route(serviceSettingsRouteWithPrefix, func(serviceSettingsRouter routing.Router) {
+			serviceSettingsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateServiceSettingsPermission)).
+				Post(root, s.serviceSettingsService.CreateHandler)
+			serviceSettingsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingsPermission)).
+				Get(root, s.serviceSettingsService.ListHandler)
+			serviceSettingsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingsPermission)).
+				Get(searchRoot, s.serviceSettingsService.SearchHandler)
+
+			serviceSettingsRouter.Route(serviceSettingIDRouteParam, func(singleServiceSettingRouter routing.Router) {
+				singleServiceSettingRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingsPermission)).
+					Get(root, s.serviceSettingsService.ReadHandler)
+				singleServiceSettingRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateServiceSettingsPermission)).
+					Put(root, s.serviceSettingsService.UpdateHandler)
+				singleServiceSettingRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveServiceSettingsPermission)).
+					Delete(root, s.serviceSettingsService.ArchiveHandler)
+			})
+
+			serviceSettingConfigurationIDRouteParam := buildURLVarChunk(servicesettingconfigurationsservice.ServiceSettingConfigurationIDURIParamKey, "")
+			serviceSettingsRouter.Route("/configurations", func(settingConfigurationRouter routing.Router) {
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateServiceSettingsPermission)).
+					Post(root, s.serviceSettingsService.CreateHandler)
+
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateServiceSettingConfigurationsPermission)).
+					Post(root, s.serviceSettingConfigurationsService.CreateHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingConfigurationsPermission)).
+					Get("/user"+buildURLVarChunk(servicesettingconfigurationsservice.ServiceSettingConfigurationNameURIParamKey, ""), s.serviceSettingConfigurationsService.ForUserByNameHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingConfigurationsPermission)).
+					Get("/user", s.serviceSettingConfigurationsService.ForUserHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingConfigurationsPermission)).
+					Get("/household", s.serviceSettingConfigurationsService.ForHouseholdHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateServiceSettingConfigurationsPermission)).
+					Put(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.UpdateHandler)
+				settingConfigurationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveServiceSettingConfigurationsPermission)).
+					Delete(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.ArchiveHandler)
 			})
 		})
 	})

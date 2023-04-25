@@ -30,11 +30,11 @@ import (
 	householdinvitationssservice "github.com/prixfixeco/backend/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/backend/internal/services/households"
 	mealplaneventsservice "github.com/prixfixeco/backend/internal/services/mealplanevents"
-	mealplangrocerylistitems "github.com/prixfixeco/backend/internal/services/mealplangrocerylistitems"
+	"github.com/prixfixeco/backend/internal/services/mealplangrocerylistitems"
 	mealplanoptionsservice "github.com/prixfixeco/backend/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/backend/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/backend/internal/services/mealplans"
-	mealplantasks "github.com/prixfixeco/backend/internal/services/mealplantasks"
+	"github.com/prixfixeco/backend/internal/services/mealplantasks"
 	mealsservice "github.com/prixfixeco/backend/internal/services/meals"
 	recipepreptasksservice "github.com/prixfixeco/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/prixfixeco/backend/internal/services/recipes"
@@ -44,6 +44,8 @@ import (
 	recipestepproductsservice "github.com/prixfixeco/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/prixfixeco/backend/internal/services/recipestepvessels"
+	"github.com/prixfixeco/backend/internal/services/servicesettingconfigurations"
+	servicesettingsservice "github.com/prixfixeco/backend/internal/services/servicesettings"
 	usersservice "github.com/prixfixeco/backend/internal/services/users"
 	validingredientmeasurementunitsservice "github.com/prixfixeco/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/backend/internal/services/validingredientpreparations"
@@ -52,7 +54,7 @@ import (
 	validingredientstatesservice "github.com/prixfixeco/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/prixfixeco/backend/internal/services/validinstruments"
 	validmeasurementconversionsservice "github.com/prixfixeco/backend/internal/services/validmeasurementconversions"
-	validmeasurementunits "github.com/prixfixeco/backend/internal/services/validmeasurementunits"
+	"github.com/prixfixeco/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/prixfixeco/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/backend/internal/services/validpreparations"
 	vendorproxyservice "github.com/prixfixeco/backend/internal/services/vendorproxy"
@@ -120,6 +122,8 @@ func Build(
 		postgres.Providers,
 		analyticscfg.Providers,
 		logcfg.Providers,
+		servicesettingsservice.Providers,
+		servicesettingconfigurations.Providers,
 	)
 
 	return nil, nil

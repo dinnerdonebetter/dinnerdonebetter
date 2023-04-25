@@ -1,8 +1,6 @@
 package config
 
 import (
-	"github.com/prixfixeco/backend/internal/database"
-
 	"github.com/google/wire"
 )
 
@@ -11,20 +9,20 @@ var (
 	Providers = wire.NewSet(
 		wire.FieldsOf(
 			new(*InstanceConfig),
-			"Database",
 			"Observability",
-			"Meta",
-			"Encoding",
 			"Email",
 			"Analytics",
+			"FeatureFlags",
+			"Encoding",
+			"Routing",
+			"Database",
+			"Meta",
 			"Events",
 			"Server",
-			"Routing",
 			"Services",
-			"FeatureFlags",
 		),
 		wire.FieldsOf(
-			new(*ServicesConfigurations),
+			new(*ServicesConfig),
 			"ValidMeasurementUnits",
 			"ValidInstruments",
 			"ValidIngredients",
@@ -57,18 +55,8 @@ var (
 			"RecipeStepVessels",
 			"Auth",
 			"VendorProxy",
+			"ServiceSettings",
+			"ServiceSettingConfigurations",
 		),
 	)
 )
-
-// ProvideCloserFunc provides a closer function.
-func ProvideCloserFunc(dbm database.DataManager) func() error {
-	return func() error {
-		db := dbm.DB()
-		if err := db.Close(); err != nil {
-			return err
-		}
-
-		return nil
-	}
-}

@@ -385,6 +385,11 @@ var (
 			Description: "batch of changes",
 			Script:      fetchMigration("00074_batch_of_changes"),
 		},
+		{
+			Version:     75,
+			Description: "user settings",
+			Script:      fetchMigration("00075_user_settings"),
+		},
 	}
 )
 

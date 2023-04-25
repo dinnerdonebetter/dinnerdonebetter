@@ -62,6 +62,8 @@ type (
 		recipeStepCompletionConditionsService  types.RecipeStepCompletionConditionDataService
 		validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService
 		recipeStepVesselsService               types.RecipeStepVesselDataService
+		serviceSettingsService                 types.ServiceSettingDataService
+		serviceSettingConfigurationsService    types.ServiceSettingConfigurationDataService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -117,6 +119,8 @@ func ProvideHTTPServer(
 	router routing.Router,
 	tracerProvider tracing.TracerProvider,
 	vendorProxyService vendorproxy.Service,
+	serviceSettingDataService types.ServiceSettingDataService,
+	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
 ) (*HTTPServer, error) {
 	srv := &HTTPServer{
 		config: serverSettings,
@@ -164,6 +168,8 @@ func ProvideHTTPServer(
 		validIngredientStateIngredientsService: validIngredientStateIngredientsService,
 		recipeStepVesselsService:               recipeStepVesselsService,
 		vendorProxyService:                     vendorProxyService,
+		serviceSettingsService:                 serviceSettingDataService,
+		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
 	}
 
 	srv.setupRouter(ctx, router)

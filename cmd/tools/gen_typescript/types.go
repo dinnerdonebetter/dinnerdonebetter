@@ -205,6 +205,16 @@ var (
 			types.ValidPreparationCreationRequestInput{},
 			types.ValidPreparationUpdateRequestInput{},
 		},
+		"serviceSetting.ts": {
+			types.ServiceSetting{},
+			types.ServiceSettingCreationRequestInput{},
+			types.ServiceSettingUpdateRequestInput{},
+		},
+		"serviceSettingConfiguration.ts": {
+			types.ServiceSettingConfiguration{},
+			types.ServiceSettingConfigurationCreationRequestInput{},
+			types.ServiceSettingConfigurationUpdateRequestInput{},
+		},
 		"webhooks.ts": {
 			types.Webhook{},
 			types.WebhookTriggerEvent{},

@@ -304,6 +304,26 @@ const (
 	CreateMealPlanTasksPermission Permission = "create.meal_plan_tasks"
 	// UpdateMealPlanTasksPermission is a household user permission.
 	UpdateMealPlanTasksPermission Permission = "update.meal_plan_tasks"
+
+	// CreateServiceSettingsPermission is an admin user permission.
+	CreateServiceSettingsPermission Permission = "create.service_settings"
+	// ReadServiceSettingsPermission is an admin user permission.
+	ReadServiceSettingsPermission Permission = "read.service_settings"
+	// SearchServiceSettingsPermission is an admin user permission.
+	SearchServiceSettingsPermission Permission = "search.service_settings"
+	// UpdateServiceSettingsPermission is an admin user permission.
+	UpdateServiceSettingsPermission Permission = "update.service_settings"
+	// ArchiveServiceSettingsPermission is an admin user permission.
+	ArchiveServiceSettingsPermission Permission = "archive.service_settings"
+
+	// CreateServiceSettingConfigurationsPermission is an admin user permission.
+	CreateServiceSettingConfigurationsPermission Permission = "create.service_setting_configurations"
+	// ReadServiceSettingConfigurationsPermission is an admin user permission.
+	ReadServiceSettingConfigurationsPermission Permission = "read.service_setting_configurations"
+	// UpdateServiceSettingConfigurationsPermission is an admin user permission.
+	UpdateServiceSettingConfigurationsPermission Permission = "update.service_setting_configurations"
+	// ArchiveServiceSettingConfigurationsPermission is an admin user permission.
+	ArchiveServiceSettingConfigurationsPermission Permission = "archive.service_setting_configurations"
 )
 
 // ID implements the gorbac Permission interface.
@@ -323,6 +343,10 @@ var (
 		UpdateUserStatusPermission.ID():  UpdateUserStatusPermission,
 		ReadUserPermission.ID():          ReadUserPermission,
 		SearchUserPermission.ID():        SearchUserPermission,
+
+		CreateServiceSettingsPermission.ID():  CreateServiceSettingsPermission,
+		UpdateServiceSettingsPermission.ID():  UpdateServiceSettingsPermission,
+		ArchiveServiceSettingsPermission.ID(): ArchiveServiceSettingsPermission,
 
 		CreateRecipesPermission.ID(): CreateRecipesPermission,
 
@@ -405,6 +429,9 @@ var (
 		CreateAPIClientsPermission.ID():  CreateAPIClientsPermission,
 		ReadAPIClientsPermission.ID():    ReadAPIClientsPermission,
 		ArchiveAPIClientsPermission.ID(): ArchiveAPIClientsPermission,
+
+		ReadServiceSettingsPermission.ID():   ReadServiceSettingsPermission,
+		SearchServiceSettingsPermission.ID(): SearchServiceSettingsPermission,
 
 		CreateMealsPermission.ID():  CreateMealsPermission,
 		ReadMealsPermission.ID():    ReadMealsPermission,
@@ -502,6 +529,11 @@ var (
 		SearchMealPlanOptionVotesPermission.ID():  SearchMealPlanOptionVotesPermission,
 		UpdateMealPlanOptionVotesPermission.ID():  UpdateMealPlanOptionVotesPermission,
 		ArchiveMealPlanOptionVotesPermission.ID(): ArchiveMealPlanOptionVotesPermission,
+
+		CreateServiceSettingConfigurationsPermission.ID():  CreateServiceSettingConfigurationsPermission,
+		ReadServiceSettingConfigurationsPermission.ID():    ReadServiceSettingConfigurationsPermission,
+		UpdateServiceSettingConfigurationsPermission.ID():  UpdateServiceSettingConfigurationsPermission,
+		ArchiveServiceSettingConfigurationsPermission.ID(): ArchiveServiceSettingConfigurationsPermission,
 
 		ReadMealPlanTasksPermission.ID():   ReadMealPlanTasksPermission,
 		UpdateMealPlanTasksPermission.ID(): UpdateMealPlanTasksPermission,

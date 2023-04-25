@@ -226,7 +226,7 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 	return recipeStep, nil
 }
 
-//go:embed queries/recipe_steps/get_one_by_id.sql
+//go:embed queries/recipe_steps/get_one_by_recipe_id.sql
 var getRecipeStepByIDQuery string
 
 // getRecipeStepByID fetches a recipe step from the database.

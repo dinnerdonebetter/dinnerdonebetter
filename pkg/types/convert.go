@@ -1,4 +1,4 @@
-package converters
+package types
 
 import (
 	"github.com/jinzhu/copier"

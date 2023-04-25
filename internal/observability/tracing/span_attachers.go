@@ -408,3 +408,18 @@ func AttachValidMeasurementConversionIDToSpan(span trace.Span, validMeasurementC
 func AttachRecipeMediaIDToSpan(span trace.Span, recipeMediaID string) {
 	AttachStringToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
 }
+
+// AttachServiceSettingIDToSpan attaches a service setting ID to a given span.
+func AttachServiceSettingIDToSpan(span trace.Span, serviceSettingID string) {
+	AttachStringToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
+}
+
+// AttachServiceSettingNameToSpan attaches a service setting name to a given span.
+func AttachServiceSettingNameToSpan(span trace.Span, serviceSettingName string) {
+	AttachStringToSpan(span, keys.ServiceSettingNameKey, serviceSettingName)
+}
+
+// AttachServiceSettingConfigurationIDToSpan attaches a service setting configuration ID to a given span.
+func AttachServiceSettingConfigurationIDToSpan(span trace.Span, serviceSettingConfigurationID string) {
+	AttachStringToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+}
