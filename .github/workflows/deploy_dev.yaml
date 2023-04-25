@@ -1,7 +1,7 @@
-on: # [pull_request]
-  push:
-    branches:
-      - dev
+on: [pull_request]
+#  push:
+#    branches:
+#      - dev
 name: deploy
 jobs:
   dev:
@@ -67,6 +67,11 @@ jobs:
         working-directory: environments/dev/terraform
         id: validate
         run: terraform validate -no-color
+
+#      - name: Push API server container
+#        run: |
+#          docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
+#          docker push gcr.io/prixfixe-dev/api_server:latest
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
