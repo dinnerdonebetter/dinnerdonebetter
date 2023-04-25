@@ -44,6 +44,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
+	providedInput.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	providedInput.BelongsToUser = sessionCtxData.Requester.UserID
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
