@@ -169,5 +169,12 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
       secret     = google_secret_manager_secret.api_user_database_password.secret_id
       version    = "latest"
     }
+
+    secret_environment_variables {
+      key        = "PRIXFIXE_DATA_CHANGES_TOPIC"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.data_changes_topic_name.secret_id
+      version    = "latest"
+    }
   }
 }

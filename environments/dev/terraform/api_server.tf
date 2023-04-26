@@ -118,6 +118,12 @@ resource "google_cloud_run_service" "api_server" {
       containers {
         image = "gcr.io/prixfixe-dev/api_server"
 
+        resources {
+          requests = {
+            memory = "128Mi"
+          }
+        }
+
         volume_mounts {
           name       = "config"
           mount_path = "/config"

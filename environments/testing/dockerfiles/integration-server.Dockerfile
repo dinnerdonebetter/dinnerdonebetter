@@ -17,8 +17,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /prixf
 # final stage
 FROM debian:stretch
 
-# RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
-
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 COPY --from=build-stage /prixfixe /prixfixe
 
 ENTRYPOINT ["/prixfixe"]

@@ -68,14 +68,14 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: environments/dev/terraform
-
       - name: Push API server container
         run: |
           docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
           docker push gcr.io/prixfixe-dev/api_server:latest
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: environments/dev/terraform
 
       # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
       - id: deploy-api-server
