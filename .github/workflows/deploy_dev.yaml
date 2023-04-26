@@ -76,3 +76,11 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: environments/dev/terraform
+
+      # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
+      - id: deploy-api-server
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: 'api-server'
+          project_id: 'prixfixe-dev'
+          image: 'gcr.io/prixfixe-dev/api_server'
