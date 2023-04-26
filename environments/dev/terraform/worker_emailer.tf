@@ -126,6 +126,13 @@ resource "google_cloudfunctions2_function" "outbound_emailer" {
       secret     = google_secret_manager_secret.segment_api_token.secret_id
       version    = "latest"
     }
+
+    secret_environment_variables {
+      key        = "PRIXFIXE_DATA_CHANGES_TOPIC"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.data_changes_topic_name.secret_id
+      version    = "latest"
+    }
   }
 
   event_trigger {
