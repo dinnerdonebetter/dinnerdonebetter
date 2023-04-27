@@ -145,7 +145,7 @@ func (x *ServiceSettingCreationRequestInput) ValidateWithContext(ctx context.Con
 		}
 	}
 
-	if !defaultValueFoundInEnumeration && x.DefaultValue != nil && *x.DefaultValue != "" {
+	if !defaultValueFoundInEnumeration && len(x.Enumeration) > 0 && x.DefaultValue != nil && *x.DefaultValue != "" {
 		result = multierror.Append(result, errors.New("default value must be in enumeration"))
 	}
 
@@ -191,7 +191,7 @@ func (x *ServiceSettingUpdateRequestInput) ValidateWithContext(ctx context.Conte
 		}
 	}
 
-	if !defaultValueFoundInEnumeration && x.DefaultValue != nil && *x.DefaultValue != "" {
+	if !defaultValueFoundInEnumeration && len(x.Enumeration) > 0 && x.DefaultValue != nil && *x.DefaultValue != "" {
 		result = multierror.Append(result, errors.New("default value must be in enumeration"))
 	}
 

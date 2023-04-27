@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
+	"github.com/prixfixeco/backend/internal/database"
+	"github.com/prixfixeco/backend/internal/database/postgres"
 	"github.com/prixfixeco/backend/internal/email"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability"
@@ -86,6 +89,21 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	defer outboundEmailsPublisher.Stop()
 
+	// manual db timeout until I find out what's wrong
+	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
+	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, &cfg.Database, tracerProvider)
+	if err != nil {
+		cancel()
+		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
+	}
+
+	cancel()
+	defer dataManager.Close()
+
+	if !dataManager.IsReady(ctx, 50) {
+		return observability.PrepareAndLogError(database.ErrDatabaseNotReady, logger, span, "pinging database")
+	}
+
 	var changeMessage types.DataChangeMessage
 	if err = json.Unmarshal(msg.Message.Data, &changeMessage); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
@@ -106,7 +124,31 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 		break
 	case types.MealPlanCreatedCustomerEventType:
-		// TODO: handle meal plan created event
+		mealPlan := changeMessage.MealPlan
+		if mealPlan == nil {
+			return observability.PrepareError(fmt.Errorf("password reset token is nil"), span, "publishing password reset token redemption email")
+		}
+
+		var household *types.Household
+		household, err = dataManager.GetHousehold(ctx, mealPlan.BelongsToHousehold)
+		if err != nil {
+			return observability.PrepareError(err, span, "getting household")
+		}
+
+		for _, member := range household.Members {
+			if member.BelongsToUser.EmailAddressVerifiedAt != nil {
+				edr := &email.DeliveryRequest{
+					UserID:   member.BelongsToUser.ID,
+					Template: email.TemplateTypeMealPlanCreated,
+					MealPlan: mealPlan,
+				}
+
+				if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
+					observability.AcknowledgeError(err, logger, span, "publishing meal plan created email")
+				}
+			}
+		}
+
 		break
 	case types.PasswordResetTokenCreatedEventType:
 		if changeMessage.PasswordResetToken == nil {
