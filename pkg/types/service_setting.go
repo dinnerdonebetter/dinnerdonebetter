@@ -3,10 +3,12 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -30,7 +32,8 @@ func init() {
 type (
 	// ServiceSetting represents a service setting.
 	ServiceSetting struct {
-		_             struct{}
+		_ struct{}
+
 		CreatedAt     time.Time  `json:"createdAt"`
 		DefaultValue  *string    `json:"defaultValue"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
@@ -45,22 +48,20 @@ type (
 
 	// ServiceSettingCreationRequestInput represents what a user could set as input for creating settings.
 	ServiceSettingCreationRequestInput struct {
-		_             struct{}
-		CreatedAt     time.Time  `json:"createdAt"`
-		DefaultValue  *string    `json:"defaultValue"`
-		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt    *time.Time `json:"archivedAt"`
-		ID            string     `json:"id"`
-		Name          string     `json:"name"`
-		Type          string     `json:"type"`
-		Description   string     `json:"description"`
-		Enumeration   []string   `json:"enumeration"`
-		AdminsOnly    bool       `json:"adminsOnly"`
+		_ struct{}
+
+		DefaultValue *string  `json:"defaultValue"`
+		Name         string   `json:"name"`
+		Type         string   `json:"type"`
+		Description  string   `json:"description"`
+		Enumeration  []string `json:"enumeration"`
+		AdminsOnly   bool     `json:"adminsOnly"`
 	}
 
 	// ServiceSettingDatabaseCreationInput represents what a user could set as input for creating service settings.
 	ServiceSettingDatabaseCreationInput struct {
-		_            struct{}
+		_ struct{}
+
 		DefaultValue *string
 		ID           string
 		Name         string
@@ -72,7 +73,8 @@ type (
 
 	// ServiceSettingUpdateRequestInput represents what a user could set as input for updating service settings.
 	ServiceSettingUpdateRequestInput struct {
-		_            struct{}
+		_ struct{}
+
 		Name         *string  `json:"name"`
 		Type         *string  `json:"type"`
 		Description  *string  `json:"description"`
@@ -134,12 +136,33 @@ var _ validation.ValidatableWithContext = (*ServiceSettingCreationRequestInput)(
 
 // ValidateWithContext validates a ServiceSettingCreationRequestInput.
 func (x *ServiceSettingCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var result *multierror.Error
+
+	var defaultValueFoundInEnumeration bool
+	for _, enum := range x.Enumeration {
+		if x.DefaultValue != nil && enum == *x.DefaultValue {
+			defaultValueFoundInEnumeration = true
+		}
+	}
+
+	if !defaultValueFoundInEnumeration && x.DefaultValue != nil && *x.DefaultValue != "" {
+		result = multierror.Append(result, errors.New("default value must be in enumeration"))
+	}
+
+	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
-	)
+	); err != nil {
+		result = multierror.Append(result, err)
+	}
+
+	if result != nil {
+		return result
+	}
+
+	return nil
 }
 
 var _ validation.ValidatableWithContext = (*ServiceSettingDatabaseCreationInput)(nil)
@@ -159,10 +182,31 @@ var _ validation.ValidatableWithContext = (*ServiceSettingUpdateRequestInput)(ni
 
 // ValidateWithContext validates a ServiceSettingUpdateRequestInput.
 func (x *ServiceSettingUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var result *multierror.Error
+
+	var defaultValueFoundInEnumeration bool
+	for _, enum := range x.Enumeration {
+		if x.DefaultValue != nil && enum == *x.DefaultValue {
+			defaultValueFoundInEnumeration = true
+		}
+	}
+
+	if !defaultValueFoundInEnumeration && x.DefaultValue != nil && *x.DefaultValue != "" {
+		result = multierror.Append(result, errors.New("default value must be in enumeration"))
+	}
+
+	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Description, validation.Required),
-	)
+	); err != nil {
+		result = multierror.Append(result, err)
+	}
+
+	if result != nil {
+		return result
+	}
+
+	return nil
 }
