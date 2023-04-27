@@ -74,6 +74,7 @@ func (w *MealPlanTaskCreatorWorker) HandleMessage(ctx context.Context, _ []byte)
 		if creationErr != nil {
 			result = multierror.Append(result, creationErr)
 			observability.AcknowledgeError(creationErr, l, span, "creating meal plan tasks for meal plan option")
+			continue
 		}
 
 		for _, createdStep := range createdMealPlanTasks {
