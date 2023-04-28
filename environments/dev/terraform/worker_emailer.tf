@@ -8,7 +8,10 @@ resource "google_project_iam_custom_role" "outbound_emailer_role" {
   description = "An IAM role for the outbound emailer"
   permissions = [
     "secretmanager.versions.access",
+    "cloudsql.instances.connect",
+    "cloudsql.instances.get",
     "pubsub.topics.list",
+    "pubsub.topics.publish",
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
