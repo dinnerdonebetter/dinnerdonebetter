@@ -245,37 +245,5 @@ func GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(c
 
 // GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	client, err := secretmanager.NewClient(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create secretmanager client: %w", err)
-	}
-
-	var cfg *InstanceConfig
-	configBytes, configFetchErr := fetchSecretFromSecretStore(ctx, client, "api_service_config")
-	if configFetchErr != nil {
-		return nil, fmt.Errorf("fetching config from secret store: %w", configFetchErr)
-	}
-
-	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
-		return nil, encodeErr
-	}
-
-	rawPort := os.Getenv(gcpPortEnvVarKey)
-	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
-	if portParseErr != nil {
-		return nil, fmt.Errorf("parsing port: %w", portParseErr)
-	}
-	cfg.Server.HTTPPort = uint16(port)
-
-	// don't worry about it
-	cfg.Database.ConnectionDetails = " "
-
-	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
-	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
-
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
-	}
-
-	return cfg, nil
+	return getWorkerConfigFromGoogleCloudSecretManager(ctx)
 }
