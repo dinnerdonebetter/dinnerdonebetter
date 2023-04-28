@@ -97,7 +97,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring outbound_emailer")
+		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}
 
 	var emailDeliveryRequest email.DeliveryRequest
@@ -151,7 +151,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 		mail, err = email.BuildGeneratedPasswordResetTokenEmail(user.EmailAddress, emailDeliveryRequest.PasswordResetToken, envCfg)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "building password reset token email")
+			return observability.PrepareAndLogError(err, logger, span, "building password reset token email")
 		}
 		emailType = "password reset token"
 
@@ -159,9 +159,17 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	case email.TemplateTypePasswordResetTokenRedeemed:
 		mail, err = email.BuildPasswordResetTokenRedeemedEmail(user.EmailAddress, envCfg)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "building password reset token redemption email")
+			return observability.PrepareAndLogError(err, logger, span, "building password reset token redemption email")
 		}
 		emailType = "password reset token redemption"
+
+		break
+	case email.TemplateTypeMealPlanCreated:
+		mail, err = email.BuildMealPlanCreatedEmail(user.EmailAddress, emailDeliveryRequest.MealPlan, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
+		}
+		emailType = "meal plan created"
 
 		break
 	}
