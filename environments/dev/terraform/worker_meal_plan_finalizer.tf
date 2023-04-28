@@ -19,7 +19,7 @@ locals {
 }
 
 resource "google_pubsub_topic" "meal_plan_finalizer_topic" {
-  name = "meal_plan_finalization_work"
+  name = "meal_plan_finalizer_work"
 }
 
 resource "google_cloud_scheduler_job" "meal_plan_finalization" {
@@ -39,7 +39,6 @@ resource "google_cloud_scheduler_job" "meal_plan_finalization" {
 resource "google_storage_bucket" "meal_plan_finalizer_bucket" {
   name                        = "meal-plan-finalizer-cloud-function"
   location                    = "US"
-  uniform_bucket_level_access = true
 }
 
 data "archive_file" "meal_plan_finalizer_function" {
@@ -79,17 +78,16 @@ resource "google_secret_manager_secret" "meal_plan_finalizer_user_database_passw
   }
 }
 
+resource "google_secret_manager_secret_version" "meal_plan_finalizer_user_database_password" {
+  secret = google_secret_manager_secret.meal_plan_finalizer_user_database_password.id
+
+  secret_data = random_password.meal_plan_finalizer_user_database_password.result
+}
 
 resource "google_sql_user" "meal_plan_finalizer_user" {
   name     = local.meal_plan_finalizer_database_username
   instance = google_sql_database_instance.dev.name
   password = random_password.meal_plan_finalizer_user_database_password.result
-}
-
-resource "google_secret_manager_secret_version" "meal_plan_finalizer_user_database_password" {
-  secret = google_secret_manager_secret.meal_plan_finalizer_user_database_password.id
-
-  secret_data = random_password.meal_plan_finalizer_user_database_password.result
 }
 
 # Permissions on the service account used by the function and Eventarc trigger
@@ -115,6 +113,7 @@ resource "google_project_iam_member" "meal_plan_finalizer_artifactregistry_reade
 
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   depends_on = [
+    google_cloud_scheduler_job.meal_plan_finalization,
     google_project_iam_member.meal_plan_finalizer_event_receiving,
     google_project_iam_member.meal_plan_finalizer_artifactregistry_reader,
   ]
@@ -122,14 +121,6 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   name        = "meal-plan-finalizer"
   description = "Meal Plan Finalizer"
   location    = local.gcp_region
-
-  event_trigger {
-    trigger_region        = local.gcp_region
-    event_type            = local.pubsub_topic_publish_event
-    pubsub_topic          = google_pubsub_topic.meal_plan_finalizer_topic.id
-    retry_policy          = "RETRY_POLICY_RETRY"
-    service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
-  }
 
   build_config {
     runtime     = local.go_runtime
@@ -176,5 +167,13 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
       secret     = google_secret_manager_secret.data_changes_topic_name.secret_id
       version    = "latest"
     }
+  }
+
+  event_trigger {
+    trigger_region        = local.gcp_region
+    event_type            = local.pubsub_topic_publish_event
+    pubsub_topic          = google_pubsub_topic.meal_plan_finalizer_topic.id
+    retry_policy          = "RETRY_POLICY_RETRY"
+    service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
   }
 }
