@@ -8,7 +8,10 @@ resource "google_project_iam_custom_role" "data_changes_worker_role" {
   description = "An IAM role for the data changes worker"
   permissions = [
     "secretmanager.versions.access",
+    "cloudsql.instances.connect",
+    "cloudsql.instances.get",
     "pubsub.topics.list",
+    "pubsub.topics.publish",
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
