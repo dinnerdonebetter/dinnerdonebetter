@@ -103,6 +103,20 @@ resource "google_cloudfunctions2_function" "data_changes" {
       GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
       OUTBOUND_EMAILS_TOPIC_NAME       = google_pubsub_topic.outbound_emails_topic.name
+      PRIXFIXE_DATABASE_USER           = google_sql_user.api_user.name,
+      PRIXFIXE_DATABASE_NAME           = local.database_name,
+      // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
+      // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
+      PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
+      GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
+      GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
+    }
+
+    secret_environment_variables {
+      key        = "PRIXFIXE_DATABASE_PASSWORD"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.api_user_database_password.secret_id
+      version    = "latest"
     }
 
     secret_environment_variables {
