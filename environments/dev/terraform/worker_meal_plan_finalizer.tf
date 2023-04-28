@@ -37,8 +37,8 @@ resource "google_cloud_scheduler_job" "meal_plan_finalization" {
 }
 
 resource "google_storage_bucket" "meal_plan_finalizer_bucket" {
-  name                        = "meal-plan-finalizer-cloud-function"
-  location                    = "US"
+  name     = "meal-plan-finalizer-cloud-function"
+  location = "US"
 }
 
 data "archive_file" "meal_plan_finalizer_function" {
