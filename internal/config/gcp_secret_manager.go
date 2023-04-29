@@ -221,6 +221,10 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 	}
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
+	if cfg.Email.Sendgrid.APIToken == "" {
+		cfg.Email.Provider = ""
+	}
+
 	cfg.Events.Publishers.PubSubConfig.TopicName = string(changesTopic)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 
