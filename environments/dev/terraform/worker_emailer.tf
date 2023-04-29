@@ -117,6 +117,13 @@ resource "google_cloudfunctions2_function" "outbound_emailer" {
     }
 
     secret_environment_variables {
+      key        = "PRIXFIXE_DATABASE_PASSWORD"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.api_user_database_password.secret_id
+      version    = "latest"
+    }
+
+    secret_environment_variables {
       key        = "PRIXFIXE_SENDGRID_API_TOKEN"
       project_id = local.project_id
       secret     = google_secret_manager_secret.sendgrid_api_token.secret_id

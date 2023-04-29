@@ -92,9 +92,11 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 		return observability.PrepareError(err, span, "sending email")
 	}
 
-	// Fun fact: if your account is limited and not able to send an email, there islocalhost:9000/accept_invitation?i=cgk80ta23akg00eo8pf0&t=DHriGX_38me7f7NY7yjHjrh47jU9RIbloCAQU4SJhRwDoHSI23dw0kaD2CBHepRnnpbmHxcPOohCC5t8foniGA
+	// Fun fact: if your account is limited and not able to send an email, there is localhost:9000/accept_invitation?i=cgk80ta23akg00eo8pf0&t=DHriGX_38me7f7NY7yjHjrh47jU9RIbloCAQU4SJhRwDoHSI23dw0kaD2CBHepRnnpbmHxcPOohCC5t8foniGA
 	// no distinguishing feature of the response to let you know. Thanks, SendGrid!
 	if res.StatusCode != http.StatusAccepted {
+		e.logger.WithValue("sendgrid_api_token", e.config.APIToken).Info("sending email yielded an invalid response")
+		tracing.AttachStringToSpan(span, e.config.APIToken, "sendgrid_api_token")
 		return observability.PrepareError(ErrSendgridAPIIssue, span, "sending email yielded a %d response", res.StatusCode)
 	}
 

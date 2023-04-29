@@ -44,18 +44,8 @@ type (
 	}
 )
 
-var (
-	//go:embed templates/invite.tmpl
-	outgoingInviteTemplate string
-	//go:embed templates/username_reminder.tmpl
-	usernameReminderTemplate string
-	//go:embed templates/password_reset.tmpl
-	passwordResetTemplate string
-	//go:embed templates/password_reset_token_redeemed.tmpl
-	passwordResetTokenRedeemedTemplate string
-	//go:embed templates/meal_plan_created.tmpl
-	mealPlanCreatedTemplate string
-)
+//go:embed templates/invite.tmpl
+var outgoingInviteTemplate string
 
 type inviteContent struct {
 	LogoURL      string
@@ -97,6 +87,9 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation, envC
 	return msg, nil
 }
 
+//go:embed templates/password_reset.tmpl
+var passwordResetTemplate string
+
 type resetContent struct {
 	LogoURL   string
 	WebAppURL string
@@ -133,6 +126,9 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 	return msg, nil
 }
 
+//go:embed templates/username_reminder.tmpl
+var usernameReminderTemplate string
+
 type usernameReminderContent struct {
 	LogoURL   string
 	WebAppURL string
@@ -168,6 +164,9 @@ func BuildUsernameReminderEmail(toEmail, username string, envCfg *EnvironmentCon
 	return msg, nil
 }
 
+//go:embed templates/password_reset_token_redeemed.tmpl
+var passwordResetTokenRedeemedTemplate string
+
 type redemptionContent struct {
 	LogoURL   string
 	WebAppURL string
@@ -200,6 +199,9 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string, envCfg *EnvironmentCon
 
 	return msg, nil
 }
+
+//go:embed templates/meal_plan_created.tmpl
+var mealPlanCreatedTemplate string
 
 type mealPlanCreatedContent struct {
 	LogoURL         string
