@@ -44,11 +44,22 @@ type (
 	}
 )
 
+func buildDefaultTemplateFuncMap() map[string]any {
+	return map[string]any{
+		"attr": func(s string) template.HTMLAttr {
+			return template.HTMLAttr(s)
+		},
+		"safe": func(s string) template.HTML {
+			return template.HTML(s)
+		},
+	}
+}
+
 //go:embed templates/invite.tmpl
 var outgoingInviteTemplate string
 
 type inviteContent struct {
-	LogoURL      string
+	LogoURL      template.URL
 	WebAppURL    string
 	Token        string
 	InvitationID string
@@ -69,7 +80,7 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation, envC
 		Note:         householdInvitation.Note,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(outgoingInviteTemplate))
+	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(outgoingInviteTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
@@ -91,7 +102,7 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation, envC
 var passwordResetTemplate string
 
 type resetContent struct {
-	LogoURL   string
+	LogoURL   template.URL
 	WebAppURL string
 	Token     string
 }
@@ -108,7 +119,7 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 		Token:     passwordResetToken.Token,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(passwordResetTemplate))
+	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(passwordResetTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
@@ -130,7 +141,7 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 var usernameReminderTemplate string
 
 type usernameReminderContent struct {
-	LogoURL   string
+	LogoURL   template.URL
 	WebAppURL string
 	Username  string
 }
@@ -147,7 +158,7 @@ func BuildUsernameReminderEmail(toEmail, username string, envCfg *EnvironmentCon
 		Username:  username,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(usernameReminderTemplate))
+	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(usernameReminderTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
@@ -168,7 +179,7 @@ func BuildUsernameReminderEmail(toEmail, username string, envCfg *EnvironmentCon
 var passwordResetTokenRedeemedTemplate string
 
 type redemptionContent struct {
-	LogoURL   string
+	LogoURL   template.URL
 	WebAppURL string
 }
 
@@ -183,7 +194,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string, envCfg *EnvironmentCon
 		WebAppURL: envCfg.baseURL,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(passwordResetTokenRedeemedTemplate))
+	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(passwordResetTokenRedeemedTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
@@ -204,7 +215,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string, envCfg *EnvironmentCon
 var mealPlanCreatedTemplate string
 
 type mealPlanCreatedContent struct {
-	LogoURL         string
+	LogoURL         template.URL
 	MealPlanVoteURL string
 }
 
@@ -219,7 +230,7 @@ func BuildMealPlanCreatedEmail(toEmail string, mealPlan *types.MealPlan, envCfg 
 		MealPlanVoteURL: fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID),
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(mealPlanCreatedTemplate))
+	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(mealPlanCreatedTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
