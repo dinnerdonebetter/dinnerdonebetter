@@ -2,6 +2,7 @@ package email
 
 import (
 	"errors"
+	"html/template"
 	"sync"
 )
 
@@ -9,7 +10,7 @@ type (
 
 	// EnvironmentConfig is the configuration for a given environment.
 	EnvironmentConfig struct {
-		baseURL,
+		baseURL template.URL
 		outboundInvitesEmailAddress,
 		passwordResetCreationEmailAddress,
 		passwordResetRedemptionEmailAddress string
@@ -37,7 +38,7 @@ var (
 )
 
 // BaseURL returns the BaseURL field.
-func (c *EnvironmentConfig) BaseURL() string {
+func (c *EnvironmentConfig) BaseURL() template.URL {
 	return c.baseURL
 }
 

@@ -45,14 +45,7 @@ type (
 )
 
 func buildDefaultTemplateFuncMap() map[string]any {
-	return map[string]any{
-		"attr": func(s string) template.HTMLAttr {
-			return template.HTMLAttr(s)
-		},
-		"safe": func(s string) template.HTML {
-			return template.HTML(s)
-		},
-	}
+	return map[string]any{}
 }
 
 //go:embed templates/invite.tmpl
@@ -74,7 +67,7 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation, envC
 
 	content := &inviteContent{
 		LogoURL:      logoURL,
-		WebAppURL:    template.URL(envCfg.baseURL),
+		WebAppURL:    envCfg.baseURL,
 		Token:        householdInvitation.Token,
 		InvitationID: householdInvitation.ID,
 		Note:         householdInvitation.Note,
@@ -115,7 +108,7 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 
 	content := &resetContent{
 		LogoURL:   logoURL,
-		WebAppURL: template.URL(envCfg.BaseURL()),
+		WebAppURL: envCfg.BaseURL(),
 		Token:     passwordResetToken.Token,
 	}
 
@@ -154,7 +147,7 @@ func BuildUsernameReminderEmail(toEmail, username string, envCfg *EnvironmentCon
 
 	content := &usernameReminderContent{
 		LogoURL:   logoURL,
-		WebAppURL: template.URL(envCfg.BaseURL()),
+		WebAppURL: envCfg.BaseURL(),
 		Username:  username,
 	}
 
@@ -191,7 +184,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string, envCfg *EnvironmentCon
 
 	content := &redemptionContent{
 		LogoURL:   logoURL,
-		WebAppURL: template.URL(envCfg.BaseURL()),
+		WebAppURL: envCfg.BaseURL(),
 	}
 
 	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(passwordResetTokenRedeemedTemplate))
@@ -226,7 +219,8 @@ func BuildMealPlanCreatedEmail(toEmail string, mealPlan *types.MealPlan, envCfg 
 	}
 
 	content := &mealPlanCreatedContent{
-		LogoURL:         logoURL,
+		LogoURL: logoURL,
+		//#nosec G203
 		MealPlanVoteURL: template.URL(fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID)),
 	}
 
