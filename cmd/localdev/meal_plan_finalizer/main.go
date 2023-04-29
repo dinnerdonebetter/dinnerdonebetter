@@ -12,7 +12,6 @@ import (
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database/postgres"
-	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/messagequeue/redis"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
@@ -64,11 +63,6 @@ func main() {
 
 	cfg.Database.RunMigrations = false
 
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	cdp, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
 		log.Fatal(err)
@@ -99,7 +93,6 @@ func main() {
 		logger,
 		dataManager,
 		dataChangesPublisher,
-		emailer,
 		cdp,
 		tracerProvider,
 	)

@@ -5,7 +5,6 @@ import (
 
 	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
-	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability"
@@ -20,7 +19,6 @@ type MealPlanFinalizationWorker struct {
 	encoder                encoding.ClientEncoder
 	dataManager            database.DataManager
 	postUpdatesPublisher   messagequeue.Publisher
-	emailSender            email.Emailer
 	analyticsEventReporter analytics.EventReporter
 }
 
@@ -29,7 +27,6 @@ func ProvideMealPlanFinalizationWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
 	postUpdatesPublisher messagequeue.Publisher,
-	emailSender email.Emailer,
 	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 ) *MealPlanFinalizationWorker {
@@ -41,7 +38,6 @@ func ProvideMealPlanFinalizationWorker(
 		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataManager:            dataManager,
 		postUpdatesPublisher:   postUpdatesPublisher,
-		emailSender:            emailSender,
 		analyticsEventReporter: analyticsEventReporter,
 	}
 }
