@@ -15,7 +15,6 @@ import (
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/messagequeue/redis"
 	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/internal/workers"
 
 	_ "go.uber.org/automaxprocs"
@@ -36,7 +35,6 @@ func main() {
 	}
 
 	logger.Info("starting meal plan finalizer workers...")
-	client := tracing.BuildTracedHTTPClient()
 
 	// find and validate our configuration filepath.
 	configFilepath := os.Getenv(configFilepathEnvVar)

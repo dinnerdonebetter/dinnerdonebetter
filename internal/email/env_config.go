@@ -2,8 +2,10 @@ package email
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
 	"sync"
+	"time"
 
 	"github.com/matcornic/hermes/v2"
 )
@@ -59,14 +61,15 @@ func (c *EnvironmentConfig) PasswordResetRedemptionEmailAddress() string {
 	return c.passwordResetRedemptionEmailAddress
 }
 
-func (c *EnvironmentConfig) buildHermes() hermes.Hermes {
-	return hermes.Hermes{
+func (c *EnvironmentConfig) buildHermes() *hermes.Hermes {
+	return &hermes.Hermes{
 		Product: hermes.Product{
 			// Appears in header & footer of e-mails
 			Name: companyName,
 			Link: string(c.baseURL),
 			// Optional product logo
-			Logo: logoURL,
+			Logo:      logoURL,
+			Copyright: fmt.Sprintf("Copyright © %d %s. All rights reserved.", time.Now().Year(), companyName),
 		},
 	}
 }
