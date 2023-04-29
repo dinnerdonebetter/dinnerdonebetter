@@ -47,6 +47,7 @@ func TestBuildMealPlanCreatedEmail(T *testing.T) {
 		actual, err := BuildMealPlanCreatedEmail(t.Name(), mealPlan, envConfigsMap[defaultEnv])
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
+		assert.Contains(t, actual.HTMLContent, logoURL)
 	})
 }
 

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"html/template"
 	"sync"
+
+	"github.com/matcornic/hermes/v2"
 )
 
 type (
@@ -55,6 +57,18 @@ func (c *EnvironmentConfig) PasswordResetCreationEmailAddress() string {
 // PasswordResetRedemptionEmailAddress returns the PasswordResetRedemptionEmailAddress field.
 func (c *EnvironmentConfig) PasswordResetRedemptionEmailAddress() string {
 	return c.passwordResetRedemptionEmailAddress
+}
+
+func (c *EnvironmentConfig) buildHermes() hermes.Hermes {
+	return hermes.Hermes{
+		Product: hermes.Product{
+			// Appears in header & footer of e-mails
+			Name: companyName,
+			Link: string(c.baseURL),
+			// Optional product logo
+			Logo: logoURL,
+		},
+	}
 }
 
 func GetConfigForEnvironment(env string) *EnvironmentConfig {

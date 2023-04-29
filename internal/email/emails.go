@@ -7,6 +7,23 @@ import (
 	"html/template"
 
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/matcornic/hermes/v2"
+)
+
+var (
+	// Configure hermes by setting a theme and your product info
+	h = hermes.Hermes{
+		// Optional Theme
+		// Theme: new(Default)
+		Product: hermes.Product{
+			// Appears in header & footer of e-mails
+			Name: "Hermes",
+			Link: "https://example-hermes.com/",
+			// Optional product logo
+			Logo: "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png",
+		},
+	}
 )
 
 const (
@@ -208,7 +225,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string, envCfg *EnvironmentCon
 var mealPlanCreatedTemplate string
 
 type mealPlanCreatedContent struct {
-	LogoURL         template.URL
+	LogoURL         template.HTMLAttr
 	MealPlanVoteURL template.URL
 }
 
@@ -219,7 +236,7 @@ func BuildMealPlanCreatedEmail(toEmail string, mealPlan *types.MealPlan, envCfg 
 	}
 
 	content := &mealPlanCreatedContent{
-		LogoURL: logoURL,
+		LogoURL: template.HTMLAttr(logoURL),
 		//#nosec G203
 		MealPlanVoteURL: template.URL(fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID)),
 	}
