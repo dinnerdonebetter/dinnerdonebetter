@@ -7,7 +7,6 @@ import (
 
 	"github.com/prixfixeco/backend/internal/analytics"
 	"github.com/prixfixeco/backend/internal/database"
-	"github.com/prixfixeco/backend/internal/email"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
@@ -28,7 +27,6 @@ func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
 		zerolog.NewZerologLogger(logging.DebugLevel),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
-		&email.MockEmailer{},
 		&analytics.MockEventReporter{},
 		tracing.NewNoopTracerProvider(),
 	)
@@ -47,7 +45,6 @@ func TestProvideChoresWorker(T *testing.T) {
 			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
-			&email.MockEmailer{},
 			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)

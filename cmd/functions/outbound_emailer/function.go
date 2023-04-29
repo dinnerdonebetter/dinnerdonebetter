@@ -137,7 +137,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 		break
 	case email.TemplateTypeUsernameReminder:
-		mail, err = email.BuildUsernameReminderEmail(user.EmailAddress, user.Username, envCfg)
+		mail, err = email.BuildUsernameReminderEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building username reminder email")
 		}
@@ -149,7 +149,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 			return observability.PrepareAndLogError(err, logger, span, "missing password reset token")
 		}
 
-		mail, err = email.BuildGeneratedPasswordResetTokenEmail(user.EmailAddress, emailDeliveryRequest.PasswordResetToken, envCfg)
+		mail, err = email.BuildGeneratedPasswordResetTokenEmail(user, emailDeliveryRequest.PasswordResetToken, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token email")
 		}
@@ -157,7 +157,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 		break
 	case email.TemplateTypePasswordResetTokenRedeemed:
-		mail, err = email.BuildPasswordResetTokenRedeemedEmail(user.EmailAddress, envCfg)
+		mail, err = email.BuildPasswordResetTokenRedeemedEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token redemption email")
 		}
@@ -165,7 +165,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 		break
 	case email.TemplateTypeMealPlanCreated:
-		mail, err = email.BuildMealPlanCreatedEmail(user.EmailAddress, emailDeliveryRequest.MealPlan, envCfg)
+		mail, err = email.BuildMealPlanCreatedEmail(user, emailDeliveryRequest.MealPlan, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
 		}

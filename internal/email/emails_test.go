@@ -2,7 +2,9 @@ package email
 
 import (
 	"testing"
+	"time"
 
+	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -14,11 +16,14 @@ func TestBuildGeneratedPasswordResetTokenEmail(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		user := fakes.BuildFakeUser()
+		user.EmailAddressVerifiedAt = pointers.Pointer(time.Now())
 		token := fakes.BuildFakePasswordResetToken()
 
-		actual, err := BuildGeneratedPasswordResetTokenEmail(t.Name(), token, envConfigsMap[defaultEnv])
+		actual, err := BuildGeneratedPasswordResetTokenEmail(user, token, envConfigsMap[defaultEnv])
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
+		assert.Contains(t, actual.HTMLContent, logoURL)
 	})
 }
 
@@ -42,11 +47,14 @@ func TestBuildMealPlanCreatedEmail(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		user := fakes.BuildFakeUser()
+		user.EmailAddressVerifiedAt = pointers.Pointer(time.Now())
 		mealPlan := fakes.BuildFakeMealPlan()
 
-		actual, err := BuildMealPlanCreatedEmail(t.Name(), mealPlan, envConfigsMap[defaultEnv])
+		actual, err := BuildMealPlanCreatedEmail(user, mealPlan, envConfigsMap[defaultEnv])
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
+		assert.Contains(t, actual.HTMLContent, logoURL)
 	})
 }
 
@@ -56,7 +64,10 @@ func TestBuildPasswordResetTokenRedeemedEmail(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual, err := BuildPasswordResetTokenRedeemedEmail(t.Name(), envConfigsMap[defaultEnv])
+		user := fakes.BuildFakeUser()
+		user.EmailAddressVerifiedAt = pointers.Pointer(time.Now())
+
+		actual, err := BuildPasswordResetTokenRedeemedEmail(user, envConfigsMap[defaultEnv])
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})
@@ -69,8 +80,9 @@ func TestBuildUsernameReminderEmail(T *testing.T) {
 		t.Parallel()
 
 		user := fakes.BuildFakeUser()
+		user.EmailAddressVerifiedAt = pointers.Pointer(time.Now())
 
-		actual, err := BuildUsernameReminderEmail(t.Name(), user.Username, envConfigsMap[defaultEnv])
+		actual, err := BuildUsernameReminderEmail(user, envConfigsMap[defaultEnv])
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})

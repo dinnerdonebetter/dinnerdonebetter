@@ -220,11 +220,9 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)
 	}
 
-	cfg.Events.Publishers.PubSubConfig.TopicName = string(changesTopic)
-
-	// we don't actually need these, except for validation
-	cfg.Analytics.Segment = &segment.Config{APIToken: " "}
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
+	cfg.Events.Publishers.PubSubConfig.TopicName = string(changesTopic)
+	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr

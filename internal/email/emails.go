@@ -1,12 +1,17 @@
 package email
 
 import (
-	"bytes"
 	_ "embed"
+	"errors"
 	"fmt"
-	"html/template"
 
 	"github.com/prixfixeco/backend/pkg/types"
+
+	"github.com/matcornic/hermes/v2"
+)
+
+var (
+	ErrUnverifiedEmailRecipient = errors.New("missing email address verification for user")
 )
 
 const (
@@ -44,38 +49,32 @@ type (
 	}
 )
 
-func buildDefaultTemplateFuncMap() map[string]any {
-	return map[string]any{}
-}
-
-//go:embed templates/invite.tmpl
-var outgoingInviteTemplate string
-
-type inviteContent struct {
-	LogoURL      template.URL
-	WebAppURL    template.URL
-	Token        string
-	InvitationID string
-	Note         string
-}
-
 // BuildInviteMemberEmail builds an email notifying a user that they've been invited to join a household.
 func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, ErrMissingEnvCfg
 	}
 
-	content := &inviteContent{
-		LogoURL:      logoURL,
-		WebAppURL:    envCfg.baseURL,
-		Token:        householdInvitation.Token,
-		InvitationID: householdInvitation.ID,
-		Note:         householdInvitation.Note,
+	e := hermes.Email{
+		Body: hermes.Body{
+			Name: householdInvitation.ToEmail,
+			Intros: []string{
+				fmt.Sprintf("You've been invited to join a household on %s!", companyName),
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Click the button below to reset your password:",
+					Button: hermes.Button{
+						Text: "Join the fun",
+						Link: fmt.Sprintf("%s/accept_invitation?i=%s&t=%s", envCfg.BaseURL(), householdInvitation.ID, householdInvitation.Token),
+					},
+				},
+			},
+		},
 	}
 
-	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(outgoingInviteTemplate))
-	var b bytes.Buffer
-	if err := tmpl.Execute(&b, content); err != nil {
+	htmlContent, err := envCfg.buildHermes().GenerateHTML(e)
+	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
@@ -84,158 +83,167 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation, envC
 		ToName:      "",
 		FromAddress: envCfg.outboundInvitesEmailAddress,
 		FromName:    companyName,
-		Subject:     fmt.Sprintf("You've been invited to join a household on %s!", companyName),
-		HTMLContent: b.String(),
+		Subject:     "You've been invited!",
+		HTMLContent: htmlContent,
 	}
 
 	return msg, nil
 }
 
-//go:embed templates/password_reset.tmpl
-var passwordResetTemplate string
-
-type resetContent struct {
-	LogoURL   template.URL
-	WebAppURL template.URL
-	Token     string
-}
-
 // BuildGeneratedPasswordResetTokenEmail builds an email notifying a user that they've been invited to join a household.
-func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *types.PasswordResetToken, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+func BuildGeneratedPasswordResetTokenEmail(recipient *types.User, passwordResetToken *types.PasswordResetToken, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, ErrMissingEnvCfg
 	}
 
-	content := &resetContent{
-		LogoURL:   logoURL,
-		WebAppURL: envCfg.BaseURL(),
-		Token:     passwordResetToken.Token,
+	if recipient.EmailAddressVerifiedAt == nil {
+		return nil, ErrUnverifiedEmailRecipient
 	}
 
-	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(passwordResetTemplate))
-	var b bytes.Buffer
-	if err := tmpl.Execute(&b, content); err != nil {
+	e := hermes.Email{
+		Body: hermes.Body{
+			Name: recipient.Username,
+			Intros: []string{
+				"You have received this email because a password reset was requested.",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Click the button below to reset your password:",
+					Button: hermes.Button{
+						Text: "Reset your password",
+						Link: fmt.Sprintf("%s/reset_password-reset?t=%s", envCfg.BaseURL(), passwordResetToken.Token),
+					},
+				},
+			},
+			Outros: []string{
+				"If you did not request a password reset, no further action is required on your part.",
+			},
+		},
+	}
+
+	htmlContent, err := envCfg.buildHermes().GenerateHTML(e)
+	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
 	msg := &OutboundEmailMessage{
-		ToAddress:   toEmail,
+		ToAddress:   recipient.EmailAddress,
 		ToName:      "",
 		FromAddress: envCfg.passwordResetCreationEmailAddress,
 		FromName:    companyName,
 		Subject:     fmt.Sprintf("A password reset link was requested for your %s account", companyName),
-		HTMLContent: b.String(),
+		HTMLContent: htmlContent,
 	}
 
 	return msg, nil
-}
-
-//go:embed templates/username_reminder.tmpl
-var usernameReminderTemplate string
-
-type usernameReminderContent struct {
-	LogoURL   template.URL
-	WebAppURL template.URL
-	Username  string
 }
 
 // BuildUsernameReminderEmail builds an email notifying a user that they've been invited to join a household.
-func BuildUsernameReminderEmail(toEmail, username string, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+func BuildUsernameReminderEmail(recipient *types.User, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, ErrMissingEnvCfg
 	}
 
-	content := &usernameReminderContent{
-		LogoURL:   logoURL,
-		WebAppURL: envCfg.BaseURL(),
-		Username:  username,
+	if recipient.EmailAddressVerifiedAt == nil {
+		return nil, ErrUnverifiedEmailRecipient
 	}
 
-	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(usernameReminderTemplate))
-	var b bytes.Buffer
-	if err := tmpl.Execute(&b, content); err != nil {
+	e := hermes.Email{
+		Body: hermes.Body{
+			Name: recipient.Username,
+			Intros: []string{
+				fmt.Sprintf("A username reminder for your %s account was requested. Your username is <b>%s</b>.", companyName, recipient.Username),
+			},
+			Outros: []string{
+				"If you did not request a username reminder, no further action is required on your part.",
+			},
+		},
+	}
+
+	htmlContent, err := envCfg.buildHermes().GenerateHTML(e)
+	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
 	msg := &OutboundEmailMessage{
-		ToAddress:   toEmail,
+		ToAddress:   recipient.EmailAddress,
 		FromAddress: envCfg.passwordResetCreationEmailAddress,
 		FromName:    companyName,
 		Subject:     fmt.Sprintf("A password reset link was requested for your %s account", companyName),
-		HTMLContent: b.String(),
+		HTMLContent: htmlContent,
 	}
 
 	return msg, nil
-}
-
-//go:embed templates/password_reset_token_redeemed.tmpl
-var passwordResetTokenRedeemedTemplate string
-
-type redemptionContent struct {
-	LogoURL   template.URL
-	WebAppURL template.URL
 }
 
 // BuildPasswordResetTokenRedeemedEmail builds an email notifying a user that they've been invited to join a household.
-func BuildPasswordResetTokenRedeemedEmail(toEmail string, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+func BuildPasswordResetTokenRedeemedEmail(recipient *types.User, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, ErrMissingEnvCfg
 	}
 
-	content := &redemptionContent{
-		LogoURL:   logoURL,
-		WebAppURL: envCfg.BaseURL(),
+	if recipient.EmailAddressVerifiedAt == nil {
+		return nil, ErrUnverifiedEmailRecipient
 	}
 
-	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(passwordResetTokenRedeemedTemplate))
-	var b bytes.Buffer
-	if err := tmpl.Execute(&b, content); err != nil {
+	e := hermes.Email{
+		Body: hermes.Body{
+			Name: recipient.Username,
+			Intros: []string{
+				"This is to inform you that your password has been changed upon successful redemption of a reset token.",
+			},
+			Outros: []string{
+				"If you did not request a password reset, please contact support.",
+			},
+		},
+	}
+
+	htmlContent, err := envCfg.buildHermes().GenerateHTML(e)
+	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
 	msg := &OutboundEmailMessage{
-		ToAddress:   toEmail,
+		ToAddress:   recipient.EmailAddress,
 		FromAddress: envCfg.passwordResetRedemptionEmailAddress,
 		FromName:    companyName,
 		Subject:     fmt.Sprintf("Your %s account password has been changed.", companyName),
-		HTMLContent: b.String(),
+		HTMLContent: htmlContent,
 	}
 
 	return msg, nil
 }
 
-//go:embed templates/meal_plan_created.tmpl
-var mealPlanCreatedTemplate string
-
-type mealPlanCreatedContent struct {
-	LogoURL         template.URL
-	MealPlanVoteURL template.URL
-}
-
 // BuildMealPlanCreatedEmail builds an email notifying a user that they've been invited to join a household.
-func BuildMealPlanCreatedEmail(toEmail string, mealPlan *types.MealPlan, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+func BuildMealPlanCreatedEmail(recipient *types.User, mealPlan *types.MealPlan, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, ErrMissingEnvCfg
 	}
 
-	content := &mealPlanCreatedContent{
-		LogoURL: logoURL,
-		//#nosec G203
-		MealPlanVoteURL: template.URL(fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID)),
+	if recipient.EmailAddressVerifiedAt == nil {
+		return nil, ErrUnverifiedEmailRecipient
 	}
 
-	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(mealPlanCreatedTemplate))
-	var b bytes.Buffer
-	if err := tmpl.Execute(&b, content); err != nil {
+	e := hermes.Email{
+		Body: hermes.Body{
+			Name: recipient.Username,
+			Intros: []string{
+				fmt.Sprintf(`A new meal plan has been created for your household. You can vote on what's for dinner <a href=%q>here</a>`, fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID)),
+			},
+		},
+	}
+
+	htmlContent, err := envCfg.buildHermes().GenerateHTML(e)
+	if err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
 	msg := &OutboundEmailMessage{
-		ToAddress:   toEmail,
+		ToAddress:   recipient.EmailAddress,
 		FromAddress: envCfg.passwordResetRedemptionEmailAddress,
 		FromName:    companyName,
 		Subject:     "A new meal plan has been created!",
-		HTMLContent: b.String(),
+		HTMLContent: htmlContent,
 	}
 
 	return msg, nil

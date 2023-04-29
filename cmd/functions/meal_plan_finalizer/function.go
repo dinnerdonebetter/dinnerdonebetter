@@ -10,7 +10,6 @@ import (
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
-	emailconfig "github.com/prixfixeco/backend/internal/email/config"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
@@ -47,12 +46,6 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
 	defer span.End()
-
-	client := tracing.BuildTracedHTTPClient()
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, client)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring outbound_emailer")
-	}
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
@@ -94,7 +87,6 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 		logger,
 		dataManager,
 		dataChangesPublisher,
-		emailer,
 		analyticsEventReporter,
 		tracerProvider,
 	)
