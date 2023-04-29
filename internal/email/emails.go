@@ -60,7 +60,7 @@ var outgoingInviteTemplate string
 
 type inviteContent struct {
 	LogoURL      template.URL
-	WebAppURL    string
+	WebAppURL    template.URL
 	Token        string
 	InvitationID string
 	Note         string
@@ -74,7 +74,7 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation, envC
 
 	content := &inviteContent{
 		LogoURL:      logoURL,
-		WebAppURL:    envCfg.baseURL,
+		WebAppURL:    template.URL(envCfg.baseURL),
 		Token:        householdInvitation.Token,
 		InvitationID: householdInvitation.ID,
 		Note:         householdInvitation.Note,
@@ -103,7 +103,7 @@ var passwordResetTemplate string
 
 type resetContent struct {
 	LogoURL   template.URL
-	WebAppURL string
+	WebAppURL template.URL
 	Token     string
 }
 
@@ -115,7 +115,7 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 
 	content := &resetContent{
 		LogoURL:   logoURL,
-		WebAppURL: envCfg.BaseURL(),
+		WebAppURL: template.URL(envCfg.BaseURL()),
 		Token:     passwordResetToken.Token,
 	}
 
@@ -142,7 +142,7 @@ var usernameReminderTemplate string
 
 type usernameReminderContent struct {
 	LogoURL   template.URL
-	WebAppURL string
+	WebAppURL template.URL
 	Username  string
 }
 
@@ -154,7 +154,7 @@ func BuildUsernameReminderEmail(toEmail, username string, envCfg *EnvironmentCon
 
 	content := &usernameReminderContent{
 		LogoURL:   logoURL,
-		WebAppURL: envCfg.baseURL,
+		WebAppURL: template.URL(envCfg.BaseURL()),
 		Username:  username,
 	}
 
@@ -180,7 +180,7 @@ var passwordResetTokenRedeemedTemplate string
 
 type redemptionContent struct {
 	LogoURL   template.URL
-	WebAppURL string
+	WebAppURL template.URL
 }
 
 // BuildPasswordResetTokenRedeemedEmail builds an email notifying a user that they've been invited to join a household.
@@ -191,7 +191,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string, envCfg *EnvironmentCon
 
 	content := &redemptionContent{
 		LogoURL:   logoURL,
-		WebAppURL: envCfg.baseURL,
+		WebAppURL: template.URL(envCfg.BaseURL()),
 	}
 
 	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(passwordResetTokenRedeemedTemplate))
@@ -216,7 +216,7 @@ var mealPlanCreatedTemplate string
 
 type mealPlanCreatedContent struct {
 	LogoURL         template.URL
-	MealPlanVoteURL string
+	MealPlanVoteURL template.URL
 }
 
 // BuildMealPlanCreatedEmail builds an email notifying a user that they've been invited to join a household.
@@ -227,7 +227,7 @@ func BuildMealPlanCreatedEmail(toEmail string, mealPlan *types.MealPlan, envCfg 
 
 	content := &mealPlanCreatedContent{
 		LogoURL:         logoURL,
-		MealPlanVoteURL: fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID),
+		MealPlanVoteURL: template.URL(fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID)),
 	}
 
 	tmpl := template.Must(template.New("").Funcs(buildDefaultTemplateFuncMap()).Parse(mealPlanCreatedTemplate))
