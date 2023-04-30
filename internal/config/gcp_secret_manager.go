@@ -230,8 +230,8 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	cfg.Email = emailcfg.Config{}
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
 	}
 
 	return cfg, nil
@@ -246,8 +246,8 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	cfg.Email = emailcfg.Config{}
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
 	}
 
 	return cfg, nil
@@ -262,8 +262,8 @@ func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.
 
 	cfg.Email = emailcfg.Config{}
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
 	}
 
 	return cfg, nil
@@ -278,8 +278,8 @@ func GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(c
 
 	cfg.Email = emailcfg.Config{}
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
 	}
 
 	return cfg, nil
@@ -294,8 +294,8 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
 	}
 
 	return cfg, nil

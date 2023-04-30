@@ -162,6 +162,13 @@ resource "google_cloudfunctions2_function" "meal_plan_task_creator" {
     }
 
     secret_environment_variables {
+      key        = "PRIXFIXE_SEGMENT_API_TOKEN"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.segment_api_token.secret_id
+      version    = "latest"
+    }
+
+    secret_environment_variables {
       key        = "PRIXFIXE_DATABASE_PASSWORD"
       project_id = local.project_id
       secret     = google_secret_manager_secret.api_user_database_password.secret_id
