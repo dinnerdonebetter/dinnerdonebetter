@@ -59,7 +59,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, logger, nil, "getting environment config")
 	}
 
-	cfg, err := config.GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

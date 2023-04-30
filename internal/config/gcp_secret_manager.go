@@ -11,6 +11,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/analytics/segment"
 	"github.com/prixfixeco/backend/internal/database"
+	emailcfg "github.com/prixfixeco/backend/internal/email/config"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
 
@@ -100,7 +101,6 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 
-	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName
@@ -215,21 +215,23 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 
 	logger.Debug("fetched database values")
 
-	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
-	if err != nil {
-		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)
-	}
-
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
-	if cfg.Email.Sendgrid.APIToken == "" {
-		cfg.Email.Provider = ""
-	}
-
-	cfg.Events.Publishers.PubSubConfig.TopicName = string(changesTopic)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	return cfg, nil
+}
+
+// GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Email = emailcfg.Config{}
+
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -237,20 +239,64 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 
 // GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	return getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Email = emailcfg.Config{}
+
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
 }
 
 // GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	return getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Email = emailcfg.Config{}
+
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
 }
 
 // GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	return getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Email = emailcfg.Config{}
+
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
 }
 
-// GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
-func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	return getWorkerConfigFromGoogleCloudSecretManager(ctx)
+// GetOutboundEmailerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
+
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
 }

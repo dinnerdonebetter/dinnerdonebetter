@@ -80,8 +80,7 @@ const (
 	testingEnv     = "testing"
 
 	// message provider topics.
-	dataChangesTopicName    = "data_changes"
-	outboundEmailsTopicName = "outbound_emails"
+	dataChangesTopicName = "data_changes"
 
 	pasetoSecretSize      = 32
 	maxAttempts           = 50
