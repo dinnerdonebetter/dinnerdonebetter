@@ -28,9 +28,9 @@ var (
 	envConfigsMap    = map[string]*EnvironmentConfig{
 		"dev": {
 			baseURL:                             "https://www.prixfixe.dev",
-			outboundInvitesEmailAddress:         "invites@prixfixe.dev",
-			passwordResetCreationEmailAddress:   "noreply.auth@prixfixe.dev",
-			passwordResetRedemptionEmailAddress: "noreply.auth@prixfixe.dev",
+			outboundInvitesEmailAddress:         "noreply@prixfixe.dev",
+			passwordResetCreationEmailAddress:   "noreply@prixfixe.dev",
+			passwordResetRedemptionEmailAddress: "noreply@prixfixe.dev",
 		},
 		defaultEnv: {
 			baseURL:                             "https://not.real.lol",

@@ -15,7 +15,6 @@ WHERE
   AND meal_plans.status = 'finalized'
   AND meal_plan_options.chosen IS TRUE
   AND meal_plans.tasks_created IS FALSE
-  AND meal_plan_events.starts_at < NOW() + (1 * interval '1 week')
 GROUP BY
   meal_plans.id,
   meal_plan_options.id,
