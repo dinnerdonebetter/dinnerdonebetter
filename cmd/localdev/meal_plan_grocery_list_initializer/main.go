@@ -98,7 +98,7 @@ func main() {
 		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)
 
-	mealPlanGroceryListInitializationConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanGroceryListInitTopic, mealPlanGroceryListInitializationWorker.HandleMessage)
+	mealPlanGroceryListInitializationConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanGroceryListInitTopic, mealPlanGroceryListInitializationWorker.InitializeGroceryListsForFinalizedMealPlans)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -264,7 +264,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		}
 		w.dataManager = mdm
 
-		assert.NoError(t, w.HandleMessage(ctx, []byte("{}")))
+		assert.NoError(t, w.InitializeGroceryListsForFinalizedMealPlans(ctx, []byte("{}")))
 		mock.AssertExpectationsForObjects(t, mdm)
 	})
 }

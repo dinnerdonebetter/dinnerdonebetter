@@ -90,7 +90,7 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event)
 		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)
 
-	if err = mealPlanGroceryListInitializationWorker.HandleMessage(ctx, nil); err != nil {
+	if err = mealPlanGroceryListInitializationWorker.InitializeGroceryListsForFinalizedMealPlans(ctx, nil); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "handling message")
 	}
 

@@ -577,17 +577,34 @@ func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context
 		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with uninitialized grocery lists query")
 	}
 
-	mealPlans := []*types.MealPlan{}
+	mealPlanDetails := map[string]string{}
 	for rows.Next() {
-		mp, _, _, scanErr := q.scanMealPlan(ctx, rows, false)
-		if scanErr != nil {
-			return nil, observability.PrepareError(scanErr, span, "scanning meal plan response")
+		var mealPlanID, householdID string
+
+		targetVars := []any{
+			&mealPlanID,
+			&householdID,
 		}
-		mealPlans = append(mealPlans, mp)
+
+		if err = rows.Scan(targetVars...); err != nil {
+			return nil, observability.PrepareError(err, span, "scanning meal plan ID")
+		}
+
+		mealPlanDetails[mealPlanID] = householdID
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
 		return nil, observability.PrepareError(err, span, "closing rows")
+	}
+
+	mealPlans := []*types.MealPlan{}
+	for mealPlanID, householdID := range mealPlanDetails {
+		mealPlan, getMealPlanErr := q.GetMealPlan(ctx, mealPlanID, householdID)
+		if getMealPlanErr != nil {
+			return nil, observability.PrepareError(getMealPlanErr, span, "getting meal plan")
+		}
+
+		mealPlans = append(mealPlans, mealPlan)
 	}
 
 	return mealPlans, nil

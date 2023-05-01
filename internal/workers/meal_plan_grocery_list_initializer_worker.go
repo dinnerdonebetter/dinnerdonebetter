@@ -10,6 +10,7 @@ import (
 	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 
@@ -54,8 +55,8 @@ func ProvideMealPlanGroceryListInitializer(
 	}
 }
 
-// HandleMessage handles a pending write.
-func (w *MealPlanGroceryListInitializer) HandleMessage(ctx context.Context, _ []byte) error {
+// InitializeGroceryListsForFinalizedMealPlans handles a pending write.
+func (w *MealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealPlans(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -66,16 +67,31 @@ func (w *MealPlanGroceryListInitializer) HandleMessage(ctx context.Context, _ []
 		return observability.PrepareAndLogError(err, logger, span, "getting finalized meal plan data")
 	}
 
+	logger = logger.WithValue("meal_plan_quantity", len(mealPlans))
+
+	if len(mealPlans) > 0 {
+		logger.Info("attempting to initialize grocery lists for meal plans")
+	}
+
 	var errorResult *multierror.Error
 
 	for _, mealPlan := range mealPlans {
+		l := logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
+
 		dbInputs, groceryListCreationErr := w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
 		if groceryListCreationErr != nil {
 			errorResult = multierror.Append(errorResult, groceryListCreationErr)
+			l.Error(groceryListCreationErr, "failed to generate grocery list inputs for meal plan")
+			continue
 		}
+
+		l = l.WithValue("grocery_list_items_to_create", len(dbInputs))
+		l.Info("creating grocery list items for meal plan")
 
 		if err = w.dataManager.CreateMealPlanGroceryListItemsForMealPlan(ctx, mealPlan.ID, dbInputs); err != nil {
 			errorResult = multierror.Append(errorResult, err)
+			l.Error(groceryListCreationErr, "failed to create grocery list for meal plan")
+			continue
 		}
 	}
 

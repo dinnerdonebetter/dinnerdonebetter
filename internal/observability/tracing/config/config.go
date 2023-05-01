@@ -33,7 +33,6 @@ type (
 // ProvideTracerProvider provides an instrumentation handler.
 func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (traceProvider tracing.TracerProvider, err error) {
 	logger := l.WithValue("tracing_provider", c.Provider)
-	logger.Info("setting tracing provider")
 
 	p := strings.TrimSpace(strings.ToLower(c.Provider))
 

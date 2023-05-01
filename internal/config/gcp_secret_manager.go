@@ -167,8 +167,6 @@ func fetchSecretFromSecretStore(ctx context.Context, client SecretVersionAccesso
 
 // getWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	logger := zerolog.NewZerologLogger(logging.DebugLevel)
-
 	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
 	if secretManagerCreationErr != nil {
 		return nil, fmt.Errorf("failed to create secretmanager client: %w", secretManagerCreationErr)
@@ -212,9 +210,6 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 	cfg.Database.RunMigrations = false
-
-	logger.Debug("fetched database values")
-
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
 

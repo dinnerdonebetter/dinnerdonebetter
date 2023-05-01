@@ -97,7 +97,7 @@ func main() {
 		tracerProvider,
 	)
 
-	mealPlanTaskCreationConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanTaskCreationTopic, mealPlanTaskCreationEnsurerWorker.HandleMessage)
+	mealPlanTaskCreationConsumer, err := consumerProvider.ProvideConsumer(ctx, mealPlanTaskCreationTopic, mealPlanTaskCreationEnsurerWorker.CreateMealPlanTasksForFinalizedMealPlans)
 	if err != nil {
 		log.Fatal(err)
 	}
