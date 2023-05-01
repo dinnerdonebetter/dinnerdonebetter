@@ -52,8 +52,8 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 	}
 }
 
-// HandleMessage handles a pending write.
-func (w *MealPlanTaskCreatorWorker) HandleMessage(ctx context.Context, _ []byte) error {
+// CreateMealPlanTasksForFinalizedMealPlans does the main thing.
+func (w *MealPlanTaskCreatorWorker) CreateMealPlanTasksForFinalizedMealPlans(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -228,7 +228,16 @@ func BuildMealPlanCreatedEmail(recipient *types.User, mealPlan *types.MealPlan, 
 		Body: hermes.Body{
 			Name: recipient.Username,
 			Intros: []string{
-				fmt.Sprintf(`A new meal plan has been created for your household. You can vote on what's for dinner <a href=%q>here</a>`, fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID)),
+				"A new meal plan has been created for your household!",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "You can rank each meal in the meal plan by clicking the button below",
+					Button: hermes.Button{
+						Text: "Submit your vote",
+						Link: fmt.Sprintf("%s/meal_plans/%s", envCfg.baseURL, mealPlan.ID),
+					},
+				},
 			},
 		},
 	}

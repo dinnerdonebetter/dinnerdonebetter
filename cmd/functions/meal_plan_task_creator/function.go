@@ -94,7 +94,7 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 		tracerProvider,
 	)
 
-	if err = mealPlanTaskCreationEnsurerWorker.HandleMessage(ctx, nil); err != nil {
+	if err = mealPlanTaskCreationEnsurerWorker.CreateMealPlanTasksForFinalizedMealPlans(ctx, nil); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "handling message")
 	}
 

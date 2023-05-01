@@ -61,7 +61,7 @@ func TestMealPlanTaskCreationEnsurerWorker_HandleMessage(T *testing.T) {
 		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
 		w.dataManager = mdm
 
-		err := w.HandleMessage(ctx, []byte("{}"))
+		err := w.CreateMealPlanTasksForFinalizedMealPlans(ctx, []byte("{}"))
 		assert.NoError(t, err)
 	})
 }
