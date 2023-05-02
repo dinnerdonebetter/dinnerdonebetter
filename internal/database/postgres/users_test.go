@@ -2304,7 +2304,7 @@ func TestQuerier_GetUserByEmailAddressVerificationToken(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetUserByEmailAddressVerificationToken(ctx, "")
-		assert.NoError(t, err)
+		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 
