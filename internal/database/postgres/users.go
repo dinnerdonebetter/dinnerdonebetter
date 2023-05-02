@@ -713,3 +713,58 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 
 	return nil
 }
+
+//go:embed queries/users/get_by_email_verification_token.sql
+var getUserByEmailAddressVerificationTokenQuery string
+
+func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*types.User, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if token == "" {
+		return nil, ErrEmptyInputProvided
+	}
+
+	emailAddressVerificationMatchesArgs := []any{
+		token,
+	}
+
+	row := q.getOneRow(ctx, q.db, "user", getUserByEmailAddressVerificationTokenQuery, emailAddressVerificationMatchesArgs)
+
+	u, _, _, err := q.scanUser(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "scanning user")
+	}
+
+	return u, nil
+}
+
+//go:embed queries/users/mark_email_address_as_verified.sql
+var markEmailAddressAsVerifiedQuery string
+
+func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+
+	if token == "" {
+		return ErrEmptyInputProvided
+	}
+
+	args := []any{
+		userID,
+		token,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "user email address verification", markEmailAddressAsVerifiedQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "writing verified email address status to database")
+	}
+
+	return nil
+}

@@ -919,3 +919,55 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 
 	res.WriteHeader(http.StatusAccepted)
 }
+
+// VerifyUserEmailAddressHandler checks for a user with a given email address and notifies them via email if there is a username associated with it.
+func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	input := new(types.EmailAddressVerificationRequestInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user, err := s.userDataManager.GetUserByEmailAddressVerificationToken(ctx, input.Token)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
+
+		observability.AcknowledgeError(err, logger, span, "fetching user")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err = s.userDataManager.MarkUserEmailAddressAsVerified(ctx, user.ID, input.Token); err != nil {
+		observability.AcknowledgeError(err, logger, span, "marking user email as verified")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		DataType:  types.UserDataType,
+		EventType: types.PasswordResetTokenRedeemedEventType,
+		UserID:    user.ID,
+	}
+
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}

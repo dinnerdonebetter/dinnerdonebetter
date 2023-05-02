@@ -99,13 +99,13 @@ type (
 
 	// HouseholdInvitationDataService describes a structure capable of serving traffic related to household invitations.
 	HouseholdInvitationDataService interface {
-		ReadHandler(res http.ResponseWriter, req *http.Request)
-		InboundInvitesHandler(res http.ResponseWriter, req *http.Request)
-		OutboundInvitesHandler(res http.ResponseWriter, req *http.Request)
-		InviteMemberHandler(res http.ResponseWriter, req *http.Request)
-		CancelInviteHandler(res http.ResponseWriter, req *http.Request)
-		AcceptInviteHandler(res http.ResponseWriter, req *http.Request)
-		RejectInviteHandler(res http.ResponseWriter, req *http.Request)
+		ReadHandler(http.ResponseWriter, *http.Request)
+		InboundInvitesHandler(http.ResponseWriter, *http.Request)
+		OutboundInvitesHandler(http.ResponseWriter, *http.Request)
+		InviteMemberHandler(http.ResponseWriter, *http.Request)
+		CancelInviteHandler(http.ResponseWriter, *http.Request)
+		AcceptInviteHandler(http.ResponseWriter, *http.Request)
+		RejectInviteHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

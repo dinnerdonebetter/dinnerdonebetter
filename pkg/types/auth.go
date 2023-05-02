@@ -127,12 +127,12 @@ type (
 
 	// AuthService describes a structure capable of handling passwords and authorization requests.
 	AuthService interface {
-		StatusHandler(res http.ResponseWriter, req *http.Request)
+		StatusHandler(http.ResponseWriter, *http.Request)
 		BuildLoginHandler(bool) func(http.ResponseWriter, *http.Request)
-		EndSessionHandler(res http.ResponseWriter, req *http.Request)
-		CycleCookieSecretHandler(res http.ResponseWriter, req *http.Request)
-		PASETOHandler(res http.ResponseWriter, req *http.Request)
-		ChangeActiveHouseholdHandler(res http.ResponseWriter, req *http.Request)
+		EndSessionHandler(http.ResponseWriter, *http.Request)
+		CycleCookieSecretHandler(http.ResponseWriter, *http.Request)
+		PASETOHandler(http.ResponseWriter, *http.Request)
+		ChangeActiveHouseholdHandler(http.ResponseWriter, *http.Request)
 
 		PermissionFilterMiddleware(permissions ...authorization.Permission) func(next http.Handler) http.Handler
 		CookieRequirementMiddleware(next http.Handler) http.Handler

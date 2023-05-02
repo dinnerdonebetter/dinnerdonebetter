@@ -146,19 +146,28 @@ type (
 		TwoFactorSecret string `json:"twoFactorSecret"`
 	}
 
+	// EmailAddressVerificationRequestInput represents the request a User provides when verifying their email address.
+	EmailAddressVerificationRequestInput struct {
+		_ struct{}
+
+		Token string `json:"emailVerificationToken"`
+	}
+
 	// AdminUserDataManager contains administrative User functions that we don't necessarily want to expose
 	// to, say, the collection of handlers.
 	AdminUserDataManager interface {
 		UpdateUserAccountStatus(ctx context.Context, userID string, input *UserAccountStatusUpdateInput) error
 	}
 
-	// UserDataManager describes a structure which can manage users in permanent objectstorage.
+	// UserDataManager describes a structure which can manage users in persistent storage.
 	UserDataManager interface {
 		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
 		GetUser(ctx context.Context, userID string) (*User, error)
 		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
+		GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*User, error)
+		MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
@@ -171,20 +180,21 @@ type (
 
 	// UserDataService describes a structure capable of serving traffic related to users.
 	UserDataService interface {
-		ListHandler(res http.ResponseWriter, req *http.Request)
-		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ReadHandler(res http.ResponseWriter, req *http.Request)
-		SelfHandler(res http.ResponseWriter, req *http.Request)
-		PermissionsHandler(res http.ResponseWriter, req *http.Request)
-		UsernameSearchHandler(res http.ResponseWriter, req *http.Request)
-		NewTOTPSecretHandler(res http.ResponseWriter, req *http.Request)
-		TOTPSecretVerificationHandler(res http.ResponseWriter, req *http.Request)
-		UpdatePasswordHandler(res http.ResponseWriter, req *http.Request)
-		AvatarUploadHandler(res http.ResponseWriter, req *http.Request)
-		ArchiveHandler(res http.ResponseWriter, req *http.Request)
-		CreatePasswordResetTokenHandler(res http.ResponseWriter, req *http.Request)
-		PasswordResetTokenRedemptionHandler(res http.ResponseWriter, req *http.Request)
-		RequestUsernameReminderHandler(res http.ResponseWriter, req *http.Request)
+		ListHandler(http.ResponseWriter, *http.Request)
+		CreateHandler(http.ResponseWriter, *http.Request)
+		ReadHandler(http.ResponseWriter, *http.Request)
+		SelfHandler(http.ResponseWriter, *http.Request)
+		PermissionsHandler(http.ResponseWriter, *http.Request)
+		UsernameSearchHandler(http.ResponseWriter, *http.Request)
+		NewTOTPSecretHandler(http.ResponseWriter, *http.Request)
+		TOTPSecretVerificationHandler(http.ResponseWriter, *http.Request)
+		UpdatePasswordHandler(http.ResponseWriter, *http.Request)
+		AvatarUploadHandler(http.ResponseWriter, *http.Request)
+		ArchiveHandler(http.ResponseWriter, *http.Request)
+		CreatePasswordResetTokenHandler(http.ResponseWriter, *http.Request)
+		PasswordResetTokenRedemptionHandler(http.ResponseWriter, *http.Request)
+		RequestUsernameReminderHandler(http.ResponseWriter, *http.Request)
+		VerifyUserEmailAddressHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
@@ -268,5 +278,14 @@ func (i *TOTPSecretRefreshInput) ValidateWithContext(ctx context.Context) error 
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.CurrentPassword, validation.Required),
 		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*EmailAddressVerificationRequestInput)(nil)
+
+// ValidateWithContext ensures our provided EmailAddressVerificationRequestInput meets expectations.
+func (i *EmailAddressVerificationRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, i,
+		validation.Field(&i.Token, validation.Required),
 	)
 }

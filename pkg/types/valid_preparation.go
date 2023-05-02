@@ -143,13 +143,13 @@ type (
 
 	// ValidPreparationDataService describes a structure capable of serving traffic related to valid preparations.
 	ValidPreparationDataService interface {
-		SearchHandler(res http.ResponseWriter, req *http.Request)
-		ListHandler(res http.ResponseWriter, req *http.Request)
-		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ReadHandler(res http.ResponseWriter, req *http.Request)
-		RandomHandler(res http.ResponseWriter, req *http.Request)
-		UpdateHandler(res http.ResponseWriter, req *http.Request)
-		ArchiveHandler(res http.ResponseWriter, req *http.Request)
+		SearchHandler(http.ResponseWriter, *http.Request)
+		ListHandler(http.ResponseWriter, *http.Request)
+		CreateHandler(http.ResponseWriter, *http.Request)
+		ReadHandler(http.ResponseWriter, *http.Request)
+		RandomHandler(http.ResponseWriter, *http.Request)
+		UpdateHandler(http.ResponseWriter, *http.Request)
+		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

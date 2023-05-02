@@ -10,7 +10,7 @@ import (
 type (
 	// AdminService describes a structure capable of serving traffic related to users.
 	AdminService interface {
-		UserAccountStatusChangeHandler(res http.ResponseWriter, req *http.Request)
+		UserAccountStatusChangeHandler(http.ResponseWriter, *http.Request)
 	}
 
 	// UserAccountStatusUpdateInput represents what an admin User could provide as input for changing statuses.

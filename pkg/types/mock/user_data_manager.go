@@ -15,6 +15,17 @@ type UserDataManager struct {
 	mock.Mock
 }
 
+// GetUserByEmailAddressVerificationToken is a mock function.
+func (m *UserDataManager) GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*types.User, error) {
+	args := m.Called(ctx, token)
+	return args.Get(0).(*types.User), args.Error(1)
+}
+
+// MarkUserEmailAddressAsVerified is a mock function.
+func (m *UserDataManager) MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error {
+	return m.Called(ctx, userID, token).Error(0)
+}
+
 // UserHasStatus is a mock function.
 func (m *UserDataManager) UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error) {
 	args := m.Called(ctx, userID, statuses)

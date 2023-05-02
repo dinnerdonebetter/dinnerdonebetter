@@ -174,3 +174,10 @@ func BuildFakePasswordResetTokenRedemptionRequestInput() *types.PasswordResetTok
 		NewPassword: BuildFakePassword(),
 	}
 }
+
+// BuildFakeEmailAddressVerificationRequestInput builds a faked EmailAddressVerificationRequestInput.
+func BuildFakeEmailAddressVerificationRequestInput() *types.EmailAddressVerificationRequestInput {
+	return &types.EmailAddressVerificationRequestInput{
+		Token: buildUniqueString(),
+	}
+}

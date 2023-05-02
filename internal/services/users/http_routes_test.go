@@ -3478,3 +3478,245 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher, auth)
 	})
 }
+
+func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserByEmailAddressVerificationToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return(helper.exampleUser, nil)
+
+		mockDB.UserDataManager.On(
+			"MarkUserEmailAddressAsVerified",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput.Token,
+		).Return(nil)
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
+	})
+
+	T.Run("with error decoding request", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"DecodeRequest",
+			testutils.ContextMatcher,
+			testutils.HTTPRequestMatcher,
+			mock.IsType(&types.EmailAddressVerificationRequestInput{}),
+		).Return(errors.New("blah"))
+
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"invalid request content",
+			http.StatusBadRequest,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+	})
+
+	T.Run("with invalid input", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := &types.EmailAddressVerificationRequestInput{}
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+	})
+
+	T.Run("with error fetching user by token", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserByEmailAddressVerificationToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return((*types.User)(nil), errors.New("blah"))
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with sql.ErrNoRows for verification token", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserByEmailAddressVerificationToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return((*types.User)(nil), sql.ErrNoRows)
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error marking user email address as verified", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserByEmailAddressVerificationToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return(helper.exampleUser, nil)
+
+		mockDB.UserDataManager.On(
+			"MarkUserEmailAddressAsVerified",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput.Token,
+		).Return(errors.New("blah"))
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error publishing data change message", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserByEmailAddressVerificationToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return(helper.exampleUser, nil)
+
+		mockDB.UserDataManager.On(
+			"MarkUserEmailAddressAsVerified",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput.Token,
+		).Return(nil)
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
+	})
+}

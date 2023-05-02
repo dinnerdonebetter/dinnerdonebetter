@@ -74,9 +74,9 @@ type (
 
 	// PasswordResetTokenDataService describes a structure capable of serving traffic related to password reset tokens.
 	PasswordResetTokenDataService interface {
-		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ReadHandler(res http.ResponseWriter, req *http.Request)
-		ArchiveHandler(res http.ResponseWriter, req *http.Request)
+		CreateHandler(http.ResponseWriter, *http.Request)
+		ReadHandler(http.ResponseWriter, *http.Request)
+		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
