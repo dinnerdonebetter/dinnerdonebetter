@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
@@ -33,6 +34,11 @@ func init() {
 // InitializeGroceryListsItemsForMealPlans is our cloud function entrypoint.
 func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
+
+	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+		logger.Info("CEASE_OPERATION is set to true, exiting")
+		return nil
+	}
 
 	cfg, err := config.GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {

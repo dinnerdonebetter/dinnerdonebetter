@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
@@ -32,6 +33,11 @@ func init() {
 // FinalizeMealPlans is our cloud function entrypoint.
 func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
+
+	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+		logger.Info("CEASE_OPERATION is set to true, exiting")
+		return nil
+	}
 
 	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {

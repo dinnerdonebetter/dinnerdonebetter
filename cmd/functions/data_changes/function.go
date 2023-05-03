@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/prixfixeco/backend/internal/analytics"
@@ -49,12 +50,17 @@ type PubSubMessage struct {
 
 // ProcessDataChange handles a data change.
 func ProcessDataChange(ctx context.Context, e event.Event) error {
+	logger := zerolog.NewZerologLogger(logging.DebugLevel)
+
+	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+		logger.Info("CEASE_OPERATION is set to true, exiting")
+		return nil
+	}
+
 	var msg MessagePublishedData
 	if err := e.DataAs(&msg); err != nil {
 		return fmt.Errorf("event.DataAs: %v", err)
 	}
-
-	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	cfg, err := config.GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {

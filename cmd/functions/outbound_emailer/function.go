@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
@@ -47,12 +48,12 @@ type PubSubMessage struct {
 
 // SendEmail handles a data change.
 func SendEmail(ctx context.Context, e event.Event) error {
-	var msg MessagePublishedData
-	if err := e.DataAs(&msg); err != nil {
-		return fmt.Errorf("event.DataAs: %v", err)
-	}
-
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
+
+	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+		logger.Info("CEASE_OPERATION is set to true, exiting")
+		return nil
+	}
 
 	envCfg := email.GetConfigForEnvironment(os.Getenv("PF_ENVIRONMENT"))
 	if envCfg == nil {
@@ -98,6 +99,11 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
+	}
+
+	var msg MessagePublishedData
+	if err = e.DataAs(&msg); err != nil {
+		return fmt.Errorf("event.DataAs: %v", err)
 	}
 
 	var emailDeliveryRequest email.DeliveryRequest

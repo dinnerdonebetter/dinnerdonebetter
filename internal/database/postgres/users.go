@@ -399,7 +399,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		"destination_household":          input.DestinationHouseholdID,
 	})
 
-	token, err := q.secretGenerator.GenerateBase32EncodedString(ctx, 32)
+	token, err := q.secretGenerator.GenerateBase64EncodedString(ctx, 32)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "generating email verification token")
 	}

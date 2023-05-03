@@ -787,7 +787,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -896,7 +896,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -935,7 +935,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -993,7 +993,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1054,7 +1054,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1191,7 +1191,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1291,7 +1291,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1403,7 +1403,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1478,7 +1478,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1566,7 +1566,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1664,7 +1664,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1765,7 +1765,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)

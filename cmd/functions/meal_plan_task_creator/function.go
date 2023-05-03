@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
@@ -38,6 +39,11 @@ type PubSubMessage struct {
 // CreateMealPlanTasks is our cloud function entrypoint.
 func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
+
+	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+		logger.Info("CEASE_OPERATION is set to true, exiting")
+		return nil
+	}
 
 	cfg, err := config.GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
