@@ -973,7 +973,7 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// RequestEmailVerificationEmailHandler ...
+// RequestEmailVerificationEmailHandler submits a request for an email verification email.
 func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
