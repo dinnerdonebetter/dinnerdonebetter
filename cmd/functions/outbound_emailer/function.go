@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
@@ -47,12 +48,12 @@ type PubSubMessage struct {
 
 // SendEmail handles a data change.
 func SendEmail(ctx context.Context, e event.Event) error {
-	var msg MessagePublishedData
-	if err := e.DataAs(&msg); err != nil {
-		return fmt.Errorf("event.DataAs: %v", err)
-	}
-
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
+
+	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
+		logger.Info("CEASE_OPERATION is set to true, exiting")
+		return nil
+	}
 
 	envCfg := email.GetConfigForEnvironment(os.Getenv("PF_ENVIRONMENT"))
 	if envCfg == nil {
@@ -100,6 +101,11 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}
 
+	var msg MessagePublishedData
+	if err = e.DataAs(&msg); err != nil {
+		return fmt.Errorf("event.DataAs: %v", err)
+	}
+
 	var emailDeliveryRequest email.DeliveryRequest
 	if err = json.Unmarshal(msg.Message.Data, &emailDeliveryRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
@@ -113,14 +119,10 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		return observability.PrepareAndLogError(err, logger, span, "getting user")
 	}
 
-	if user.EmailAddressVerifiedAt == nil {
-		logger.Info("user email address not verified, skipping email delivery")
-		return nil
-	}
-
 	var (
-		mail      *email.OutboundEmailMessage
-		emailType string
+		mail                   *email.OutboundEmailMessage
+		shouldSkipIfUnverified = true
+		emailType              string
 	)
 
 	switch emailDeliveryRequest.Template {
@@ -172,6 +174,20 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		emailType = "meal plan created"
 
 		break
+	case email.TemplateTypeVerifyEmailAddress:
+		shouldSkipIfUnverified = false
+		mail, err = email.BuildVerifyEmailAddressEmail(user, emailDeliveryRequest.EmailVerificationToken, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
+		}
+		emailType = "email address verification"
+
+		break
+	}
+
+	if shouldSkipIfUnverified && user.EmailAddressVerifiedAt == nil {
+		logger.Info("user email address not verified, skipping email delivery")
+		return nil
 	}
 
 	if err = emailer.SendEmail(ctx, mail); err != nil {

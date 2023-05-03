@@ -69,9 +69,9 @@ type (
 		EventType                        CustomerEventType               `json:"messageType"`
 		ValidIngredientStateIngredientID string                          `json:"validIngredientStateIngredientID"`
 		ValidMeasurementConversionID     string                          `json:"validMeasurementConversionID,omitempty"`
-		DataType                         dataType                        `json:"dataType"`
 		ValidIngredientStateID           string                          `json:"validIngredientStateID,omitempty"`
 		MealPlanEventID                  string                          `json:"mealPlanEventID,omitempty"`
+		EmailVerificationToken           string                          `json:"emailVerificationToken,omitempty"`
 	}
 
 	choreType string

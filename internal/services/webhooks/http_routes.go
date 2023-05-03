@@ -64,7 +64,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.WebhookDataType,
 		EventType:   types.WebhookCreatedCustomerEventType,
 		Webhook:     webhook,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -203,7 +202,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.WebhookDataType,
 		EventType:   types.WebhookArchivedCustomerEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,

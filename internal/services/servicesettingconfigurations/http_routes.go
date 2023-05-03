@@ -68,7 +68,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:                    types.ServiceSettingConfigurationDataType,
 		EventType:                   types.ServiceSettingConfigurationCreatedCustomerEventType,
 		ServiceSettingConfiguration: serviceSettingConfiguration,
 		UserID:                      sessionCtxData.Requester.UserID,
@@ -250,7 +249,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:                    types.ServiceSettingConfigurationDataType,
 		EventType:                   types.ServiceSettingConfigurationUpdatedCustomerEventType,
 		ServiceSettingConfiguration: serviceSettingConfiguration,
 		UserID:                      sessionCtxData.Requester.UserID,
@@ -305,7 +303,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.ServiceSettingConfigurationDataType,
 		EventType: types.ServiceSettingConfigurationArchivedCustomerEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}

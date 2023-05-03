@@ -83,13 +83,13 @@ type (
 
 	// ValidIngredientStateIngredientDataService describes a structure capable of serving traffic related to valid ingredient state ingredients.
 	ValidIngredientStateIngredientDataService interface {
-		ListHandler(res http.ResponseWriter, req *http.Request)
-		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ReadHandler(res http.ResponseWriter, req *http.Request)
-		UpdateHandler(res http.ResponseWriter, req *http.Request)
-		ArchiveHandler(res http.ResponseWriter, req *http.Request)
-		SearchByIngredientHandler(res http.ResponseWriter, req *http.Request)
-		SearchByIngredientStateHandler(res http.ResponseWriter, req *http.Request)
+		ListHandler(http.ResponseWriter, *http.Request)
+		CreateHandler(http.ResponseWriter, *http.Request)
+		ReadHandler(http.ResponseWriter, *http.Request)
+		UpdateHandler(http.ResponseWriter, *http.Request)
+		ArchiveHandler(http.ResponseWriter, *http.Request)
+		SearchByIngredientHandler(http.ResponseWriter, *http.Request)
+		SearchByIngredientStateHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

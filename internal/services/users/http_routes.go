@@ -214,8 +214,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// create the user.
 	user, userCreationErr := s.userDataManager.CreateUser(ctx, input)
 	if userCreationErr != nil {
+		observability.AcknowledgeError(err, logger, span, "creating user")
 		if errors.Is(userCreationErr, database.ErrUserAlreadyExists) {
-			observability.AcknowledgeError(err, logger, span, "creating user")
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, "username taken", http.StatusBadRequest)
 			return
 		}
@@ -228,8 +228,14 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	defaultHouseholdID, err := s.householdUserMembershipDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating user")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "internal error", http.StatusInternalServerError)
+		observability.AcknowledgeError(err, logger, span, "fetching default household ID for user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	emailVerificationToken, emailVerificationTokenErr := s.userDataManager.GetEmailAddressVerificationTokenForUser(ctx, user.ID)
+	if emailVerificationTokenErr != nil {
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
@@ -237,10 +243,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachUserIDToSpan(span, user.ID)
 
 	dcm := &types.DataChangeMessage{
-		HouseholdID: defaultHouseholdID,
-		DataType:    types.UserDataType,
-		EventType:   types.UserSignedUpCustomerEventType,
-		UserID:      user.ID,
+		HouseholdID:            defaultHouseholdID,
+		EventType:              types.UserSignedUpCustomerEventType,
+		UserID:                 user.ID,
+		EmailVerificationToken: emailVerificationToken,
 	}
 
 	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
@@ -467,7 +473,6 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
 		EventType: types.TwoFactorSecretVerifiedCustomerEventType,
 		UserID:    user.ID,
 	}
@@ -763,7 +768,6 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
 		EventType: types.UsernameReminderRequestedEventType,
 		UserID:    u.ID,
 	}
@@ -828,7 +832,6 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:           types.UserDataType,
 		EventType:          types.PasswordResetTokenCreatedEventType,
 		UserID:             u.ID,
 		PasswordResetToken: t,
@@ -908,9 +911,97 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
 		EventType: types.PasswordResetTokenRedeemedEventType,
 		UserID:    t.BelongsToUser,
+	}
+
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// VerifyUserEmailAddressHandler checks for a user with a given email address and notifies them via email if there is a username associated with it.
+func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	input := new(types.EmailAddressVerificationRequestInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user, err := s.userDataManager.GetUserByEmailAddressVerificationToken(ctx, input.Token)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
+
+		observability.AcknowledgeError(err, logger, span, "fetching user")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err = s.userDataManager.MarkUserEmailAddressAsVerified(ctx, user.ID, input.Token); err != nil {
+		observability.AcknowledgeError(err, logger, span, "marking user email as verified")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.UserEmailAddressVerifiedEventType,
+		UserID:    user.ID,
+	}
+
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// RequestEmailVerificationEmailHandler submits a request for an email verification email.
+func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	verificationToken, err := s.userDataManager.GetEmailAddressVerificationTokenForUser(ctx, sessionCtxData.Requester.UserID)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching email address verification token")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType:              types.UserEmailAddressVerificationEmailRequestedEventType,
+		UserID:                 sessionCtxData.Requester.UserID,
+		EmailVerificationToken: verificationToken,
 	}
 
 	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {

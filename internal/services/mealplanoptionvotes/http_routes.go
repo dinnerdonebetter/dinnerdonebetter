@@ -90,7 +90,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	for _, vote := range mealPlanOptionVotes {
 		dcm := &types.DataChangeMessage{
-			DataType:             types.MealPlanOptionVoteDataType,
 			EventType:            types.MealPlanOptionVoteCreatedCustomerEventType,
 			MealPlanID:           mealPlanID,
 			MealPlanOptionID:     vote.BelongsToMealPlanOption,
@@ -121,7 +120,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			logger.Debug("meal plan option finalized")
 			// fire event
 			dcm := &types.DataChangeMessage{
-				DataType:             types.MealPlanOptionDataType,
 				EventType:            types.MealPlanOptionFinalizedCreatedCustomerEventType,
 				MealPlanID:           mealPlanID,
 				MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
@@ -146,7 +144,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				logger.Debug("meal plan finalized")
 				// fire event
 				dcm = &types.DataChangeMessage{
-					DataType:             types.MealPlanDataType,
 					EventType:            types.MealPlanFinalizedCustomerEventType,
 					MealPlanID:           mealPlanID,
 					MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
@@ -347,7 +344,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:             types.MealPlanOptionVoteDataType,
 		EventType:            types.MealPlanOptionVoteUpdatedCustomerEventType,
 		MealPlanID:           mealPlanID,
 		MealPlanOptionID:     mealPlanOptionID,
@@ -421,7 +417,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:             types.MealPlanOptionVoteDataType,
 		EventType:            types.MealPlanOptionVoteArchivedCustomerEventType,
 		MealPlanID:           mealPlanID,
 		MealPlanOptionID:     mealPlanOptionID,

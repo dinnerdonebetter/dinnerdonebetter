@@ -129,15 +129,15 @@ type (
 
 	// RecipeDataService describes a structure capable of serving traffic related to recipes.
 	RecipeDataService interface {
-		ListHandler(res http.ResponseWriter, req *http.Request)
-		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ReadHandler(res http.ResponseWriter, req *http.Request)
-		SearchHandler(res http.ResponseWriter, req *http.Request)
-		UpdateHandler(res http.ResponseWriter, req *http.Request)
-		ArchiveHandler(res http.ResponseWriter, req *http.Request)
-		DAGHandler(res http.ResponseWriter, req *http.Request)
-		EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.Request)
-		ImageUploadHandler(res http.ResponseWriter, req *http.Request)
+		ListHandler(http.ResponseWriter, *http.Request)
+		CreateHandler(http.ResponseWriter, *http.Request)
+		ReadHandler(http.ResponseWriter, *http.Request)
+		SearchHandler(http.ResponseWriter, *http.Request)
+		UpdateHandler(http.ResponseWriter, *http.Request)
+		ArchiveHandler(http.ResponseWriter, *http.Request)
+		DAGHandler(http.ResponseWriter, *http.Request)
+		EstimatedPrepStepsHandler(http.ResponseWriter, *http.Request)
+		ImageUploadHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

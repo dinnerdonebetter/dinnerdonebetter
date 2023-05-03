@@ -787,7 +787,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -896,7 +896,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -935,7 +935,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -993,7 +993,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1054,7 +1054,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1191,7 +1191,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1291,7 +1291,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1403,7 +1403,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1478,7 +1478,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1566,7 +1566,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1664,7 +1664,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -1765,7 +1765,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleToken := fakes.BuildFakeID()
 		secretGenerator := &mockrandom.Generator{}
 		secretGenerator.On(
-			"GenerateBase32EncodedString",
+			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
 			32,
 		).Return(exampleToken, nil)
@@ -2267,6 +2267,144 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveUser(ctx, exampleUserID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetUserByEmailAddressVerificationToken(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{exampleInput.Token}
+
+		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailAddressVerificationTokenQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
+
+		actual, err := c.GetUserByEmailAddressVerificationToken(ctx, exampleInput.Token)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleUser, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with missing token", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.GetUserByEmailAddressVerificationToken(ctx, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{exampleInput.Token}
+
+		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailAddressVerificationTokenQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetUserByEmailAddressVerificationToken(ctx, exampleInput.Token)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkUserEmailAddressAsVerified(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleUser.ID,
+			exampleInput.Token,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(markEmailAddressAsVerifiedQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		err := c.MarkUserEmailAddressAsVerified(ctx, exampleUser.ID, exampleInput.Token)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with missing user ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		err := c.MarkUserEmailAddressAsVerified(ctx, "", exampleInput.Token)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with missing token", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		err := c.MarkUserEmailAddressAsVerified(ctx, exampleUser.ID, "")
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error writing to database", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleUser.ID,
+			exampleInput.Token,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(markEmailAddressAsVerifiedQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		err := c.MarkUserEmailAddressAsVerified(ctx, exampleUser.ID, exampleInput.Token)
+		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

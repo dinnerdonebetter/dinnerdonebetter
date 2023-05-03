@@ -132,7 +132,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger.Debug("created household")
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.HouseholdDataType,
 		EventType:   types.HouseholdCreatedCustomerEventType,
 		Household:   household,
 		HouseholdID: household.ID,
@@ -318,7 +317,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.HouseholdDataType,
 		EventType:   types.HouseholdUpdatedCustomerEventType,
 		Household:   household,
 		HouseholdID: household.ID,
@@ -369,7 +367,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.HouseholdDataType,
 		EventType:   types.HouseholdArchivedCustomerEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -435,7 +432,6 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.UserMembershipDataType,
 		EventType:   types.HouseholdMembershipPermissionsUpdatedCustomerEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -496,7 +492,6 @@ func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.HouseholdDataType,
 		EventType:   types.HouseholdOwnershipTransferredCustomerEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -550,7 +545,6 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 	logger.Info("user removed from household")
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.UserMembershipDataType,
 		EventType:   types.HouseholdMemberRemovedCustomerEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,
@@ -594,7 +588,6 @@ func (s *service) MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *ht
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.UserMembershipDataType,
 		EventType:   types.HouseholdMemberRemovedCustomerEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,

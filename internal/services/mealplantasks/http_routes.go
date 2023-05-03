@@ -70,7 +70,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:     types.MealPlanDataType,
 		EventType:    types.MealPlanCreatedCustomerEventType,
 		MealPlanID:   mealPlanID,
 		MealPlanTask: mealPlanTask,
@@ -236,7 +235,6 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:       types.MealPlanTaskDataType,
 		EventType:      types.MealPlanTaskStatusChangedCustomerEventType,
 		MealPlanTask:   mealPlanTask,
 		MealPlanTaskID: mealPlanTaskID,

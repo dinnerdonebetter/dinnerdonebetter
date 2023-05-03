@@ -57,9 +57,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
-				return message.DataType == types.MealPlanOptionVoteDataType
-			}),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
 		dbManager.MealPlanOptionDataManager.On(
@@ -73,7 +71,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
@@ -86,7 +85,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -262,9 +262,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
-				return message.DataType == types.MealPlanOptionVoteDataType
-			}),
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 
 		dbManager.MealPlanOptionDataManager.On(
@@ -278,7 +276,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
@@ -291,7 +290,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -334,9 +334,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
-				return message.DataType == types.MealPlanOptionVoteDataType
-			}),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
 		dbManager.MealPlanOptionDataManager.On(
@@ -390,9 +388,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
-				return message.DataType == types.MealPlanOptionVoteDataType
-			}),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
 		dbManager.MealPlanOptionDataManager.On(
@@ -406,7 +402,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 
 		dbManager.MealPlanDataManager.On(
@@ -419,7 +416,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -462,9 +460,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
-				return message.DataType == types.MealPlanOptionVoteDataType
-			}),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
 		dbManager.MealPlanOptionDataManager.On(
@@ -478,7 +474,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -529,9 +526,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
-				return message.DataType == types.MealPlanOptionVoteDataType
-			}),
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
 		dbManager.MealPlanOptionDataManager.On(
@@ -545,7 +540,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
@@ -558,7 +554,8 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanDataType }),
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

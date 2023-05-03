@@ -84,7 +84,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.RecipeStepDataType,
 		EventType:   types.RecipeStepCreatedCustomerEventType,
 		RecipeStep:  recipeStep,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -250,7 +249,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.RecipeStepDataType,
 		EventType:   types.RecipeStepUpdatedCustomerEventType,
 		RecipeStep:  recipeStep,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -311,7 +309,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.RecipeStepDataType,
 		EventType:   types.RecipeStepArchivedCustomerEventType,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
 		UserID:      sessionCtxData.Requester.UserID,
