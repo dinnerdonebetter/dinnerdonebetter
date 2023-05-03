@@ -9,7 +9,6 @@ import (
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/converters"
 )
 
 const (
@@ -88,88 +87,6 @@ func (b *Builder) BuildGetServiceSettingsRequest(ctx context.Context, filter *ty
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		logger.Error(err, "building request")
-		return nil, observability.PrepareError(err, span, "building request")
-	}
-
-	return req, nil
-}
-
-// BuildCreateServiceSettingRequest builds an HTTP request for creating a service setting.
-func (b *Builder) BuildCreateServiceSettingRequest(ctx context.Context, input *types.ServiceSettingCreationRequestInput) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if input == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, span, "validating input")
-	}
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		serviceSettingsBasePath,
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "building request")
-	}
-
-	return req, nil
-}
-
-// BuildUpdateServiceSettingRequest builds an HTTP request for updating a service setting.
-func (b *Builder) BuildUpdateServiceSettingRequest(ctx context.Context, serviceSetting *types.ServiceSetting) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if serviceSetting == nil {
-		return nil, ErrNilInputProvided
-	}
-	tracing.AttachServiceSettingIDToSpan(span, serviceSetting.ID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		serviceSettingsBasePath,
-		serviceSetting.ID,
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	input := converters.ConvertServiceSettingToServiceSettingUpdateRequestInput(serviceSetting)
-
-	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "building request")
-	}
-
-	return req, nil
-}
-
-// BuildArchiveServiceSettingRequest builds an HTTP request for archiving a service setting.
-func (b *Builder) BuildArchiveServiceSettingRequest(ctx context.Context, serviceSettingID string) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if serviceSettingID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		serviceSettingsBasePath,
-		serviceSettingID,
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
-	if err != nil {
 		return nil, observability.PrepareError(err, span, "building request")
 	}
 

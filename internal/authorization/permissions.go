@@ -305,14 +305,10 @@ const (
 	// UpdateMealPlanTasksPermission is a household user permission.
 	UpdateMealPlanTasksPermission Permission = "update.meal_plan_tasks"
 
-	// CreateServiceSettingsPermission is an admin user permission.
-	CreateServiceSettingsPermission Permission = "create.service_settings"
 	// ReadServiceSettingsPermission is an admin user permission.
 	ReadServiceSettingsPermission Permission = "read.service_settings"
 	// SearchServiceSettingsPermission is an admin user permission.
 	SearchServiceSettingsPermission Permission = "search.service_settings"
-	// UpdateServiceSettingsPermission is an admin user permission.
-	UpdateServiceSettingsPermission Permission = "update.service_settings"
 	// ArchiveServiceSettingsPermission is an admin user permission.
 	ArchiveServiceSettingsPermission Permission = "archive.service_settings"
 
@@ -344,8 +340,6 @@ var (
 		ReadUserPermission.ID():          ReadUserPermission,
 		SearchUserPermission.ID():        SearchUserPermission,
 
-		CreateServiceSettingsPermission.ID():  CreateServiceSettingsPermission,
-		UpdateServiceSettingsPermission.ID():  UpdateServiceSettingsPermission,
 		ArchiveServiceSettingsPermission.ID(): ArchiveServiceSettingsPermission,
 
 		CreateRecipesPermission.ID(): CreateRecipesPermission,

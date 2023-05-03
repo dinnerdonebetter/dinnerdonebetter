@@ -1035,9 +1035,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 		serviceSettingIDRouteParam := buildURLVarChunk(servicesettingsservice.ServiceSettingIDURIParamKey, "")
 		v1Router.Route(serviceSettingsRouteWithPrefix, func(serviceSettingsRouter routing.Router) {
 			serviceSettingsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateServiceSettingsPermission)).
-				Post(root, s.serviceSettingsService.CreateHandler)
-			serviceSettingsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingsPermission)).
 				Get(root, s.serviceSettingsService.ListHandler)
 			serviceSettingsRouter.
@@ -1048,12 +1045,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 				singleServiceSettingRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadServiceSettingsPermission)).
 					Get(root, s.serviceSettingsService.ReadHandler)
-				singleServiceSettingRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateServiceSettingsPermission)).
-					Put(root, s.serviceSettingsService.UpdateHandler)
-				singleServiceSettingRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveServiceSettingsPermission)).
-					Delete(root, s.serviceSettingsService.ArchiveHandler)
 			})
 
 			serviceSettingConfigurationIDRouteParam := buildURLVarChunk(servicesettingconfigurationsservice.ServiceSettingConfigurationIDURIParamKey, "")
