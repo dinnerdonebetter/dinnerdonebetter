@@ -68,7 +68,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:                       types.ValidIngredientStateIngredientDataType,
 		EventType:                      types.ValidIngredientStateIngredientCreatedCustomerEventType,
 		ValidIngredientStateIngredient: validIngredientStateIngredient,
 		UserID:                         sessionCtxData.Requester.UserID,
@@ -218,7 +217,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:                       types.ValidIngredientStateIngredientDataType,
 		EventType:                      types.ValidIngredientStateIngredientUpdatedCustomerEventType,
 		ValidIngredientStateIngredient: validIngredientStateIngredient,
 		UserID:                         sessionCtxData.Requester.UserID,
@@ -273,7 +271,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.ValidIngredientStateIngredientDataType,
 		EventType: types.ValidIngredientStateIngredientArchivedCustomerEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}

@@ -7,11 +7,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/prixfixeco/backend/internal/analytics"
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
 	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	"github.com/prixfixeco/backend/internal/email"
+	"github.com/prixfixeco/backend/internal/messagequeue"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/logging"
@@ -65,7 +67,9 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	ctx, span := tracing.NewTracer(tracerProvider.Tracer("data_changes_job")).StartSpan(ctx)
+	tracer := tracing.NewTracer(tracerProvider.Tracer("data_changes_job"))
+
+	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
@@ -112,96 +116,123 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	logger = logger.WithValue("event_type", changeMessage.EventType)
 
-	if dataCollectionErr := analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.UserID, changeMessage.Context); dataCollectionErr != nil {
-		observability.AcknowledgeError(dataCollectionErr, logger, span, "notifying customer data platform")
+	if changeMessage.UserID != "" && changeMessage.EventType != "" {
+		if err = analyticsEventReporter.EventOccurred(ctx, changeMessage.EventType, changeMessage.UserID, changeMessage.Context); err != nil {
+			observability.AcknowledgeError(err, logger, span, "notifying customer data platform")
+		}
 	}
+
+	if err = handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, analyticsEventReporter, changeMessage); err != nil {
+		observability.AcknowledgeError(err, logger, span, "notifying customer(s)")
+	}
+
+	return nil
+}
+
+func handleOutboundNotifications(
+	ctx context.Context,
+	logger logging.Logger,
+	tracer tracing.Tracer,
+	dataManager database.DataManager,
+	outboundEmailsPublisher messagequeue.Publisher,
+	analyticsEventReporter analytics.EventReporter,
+	changeMessage types.DataChangeMessage,
+) error {
+	ctx, span := tracer.StartSpan(ctx)
+	defer span.End()
+
+	var (
+		emailType string
+		edrs      []*email.DeliveryRequest
+	)
 
 	switch changeMessage.EventType {
 	case types.UserSignedUpCustomerEventType:
-		if err = analyticsEventReporter.AddUser(ctx, changeMessage.UserID, changeMessage.Context); err != nil {
-			return observability.PrepareError(err, span, "notifying customer data platform")
+		emailType = "user signup"
+		if err := analyticsEventReporter.AddUser(ctx, changeMessage.UserID, changeMessage.Context); err != nil {
+			observability.AcknowledgeError(err, logger, span, "notifying customer data platform")
 		}
+
+		edrs = append(edrs, &email.DeliveryRequest{
+			UserID:                 changeMessage.UserID,
+			Template:               email.TemplateTypeVerifyEmailAddress,
+			EmailVerificationToken: changeMessage.EmailVerificationToken,
+		})
 
 		break
 	case types.MealPlanCreatedCustomerEventType:
+		emailType = "meal plan created"
 		mealPlan := changeMessage.MealPlan
 		if mealPlan == nil {
-			return observability.PrepareError(fmt.Errorf("password reset token is nil"), span, "publishing password reset token redemption email")
+			return observability.PrepareError(fmt.Errorf("meal plan is nil"), span, "publishing meal plan created email")
 		}
 
-		var household *types.Household
-		household, err = dataManager.GetHousehold(ctx, mealPlan.BelongsToHousehold)
+		household, err := dataManager.GetHousehold(ctx, mealPlan.BelongsToHousehold)
 		if err != nil {
 			return observability.PrepareError(err, span, "getting household")
 		}
 
 		for _, member := range household.Members {
 			if member.BelongsToUser.EmailAddressVerifiedAt != nil {
-				edr := &email.DeliveryRequest{
+				edrs = append(edrs, &email.DeliveryRequest{
 					UserID:   member.BelongsToUser.ID,
 					Template: email.TemplateTypeMealPlanCreated,
 					MealPlan: mealPlan,
-				}
-
-				if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
-					observability.AcknowledgeError(err, logger, span, "publishing meal plan created email")
-				}
+				})
 			}
 		}
 
 		break
 	case types.PasswordResetTokenCreatedEventType:
+		emailType = "password reset request"
 		if changeMessage.PasswordResetToken == nil {
-			return observability.PrepareError(fmt.Errorf("password reset token is nil"), span, "publishing password reset token redemption email")
+			return observability.PrepareError(fmt.Errorf("password reset token is nil"), span, "publishing password reset token email")
 		}
 
-		edr := &email.DeliveryRequest{
+		edrs = append(edrs, &email.DeliveryRequest{
 			UserID:             changeMessage.UserID,
 			Template:           email.TemplateTypePasswordReset,
 			PasswordResetToken: changeMessage.PasswordResetToken,
-		}
-		if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing password reset token redemption email")
-		}
+		})
 
 		break
 
 	case types.UsernameReminderRequestedEventType:
-		edr := &email.DeliveryRequest{
+		emailType = "username reminder"
+		edrs = append(edrs, &email.DeliveryRequest{
 			UserID:   changeMessage.UserID,
 			Template: email.TemplateTypeUsernameReminder,
-		}
-		if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing password reset token redemption email")
-		}
+		})
 
 		break
 
 	case types.PasswordResetTokenRedeemedEventType:
-		edr := &email.DeliveryRequest{
+		emailType = "password reset token redeemed"
+		edrs = append(edrs, &email.DeliveryRequest{
 			UserID:   changeMessage.UserID,
 			Template: email.TemplateTypePasswordResetTokenRedeemed,
-		}
-		if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing password reset token redemption email")
-		}
+		})
 
 		break
 	case types.HouseholdInvitationCreatedCustomerEventType:
+		emailType = "household invitation created"
 		if changeMessage.HouseholdInvitation == nil {
 			return observability.PrepareError(fmt.Errorf("household invitation is nil"), span, "publishing password reset token redemption email")
 		}
 
-		edr := &email.DeliveryRequest{
+		edrs = append(edrs, &email.DeliveryRequest{
 			UserID:     changeMessage.UserID,
 			Template:   email.TemplateTypeInvite,
 			Invitation: changeMessage.HouseholdInvitation,
-		}
-		if err = outboundEmailsPublisher.Publish(ctx, edr); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing outbound email")
-		}
+		})
 
 		break
+	}
+
+	for _, edr := range edrs {
+		if err := outboundEmailsPublisher.Publish(ctx, edr); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing %s request email", emailType)
+		}
 	}
 
 	return nil

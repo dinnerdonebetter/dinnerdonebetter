@@ -113,14 +113,10 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		return observability.PrepareAndLogError(err, logger, span, "getting user")
 	}
 
-	if user.EmailAddressVerifiedAt == nil {
-		logger.Info("user email address not verified, skipping email delivery")
-		return nil
-	}
-
 	var (
-		mail      *email.OutboundEmailMessage
-		emailType string
+		mail                   *email.OutboundEmailMessage
+		shouldSkipIfUnverified = true
+		emailType              string
 	)
 
 	switch emailDeliveryRequest.Template {
@@ -172,6 +168,20 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		emailType = "meal plan created"
 
 		break
+	case email.TemplateTypeVerifyEmailAddress:
+		shouldSkipIfUnverified = false
+		mail, err = email.BuildVerifyEmailAddressEmail(user, emailDeliveryRequest.EmailVerificationToken, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
+		}
+		emailType = "email address verification"
+
+		break
+	}
+
+	if shouldSkipIfUnverified && user.EmailAddressVerifiedAt == nil {
+		logger.Info("user email address not verified, skipping email delivery")
+		return nil
 	}
 
 	if err = emailer.SendEmail(ctx, mail); err != nil {

@@ -103,7 +103,6 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:            types.HouseholdInvitationDataType,
 		EventType:           types.HouseholdInvitationCreatedCustomerEventType,
 		HouseholdInvitation: householdInvitation,
 		HouseholdID:         householdID,
@@ -290,7 +289,6 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:              types.HouseholdInvitationDataType,
 		EventType:             types.HouseholdInvitationAcceptedCustomerEventType,
 		HouseholdID:           invitation.DestinationHousehold.ID,
 		HouseholdInvitationID: householdInvitationID,
@@ -360,7 +358,6 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:              types.HouseholdInvitationDataType,
 		EventType:             types.HouseholdInvitationCanceledCustomerEventType,
 		HouseholdID:           invitation.DestinationHousehold.ID,
 		HouseholdInvitationID: householdInvitationID,
@@ -429,7 +426,6 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:              types.HouseholdInvitationDataType,
 		EventType:             types.HouseholdInvitationRejectedCustomerEventType,
 		HouseholdID:           invitation.DestinationHousehold.ID,
 		HouseholdInvitationID: householdInvitationID,

@@ -378,6 +378,12 @@ func TestService_CreateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
+
+		db.UserDataManager.On(
+			"GetEmailAddressVerificationTokenForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
 		db.HouseholdUserMembershipDataManager.On(
@@ -540,6 +546,12 @@ func TestService_CreateHandler(T *testing.T) {
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
+		db.UserDataManager.On(
+			"GetEmailAddressVerificationTokenForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(t.Name(), nil)
+
 		db.HouseholdInvitationDataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -608,6 +620,13 @@ func TestService_CreateHandler(T *testing.T) {
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
+		db.UserDataManager.On(
+			"GetEmailAddressVerificationTokenForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(t.Name(), nil)
+		helper.service.userDataManager = db
+
 		db.HouseholdInvitationDataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -660,6 +679,12 @@ func TestService_CreateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
+
+		db.UserDataManager.On(
+			"GetEmailAddressVerificationTokenForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(t.Name(), nil)
 
 		db.HouseholdInvitationDataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
@@ -752,6 +777,12 @@ func TestService_CreateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
+
+		db.UserDataManager.On(
+			"GetEmailAddressVerificationTokenForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
 		db.HouseholdUserMembershipDataManager.On(
@@ -908,6 +939,12 @@ func TestService_CreateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
+
+		db.UserDataManager.On(
+			"GetEmailAddressVerificationTokenForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
 		db.HouseholdUserMembershipDataManager.On(
@@ -939,6 +976,68 @@ func TestService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
+	})
+
+	T.Run("with error fetching email address verification token", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserRegistrationInputFromUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"HashPassword",
+			testutils.ContextMatcher,
+			exampleInput.Password,
+		).Return(helper.exampleUser.HashedPassword, nil)
+		helper.service.authenticator = auth
+
+		db := database.NewMockDatabase()
+		db.UserDataManager.On(
+			"CreateUser",
+			testutils.ContextMatcher,
+			mock.IsType(&types.UserDatabaseCreationInput{}),
+		).Return(helper.exampleUser, nil)
+
+		db.UserDataManager.On(
+			"GetEmailAddressVerificationTokenForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return("", errors.New("blah"))
+		helper.service.userDataManager = db
+
+		db.HouseholdUserMembershipDataManager.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdUserMembershipDataManager = db
+
+		helper.req = helper.req.WithContext(
+			context.WithValue(
+				helper.req.Context(),
+				types.UserRegistrationInputContextKey,
+				exampleInput,
+			),
+		)
+
+		helper.service.authSettings.EnableUserSignup = true
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, auth, db)
 	})
 }
 

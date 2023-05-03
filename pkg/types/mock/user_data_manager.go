@@ -100,3 +100,9 @@ func (m *UserDataManager) UpdateUserPassword(ctx context.Context, userID, newHas
 func (m *UserDataManager) ArchiveUser(ctx context.Context, userID string) error {
 	return m.Called(ctx, userID).Error(0)
 }
+
+// GetEmailAddressVerificationTokenForUser is a mock function.
+func (m *UserDataManager) GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error) {
+	args := m.Called(ctx, userID)
+	return args.String(0), args.Error(1)
+}

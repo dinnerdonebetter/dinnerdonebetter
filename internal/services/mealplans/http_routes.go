@@ -79,7 +79,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.MealPlanDataType,
 		EventType:   types.MealPlanCreatedCustomerEventType,
 		MealPlan:    mealPlan,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -231,7 +230,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.MealPlanDataType,
 		EventType:   types.MealPlanUpdatedCustomerEventType,
 		MealPlan:    mealPlan,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -287,7 +285,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:    types.MealPlanDataType,
 		EventType:   types.MealPlanArchivedCustomerEventType,
 		MealPlanID:  mealPlanID,
 		HouseholdID: sessionCtxData.ActiveHouseholdID,

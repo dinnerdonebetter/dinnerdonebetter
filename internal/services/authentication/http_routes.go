@@ -165,7 +165,6 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		}
 
 		dcm := &types.DataChangeMessage{
-			DataType:    types.UserDataType,
 			EventType:   types.UserLoggedInCustomerEventType,
 			HouseholdID: defaultHouseholdID,
 			UserID:      user.ID,
@@ -254,7 +253,6 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
 		EventType: types.UserChangedActiveHouseholdCustomerEventType,
 		Context: map[string]any{
 			"old_household_id": sessionCtxData.ActiveHouseholdID,
@@ -321,7 +319,6 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	http.SetCookie(res, newCookie)
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
 		EventType: types.UserLoggedOutCustomerEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}

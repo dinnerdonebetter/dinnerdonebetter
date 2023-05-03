@@ -38,6 +38,8 @@ const (
 	UserLoggedOutCustomerEventType CustomerEventType = "user_logged_out"
 	// UserChangedActiveHouseholdCustomerEventType indicates a user has logged in.
 	UserChangedActiveHouseholdCustomerEventType CustomerEventType = "changed_active_household"
+	// UserEmailAddressVerifiedEventType indicates a user created a password reset token.
+	UserEmailAddressVerifiedEventType CustomerEventType = "user_email_address_verified"
 )
 
 func init() {

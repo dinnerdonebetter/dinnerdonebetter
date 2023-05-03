@@ -168,6 +168,7 @@ type (
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
 		GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*User, error)
 		MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error
+		GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error)
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)

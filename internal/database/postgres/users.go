@@ -714,6 +714,31 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	return nil
 }
 
+//go:embed queries/users/get_email_verification_token_by_user_id.sql
+var getEmailAddressVerificationTokenByUserIDQuery string
+
+func (q *Querier) GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return "", ErrInvalidIDProvided
+	}
+
+	getEmailAddressVerificationTokenByUserIDArgs := []any{
+		userID,
+	}
+
+	row := q.getOneRow(ctx, q.db, "user email address verification token", getEmailAddressVerificationTokenByUserIDQuery, getEmailAddressVerificationTokenByUserIDArgs)
+
+	var token string
+	if err := row.Scan(&token); err != nil {
+		return "", observability.PrepareError(err, span, "scanning email address verification token")
+	}
+
+	return token, nil
+}
+
 //go:embed queries/users/get_by_email_verification_token.sql
 var getUserByEmailAddressVerificationTokenQuery string
 
@@ -729,7 +754,7 @@ func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, to
 		token,
 	}
 
-	row := q.getOneRow(ctx, q.db, "user", getUserByEmailAddressVerificationTokenQuery, emailAddressVerificationMatchesArgs)
+	row := q.getOneRow(ctx, q.db, "user by email address verification token", getUserByEmailAddressVerificationTokenQuery, emailAddressVerificationMatchesArgs)
 
 	u, _, _, err := q.scanUser(ctx, row, false)
 	if err != nil {

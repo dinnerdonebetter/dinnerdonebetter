@@ -214,8 +214,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// create the user.
 	user, userCreationErr := s.userDataManager.CreateUser(ctx, input)
 	if userCreationErr != nil {
+		observability.AcknowledgeError(err, logger, span, "creating user")
 		if errors.Is(userCreationErr, database.ErrUserAlreadyExists) {
-			observability.AcknowledgeError(err, logger, span, "creating user")
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, "username taken", http.StatusBadRequest)
 			return
 		}
@@ -228,8 +228,14 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	defaultHouseholdID, err := s.householdUserMembershipDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating user")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "internal error", http.StatusInternalServerError)
+		observability.AcknowledgeError(err, logger, span, "fetching default household ID for user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	emailVerificationToken, emailVerificationTokenErr := s.userDataManager.GetEmailAddressVerificationTokenForUser(ctx, user.ID)
+	if emailVerificationTokenErr != nil {
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
@@ -237,10 +243,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachUserIDToSpan(span, user.ID)
 
 	dcm := &types.DataChangeMessage{
-		HouseholdID: defaultHouseholdID,
-		DataType:    types.UserDataType,
-		EventType:   types.UserSignedUpCustomerEventType,
-		UserID:      user.ID,
+		HouseholdID:            defaultHouseholdID,
+		EventType:              types.UserSignedUpCustomerEventType,
+		UserID:                 user.ID,
+		EmailVerificationToken: emailVerificationToken,
 	}
 
 	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
@@ -467,7 +473,6 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
 		EventType: types.TwoFactorSecretVerifiedCustomerEventType,
 		UserID:    user.ID,
 	}
@@ -763,7 +768,6 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
 		EventType: types.UsernameReminderRequestedEventType,
 		UserID:    u.ID,
 	}
@@ -828,7 +832,6 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:           types.UserDataType,
 		EventType:          types.PasswordResetTokenCreatedEventType,
 		UserID:             u.ID,
 		PasswordResetToken: t,
@@ -908,7 +911,6 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
 		EventType: types.PasswordResetTokenRedeemedEventType,
 		UserID:    t.BelongsToUser,
 	}
@@ -960,8 +962,7 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	}
 
 	dcm := &types.DataChangeMessage{
-		DataType:  types.UserDataType,
-		EventType: types.PasswordResetTokenRedeemedEventType,
+		EventType: types.UserEmailAddressVerifiedEventType,
 		UserID:    user.ID,
 	}
 

@@ -79,7 +79,6 @@ func (w *MealPlanTaskCreatorWorker) CreateMealPlanTasksForFinalizedMealPlans(ctx
 
 		for _, createdStep := range createdMealPlanTasks {
 			if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				DataType:       types.MealPlanTaskDataType,
 				EventType:      types.MealPlanTaskCreatedCustomerEventType,
 				MealPlanTask:   createdStep,
 				MealPlanTaskID: createdStep.ID,
