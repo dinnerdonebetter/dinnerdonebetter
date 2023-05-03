@@ -166,6 +166,16 @@ func handleOutboundNotifications(
 		})
 
 		break
+	case types.UserEmailAddressVerificationEmailRequestedEventType:
+		emailType = "email address verification"
+
+		edrs = append(edrs, &email.DeliveryRequest{
+			UserID:                 changeMessage.UserID,
+			Template:               email.TemplateTypeVerifyEmailAddress,
+			EmailVerificationToken: changeMessage.EmailVerificationToken,
+		})
+
+		break
 	case types.MealPlanCreatedCustomerEventType:
 		emailType = "meal plan created"
 		mealPlan := changeMessage.MealPlan

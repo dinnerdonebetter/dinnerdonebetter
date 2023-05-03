@@ -196,6 +196,7 @@ type (
 		PasswordResetTokenRedemptionHandler(http.ResponseWriter, *http.Request)
 		RequestUsernameReminderHandler(http.ResponseWriter, *http.Request)
 		VerifyUserEmailAddressHandler(http.ResponseWriter, *http.Request)
+		RequestEmailVerificationEmailHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

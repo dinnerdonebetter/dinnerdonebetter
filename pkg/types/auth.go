@@ -40,6 +40,8 @@ const (
 	UserChangedActiveHouseholdCustomerEventType CustomerEventType = "changed_active_household"
 	// UserEmailAddressVerifiedEventType indicates a user created a password reset token.
 	UserEmailAddressVerifiedEventType CustomerEventType = "user_email_address_verified"
+	// UserEmailAddressVerificationEmailRequestedEventType indicates a user created a password reset token.
+	UserEmailAddressVerificationEmailRequestedEventType CustomerEventType = "user_email_address_verification_email_requested"
 )
 
 func init() {

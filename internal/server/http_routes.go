@@ -115,6 +115,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 			usersRouter.Post("/avatar/upload", s.usersService.AvatarUploadHandler)
 
 			usersRouter.Get("/self", s.usersService.SelfHandler)
+			usersRouter.Post("/email_address_verification", s.usersService.RequestEmailVerificationEmailHandler)
 			usersRouter.Post("/permissions/check", s.usersService.PermissionsHandler)
 
 			singleUserRoute := buildURLVarChunk(usersservice.UserIDURIParamKey, "")

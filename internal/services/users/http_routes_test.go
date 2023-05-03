@@ -3819,3 +3819,38 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
 }
+
+func TestService_RequestEmailVerificationEmailHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetEmailAddressVerificationTokenForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(t.Name(), nil)
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.RequestEmailVerificationEmailHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
+	})
+}
