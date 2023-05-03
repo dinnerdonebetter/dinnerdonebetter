@@ -235,6 +235,8 @@ func handleOutboundNotifications(
 		break
 	}
 
+	logger.WithValue("email_type", emailType).WithValue("outbound_emails_to_send", len(edrs)).Info("publishing email requests")
+
 	for _, edr := range edrs {
 		if err := outboundEmailsPublisher.Publish(ctx, edr); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing %s request email", emailType)
