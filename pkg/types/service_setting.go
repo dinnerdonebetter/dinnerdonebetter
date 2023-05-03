@@ -89,19 +89,13 @@ type (
 		GetServiceSetting(ctx context.Context, serviceSettingID string) (*ServiceSetting, error)
 		GetServiceSettings(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ServiceSetting], error)
 		SearchForServiceSettings(ctx context.Context, query string) ([]*ServiceSetting, error)
-		CreateServiceSetting(ctx context.Context, input *ServiceSettingDatabaseCreationInput) (*ServiceSetting, error)
-		UpdateServiceSetting(ctx context.Context, updated *ServiceSetting) error
-		ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error
 	}
 
 	// ServiceSettingDataService describes a structure capable of serving traffic related to service settings.
 	ServiceSettingDataService interface {
 		SearchHandler(http.ResponseWriter, *http.Request)
 		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
 		ReadHandler(http.ResponseWriter, *http.Request)
-		UpdateHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
