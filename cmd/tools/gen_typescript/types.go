@@ -154,6 +154,7 @@ var (
 			types.UserLoginInput{},
 			types.UsernameReminderRequestInput{},
 			types.UserAccountStatusUpdateInput{},
+			types.EmailAddressVerificationRequestInput{},
 		},
 		"validIngredientMeasurementUnits.ts": {
 			types.ValidIngredientMeasurementUnit{},

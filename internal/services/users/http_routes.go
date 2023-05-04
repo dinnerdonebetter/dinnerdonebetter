@@ -877,6 +877,11 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 
 	u, err := s.userDataManager.GetUser(ctx, t.BelongsToUser)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
+
 		observability.AcknowledgeError(err, logger, span, "fetching user")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
 		return
@@ -899,12 +904,22 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 
 	// update the user.
 	if err = s.userDataManager.UpdateUserPassword(ctx, u.ID, newPasswordHash); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
+
 		observability.AcknowledgeError(err, logger, span, "updating user")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	if redemptionErr := s.passwordResetTokenDataManager.RedeemPasswordResetToken(ctx, t.ID); redemptionErr != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
+
 		observability.AcknowledgeError(err, logger, span, "redeeming password reset token")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -956,6 +971,11 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	}
 
 	if err = s.userDataManager.MarkUserEmailAddressAsVerified(ctx, user.ID, input.Token); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
+
 		observability.AcknowledgeError(err, logger, span, "marking user email as verified")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
 		return
