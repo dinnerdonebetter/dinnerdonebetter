@@ -788,6 +788,10 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "user email address verification", markEmailAddressAsVerifiedQuery, args); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return err
+		}
+
 		return observability.PrepareAndLogError(err, logger, span, "writing verified email address status to database")
 	}
 
