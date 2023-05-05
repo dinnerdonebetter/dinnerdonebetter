@@ -19,71 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func buildMockRowsFromMealPlanTasks(includeCounts bool, filteredCount uint64, mealPlans ...*types.MealPlanTask) *sqlmock.Rows {
-	columns := []string{
-		"meal_plan_tasks.id",
-		"meal_plan_options.id",
-		"meal_plan_options.assigned_cook",
-		"meal_plan_options.assigned_dishwasher",
-		"meal_plan_options.chosen",
-		"meal_plan_options.tiebroken",
-		"meal_plan_options.meal_scale",
-		"meal_plan_options.meal_id",
-		"meal_plan_options.notes",
-		"meal_plan_options.created_at",
-		"meal_plan_options.last_updated_at",
-		"meal_plan_options.archived_at",
-		"meal_plan_options.belongs_to_meal_plan_event",
-		"meal_plan_tasks.created_at",
-		"meal_plan_tasks.last_updated_at",
-		"meal_plan_tasks.completed_at",
-		"meal_plan_tasks.status",
-		"meal_plan_tasks.creation_explanation",
-		"meal_plan_tasks.status_explanation",
-		"meal_plan_tasks.assigned_to_user",
-	}
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, x := range mealPlans {
-		rowValues := []driver.Value{
-			x.ID,
-			x.MealPlanOption.ID,
-			x.MealPlanOption.AssignedCook,
-			x.MealPlanOption.AssignedDishwasher,
-			x.MealPlanOption.Chosen,
-			x.MealPlanOption.TieBroken,
-			x.MealPlanOption.MealScale,
-			x.MealPlanOption.Meal.ID,
-			x.MealPlanOption.Notes,
-			x.MealPlanOption.CreatedAt,
-			x.MealPlanOption.LastUpdatedAt,
-			x.MealPlanOption.ArchivedAt,
-			x.MealPlanOption.BelongsToMealPlanEvent,
-			x.CreatedAt,
-			x.LastUpdatedAt,
-			x.CompletedAt,
-			x.Status,
-			x.CreationExplanation,
-			x.StatusExplanation,
-			x.AssignedToUser,
-		}
-
-		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(mealPlans))
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
-
-func buildMockRowsFromMealPlanTasksWithRecipePrepTaskSteps(includeCounts bool, filteredCount uint64, mealPlans ...*types.MealPlanTask) *sqlmock.Rows {
+func buildMockRowsFromMealPlanTasksWithRecipePrepTaskSteps(includeCounts bool, filteredCount uint64, mealPlanTasks ...*types.MealPlanTask) *sqlmock.Rows {
 	columns := []string{
 		"meal_plan_tasks.id",
 		"meal_plan_options.id",
@@ -129,49 +65,49 @@ func buildMockRowsFromMealPlanTasksWithRecipePrepTaskSteps(includeCounts bool, f
 
 	exampleRows := sqlmock.NewRows(columns)
 
-	for _, x := range mealPlans {
+	for _, x := range mealPlanTasks {
 		for _, y := range x.RecipePrepTask.TaskSteps {
 			rowValues := []driver.Value{
-				x.ID,
-				x.MealPlanOption.ID,
-				x.MealPlanOption.AssignedCook,
-				x.MealPlanOption.AssignedDishwasher,
-				x.MealPlanOption.Chosen,
-				x.MealPlanOption.TieBroken,
-				x.MealPlanOption.MealScale,
-				x.MealPlanOption.Meal.ID,
-				x.MealPlanOption.Notes,
-				x.MealPlanOption.CreatedAt,
-				x.MealPlanOption.LastUpdatedAt,
-				x.MealPlanOption.ArchivedAt,
-				x.MealPlanOption.BelongsToMealPlanEvent,
-				x.RecipePrepTask.ID,
-				x.RecipePrepTask.Notes,
-				x.RecipePrepTask.ExplicitStorageInstructions,
-				x.RecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
-				x.RecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
-				x.RecipePrepTask.StorageType,
-				x.RecipePrepTask.MinimumStorageTemperatureInCelsius,
-				x.RecipePrepTask.MaximumStorageTemperatureInCelsius,
-				x.RecipePrepTask.BelongsToRecipe,
-				x.RecipePrepTask.CreatedAt,
-				x.RecipePrepTask.LastUpdatedAt,
-				x.RecipePrepTask.ArchivedAt,
-				y.ID,
-				y.BelongsToRecipeStep,
-				y.BelongsToRecipePrepTask,
-				y.SatisfiesRecipeStep,
-				x.CreatedAt,
-				x.LastUpdatedAt,
-				x.CompletedAt,
-				x.Status,
-				x.CreationExplanation,
-				x.StatusExplanation,
-				x.AssignedToUser,
+				&x.ID,
+				&x.MealPlanOption.ID,
+				&x.MealPlanOption.AssignedCook,
+				&x.MealPlanOption.AssignedDishwasher,
+				&x.MealPlanOption.Chosen,
+				&x.MealPlanOption.TieBroken,
+				&x.MealPlanOption.MealScale,
+				&x.MealPlanOption.Meal.ID,
+				&x.MealPlanOption.Notes,
+				&x.MealPlanOption.CreatedAt,
+				&x.MealPlanOption.LastUpdatedAt,
+				&x.MealPlanOption.ArchivedAt,
+				&x.MealPlanOption.BelongsToMealPlanEvent,
+				&x.RecipePrepTask.ID,
+				&x.RecipePrepTask.Notes,
+				&x.RecipePrepTask.ExplicitStorageInstructions,
+				&x.RecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
+				&x.RecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
+				&x.RecipePrepTask.StorageType,
+				&x.RecipePrepTask.MinimumStorageTemperatureInCelsius,
+				&x.RecipePrepTask.MaximumStorageTemperatureInCelsius,
+				&x.RecipePrepTask.BelongsToRecipe,
+				&x.RecipePrepTask.CreatedAt,
+				&x.RecipePrepTask.LastUpdatedAt,
+				&x.RecipePrepTask.ArchivedAt,
+				&y.ID,
+				&y.BelongsToRecipeStep,
+				&y.BelongsToRecipePrepTask,
+				&y.SatisfiesRecipeStep,
+				&x.CreatedAt,
+				&x.LastUpdatedAt,
+				&x.CompletedAt,
+				&x.Status,
+				&x.CreationExplanation,
+				&x.StatusExplanation,
+				&x.AssignedToUser,
 			}
 
 			if includeCounts {
-				rowValues = append(rowValues, filteredCount, len(mealPlans))
+				rowValues = append(rowValues, filteredCount, len(mealPlanTasks))
 			}
 
 			exampleRows.AddRow(rowValues...)
@@ -663,10 +599,6 @@ func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanTasks := fakes.BuildFakeMealPlanTaskList()
-		for i := range exampleMealPlanTasks.Data {
-			exampleMealPlanTasks.Data[i].MealPlanOption = types.MealPlanOption{}
-			exampleMealPlanTasks.Data[i].RecipePrepTask = types.RecipePrepTask{}
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -677,7 +609,7 @@ func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(listMealPlanTasksForMealPlanQuery)).
 			WithArgs(interfaceToDriverValue(getMealPlanTaskByIDArgs)...).
-			WillReturnRows(buildMockRowsFromMealPlanTasks(false, 0, exampleMealPlanTasks.Data...))
+			WillReturnRows(buildMockRowsFromMealPlanTasksWithRecipePrepTaskSteps(false, 0, exampleMealPlanTasks.Data...))
 
 		actual, err := c.GetMealPlanTasksForMealPlan(ctx, exampleMealPlanID)
 		assert.NoError(t, err)

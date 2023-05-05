@@ -12,5 +12,5 @@ SET
 	status_explanation = $10,
 	status = $11,
 	last_updated_at = NOW()
-WHERE completed_at IS NULL
+WHERE archived_at IS NULL
 	AND id = $12;

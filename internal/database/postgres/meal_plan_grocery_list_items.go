@@ -30,7 +30,7 @@ var (
 		"meal_plan_grocery_list_items.status",
 		"meal_plan_grocery_list_items.created_at",
 		"meal_plan_grocery_list_items.last_updated_at",
-		"meal_plan_grocery_list_items.completed_at",
+		"meal_plan_grocery_list_items.archived_at",
 	}
 )
 

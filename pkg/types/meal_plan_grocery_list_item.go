@@ -11,7 +11,7 @@ import (
 
 const (
 	// MealPlanGroceryListItemDataType indicates an event is related to a meal plan grocery list item.
-	MealPlanGroceryListItemDataType dataType = "valid_preparation"
+	MealPlanGroceryListItemDataType dataType = "meal_plan_grocery_list_item"
 
 	// MealPlanGroceryListItemStatusUnknown represents the database-side enum member for grocery list item status.
 	MealPlanGroceryListItemStatusUnknown = "unknown"
@@ -25,11 +25,11 @@ const (
 	MealPlanGroceryListItemStatusAcquired = "acquired"
 
 	// MealPlanGroceryListItemCreatedCustomerEventType indicates a meal plan grocery list item was created.
-	MealPlanGroceryListItemCreatedCustomerEventType CustomerEventType = "valid_preparation_created"
+	MealPlanGroceryListItemCreatedCustomerEventType CustomerEventType = "meal_plan_grocery_list_item_created"
 	// MealPlanGroceryListItemUpdatedCustomerEventType indicates a meal plan grocery list item was updated.
-	MealPlanGroceryListItemUpdatedCustomerEventType CustomerEventType = "valid_preparation_updated"
+	MealPlanGroceryListItemUpdatedCustomerEventType CustomerEventType = "meal_plan_grocery_list_item_updated"
 	// MealPlanGroceryListItemArchivedCustomerEventType indicates a meal plan grocery list item was archived.
-	MealPlanGroceryListItemArchivedCustomerEventType CustomerEventType = "valid_preparation_archived"
+	MealPlanGroceryListItemArchivedCustomerEventType CustomerEventType = "meal_plan_grocery_list_item_archived"
 )
 
 func init() {
