@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/shopspring/decimal"
 )
@@ -41,6 +42,21 @@ type (
 		Pagination
 	}
 
+	Identifiable interface {
+		Identify() string
+	}
+
+	DatabaseRecord struct {
+		_ struct{}
+
+		CreatedAt     time.Time  `json:"createdAt"`
+		ArchivedAt    *time.Time `json:"archivedAt"`
+		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
+		ID            string     `json:"id"`
+	}
+
+	DatabaseRecords []Identifiable
+
 	APIMeta struct {
 		_ struct{}
 
@@ -73,4 +89,24 @@ type (
 
 func (e *APIError) Error() string {
 	return fmt.Sprintf("%d: %s", e.Code, e.Message)
+}
+
+// Identify returns the ID of the DatabaseRecord.
+func (r DatabaseRecord) Identify() string {
+	return r.ID
+}
+
+// Len implements the sort.Sort interface.
+func (m DatabaseRecords) Len() int {
+	return len(m)
+}
+
+// Less implements the sort.Sort interface.
+func (m DatabaseRecords) Less(i, j int) bool {
+	return m[i].Identify() < m[j].Identify()
+}
+
+// Swap implements the sort.Sort interface.
+func (m DatabaseRecords) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
 }

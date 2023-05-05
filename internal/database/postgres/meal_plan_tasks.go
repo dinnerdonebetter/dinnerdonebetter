@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"sort"
 	"time"
 
 	"github.com/prixfixeco/backend/internal/database"
@@ -75,15 +76,16 @@ func (q *Querier) scanMealPlanTaskWithRecipePrepTaskSteps(ctx context.Context, r
 	return x, nil
 }
 
-// scanMealPlanTasks takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan task struct.
-func (q *Querier) scanMealPlanTasks(ctx context.Context, rows database.ResultIterator) (mealPlanTasks []*types.MealPlanTask, err error) {
+// scanMealPlanTasksForMealPlan takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan task struct.
+func (q *Querier) scanMealPlanTasksForMealPlan(ctx context.Context, rows database.ResultIterator) ([]*types.MealPlanTask, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	var lastMealPlanTaskID string
+	mealPlanTaskResults := []*types.MealPlanTask{}
 
 	for rows.Next() {
 		x := &types.MealPlanTask{}
+		y := &types.RecipePrepTaskStep{}
 
 		targetVars := []any{
 			&x.ID,
@@ -99,6 +101,22 @@ func (q *Querier) scanMealPlanTasks(ctx context.Context, rows database.ResultIte
 			&x.MealPlanOption.LastUpdatedAt,
 			&x.MealPlanOption.ArchivedAt,
 			&x.MealPlanOption.BelongsToMealPlanEvent,
+			&x.RecipePrepTask.ID,
+			&x.RecipePrepTask.Notes,
+			&x.RecipePrepTask.ExplicitStorageInstructions,
+			&x.RecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
+			&x.RecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
+			&x.RecipePrepTask.StorageType,
+			&x.RecipePrepTask.MinimumStorageTemperatureInCelsius,
+			&x.RecipePrepTask.MaximumStorageTemperatureInCelsius,
+			&x.RecipePrepTask.BelongsToRecipe,
+			&x.RecipePrepTask.CreatedAt,
+			&x.RecipePrepTask.LastUpdatedAt,
+			&x.RecipePrepTask.ArchivedAt,
+			&y.ID,
+			&y.BelongsToRecipeStep,
+			&y.BelongsToRecipePrepTask,
+			&y.SatisfiesRecipeStep,
 			&x.CreatedAt,
 			&x.LastUpdatedAt,
 			&x.CompletedAt,
@@ -108,16 +126,34 @@ func (q *Querier) scanMealPlanTasks(ctx context.Context, rows database.ResultIte
 			&x.AssignedToUser,
 		}
 
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning complete meal plan task")
+		if err := rows.Scan(targetVars...); err != nil {
+			return nil, observability.PrepareError(err, span, "scanning meal plan task")
 		}
 
-		if lastMealPlanTaskID == "" {
-			lastMealPlanTaskID = x.ID
-		}
+		x.RecipePrepTask.TaskSteps = append(x.RecipePrepTask.TaskSteps, y)
 
-		mealPlanTasks = append(mealPlanTasks, x)
+		mealPlanTaskResults = append(mealPlanTaskResults, x)
 	}
+
+	// the TL;DR of this is that we get a list of every meal plan task step in a given meal plan,
+	// for some unknown number of meal plan tasks. So we sort them by ID, congeal all the task
+	// steps together and then return the results sorted by ID. There's probably a better and prettier
+	// way to do this, but this is how we're doing it in this particular instance. At least I wrote this.
+	mealPlanTaskMap := map[string]*types.MealPlanTask{}
+	for _, mealPlanTask := range mealPlanTaskResults {
+		if _, ok := mealPlanTaskMap[mealPlanTask.ID]; !ok {
+			mealPlanTaskMap[mealPlanTask.ID] = mealPlanTask
+		} else {
+			mealPlanTaskMap[mealPlanTask.ID].RecipePrepTask.TaskSteps = append(mealPlanTaskMap[mealPlanTask.ID].RecipePrepTask.TaskSteps, mealPlanTask.RecipePrepTask.TaskSteps...)
+		}
+	}
+
+	mealPlanTasks := types.MealPlanTaskList{}
+	for _, mealPlanTask := range mealPlanTaskMap {
+		mealPlanTasks = append(mealPlanTasks, mealPlanTask)
+	}
+
+	sort.Sort(mealPlanTasks)
 
 	return mealPlanTasks, nil
 }
@@ -303,7 +339,7 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing meal plan tasks list retrieval query")
 	}
 
-	x, scanErr := q.scanMealPlanTasks(ctx, rows)
+	x, scanErr := q.scanMealPlanTasksForMealPlan(ctx, rows)
 	if scanErr != nil {
 		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning meal plan tasks")
 	}

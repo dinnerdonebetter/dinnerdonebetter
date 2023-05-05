@@ -13,9 +13,9 @@ SELECT
 	meal_plan_grocery_list_items.status,
 	meal_plan_grocery_list_items.created_at,
 	meal_plan_grocery_list_items.last_updated_at,
-	meal_plan_grocery_list_items.completed_at
+	meal_plan_grocery_list_items.archived_at
 FROM meal_plan_grocery_list_items
 	FULL OUTER JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan=meal_plans.id
-WHERE meal_plan_grocery_list_items.completed_at IS NULL
+WHERE meal_plan_grocery_list_items.archived_at IS NULL
   AND meal_plan_grocery_list_items.id = $2
   AND meal_plan_grocery_list_items.belongs_to_meal_plan = $1;

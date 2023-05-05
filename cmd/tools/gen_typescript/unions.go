@@ -39,6 +39,18 @@ var (
 			},
 		},
 		{
+			Comment:   "meal plan grocery list item statuses",
+			Name:      "ValidMealPlanGroceryListItemStatus",
+			ConstName: "VALID_MEAL_PLAN_GROCERY_LIST_ITEM_STATUSES",
+			Values: []string{
+				"unknown",
+				"already owned",
+				"needs",
+				"unavailable",
+				"acquired",
+			},
+		},
+		{
 			Comment:   "meal plan election methods",
 			Name:      "ValidMealPlanElectionMethod",
 			ConstName: "VALID_MEAL_PLAN_ELECTION_METHODS",
