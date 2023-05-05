@@ -190,6 +190,8 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		return nil
 	}
 
+	logger.Info("sending email")
+
 	if err = emailer.SendEmail(ctx, mail); err != nil {
 		observability.AcknowledgeError(err, logger, span, "sending %s email", emailType)
 	}

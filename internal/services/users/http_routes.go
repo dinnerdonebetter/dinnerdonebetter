@@ -1028,5 +1028,7 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
 	}
 
+	logger.WithValue("data_change_message", dcm).Debug("published data change message")
+
 	res.WriteHeader(http.StatusAccepted)
 }
