@@ -197,6 +197,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := &types.UserDatabaseCreationInput{
 		ID:              identifiers.New(),
 		Username:        registrationInput.Username,
+		FirstName:       registrationInput.FirstName,
+		LastName:        registrationInput.LastName,
 		EmailAddress:    registrationInput.EmailAddress,
 		HashedPassword:  hp,
 		TwoFactorSecret: tfs,
@@ -257,6 +259,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ucr := &types.UserCreationResponse{
 		CreatedUserID:   user.ID,
 		Username:        user.Username,
+		FirstName:       user.FirstName,
+		LastName:        user.LastName,
 		EmailAddress:    user.EmailAddress,
 		CreatedAt:       user.CreatedAt,
 		TwoFactorSecret: user.TwoFactorSecret,
