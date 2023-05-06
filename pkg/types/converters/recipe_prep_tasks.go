@@ -19,6 +19,8 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.Recipe
 		})
 	}
 	x := &types.RecipePrepTaskUpdateRequestInput{
+		Name:                                   &input.Name,
+		Description:                            &input.Description,
 		Notes:                                  &input.Notes,
 		ExplicitStorageInstructions:            &input.ExplicitStorageInstructions,
 		MinimumTimeBufferBeforeRecipeInSeconds: &input.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -45,6 +47,8 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 
 	x := &types.RecipePrepTaskDatabaseCreationInput{
 		ID:                                     identifiers.New(),
+		Name:                                   input.Name,
+		Description:                            input.Description,
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		StorageType:                            input.StorageType,
@@ -63,6 +67,8 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput(recipe *types.RecipeDatabaseCreationInput, input *types.RecipePrepTaskWithinRecipeCreationRequestInput) (*types.RecipePrepTaskDatabaseCreationInput, error) {
 	x := &types.RecipePrepTaskDatabaseCreationInput{
 		ID:                                     identifiers.New(),
+		Name:                                   input.Name,
+		Description:                            input.Description,
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		StorageType:                            input.StorageType,
@@ -99,6 +105,8 @@ func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *types.Rec
 
 	return &types.RecipePrepTaskDatabaseCreationInput{
 		ID:                                     input.ID,
+		Name:                                   input.Name,
+		Description:                            input.Description,
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		StorageType:                            input.StorageType,
@@ -125,6 +133,8 @@ func ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(input *types.Reci
 	}
 
 	return &types.RecipePrepTaskCreationRequestInput{
+		Name:                                   input.Name,
+		Description:                            input.Description,
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		StorageType:                            input.StorageType,
@@ -144,6 +154,8 @@ func ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(recip
 	}
 
 	return &types.RecipePrepTaskWithinRecipeCreationRequestInput{
+		Name:                                   input.Name,
+		Description:                            input.Description,
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		StorageType:                            input.StorageType,

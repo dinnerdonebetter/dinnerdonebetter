@@ -1,5 +1,7 @@
 SELECT
 	recipe_prep_tasks.id,
+	recipe_prep_tasks.name,
+	recipe_prep_tasks.description,
 	recipe_prep_tasks.notes,
 	recipe_prep_tasks.explicit_storage_instructions,
 	recipe_prep_tasks.minimum_time_buffer_before_recipe_in_seconds,

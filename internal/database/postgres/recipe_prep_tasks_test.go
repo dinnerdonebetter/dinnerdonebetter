@@ -19,6 +19,8 @@ import (
 func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) *sqlmock.Rows {
 	columns := []string{
 		"recipe_prep_tasks.id",
+		"recipe_prep_tasks.name",
+		"recipe_prep_tasks.description",
 		"recipe_prep_tasks.notes",
 		"recipe_prep_tasks.explicit_storage_instructions",
 		"recipe_prep_tasks.minimum_time_buffer_before_recipe_in_seconds",
@@ -42,6 +44,8 @@ func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) 
 		for _, y := range x.TaskSteps {
 			rowValues := []driver.Value{
 				x.ID,
+				x.Name,
+				x.Description,
 				x.Notes,
 				x.ExplicitStorageInstructions,
 				x.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -136,6 +140,8 @@ func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 
 		createRecipePrepTaskQueryArgs := []any{
 			exampleInput.ID,
+			exampleInput.Name,
+			exampleInput.Description,
 			exampleInput.Notes,
 			exampleInput.ExplicitStorageInstructions,
 			exampleInput.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -254,6 +260,8 @@ func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []any{
+			exampleRecipePrepTask.Name,
+			exampleRecipePrepTask.Description,
 			exampleRecipePrepTask.Notes,
 			exampleRecipePrepTask.ExplicitStorageInstructions,
 			exampleRecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,

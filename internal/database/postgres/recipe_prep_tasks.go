@@ -27,6 +27,8 @@ func (q *Querier) scanRecipePrepTaskWithSteps(ctx context.Context, rows database
 
 		targetVars := []any{
 			&x.ID,
+			&x.Name,
+			&x.Description,
 			&x.Notes,
 			&x.ExplicitStorageInstructions,
 			&x.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -67,6 +69,8 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 
 		targetVars := []any{
 			&recipePrepTask.ID,
+			&recipePrepTask.Name,
+			&recipePrepTask.Description,
 			&recipePrepTask.Notes,
 			&recipePrepTask.ExplicitStorageInstructions,
 			&recipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -203,6 +207,8 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 
 	args := []any{
 		input.ID,
+		input.Name,
+		input.Description,
 		input.Notes,
 		input.ExplicitStorageInstructions,
 		input.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -222,6 +228,8 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 	x := &types.RecipePrepTask{
 		CreatedAt:                              q.timeFunc(),
 		ID:                                     input.ID,
+		Name:                                   input.Name,
+		Description:                            input.Description,
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		MinimumTimeBufferBeforeRecipeInSeconds: input.MinimumTimeBufferBeforeRecipeInSeconds,
@@ -376,6 +384,8 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, updated.ID)
 
 	updateRecipePrepStepTaskArgs := []any{
+		updated.Name,
+		updated.Description,
 		updated.Notes,
 		updated.ExplicitStorageInstructions,
 		updated.MinimumTimeBufferBeforeRecipeInSeconds,
