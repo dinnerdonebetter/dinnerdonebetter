@@ -11,7 +11,8 @@ import (
 func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 	return &types.HouseholdInvitation{
 		FromUser:             *BuildFakeUser(),
-		ToEmail:              buildUniqueString(),
+		ToEmail:              fake.Email(),
+		ToName:               buildUniqueString(),
 		ToUser:               func(s string) *string { return &s }(buildUniqueString()),
 		Note:                 buildUniqueString(),
 		StatusNote:           buildUniqueString(),

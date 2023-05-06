@@ -1133,6 +1133,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		for _, prepTask := range exampleInput.PrepTasks {
 			createRecipePrepTaskQueryArgs := []any{
 				prepTask.ID,
+				prepTask.Name,
+				prepTask.Description,
 				prepTask.Notes,
 				prepTask.ExplicitStorageInstructions,
 				prepTask.MinimumTimeBufferBeforeRecipeInSeconds,

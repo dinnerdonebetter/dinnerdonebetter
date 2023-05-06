@@ -197,6 +197,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := &types.UserDatabaseCreationInput{
 		ID:              identifiers.New(),
 		Username:        registrationInput.Username,
+		FirstName:       registrationInput.FirstName,
+		LastName:        registrationInput.LastName,
 		EmailAddress:    registrationInput.EmailAddress,
 		HashedPassword:  hp,
 		TwoFactorSecret: tfs,
@@ -257,6 +259,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ucr := &types.UserCreationResponse{
 		CreatedUserID:   user.ID,
 		Username:        user.Username,
+		FirstName:       user.FirstName,
+		LastName:        user.LastName,
 		EmailAddress:    user.EmailAddress,
 		CreatedAt:       user.CreatedAt,
 		TwoFactorSecret: user.TwoFactorSecret,
@@ -1027,6 +1031,8 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
 		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
 	}
+
+	logger.WithValue("data_change_message", dcm).Debug("published data change message")
 
 	res.WriteHeader(http.StatusAccepted)
 }

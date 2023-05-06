@@ -52,6 +52,8 @@ type (
 		BelongsToRecipe                        string                `json:"belongsToRecipe"`
 		ExplicitStorageInstructions            string                `json:"explicitStorageInstructions"`
 		Notes                                  string                `json:"notes"`
+		Name                                   string                `json:"name"`
+		Description                            string                `json:"description"`
 		TaskSteps                              []*RecipePrepTaskStep `json:"recipeSteps"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                `json:"minimumTimeBufferBeforeRecipeInSeconds"`
 	}
@@ -65,6 +67,8 @@ type (
 		Notes                                  string                                    `json:"notes"`
 		ExplicitStorageInstructions            string                                    `json:"explicitStorageInstructions"`
 		StorageType                            string                                    `json:"storageType"`
+		Name                                   string                                    `json:"name"`
+		Description                            string                                    `json:"description"`
 		BelongsToRecipe                        string                                    `json:"belongsToRecipe"`
 		TaskSteps                              []*RecipePrepTaskStepCreationRequestInput `json:"recipeSteps"`
 		MinimumTimeBufferBeforeRecipeInSeconds uint32                                    `json:"minimumTimeBufferBeforeRecipeInSeconds"`
@@ -77,6 +81,8 @@ type (
 		MinimumStorageTemperatureInCelsius     *float32                                              `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius     *float32                                              `json:"maximumStorageTemperatureInCelsius"`
 		Notes                                  string                                                `json:"notes"`
+		Name                                   string                                                `json:"name"`
+		Description                            string                                                `json:"description"`
 		ExplicitStorageInstructions            string                                                `json:"explicitStorageInstructions"`
 		StorageType                            string                                                `json:"storageType"`
 		BelongsToRecipe                        string                                                `json:"belongsToRecipe"`
@@ -93,6 +99,8 @@ type (
 		ID                                     string
 		Notes                                  string
 		ExplicitStorageInstructions            string
+		Name                                   string
+		Description                            string
 		StorageType                            string
 		BelongsToRecipe                        string
 		TaskSteps                              []*RecipePrepTaskStepDatabaseCreationInput
@@ -108,6 +116,8 @@ type (
 		MinimumTimeBufferBeforeRecipeInSeconds *uint32                                 `json:"minimumTimeBufferBeforeRecipeInSeconds,omitempty"`
 		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                 `json:"maximumTimeBufferBeforeRecipeInSeconds,omitempty"`
 		StorageType                            *string                                 `json:"storageType,omitempty"`
+		Name                                   *string                                 `json:"name"`
+		Description                            *string                                 `json:"description"`
 		MinimumStorageTemperatureInCelsius     *float32                                `json:"minimumStorageTemperatureInCelsius,omitempty"`
 		MaximumStorageTemperatureInCelsius     *float32                                `json:"maximumStorageTemperatureInCelsius,omitempty"`
 		BelongsToRecipe                        *string                                 `json:"belongsToRecipe,omitempty"`
@@ -171,6 +181,14 @@ func (x *RecipePrepTask) Update(input *RecipePrepTaskUpdateRequestInput) {
 	if input.BelongsToRecipe != nil && *input.BelongsToRecipe != x.BelongsToRecipe {
 		x.BelongsToRecipe = *input.BelongsToRecipe
 	}
+
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
+	}
+
+	if input.Description != nil && *input.Description != x.Description {
+		x.Description = *input.Description
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipePrepTaskCreationRequestInput)(nil)
@@ -183,6 +201,7 @@ func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Con
 		ctx,
 		x,
 		validation.Field(&x.BelongsToRecipe, validation.Required),
+		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.StorageType, validation.Required),
 		validation.Field(&x.MaximumTimeBufferBeforeRecipeInSeconds, validation.Required),
 		validation.Field(&x.MinimumStorageTemperatureInCelsius, validation.Required),

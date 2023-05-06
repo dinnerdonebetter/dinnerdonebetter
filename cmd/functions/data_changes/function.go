@@ -164,8 +164,6 @@ func handleOutboundNotifications(
 			Template:               email.TemplateTypeVerifyEmailAddress,
 			EmailVerificationToken: changeMessage.EmailVerificationToken,
 		})
-
-		break
 	case types.UserEmailAddressVerificationEmailRequestedEventType:
 		emailType = "email address verification"
 
@@ -174,8 +172,6 @@ func handleOutboundNotifications(
 			Template:               email.TemplateTypeVerifyEmailAddress,
 			EmailVerificationToken: changeMessage.EmailVerificationToken,
 		})
-
-		break
 	case types.MealPlanCreatedCustomerEventType:
 		emailType = "meal plan created"
 		mealPlan := changeMessage.MealPlan
@@ -197,8 +193,6 @@ func handleOutboundNotifications(
 				})
 			}
 		}
-
-		break
 	case types.PasswordResetTokenCreatedEventType:
 		emailType = "password reset request"
 		if changeMessage.PasswordResetToken == nil {
@@ -211,8 +205,6 @@ func handleOutboundNotifications(
 			PasswordResetToken: changeMessage.PasswordResetToken,
 		})
 
-		break
-
 	case types.UsernameReminderRequestedEventType:
 		emailType = "username reminder"
 		edrs = append(edrs, &email.DeliveryRequest{
@@ -220,16 +212,12 @@ func handleOutboundNotifications(
 			Template: email.TemplateTypeUsernameReminder,
 		})
 
-		break
-
 	case types.PasswordResetTokenRedeemedEventType:
 		emailType = "password reset token redeemed"
 		edrs = append(edrs, &email.DeliveryRequest{
 			UserID:   changeMessage.UserID,
 			Template: email.TemplateTypePasswordResetTokenRedeemed,
 		})
-
-		break
 	case types.HouseholdInvitationCreatedCustomerEventType:
 		emailType = "household invitation created"
 		if changeMessage.HouseholdInvitation == nil {
@@ -241,11 +229,11 @@ func handleOutboundNotifications(
 			Template:   email.TemplateTypeInvite,
 			Invitation: changeMessage.HouseholdInvitation,
 		})
-
-		break
 	}
 
-	logger.WithValue("email_type", emailType).WithValue("outbound_emails_to_send", len(edrs)).Info("publishing email requests")
+	if len(edrs) == 0 {
+		logger.WithValue("email_type", emailType).WithValue("outbound_emails_to_send", len(edrs)).Info("publishing email requests")
+	}
 
 	for _, edr := range edrs {
 		if err := outboundEmailsPublisher.Publish(ctx, edr); err != nil {

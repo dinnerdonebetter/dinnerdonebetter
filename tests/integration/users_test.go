@@ -20,6 +20,8 @@ func checkUserCreationEquality(t *testing.T, expected *types.UserRegistrationInp
 	t.Helper()
 
 	assert.NotZero(t, actual.CreatedUserID)
+	assert.Equal(t, expected.FirstName, actual.FirstName)
+	assert.Equal(t, expected.LastName, actual.LastName)
 	assert.Equal(t, expected.Username, actual.Username)
 	assert.NotEmpty(t, actual.TwoFactorSecret)
 	assert.NotZero(t, actual.CreatedAt)

@@ -8,6 +8,7 @@ import (
 func ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput(input *types.HouseholdInvitationCreationRequestInput) *types.HouseholdInvitationDatabaseCreationInput {
 	x := &types.HouseholdInvitationDatabaseCreationInput{
 		ToEmail: input.ToEmail,
+		ToName:  input.ToName,
 	}
 
 	if input.ExpiresAt != nil {
@@ -21,6 +22,7 @@ func ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreatio
 func ConvertHouseholdInvitationToHouseholdInvitationCreationInput(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationCreationRequestInput {
 	return &types.HouseholdInvitationCreationRequestInput{
 		Note:      householdInvitation.Note,
+		ToName:    householdInvitation.ToName,
 		ToEmail:   householdInvitation.ToEmail,
 		ExpiresAt: &householdInvitation.ExpiresAt,
 	}
@@ -40,6 +42,7 @@ func ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(househ
 		ID:                     householdInvitation.ID,
 		FromUser:               householdInvitation.FromUser.ID,
 		ToUser:                 householdInvitation.ToUser,
+		ToName:                 householdInvitation.ToName,
 		Note:                   householdInvitation.Note,
 		ToEmail:                householdInvitation.ToEmail,
 		Token:                  householdInvitation.Token,

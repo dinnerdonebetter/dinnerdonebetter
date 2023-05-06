@@ -32,6 +32,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 		GroceryListInitialized: false,
 		ElectionMethod:         types.MealPlanElectionMethodSchulze,
 		Events:                 events,
+		CreatedByUser:          BuildFakeID(),
 	}
 }
 

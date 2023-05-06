@@ -20,6 +20,8 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 	return &types.RecipePrepTask{
 		ID:                          BuildFakeID(),
 		Notes:                       buildUniqueString(),
+		Name:                        buildUniqueString(),
+		Description:                 buildUniqueString(),
 		ExplicitStorageInstructions: buildUniqueString(),
 		StorageType: fake.RandomString([]string{
 			types.RecipePrepTaskStorageTypeUncovered,
@@ -84,6 +86,8 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 	return &types.RecipePrepTaskCreationRequestInput{
 		Notes:                                  buildUniqueString(),
 		ExplicitStorageInstructions:            buildUniqueString(),
+		Name:                                   buildUniqueString(),
+		Description:                            buildUniqueString(),
 		StorageType:                            types.RecipePrepTaskStorageTypeUncovered,
 		BelongsToRecipe:                        BuildFakeID(),
 		TaskSteps:                              taskSteps,
@@ -105,6 +109,8 @@ func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequ
 	return &types.RecipePrepTaskUpdateRequestInput{
 		Notes:                                  pointers.Pointer(buildUniqueString()),
 		ExplicitStorageInstructions:            pointers.Pointer(buildUniqueString()),
+		Name:                                   pointers.Pointer(buildUniqueString()),
+		Description:                            pointers.Pointer(buildUniqueString()),
 		StorageType:                            pointers.Pointer(types.RecipePrepTaskStorageTypeUncovered),
 		BelongsToRecipe:                        pointers.Pointer(BuildFakeID()),
 		MaximumTimeBufferBeforeRecipeInSeconds: pointers.Pointer(fake.Uint32()),
@@ -126,6 +132,8 @@ func BuildFakeRecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *types.Re
 	return &types.RecipePrepTaskUpdateRequestInput{
 		Notes:                                  pointers.Pointer(buildUniqueString()),
 		ExplicitStorageInstructions:            pointers.Pointer(buildUniqueString()),
+		Name:                                   pointers.Pointer(buildUniqueString()),
+		Description:                            pointers.Pointer(buildUniqueString()),
 		StorageType:                            pointers.Pointer(types.RecipePrepTaskStorageTypeUncovered),
 		BelongsToRecipe:                        pointers.Pointer(BuildFakeID()),
 		TaskSteps:                              taskSteps,

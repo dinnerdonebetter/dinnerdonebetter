@@ -20,6 +20,8 @@ func BuildFakeUser() *types.User {
 
 	return &types.User{
 		ID:                        BuildFakeID(),
+		FirstName:                 fake.FirstName(),
+		LastName:                  fake.LastName(),
 		EmailAddress:              fake.Email(),
 		Username:                  fake.Password(true, true, true, false, false, 32),
 		Birthday:                  pointers.Pointer(BuildFakeTime()),
@@ -56,6 +58,8 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 	return &types.UserRegistrationInput{
 		Username:     exampleUser.Username,
 		EmailAddress: fake.Email(),
+		FirstName:    exampleUser.FirstName,
+		LastName:     exampleUser.LastName,
 		Password:     BuildFakePassword(),
 		Birthday:     exampleUser.Birthday,
 	}
@@ -65,6 +69,8 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistrationInput {
 	return &types.UserRegistrationInput{
 		Username:     user.Username,
+		FirstName:    user.FirstName,
+		LastName:     user.LastName,
 		EmailAddress: user.EmailAddress,
 		Password:     BuildFakePassword(),
 		Birthday:     user.Birthday,
@@ -75,6 +81,8 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 func BuildFakeUserRegistrationInputWithInviteFromUser(user *types.User) *types.UserRegistrationInput {
 	return &types.UserRegistrationInput{
 		Username:        user.Username,
+		FirstName:       user.FirstName,
+		LastName:        user.LastName,
 		EmailAddress:    user.EmailAddress,
 		Password:        BuildFakePassword(),
 		Birthday:        user.Birthday,

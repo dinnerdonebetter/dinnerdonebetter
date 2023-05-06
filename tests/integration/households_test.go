@@ -242,6 +242,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			t.Logf("inviting user")
 			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
+				ToName:  t.Name(),
 				ToEmail: u.EmailAddress,
 			})
 			require.NoError(t, err)

@@ -52,11 +52,12 @@ type (
 		VotingDeadline         time.Time        `json:"votingDeadline"`
 		ArchivedAt             *time.Time       `json:"archivedAt"`
 		LastUpdatedAt          *time.Time       `json:"lastUpdatedAt"`
-		Status                 string           `json:"status"`
 		ID                     string           `json:"id"`
+		Status                 string           `json:"status"`
 		Notes                  string           `json:"notes"`
 		ElectionMethod         string           `json:"electionMethod"`
 		BelongsToHousehold     string           `json:"belongsToHousehold"`
+		CreatedByUser          string           `json:"createdBy"`
 		Events                 []*MealPlanEvent `json:"events"`
 		GroceryListInitialized bool             `json:"groceryListInitialized"`
 		TasksCreated           bool             `json:"tasksCreated"`
@@ -81,6 +82,7 @@ type (
 		Notes              string
 		ID                 string
 		ElectionMethod     string
+		CreatedByUser      string
 		Events             []*MealPlanEventDatabaseCreationInput
 	}
 
@@ -163,6 +165,7 @@ func (x *MealPlanDatabaseCreationInput) ValidateWithContext(ctx context.Context)
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.VotingDeadline, validation.Required),
 		validation.Field(&x.BelongsToHousehold, validation.Required),
+		validation.Field(&x.CreatedByUser, validation.Required),
 	)
 }
 

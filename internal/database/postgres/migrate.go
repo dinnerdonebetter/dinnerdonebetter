@@ -395,6 +395,11 @@ var (
 			Description: "misc missing fields",
 			Script:      fetchMigration("00076_missing_fields"),
 		},
+		{
+			Version:     77,
+			Description: "more stuff",
+			Script:      fetchMigration("00077_more_stuff"),
+		},
 	}
 )
 

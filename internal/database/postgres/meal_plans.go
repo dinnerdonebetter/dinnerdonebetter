@@ -27,6 +27,7 @@ var (
 		"meal_plans.last_updated_at",
 		"meal_plans.archived_at",
 		"meal_plans.belongs_to_household",
+		"meal_plans.created_by_user",
 	}
 )
 
@@ -49,6 +50,7 @@ func (q *Querier) scanMealPlan(ctx context.Context, scan database.Scanner, inclu
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
 		&x.BelongsToHousehold,
+		&x.CreatedByUser,
 	}
 
 	if includeCounts {
@@ -256,6 +258,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 		status,
 		input.VotingDeadline,
 		input.BelongsToHousehold,
+		input.CreatedByUser,
 	}
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -277,6 +280,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 		BelongsToHousehold: input.BelongsToHousehold,
 		ElectionMethod:     input.ElectionMethod,
 		CreatedAt:          q.currentTime(),
+		CreatedByUser:      input.CreatedByUser,
 	}
 
 	logger.WithValue("quantity", len(input.Events)).Info("creating events for meal plan")

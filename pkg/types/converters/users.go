@@ -9,6 +9,8 @@ func ConvertUserToUserCreationResponse(user *types.User) *types.UserCreationResp
 	return &types.UserCreationResponse{
 		CreatedUserID: user.ID,
 		Username:      user.Username,
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
 		CreatedAt:     user.CreatedAt,
 	}
 }
@@ -19,6 +21,8 @@ func ConvertUserToUserDatabaseCreationInput(user *types.User) *types.UserDatabas
 		ID:              user.ID,
 		EmailAddress:    user.EmailAddress,
 		Username:        user.Username,
+		FirstName:       user.FirstName,
+		LastName:        user.LastName,
 		HashedPassword:  user.HashedPassword,
 		TwoFactorSecret: user.TwoFactorSecret,
 		Birthday:        user.Birthday,
