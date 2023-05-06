@@ -85,6 +85,18 @@ var (
 				"unspecified",
 			},
 		},
+		{
+			Comment:   "meal plan task statuses",
+			Name:      "MealPlanTaskStatus",
+			ConstName: "MEAL_PLAN_TASK_STATUSES",
+			Values: []string{
+				"unfinished",
+				"delayed",
+				"ignored",
+				"canceled",
+				"finished",
+			},
+		},
 	}
 )
 
