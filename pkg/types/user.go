@@ -53,6 +53,8 @@ type (
 		ID                        string     `json:"id"`
 		AccountStatus             string     `json:"accountStatus"`
 		Username                  string     `json:"username"`
+		FirstName                 string     `json:"firstName"`
+		LastName                  string     `json:"lastName"`
 		EmailAddress              string     `json:"emailAddress"`
 		EmailAddressVerifiedAt    *time.Time `json:"emailAddressVerifiedAt"`
 		ServiceRole               string     `json:"serviceRoles"`
@@ -69,6 +71,8 @@ type (
 		InvitationToken string     `json:"invitationToken,omitempty"`
 		InvitationID    string     `json:"invitationID,omitempty"`
 		Username        string     `json:"username"`
+		FirstName       string     `json:"firstName"`
+		LastName        string     `json:"lastName"`
 		HouseholdName   string     `json:"householdName"`
 	}
 
@@ -86,6 +90,8 @@ type (
 		Username               string
 		EmailAddress           string
 		HouseholdName          string
+		FirstName              string
+		LastName               string
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
@@ -101,6 +107,8 @@ type (
 		CreatedUserID   string     `json:"createdUserID"`
 		AccountStatus   string     `json:"accountStatus"`
 		TwoFactorSecret string     `json:"twoFactorSecret"`
+		FirstName       string     `json:"firstName"`
+		LastName        string     `json:"lastName"`
 		IsAdmin         bool       `json:"isAdmin"`
 	}
 
@@ -204,6 +212,14 @@ type (
 func (u *User) Update(input *User) {
 	if input.Username != "" && input.Username != u.Username {
 		u.Username = input.Username
+	}
+
+	if input.FirstName != "" && input.FirstName != u.FirstName {
+		u.FirstName = input.FirstName
+	}
+
+	if input.LastName != "" && input.LastName != u.LastName {
+		u.LastName = input.LastName
 	}
 
 	if input.HashedPassword != "" && input.HashedPassword != u.HashedPassword {

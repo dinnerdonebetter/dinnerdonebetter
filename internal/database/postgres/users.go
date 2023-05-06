@@ -26,6 +26,8 @@ var (
 	usersTableColumns = []string{
 		"users.id",
 		"users.username",
+		"users.first_name",
+		"users.last_name",
 		"users.email_address",
 		"users.email_address_verified_at",
 		"users.avatar_src",
@@ -58,6 +60,8 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 
 	targetVars := []any{
 		&user.ID,
+		&user.FirstName,
+		&user.LastName,
 		&user.Username,
 		&user.EmailAddress,
 		&user.EmailAddressVerifiedAt,
@@ -406,6 +410,8 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 
 	userCreationArgs := []any{
 		input.ID,
+		input.FirstName,
+		input.LastName,
 		input.Username,
 		input.EmailAddress,
 		input.HashedPassword,
@@ -440,6 +446,8 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 
 	user := &types.User{
 		ID:              input.ID,
+		FirstName:       input.FirstName,
+		LastName:        input.LastName,
 		Username:        input.Username,
 		EmailAddress:    input.EmailAddress,
 		HashedPassword:  input.HashedPassword,
@@ -552,6 +560,8 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 
 	args := []any{
 		updated.Username,
+		updated.FirstName,
+		updated.LastName,
 		updated.HashedPassword,
 		updated.AvatarSrc,
 		updated.TwoFactorSecret,

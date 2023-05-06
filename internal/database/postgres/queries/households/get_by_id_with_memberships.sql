@@ -12,6 +12,8 @@ SELECT
 	households.archived_at,
 	households.belongs_to_user,
 	users.id,
+	users.first_name,
+	users.last_name,
 	users.username,
 	users.email_address,
 	users.email_address_verified_at,

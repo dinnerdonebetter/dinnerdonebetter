@@ -35,6 +35,8 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 	for _, user := range users {
 		rowValues := []driver.Value{
 			user.ID,
+			user.FirstName,
+			user.LastName,
 			user.Username,
 			user.EmailAddress,
 			user.EmailAddressVerifiedAt,
@@ -795,6 +797,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -945,6 +949,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1003,6 +1009,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1064,6 +1072,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1201,6 +1211,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1301,6 +1313,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1413,6 +1427,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1488,6 +1504,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1576,6 +1594,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1674,6 +1694,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1775,6 +1797,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		userCreationArgs := []any{
 			exampleUserCreationInput.ID,
+			exampleUserCreationInput.FirstName,
+			exampleUserCreationInput.LastName,
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
@@ -1877,6 +1901,8 @@ func TestQuerier_UpdateUser(T *testing.T) {
 
 		args := []any{
 			exampleUser.Username,
+			exampleUser.FirstName,
+			exampleUser.LastName,
 			exampleUser.HashedPassword,
 			exampleUser.AvatarSrc,
 			exampleUser.TwoFactorSecret,
@@ -1913,6 +1939,8 @@ func TestQuerier_UpdateUser(T *testing.T) {
 
 		args := []any{
 			exampleUser.Username,
+			exampleUser.FirstName,
+			exampleUser.LastName,
 			exampleUser.HashedPassword,
 			exampleUser.AvatarSrc,
 			exampleUser.TwoFactorSecret,
