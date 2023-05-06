@@ -33,6 +33,7 @@ SELECT
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
+	household_invitations.to_name,
 	household_invitations.status,
 	household_invitations.note,
 	household_invitations.status_note,

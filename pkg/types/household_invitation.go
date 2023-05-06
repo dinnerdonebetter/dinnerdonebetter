@@ -42,6 +42,7 @@ type (
 		ExpiresAt *time.Time `json:"expiresAt"`
 		Note      string     `json:"note"`
 		ToEmail   string     `json:"toEmail"`
+		ToName    string     `json:"toName"`
 	}
 
 	// HouseholdInvitationDatabaseCreationInput represents what a User could set as input for creating household invitations.
@@ -54,6 +55,7 @@ type (
 		Note                   string
 		ToEmail                string
 		Token                  string
+		ToName                 string
 		ExpiresAt              time.Time
 		DestinationHouseholdID string
 	}
@@ -72,6 +74,7 @@ type (
 		Token                string     `json:"token"`
 		ID                   string     `json:"id"`
 		Note                 string     `json:"note"`
+		ToName               string     `json:"toName"`
 		ExpiresAt            time.Time  `json:"expiresAt"`
 		DestinationHousehold Household  `json:"destinationHousehold"`
 		FromUser             User       `json:"fromUser"`
