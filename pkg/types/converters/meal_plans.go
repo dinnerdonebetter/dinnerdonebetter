@@ -26,6 +26,7 @@ func ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input *t
 	x := &types.MealPlanDatabaseCreationInput{
 		ID:             identifiers.New(),
 		Notes:          input.Notes,
+		CreatedByUser:  identifiers.New(),
 		VotingDeadline: input.VotingDeadline,
 		Events:         events,
 		ElectionMethod: input.ElectionMethod,
@@ -63,5 +64,6 @@ func ConvertMealPlanToMealPlanDatabaseCreationInput(mealPlan *types.MealPlan) *t
 		Events:             events,
 		ElectionMethod:     mealPlan.ElectionMethod,
 		BelongsToHousehold: mealPlan.BelongsToHousehold,
+		CreatedByUser:      mealPlan.CreatedByUser,
 	}
 }

@@ -56,6 +56,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := converters.ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
+	input.CreatedByUser = sessionCtxData.Requester.UserID
 
 	for i := range input.Events {
 		input.Events[i].ID = identifiers.New()

@@ -40,6 +40,7 @@ func buildMockRowsFromMealPlans(includeCounts bool, filteredCount uint64, mealPl
 			x.LastUpdatedAt,
 			x.ArchivedAt,
 			x.BelongsToHousehold,
+			x.CreatedByUser,
 		}
 
 		if includeCounts {
@@ -504,6 +505,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			types.AwaitingVotesMealPlanStatus,
 			exampleInput.VotingDeadline,
 			exampleInput.BelongsToHousehold,
+			exampleInput.CreatedByUser,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanCreationQuery)).
@@ -611,6 +613,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			types.AwaitingVotesMealPlanStatus,
 			exampleInput.VotingDeadline,
 			exampleInput.BelongsToHousehold,
+			exampleInput.CreatedByUser,
 		}
 
 		db.ExpectBegin()
@@ -663,6 +666,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			types.AwaitingVotesMealPlanStatus,
 			exampleInput.VotingDeadline,
 			exampleInput.BelongsToHousehold,
+			exampleInput.CreatedByUser,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanCreationQuery)).
