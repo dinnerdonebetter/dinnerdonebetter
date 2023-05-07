@@ -81,7 +81,7 @@ type (
 		_ struct{}
 
 		Status            *string `json:"status"`
-		StatusExplanation *string `json:"statusExplanation"`
+		StatusExplanation string  `json:"statusExplanation"`
 		AssignedToUser    *string `json:"assignedToUser"`
 		ID                string  `json:"-"`
 	}
@@ -129,8 +129,8 @@ func (m MealPlanTaskList) Swap(i, j int) {
 
 // Update merges an MealPlanTaskStatusChangeRequestInput with a meal plan task.
 func (x *MealPlanTask) Update(input *MealPlanTaskStatusChangeRequestInput) {
-	if input.StatusExplanation != nil && *input.StatusExplanation != x.StatusExplanation {
-		x.StatusExplanation = *input.StatusExplanation
+	if input.StatusExplanation != "" && input.StatusExplanation != x.StatusExplanation {
+		x.StatusExplanation = input.StatusExplanation
 	}
 
 	if input.Status != nil && *input.Status != x.Status {

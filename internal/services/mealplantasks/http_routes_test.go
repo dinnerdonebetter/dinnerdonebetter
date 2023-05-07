@@ -263,7 +263,7 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 
 		expectedPrepStep := helper.exampleMealPlanTask
 		expectedPrepStep.Status = *exampleStatusChangeInput.Status
-		expectedPrepStep.StatusExplanation = *exampleStatusChangeInput.StatusExplanation
+		expectedPrepStep.StatusExplanation = exampleStatusChangeInput.StatusExplanation
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
@@ -369,7 +369,7 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 
 		expectedPrepStep := helper.exampleMealPlanTask
 		expectedPrepStep.Status = *exampleCreationInput.Status
-		expectedPrepStep.StatusExplanation = *exampleCreationInput.StatusExplanation
+		expectedPrepStep.StatusExplanation = exampleCreationInput.StatusExplanation
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
