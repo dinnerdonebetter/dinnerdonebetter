@@ -20,8 +20,8 @@ const (
 
 	// MealPlanTaskStatusUnfinished represents the unfinished enum member for meal plan task status in the DB.
 	MealPlanTaskStatusUnfinished = "unfinished"
-	// MealPlanTaskStatusDelayed represents the delayed enum member for meal plan task status in the DB.
-	MealPlanTaskStatusDelayed = "delayed"
+	// MealPlanTaskStatusPostponed represents the postponed enum member for meal plan task status in the DB.
+	MealPlanTaskStatusPostponed = "postponed"
 
 	// MealPlanTaskStatusIgnored represents the ignored enum member for meal plan task status in the DB.
 	MealPlanTaskStatusIgnored = "ignored"
@@ -157,7 +157,7 @@ func (x *MealPlanTaskCreationRequestInput) ValidateWithContext(ctx context.Conte
 		validation.Field(&x.RecipePrepTaskID, validation.Required),
 		validation.Field(&x.Status, validation.In(
 			MealPlanTaskStatusUnfinished,
-			MealPlanTaskStatusDelayed,
+			MealPlanTaskStatusPostponed,
 			MealPlanTaskStatusIgnored,
 			MealPlanTaskStatusCanceled,
 			MealPlanTaskStatusFinished,
@@ -186,7 +186,7 @@ func (x *MealPlanTaskStatusChangeRequestInput) ValidateWithContext(ctx context.C
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Status, validation.In(
 			MealPlanTaskStatusUnfinished,
-			MealPlanTaskStatusDelayed,
+			MealPlanTaskStatusPostponed,
 			MealPlanTaskStatusIgnored,
 			MealPlanTaskStatusCanceled,
 			MealPlanTaskStatusFinished,
