@@ -400,6 +400,11 @@ var (
 			Description: "more stuff",
 			Script:      fetchMigration("00077_more_stuff"),
 		},
+		{
+			Version:     78,
+			Description: "optional recipe prep tasks",
+			Script:      fetchMigration("00078_optional_tasks"),
+		},
 	}
 )
 
