@@ -91,7 +91,7 @@ var (
 			ConstName: "MEAL_PLAN_TASK_STATUSES",
 			Values: []string{
 				"unfinished",
-				"delayed",
+				"postponed",
 				"ignored",
 				"canceled",
 				"finished",

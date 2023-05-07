@@ -474,11 +474,11 @@ func (q *Querier) ChangeMealPlanTaskStatus(ctx context.Context, input *types.Mea
 		settledAt,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "prep step status change", changeMealPlanTaskStatusQuery, changeMealPlanTaskStatusArgs); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "changing prep step status")
+	if err := q.performWriteQuery(ctx, q.db, "meal plan task status change", changeMealPlanTaskStatusQuery, changeMealPlanTaskStatusArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "changing meal plan task status")
 	}
 
-	logger.Info("prep step status changed")
+	logger.Info("meal plan task status changed")
 
 	return nil
 }
