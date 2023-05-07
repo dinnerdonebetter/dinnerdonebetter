@@ -64,6 +64,6 @@ func BuildFakeMealPlanTaskStatusChangeRequestInput() *types.MealPlanTaskStatusCh
 	return &types.MealPlanTaskStatusChangeRequestInput{
 		ID:                BuildFakeID(),
 		Status:            pointers.Pointer("unfinished"),
-		StatusExplanation: pointers.Pointer(buildUniqueString()),
+		StatusExplanation: buildUniqueString(),
 	}
 }
