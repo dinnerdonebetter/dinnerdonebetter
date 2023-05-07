@@ -45,6 +45,7 @@ func (q *Querier) scanMealPlanTaskWithRecipePrepTaskSteps(ctx context.Context, r
 			&x.RecipePrepTask.Name,
 			&x.RecipePrepTask.Description,
 			&x.RecipePrepTask.Notes,
+			&x.RecipePrepTask.Optional,
 			&x.RecipePrepTask.ExplicitStorageInstructions,
 			&x.RecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
 			&x.RecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
@@ -107,6 +108,7 @@ func (q *Querier) scanMealPlanTasksForMealPlan(ctx context.Context, rows databas
 			&x.RecipePrepTask.Name,
 			&x.RecipePrepTask.Description,
 			&x.RecipePrepTask.Notes,
+			&x.RecipePrepTask.Optional,
 			&x.RecipePrepTask.ExplicitStorageInstructions,
 			&x.RecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
 			&x.RecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
@@ -226,10 +228,8 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 
 	x, err = q.scanMealPlanTaskWithRecipePrepTaskSteps(ctx, rows)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan task")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan task")
 	}
-
-	logger.Info("meal plan tasks retrieved")
 
 	return x, nil
 }

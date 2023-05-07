@@ -1136,6 +1136,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				prepTask.Name,
 				prepTask.Description,
 				prepTask.Notes,
+				prepTask.Optional,
 				prepTask.ExplicitStorageInstructions,
 				prepTask.MinimumTimeBufferBeforeRecipeInSeconds,
 				prepTask.MaximumTimeBufferBeforeRecipeInSeconds,

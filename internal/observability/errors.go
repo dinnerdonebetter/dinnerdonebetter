@@ -22,7 +22,10 @@ func PrepareAndLogError(err error, logger logging.Logger, span tracing.Span, des
 		logger.Error(err, desc)
 	}
 
-	return fmt.Errorf("%s: %w", desc, err)
+	if desc != "" {
+		return fmt.Errorf("%s: %w", desc, err)
+	}
+	return err
 }
 
 // PrepareError standardizes our error handling by logging, tracing, and formatting an error consistently.
@@ -42,7 +45,9 @@ func PrepareError(err error, span tracing.Span, descriptionFmt string, descripti
 // AcknowledgeError standardizes our error handling by logging and tracing consistently.
 func AcknowledgeError(err error, logger logging.Logger, span tracing.Span, descriptionFmt string, descriptionArgs ...any) {
 	desc := fmt.Sprintf(descriptionFmt, descriptionArgs...)
-	logging.EnsureLogger(logger).Error(err, desc)
+	if desc != "" {
+		logging.EnsureLogger(logger).Error(err, desc)
+	}
 	if span != nil {
 		tracing.AttachErrorToSpan(span, desc, err)
 	}
