@@ -208,9 +208,5 @@ func (x *MealPlanGroceryListItemUpdateRequestInput) ValidateWithContext(ctx cont
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.BelongsToMealPlan, validation.Required),
-		validation.Field(&x.ValidIngredientID, validation.Required),
-		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
-		validation.Field(&x.MinimumQuantityNeeded, validation.Required),
 	)
 }

@@ -22,10 +22,8 @@ const (
 	MealPlanTaskStatusUnfinished = "unfinished"
 	// MealPlanTaskStatusPostponed represents the postponed enum member for meal plan task status in the DB.
 	MealPlanTaskStatusPostponed = "postponed"
-
 	// MealPlanTaskStatusIgnored represents the ignored enum member for meal plan task status in the DB.
 	MealPlanTaskStatusIgnored = "ignored"
-
 	// MealPlanTaskStatusCanceled represents the canceled enum member for meal plan task status in the DB.
 	MealPlanTaskStatusCanceled = "canceled"
 	// MealPlanTaskStatusFinished represents the finished enum member for meal plan task status in the DB.
