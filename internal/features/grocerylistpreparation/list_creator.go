@@ -60,7 +60,7 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 									}
 
 									inputs[ingredient.Ingredient.ID] = &types.MealPlanGroceryListItemDatabaseCreationInput{
-										Status:                 types.MealPlanGroceryListItemStatusUnknown,
+										Status:                 types.MealPlanGroceryListItemStatusNeeds,
 										ValidMeasurementUnitID: ingredient.MeasurementUnit.ID,
 										ValidIngredientID:      ingredient.Ingredient.ID,
 										BelongsToMealPlan:      mealPlan.ID,
