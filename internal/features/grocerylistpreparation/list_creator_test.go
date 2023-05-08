@@ -185,7 +185,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		expectedMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -193,7 +193,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				MaximumQuantityNeeded:  pointers.Pointer(float32(200)),
 			},
 			carrot.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -201,7 +201,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
 			},
 			celery.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -209,7 +209,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
 			},
 			salt.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -340,7 +340,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		expectedMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -348,7 +348,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
 			},
 			carrot.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -356,7 +356,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				MaximumQuantityNeeded:  pointers.Pointer(float32(200)),
 			},
 			celery.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 types.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,

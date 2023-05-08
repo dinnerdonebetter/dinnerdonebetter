@@ -28,7 +28,6 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	assert.Equal(t, expected.MeasurementUnit, actual.MeasurementUnit, "expected MeasurementUnit for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit, actual.MeasurementUnit)
 	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
 	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected OptionIndex for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.OptionIndex, actual.OptionIndex)
-	assert.Equal(t, expected.RequiresDefrost, actual.RequiresDefrost, "expected RequiresDefrost for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.RequiresDefrost, actual.RequiresDefrost)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Optional, actual.Optional)
 	assert.Equal(t, expected.ToTaste, actual.ToTaste, "expected ToTaste for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.ToTaste, actual.ToTaste)
 	assert.NotZero(t, actual.CreatedAt)

@@ -59,7 +59,6 @@ SELECT
 	recipe_step_ingredients.recipe_step_product_id,
 	recipe_step_ingredients.ingredient_notes,
 	recipe_step_ingredients.option_index,
-    recipe_step_ingredients.requires_defrost,
 	recipe_step_ingredients.to_taste,
 	recipe_step_ingredients.product_percentage_to_use,
     recipe_step_ingredients.vessel_index,

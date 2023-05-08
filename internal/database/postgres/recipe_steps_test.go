@@ -683,7 +683,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.RecipeStepProductID,
 				ingredient.IngredientNotes,
 				ingredient.OptionIndex,
-				ingredient.RequiresDefrost,
 				ingredient.ToTaste,
 				ingredient.ProductPercentageToUse,
 				ingredient.VesselIndex,
@@ -834,23 +833,23 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(recipeStepCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
+		ingredient := exampleInput.Ingredients[0]
 		recipeStepIngredientCreationArgs := []any{
-			exampleInput.Ingredients[0].ID,
-			exampleInput.Ingredients[0].Name,
-			exampleInput.Ingredients[0].Optional,
-			exampleInput.Ingredients[0].IngredientID,
-			exampleInput.Ingredients[0].MeasurementUnitID,
-			exampleInput.Ingredients[0].MinimumQuantity,
-			exampleInput.Ingredients[0].MaximumQuantity,
-			exampleInput.Ingredients[0].QuantityNotes,
-			exampleInput.Ingredients[0].RecipeStepProductID,
-			exampleInput.Ingredients[0].IngredientNotes,
-			exampleInput.Ingredients[0].OptionIndex,
-			exampleInput.Ingredients[0].RequiresDefrost,
-			exampleInput.Ingredients[0].ToTaste,
-			exampleInput.Ingredients[0].ProductPercentageToUse,
-			exampleInput.Ingredients[0].VesselIndex,
-			exampleInput.Ingredients[0].BelongsToRecipeStep,
+			ingredient.ID,
+			ingredient.Name,
+			ingredient.Optional,
+			ingredient.IngredientID,
+			ingredient.MeasurementUnitID,
+			ingredient.MinimumQuantity,
+			ingredient.MaximumQuantity,
+			ingredient.QuantityNotes,
+			ingredient.RecipeStepProductID,
+			ingredient.IngredientNotes,
+			ingredient.OptionIndex,
+			ingredient.ToTaste,
+			ingredient.ProductPercentageToUse,
+			ingredient.VesselIndex,
+			ingredient.BelongsToRecipeStep,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
@@ -923,7 +922,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.RecipeStepProductID,
 				ingredient.IngredientNotes,
 				ingredient.OptionIndex,
-				ingredient.RequiresDefrost,
 				ingredient.ToTaste,
 				ingredient.ProductPercentageToUse,
 				ingredient.VesselIndex,

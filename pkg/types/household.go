@@ -45,7 +45,7 @@ type (
 		_ struct{}
 
 		CreatedAt                  time.Time                          `json:"createdAt"`
-		SubscriptionPlanID         *uint64                            `json:"subscriptionPlanID"`
+		SubscriptionPlanID         *string                            `json:"subscriptionPlanID"`
 		LastUpdatedAt              *time.Time                         `json:"lastUpdatedAt"`
 		ArchivedAt                 *time.Time                         `json:"archivedAt"`
 		ContactPhone               string                             `json:"contactPhone"`

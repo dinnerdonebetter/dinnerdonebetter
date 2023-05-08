@@ -47,7 +47,6 @@ type (
 		MeasurementUnit        ValidMeasurementUnit `json:"measurementUnit"`
 		MinimumQuantity        float32              `json:"minimumQuantity"`
 		OptionIndex            uint16               `json:"optionIndex"`
-		RequiresDefrost        bool                 `json:"requiresDefrost"`
 		Optional               bool                 `json:"optional"`
 		ToTaste                bool                 `json:"toTaste"`
 	}
@@ -67,7 +66,6 @@ type (
 		QuantityNotes                   string   `json:"quantityNotes"`
 		MinimumQuantity                 float32  `json:"minimumQuantity"`
 		OptionIndex                     uint16   `json:"optionIndex"`
-		RequiresDefrost                 bool     `json:"requiresDefrost"`
 		Optional                        bool     `json:"optional"`
 		ToTaste                         bool     `json:"toTaste"`
 	}
@@ -91,7 +89,6 @@ type (
 		MinimumQuantity                 float32
 		OptionIndex                     uint16
 		Optional                        bool
-		RequiresDefrost                 bool
 		ToTaste                         bool
 	}
 
@@ -110,7 +107,6 @@ type (
 		MinimumQuantity        *float32 `json:"minimumQuantity,omitempty"`
 		MaximumQuantity        *float32 `json:"maximumQuantity,omitempty"`
 		OptionIndex            *uint16  `json:"optionIndex,omitempty"`
-		RequiresDefrost        *bool    `json:"requiresDefrost,omitempty"`
 		VesselIndex            *uint16  `json:"vesselIndex,omitempty"`
 		ToTaste                *bool    `json:"toTaste,omitempty"`
 		ProductPercentageToUse *float32 `json:"productPercentageToUse,omitempty"`
@@ -176,10 +172,6 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 
 	if input.OptionIndex != nil && *input.OptionIndex != x.OptionIndex {
 		x.OptionIndex = *input.OptionIndex
-	}
-
-	if input.RequiresDefrost != nil && *input.RequiresDefrost != x.RequiresDefrost {
-		x.RequiresDefrost = *input.RequiresDefrost
 	}
 
 	if input.VesselIndex != nil && x.VesselIndex != nil && *input.VesselIndex != *x.VesselIndex {

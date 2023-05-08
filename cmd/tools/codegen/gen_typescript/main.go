@@ -114,6 +114,7 @@ export * from './pagination';
 					filesToImportsMapForFile[importMap[imp]] = map[string]struct{}{imp: {}}
 				}
 			}
+
 			output += typClass + "\n"
 		}
 

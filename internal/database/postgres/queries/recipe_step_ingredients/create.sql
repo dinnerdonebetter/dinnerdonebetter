@@ -10,9 +10,8 @@ INSERT INTO recipe_step_ingredients (
 	recipe_step_product_id,
 	ingredient_notes,
 	option_index,
-	requires_defrost,
 	to_taste,
 	product_percentage_to_use,
     vessel_index,
 	belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16);
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15);

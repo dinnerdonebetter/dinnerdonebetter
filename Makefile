@@ -191,7 +191,14 @@ clean_ts:
 
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
-	go run github.com/prixfixeco/backend/cmd/tools/gen_typescript
+	go run github.com/prixfixeco/backend/cmd/tools/codegen/gen_typescript
+
+clean_swift:
+	rm -rf $(ARTIFACTS_DIR)/swift
+
+swift: clean_swift
+	mkdir -p $(ARTIFACTS_DIR)/swift
+	go run github.com/prixfixeco/backend/cmd/tools/codegen/gen_swift
 
 ## Integration tests
 

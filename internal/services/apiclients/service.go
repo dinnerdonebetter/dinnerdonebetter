@@ -24,7 +24,7 @@ var _ types.APIClientDataService = (*service)(nil)
 type (
 	// Config manages our body validation.
 	Config struct {
-		dataChangesTopicName string
+		DataChangesTopicName string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
 		minimumUsernameLength,
 		minimumPasswordLength uint8
 	}
@@ -58,7 +58,7 @@ func ProvideAPIClientsService(
 	secretGenerator random.Generator,
 	publisherProvider messagequeue.PublisherProvider,
 ) (types.APIClientDataService, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.dataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up api clients service data changes publisher: %w", err)
 	}
