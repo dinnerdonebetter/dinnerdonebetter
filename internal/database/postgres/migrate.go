@@ -410,6 +410,11 @@ var (
 			Description: "last_indexed_at fields",
 			Script:      fetchMigration("00079_last_indexed_fields"),
 		},
+		{
+			Version:     80,
+			Description: "remove quantity scales",
+			Script:      fetchMigration("00080_remove_quantity_scales"),
+		},
 	}
 )
 

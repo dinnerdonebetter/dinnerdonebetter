@@ -17,7 +17,6 @@ SELECT
 	valid_measurement_units.archived_at,
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
-	recipe_step_products.quantity_scale_factor,
 	recipe_step_products.quantity_notes,
 	recipe_step_products.compostable,
 	recipe_step_products.maximum_storage_duration_in_seconds,

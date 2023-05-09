@@ -51,7 +51,6 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 			&x.Optional,
 			&x.MinimumQuantity,
 			&x.MaximumQuantity,
-			&x.QuantityScaleFactor,
 			&x.OptionIndex,
 			x.CreatedAt,
 			x.LastUpdatedAt,
@@ -495,7 +494,6 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 			exampleInput.OptionIndex,
 			exampleInput.MinimumQuantity,
 			exampleInput.MaximumQuantity,
-			exampleInput.QuantityScaleFactor,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -546,7 +544,6 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 			exampleInput.OptionIndex,
 			exampleInput.MinimumQuantity,
 			exampleInput.MaximumQuantity,
-			exampleInput.QuantityScaleFactor,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -588,7 +585,6 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 			exampleRecipeStepInstrument.OptionIndex,
 			exampleRecipeStepInstrument.MinimumQuantity,
 			exampleRecipeStepInstrument.MaximumQuantity,
-			exampleRecipeStepInstrument.QuantityScaleFactor,
 			exampleRecipeStepInstrument.BelongsToRecipeStep,
 			exampleRecipeStepInstrument.ID,
 		}
@@ -629,7 +625,6 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 			exampleRecipeStepInstrument.OptionIndex,
 			exampleRecipeStepInstrument.MinimumQuantity,
 			exampleRecipeStepInstrument.MaximumQuantity,
-			exampleRecipeStepInstrument.QuantityScaleFactor,
 			exampleRecipeStepInstrument.BelongsToRecipeStep,
 			exampleRecipeStepInstrument.ID,
 		}

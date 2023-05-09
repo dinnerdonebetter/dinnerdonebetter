@@ -44,7 +44,6 @@ var (
 		"recipe_step_instruments.optional",
 		"recipe_step_instruments.minimum_quantity",
 		"recipe_step_instruments.maximum_quantity",
-		"recipe_step_instruments.quantity_scale_factor",
 		"recipe_step_instruments.option_index",
 		"recipe_step_instruments.created_at",
 		"recipe_step_instruments.last_updated_at",
@@ -90,7 +89,6 @@ func (q *Querier) scanRecipeStepInstrument(ctx context.Context, scan database.Sc
 		&x.Optional,
 		&x.MinimumQuantity,
 		&x.MaximumQuantity,
-		&x.QuantityScaleFactor,
 		&x.OptionIndex,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -339,7 +337,6 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 		input.OptionIndex,
 		input.MinimumQuantity,
 		input.MaximumQuantity,
-		input.QuantityScaleFactor,
 		input.BelongsToRecipeStep,
 	}
 
@@ -360,7 +357,6 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 		OptionIndex:         input.OptionIndex,
 		MinimumQuantity:     input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
-		QuantityScaleFactor: input.QuantityScaleFactor,
 		CreatedAt:           q.currentTime(),
 	}
 
@@ -409,7 +405,6 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 		updated.OptionIndex,
 		updated.MinimumQuantity,
 		updated.MaximumQuantity,
-		updated.QuantityScaleFactor,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

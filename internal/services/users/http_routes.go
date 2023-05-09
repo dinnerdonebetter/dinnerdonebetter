@@ -251,8 +251,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		EmailVerificationToken: emailVerificationToken,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	if err = s.featureFlagManager.Identify(ctx, user); err != nil {
+		observability.AcknowledgeError(err, logger, span, "identifying user in feature flag manager")
 	}
 
 	// UserCreationResponse is a struct we can use to notify the user of their two factor secret, but ideally just this once and then never again.

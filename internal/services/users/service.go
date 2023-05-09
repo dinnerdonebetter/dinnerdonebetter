@@ -8,6 +8,7 @@ import (
 
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/featureflags"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/objectstorage"
 	"github.com/prixfixeco/backend/internal/observability/logging"
@@ -51,6 +52,7 @@ type (
 		authSettings                       *authservice.Config
 		sessionContextDataFetcher          func(*http.Request) (*types.SessionContextData, error)
 		cfg                                *Config
+		featureFlagManager                 featureflags.FeatureFlagManager
 	}
 )
 
@@ -75,6 +77,7 @@ func ProvideUsersService(
 	publisherProvider messagequeue.PublisherProvider,
 	secretGenerator random.Generator,
 	passwordResetTokenDataManager types.PasswordResetTokenDataManager,
+	featureFlagManager featureflags.FeatureFlagManager,
 ) (types.UserDataService, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
@@ -108,6 +111,7 @@ func ProvideUsersService(
 		uploadManager:                      uploadManager,
 		dataChangesPublisher:               dataChangesPublisher,
 		passwordResetTokenDataManager:      passwordResetTokenDataManager,
+		featureFlagManager:                 featureFlagManager,
 	}
 
 	return s, nil
