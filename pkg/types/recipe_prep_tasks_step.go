@@ -5,9 +5,6 @@ import (
 )
 
 const (
-	// RecipePrepTaskStepDataType indicates an event is related to a recipe prep task step.
-	RecipePrepTaskStepDataType dataType = "recipe_prep_task_step"
-
 	// RecipePrepTaskStepCreatedCustomerEventType indicates a recipe prep task step was created.
 	RecipePrepTaskStepCreatedCustomerEventType CustomerEventType = "recipe_prep_task_step_created"
 	// RecipePrepTaskStepUpdatedCustomerEventType indicates a recipe prep task step was updated.

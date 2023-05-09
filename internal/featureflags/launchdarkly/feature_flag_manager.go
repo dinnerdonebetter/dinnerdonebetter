@@ -10,6 +10,7 @@ import (
 	"github.com/prixfixeco/backend/internal/featureflags"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/pkg/types"
 
 	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	ld "github.com/launchdarkly/go-server-sdk/v6"
@@ -30,6 +31,7 @@ type (
 
 	launchDarklyClient interface {
 		BoolVariation(key string, context ldcontext.Context, defaultVal bool) (bool, error)
+		Identify(context ldcontext.Context) error
 	}
 
 	// featureFlagManager implements the feature flag interface.
@@ -90,4 +92,19 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	defer span.End()
 
 	return f.launchDarklyClient.BoolVariation(feature, ldcontext.New(userID), false)
+}
+
+// Identify identifies a user in LaunchDarkly.
+func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) error {
+	_, span := tracing.StartSpan(ctx)
+	defer span.End()
+
+	return f.launchDarklyClient.Identify(
+		ldcontext.NewBuilderFromContext(ldcontext.New(user.ID)).
+			Name(user.Username).
+			SetString("email", user.EmailAddress).
+			SetString("first_name", user.FirstName).
+			SetString("last_name", user.LastName).
+			Build(),
+	)
 }

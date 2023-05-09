@@ -51,6 +51,7 @@ func buildMockRowsFromRecipeStepVessels(includeCounts bool, filteredCount uint64
 			&x.VesselPreposition,
 			&x.MinimumQuantity,
 			&x.MaximumQuantity,
+			&x.QuantityScaleFactor,
 			&x.UnavailableAfterStep,
 			&x.CreatedAt,
 			&x.LastUpdatedAt,
@@ -492,6 +493,7 @@ func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 			exampleInput.VesselPreposition,
 			exampleInput.MinimumQuantity,
 			exampleInput.MaximumQuantity,
+			exampleInput.QuantityScaleFactor,
 			exampleInput.UnavailableAfterStep,
 		}
 
@@ -541,6 +543,7 @@ func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 			exampleInput.VesselPreposition,
 			exampleInput.MinimumQuantity,
 			exampleInput.MaximumQuantity,
+			exampleInput.QuantityScaleFactor,
 			exampleInput.UnavailableAfterStep,
 		}
 
@@ -581,6 +584,7 @@ func TestQuerier_UpdateRecipeStepVessel(T *testing.T) {
 			exampleRecipeStepVessel.VesselPreposition,
 			exampleRecipeStepVessel.MinimumQuantity,
 			exampleRecipeStepVessel.MaximumQuantity,
+			exampleRecipeStepVessel.QuantityScaleFactor,
 			exampleRecipeStepVessel.UnavailableAfterStep,
 			exampleRecipeStepVessel.BelongsToRecipeStep,
 			exampleRecipeStepVessel.ID,
@@ -621,6 +625,7 @@ func TestQuerier_UpdateRecipeStepVessel(T *testing.T) {
 			exampleRecipeStepVessel.VesselPreposition,
 			exampleRecipeStepVessel.MinimumQuantity,
 			exampleRecipeStepVessel.MaximumQuantity,
+			exampleRecipeStepVessel.QuantityScaleFactor,
 			exampleRecipeStepVessel.UnavailableAfterStep,
 			exampleRecipeStepVessel.BelongsToRecipeStep,
 			exampleRecipeStepVessel.ID,

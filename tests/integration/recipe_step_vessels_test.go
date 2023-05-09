@@ -31,6 +31,7 @@ func checkRecipeStepVesselEquality(t *testing.T, expected, actual *types.RecipeS
 	assert.Equal(t, expected.VesselPreposition, actual.VesselPreposition, "expected VesselPreposition for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.VesselPreposition, actual.VesselPreposition)
 	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)
 	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
+	assert.Equal(t, expected.QuantityScaleFactor, actual.QuantityScaleFactor, "expected QuantityScaleFactor for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.QuantityScaleFactor, actual.QuantityScaleFactor)
 	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected UnavailableAfterStep for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.UnavailableAfterStep, actual.UnavailableAfterStep)
 
 	assert.NotZero(t, actual.CreatedAt)

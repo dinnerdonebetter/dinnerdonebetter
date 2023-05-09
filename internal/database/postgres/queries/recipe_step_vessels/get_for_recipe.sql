@@ -21,6 +21,7 @@ SELECT
     recipe_step_vessels.vessel_predicate,
     recipe_step_vessels.minimum_quantity,
     recipe_step_vessels.maximum_quantity,
+    recipe_step_vessels.quantity_scale_factor,
     recipe_step_vessels.unavailable_after_step,
     recipe_step_vessels.created_at,
     recipe_step_vessels.last_updated_at,

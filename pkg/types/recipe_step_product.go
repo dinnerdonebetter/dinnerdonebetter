@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// RecipeStepProductDataType indicates an event is related to a recipe step product.
-	RecipeStepProductDataType dataType = "recipe_step_product"
-
 	// RecipeStepProductIngredientType represents one of the valid recipe step product type values.
 	RecipeStepProductIngredientType = "ingredient"
 	// RecipeStepProductInstrumentType represents one of the valid recipe step product type values.
@@ -39,7 +36,7 @@ type (
 	RecipeStepProduct struct {
 		_                                  struct{}
 		CreatedAt                          time.Time             `json:"createdAt"`
-		ContainedInVesselIndex             *uint16               `json:"containedInVesselIndex"`
+		MaximumStorageTemperatureInCelsius *float32              `json:"maximumStorageTemperatureInCelsius"`
 		MaximumStorageDurationInSeconds    *uint32               `json:"maximumStorageDurationInSeconds"`
 		MinimumStorageTemperatureInCelsius *float32              `json:"minimumStorageTemperatureInCelsius"`
 		ArchivedAt                         *time.Time            `json:"archivedAt"`
@@ -47,13 +44,14 @@ type (
 		MinimumQuantity                    *float32              `json:"minimumQuantity"`
 		MeasurementUnit                    *ValidMeasurementUnit `json:"measurementUnit"`
 		MaximumQuantity                    *float32              `json:"maximumQuantity"`
-		MaximumStorageTemperatureInCelsius *float32              `json:"maximumStorageTemperatureInCelsius"`
+		ContainedInVesselIndex             *uint16               `json:"containedInVesselIndex"`
 		Name                               string                `json:"name"`
 		BelongsToRecipeStep                string                `json:"belongsToRecipeStep"`
 		Type                               string                `json:"type"`
 		ID                                 string                `json:"id"`
 		StorageInstructions                string                `json:"storageInstructions"`
 		QuantityNotes                      string                `json:"quantityNotes"`
+		QuantityScaleFactor                float32               `json:"quantityScaleFactor"`
 		Index                              uint16                `json:"index"`
 		IsWaste                            bool                  `json:"isWaste"`
 		IsLiquid                           bool                  `json:"isLiquid"`
@@ -74,6 +72,7 @@ type (
 		Name                               string   `json:"name"`
 		StorageInstructions                string   `json:"storageInstructions"`
 		Type                               string   `json:"type"`
+		QuantityScaleFactor                float32  `json:"quantityScaleFactor"`
 		Index                              uint16   `json:"index"`
 		Compostable                        bool     `json:"compostable"`
 		IsLiquid                           bool     `json:"isLiquid"`
@@ -96,6 +95,7 @@ type (
 		QuantityNotes                      string
 		ID                                 string
 		Type                               string
+		QuantityScaleFactor                float32
 		Index                              uint16
 		Compostable                        bool
 		IsLiquid                           bool
@@ -114,6 +114,7 @@ type (
 		MinimumQuantity                    *float32 `json:"minimumQuantity,omitempty"`
 		MaximumQuantity                    *float32 `json:"maximumQuantity,omitempty"`
 		Compostable                        *bool    `json:"compostable,omitempty"`
+		QuantityScaleFactor                *float32 `json:"quantityScaleFactor"`
 		MaximumStorageDurationInSeconds    *uint32  `json:"maximumStorageDurationInSeconds,omitempty"`
 		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius,omitempty"`
 		MaximumStorageTemperatureInCelsius *float32 `json:"maximumStorageTemperatureInCelsius,omitempty"`
@@ -205,6 +206,10 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 	if input.ContainedInVesselIndex != nil && x.ContainedInVesselIndex != nil && *input.ContainedInVesselIndex != *x.ContainedInVesselIndex {
 		x.ContainedInVesselIndex = input.ContainedInVesselIndex
 	}
+
+	if input.QuantityScaleFactor != nil && x.QuantityScaleFactor != 0 && *input.QuantityScaleFactor != x.QuantityScaleFactor {
+		x.QuantityScaleFactor = *input.QuantityScaleFactor
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepProductCreationRequestInput)(nil)
@@ -215,6 +220,7 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
@@ -229,6 +235,7 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
@@ -243,6 +250,7 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantity, validation.Required),

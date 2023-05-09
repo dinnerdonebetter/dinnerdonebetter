@@ -405,6 +405,11 @@ var (
 			Description: "optional recipe prep tasks",
 			Script:      fetchMigration("00078_optional_tasks"),
 		},
+		{
+			Version:     79,
+			Description: "last_indexed_at fields",
+			Script:      fetchMigration("00079_last_indexed_fields"),
+		},
 	}
 )
 

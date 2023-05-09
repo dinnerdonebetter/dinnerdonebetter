@@ -23,6 +23,7 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 			MinimumQuantity:                    pointers.Pointer(fake.Float32()),
 			QuantityNotes:                      fake.LoremIpsumSentence(exampleQuantity),
 			Compostable:                        fake.Bool(),
+			QuantityScaleFactor:                1.0,
 			MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
 			MinimumStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
 			MaximumStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
@@ -56,6 +57,7 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 			MaximumQuantity:                    pointers.Pointer(fake.Float32()),
 			QuantityNotes:                      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Compostable:                        pointers.Pointer(fake.Bool()),
+			QuantityScaleFactor:                pointers.Pointer(float32(1.0)),
 			MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
 			MinimumStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
 			MaximumStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
@@ -68,7 +70,9 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 	T.Run("with empty strings", func(t *testing.T) {
 		t.Parallel()
 
-		x := &RecipeStepProductUpdateRequestInput{}
+		x := &RecipeStepProductUpdateRequestInput{
+			QuantityScaleFactor: pointers.Pointer(float32(1.0)),
+		}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)

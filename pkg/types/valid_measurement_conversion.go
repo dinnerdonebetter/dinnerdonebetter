@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// ValidMeasurementConversionDataType indicates an event is related to a valid measurement conversion.
-	ValidMeasurementConversionDataType dataType = "valid_measurement_conversion"
-
 	// ValidMeasurementConversionCreatedCustomerEventType indicates a valid measurement conversion was created.
 	ValidMeasurementConversionCreatedCustomerEventType CustomerEventType = "valid_measurement_conversion_created"
 	// ValidMeasurementConversionUpdatedCustomerEventType indicates a valid measurement conversion was updated.

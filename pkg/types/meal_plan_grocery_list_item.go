@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// MealPlanGroceryListItemDataType indicates an event is related to a meal plan grocery list item.
-	MealPlanGroceryListItemDataType dataType = "meal_plan_grocery_list_item"
-
 	// MealPlanGroceryListItemStatusUnknown represents the database-side enum member for grocery list item status.
 	MealPlanGroceryListItemStatusUnknown = "unknown"
 	// MealPlanGroceryListItemStatusAlreadyOwned represents the database-side enum member for grocery list item status.

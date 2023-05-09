@@ -26,6 +26,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		Compostable:                        fake.Bool(),
 		IsLiquid:                           fake.Bool(),
 		IsWaste:                            fake.Bool(),
+		QuantityScaleFactor:                float32(BuildFakeNumber()),
 		MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
 		MinimumStorageTemperatureInCelsius: pointers.Pointer(float32(storageTemp)),
 		MaximumStorageTemperatureInCelsius: pointers.Pointer(float32(storageTemp + 1)),

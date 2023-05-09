@@ -23,6 +23,7 @@ SELECT
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at,
+	recipe_steps.time_scale_factor,
 	recipe_steps.minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius,

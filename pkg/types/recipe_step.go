@@ -13,10 +13,6 @@ import (
 
 const (
 	maxIngredientsPerStep = 100
-	maxProductsPerStep    = 100
-
-	// RecipeStepDataType indicates an event is related to a recipe step.
-	RecipeStepDataType dataType = "recipe_step"
 
 	// RecipeStepCreatedCustomerEventType indicates a recipe step was created.
 	RecipeStepCreatedCustomerEventType CustomerEventType = "recipe_step_created"
@@ -35,8 +31,7 @@ func init() {
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		_ struct{}
-
+		_                             struct{}
 		CreatedAt                     time.Time                        `json:"createdAt"`
 		MinimumEstimatedTimeInSeconds *uint32                          `json:"minimumEstimatedTimeInSeconds"`
 		ArchivedAt                    *time.Time                       `json:"archivedAt"`
@@ -44,18 +39,19 @@ type (
 		MinimumTemperatureInCelsius   *float32                         `json:"minimumTemperatureInCelsius"`
 		MaximumTemperatureInCelsius   *float32                         `json:"maximumTemperatureInCelsius"`
 		MaximumEstimatedTimeInSeconds *uint32                          `json:"maximumEstimatedTimeInSeconds"`
-		ExplicitInstructions          string                           `json:"explicitInstructions"`
-		Notes                         string                           `json:"notes"`
-		ID                            string                           `json:"id"`
 		BelongsToRecipe               string                           `json:"belongsToRecipe"`
 		ConditionExpression           string                           `json:"conditionExpression"`
-		Products                      []*RecipeStepProduct             `json:"products"`
+		ID                            string                           `json:"id"`
+		Notes                         string                           `json:"notes"`
+		ExplicitInstructions          string                           `json:"explicitInstructions"`
 		Media                         []*RecipeMedia                   `json:"media"`
+		Products                      []*RecipeStepProduct             `json:"products"`
 		Instruments                   []*RecipeStepInstrument          `json:"instruments"`
 		Vessels                       []*RecipeStepVessel              `json:"vessels"`
 		CompletionConditions          []*RecipeStepCompletionCondition `json:"completionConditions"`
 		Ingredients                   []*RecipeStepIngredient          `json:"ingredients"`
 		Preparation                   ValidPreparation                 `json:"preparation"`
+		TimeScaleFactor               float32                          `json:"timeScaleFactor"`
 		Index                         uint32                           `json:"index"`
 		Optional                      bool                             `json:"optional"`
 		StartTimerAutomatically       bool                             `json:"startTimerAutomatically"`
@@ -66,21 +62,21 @@ type (
 
 	// RecipeStepCreationRequestInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationRequestInput struct {
-		_ struct{}
-
+		_                             struct{}
 		MaximumTemperatureInCelsius   *float32                                             `json:"maximumTemperatureInCelsius"`
 		MinimumTemperatureInCelsius   *float32                                             `json:"minimumTemperatureInCelsius"`
 		MaximumEstimatedTimeInSeconds *uint32                                              `json:"maximumEstimatedTimeInSeconds"`
 		MinimumEstimatedTimeInSeconds *uint32                                              `json:"minimumEstimatedTimeInSeconds"`
-		ConditionExpression           string                                               `json:"conditionExpression"`
-		Notes                         string                                               `json:"notes"`
 		PreparationID                 string                                               `json:"preparationID"`
+		Notes                         string                                               `json:"notes"`
+		ConditionExpression           string                                               `json:"conditionExpression"`
 		ExplicitInstructions          string                                               `json:"explicitInstructions"`
 		Instruments                   []*RecipeStepInstrumentCreationRequestInput          `json:"instruments"`
 		Vessels                       []*RecipeStepVesselCreationRequestInput              `json:"vessels"`
 		Products                      []*RecipeStepProductCreationRequestInput             `json:"products"`
 		Ingredients                   []*RecipeStepIngredientCreationRequestInput          `json:"ingredients"`
 		CompletionConditions          []*RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions"`
+		TimeScaleFactor               float32                                              `json:"timeScaleFactor"`
 		Index                         uint32                                               `json:"index"`
 		Optional                      bool                                                 `json:"optional"`
 		StartTimerAutomatically       bool                                                 `json:"startTimerAutomatically"`
@@ -88,23 +84,23 @@ type (
 
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
-		_ struct{}
-
+		_                             struct{}
 		MinimumEstimatedTimeInSeconds *uint32
 		MinimumTemperatureInCelsius   *float32
 		MaximumEstimatedTimeInSeconds *uint32
 		MaximumTemperatureInCelsius   *float32
-		ConditionExpression           string
+		BelongsToRecipe               string
 		PreparationID                 string
 		ID                            string
 		Notes                         string
 		ExplicitInstructions          string
-		BelongsToRecipe               string
+		ConditionExpression           string
 		Ingredients                   []*RecipeStepIngredientDatabaseCreationInput
 		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput
 		Vessels                       []*RecipeStepVesselDatabaseCreationInput
 		Products                      []*RecipeStepProductDatabaseCreationInput
 		CompletionConditions          []*RecipeStepCompletionConditionDatabaseCreationInput
+		TimeScaleFactor               float32
 		Index                         uint32
 		Optional                      bool
 		StartTimerAutomatically       bool
@@ -118,6 +114,7 @@ type (
 		Notes                         *string           `json:"notes,omitempty"`
 		Preparation                   *ValidPreparation `json:"preparation,omitempty"`
 		Index                         *uint32           `json:"index,omitempty"`
+		TimeScaleFactor               *float32          `json:"timeScaleFactor"`
 		MinimumTemperatureInCelsius   *float32          `json:"minimumTemperatureInCelsius,omitempty"`
 		MaximumEstimatedTimeInSeconds *uint32           `json:"maximumEstimatedTimeInSeconds,omitempty"`
 		Optional                      *bool             `json:"optional,omitempty"`
@@ -207,6 +204,10 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 	if input.StartTimerAutomatically != nil && *input.StartTimerAutomatically != x.StartTimerAutomatically {
 		x.StartTimerAutomatically = *input.StartTimerAutomatically
 	}
+
+	if input.TimeScaleFactor != nil && *input.TimeScaleFactor != x.TimeScaleFactor {
+		x.TimeScaleFactor = *input.TimeScaleFactor
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
@@ -225,6 +226,7 @@ func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context
 		x,
 		validation.Field(&x.PreparationID, validation.Required),
 		validation.Field(&x.Products, validation.Required),
+		validation.Field(&x.TimeScaleFactor, validation.Min(0.01)),
 	)
 
 	if validationErr != nil {

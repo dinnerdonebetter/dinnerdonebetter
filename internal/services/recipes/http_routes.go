@@ -500,6 +500,18 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 			return
 		}
 
+		dcm := &types.DataChangeMessage{
+			EventType:     types.RecipeMediaCreatedCustomerEventType,
+			RecipeID:      recipeID,
+			RecipeMediaID: input.ID,
+			HouseholdID:   sessionCtxData.ActiveHouseholdID,
+			UserID:        sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
+
 		logger.Info("image info saved in database")
 	}
 

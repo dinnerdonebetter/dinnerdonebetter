@@ -11,18 +11,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 )
 
-const (
-	// ServiceSettingDataType indicates an event is related to a service setting.
-	ServiceSettingDataType dataType = "service_setting"
-
-	// ServiceSettingCreatedCustomerEventType indicates a service setting was created.
-	ServiceSettingCreatedCustomerEventType CustomerEventType = "service_setting_created"
-	// ServiceSettingUpdatedCustomerEventType indicates a service setting was updated.
-	ServiceSettingUpdatedCustomerEventType CustomerEventType = "service_setting_updated"
-	// ServiceSettingArchivedCustomerEventType indicates a service setting was archived.
-	ServiceSettingArchivedCustomerEventType CustomerEventType = "service_setting_archived"
-)
-
 func init() {
 	gob.Register(new(ServiceSetting))
 	gob.Register(new(ServiceSettingCreationRequestInput))

@@ -18,6 +18,7 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 		OptionIndex:         &input.OptionIndex,
 		MinimumQuantity:     &input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
+		QuantityScaleFactor: &input.QuantityScaleFactor,
 	}
 
 	return x
@@ -38,49 +39,52 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 		MaximumQuantity:                 input.MaximumQuantity,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
+		QuantityScaleFactor:             input.QuantityScaleFactor,
 	}
 
 	return x
 }
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput builds a RecipeStepInstrumentCreationRequestInput from a RecipeStepInstrument.
-func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentCreationRequestInput {
+func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input *types.RecipeStepInstrument) *types.RecipeStepInstrumentCreationRequestInput {
 	var instrumentID *string
-	if recipeStepInstrument.Instrument != nil {
-		instrumentID = &recipeStepInstrument.Instrument.ID
+	if input.Instrument != nil {
+		instrumentID = &input.Instrument.ID
 	}
 
 	return &types.RecipeStepInstrumentCreationRequestInput{
 		InstrumentID:        instrumentID,
-		Name:                recipeStepInstrument.Name,
-		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
-		Notes:               recipeStepInstrument.Notes,
-		PreferenceRank:      recipeStepInstrument.PreferenceRank,
-		Optional:            recipeStepInstrument.Optional,
-		OptionIndex:         recipeStepInstrument.OptionIndex,
-		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,
-		MaximumQuantity:     recipeStepInstrument.MaximumQuantity,
+		Name:                input.Name,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Notes:               input.Notes,
+		PreferenceRank:      input.PreferenceRank,
+		Optional:            input.Optional,
+		OptionIndex:         input.OptionIndex,
+		MinimumQuantity:     input.MinimumQuantity,
+		MaximumQuantity:     input.MaximumQuantity,
+		QuantityScaleFactor: input.QuantityScaleFactor,
 	}
 }
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput builds a RecipeStepInstrumentDatabaseCreationInput from a RecipeStepInstrument.
-func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentDatabaseCreationInput {
+func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(input *types.RecipeStepInstrument) *types.RecipeStepInstrumentDatabaseCreationInput {
 	var instrumentID *string
-	if recipeStepInstrument.Instrument != nil {
-		instrumentID = &recipeStepInstrument.Instrument.ID
+	if input.Instrument != nil {
+		instrumentID = &input.Instrument.ID
 	}
 
 	return &types.RecipeStepInstrumentDatabaseCreationInput{
-		ID:                  recipeStepInstrument.ID,
+		ID:                  input.ID,
 		InstrumentID:        instrumentID,
-		Name:                recipeStepInstrument.Name,
-		RecipeStepProductID: recipeStepInstrument.RecipeStepProductID,
-		Notes:               recipeStepInstrument.Notes,
-		PreferenceRank:      recipeStepInstrument.PreferenceRank,
-		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
-		Optional:            recipeStepInstrument.Optional,
-		OptionIndex:         recipeStepInstrument.OptionIndex,
-		MinimumQuantity:     recipeStepInstrument.MinimumQuantity,
-		MaximumQuantity:     recipeStepInstrument.MaximumQuantity,
+		Name:                input.Name,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Notes:               input.Notes,
+		PreferenceRank:      input.PreferenceRank,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		Optional:            input.Optional,
+		OptionIndex:         input.OptionIndex,
+		MinimumQuantity:     input.MinimumQuantity,
+		MaximumQuantity:     input.MaximumQuantity,
+		QuantityScaleFactor: input.QuantityScaleFactor,
 	}
 }

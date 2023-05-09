@@ -10,15 +10,8 @@ import (
 )
 
 const (
-	// RecipeMediaDataType indicates an event is related to recipe media.
-	RecipeMediaDataType dataType = "recipe_media"
-
 	// RecipeMediaCreatedCustomerEventType indicates recipe media was created.
 	RecipeMediaCreatedCustomerEventType CustomerEventType = "recipe_media_created"
-	// RecipeMediaUpdatedCustomerEventType indicates recipe media was updated.
-	RecipeMediaUpdatedCustomerEventType CustomerEventType = "recipe_media_updated"
-	// RecipeMediaArchivedCustomerEventType indicates recipe media was archived.
-	RecipeMediaArchivedCustomerEventType CustomerEventType = "recipe_media_archived"
 )
 
 func init() {

@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// ValidPreparationDataType indicates an event is related to a valid preparation.
-	ValidPreparationDataType dataType = "valid_preparation"
-
 	// ValidPreparationCreatedCustomerEventType indicates a valid preparation was created.
 	ValidPreparationCreatedCustomerEventType CustomerEventType = "valid_preparation_created"
 	// ValidPreparationUpdatedCustomerEventType indicates a valid preparation was updated.

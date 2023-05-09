@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	// Providers represents what we provide to dependency injectors.
-	Providers = wire.NewSet(
+	// DBProviders represents what we provide to dependency injectors.
+	DBProviders = wire.NewSet(
 		ProvideMealPlanTaskDataManager,
 		ProvideHouseholdDataManager,
 		ProvideHouseholdInvitationDataManager,

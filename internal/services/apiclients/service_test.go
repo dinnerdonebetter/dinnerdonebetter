@@ -50,11 +50,11 @@ func TestProvideAPIClientsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
-			dataChangesTopicName: t.Name(),
+			DataChangesTopicName: t.Name(),
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.dataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideAPIClientsService(
 			logging.NewNoopLogger(),

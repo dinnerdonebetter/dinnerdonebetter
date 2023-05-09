@@ -23,6 +23,7 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		OptionIndex:         uint16(fake.Uint8()),
 		MinimumQuantity:     fake.Uint32(),
 		MaximumQuantity:     pointers.Pointer(fake.Uint32()),
+		QuantityScaleFactor: float32(BuildFakeNumber()),
 	}
 }
 

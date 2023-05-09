@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	// Providers represents this package's offering to the dependency injector.
-	Providers = wire.NewSet(
+	// ServiceConfigProviders represents this package's offering to the dependency injector.
+	ServiceConfigProviders = wire.NewSet(
 		wire.FieldsOf(
 			new(*InstanceConfig),
 			"Observability",

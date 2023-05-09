@@ -11,9 +11,6 @@ import (
 )
 
 const (
-	// MealPlanEventDataType indicates an event is related to a meal plan event.
-	MealPlanEventDataType dataType = "meal_plan_event"
-
 	// MealPlanEventCreatedCustomerEventType indicates a meal plan was created.
 	MealPlanEventCreatedCustomerEventType CustomerEventType = "meal_plan_event_created"
 	// MealPlanEventUpdatedCustomerEventType indicates a meal plan was updated.

@@ -70,11 +70,11 @@ func Build(
 	cfg *config.InstanceConfig,
 ) (*server.HTTPServer, error) {
 	wire.Build(
-		config.Providers,
-		database.Providers,
+		config.ServiceConfigProviders,
+		database.DBProviders,
 		dbconfig.Providers,
-		encoding.Providers,
-		msgconfig.Providers,
+		encoding.EncDecProviders,
+		msgconfig.MessageQueueProviders,
 		server.Providers,
 		images.Providers,
 		chi.Providers,

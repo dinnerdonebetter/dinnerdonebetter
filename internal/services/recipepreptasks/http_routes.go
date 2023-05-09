@@ -84,6 +84,20 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
+	for _, step := range recipePrepTask.TaskSteps {
+		dcm = &types.DataChangeMessage{
+			EventType:          types.RecipePrepTaskStepCreatedCustomerEventType,
+			RecipePrepTask:     recipePrepTask,
+			RecipePrepTaskStep: step,
+			HouseholdID:        sessionCtxData.ActiveHouseholdID,
+			UserID:             sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
+	}
+
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipePrepTask, http.StatusAccepted)
 }
 

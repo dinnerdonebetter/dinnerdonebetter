@@ -12,15 +12,17 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 )
 
-// MealPlanFinalizationWorker finalizes meal plans.
-type MealPlanFinalizationWorker struct {
-	logger                 logging.Logger
-	tracer                 tracing.Tracer
-	encoder                encoding.ClientEncoder
-	dataManager            database.DataManager
-	postUpdatesPublisher   messagequeue.Publisher
-	analyticsEventReporter analytics.EventReporter
-}
+type (
+	// MealPlanFinalizationWorker finalizes meal plans.
+	MealPlanFinalizationWorker struct {
+		logger                 logging.Logger
+		tracer                 tracing.Tracer
+		encoder                encoding.ClientEncoder
+		dataManager            database.DataManager
+		postUpdatesPublisher   messagequeue.Publisher
+		analyticsEventReporter analytics.EventReporter
+	}
+)
 
 // ProvideMealPlanFinalizationWorker provides a MealPlanFinalizationWorker.
 func ProvideMealPlanFinalizationWorker(

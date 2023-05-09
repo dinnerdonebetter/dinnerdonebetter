@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// RecipeStepIngredientDataType indicates an event is related to a recipe step ingredient.
-	RecipeStepIngredientDataType dataType = "recipe_step_ingredient"
-
 	// RecipeStepIngredientCreatedCustomerEventType indicates a recipe step ingredient was created.
 	RecipeStepIngredientCreatedCustomerEventType CustomerEventType = "recipe_step_ingredient_created"
 	// RecipeStepIngredientUpdatedCustomerEventType indicates a recipe step ingredient was updated.
@@ -39,15 +36,15 @@ type (
 		MaximumQuantity        *float32             `json:"maximumQuantity"`
 		VesselIndex            *uint16              `json:"vesselIndex"`
 		ProductPercentageToUse *float32             `json:"productPercentageToUse"`
-		QuantityNotes          string               `json:"quantityNotes"`
 		Name                   string               `json:"name"`
+		QuantityNotes          string               `json:"quantityNotes"`
 		ID                     string               `json:"id"`
 		BelongsToRecipeStep    string               `json:"belongsToRecipeStep"`
 		IngredientNotes        string               `json:"ingredientNotes"`
 		MeasurementUnit        ValidMeasurementUnit `json:"measurementUnit"`
+		QuantityScaleFactor    float32              `json:"quantityScaleFactor"`
 		MinimumQuantity        float32              `json:"minimumQuantity"`
 		OptionIndex            uint16               `json:"optionIndex"`
-		RequiresDefrost        bool                 `json:"requiresDefrost"`
 		Optional               bool                 `json:"optional"`
 		ToTaste                bool                 `json:"toTaste"`
 	}
@@ -61,13 +58,13 @@ type (
 		MaximumQuantity                 *float32 `json:"maximumQuantity"`
 		VesselIndex                     *uint16  `json:"vesselIndex"`
 		ProductPercentageToUse          *float32 `json:"productPercentageToUse"`
+		QuantityNotes                   string   `json:"quantityNotes"`
 		IngredientNotes                 string   `json:"ingredientNotes"`
 		MeasurementUnitID               string   `json:"measurementUnitID"`
 		Name                            string   `json:"name"`
-		QuantityNotes                   string   `json:"quantityNotes"`
+		QuantityScaleFactor             float32  `json:"quantityScaleFactor"`
 		MinimumQuantity                 float32  `json:"minimumQuantity"`
 		OptionIndex                     uint16   `json:"optionIndex"`
-		RequiresDefrost                 bool     `json:"requiresDefrost"`
 		Optional                        bool     `json:"optional"`
 		ToTaste                         bool     `json:"toTaste"`
 	}
@@ -88,10 +85,10 @@ type (
 		BelongsToRecipeStep             string
 		Name                            string
 		IngredientNotes                 string
+		QuantityScaleFactor             float32
 		MinimumQuantity                 float32
 		OptionIndex                     uint16
 		Optional                        bool
-		RequiresDefrost                 bool
 		ToTaste                         bool
 	}
 
@@ -106,11 +103,11 @@ type (
 		MeasurementUnitID      *string  `json:"measurementUnitID,omitempty"`
 		QuantityNotes          *string  `json:"quantityNotes,omitempty"`
 		IngredientNotes        *string  `json:"ingredientNotes,omitempty"`
+		QuantityScaleFactor    *float32 `json:"quantityScaleFactor"`
 		BelongsToRecipeStep    *string  `json:"belongsToRecipeStep,omitempty"`
 		MinimumQuantity        *float32 `json:"minimumQuantity,omitempty"`
 		MaximumQuantity        *float32 `json:"maximumQuantity,omitempty"`
 		OptionIndex            *uint16  `json:"optionIndex,omitempty"`
-		RequiresDefrost        *bool    `json:"requiresDefrost,omitempty"`
 		VesselIndex            *uint16  `json:"vesselIndex,omitempty"`
 		ToTaste                *bool    `json:"toTaste,omitempty"`
 		ProductPercentageToUse *float32 `json:"productPercentageToUse,omitempty"`
@@ -178,10 +175,6 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.OptionIndex = *input.OptionIndex
 	}
 
-	if input.RequiresDefrost != nil && *input.RequiresDefrost != x.RequiresDefrost {
-		x.RequiresDefrost = *input.RequiresDefrost
-	}
-
 	if input.VesselIndex != nil && x.VesselIndex != nil && *input.VesselIndex != *x.VesselIndex {
 		x.VesselIndex = input.VesselIndex
 	}
@@ -193,6 +186,10 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 	if input.ProductPercentageToUse != nil && x.ProductPercentageToUse != nil && *input.ProductPercentageToUse != *x.ProductPercentageToUse {
 		x.ProductPercentageToUse = input.ProductPercentageToUse
 	}
+
+	if input.QuantityScaleFactor != nil && x.QuantityScaleFactor != 0 && *input.QuantityScaleFactor != x.QuantityScaleFactor {
+		x.QuantityScaleFactor = *input.QuantityScaleFactor
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepIngredientCreationRequestInput)(nil)
@@ -202,6 +199,7 @@ func (x *RecipeStepIngredientCreationRequestInput) ValidateWithContext(ctx conte
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
+		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
@@ -215,6 +213,7 @@ func (x *RecipeStepIngredientDatabaseCreationInput) ValidateWithContext(ctx cont
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 	)
@@ -227,6 +226,7 @@ func (x *RecipeStepIngredientUpdateRequestInput) ValidateWithContext(ctx context
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
+		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantity, validation.Required),
 	)

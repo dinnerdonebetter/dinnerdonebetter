@@ -11,9 +11,6 @@ import (
 )
 
 const (
-	// MealPlanDataType indicates an event is related to a meal plan.
-	MealPlanDataType dataType = "meal_plan"
-
 	// MealPlanElectionMethodSchulze is used to denote the Schulze election method.
 	MealPlanElectionMethodSchulze = "schulze"
 	// MealPlanElectionMethodInstantRunoff is used to denote the Instant Runoff election method.

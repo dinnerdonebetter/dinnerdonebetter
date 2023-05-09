@@ -7,6 +7,7 @@ import (
 	"github.com/prixfixeco/backend/internal/authentication"
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/featureflags"
 	"github.com/prixfixeco/backend/internal/messagequeue"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -37,6 +38,7 @@ type (
 		config                     *Config
 		logger                     logging.Logger
 		authenticator              authentication.Authenticator
+		featureFlagManager         featureflags.FeatureFlagManager
 		userDataManager            types.UserDataManager
 		apiClientManager           types.APIClientDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
@@ -65,6 +67,7 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	secretGenerator random.Generator,
 	emailer email.Emailer,
+	featureFlagManager featureflags.FeatureFlagManager,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
@@ -91,6 +94,7 @@ func ProvideService(
 		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
 		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		dataChangesPublisher:       dataChangesPublisher,
+		featureFlagManager:         featureFlagManager,
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {

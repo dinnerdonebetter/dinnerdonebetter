@@ -11,9 +11,6 @@ import (
 )
 
 const (
-	// UserDataType indicates an event is user membership-related.
-	UserDataType dataType = "user"
-
 	// UserSignedUpCustomerEventType indicates a user signed up.
 	UserSignedUpCustomerEventType CustomerEventType = "user_signed_up"
 

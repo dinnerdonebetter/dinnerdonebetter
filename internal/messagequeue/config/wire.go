@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	// Providers are what we provide to dependency injection.
-	Providers = wire.NewSet(
+	// MessageQueueProviders are what we provide to dependency injection.
+	MessageQueueProviders = wire.NewSet(
 		ProvideConsumerProvider,
 		ProvidePublisherProvider,
 	)
