@@ -738,6 +738,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				instrument.OptionIndex,
 				instrument.MinimumQuantity,
 				instrument.MaximumQuantity,
+				instrument.QuantityScaleFactor,
 				instrument.BelongsToRecipeStep,
 			}
 

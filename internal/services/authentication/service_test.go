@@ -7,6 +7,7 @@ import (
 	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
 	"github.com/prixfixeco/backend/internal/email"
 	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/prixfixeco/backend/internal/featureflags"
 	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -53,6 +54,7 @@ func buildTestService(t *testing.T) *service {
 		pp,
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		&email.MockEmailer{},
+		&featureflags.NoopFeatureFlagManager{},
 	)
 	require.NoError(t, err)
 
@@ -90,6 +92,7 @@ func TestProvideService(T *testing.T) {
 			pp,
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
+			&featureflags.NoopFeatureFlagManager{},
 		)
 
 		assert.NotNil(t, s)
@@ -129,6 +132,7 @@ func TestProvideService(T *testing.T) {
 			pp,
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
+			&featureflags.NoopFeatureFlagManager{},
 		)
 
 		assert.Nil(t, s)

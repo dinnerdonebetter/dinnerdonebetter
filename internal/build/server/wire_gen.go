@@ -110,7 +110,12 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer,
 	if err != nil {
 		return nil, err
 	}
-	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer)
+	config13 := &cfg.FeatureFlags
+	featureFlagManager, err := config7.ProvideFeatureFlagManager(config13, logger, tracerProvider, client)
+	if err != nil {
+		return nil, err
+	}
+	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer, featureFlagManager)
 	if err != nil {
 		return nil, err
 	}
@@ -272,9 +277,9 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer,
 	if err != nil {
 		return nil, err
 	}
-	config13 := &servicesConfig.RecipeStepCompletionConditions
+	config14 := &servicesConfig.RecipeStepCompletionConditions
 	recipeStepCompletionConditionDataManager := database.ProvideRecipeStepCompletionConditionDataManager(dataManager)
-	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config13, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config14, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -301,11 +306,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer,
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, tracerProvider, routingConfig)
 	vendorproxyConfig := &servicesConfig.VendorProxy
-	config14 := &cfg.FeatureFlags
-	featureFlagManager, err := config7.ProvideFeatureFlagManager(config14, logger, tracerProvider, client)
-	if err != nil {
-		return nil, err
-	}
 	config15 := &cfg.Analytics
 	eventReporter, err := config8.ProvideEventReporter(config15, logger, tracerProvider)
 	if err != nil {

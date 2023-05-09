@@ -1079,6 +1079,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					instrument.OptionIndex,
 					instrument.MinimumQuantity,
 					instrument.MaximumQuantity,
+					instrument.QuantityScaleFactor,
 					instrument.BelongsToRecipeStep,
 				}
 

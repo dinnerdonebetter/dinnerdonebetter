@@ -10,4 +10,4 @@ ALTER TABLE recipe_step_products ADD COLUMN "quantity_scale_factor" NUMERIC(10, 
 ALTER TABLE recipe_step_ingredients ADD COLUMN "quantity_scale_factor" NUMERIC(10, 5) NOT NULL DEFAULT 1.0;
 ALTER TABLE recipe_step_ingredients DROP COLUMN IF EXISTS "requires_defrost";
 ALTER TABLE recipe_step_vessels ADD COLUMN "quantity_scale_factor" NUMERIC(10, 5) NOT NULL DEFAULT 1.0;
--- ALTER TABLE recipe_step_instruments ADD COLUMN "quantity_scale_factor" NUMERIC(10, 5) NOT NULL DEFAULT 1.0;
+ALTER TABLE recipe_step_instruments ADD COLUMN "quantity_scale_factor" NUMERIC(10, 5) NOT NULL DEFAULT 1.0;
