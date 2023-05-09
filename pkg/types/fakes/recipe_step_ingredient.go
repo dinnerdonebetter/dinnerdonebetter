@@ -22,6 +22,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		Optional:               fake.Bool(),
 		IngredientNotes:        buildUniqueString(),
 		CreatedAt:              BuildFakeTime(),
+		QuantityScaleFactor:    float32(BuildFakeNumber()),
 		BelongsToRecipeStep:    BuildFakeID(),
 		VesselIndex:            pointers.Pointer(fake.Uint16()),
 		ToTaste:                fake.Bool(),

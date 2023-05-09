@@ -1051,6 +1051,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.MeasurementUnitID,
 					ingredient.MinimumQuantity,
 					ingredient.MaximumQuantity,
+					ingredient.QuantityScaleFactor,
 					ingredient.QuantityNotes,
 					ingredient.RecipeStepProductID,
 					ingredient.IngredientNotes,
