@@ -102,7 +102,6 @@ var fullRecipesColumns = []string{
 	"valid_preparations.created_at",
 	"valid_preparations.last_updated_at",
 	"valid_preparations.archived_at",
-	"recipe_steps.time_scale_factor",
 	"recipe_steps.minimum_estimated_time_in_seconds",
 	"recipe_steps.maximum_estimated_time_in_seconds",
 	"recipe_steps.minimum_temperature_in_celsius",
@@ -163,7 +162,6 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Preparation.CreatedAt,
 			&step.Preparation.LastUpdatedAt,
 			&step.Preparation.ArchivedAt,
-			&step.TimeScaleFactor,
 			&step.MinimumEstimatedTimeInSeconds,
 			&step.MaximumEstimatedTimeInSeconds,
 			&step.MinimumTemperatureInCelsius,
@@ -1025,7 +1023,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				step.ID,
 				step.Index,
 				step.PreparationID,
-				step.TimeScaleFactor,
 				step.MinimumEstimatedTimeInSeconds,
 				step.MaximumEstimatedTimeInSeconds,
 				step.MinimumTemperatureInCelsius,
@@ -1051,7 +1048,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.MeasurementUnitID,
 					ingredient.MinimumQuantity,
 					ingredient.MaximumQuantity,
-					ingredient.QuantityScaleFactor,
 					ingredient.QuantityNotes,
 					ingredient.RecipeStepProductID,
 					ingredient.IngredientNotes,
@@ -1079,7 +1075,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					instrument.OptionIndex,
 					instrument.MinimumQuantity,
 					instrument.MaximumQuantity,
-					instrument.QuantityScaleFactor,
 					instrument.BelongsToRecipeStep,
 				}
 
@@ -1099,7 +1094,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					vessel.VesselPreposition,
 					vessel.MinimumQuantity,
 					vessel.MaximumQuantity,
-					vessel.QuantityScaleFactor,
 					vessel.UnavailableAfterStep,
 				}
 
@@ -1440,7 +1434,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Steps[0].ID,
 			0,
 			exampleInput.Steps[0].PreparationID,
-			exampleInput.Steps[0].TimeScaleFactor,
 			exampleInput.Steps[0].MinimumEstimatedTimeInSeconds,
 			exampleInput.Steps[0].MaximumEstimatedTimeInSeconds,
 			exampleInput.Steps[0].MinimumTemperatureInCelsius,

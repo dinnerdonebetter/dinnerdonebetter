@@ -174,6 +174,10 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
 
+		if err = s.featureFlagManager.Identify(ctx, user); err != nil {
+			observability.AcknowledgeError(err, logger, span, "identifying user in feature flag manager")
+		}
+
 		http.SetCookie(res, cookie)
 
 		statusResponse := &types.UserStatusResponse{

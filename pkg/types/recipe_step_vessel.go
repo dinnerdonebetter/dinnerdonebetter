@@ -39,7 +39,6 @@ type (
 		BelongsToRecipeStep  string           `json:"belongsToRecipeStep"`
 		VesselPreposition    string           `json:"vesselPreposition"`
 		Name                 string           `json:"name"`
-		QuantityScaleFactor  float32          `json:"quantityScaleFactor"`
 		MinimumQuantity      uint32           `json:"minimumQuantity"`
 		UnavailableAfterStep bool             `json:"unavailableAfterStep"`
 	}
@@ -55,7 +54,6 @@ type (
 		Name                            string  `json:"name"`
 		Notes                           string  `json:"notes"`
 		VesselPreposition               string  `json:"vesselPreposition"`
-		QuantityScaleFactor             float32 `json:"quantityScaleFactor"`
 		MinimumQuantity                 uint32  `json:"minimumQuantity"`
 		UnavailableAfterStep            bool    `json:"unavailableAfterStep"`
 	}
@@ -73,7 +71,6 @@ type (
 		BelongsToRecipeStep             string
 		VesselPreposition               string
 		Name                            string
-		QuantityScaleFactor             float32
 		MinimumQuantity                 uint32
 		UnavailableAfterStep            bool
 	}
@@ -82,16 +79,15 @@ type (
 	RecipeStepVesselUpdateRequestInput struct {
 		_ struct{}
 
-		RecipeStepProductID  *string  `json:"recipeStepProductID,omitempty"`
-		Name                 *string  `json:"name,omitempty"`
-		Notes                *string  `json:"notes,omitempty"`
-		BelongsToRecipeStep  *string  `json:"belongsToRecipeStep,omitempty"`
-		InstrumentID         *string  `json:"instrumentID,omitempty"`
-		QuantityScaleFactor  *float32 `json:"quantityScaleFactor"`
-		MinimumQuantity      *uint32  `json:"minimumQuantity,omitempty"`
-		MaximumQuantity      *uint32  `json:"maximumQuantity,omitempty"`
-		VesselPreposition    *string  `json:"vesselPreposition,omitempty"`
-		UnavailableAfterStep *bool    `json:"unavailableAfterStep,omitempty"`
+		RecipeStepProductID  *string `json:"recipeStepProductID,omitempty"`
+		Name                 *string `json:"name,omitempty"`
+		Notes                *string `json:"notes,omitempty"`
+		BelongsToRecipeStep  *string `json:"belongsToRecipeStep,omitempty"`
+		InstrumentID         *string `json:"instrumentID,omitempty"`
+		MinimumQuantity      *uint32 `json:"minimumQuantity,omitempty"`
+		MaximumQuantity      *uint32 `json:"maximumQuantity,omitempty"`
+		VesselPreposition    *string `json:"vesselPreposition,omitempty"`
+		UnavailableAfterStep *bool   `json:"unavailableAfterStep,omitempty"`
 	}
 
 	// RecipeStepVesselDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -159,10 +155,6 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 	if input.InstrumentID != nil && x.Instrument != nil && *input.InstrumentID != x.Instrument.ID {
 		x.Instrument = &ValidInstrument{ID: *input.InstrumentID}
 	}
-
-	if input.QuantityScaleFactor != nil && x.QuantityScaleFactor != 0 && *input.QuantityScaleFactor != x.QuantityScaleFactor {
-		x.QuantityScaleFactor = *input.QuantityScaleFactor
-	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepVesselCreationRequestInput)(nil)
@@ -173,7 +165,6 @@ func (x *RecipeStepVesselCreationRequestInput) ValidateWithContext(ctx context.C
 		ctx,
 		x,
 		validation.Field(&x.MinimumQuantity, validation.Required),
-		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 	)
 }
 
@@ -186,7 +177,6 @@ func (x *RecipeStepVesselDatabaseCreationInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.BelongsToRecipeStep, validation.Required),
-		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }
@@ -199,6 +189,5 @@ func (x *RecipeStepVesselUpdateRequestInput) ValidateWithContext(ctx context.Con
 		ctx,
 		x,
 		validation.Field(&x.BelongsToRecipeStep, validation.Required),
-		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 	)
 }

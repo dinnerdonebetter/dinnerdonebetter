@@ -40,7 +40,6 @@ type (
 		Name                string           `json:"name"`
 		BelongsToRecipeStep string           `json:"belongsToRecipeStep"`
 		ID                  string           `json:"id"`
-		QuantityScaleFactor float32          `json:"quantityScaleFactor"`
 		MinimumQuantity     uint32           `json:"minimumQuantity"`
 		OptionIndex         uint16           `json:"optionIndex"`
 		PreferenceRank      uint8            `json:"preferenceRank"`
@@ -57,7 +56,6 @@ type (
 		MaximumQuantity                 *uint32 `json:"maximumQuantity"`
 		Notes                           string  `json:"notes"`
 		Name                            string  `json:"name"`
-		QuantityScaleFactor             float32 `json:"quantityScaleFactor"`
 		MinimumQuantity                 uint32  `json:"minimumQuantity"`
 		OptionIndex                     uint16  `json:"optionIndex"`
 		Optional                        bool    `json:"optional"`
@@ -76,7 +74,6 @@ type (
 		BelongsToRecipeStep             string
 		ID                              string
 		Notes                           string
-		QuantityScaleFactor             float32
 		MinimumQuantity                 uint32
 		OptionIndex                     uint16
 		Optional                        bool
@@ -87,17 +84,16 @@ type (
 	RecipeStepInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		InstrumentID        *string  `json:"instrumentID,omitempty"`
-		RecipeStepProductID *string  `json:"recipeStepProductID,omitempty"`
-		Notes               *string  `json:"notes,omitempty"`
-		QuantityScaleFactor *float32 `json:"quantityScaleFactor"`
-		PreferenceRank      *uint8   `json:"preferenceRank,omitempty"`
-		BelongsToRecipeStep *string  `json:"belongsToRecipeStep,omitempty"`
-		Name                *string  `json:"name,omitempty"`
-		Optional            *bool    `json:"optional,omitempty"`
-		OptionIndex         *uint16  `json:"optionIndex,omitempty"`
-		MinimumQuantity     *uint32  `json:"minimumQuantity,omitempty"`
-		MaximumQuantity     *uint32  `json:"maximumQuantity,omitempty"`
+		InstrumentID        *string `json:"instrumentID,omitempty"`
+		RecipeStepProductID *string `json:"recipeStepProductID,omitempty"`
+		Notes               *string `json:"notes,omitempty"`
+		PreferenceRank      *uint8  `json:"preferenceRank,omitempty"`
+		BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`
+		Name                *string `json:"name,omitempty"`
+		Optional            *bool   `json:"optional,omitempty"`
+		OptionIndex         *uint16 `json:"optionIndex,omitempty"`
+		MinimumQuantity     *uint32 `json:"minimumQuantity,omitempty"`
+		MaximumQuantity     *uint32 `json:"maximumQuantity,omitempty"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -157,10 +153,6 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 	if input.OptionIndex != nil && *input.OptionIndex != x.OptionIndex {
 		x.OptionIndex = *input.OptionIndex
 	}
-
-	if input.QuantityScaleFactor != nil && *input.QuantityScaleFactor != x.QuantityScaleFactor {
-		x.QuantityScaleFactor = *input.QuantityScaleFactor
-	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepInstrumentCreationRequestInput)(nil)
@@ -198,7 +190,6 @@ func (x *RecipeStepInstrumentDatabaseCreationInput) ValidateWithContext(ctx cont
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.InstrumentID, validation.Required),
 		validation.Field(&x.BelongsToRecipeStep, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
@@ -212,7 +203,6 @@ func (x *RecipeStepInstrumentUpdateRequestInput) ValidateWithContext(ctx context
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.QuantityScaleFactor, validation.Min(0.01)),
 		validation.Field(&x.BelongsToRecipeStep, validation.Required),
 	)
 }

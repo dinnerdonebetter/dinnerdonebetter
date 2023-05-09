@@ -8,8 +8,7 @@ UPDATE recipe_step_instruments SET
 	option_index = $7,
 	minimum_quantity = $8,
 	maximum_quantity = $9,
-	quantity_scale_factor = $10,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_recipe_step = $11
-	AND id = $12;
+	AND belongs_to_recipe_step = $10
+	AND id = $11;

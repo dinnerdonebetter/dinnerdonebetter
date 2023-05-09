@@ -18,7 +18,6 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 		OptionIndex:         &input.OptionIndex,
 		MinimumQuantity:     &input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
-		QuantityScaleFactor: &input.QuantityScaleFactor,
 	}
 
 	return x
@@ -39,7 +38,6 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 		MaximumQuantity:                 input.MaximumQuantity,
 		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
 		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
-		QuantityScaleFactor:             input.QuantityScaleFactor,
 	}
 
 	return x
@@ -62,7 +60,6 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input
 		OptionIndex:         input.OptionIndex,
 		MinimumQuantity:     input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
-		QuantityScaleFactor: input.QuantityScaleFactor,
 	}
 }
 
@@ -85,6 +82,5 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(inpu
 		OptionIndex:         input.OptionIndex,
 		MinimumQuantity:     input.MinimumQuantity,
 		MaximumQuantity:     input.MaximumQuantity,
-		QuantityScaleFactor: input.QuantityScaleFactor,
 	}
 }

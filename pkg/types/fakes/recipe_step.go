@@ -74,7 +74,6 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		CreatedAt:                     BuildFakeTime(),
 		BelongsToRecipe:               BuildFakeID(),
 		Ingredients:                   ingredients,
-		TimeScaleFactor:               float32(BuildFakeNumber()),
 		ExplicitInstructions:          buildUniqueString(),
 		ConditionExpression:           buildUniqueString(),
 		Instruments:                   instruments,

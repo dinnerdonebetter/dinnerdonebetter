@@ -51,7 +51,6 @@ type (
 		CompletionConditions          []*RecipeStepCompletionCondition `json:"completionConditions"`
 		Ingredients                   []*RecipeStepIngredient          `json:"ingredients"`
 		Preparation                   ValidPreparation                 `json:"preparation"`
-		TimeScaleFactor               float32                          `json:"timeScaleFactor"`
 		Index                         uint32                           `json:"index"`
 		Optional                      bool                             `json:"optional"`
 		StartTimerAutomatically       bool                             `json:"startTimerAutomatically"`
@@ -76,7 +75,6 @@ type (
 		Products                      []*RecipeStepProductCreationRequestInput             `json:"products"`
 		Ingredients                   []*RecipeStepIngredientCreationRequestInput          `json:"ingredients"`
 		CompletionConditions          []*RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions"`
-		TimeScaleFactor               float32                                              `json:"timeScaleFactor"`
 		Index                         uint32                                               `json:"index"`
 		Optional                      bool                                                 `json:"optional"`
 		StartTimerAutomatically       bool                                                 `json:"startTimerAutomatically"`
@@ -100,7 +98,6 @@ type (
 		Vessels                       []*RecipeStepVesselDatabaseCreationInput
 		Products                      []*RecipeStepProductDatabaseCreationInput
 		CompletionConditions          []*RecipeStepCompletionConditionDatabaseCreationInput
-		TimeScaleFactor               float32
 		Index                         uint32
 		Optional                      bool
 		StartTimerAutomatically       bool
@@ -114,7 +111,6 @@ type (
 		Notes                         *string           `json:"notes,omitempty"`
 		Preparation                   *ValidPreparation `json:"preparation,omitempty"`
 		Index                         *uint32           `json:"index,omitempty"`
-		TimeScaleFactor               *float32          `json:"timeScaleFactor"`
 		MinimumTemperatureInCelsius   *float32          `json:"minimumTemperatureInCelsius,omitempty"`
 		MaximumEstimatedTimeInSeconds *uint32           `json:"maximumEstimatedTimeInSeconds,omitempty"`
 		Optional                      *bool             `json:"optional,omitempty"`
@@ -204,10 +200,6 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 	if input.StartTimerAutomatically != nil && *input.StartTimerAutomatically != x.StartTimerAutomatically {
 		x.StartTimerAutomatically = *input.StartTimerAutomatically
 	}
-
-	if input.TimeScaleFactor != nil && *input.TimeScaleFactor != x.TimeScaleFactor {
-		x.TimeScaleFactor = *input.TimeScaleFactor
-	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
@@ -226,7 +218,6 @@ func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context
 		x,
 		validation.Field(&x.PreparationID, validation.Required),
 		validation.Field(&x.Products, validation.Required),
-		validation.Field(&x.TimeScaleFactor, validation.Min(0.01)),
 	)
 
 	if validationErr != nil {

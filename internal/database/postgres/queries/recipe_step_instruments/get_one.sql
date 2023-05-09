@@ -21,7 +21,6 @@ SELECT
 	recipe_step_instruments.optional,
 	recipe_step_instruments.minimum_quantity,
 	recipe_step_instruments.maximum_quantity,
-	recipe_step_instruments.quantity_scale_factor,
 	recipe_step_instruments.option_index,
 	recipe_step_instruments.created_at,
 	recipe_step_instruments.last_updated_at,

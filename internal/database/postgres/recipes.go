@@ -187,7 +187,6 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&y.Preparation.CreatedAt,
 		&y.Preparation.LastUpdatedAt,
 		&y.Preparation.ArchivedAt,
-		&y.TimeScaleFactor,
 		&y.MinimumEstimatedTimeInSeconds,
 		&y.MaximumEstimatedTimeInSeconds,
 		&y.MinimumTemperatureInCelsius,
