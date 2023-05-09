@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// ValidMeasurementUnitDataType indicates an event is related to a valid measurement unit.
-	ValidMeasurementUnitDataType dataType = "valid_measurement_unit"
-
 	// ValidMeasurementUnitCreatedCustomerEventType indicates a valid measurement unit was created.
 	ValidMeasurementUnitCreatedCustomerEventType CustomerEventType = "valid_measurement_unit_created"
 	// ValidMeasurementUnitUpdatedCustomerEventType indicates a valid measurement unit was updated.

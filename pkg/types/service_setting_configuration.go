@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// ServiceSettingConfigurationDataType indicates an event is related to a service setting.
-	ServiceSettingConfigurationDataType dataType = "service_setting_configuration"
-
 	// ServiceSettingConfigurationCreatedCustomerEventType indicates a service setting was created.
 	ServiceSettingConfigurationCreatedCustomerEventType CustomerEventType = "service_setting_configuration_created"
 	// ServiceSettingConfigurationUpdatedCustomerEventType indicates a service setting was updated.

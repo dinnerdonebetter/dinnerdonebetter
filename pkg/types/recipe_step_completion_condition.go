@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// RecipeStepCompletionConditionDataType indicates an event is related to a recipe step completion condition.
-	RecipeStepCompletionConditionDataType dataType = "recipe_step_completion_condition"
-
 	// RecipeStepCompletionConditionCreatedCustomerEventType indicates a recipe step completion condition was created.
 	RecipeStepCompletionConditionCreatedCustomerEventType CustomerEventType = "recipe_step_completion_condition_created"
 	// RecipeStepCompletionConditionUpdatedCustomerEventType indicates a recipe step completion condition was updated.

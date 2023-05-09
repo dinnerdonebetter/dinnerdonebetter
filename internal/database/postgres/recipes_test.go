@@ -1098,6 +1098,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					vessel.VesselPreposition,
 					vessel.MinimumQuantity,
 					vessel.MaximumQuantity,
+					vessel.QuantityScaleFactor,
 					vessel.UnavailableAfterStep,
 				}
 

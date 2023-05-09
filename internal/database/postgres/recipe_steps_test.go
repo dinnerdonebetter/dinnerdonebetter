@@ -757,6 +757,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				vessel.VesselPreposition,
 				vessel.MinimumQuantity,
 				vessel.MaximumQuantity,
+				vessel.QuantityScaleFactor,
 				vessel.UnavailableAfterStep,
 			}
 

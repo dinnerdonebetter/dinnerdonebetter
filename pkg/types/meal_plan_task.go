@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// MealPlanTaskDataType indicates an event is related to a meal plan task.
-	MealPlanTaskDataType dataType = "meal_plan_task"
-
 	// MealPlanTaskCreatedCustomerEventType indicates a meal plan task was created.
 	MealPlanTaskCreatedCustomerEventType CustomerEventType = "meal_plan_task_created"
 	// MealPlanTaskStatusChangedCustomerEventType indicates a meal plan task was created.

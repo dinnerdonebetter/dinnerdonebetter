@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// ValidIngredientDataType indicates an event is related to a valid ingredient.
-	ValidIngredientDataType dataType = "valid_ingredient"
-
 	// ValidIngredientCreatedCustomerEventType indicates a valid ingredient was created.
 	ValidIngredientCreatedCustomerEventType CustomerEventType = "valid_ingredient_created"
 	// ValidIngredientUpdatedCustomerEventType indicates a valid ingredient was updated.

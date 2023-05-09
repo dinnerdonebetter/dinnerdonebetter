@@ -12,6 +12,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *types.Re
 		Notes:                &input.Notes,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Name:                 &input.Name,
+		QuantityScaleFactor:  &input.QuantityScaleFactor,
 		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
 		MinimumQuantity:      &input.MinimumQuantity,
 		MaximumQuantity:      input.MaximumQuantity,
@@ -29,6 +30,7 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 		InstrumentID:                    input.InstrumentID,
 		RecipeStepProductID:             input.RecipeStepProductID,
 		Name:                            input.Name,
+		QuantityScaleFactor:             input.QuantityScaleFactor,
 		Notes:                           input.Notes,
 		MinimumQuantity:                 input.MinimumQuantity,
 		MaximumQuantity:                 input.MaximumQuantity,
@@ -42,41 +44,43 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 }
 
 // ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput builds a RecipeStepVesselCreationRequestInput from a RecipeStepVessel.
-func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(recipeStepInstrument *types.RecipeStepVessel) *types.RecipeStepVesselCreationRequestInput {
+func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *types.RecipeStepVessel) *types.RecipeStepVesselCreationRequestInput {
 	var instrumentID *string
-	if recipeStepInstrument.Instrument != nil {
-		instrumentID = &recipeStepInstrument.Instrument.ID
+	if input.Instrument != nil {
+		instrumentID = &input.Instrument.ID
 	}
 
 	return &types.RecipeStepVesselCreationRequestInput{
 		InstrumentID:         instrumentID,
-		Name:                 recipeStepInstrument.Name,
-		RecipeStepProductID:  recipeStepInstrument.RecipeStepProductID,
-		Notes:                recipeStepInstrument.Notes,
-		VesselPreposition:    recipeStepInstrument.VesselPreposition,
-		UnavailableAfterStep: recipeStepInstrument.UnavailableAfterStep,
-		MinimumQuantity:      recipeStepInstrument.MinimumQuantity,
-		MaximumQuantity:      recipeStepInstrument.MaximumQuantity,
+		Name:                 input.Name,
+		RecipeStepProductID:  input.RecipeStepProductID,
+		Notes:                input.Notes,
+		QuantityScaleFactor:  input.QuantityScaleFactor,
+		VesselPreposition:    input.VesselPreposition,
+		UnavailableAfterStep: input.UnavailableAfterStep,
+		MinimumQuantity:      input.MinimumQuantity,
+		MaximumQuantity:      input.MaximumQuantity,
 	}
 }
 
 // ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput builds a RecipeStepVesselDatabaseCreationInput from a RecipeStepVessel.
-func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(recipeStepInstrument *types.RecipeStepVessel) *types.RecipeStepVesselDatabaseCreationInput {
+func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *types.RecipeStepVessel) *types.RecipeStepVesselDatabaseCreationInput {
 	var instrumentID *string
-	if recipeStepInstrument.Instrument != nil {
-		instrumentID = &recipeStepInstrument.Instrument.ID
+	if input.Instrument != nil {
+		instrumentID = &input.Instrument.ID
 	}
 
 	return &types.RecipeStepVesselDatabaseCreationInput{
-		ID:                   recipeStepInstrument.ID,
+		ID:                   input.ID,
 		InstrumentID:         instrumentID,
-		Name:                 recipeStepInstrument.Name,
-		RecipeStepProductID:  recipeStepInstrument.RecipeStepProductID,
-		Notes:                recipeStepInstrument.Notes,
-		BelongsToRecipeStep:  recipeStepInstrument.BelongsToRecipeStep,
-		VesselPreposition:    recipeStepInstrument.VesselPreposition,
-		UnavailableAfterStep: recipeStepInstrument.UnavailableAfterStep,
-		MinimumQuantity:      recipeStepInstrument.MinimumQuantity,
-		MaximumQuantity:      recipeStepInstrument.MaximumQuantity,
+		QuantityScaleFactor:  input.QuantityScaleFactor,
+		Name:                 input.Name,
+		RecipeStepProductID:  input.RecipeStepProductID,
+		Notes:                input.Notes,
+		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		VesselPreposition:    input.VesselPreposition,
+		UnavailableAfterStep: input.UnavailableAfterStep,
+		MinimumQuantity:      input.MinimumQuantity,
+		MaximumQuantity:      input.MaximumQuantity,
 	}
 }

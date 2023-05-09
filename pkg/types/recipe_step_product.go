@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// RecipeStepProductDataType indicates an event is related to a recipe step product.
-	RecipeStepProductDataType dataType = "recipe_step_product"
-
 	// RecipeStepProductIngredientType represents one of the valid recipe step product type values.
 	RecipeStepProductIngredientType = "ingredient"
 	// RecipeStepProductInstrumentType represents one of the valid recipe step product type values.

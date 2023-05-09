@@ -8,8 +8,6 @@ const (
 )
 
 type (
-	dataType string
-
 	// CustomerEventType is the type to use/compare against when checking meal plan status.
 	CustomerEventType string
 
@@ -27,6 +25,7 @@ type (
 		Context                          map[string]any                  `json:"context,omitempty"`
 		Recipe                           *Recipe                         `json:"recipe,omitempty"`
 		RecipePrepTask                   *RecipePrepTask                 `json:"recipePrepTask,omitempty"`
+		RecipePrepTaskStep               *RecipePrepTaskStep             `json:"recipePrepTaskStep,omitempty"`
 		RecipeStep                       *RecipeStep                     `json:"recipeStep,omitempty"`
 		RecipeStepProduct                *RecipeStepProduct              `json:"recipeStepProduct,omitempty"`
 		RecipeStepInstrument             *RecipeStepInstrument           `json:"recipeStepInstrument,omitempty"`
@@ -64,6 +63,7 @@ type (
 		RecipeStepID                     string                          `json:"recipeStepID,omitempty"`
 		RecipePrepTaskID                 string                          `json:"recipePrepTaskID,omitempty"`
 		RecipeID                         string                          `json:"recipeID,omitempty"`
+		RecipeMediaID                    string                          `json:"recipeMediaID,omitempty"`
 		MealID                           string                          `json:"mealID,omitempty"`
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
 		EventType                        CustomerEventType               `json:"messageType"`

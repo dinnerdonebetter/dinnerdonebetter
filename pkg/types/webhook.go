@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	// WebhookDataType indicates an event is webhook-related.
-	WebhookDataType dataType = "webhook"
-
 	// WebhookCreatedCustomerEventType indicates a webhook was created.
 	WebhookCreatedCustomerEventType CustomerEventType = "webhook_created"
 	// WebhookArchivedCustomerEventType indicates a webhook was archived.

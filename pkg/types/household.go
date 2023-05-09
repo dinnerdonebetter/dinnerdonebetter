@@ -11,9 +11,6 @@ import (
 )
 
 const (
-	// HouseholdDataType indicates an event is related to a household.
-	HouseholdDataType dataType = "household"
-
 	// HouseholdCreatedCustomerEventType indicates a household was created.
 	HouseholdCreatedCustomerEventType CustomerEventType = "household_created"
 	// HouseholdUpdatedCustomerEventType indicates a household was updated.

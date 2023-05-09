@@ -12,9 +12,6 @@ import (
 )
 
 const (
-	// MealDataType indicates an event is related to a meal.
-	MealDataType dataType = "meal"
-
 	// MealComponentTypesUnspecified represents the unspecified meal component type.
 	MealComponentTypesUnspecified = "unspecified"
 	// MealComponentTypesAmuseBouche represents the amuse-bouche meal component type.

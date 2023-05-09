@@ -74,7 +74,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:     types.MealPlanCreatedCustomerEventType,
+		EventType:     types.MealPlanEventCreatedCustomerEventType,
 		MealPlanEvent: mealPlanEvent,
 		HouseholdID:   sessionCtxData.ActiveHouseholdID,
 		UserID:        sessionCtxData.Requester.UserID,

@@ -13,10 +13,6 @@ import (
 
 const (
 	maxIngredientsPerStep = 100
-	maxProductsPerStep    = 100
-
-	// RecipeStepDataType indicates an event is related to a recipe step.
-	RecipeStepDataType dataType = "recipe_step"
 
 	// RecipeStepCreatedCustomerEventType indicates a recipe step was created.
 	RecipeStepCreatedCustomerEventType CustomerEventType = "recipe_step_created"

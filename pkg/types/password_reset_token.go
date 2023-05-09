@@ -9,11 +9,6 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-const (
-	// PasswordResetTokenDataType indicates an event is related to a password reset token.
-	PasswordResetTokenDataType dataType = "password_reset_token"
-)
-
 func init() {
 	gob.Register(new(PasswordResetToken))
 	gob.Register(new(PasswordResetTokenCreationRequestInput))

@@ -9,9 +9,6 @@ import (
 )
 
 const (
-	// HouseholdInvitationDataType indicates an event is related to a household invitation.
-	HouseholdInvitationDataType dataType = "household_invitation"
-
 	// HouseholdInvitationCreatedCustomerEventType indicates a household invitation was created.
 	HouseholdInvitationCreatedCustomerEventType CustomerEventType = "household_invitation_created"
 	// HouseholdInvitationCanceledCustomerEventType indicates a household invitation was created.

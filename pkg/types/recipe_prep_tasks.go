@@ -11,9 +11,6 @@ import (
 )
 
 const (
-	// RecipePrepTaskDataType indicates an event is related to a recipe prep task.
-	RecipePrepTaskDataType dataType = "recipe_prep_step"
-
 	// RecipePrepTaskStorageTypeUncovered is a valid storage type for a recipe step task.
 	RecipePrepTaskStorageTypeUncovered = "uncovered"
 	// RecipePrepTaskStorageTypeCovered is a valid storage type for a recipe step task.
