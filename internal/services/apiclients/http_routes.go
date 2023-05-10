@@ -117,7 +117,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachUserIDToSpan(span, user.ID)
 
 	// check credentials.
-	valid, err := s.authenticator.ValidateLogin(
+	valid, err := s.authenticator.CredentialsAreValid(
 		ctx,
 		user.HashedPassword,
 		input.Password,

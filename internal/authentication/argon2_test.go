@@ -46,7 +46,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 		code, err := totp.GenerateCode(exampleTwoFactorSecret, time.Now().UTC())
 		assert.NoError(t, err, "error generating code to validate login")
 
-		valid, err := x.ValidateLogin(
+		valid, err := x.CredentialsAreValid(
 			ctx,
 			argon2HashedExamplePassword,
 			examplePassword,
@@ -61,7 +61,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		valid, err := x.ValidateLogin(
+		valid, err := x.CredentialsAreValid(
 			ctx,
 			argon2HashedExamplePassword,
 			examplePassword,
@@ -77,7 +77,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 
 		ctx := context.Background()
 
-		valid, err := x.ValidateLogin(
+		valid, err := x.CredentialsAreValid(
 			ctx,
 			"       blah blah blah not a valid hash lol           ",
 			examplePassword,
@@ -96,7 +96,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 		code, err := totp.GenerateCode(exampleTwoFactorSecret, time.Now().UTC())
 		assert.NoError(t, err, "error generating code to validate login")
 
-		valid, err := x.ValidateLogin(
+		valid, err := x.CredentialsAreValid(
 			ctx,
 			argon2HashedExamplePassword,
 			"examplePassword",
@@ -112,7 +112,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 
 		ctx := context.Background()
 
-		valid, err := x.ValidateLogin(
+		valid, err := x.CredentialsAreValid(
 			ctx,
 			argon2HashedExamplePassword,
 			examplePassword,

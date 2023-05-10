@@ -115,7 +115,7 @@ func TestAuthenticationService_validateLogin(T *testing.T) {
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -138,7 +138,7 @@ func TestAuthenticationService_validateLogin(T *testing.T) {
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -163,7 +163,7 @@ func TestAuthenticationService_validateLogin(T *testing.T) {
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -186,7 +186,7 @@ func TestAuthenticationService_validateLogin(T *testing.T) {
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,

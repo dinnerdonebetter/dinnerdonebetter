@@ -282,7 +282,6 @@ func (i *PasswordUpdateInput) ValidateWithContext(ctx context.Context, minPasswo
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.CurrentPassword, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
 		validation.Field(&i.NewPassword, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
-		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
 	)
 }
 

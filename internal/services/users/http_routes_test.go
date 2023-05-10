@@ -49,7 +49,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			examplePassword,
@@ -147,7 +147,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			examplePassword,
@@ -187,7 +187,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			examplePassword,
@@ -1675,7 +1675,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -1836,7 +1836,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -1881,7 +1881,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -1926,7 +1926,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -1979,7 +1979,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -2030,7 +2030,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -2136,7 +2136,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -2177,7 +2177,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -2223,7 +2223,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
@@ -2274,7 +2274,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,

@@ -37,36 +37,6 @@ const (
 	passwordResetTokenSize = 32
 )
 
-// validateCredentialChangeRequest takes a user's credentials and determines
-// if they match what is on record.
-func (s *service) validateCredentialChangeRequest(ctx context.Context, userID, password, totpToken string) (user *types.User, httpStatus int) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithValue(keys.UserIDKey, userID)
-
-	// fetch user data.
-	user, err := s.userDataManager.GetUser(ctx, userID)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, http.StatusNotFound
-	} else if err != nil {
-		logger.Error(err, "error encountered fetching user")
-		return nil, http.StatusInternalServerError
-	}
-
-	// validate login.
-	valid, validationErr := s.authenticator.ValidateLogin(ctx, user.HashedPassword, password, user.TwoFactorSecret, totpToken)
-	if validationErr != nil {
-		logger.WithValue("validation_error", validationErr).Debug("error validating credentials")
-		return nil, http.StatusBadRequest
-	} else if !valid {
-		logger.WithValue("valid", valid).Error(err, "invalid credentials")
-		return nil, http.StatusUnauthorized
-	}
-
-	return user, http.StatusOK
-}
-
 // UsernameSearchHandler is a handler for responding to username queries.
 func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -153,7 +123,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// ensure the password is not garbage-tier
-	if err := passwordvalidator.Validate(registrationInput.Password, minimumPasswordEntropy); err != nil {
+	if err := passwordvalidator.Validate(strings.TrimSpace(registrationInput.Password), minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("weak password provided to user creation route")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password too weak", http.StatusBadRequest)
 		return
@@ -179,7 +149,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger.Debug("completed invitation check")
 
 	// hash the password
-	hp, err := s.authenticator.HashPassword(ctx, registrationInput.Password)
+	hp, err := s.authenticator.HashPassword(ctx, strings.TrimSpace(registrationInput.Password))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -539,7 +509,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 
 	if user.TwoFactorSecretVerifiedAt != nil {
 		// validate login.
-		valid, validationErr := s.authenticator.ValidateLogin(ctx, user.HashedPassword, input.CurrentPassword, user.TwoFactorSecret, input.TOTPToken)
+		valid, validationErr := s.authenticator.CredentialsAreValid(ctx, user.HashedPassword, input.CurrentPassword, user.TwoFactorSecret, input.TOTPToken)
 		if validationErr != nil {
 			observability.AcknowledgeError(validationErr, logger, span, "validating credentials")
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -581,6 +551,47 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, result, http.StatusAccepted)
+}
+
+// validateCredentialChangeRequest takes a user's credentials and determines if they match what is on record.
+func (s *service) validateCredentialChangeRequest(ctx context.Context, userID, password, totpToken string) (user *types.User, httpStatus int) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithValue(keys.UserIDKey, userID)
+
+	// fetch user data.
+	user, err := s.userDataManager.GetUser(ctx, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, http.StatusNotFound
+		}
+
+		logger.Error(err, "error encountered fetching user")
+		return nil, http.StatusInternalServerError
+	}
+
+	if user.TwoFactorSecretVerifiedAt != nil && totpToken == "" {
+		return nil, http.StatusResetContent
+	}
+
+	tfs := user.TwoFactorSecret
+	if user.TwoFactorSecretVerifiedAt == nil {
+		tfs = ""
+		totpToken = ""
+	}
+
+	// validate login.
+	valid, err := s.authenticator.CredentialsAreValid(ctx, user.HashedPassword, password, tfs, totpToken)
+	if err != nil {
+		logger.WithValue("validation_error", err).Debug("error validating credentials")
+		return nil, http.StatusBadRequest
+	} else if !valid {
+		logger.WithValue("valid", valid).Error(err, "invalid credentials")
+		return nil, http.StatusUnauthorized
+	}
+
+	return user, http.StatusOK
 }
 
 // UpdatePasswordHandler updates a user's password.
@@ -640,7 +651,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// hash the new password.
-	newPasswordHash, err := s.authenticator.HashPassword(ctx, input.NewPassword)
+	newPasswordHash, err := s.authenticator.HashPassword(ctx, strings.TrimSpace(input.NewPassword))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "hashing password")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -656,6 +667,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 
 	// we're all good, log the user out
 	http.SetCookie(res, &http.Cookie{MaxAge: -1})
+	res.WriteHeader(http.StatusAccepted)
 }
 
 func stringPointer(storageProviderPath string) *string {
@@ -896,14 +908,14 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 	}
 
 	// ensure the password isn't garbage-tier
-	if err = passwordvalidator.Validate(input.NewPassword, minimumPasswordEntropy); err != nil {
+	if err = passwordvalidator.Validate(strings.TrimSpace(input.NewPassword), minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("invalid password provided")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "new password is too weak!", http.StatusBadRequest)
 		return
 	}
 
 	// hash the new password.
-	newPasswordHash, err := s.authenticator.HashPassword(ctx, input.NewPassword)
+	newPasswordHash, err := s.authenticator.HashPassword(ctx, strings.TrimSpace(input.NewPassword))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "hashing password")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

@@ -30,6 +30,6 @@ type (
 	Authenticator interface {
 		Hasher
 
-		ValidateLogin(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error)
+		CredentialsAreValid(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error)
 	}
 )

@@ -68,7 +68,7 @@ func (s *service) validateLogin(ctx context.Context, user *types.User, loginInpu
 	logger := s.logger.WithValue(keys.UsernameKey, user.Username)
 
 	// check for login validity.
-	loginValid, err := s.authenticator.ValidateLogin(
+	loginValid, err := s.authenticator.CredentialsAreValid(
 		ctx,
 		user.HashedPassword,
 		loginInput.Password,

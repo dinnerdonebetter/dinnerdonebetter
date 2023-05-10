@@ -56,7 +56,7 @@ func (a *Argon2Authenticator) HashPassword(ctx context.Context, password string)
 // ValidateLogin validates a login attempt by:
 //   - checking that the provided authentication matches the provided hashed passwords.
 //   - checking that the temporary one-time authentication provided jives with the provided two factor secret.
-func (a *Argon2Authenticator) ValidateLogin(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
+func (a *Argon2Authenticator) CredentialsAreValid(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
 	_, span := a.tracer.StartSpan(ctx)
 	defer span.End()
 

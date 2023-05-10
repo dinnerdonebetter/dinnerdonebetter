@@ -16,7 +16,7 @@ type Authenticator struct {
 }
 
 // ValidateLogin satisfies our authenticator interface.
-func (m *Authenticator) ValidateLogin(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
+func (m *Authenticator) CredentialsAreValid(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
 	args := m.Called(ctx, hash, password, totpSecret, totpCode)
 
 	return args.Bool(0), args.Error(1)

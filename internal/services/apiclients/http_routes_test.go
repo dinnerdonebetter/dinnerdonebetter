@@ -173,7 +173,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		a := &mockauthn.Authenticator{}
 		a.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleInput.Password,
@@ -320,7 +320,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		a := &mockauthn.Authenticator{}
 		a.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleInput.Password,
@@ -365,7 +365,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		a := &mockauthn.Authenticator{}
 		a.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleInput.Password,
@@ -402,7 +402,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		a := &mockauthn.Authenticator{}
 		a.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleInput.Password,
@@ -457,7 +457,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		a := &mockauthn.Authenticator{}
 		a.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleInput.Password,
@@ -514,7 +514,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		a := &mockauthn.Authenticator{}
 		a.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleInput.Password,
@@ -574,7 +574,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		a := &mockauthn.Authenticator{}
 		a.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleInput.Password,
