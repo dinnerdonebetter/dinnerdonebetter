@@ -134,7 +134,7 @@ func (p *uploadProcessor) ProcessFile(ctx context.Context, req *http.Request, fi
 
 	file, info, err := req.FormFile(filename)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "parsing file from request")
+		return nil, observability.PrepareError(err, span, "parsing filename %q from request", filename)
 	}
 
 	return p.processFile(ctx, file, info, filename)
@@ -147,7 +147,7 @@ func (p *uploadProcessor) processFile(ctx context.Context, file multipart.File, 
 
 	bs, err := io.ReadAll(file)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "reading file from request")
+		return nil, observability.PrepareError(err, span, "reading filename %q from request", filename)
 	}
 
 	if isImage(info.Filename) {
@@ -177,8 +177,7 @@ func (p *uploadProcessor) ProcessFiles(ctx context.Context, req *http.Request, f
 	defer span.End()
 
 	if req.MultipartForm == nil {
-		err := req.ParseMultipartForm(defaultMaxMemory)
-		if err != nil {
+		if err := req.ParseMultipartForm(defaultMaxMemory); err != nil {
 			return nil, fmt.Errorf("parsing multipart form: %w", err)
 		}
 	}
@@ -203,6 +202,10 @@ func (p *uploadProcessor) ProcessFiles(ctx context.Context, req *http.Request, f
 				}
 			}
 		}
+	}
+
+	if errs != nil {
+		return nil, errs
 	}
 
 	return uploads, nil

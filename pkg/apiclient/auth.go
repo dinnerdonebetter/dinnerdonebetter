@@ -106,7 +106,7 @@ func (c *Client) ChangePassword(ctx context.Context, cookie *http.Cookie, input 
 
 	c.closeResponseBody(ctx, res)
 
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode != http.StatusAccepted {
 		return observability.PrepareError(errInvalidResponseCode, span, "invalid response code: %d", res.StatusCode)
 	}
 
