@@ -56,7 +56,7 @@ func DefaultQueryFilter() *QueryFilter {
 	}
 }
 
-// AttachToLogger attaches a QueryFilter's values to a logging.Logger.
+// AttachToLogger attaches a QueryFilter's values to a logging.logger.
 func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 	l := logging.EnsureLogger(logger).Clone()
 

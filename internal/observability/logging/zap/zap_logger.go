@@ -71,36 +71,36 @@ func (l *zapLogger) SetRequestIDFunc(f logging.RequestIDFunc) {
 	}
 }
 
-// Info satisfies our contract for the logging.Logger Info method.
+// Info satisfies our contract for the logging.logger Info method.
 func (l *zapLogger) Info(input string) {
 	l.logger.Info(input)
 }
 
-// Debug satisfies our contract for the logging.Logger Debug method.
+// Debug satisfies our contract for the logging.logger Debug method.
 func (l *zapLogger) Debug(input string) {
 	l.logger.Debug(input)
 }
 
-// Error satisfies our contract for the logging.Logger Error method.
+// Error satisfies our contract for the logging.logger Error method.
 func (l *zapLogger) Error(err error, whatWasHappeningWhenErrorOccurred string) {
 	if err != nil {
 		l.logger.Error(fmt.Sprintf("error %s: %s", whatWasHappeningWhenErrorOccurred, err.Error()))
 	}
 }
 
-// Clone satisfies our contract for the logging.Logger WithValue method.
+// Clone satisfies our contract for the logging.logger WithValue method.
 func (l *zapLogger) Clone() logging.Logger {
 	l2 := l.logger.With()
 	return &zapLogger{logger: l2}
 }
 
-// WithValue satisfies our contract for the logging.Logger WithValue method.
+// WithValue satisfies our contract for the logging.logger WithValue method.
 func (l *zapLogger) WithValue(key string, value any) logging.Logger {
 	l2 := l.logger.With(zap.Any(key, value))
 	return &zapLogger{logger: l2}
 }
 
-// WithValues satisfies our contract for the logging.Logger WithValues method.
+// WithValues satisfies our contract for the logging.logger WithValues method.
 func (l *zapLogger) WithValues(values map[string]any) logging.Logger {
 	var l2 = l.logger.With()
 
@@ -111,13 +111,13 @@ func (l *zapLogger) WithValues(values map[string]any) logging.Logger {
 	return &zapLogger{logger: l2}
 }
 
-// WithError satisfies our contract for the logging.Logger WithError method.
+// WithError satisfies our contract for the logging.logger WithError method.
 func (l *zapLogger) WithError(err error) logging.Logger {
 	l2 := l.logger.With(zap.Error(err))
 	return &zapLogger{logger: l2}
 }
 
-// WithSpan satisfies our contract for the logging.Logger WithSpan method.
+// WithSpan satisfies our contract for the logging.logger WithSpan method.
 func (l *zapLogger) WithSpan(span trace.Span) logging.Logger {
 	spanCtx := span.SpanContext()
 	spanID := spanCtx.SpanID().String()
@@ -151,12 +151,12 @@ func (l *zapLogger) attachRequestToLog(req *http.Request) *zap.Logger {
 	return l.logger
 }
 
-// WithRequest satisfies our contract for the logging.Logger WithRequest method.
+// WithRequest satisfies our contract for the logging.logger WithRequest method.
 func (l *zapLogger) WithRequest(req *http.Request) logging.Logger {
 	return &zapLogger{logger: l.attachRequestToLog(req)}
 }
 
-// WithResponse satisfies our contract for the logging.Logger WithResponse method.
+// WithResponse satisfies our contract for the logging.logger WithResponse method.
 func (l *zapLogger) WithResponse(res *http.Response) logging.Logger {
 	l2 := l.logger.With()
 	if res != nil {

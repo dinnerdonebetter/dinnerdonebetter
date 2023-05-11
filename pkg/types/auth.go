@@ -192,10 +192,6 @@ func (x *SessionContextData) AttachToLogger(logger logging.Logger) logging.Logge
 	if x != nil {
 		logger = logger.WithValue(keys.RequesterIDKey, x.Requester.UserID).
 			WithValue(keys.ActiveHouseholdIDKey, x.ActiveHouseholdID)
-
-		if x.Requester.ServicePermissions != nil {
-			logger = logger.WithValue(keys.ServiceRoleKey, x.Requester.ServicePermissions.IsServiceAdmin())
-		}
 	}
 
 	return logger
