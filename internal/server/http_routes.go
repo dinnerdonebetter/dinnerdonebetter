@@ -111,7 +111,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 				Get(root, s.usersService.ListHandler)
 			usersRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchUserPermission)).
-				Get("/search", s.usersService.UsernameSearchHandler)
+				Get(searchRoot, s.usersService.UsernameSearchHandler)
 			usersRouter.Post("/avatar/upload", s.usersService.AvatarUploadHandler)
 
 			usersRouter.Get("/self", s.usersService.SelfHandler)
@@ -578,7 +578,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 				Get(root, s.mealsService.ListHandler)
 			mealsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
-				Get("/search", s.mealsService.SearchHandler)
+				Get(searchRoot, s.mealsService.SearchHandler)
 
 			mealsRouter.Route(mealIDRouteParam, func(singleMealRouter routing.Router) {
 				singleMealRouter.
@@ -603,7 +603,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 				Get(root, s.recipesService.ListHandler)
 			recipesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
-				Get("/search", s.recipesService.SearchHandler)
+				Get(searchRoot, s.recipesService.SearchHandler)
 			recipesRouter.Route(recipeIDRouteParam, func(singleRecipeRouter routing.Router) {
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).

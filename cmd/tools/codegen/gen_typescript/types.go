@@ -8,15 +8,15 @@ import (
 
 var (
 	filesToGenerate = map[string][]any{
-		"admin.ts": {
+		"admin": {
 			types.ModifyUserPermissionsInput{},
 		},
-		"apiClients.ts": {
+		"apiClients": {
 			types.APIClient{},
 			types.APIClientCreationRequestInput{},
 			types.APIClientCreationResponse{},
 		},
-		"auth.ts": {
+		"auth": {
 			types.ChangeActiveHouseholdInput{},
 			types.PASETOCreationInput{},
 			types.PASETOResponse{},
@@ -28,125 +28,125 @@ var (
 			types.TOTPSecretRefreshResponse{},
 			types.PasswordUpdateInput{},
 		},
-		"errors.ts": {
+		"errors": {
 			types.APIError{},
 		},
-		"householdInvitations.ts": {
+		"householdInvitations": {
 			types.HouseholdInvitation{},
 			types.HouseholdInvitationUpdateRequestInput{},
 			types.HouseholdInvitationCreationRequestInput{},
 		},
-		"households.ts": {
+		"households": {
 			types.Household{},
 			types.HouseholdCreationRequestInput{},
 			types.HouseholdUpdateRequestInput{},
 			types.HouseholdOwnershipTransferInput{},
 		},
-		"householdUserMemberships.ts": {
+		"householdUserMemberships": {
 			types.HouseholdUserMembership{},
 			types.HouseholdUserMembershipWithUser{},
 			types.HouseholdUserMembershipCreationRequestInput{},
 		},
-		"mealPlanEvents.ts": {
+		"mealPlanEvents": {
 			types.MealPlanEvent{},
 			types.MealPlanEventCreationRequestInput{},
 			types.MealPlanEventUpdateRequestInput{},
 		},
-		"mealPlanGroceryListItems.ts": {
+		"mealPlanGroceryListItems": {
 			types.MealPlanGroceryListItem{},
 			types.MealPlanGroceryListItemCreationRequestInput{},
 			types.MealPlanGroceryListItemUpdateRequestInput{},
 		},
-		"mealPlanOptions.ts": {
+		"mealPlanOptions": {
 			types.MealPlanOption{},
 			types.MealPlanOptionCreationRequestInput{},
 			types.MealPlanOptionUpdateRequestInput{},
 		},
-		"mealPlanOptionVotes.ts": {
+		"mealPlanOptionVotes": {
 			types.MealPlanOptionVote{},
 			types.MealPlanOptionVoteCreationInput{},
 			types.MealPlanOptionVoteCreationRequestInput{},
 			types.MealPlanOptionVoteUpdateRequestInput{},
 		},
-		"mealPlans.ts": {
+		"mealPlans": {
 			types.MealPlan{},
 			types.MealPlanCreationRequestInput{},
 			types.MealPlanUpdateRequestInput{},
 		},
-		"mealPlanTasks.ts": {
+		"mealPlanTasks": {
 			types.MealPlanTask{},
 			types.MealPlanTaskCreationRequestInput{},
 			types.MealPlanTaskStatusChangeRequestInput{},
 		},
-		"meals.ts": {
+		"meals": {
 			types.Meal{},
 			types.MealCreationRequestInput{},
 			types.MealUpdateRequestInput{},
 		},
-		"mealComponents.ts": {
+		"mealComponents": {
 			types.MealComponent{},
 			types.MealComponentCreationRequestInput{},
 			types.MealComponentUpdateRequestInput{},
 		},
-		"permissions.ts": {
+		"permissions": {
 			types.UserPermissionsRequestInput{},
 			types.UserPermissionsResponse{},
 		},
-		"recipeMedia.ts": {
+		"recipeMedia": {
 			types.RecipeMedia{},
 			types.RecipeMediaCreationRequestInput{},
 			types.RecipeMediaUpdateRequestInput{},
 		},
-		"recipePrepTasks.ts": {
+		"recipePrepTasks": {
 			types.RecipePrepTask{},
 			types.RecipePrepTaskCreationRequestInput{},
 			types.RecipePrepTaskWithinRecipeCreationRequestInput{},
 			types.RecipePrepTaskUpdateRequestInput{},
 		},
-		"recipePrepTaskSteps.ts": {
+		"recipePrepTaskSteps": {
 			types.RecipePrepTaskStep{},
 			types.RecipePrepTaskStepWithinRecipeCreationRequestInput{},
 			types.RecipePrepTaskStepCreationRequestInput{},
 			types.RecipePrepTaskStepUpdateRequestInput{},
 		},
-		"recipeStepCompletionConditions.ts": {
+		"recipeStepCompletionConditions": {
 			types.RecipeStepCompletionCondition{},
 			types.RecipeStepCompletionConditionIngredient{},
 			types.RecipeStepCompletionConditionCreationRequestInput{},
 			types.RecipeStepCompletionConditionIngredientCreationRequestInput{},
 			types.RecipeStepCompletionConditionUpdateRequestInput{},
 		},
-		"recipeStepIngredients.ts": {
+		"recipeStepIngredients": {
 			types.RecipeStepIngredient{},
 			types.RecipeStepIngredientCreationRequestInput{},
 			types.RecipeStepIngredientUpdateRequestInput{},
 		},
-		"recipeStepInstruments.ts": {
+		"recipeStepInstruments": {
 			types.RecipeStepInstrument{},
 			types.RecipeStepInstrumentCreationRequestInput{},
 			types.RecipeStepInstrumentUpdateRequestInput{},
 		},
-		"recipeStepVessels.ts": {
+		"recipeStepVessels": {
 			types.RecipeStepVessel{},
 			types.RecipeStepVesselCreationRequestInput{},
 			types.RecipeStepVesselUpdateRequestInput{},
 		},
-		"recipeStepProducts.ts": {
+		"recipeStepProducts": {
 			types.RecipeStepProduct{},
 			types.RecipeStepProductCreationRequestInput{},
 			types.RecipeStepProductUpdateRequestInput{},
 		},
-		"recipeSteps.ts": {
+		"recipeSteps": {
 			types.RecipeStep{},
 			types.RecipeStepCreationRequestInput{},
 			types.RecipeStepUpdateRequestInput{},
 		},
-		"recipes.ts": {
+		"recipes": {
 			types.Recipe{},
 			types.RecipeCreationRequestInput{},
 			types.RecipeUpdateRequestInput{},
 		},
-		"users.ts": {
+		"users": {
 			types.UserStatusResponse{},
 			types.User{},
 			types.UserRegistrationInput{},
@@ -155,68 +155,69 @@ var (
 			types.UsernameReminderRequestInput{},
 			types.UserAccountStatusUpdateInput{},
 			types.EmailAddressVerificationRequestInput{},
+			types.AvatarUpdateInput{},
 		},
-		"validIngredientMeasurementUnits.ts": {
+		"validIngredientMeasurementUnits": {
 			types.ValidIngredientMeasurementUnit{},
 			types.ValidIngredientMeasurementUnitCreationRequestInput{},
 			types.ValidIngredientMeasurementUnitUpdateRequestInput{},
 		},
-		"validIngredientPreparations.ts": {
+		"validIngredientPreparations": {
 			types.ValidIngredientPreparation{},
 			types.ValidIngredientPreparationCreationRequestInput{},
 			types.ValidIngredientPreparationUpdateRequestInput{},
 		},
-		"validIngredientStates.ts": {
+		"validIngredientStates": {
 			types.ValidIngredientState{},
 			types.ValidIngredientStateCreationRequestInput{},
 			types.ValidIngredientStateUpdateRequestInput{},
 		},
-		"validIngredientStateIngredients.ts": {
+		"validIngredientStateIngredients": {
 			types.ValidIngredientStateIngredient{},
 			types.ValidIngredientStateIngredientCreationRequestInput{},
 			types.ValidIngredientStateIngredientUpdateRequestInput{},
 		},
-		"validIngredients.ts": {
+		"validIngredients": {
 			types.ValidIngredient{},
 			types.ValidIngredientCreationRequestInput{},
 			types.ValidIngredientUpdateRequestInput{},
 		},
-		"validInstruments.ts": {
+		"validInstruments": {
 			types.ValidInstrument{},
 			types.ValidInstrumentCreationRequestInput{},
 			types.ValidInstrumentUpdateRequestInput{},
 		},
-		"validMeasurementUnitConversions.ts": {
+		"validMeasurementUnitConversions": {
 			types.ValidMeasurementUnitConversion{},
 			types.ValidMeasurementUnitConversionCreationRequestInput{},
 			types.ValidMeasurementUnitConversionUpdateRequestInput{},
 		},
-		"validMeasurementUnits.ts": {
+		"validMeasurementUnits": {
 			types.ValidMeasurementUnit{},
 			types.ValidMeasurementUnitCreationRequestInput{},
 			types.ValidMeasurementUnitUpdateRequestInput{},
 		},
-		"validPreparationInstruments.ts": {
+		"validPreparationInstruments": {
 			types.ValidPreparationInstrument{},
 			types.ValidPreparationInstrumentCreationRequestInput{},
 			types.ValidPreparationInstrumentUpdateRequestInput{},
 		},
-		"validPreparations.ts": {
+		"validPreparations": {
 			types.ValidPreparation{},
 			types.ValidPreparationCreationRequestInput{},
 			types.ValidPreparationUpdateRequestInput{},
 		},
-		"serviceSetting.ts": {
+		"serviceSetting": {
 			types.ServiceSetting{},
 			types.ServiceSettingCreationRequestInput{},
 			types.ServiceSettingUpdateRequestInput{},
 		},
-		"serviceSettingConfiguration.ts": {
+		"serviceSettingConfiguration": {
 			types.ServiceSettingConfiguration{},
 			types.ServiceSettingConfigurationCreationRequestInput{},
 			types.ServiceSettingConfigurationUpdateRequestInput{},
 		},
-		"webhooks.ts": {
+		"webhooks": {
 			types.Webhook{},
 			types.WebhookTriggerEvent{},
 			types.WebhookCreationRequestInput{},

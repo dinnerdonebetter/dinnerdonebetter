@@ -30,7 +30,7 @@ func (t *instrumentedSQLTracerWrapper) GetSpan(ctx context.Context) instrumented
 	}
 }
 
-// NewInstrumentedSQLLogger wraps a logging.logger for instrumentedsql.
+// NewInstrumentedSQLLogger wraps a logging.Logger for instrumentedsql.
 func NewInstrumentedSQLLogger(logger logging.Logger) instrumentedsql.Logger {
 	return &instrumentedSQLLoggerWrapper{logger: logging.EnsureLogger(logger).WithName("sql")}
 }

@@ -127,6 +127,13 @@ type (
 		TOTPToken       string `json:"totpToken"`
 	}
 
+	// AvatarUpdateInput represents input a User would provide when updating their passwords.
+	AvatarUpdateInput struct {
+		_ struct{}
+
+		Base64EncodedData string `json:"base64EncodedData"`
+	}
+
 	// TOTPSecretRefreshInput represents input a User would provide when updating their 2FA secret.
 	TOTPSecretRefreshInput struct {
 		_ struct{}

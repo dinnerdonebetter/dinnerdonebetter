@@ -118,6 +118,13 @@ func BuildFakePasswordUpdateInput() *types.PasswordUpdateInput {
 	}
 }
 
+// BuildFakeAvatarUpdateInput builds a faked AvatarUpdateInput.
+func BuildFakeAvatarUpdateInput() *types.AvatarUpdateInput {
+	return &types.AvatarUpdateInput{
+		Base64EncodedData: buildUniqueString(),
+	}
+}
+
 // BuildFakeTOTPSecretRefreshInput builds a faked TOTPSecretRefreshInput.
 func BuildFakeTOTPSecretRefreshInput() *types.TOTPSecretRefreshInput {
 	return &types.TOTPSecretRefreshInput{

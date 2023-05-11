@@ -84,36 +84,36 @@ func (l *zerologLogger) SetRequestIDFunc(f logging.RequestIDFunc) {
 	}
 }
 
-// Info satisfies our contract for the logging.logger Info method.
+// Info satisfies our contract for the logging.Logger Info method.
 func (l *zerologLogger) Info(input string) {
 	l.logger.Info().Msg(input)
 }
 
-// Debug satisfies our contract for the logging.logger Debug method.
+// Debug satisfies our contract for the logging.Logger Debug method.
 func (l *zerologLogger) Debug(input string) {
 	l.logger.Debug().Msg(input)
 }
 
-// Error satisfies our contract for the logging.logger Error method.
+// Error satisfies our contract for the logging.Logger Error method.
 func (l *zerologLogger) Error(err error, whatWasHappeningWhenErrorOccurred string) {
 	if err != nil {
 		l.logger.Error().Stack().Caller().Msg(fmt.Sprintf("error %s: %s", whatWasHappeningWhenErrorOccurred, err.Error()))
 	}
 }
 
-// Clone satisfies our contract for the logging.logger WithValue method.
+// Clone satisfies our contract for the logging.Logger WithValue method.
 func (l *zerologLogger) Clone() logging.Logger {
 	l2 := l.logger.With().Logger()
 	return &zerologLogger{logger: l2}
 }
 
-// WithValue satisfies our contract for the logging.logger WithValue method.
+// WithValue satisfies our contract for the logging.Logger WithValue method.
 func (l *zerologLogger) WithValue(key string, value any) logging.Logger {
 	l2 := l.logger.With().Interface(key, value).Logger()
 	return &zerologLogger{logger: l2}
 }
 
-// WithValues satisfies our contract for the logging.logger WithValues method.
+// WithValues satisfies our contract for the logging.Logger WithValues method.
 func (l *zerologLogger) WithValues(values map[string]any) logging.Logger {
 	var l2 = l.logger.With().Logger()
 
@@ -124,13 +124,13 @@ func (l *zerologLogger) WithValues(values map[string]any) logging.Logger {
 	return &zerologLogger{logger: l2}
 }
 
-// WithError satisfies our contract for the logging.logger WithError method.
+// WithError satisfies our contract for the logging.Logger WithError method.
 func (l *zerologLogger) WithError(err error) logging.Logger {
 	l2 := l.logger.With().Err(err).Logger()
 	return &zerologLogger{logger: l2}
 }
 
-// WithSpan satisfies our contract for the logging.logger WithSpan method.
+// WithSpan satisfies our contract for the logging.Logger WithSpan method.
 func (l *zerologLogger) WithSpan(span trace.Span) logging.Logger {
 	spanCtx := span.SpanContext()
 	spanID := spanCtx.SpanID().String()
@@ -166,12 +166,12 @@ func (l *zerologLogger) attachRequestToLog(req *http.Request) zerolog.Logger {
 	return l.logger
 }
 
-// WithRequest satisfies our contract for the logging.logger WithRequest method.
+// WithRequest satisfies our contract for the logging.Logger WithRequest method.
 func (l *zerologLogger) WithRequest(req *http.Request) logging.Logger {
 	return &zerologLogger{logger: l.attachRequestToLog(req)}
 }
 
-// WithResponse satisfies our contract for the logging.logger WithResponse method.
+// WithResponse satisfies our contract for the logging.Logger WithResponse method.
 func (l *zerologLogger) WithResponse(res *http.Response) logging.Logger {
 	l2 := l.logger.With().Logger()
 	if res != nil {

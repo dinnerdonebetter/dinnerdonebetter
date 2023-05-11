@@ -18,6 +18,7 @@ import (
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 
 	"github.com/boombuler/barcode"
@@ -670,10 +671,6 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	res.WriteHeader(http.StatusAccepted)
 }
 
-func stringPointer(storageProviderPath string) *string {
-	return &storageProviderPath
-}
-
 // AvatarUploadHandler updates a user's avatar.
 func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -686,6 +683,14 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
 		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	// decode the request.
+	input := new(types.AvatarUpdateInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
 
@@ -703,23 +708,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	logger.Debug("retrieved user from database")
 
-	img, err := s.imageUploadProcessor.ProcessFile(ctx, req, "avatar")
-	if err != nil || img == nil {
-		observability.AcknowledgeError(err, logger, span, "processing provided avatar upload file")
-		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)
-		return
-	}
-
-	internalPath := fmt.Sprintf("avatars/%d_%s", time.Now().Unix(), img.Filename)
-	logger = logger.WithValue("file_size", len(img.Data)).WithValue("internal_path", internalPath)
-
-	if err = s.uploadManager.SaveFile(ctx, internalPath, img.Data); err != nil {
-		observability.AcknowledgeError(err, logger, span, "saving provided avatar")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	user.AvatarSrc = stringPointer(fmt.Sprintf("%s/%s", s.cfg.PublicMediaURLPrefix, internalPath))
+	user.AvatarSrc = pointers.Pointer(input.Base64EncodedData)
 
 	if err = s.userDataManager.UpdateUser(ctx, user); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user info")
