@@ -130,7 +130,7 @@ func ProvideHTTPServer(
 		encoder:        encoder,
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),
-		httpServer:     provideHTTPServer(serverSettings.HTTPPort),
+		httpServer:     provideStdLibHTTPServer(serverSettings.HTTPPort),
 		dataManager:    dataManager,
 		tracerProvider: tracerProvider,
 
@@ -240,8 +240,8 @@ const (
 	idleTimeout  = maxTimeout
 )
 
-// provideHTTPServer provides an HTTP httpServer.
-func provideHTTPServer(port uint16) *http.Server {
+// provideStdLibHTTPServer provides an HTTP httpServer.
+func provideStdLibHTTPServer(port uint16) *http.Server {
 	// heavily inspired by https://blog.cloudflare.com/exposing-go-on-the-internet/
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),

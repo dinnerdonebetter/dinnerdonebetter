@@ -117,8 +117,6 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 
 			s.overrideSessionContextDataValuesWithSessionData(ctx, sessionCtxData)
 
-			logger.Info("attributed user from cookie")
-
 			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 			return
 		}
@@ -130,12 +128,9 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 
 		if tokenSessionContextData != nil {
 			// no need to fetch info since tokens are so short-lived.
-			logger.Info("attributed user from token")
 			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, tokenSessionContextData)))
 			return
 		}
-
-		logger.Info("no user attributed to request")
 
 		next.ServeHTTP(res, req)
 	})

@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	// ProviderZerolog indicates you'd like to use the zerolog Logger.
+	// ProviderZerolog indicates you'd like to use the zerolog logger.
 	ProviderZerolog = "zerolog"
-	// ProviderZap indicates you'd like to use the zap Logger.
+	// ProviderZap indicates you'd like to use the zap logger.
 	ProviderZap = "zap"
 )
 
@@ -23,7 +23,7 @@ type (
 	}
 )
 
-// ProvideLogger builds a Logger according to the provided config.
+// ProvideLogger builds a logger according to the provided config.
 func (cfg *Config) ProvideLogger() (logging.Logger, error) {
 	var l logging.Logger
 

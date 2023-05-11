@@ -17,8 +17,6 @@ import (
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
 	mockrandom "github.com/prixfixeco/backend/internal/random/mock"
-	"github.com/prixfixeco/backend/internal/uploads/images"
-	mockuploads "github.com/prixfixeco/backend/internal/uploads/mock"
 	"github.com/prixfixeco/backend/pkg/types"
 	"github.com/prixfixeco/backend/pkg/types/fakes"
 	testutils "github.com/prixfixeco/backend/tests/utils"
@@ -2306,31 +2304,20 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
+		exampleInput := fakes.BuildFakeAvatarUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
-
-		returnImage := &images.Upload{}
-		ip := &images.MockImageUploadProcessor{}
-		ip.On(
-			"ProcessFile",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			"avatar",
-		).Return(returnImage, nil)
-		helper.service.imageUploadProcessor = ip
-
-		um := &mockuploads.MockUploadManager{}
-		um.On(
-			"SaveFile",
-			testutils.ContextMatcher,
-			mock.AnythingOfType("string"),
-			returnImage.Data,
-		).Return(nil)
-		helper.service.uploadManager = um
 
 		mockDB.UserDataManager.On(
 			"UpdateUser",
@@ -2343,13 +2330,21 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, ip, um)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("without session context data", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
+
+		exampleInput := fakes.BuildFakeAvatarUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -2373,6 +2368,14 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
+		exampleInput := fakes.BuildFakeAvatarUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
@@ -2381,107 +2384,25 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
-	})
-
-	T.Run("with error processing image", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-
-		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = mockDB
-
-		ip := &images.MockImageUploadProcessor{}
-		ip.On(
-			"ProcessFile",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher, "avatar").Return((*images.Upload)(nil), errors.New("blah"))
-		helper.service.imageUploadProcessor = ip
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeInvalidInputResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AvatarUploadHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, ip, encoderDecoder)
-	})
-
-	T.Run("with error saving file", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-
-		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = mockDB
-
-		returnImage := &images.Upload{}
-		ip := &images.MockImageUploadProcessor{}
-		ip.On(
-			"ProcessFile",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			"avatar",
-		).Return(returnImage, nil)
-		helper.service.imageUploadProcessor = ip
-
-		um := &mockuploads.MockUploadManager{}
-		um.On(
-			"SaveFile",
-			testutils.ContextMatcher,
-			mock.AnythingOfType("string"),
-			returnImage.Data,
-		).Return(errors.New("blah"))
-		helper.service.uploadManager = um
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AvatarUploadHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, ip, um, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error updating user", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
+
+		exampleInput := fakes.BuildFakeAvatarUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
@@ -2496,38 +2417,11 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		returnImage := &images.Upload{}
-		ip := &images.MockImageUploadProcessor{}
-		ip.On(
-			"ProcessFile",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			"avatar",
-		).Return(returnImage, nil)
-		helper.service.imageUploadProcessor = ip
-
-		um := &mockuploads.MockUploadManager{}
-		um.On(
-			"SaveFile",
-			testutils.ContextMatcher,
-			mock.AnythingOfType("string"),
-			returnImage.Data,
-		).Return(nil)
-		helper.service.uploadManager = um
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, ip, um, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -2587,19 +2481,11 @@ func TestService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 

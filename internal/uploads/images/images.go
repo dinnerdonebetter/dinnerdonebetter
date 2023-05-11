@@ -145,6 +145,8 @@ func (p *uploadProcessor) processFile(ctx context.Context, file multipart.File, 
 	_, span := p.tracer.StartSpan(ctx)
 	defer span.End()
 
+	tracing.AttachStringToSpan(span, "filename", filename)
+
 	bs, err := io.ReadAll(file)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "reading filename %q from request", filename)

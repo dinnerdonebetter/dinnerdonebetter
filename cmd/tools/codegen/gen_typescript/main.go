@@ -46,7 +46,7 @@ func buildImportMap() map[string]string {
 		}
 
 		for _, imp := range fileImports {
-			importMap[imp] = filename
+			importMap[imp] = fmt.Sprintf("%s.ts", filename)
 		}
 	}
 
@@ -131,7 +131,7 @@ export * from './pagination';
 		indexOutput += fmt.Sprintf("export * from './%s';\n", strings.TrimSuffix(filename, ".ts"))
 		finalOutput := fileOutput + "\n" + output
 
-		if err := os.WriteFile(fmt.Sprintf("%s/%s", destinationDirectory, filename), []byte(finalOutput), 0o600); err != nil {
+		if err := os.WriteFile(fmt.Sprintf("%s/%s.ts", destinationDirectory, filename), []byte(finalOutput), 0o600); err != nil {
 			errors = multierror.Append(errors, err)
 		}
 	}
