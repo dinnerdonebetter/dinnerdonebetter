@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/routing"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +16,7 @@ func TestBuildLoggingMiddleware(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		middleware := buildLoggingMiddleware(logging.NewNoopLogger(), &routing.Config{})
+		middleware := buildLoggingMiddleware(logging.NewNoopLogger(), false)
 
 		assert.NotNil(t, middleware)
 
@@ -31,7 +30,7 @@ func TestBuildLoggingMiddleware(T *testing.T) {
 	T.Run("with non-logged route", func(t *testing.T) {
 		t.Parallel()
 
-		middleware := buildLoggingMiddleware(logging.NewNoopLogger(), &routing.Config{})
+		middleware := buildLoggingMiddleware(logging.NewNoopLogger(), false)
 
 		assert.NotNil(t, middleware)
 

@@ -20,13 +20,13 @@ func (h errorHandler) Handle(err error) {
 
 func init() {
 	// set this to a noop error handler just so one is set
-	otel.SetErrorHandler(errorHandler{logger: zerolog.NewZerologLogger(logging.DebugLevel).WithName("otel_errors")})
+	otel.SetErrorHandler(errorHandler{logger: zerolog.NewZerologLogger(logging.ErrorLevel).WithName("otel_errors")})
 }
 
 // Tracer describes a tracer.
 type Tracer interface {
 	StartSpan(ctx context.Context) (context.Context, Span)
-	StartCustomSpan(ctx context.Context, name string) (context.Context, Span)
+	StartCustomSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, Span)
 }
 
 // TracerProvider is a simple alias for trace.TracerProvider.
@@ -45,7 +45,7 @@ func (n *noopTracerProvider) ForceFlush(_ context.Context) error {
 	return nil
 }
 
-// NewNoopTracerProvider is a shadow for otel's NewNoopTracerProvider.
+// NewNoopTracerProvider is a shadow for opentelemetry's NewNoopTracerProvider.
 var NewNoopTracerProvider = func() TracerProvider {
 	return &noopTracerProvider{}
 }

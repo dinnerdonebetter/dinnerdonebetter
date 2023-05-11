@@ -206,7 +206,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -262,7 +262,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -321,7 +321,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -505,7 +505,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -545,7 +545,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -585,7 +585,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -625,7 +625,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -666,7 +666,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -706,7 +706,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -754,7 +754,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -806,7 +806,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -859,7 +859,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -924,7 +924,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -980,7 +980,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
@@ -1028,7 +1028,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
-			"ValidateLogin",
+			"CredentialsAreValid",
 			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,

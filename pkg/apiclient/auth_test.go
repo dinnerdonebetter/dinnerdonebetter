@@ -193,7 +193,7 @@ func (s *authTestSuite) TestClient_ChangePassword() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 		exampleInput := fakes.BuildFakePasswordUpdateInput()
 
 		err := c.ChangePassword(s.ctx, s.exampleCookie, exampleInput)

@@ -6,11 +6,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/routing"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 var doNotLog = map[string]struct{}{
@@ -19,7 +20,7 @@ var doNotLog = map[string]struct{}{
 }
 
 // buildLoggingMiddleware builds a logging middleware.
-func buildLoggingMiddleware(logger logging.Logger, cfg *routing.Config) func(next http.Handler) http.Handler {
+func buildLoggingMiddleware(logger logging.Logger, silenceRouteLogging bool) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
@@ -27,7 +28,7 @@ func buildLoggingMiddleware(logger logging.Logger, cfg *routing.Config) func(nex
 			start := time.Now()
 			next.ServeHTTP(ww, req)
 
-			if !cfg.SilenceRouteLogging {
+			if !silenceRouteLogging {
 				shouldLog := true
 				for route := range doNotLog {
 					if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
@@ -48,33 +49,26 @@ func buildLoggingMiddleware(logger logging.Logger, cfg *routing.Config) func(nex
 	}
 }
 
-var doNotTrace = map[string]struct{}{
-	"/_meta_/ready": {}, // health checks
-}
-
 // buildTracingMiddleware builds a tracing middleware.
 func buildTracingMiddleware(tracer tracing.Tracer) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			shouldTrace := true
-			for route := range doNotTrace {
-				if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
-					shouldTrace = false
-					break
-				}
-			}
+			spanName := fmt.Sprintf("%s %s", req.Method, req.URL.Path)
+			ctx, span := tracer.StartCustomSpan(req.Context(), spanName)
+			defer span.End()
 
-			if shouldTrace {
-				ctx, span := tracer.StartCustomSpan(req.Context(), fmt.Sprintf("%s %s", req.Method, req.URL.Path))
-				defer span.End()
-
-				tracing.AttachRequestToSpan(span, req)
-				req = req.WithContext(ctx)
-			}
+			tracing.AttachRequestToSpan(span, req)
+			req = req.WithContext(ctx)
 
 			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
-
 			next.ServeHTTP(ww, req)
+
+			for k, v := range ww.Header() {
+				span.SetAttributes(attribute.String(fmt.Sprintf("%s.%s", keys.ResponseHeadersKey, k), strings.Join(v, ";")))
+			}
+
+			span.SetAttributes(attribute.Int(keys.ResponseStatusKey, ww.Status()))
+			span.SetAttributes(attribute.Int("response.bytes_written", ww.BytesWritten()))
 		})
 	}
 }
