@@ -6,14 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"go.opentelemetry.io/otel/attribute"
-
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/logging"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/routing"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 var doNotLog = map[string]struct{}{
@@ -22,7 +20,7 @@ var doNotLog = map[string]struct{}{
 }
 
 // buildLoggingMiddleware builds a logging middleware.
-func buildLoggingMiddleware(logger logging.Logger, cfg *routing.Config) func(next http.Handler) http.Handler {
+func buildLoggingMiddleware(logger logging.Logger, silenceRouteLogging bool) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
@@ -30,7 +28,7 @@ func buildLoggingMiddleware(logger logging.Logger, cfg *routing.Config) func(nex
 			start := time.Now()
 			next.ServeHTTP(ww, req)
 
-			if !cfg.SilenceRouteLogging {
+			if !silenceRouteLogging {
 				shouldLog := true
 				for route := range doNotLog {
 					if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
@@ -71,7 +69,6 @@ func buildTracingMiddleware(tracer tracing.Tracer) func(next http.Handler) http.
 
 			span.SetAttributes(attribute.Int(keys.ResponseStatusKey, ww.Status()))
 			span.SetAttributes(attribute.Int("response.bytes_written", ww.BytesWritten()))
-
 		})
 	}
 }
