@@ -32,6 +32,6 @@ func (t *otelTraceWrapper) StartSpan(ctx context.Context) (context.Context, Span
 }
 
 // StartCustomSpan wraps tracer.Start.
-func (t *otelTraceWrapper) StartCustomSpan(ctx context.Context, name string) (context.Context, Span) {
-	return t.tracer.Start(ctx, name)
+func (t *otelTraceWrapper) StartCustomSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, Span) {
+	return t.tracer.Start(ctx, name, opts...)
 }
