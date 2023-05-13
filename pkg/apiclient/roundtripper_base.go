@@ -13,7 +13,7 @@ import (
 
 const (
 	userAgentHeader = "User-Agent"
-	userAgent       = "Prixfixe Service client"
+	userAgent       = "Dinner Done Better Service client"
 
 	maxRetryCount = 0
 	minRetryWait  = 100 * time.Millisecond

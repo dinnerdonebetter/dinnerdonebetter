@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"encoding/base64"
 	"fmt"
 	"strings"
 	"testing"
@@ -267,7 +268,9 @@ func (s *TestSuite) TestUsers_AvatarManagement() {
 
 			_, avatar := testutils.BuildArbitraryImagePNGBytes(256)
 
-			require.NoError(t, testClients.user.UploadNewAvatar(ctx, avatar, "png"))
+			encoded := base64.RawStdEncoding.EncodeToString(avatar)
+
+			require.NoError(t, testClients.user.UploadNewAvatar(ctx, &types.AvatarUpdateInput{Base64EncodedData: encoded}))
 
 			// Assert user equality.
 			user, err := testClients.admin.GetUser(ctx, s.user.ID)

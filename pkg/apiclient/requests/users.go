@@ -1,11 +1,7 @@
 package requests
 
 import (
-	"bytes"
 	"context"
-	"fmt"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"net/url"
 
@@ -130,38 +126,20 @@ func (b *Builder) BuildArchiveUserRequest(ctx context.Context, userID string) (*
 }
 
 // BuildAvatarUploadRequest builds an HTTP request that sets a user's avatar to the provided content.
-func (b *Builder) BuildAvatarUploadRequest(ctx context.Context, avatar []byte, extension string) (*http.Request, error) {
+func (b *Builder) BuildAvatarUploadRequest(ctx context.Context, input *types.AvatarUpdateInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if len(avatar) == 0 {
+	if input == nil {
 		return nil, ErrNilInputProvided
-	}
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-
-	part, err := writer.CreateFormFile("avatar", fmt.Sprintf("avatar.%s", extension))
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating form file")
-	}
-
-	if _, err = io.Copy(part, bytes.NewReader(avatar)); err != nil {
-		return nil, observability.PrepareError(err, span, "copying file contents to request")
-	}
-
-	if err = writer.Close(); err != nil {
-		return nil, observability.PrepareError(err, span, "closing avatar writer")
 	}
 
 	uri := b.BuildURL(ctx, nil, usersBasePath, "avatar", "upload")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, body)
+	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building avatar upload request")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
-
-	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	return req, nil
 }

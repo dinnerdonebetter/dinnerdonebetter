@@ -15,7 +15,7 @@ var (
 )
 
 const (
-	companyName = "PrixFixe"
+	companyName = "Dinner Done Better"
 
 	defaultEnv = "testing"
 
@@ -26,6 +26,8 @@ const (
 	TemplateTypeInvite = "invite"
 	// TemplateTypeUsernameReminder is used to indicate the username_reminder template.
 	TemplateTypeUsernameReminder = "username_reminder"
+	// TemplateTypePasswordResetTokenCreated is used to indicate the password_reset template.
+	TemplateTypePasswordResetTokenCreated = "password_reset_token_created"
 	// TemplateTypePasswordReset is used to indicate the password_reset template.
 	TemplateTypePasswordReset = "password_reset"
 	// TemplateTypePasswordResetTokenRedeemed is used to indicate the password_reset_token_redeemed template.
@@ -197,6 +199,44 @@ func BuildPasswordResetTokenRedeemedEmail(recipient *types.User, envCfg *Environ
 			},
 			Outros: []string{
 				"If you did not request a password reset, please contact support.",
+			},
+		},
+	}
+
+	htmlContent, err := envCfg.buildHermes().GenerateHTML(e)
+	if err != nil {
+		return nil, fmt.Errorf("error rendering email template: %w", err)
+	}
+
+	msg := &OutboundEmailMessage{
+		ToAddress:   recipient.EmailAddress,
+		FromAddress: envCfg.passwordResetRedemptionEmailAddress,
+		FromName:    companyName,
+		Subject:     fmt.Sprintf("Your %s account password has been changed.", companyName),
+		HTMLContent: htmlContent,
+	}
+
+	return msg, nil
+}
+
+// BuildPasswordChangedEmail builds an email notifying a user that they've been invited to join a household.
+func BuildPasswordChangedEmail(recipient *types.User, envCfg *EnvironmentConfig) (*OutboundEmailMessage, error) {
+	if envCfg == nil {
+		return nil, ErrMissingEnvCfg
+	}
+
+	if recipient.EmailAddressVerifiedAt == nil {
+		return nil, ErrUnverifiedEmailRecipient
+	}
+
+	e := hermes.Email{
+		Body: hermes.Body{
+			Name: recipient.Username,
+			Intros: []string{
+				"This is to inform you that your password has been changed.",
+			},
+			Outros: []string{
+				"If you did not perform this action, please contact support.",
 			},
 		},
 	}

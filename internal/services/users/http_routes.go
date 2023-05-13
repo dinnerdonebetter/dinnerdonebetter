@@ -31,7 +31,7 @@ const (
 	// UserIDURIParamKey is used to refer to user IDs in router params.
 	UserIDURIParamKey = "userID"
 
-	totpIssuer             = "Prixfixe"
+	totpIssuer             = "DinnerDoneBetter"
 	base64ImagePrefix      = "data:image/jpeg;base64,"
 	minimumPasswordEntropy = 60
 	totpSecretSize         = 64
@@ -664,6 +664,15 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 		observability.AcknowledgeError(err, logger, span, "updating user")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.PasswordChangedEventType,
+		UserID:    user.ID,
+	}
+
+	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
 	}
 
 	// we're all good, log the user out

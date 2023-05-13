@@ -2,8 +2,6 @@ package apiclient
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
@@ -120,28 +118,16 @@ func (c *Client) ArchiveUser(ctx context.Context, userID string) error {
 	return nil
 }
 
-const (
-	pngExtension  = "png"
-	jpegExtension = "jpeg"
-	gifExtension  = "gif"
-)
-
 // UploadNewAvatar uploads a new avatar.
-func (c *Client) UploadNewAvatar(ctx context.Context, avatar []byte, extension string) error {
+func (c *Client) UploadNewAvatar(ctx context.Context, input *types.AvatarUpdateInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if len(avatar) == 0 {
-		return fmt.Errorf("%w: %d", ErrInvalidAvatarSize, len(avatar))
+	if input == nil {
+		return ErrNilInputProvided
 	}
 
-	ex := strings.ToLower(strings.TrimSpace(extension))
-	if ex != jpegExtension && ex != pngExtension && ex != gifExtension {
-		err := fmt.Errorf("%s: %w", extension, ErrInvalidImageExtension)
-		return observability.PrepareError(err, span, "uploading avatar")
-	}
-
-	req, err := c.requestBuilder.BuildAvatarUploadRequest(ctx, avatar, extension)
+	req, err := c.requestBuilder.BuildAvatarUploadRequest(ctx, input)
 	if err != nil {
 		return observability.PrepareError(err, span, "building avatar upload request")
 	}

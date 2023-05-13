@@ -1,4 +1,4 @@
-# PrixFixe API
+# Dinner Done Better API
 
 ## dev dependencies
 
