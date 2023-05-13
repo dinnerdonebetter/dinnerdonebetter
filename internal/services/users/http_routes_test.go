@@ -2042,11 +2042,19 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		).Return("blah", nil)
 		helper.service.authenticator = auth
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, auth)
+		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
 	})
 
 	T.Run("without input attached to request", func(t *testing.T) {

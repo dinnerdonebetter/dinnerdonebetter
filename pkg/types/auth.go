@@ -30,6 +30,8 @@ const (
 	PasswordResetTokenCreatedEventType CustomerEventType = "password_reset_token_created"
 	// PasswordResetTokenRedeemedEventType indicates a user created a password reset token.
 	PasswordResetTokenRedeemedEventType CustomerEventType = "password_reset_token_redeemed"
+	// PasswordChangedEventType indicates a user created a password reset token.
+	PasswordChangedEventType CustomerEventType = "password_changed"
 	// UsernameReminderRequestedEventType indicates a user requested a username reminder.
 	UsernameReminderRequestedEventType CustomerEventType = "username_reminder_requested"
 	// UserLoggedInCustomerEventType indicates a user has logged in.

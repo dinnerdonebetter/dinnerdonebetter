@@ -201,7 +201,7 @@ func handleOutboundNotifications(
 
 		edrs = append(edrs, &email.DeliveryRequest{
 			UserID:             changeMessage.UserID,
-			Template:           email.TemplateTypePasswordReset,
+			Template:           email.TemplateTypePasswordResetTokenCreated,
 			PasswordResetToken: changeMessage.PasswordResetToken,
 		})
 
@@ -218,6 +218,14 @@ func handleOutboundNotifications(
 			UserID:   changeMessage.UserID,
 			Template: email.TemplateTypePasswordResetTokenRedeemed,
 		})
+
+	case types.PasswordChangedEventType:
+		emailType = "password reset token redeemed"
+		edrs = append(edrs, &email.DeliveryRequest{
+			UserID:   changeMessage.UserID,
+			Template: email.TemplateTypePasswordReset,
+		})
+
 	case types.HouseholdInvitationCreatedCustomerEventType:
 		emailType = "household invitation created"
 		if changeMessage.HouseholdInvitation == nil {

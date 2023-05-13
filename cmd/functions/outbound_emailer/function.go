@@ -146,12 +146,20 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		emailType = "username reminder"
 
 		break
-	case email.TemplateTypePasswordReset:
+	case email.TemplateTypePasswordResetTokenCreated:
 		if emailDeliveryRequest.PasswordResetToken == nil {
 			return observability.PrepareAndLogError(err, logger, span, "missing password reset token")
 		}
 
 		mail, err = email.BuildGeneratedPasswordResetTokenEmail(user, emailDeliveryRequest.PasswordResetToken, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building password reset token created email")
+		}
+		emailType = "password reset token"
+
+		break
+	case email.TemplateTypePasswordReset:
+		mail, err = email.BuildPasswordChangedEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token email")
 		}
