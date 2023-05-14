@@ -58,9 +58,7 @@
 			"sqs": {
 				"messageQueueAddress": ""
 			},
-			"pubsub": {
-				"topicName": ""
-			},
+			"pubsub": {},
 			"redis": {
 				"username": "",
 				"queueAddress": [
@@ -73,9 +71,7 @@
 			"sqs": {
 				"messageQueueAddress": ""
 			},
-			"pubsub": {
-				"topicName": ""
-			},
+			"pubsub": {},
 			"redis": {
 				"username": "",
 				"queueAddress": [
@@ -90,10 +86,10 @@
 		"debug": false
 	},
 	"services": {
-		"validInstruments": {
+		"recipeStepCompletionConditions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validPreparationInstruments": {
+		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredients": {
@@ -102,7 +98,7 @@
 		"validIngredientPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanEvents": {
+		"validPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanOptionVotes": {
@@ -111,13 +107,13 @@
 		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanOptions": {
+		"recipeStepVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstrumentMeasurementUnits": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"meals": {
+		"recipeStepInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepIngredients": {
@@ -135,16 +131,16 @@
 		"vendorProxy": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepCompletionConditions": {
+		"validInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validPreparations": {
+		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepVessels": {
+		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepInstruments": {
+		"meals": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientStateIngredients": {
@@ -171,16 +167,8 @@
 		"serviceSettings": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://media.example.website/lol",
-			"dataChangesTopicName": "data_changes",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "recipes",
-					"provider": "memory"
-				},
-				"debug": false
-			}
+		"serviceSettingConfigurations": {
+			"dataChangesTopicName": "data_changes"
 		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",
@@ -204,6 +192,17 @@
 				"debug": false
 			}
 		},
+		"recipeSteps": {
+			"mediaUploadPrefix": "https://media.example.website/lol",
+			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "recipes",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
 		"webhooks": {
 			"dataChangesTopicName": "data_changes",
 			"debug": false
@@ -215,8 +214,8 @@
 		"auth": {
 			"dataChanges": "data_changes",
 			"cookies": {
-				"name": "prixfixecookie",
-				"domain": ".prixfixe.local",
+				"name": "ddb_api_cookie",
+				"domain": ".whatever.gov",
 				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
 				"lifetime": 86400000000000
@@ -229,9 +228,6 @@
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
-		},
-		"serviceSettingConfigurations": {
-			"dataChangesTopicName": "data_changes"
 		}
 	}
 }

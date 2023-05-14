@@ -9,7 +9,7 @@ import (
 
 const (
 	// DefaultCookieName is the default Cookie.BucketName.
-	DefaultCookieName = "prixfixecookie"
+	DefaultCookieName = "ddb_api_cookie"
 	// DefaultCookieLifetime is the how long a cookie is valid.
 	DefaultCookieLifetime = 24 * time.Hour
 

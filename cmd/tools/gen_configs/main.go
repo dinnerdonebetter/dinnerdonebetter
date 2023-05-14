@@ -67,7 +67,7 @@ import (
 
 const (
 	defaultPort         = 8000
-	defaultCookieDomain = ".prixfixe.local"
+	defaultCookieDomain = ".whatever.gov"
 	/* #nosec G101 */
 	debugCookieSecret = "HEREISA32CHARSECRETWHICHISMADEUP"
 	/* #nosec G101 */
