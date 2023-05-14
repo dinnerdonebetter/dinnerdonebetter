@@ -29,7 +29,7 @@ func buildTestService(t *testing.T) *service {
 		Cookies: CookieConfig{
 			Name:     DefaultCookieName,
 			BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
-			Domain:   ".prixfixe.dev",
+			Domain:   ".whocares.gov",
 		},
 		PASETO: PASETOConfig{
 			Issuer:       "test",

@@ -270,7 +270,7 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 		expectedPrepStep.StatusExplanation = *exampleInput.StatusExplanation
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPut, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPut, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -338,7 +338,7 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPut, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPut, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -378,7 +378,7 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 		expectedPrepStep.StatusExplanation = *exampleInput.StatusExplanation
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPut, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPut, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 

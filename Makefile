@@ -10,8 +10,6 @@ TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|tests|tes
 ENVIRONMENTS_DIR              := environments
 TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
-LOCAL_ADDRESS                 := api.prixfixe.local
-DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.17.2
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 LINTER_IMAGE                  := golangci/golangci-lint:v1.52.2
@@ -72,16 +70,6 @@ vendor:
 
 .PHONY: revendor
 revendor: clean_vendor vendor
-
-.PHONY: clean_certs
-clean_certs:
-	rm -rf environments/local/certificates
-	rm -rf environments/testing/certificates
-
-.PHONY: certs
-certs: clean_certs
-	(mkdir -p environments/local/certificates && cd environments/local/certificates && mkcert -client -cert-file cert.pem -key-file key.pem api.prixfixe.local $(DEFAULT_CERT_TARGETS))
-	(mkdir -p environments/testing/certificates && cd environments/testing/certificates && mkcert -client -cert-file cert.pem -key-file key.pem api.prixfixe.local $(DEFAULT_CERT_TARGETS))
 
 ## dependency injection
 

@@ -45,7 +45,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			Services: ServicesConfig{
 				Auth: authservice.Config{
 					Cookies: authservice.CookieConfig{
-						Name:     "prixfixecookie",
+						Name:     "ddb_api_cookie",
 						Domain:   "https://verygoodsoftwarenotvirus.ru",
 						Lifetime: time.Second,
 					},
