@@ -415,6 +415,11 @@ var (
 			Description: "remove quantity scales",
 			Script:      fetchMigration("00080_remove_quantity_scales"),
 		},
+		{
+			Version:     81,
+			Description: "household info fields",
+			Script:      fetchMigration("00081_household_info_fields"),
+		},
 	}
 )
 

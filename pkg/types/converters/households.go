@@ -8,7 +8,6 @@ import (
 func ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput(input *types.HouseholdCreationRequestInput) *types.HouseholdDatabaseCreationInput {
 	x := &types.HouseholdDatabaseCreationInput{
 		Name:         input.Name,
-		ContactEmail: input.ContactEmail,
 		ContactPhone: input.ContactPhone,
 		TimeZone:     input.TimeZone,
 	}
@@ -20,7 +19,6 @@ func ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput(input *types.
 func ConvertHouseholdToHouseholdUpdateRequestInput(input *types.Household) *types.HouseholdUpdateRequestInput {
 	x := &types.HouseholdUpdateRequestInput{
 		Name:          &input.Name,
-		ContactEmail:  &input.ContactEmail,
 		ContactPhone:  &input.ContactPhone,
 		BelongsToUser: input.BelongsToUser,
 		TimeZone:      &input.TimeZone,
@@ -33,7 +31,6 @@ func ConvertHouseholdToHouseholdUpdateRequestInput(input *types.Household) *type
 func ConvertHouseholdToHouseholdCreationRequestInput(household *types.Household) *types.HouseholdCreationRequestInput {
 	return &types.HouseholdCreationRequestInput{
 		Name:         household.Name,
-		ContactEmail: household.ContactEmail,
 		ContactPhone: household.ContactPhone,
 		TimeZone:     household.TimeZone,
 	}
@@ -44,7 +41,6 @@ func ConvertHouseholdToHouseholdDatabaseCreationInput(household *types.Household
 	return &types.HouseholdDatabaseCreationInput{
 		ID:            household.ID,
 		Name:          household.Name,
-		ContactEmail:  household.ContactEmail,
 		ContactPhone:  household.ContactPhone,
 		BelongsToUser: household.BelongsToUser,
 		TimeZone:      household.TimeZone,

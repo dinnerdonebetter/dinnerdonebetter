@@ -515,7 +515,6 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		householdCreationInput.ID,
 		householdCreationInput.Name,
 		types.UnpaidHouseholdBillingStatus,
-		householdCreationInput.ContactEmail,
 		householdCreationInput.ContactPhone,
 		householdCreationInput.TimeZone,
 		householdCreationInput.BelongsToUser,

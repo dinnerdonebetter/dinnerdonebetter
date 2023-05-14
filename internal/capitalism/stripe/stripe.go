@@ -69,7 +69,7 @@ func buildCustomerName(household *types.Household) string {
 func buildGetCustomerParams(a *types.Household) *stripe.CustomerParams {
 	p := &stripe.CustomerParams{
 		Name:    stripe.String(buildCustomerName(a)),
-		Email:   stripe.String(a.ContactEmail),
+		Email:   stripe.String("UNKNOWN"),
 		Phone:   stripe.String(a.ContactPhone),
 		Address: &stripe.AddressParams{},
 	}

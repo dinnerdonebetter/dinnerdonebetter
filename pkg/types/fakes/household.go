@@ -22,7 +22,6 @@ func BuildFakeHousehold() *types.Household {
 		ID:                         householdID,
 		Name:                       fake.UUID(),
 		BillingStatus:              string(types.PaidHouseholdBillingStatus),
-		ContactEmail:               fake.Email(),
 		ContactPhone:               fake.PhoneFormatted(),
 		PaymentProcessorCustomerID: fake.UUID(),
 		CreatedAt:                  BuildFakeTime(),

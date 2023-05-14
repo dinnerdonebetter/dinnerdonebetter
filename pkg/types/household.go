@@ -47,7 +47,6 @@ type (
 		ArchivedAt                 *time.Time                         `json:"archivedAt"`
 		ContactPhone               string                             `json:"contactPhone"`
 		BillingStatus              string                             `json:"billingStatus"`
-		ContactEmail               string                             `json:"contactEmail"`
 		PaymentProcessorCustomerID string                             `json:"paymentProcessorCustomer"`
 		BelongsToUser              string                             `json:"belongsToUser"`
 		ID                         string                             `json:"id"`
@@ -61,7 +60,6 @@ type (
 		_ struct{}
 
 		Name         string `json:"name"`
-		ContactEmail string `json:"contactEmail"`
 		ContactPhone string `json:"contactPhone"`
 		TimeZone     string `json:"timeZone"`
 	}
@@ -72,7 +70,6 @@ type (
 
 		ID            string
 		Name          string
-		ContactEmail  string
 		ContactPhone  string
 		TimeZone      string
 		BelongsToUser string
@@ -83,7 +80,6 @@ type (
 		_ struct{}
 
 		Name          *string `json:"name,omitempty"`
-		ContactEmail  *string `json:"contactEmail,omitempty"`
 		ContactPhone  *string `json:"contactPhone,omitempty"`
 		TimeZone      *string `json:"timeZone,omitempty"`
 		BelongsToUser string  `json:"-"`
@@ -119,10 +115,6 @@ type (
 func (x *Household) Update(input *HouseholdUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name
-	}
-
-	if input.ContactEmail != nil && *input.ContactEmail != x.ContactEmail {
-		x.ContactEmail = *input.ContactEmail
 	}
 
 	if input.ContactPhone != nil && *input.ContactPhone != x.ContactPhone {

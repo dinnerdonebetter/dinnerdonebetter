@@ -20,7 +20,6 @@ func TestHousehold_Update(T *testing.T) {
 
 		x.Update(&HouseholdUpdateRequestInput{
 			Name:          pointers.Pointer(name),
-			ContactEmail:  pointers.Pointer(name),
 			ContactPhone:  pointers.Pointer(name),
 			TimeZone:      pointers.Pointer(name),
 			BelongsToUser: name,

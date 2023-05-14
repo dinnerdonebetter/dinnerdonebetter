@@ -1,10 +1,9 @@
 UPDATE households
 SET
 	name = $1,
-	contact_email = $2,
-	contact_phone = $3,
-	time_zone = $4,
+	contact_phone = $2,
+	time_zone = $3,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_user = $5
-	AND id = $6;
+	AND belongs_to_user = $4
+	AND id = $5;

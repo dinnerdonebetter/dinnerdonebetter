@@ -3,7 +3,6 @@ SELECT
 	households.id,
 	households.name,
 	households.billing_status,
-	households.contact_email,
 	households.contact_phone,
 	households.payment_processor_customer_id,
 	households.subscription_plan_id,
