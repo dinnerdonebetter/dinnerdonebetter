@@ -940,7 +940,14 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactPhone,
-			types.DefaultHouseholdTimeZone,
+			householdCreationInput.AddressLine1,
+			householdCreationInput.AddressLine2,
+			householdCreationInput.City,
+			householdCreationInput.State,
+			householdCreationInput.ZipCode,
+			householdCreationInput.Country,
+			householdCreationInput.Latitude,
+			householdCreationInput.Longitude,
 			householdCreationInput.BelongsToUser,
 		}
 
@@ -1004,7 +1011,14 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 			householdCreationInput.Name,
 			types.UnpaidHouseholdBillingStatus,
 			householdCreationInput.ContactPhone,
-			householdCreationInput.TimeZone,
+			householdCreationInput.AddressLine1,
+			householdCreationInput.AddressLine2,
+			householdCreationInput.City,
+			householdCreationInput.State,
+			householdCreationInput.ZipCode,
+			householdCreationInput.Country,
+			householdCreationInput.Latitude,
+			householdCreationInput.Longitude,
 			householdCreationInput.BelongsToUser,
 		}
 

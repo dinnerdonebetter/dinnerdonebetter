@@ -21,7 +21,14 @@ func checkHouseholdEquality(t *testing.T, expected, actual *types.Household) {
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for household %s to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.TimeZone, actual.TimeZone, "expected TimeZone for household %s to be %v, but it was %v ", expected.ID, expected.TimeZone, actual.TimeZone)
+	assert.Equal(t, expected.AddressLine1, actual.AddressLine1, "expected AddressLine1 for household %s to be %v, but it was %v", expected.ID, expected.AddressLine1, actual.AddressLine1)
+	assert.Equal(t, expected.AddressLine2, actual.AddressLine2, "expected AddressLine2 for household %s to be %v, but it was %v", expected.ID, expected.AddressLine2, actual.AddressLine2)
+	assert.Equal(t, expected.City, actual.City, "expected City for household %s to be %v, but it was %v", expected.ID, expected.City, actual.City)
+	assert.Equal(t, expected.State, actual.State, "expected State for household %s to be %v, but it was %v", expected.ID, expected.State, actual.State)
+	assert.Equal(t, expected.ZipCode, actual.ZipCode, "expected ZipCode for household %s to be %v, but it was %v", expected.ID, expected.ZipCode, actual.ZipCode)
+	assert.Equal(t, expected.Country, actual.Country, "expected Country for household %s to be %v, but it was %v", expected.ID, expected.Country, actual.Country)
+	assert.Equal(t, expected.Latitude, actual.Latitude, "expected Latitude for household %s to be %v, but it was %v", expected.ID, expected.Latitude, actual.Latitude)
+	assert.Equal(t, expected.Longitude, actual.Longitude, "expected Longitude for household %s to be %v, but it was %v", expected.ID, expected.Longitude, actual.Longitude)
 	assert.NotZero(t, actual.CreatedAt)
 }
 

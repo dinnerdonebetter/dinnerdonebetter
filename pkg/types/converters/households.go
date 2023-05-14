@@ -1,15 +1,24 @@
 package converters
 
 import (
+	"github.com/prixfixeco/backend/internal/identifiers"
 	"github.com/prixfixeco/backend/pkg/types"
 )
 
 // ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput creates a HouseholdDatabaseCreationInput from a HouseholdCreationRequestInput.
 func ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput(input *types.HouseholdCreationRequestInput) *types.HouseholdDatabaseCreationInput {
 	x := &types.HouseholdDatabaseCreationInput{
+		ID:           identifiers.New(),
 		Name:         input.Name,
+		AddressLine1: input.AddressLine1,
+		AddressLine2: input.AddressLine2,
+		City:         input.City,
+		State:        input.State,
+		ZipCode:      input.ZipCode,
+		Country:      input.Country,
+		Latitude:     input.Latitude,
+		Longitude:    input.Longitude,
 		ContactPhone: input.ContactPhone,
-		TimeZone:     input.TimeZone,
 	}
 
 	return x
@@ -19,9 +28,16 @@ func ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput(input *types.
 func ConvertHouseholdToHouseholdUpdateRequestInput(input *types.Household) *types.HouseholdUpdateRequestInput {
 	x := &types.HouseholdUpdateRequestInput{
 		Name:          &input.Name,
+		AddressLine1:  &input.AddressLine1,
+		AddressLine2:  &input.AddressLine2,
+		City:          &input.City,
+		State:         &input.State,
+		ZipCode:       &input.ZipCode,
+		Country:       &input.Country,
+		Latitude:      input.Latitude,
+		Longitude:     input.Longitude,
 		ContactPhone:  &input.ContactPhone,
 		BelongsToUser: input.BelongsToUser,
-		TimeZone:      &input.TimeZone,
 	}
 
 	return x
@@ -31,8 +47,15 @@ func ConvertHouseholdToHouseholdUpdateRequestInput(input *types.Household) *type
 func ConvertHouseholdToHouseholdCreationRequestInput(household *types.Household) *types.HouseholdCreationRequestInput {
 	return &types.HouseholdCreationRequestInput{
 		Name:         household.Name,
+		AddressLine1: household.AddressLine1,
+		AddressLine2: household.AddressLine2,
+		City:         household.City,
+		State:        household.State,
+		ZipCode:      household.ZipCode,
+		Country:      household.Country,
+		Latitude:     household.Latitude,
+		Longitude:    household.Longitude,
 		ContactPhone: household.ContactPhone,
-		TimeZone:     household.TimeZone,
 	}
 }
 
@@ -41,9 +64,16 @@ func ConvertHouseholdToHouseholdDatabaseCreationInput(household *types.Household
 	return &types.HouseholdDatabaseCreationInput{
 		ID:            household.ID,
 		Name:          household.Name,
+		AddressLine1:  household.AddressLine1,
+		AddressLine2:  household.AddressLine2,
+		City:          household.City,
+		State:         household.State,
+		ZipCode:       household.ZipCode,
+		Country:       household.Country,
+		Latitude:      household.Latitude,
+		Longitude:     household.Longitude,
 		ContactPhone:  household.ContactPhone,
 		BelongsToUser: household.BelongsToUser,
-		TimeZone:      household.TimeZone,
 	}
 }
 

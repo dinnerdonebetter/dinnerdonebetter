@@ -18,6 +18,8 @@ func BuildFakeHousehold() *types.Household {
 		memberships = append(memberships, membership)
 	}
 
+	fakeAddress := fake.Address()
+
 	return &types.Household{
 		ID:                         householdID,
 		Name:                       fake.UUID(),
@@ -27,7 +29,14 @@ func BuildFakeHousehold() *types.Household {
 		CreatedAt:                  BuildFakeTime(),
 		BelongsToUser:              fake.UUID(),
 		Members:                    memberships,
-		TimeZone:                   types.DefaultHouseholdTimeZone,
+		AddressLine1:               fakeAddress.Address,
+		AddressLine2:               "",
+		City:                       fakeAddress.City,
+		State:                      fakeAddress.State,
+		ZipCode:                    fakeAddress.Zip,
+		Country:                    fakeAddress.Country,
+		Latitude:                   &fakeAddress.Latitude,
+		Longitude:                  &fakeAddress.Longitude,
 	}
 }
 
@@ -61,8 +70,16 @@ func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateRequestInput {
 	household := BuildFakeHousehold()
 	return &types.HouseholdUpdateRequestInput{
 		Name:          &household.Name,
+		ContactPhone:  &household.ContactPhone,
+		AddressLine1:  &household.AddressLine1,
+		AddressLine2:  &household.AddressLine2,
+		City:          &household.City,
+		State:         &household.State,
+		ZipCode:       &household.ZipCode,
+		Country:       &household.Country,
+		Latitude:      household.Latitude,
+		Longitude:     household.Longitude,
 		BelongsToUser: household.BelongsToUser,
-		TimeZone:      &household.TimeZone,
 	}
 }
 

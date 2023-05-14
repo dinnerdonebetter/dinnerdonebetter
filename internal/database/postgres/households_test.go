@@ -31,17 +31,24 @@ func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, house
 	for _, x := range households {
 		for _, y := range x.Members {
 			rowValues := []driver.Value{
-				x.ID,
-				x.Name,
-				x.BillingStatus,
-				x.ContactPhone,
-				x.PaymentProcessorCustomerID,
-				x.SubscriptionPlanID,
-				x.TimeZone,
-				x.CreatedAt,
-				x.LastUpdatedAt,
-				x.ArchivedAt,
-				x.BelongsToUser,
+				&x.ID,
+				&x.Name,
+				&x.BillingStatus,
+				&x.ContactPhone,
+				&x.AddressLine1,
+				&x.AddressLine2,
+				&x.City,
+				&x.State,
+				&x.ZipCode,
+				&x.Country,
+				&x.Latitude,
+				&x.Longitude,
+				&x.PaymentProcessorCustomerID,
+				&x.SubscriptionPlanID,
+				&x.CreatedAt,
+				&x.LastUpdatedAt,
+				&x.ArchivedAt,
+				&x.BelongsToUser,
 				&y.BelongsToUser.ID,
 				&y.BelongsToUser.FirstName,
 				&y.BelongsToUser.LastName,
@@ -52,21 +59,21 @@ func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, house
 				&y.BelongsToUser.RequiresPasswordChange,
 				&y.BelongsToUser.PasswordLastChangedAt,
 				&y.BelongsToUser.TwoFactorSecretVerifiedAt,
-				y.BelongsToUser.ServiceRole,
+				&y.BelongsToUser.ServiceRole,
 				&y.BelongsToUser.AccountStatus,
 				&y.BelongsToUser.AccountStatusExplanation,
 				&y.BelongsToUser.Birthday,
 				&y.BelongsToUser.CreatedAt,
 				&y.BelongsToUser.LastUpdatedAt,
 				&y.BelongsToUser.ArchivedAt,
-				y.ID,
-				y.BelongsToUser.ID,
-				y.BelongsToHousehold,
-				y.HouseholdRole,
-				y.DefaultHousehold,
-				y.CreatedAt,
-				x.LastUpdatedAt,
-				y.ArchivedAt,
+				&y.ID,
+				&y.BelongsToUser.ID,
+				&y.BelongsToHousehold,
+				&y.HouseholdRole,
+				&y.DefaultHousehold,
+				&y.CreatedAt,
+				&x.LastUpdatedAt,
+				&y.ArchivedAt,
 			}
 
 			if includeCounts {
@@ -590,7 +597,14 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			exampleInput.Name,
 			types.UnpaidHouseholdBillingStatus,
 			exampleInput.ContactPhone,
-			exampleHousehold.TimeZone,
+			exampleInput.AddressLine1,
+			exampleInput.AddressLine2,
+			exampleInput.City,
+			exampleInput.State,
+			exampleInput.ZipCode,
+			exampleInput.Country,
+			exampleInput.Latitude,
+			exampleInput.Longitude,
 			exampleInput.BelongsToUser,
 		}
 
@@ -677,7 +691,14 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			exampleInput.Name,
 			types.UnpaidHouseholdBillingStatus,
 			exampleInput.ContactPhone,
-			exampleHousehold.TimeZone,
+			exampleInput.AddressLine1,
+			exampleInput.AddressLine2,
+			exampleInput.City,
+			exampleInput.State,
+			exampleInput.ZipCode,
+			exampleInput.Country,
+			exampleInput.Latitude,
+			exampleInput.Longitude,
 			exampleInput.BelongsToUser,
 		}
 
@@ -716,7 +737,14 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			exampleInput.Name,
 			types.UnpaidHouseholdBillingStatus,
 			exampleInput.ContactPhone,
-			exampleHousehold.TimeZone,
+			exampleInput.AddressLine1,
+			exampleInput.AddressLine2,
+			exampleInput.City,
+			exampleInput.State,
+			exampleInput.ZipCode,
+			exampleInput.Country,
+			exampleInput.Latitude,
+			exampleInput.Longitude,
 			exampleInput.BelongsToUser,
 		}
 
@@ -766,7 +794,14 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 			exampleInput.Name,
 			types.UnpaidHouseholdBillingStatus,
 			exampleInput.ContactPhone,
-			exampleHousehold.TimeZone,
+			exampleInput.AddressLine1,
+			exampleInput.AddressLine2,
+			exampleInput.City,
+			exampleInput.State,
+			exampleInput.ZipCode,
+			exampleInput.Country,
+			exampleInput.Latitude,
+			exampleInput.Longitude,
 			exampleInput.BelongsToUser,
 		}
 
@@ -815,7 +850,14 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 		args := []any{
 			exampleHousehold.Name,
 			exampleHousehold.ContactPhone,
-			exampleHousehold.TimeZone,
+			exampleHousehold.AddressLine1,
+			exampleHousehold.AddressLine2,
+			exampleHousehold.City,
+			exampleHousehold.State,
+			exampleHousehold.ZipCode,
+			exampleHousehold.Country,
+			exampleHousehold.Latitude,
+			exampleHousehold.Longitude,
 			exampleHousehold.BelongsToUser,
 			exampleHousehold.ID,
 		}
@@ -855,7 +897,14 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 		args := []any{
 			exampleHousehold.Name,
 			exampleHousehold.ContactPhone,
-			exampleHousehold.TimeZone,
+			exampleHousehold.AddressLine1,
+			exampleHousehold.AddressLine2,
+			exampleHousehold.City,
+			exampleHousehold.State,
+			exampleHousehold.ZipCode,
+			exampleHousehold.Country,
+			exampleHousehold.Latitude,
+			exampleHousehold.Longitude,
 			exampleHousehold.BelongsToUser,
 			exampleHousehold.ID,
 		}
@@ -952,7 +1001,7 @@ func TestQuerier_buildGetHouseholdsQuery(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		c, _ := buildTestClient(t)
 
-		expectedQuery := "SELECT households.id, households.name, households.billing_status, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.time_zone, households.created_at, households.last_updated_at, households.archived_at, households.belongs_to_user, users.id, users.first_name, users.last_name, users.username, users.email_address, users.email_address_verified_at, users.avatar_src, users.requires_password_change, users.password_last_changed_at, users.two_factor_secret_verified_at, users.service_role, users.user_account_status, users.user_account_status_explanation, users.birthday, users.created_at, users.last_updated_at, users.archived_at, household_user_memberships.id, household_user_memberships.belongs_to_user, household_user_memberships.belongs_to_household, household_user_memberships.household_role, household_user_memberships.default_household, household_user_memberships.created_at, household_user_memberships.last_updated_at, household_user_memberships.archived_at, (SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL AND households.belongs_to_user = $1) as filtered_count, (SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL AND households.belongs_to_user = $2) as total_count FROM households JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id JOIN users ON household_user_memberships.belongs_to_user = users.id WHERE household_user_memberships.archived_at IS NULL AND household_user_memberships.belongs_to_user = $3 AND households.archived_at IS NULL GROUP BY households.id, users.id, household_user_memberships.id LIMIT 20"
+		expectedQuery := "SELECT households.id, households.name, households.billing_status, households.contact_phone, households.address_line_1, households.address_line_2, households.city, households.state, households.zip_code, households.country, households.latitude, households.longitude, households.payment_processor_customer_id, households.subscription_plan_id, households.created_at, households.last_updated_at, households.archived_at, households.belongs_to_user, users.id, users.first_name, users.last_name, users.username, users.email_address, users.email_address_verified_at, users.avatar_src, users.requires_password_change, users.password_last_changed_at, users.two_factor_secret_verified_at, users.service_role, users.user_account_status, users.user_account_status_explanation, users.birthday, users.created_at, users.last_updated_at, users.archived_at, household_user_memberships.id, household_user_memberships.belongs_to_user, household_user_memberships.belongs_to_household, household_user_memberships.household_role, household_user_memberships.default_household, household_user_memberships.created_at, household_user_memberships.last_updated_at, household_user_memberships.archived_at, (SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL AND households.belongs_to_user = $1) as filtered_count, (SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL AND households.belongs_to_user = $2) as total_count FROM households JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id JOIN users ON household_user_memberships.belongs_to_user = users.id WHERE household_user_memberships.archived_at IS NULL AND household_user_memberships.belongs_to_user = $3 AND households.archived_at IS NULL GROUP BY households.id, users.id, household_user_memberships.id LIMIT 20"
 		expectedArgs := []any{
 			exampleUserID,
 			exampleUserID,
@@ -972,7 +1021,7 @@ func TestQuerier_buildGetHouseholdsQuery(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		c, _ := buildTestClient(t)
 
-		expectedQuery := "SELECT households.id, households.name, households.billing_status, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.time_zone, households.created_at, households.last_updated_at, households.archived_at, households.belongs_to_user, users.id, users.first_name, users.last_name, users.username, users.email_address, users.email_address_verified_at, users.avatar_src, users.requires_password_change, users.password_last_changed_at, users.two_factor_secret_verified_at, users.service_role, users.user_account_status, users.user_account_status_explanation, users.birthday, users.created_at, users.last_updated_at, users.archived_at, household_user_memberships.id, household_user_memberships.belongs_to_user, household_user_memberships.belongs_to_household, household_user_memberships.household_role, household_user_memberships.default_household, household_user_memberships.created_at, household_user_memberships.last_updated_at, household_user_memberships.archived_at, (SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL AND households.belongs_to_user = $1) as filtered_count, (SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL AND households.belongs_to_user = $2) as total_count FROM households JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id JOIN users ON household_user_memberships.belongs_to_user = users.id WHERE household_user_memberships.archived_at IS NULL AND household_user_memberships.belongs_to_user = $3 AND households.archived_at IS NULL GROUP BY households.id, users.id, household_user_memberships.id LIMIT 20"
+		expectedQuery := "SELECT households.id, households.name, households.billing_status, households.contact_phone, households.address_line_1, households.address_line_2, households.city, households.state, households.zip_code, households.country, households.latitude, households.longitude, households.payment_processor_customer_id, households.subscription_plan_id, households.created_at, households.last_updated_at, households.archived_at, households.belongs_to_user, users.id, users.first_name, users.last_name, users.username, users.email_address, users.email_address_verified_at, users.avatar_src, users.requires_password_change, users.password_last_changed_at, users.two_factor_secret_verified_at, users.service_role, users.user_account_status, users.user_account_status_explanation, users.birthday, users.created_at, users.last_updated_at, users.archived_at, household_user_memberships.id, household_user_memberships.belongs_to_user, household_user_memberships.belongs_to_household, household_user_memberships.household_role, household_user_memberships.default_household, household_user_memberships.created_at, household_user_memberships.last_updated_at, household_user_memberships.archived_at, (SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL AND households.belongs_to_user = $1) as filtered_count, (SELECT COUNT(households.id) FROM households WHERE households.archived_at IS NULL AND households.belongs_to_user = $2) as total_count FROM households JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id JOIN users ON household_user_memberships.belongs_to_user = users.id WHERE household_user_memberships.archived_at IS NULL AND household_user_memberships.belongs_to_user = $3 AND households.archived_at IS NULL GROUP BY households.id, users.id, household_user_memberships.id LIMIT 20"
 		expectedArgs := []any{
 			exampleUserID,
 			exampleUserID,

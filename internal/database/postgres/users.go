@@ -508,7 +508,6 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		ID:            householdID,
 		Name:          hn,
 		BelongsToUser: userID,
-		TimeZone:      types.DefaultHouseholdTimeZone,
 	}
 
 	householdCreationArgs := []any{
@@ -516,7 +515,14 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		householdCreationInput.Name,
 		types.UnpaidHouseholdBillingStatus,
 		householdCreationInput.ContactPhone,
-		householdCreationInput.TimeZone,
+		householdCreationInput.AddressLine1,
+		householdCreationInput.AddressLine2,
+		householdCreationInput.City,
+		householdCreationInput.State,
+		householdCreationInput.ZipCode,
+		householdCreationInput.Country,
+		householdCreationInput.Latitude,
+		householdCreationInput.Longitude,
 		householdCreationInput.BelongsToUser,
 	}
 
