@@ -110,10 +110,6 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	cancel()
 	defer dataManager.Close()
 
-	if !dataManager.IsReady(ctx, 50) {
-		return observability.PrepareAndLogError(database.ErrDatabaseNotReady, logger, span, "pinging database")
-	}
-
 	var changeMessage types.DataChangeMessage
 	if err = json.Unmarshal(msg.Message.Data, &changeMessage); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)

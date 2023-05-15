@@ -9,7 +9,6 @@ import (
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
-	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
 	"github.com/prixfixeco/backend/internal/observability"
@@ -70,10 +69,6 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 
 	cancel()
 	defer dataManager.Close()
-
-	if !dataManager.IsReady(ctx, 50) {
-		return observability.PrepareAndLogError(database.ErrDatabaseNotReady, logger, span, "pinging database")
-	}
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {

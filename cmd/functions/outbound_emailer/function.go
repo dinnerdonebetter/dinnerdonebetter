@@ -10,7 +10,6 @@ import (
 
 	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
 	"github.com/prixfixeco/backend/internal/config"
-	"github.com/prixfixeco/backend/internal/database"
 	"github.com/prixfixeco/backend/internal/database/postgres"
 	"github.com/prixfixeco/backend/internal/email"
 	emailconfig "github.com/prixfixeco/backend/internal/email/config"
@@ -91,10 +90,6 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 	cancel()
 	defer dataManager.Close()
-
-	if !dataManager.IsReady(ctx, 50) {
-		return observability.PrepareAndLogError(database.ErrDatabaseNotReady, logger, span, "pinging database")
-	}
 
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
 	if err != nil {

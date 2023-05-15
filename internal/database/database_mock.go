@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
 
@@ -103,8 +104,8 @@ func (m *MockDatabase) ProvideSessionStore() scs.Store {
 }
 
 // Migrate satisfies the DataManager interface.
-func (m *MockDatabase) Migrate(ctx context.Context, maxAttempts uint8) error {
-	return m.Called(ctx, maxAttempts).Error(0)
+func (m *MockDatabase) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) error {
+	return m.Called(ctx, waitPeriod, maxAttempts).Error(0)
 }
 
 // Close satisfies the DataManager interface.
@@ -118,8 +119,8 @@ func (m *MockDatabase) DB() *sql.DB {
 }
 
 // IsReady satisfies the DataManager interface.
-func (m *MockDatabase) IsReady(ctx context.Context, maxAttempts uint8) (ready bool) {
-	return m.Called(ctx, maxAttempts).Bool(0)
+func (m *MockDatabase) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) (ready bool) {
+	return m.Called(ctx, waitPeriod, maxAttempts).Bool(0)
 }
 
 // BeginTx satisfies the DataManager interface.

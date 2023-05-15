@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -28,9 +27,6 @@ const (
 	PaidHouseholdBillingStatus HouseholdBillingStatus = "paid"
 	// UnpaidHouseholdBillingStatus indicates a household is not paid.
 	UnpaidHouseholdBillingStatus HouseholdBillingStatus = "unpaid"
-
-	// DefaultHouseholdTimeZone is the default time zone we will assign to a household.
-	DefaultHouseholdTimeZone = "US/Central"
 )
 
 type (
@@ -47,23 +43,34 @@ type (
 		ArchivedAt                 *time.Time                         `json:"archivedAt"`
 		ContactPhone               string                             `json:"contactPhone"`
 		BillingStatus              string                             `json:"billingStatus"`
-		ContactEmail               string                             `json:"contactEmail"`
+		AddressLine1               string                             `json:"addressLine1"`
+		AddressLine2               string                             `json:"addressLine2"`
+		City                       string                             `json:"city"`
+		State                      string                             `json:"state"`
+		ZipCode                    string                             `json:"zipCode"`
+		Country                    string                             `json:"country"`
+		Latitude                   *float64                           `json:"latitude"`
+		Longitude                  *float64                           `json:"longitude"`
 		PaymentProcessorCustomerID string                             `json:"paymentProcessorCustomer"`
 		BelongsToUser              string                             `json:"belongsToUser"`
 		ID                         string                             `json:"id"`
-		TimeZone                   string                             `json:"timeZone"`
 		Name                       string                             `json:"name"`
 		Members                    []*HouseholdUserMembershipWithUser `json:"members"`
 	}
 
 	// HouseholdCreationRequestInput represents what a User could set as input for creating households.
 	HouseholdCreationRequestInput struct {
-		_ struct{}
-
-		Name         string `json:"name"`
-		ContactEmail string `json:"contactEmail"`
-		ContactPhone string `json:"contactPhone"`
-		TimeZone     string `json:"timeZone"`
+		_            struct{}
+		Latitude     *float64 `json:"latitude"`
+		Longitude    *float64 `json:"longitude"`
+		Name         string   `json:"name"`
+		ContactPhone string   `json:"contactPhone"`
+		AddressLine1 string   `json:"addressLine1"`
+		AddressLine2 string   `json:"addressLine2"`
+		City         string   `json:"city"`
+		State        string   `json:"state"`
+		ZipCode      string   `json:"zipCode"`
+		Country      string   `json:"country"`
 	}
 
 	// HouseholdDatabaseCreationInput represents what a User could set as input for creating households.
@@ -72,9 +79,15 @@ type (
 
 		ID            string
 		Name          string
-		ContactEmail  string
+		AddressLine1  string
+		AddressLine2  string
+		City          string
+		State         string
+		ZipCode       string
+		Country       string
+		Latitude      *float64
+		Longitude     *float64
 		ContactPhone  string
-		TimeZone      string
 		BelongsToUser string
 	}
 
@@ -82,11 +95,17 @@ type (
 	HouseholdUpdateRequestInput struct {
 		_ struct{}
 
-		Name          *string `json:"name,omitempty"`
-		ContactEmail  *string `json:"contactEmail,omitempty"`
-		ContactPhone  *string `json:"contactPhone,omitempty"`
-		TimeZone      *string `json:"timeZone,omitempty"`
-		BelongsToUser string  `json:"-"`
+		Name          *string  `json:"name,omitempty"`
+		ContactPhone  *string  `json:"contactPhone,omitempty"`
+		AddressLine1  *string  `json:"addressLine1"`
+		AddressLine2  *string  `json:"addressLine2"`
+		City          *string  `json:"city"`
+		State         *string  `json:"state"`
+		ZipCode       *string  `json:"zipCode"`
+		Country       *string  `json:"country"`
+		Latitude      *float64 `json:"latitude"`
+		Longitude     *float64 `json:"longitude"`
+		BelongsToUser string   `json:"-"`
 	}
 
 	// HouseholdDataManager describes a structure capable of storing households permanently.
@@ -121,20 +140,40 @@ func (x *Household) Update(input *HouseholdUpdateRequestInput) {
 		x.Name = *input.Name
 	}
 
-	if input.ContactEmail != nil && *input.ContactEmail != x.ContactEmail {
-		x.ContactEmail = *input.ContactEmail
-	}
-
 	if input.ContactPhone != nil && *input.ContactPhone != x.ContactPhone {
 		x.ContactPhone = *input.ContactPhone
 	}
 
-	if input.TimeZone != nil && *input.TimeZone != x.TimeZone {
-		if _, err := time.LoadLocation(*input.TimeZone); err != nil {
-			// FIXME: we should return an error here, right?
-			log.Println(err)
-		}
-		x.TimeZone = *input.TimeZone
+	if input.AddressLine1 != nil && *input.AddressLine1 != x.AddressLine1 {
+		x.AddressLine1 = *input.AddressLine1
+	}
+
+	if input.AddressLine2 != nil && *input.AddressLine2 != x.AddressLine2 {
+		x.AddressLine2 = *input.AddressLine2
+	}
+
+	if input.City != nil && *input.City != x.City {
+		x.City = *input.City
+	}
+
+	if input.State != nil && *input.State != x.State {
+		x.State = *input.State
+	}
+
+	if input.ZipCode != nil && *input.ZipCode != x.ZipCode {
+		x.ZipCode = *input.ZipCode
+	}
+
+	if input.Country != nil && *input.Country != x.Country {
+		x.Country = *input.Country
+	}
+
+	if input.Latitude != nil && input.Latitude != x.Latitude {
+		x.Latitude = input.Latitude
+	}
+
+	if input.Longitude != nil && input.Longitude != x.Longitude {
+		x.Longitude = input.Longitude
 	}
 }
 
@@ -144,6 +183,8 @@ var _ validation.ValidatableWithContext = (*HouseholdCreationRequestInput)(nil)
 func (x *HouseholdCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Latitude, validation.NilOrNotEmpty),
+		validation.Field(&x.Longitude, validation.NilOrNotEmpty),
 	)
 }
 
@@ -153,6 +194,8 @@ var _ validation.ValidatableWithContext = (*HouseholdUpdateRequestInput)(nil)
 func (x *HouseholdUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Latitude, validation.NilOrNotEmpty),
+		validation.Field(&x.Longitude, validation.NilOrNotEmpty),
 	)
 }
 

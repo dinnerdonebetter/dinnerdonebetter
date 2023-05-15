@@ -35,7 +35,7 @@ func TestQuerier_Migrate(T *testing.T) {
 
 		c.migrateOnce.Do(func() {})
 
-		err := c.Migrate(ctx, 1)
+		err := c.Migrate(ctx, time.Second, 1)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
