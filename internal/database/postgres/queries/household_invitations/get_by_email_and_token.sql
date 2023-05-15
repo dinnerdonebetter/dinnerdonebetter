@@ -9,6 +9,7 @@ SELECT
 	households.city,
 	households.state,
 	households.zip_code,
+	households.country,
 	households.latitude,
     households.longitude,
 	households.payment_processor_customer_id,

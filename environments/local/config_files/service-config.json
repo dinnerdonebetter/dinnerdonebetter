@@ -46,7 +46,8 @@
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true,
-		"maxPingAttempts": 50
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000
 	},
 	"meta": {
 		"runMode": "development",

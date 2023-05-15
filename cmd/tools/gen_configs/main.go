@@ -248,6 +248,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			LogQueries:      true,
 			RunMigrations:   true,
 			MaxPingAttempts: maxAttempts,
+			PingWaitPeriod:  time.Second,
 		},
 		Observability: observability.Config{
 			Logging: devEnvLogConfig,
@@ -363,6 +364,7 @@ func buildDevConfig() *config.InstanceConfig {
 			RunMigrations:     true,
 			LogQueries:        true,
 			MaxPingAttempts:   maxAttempts,
+			PingWaitPeriod:    time.Second,
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
@@ -571,6 +573,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			RunMigrations:     true,
 			LogQueries:        true,
 			MaxPingAttempts:   maxAttempts,
+			PingWaitPeriod:    1500 * time.Millisecond,
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{

@@ -7,4 +7,3 @@ ALTER TABLE households ADD COLUMN "country" TEXT NOT NULL DEFAULT '';
 ALTER TABLE households ADD COLUMN "latitude" NUMERIC(14, 11);
 ALTER TABLE households ADD COLUMN "longitude" NUMERIC(14, 11);
 ALTER TABLE households DROP COLUMN IF EXISTS "contact_email";
-ALTER TABLE households DROP COLUMN IF EXISTS "contact_email";

@@ -71,10 +71,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if ready := dataManager.IsReady(ctx, 50); !ready {
-		log.Fatal("database not ready")
-	}
-
 	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.Consumers.RedisConfig)
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)

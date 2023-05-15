@@ -6,6 +6,6 @@ ENV SKIP_PASETO_TESTS=FALSE
 COPY . .
 
 # to debug a specific test:
-# ENTRYPOINT go test -parallel 1 -v -failfast github.com/prixfixeco/backend/tests/integration -run TestIntegration/TestUsers_AvatarManagement
+# ENTRYPOINT go test -parallel 1 -v -failfast github.com/prixfixeco/backend/tests/integration -run TestIntegration/TestHouseholds_Updating
 
 ENTRYPOINT go test -v github.com/prixfixeco/backend/tests/integration

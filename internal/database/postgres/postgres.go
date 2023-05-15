@@ -80,7 +80,7 @@ func ProvideDatabaseClient(
 	if cfg.RunMigrations {
 		c.logger.Debug("migrating querier")
 
-		if err = c.Migrate(ctx, cfg.MaxPingAttempts); err != nil {
+		if err = c.Migrate(ctx, cfg.PingWaitPeriod, cfg.MaxPingAttempts); err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "migrating database")
 		}
 
@@ -109,7 +109,7 @@ func (q *Querier) ProvideSessionStore() scs.Store {
 }
 
 // IsReady is a simple wrapper around the core querier IsReady call.
-func (q *Querier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool) {
+func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) (ready bool) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -121,7 +121,7 @@ func (q *Querier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool) {
 		err := q.db.PingContext(ctx)
 		if err != nil {
 			logger.WithValue("attempt_count", attemptCount).Debug("ping failed, waiting for db")
-			time.Sleep(time.Second)
+			time.Sleep(waitPeriod)
 
 			attemptCount++
 			if attemptCount >= int(maxAttempts) {

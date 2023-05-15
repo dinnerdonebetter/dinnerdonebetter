@@ -7,9 +7,10 @@ SET
 	city = $5,
 	state = $6,
 	zip_code = $7,
-	latitude = $8,
-    longitude = $9,
+	country = $8,
+	latitude = $9,
+    longitude = $10,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_user = $10
-	AND id = $11;
+	AND belongs_to_user = $11
+	AND id = $12;

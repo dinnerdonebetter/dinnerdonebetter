@@ -144,7 +144,7 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		db.ExpectPing().WillDelayFor(0)
 
-		assert.True(t, c.IsReady(ctx, 1))
+		assert.True(t, c.IsReady(ctx, time.Second, 1))
 	})
 
 	T.Run("with error pinging database", func(t *testing.T) {
@@ -155,7 +155,7 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		db.ExpectPing().WillReturnError(errors.New("blah"))
 
-		assert.False(t, c.IsReady(ctx, 1))
+		assert.False(t, c.IsReady(ctx, time.Second, 1))
 	})
 
 	T.Run("exhausting all available queries", func(t *testing.T) {
@@ -166,11 +166,11 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		c.IsReady(ctx, 1)
+		c.IsReady(ctx, time.Second, 1)
 
 		db.ExpectPing().WillReturnError(errors.New("blah"))
 
-		assert.False(t, c.IsReady(ctx, 1))
+		assert.False(t, c.IsReady(ctx, time.Second, 1))
 	})
 }
 
