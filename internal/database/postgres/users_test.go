@@ -1959,8 +1959,6 @@ func TestQuerier_UpdateUser(T *testing.T) {
 			exampleUser.LastName,
 			exampleUser.HashedPassword,
 			exampleUser.AvatarSrc,
-			exampleUser.TwoFactorSecret,
-			exampleUser.TwoFactorSecretVerifiedAt,
 			exampleUser.Birthday,
 			exampleUser.ID,
 		}
@@ -1997,8 +1995,6 @@ func TestQuerier_UpdateUser(T *testing.T) {
 			exampleUser.LastName,
 			exampleUser.HashedPassword,
 			exampleUser.AvatarSrc,
-			exampleUser.TwoFactorSecret,
-			exampleUser.TwoFactorSecretVerifiedAt,
 			exampleUser.Birthday,
 			exampleUser.ID,
 		}
@@ -2008,6 +2004,127 @@ func TestQuerier_UpdateUser(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.UpdateUser(ctx, exampleUser))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_UpdateUsername(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleNewUsername := fakes.BuildFakeUser().Username
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleNewUsername,
+			exampleUser.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.UpdateUsername(ctx, exampleUser.ID, exampleNewUsername))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with empty user", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.UpdateUsername(ctx, "", t.Name()))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleNewUsername := fakes.BuildFakeUser().Username
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleNewUsername,
+			exampleUser.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.UpdateUsername(ctx, exampleUser.ID, exampleNewUsername))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_UpdateUserDetails(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleUser.FirstName,
+			exampleUser.LastName,
+			exampleUser.Birthday,
+			exampleUser.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.UpdateUserDetails(ctx,
+			exampleUser.ID,
+			exampleUser.FirstName,
+			exampleUser.LastName,
+			exampleUser.Birthday,
+		))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleUser.FirstName,
+			exampleUser.LastName,
+			exampleUser.Birthday,
+			exampleUser.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.UpdateUserDetails(ctx,
+			exampleUser.ID,
+			exampleUser.FirstName,
+			exampleUser.LastName,
+			exampleUser.Birthday,
+		))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -2159,7 +2276,7 @@ func TestQuerier_UpdateUserTwoFactorSecret(T *testing.T) {
 	})
 }
 
-func TestQuerier_VerifyUserTwoFactorSecret(T *testing.T) {
+func TestQuerier_MarkUserTwoFactorSecretAsVerified(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -2211,6 +2328,76 @@ func TestQuerier_VerifyUserTwoFactorSecret(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.MarkUserTwoFactorSecretAsVerified(ctx, exampleUserID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkUserTwoFactorSecretAsUnverified(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUserID := fakes.BuildFakeID()
+		exampleSecret := fakes.BuildFakeID()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleSecret,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(markUserTwoFactorSecretAsUnverified)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		assert.NoError(t, c.MarkUserTwoFactorSecretAsUnverified(ctx, exampleUserID, exampleSecret))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid user ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleSecret := fakes.BuildFakeID()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkUserTwoFactorSecretAsUnverified(ctx, "", exampleSecret))
+	})
+
+	T.Run("with invalid secret", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUserID := fakes.BuildFakeID()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkUserTwoFactorSecretAsUnverified(ctx, exampleUserID, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUserID := fakes.BuildFakeID()
+		exampleSecret := fakes.BuildFakeID()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleSecret,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(markUserTwoFactorSecretAsUnverified)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkUserTwoFactorSecretAsUnverified(ctx, exampleUserID, exampleSecret))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

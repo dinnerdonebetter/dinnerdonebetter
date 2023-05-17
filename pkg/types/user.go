@@ -173,22 +173,30 @@ type (
 
 	// UserDataManager describes a structure which can manage users in persistent storage.
 	UserDataManager interface {
-		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
 		GetUser(ctx context.Context, userID string) (*User, error)
-		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
+		GetUserByUsername(ctx context.Context, username string) (*User, error)
+		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
+		GetUsers(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[User], error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
+		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
+
+		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
+		UpdateUser(ctx context.Context, updated *User) error
+		// UpdateUsername(ctx context.Context, userID, newUsername string) error
+		// UpdateEmailAddress(ctx context.Context, userID, newEmailAddres string) error
+		// UpdateUserDetails(ctx context.Context, userID, firstName, lastName string, birthday *time.Time) error
+		UpdateUserPassword(ctx context.Context, userID, newHash string) error
+		ArchiveUser(ctx context.Context, userID string) error
+
+		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
+
+		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
+		MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error
+
 		GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*User, error)
 		MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error
 		GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error)
-		GetUserByUsername(ctx context.Context, username string) (*User, error)
-		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
-		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
-		GetUsers(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[User], error)
-		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
-		UpdateUser(ctx context.Context, updated *User) error
-		UpdateUserPassword(ctx context.Context, userID, newHash string) error
-		ArchiveUser(ctx context.Context, userID string) error
 	}
 
 	// UserDataService describes a structure capable of serving traffic related to users.

@@ -114,7 +114,7 @@ func TestBuilder_BuildLogoutRequest(T *testing.T) {
 func TestBuilder_BuildChangePasswordRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/users/password/new"
+	const expectedPath = "/api/v1/users/password/new"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -155,7 +155,7 @@ func TestBuilder_BuildChangePasswordRequest(T *testing.T) {
 func TestBuilder_BuildCycleTwoFactorSecretRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/users/totp_secret/new"
+	const expectedPath = "/api/v1/users/totp_secret/new"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

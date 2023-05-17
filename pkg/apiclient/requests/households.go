@@ -26,7 +26,7 @@ func (b *Builder) BuildSwitchActiveHouseholdRequest(ctx context.Context, househo
 
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "household", "select")
+	uri := b.buildAPIV1URL(ctx, nil, usersBasePath, "household", "select").String()
 
 	input := &types.ChangeActiveHouseholdInput{
 		HouseholdID: householdID,

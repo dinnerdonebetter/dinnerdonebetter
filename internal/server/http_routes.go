@@ -73,22 +73,16 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 	authenticatedRouter.Get("/auth/status", s.authService.StatusHandler)
 
 	router.Route("/users", func(userRouter routing.Router) {
+		userRouter.Post(root, s.usersService.CreateHandler)
 		userRouter.Post("/login", s.authService.BuildLoginHandler(false))
 		userRouter.Post("/login/admin", s.authService.BuildLoginHandler(true))
 		userRouter.WithMiddleware(s.authService.UserAttributionMiddleware, s.authService.CookieRequirementMiddleware).
 			Post("/logout", s.authService.EndSessionHandler)
-		userRouter.Post(root, s.usersService.CreateHandler)
-		userRouter.Post("/totp_secret/verify", s.usersService.TOTPSecretVerificationHandler)
-		userRouter.Post("/email_address/verify", s.usersService.VerifyUserEmailAddressHandler)
 		userRouter.Post("/username/reminder", s.usersService.RequestUsernameReminderHandler)
 		userRouter.Post("/password/reset", s.usersService.CreatePasswordResetTokenHandler)
 		userRouter.Post("/password/reset/redeem", s.usersService.PasswordResetTokenRedemptionHandler)
-
-		// need credentials beyond this point
-		authedRouter := userRouter.WithMiddleware(s.authService.UserAttributionMiddleware, s.authService.AuthorizationMiddleware)
-		authedRouter.Post("/household/select", s.authService.ChangeActiveHouseholdHandler)
-		authedRouter.Post("/totp_secret/new", s.usersService.NewTOTPSecretHandler)
-		authedRouter.Put("/password/new", s.usersService.UpdatePasswordHandler)
+		userRouter.Post("/email_address/verify", s.usersService.VerifyUserEmailAddressHandler)
+		userRouter.Post("/totp_secret/verify", s.usersService.TOTPSecretVerificationHandler)
 	})
 
 	authenticatedRouter.WithMiddleware(s.authService.AuthorizationMiddleware).Route("/api/v1", func(v1Router routing.Router) {
@@ -117,6 +111,10 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 			usersRouter.Get("/self", s.usersService.SelfHandler)
 			usersRouter.Post("/email_address_verification", s.usersService.RequestEmailVerificationEmailHandler)
 			usersRouter.Post("/permissions/check", s.usersService.PermissionsHandler)
+
+			usersRouter.Post("/household/select", s.authService.ChangeActiveHouseholdHandler)
+			usersRouter.Put("/password/new", s.usersService.UpdatePasswordHandler)
+			usersRouter.Post("/totp_secret/new", s.usersService.NewTOTPSecretHandler)
 
 			singleUserRoute := buildURLVarChunk(usersservice.UserIDURIParamKey, "")
 			usersRouter.Route(singleUserRoute, func(singleUserRouter routing.Router) {

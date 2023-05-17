@@ -187,7 +187,7 @@ func (s *authTestSuite) TestClient_Logout() {
 }
 
 func (s *authTestSuite) TestClient_ChangePassword() {
-	const expectedPath = "/users/password/new"
+	const expectedPath = "/api/v1/users/password/new"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -252,7 +252,7 @@ func (s *authTestSuite) TestClient_ChangePassword() {
 }
 
 func (s *authTestSuite) TestClient_CycleTwoFactorSecret() {
-	const expectedPath = "/users/totp_secret/new"
+	const expectedPath = "/api/v1/users/totp_secret/new"
 
 	s.Run("standard", func() {
 		t := s.T()

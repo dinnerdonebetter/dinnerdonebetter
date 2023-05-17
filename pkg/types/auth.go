@@ -26,6 +26,12 @@ const (
 	// TwoFactorSecretVerifiedCustomerEventType indicates a user's two factor secret was verified.
 	/* #nosec G101 */
 	TwoFactorSecretVerifiedCustomerEventType CustomerEventType = "two_factor_secret_verified"
+	// TwoFactorDeactivatedCustomerEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
+	/* #nosec G101 */
+	TwoFactorDeactivatedCustomerEventType CustomerEventType = "two_factor_deactivated"
+	// TwoFactorSecretChangedCustomerEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
+	/* #nosec G101 */
+	TwoFactorSecretChangedCustomerEventType CustomerEventType = "two_factor_secret_changed"
 	// PasswordResetTokenCreatedEventType indicates a user created a password reset token.
 	PasswordResetTokenCreatedEventType CustomerEventType = "password_reset_token_created"
 	// PasswordResetTokenRedeemedEventType indicates a user created a password reset token.

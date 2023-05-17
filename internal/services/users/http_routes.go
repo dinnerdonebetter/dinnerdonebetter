@@ -27,6 +27,8 @@ import (
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
+var _ types.UserDataService = (*service)(nil)
+
 const (
 	// UserIDURIParamKey is used to refer to user IDs in router params.
 	UserIDURIParamKey = "userID"
@@ -445,8 +447,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		return
 	}
 
-	if updateUserErr := s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); updateUserErr != nil {
-		observability.AcknowledgeError(updateUserErr, logger, span, "verifying user two factor secret")
+	if err := s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "verifying user two factor secret")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -456,8 +458,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		UserID:    user.ID,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -535,14 +537,20 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	user.TwoFactorSecret = tfs
-	user.TwoFactorSecretVerifiedAt = nil
-
 	// update the user in the database.
-	if err = s.userDataManager.UpdateUser(ctx, user); err != nil {
+	if err = s.userDataManager.MarkUserTwoFactorSecretAsUnverified(ctx, user.ID, tfs); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating 2FA secret")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.TwoFactorSecretChangedCustomerEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// let the requester know we're all good.
@@ -671,8 +679,8 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 		UserID:    user.ID,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// we're all good, log the user out
@@ -790,8 +798,8 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		UserID:    u.ID,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -855,8 +863,8 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		PasswordResetToken: t,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -948,8 +956,8 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		UserID:    t.BelongsToUser,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -1004,8 +1012,8 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		UserID:    user.ID,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -1042,8 +1050,8 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		EmailVerificationToken: verificationToken,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	logger.WithValue("data_change_message", dcm).Debug("published data change message")

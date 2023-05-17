@@ -40,7 +40,7 @@ func (s *householdsTestSuite) SetupTest() {
 }
 
 func (s *householdsTestSuite) TestClient_SwitchActiveHousehold() {
-	const expectedPath = "/users/household/select"
+	const expectedPath = "/api/v1/users/household/select"
 
 	s.Run("standard", func() {
 		t := s.T()
