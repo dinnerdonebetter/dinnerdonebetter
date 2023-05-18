@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
-	"github.com/prixfixeco/backend/internal/observability/metrics/prometheus"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics/prometheus"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

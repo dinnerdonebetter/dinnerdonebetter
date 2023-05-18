@@ -9,11 +9,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/prixfixeco/backend/internal/analytics/segment"
-	"github.com/prixfixeco/backend/internal/database"
-	emailcfg "github.com/prixfixeco/backend/internal/email/config"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	"github.com/dinnerdonebetter/backend/internal/database"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"github.com/googleapis/gax-go/v2"

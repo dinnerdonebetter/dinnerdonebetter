@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"

@@ -3,8 +3,8 @@ package tracing
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"

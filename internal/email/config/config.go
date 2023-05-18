@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/prixfixeco/backend/internal/email"
-	"github.com/prixfixeco/backend/internal/email/mailgun"
-	"github.com/prixfixeco/backend/internal/email/mailjet"
-	"github.com/prixfixeco/backend/internal/email/sendgrid"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/email"
+	"github.com/dinnerdonebetter/backend/internal/email/mailgun"
+	"github.com/dinnerdonebetter/backend/internal/email/mailjet"
+	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

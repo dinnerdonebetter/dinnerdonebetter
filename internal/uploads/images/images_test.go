@@ -16,8 +16,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

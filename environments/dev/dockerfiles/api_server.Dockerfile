@@ -1,11 +1,11 @@
 # build stage
 FROM golang:1.20-bullseye AS build-stage
 
-WORKDIR /go/src/github.com/prixfixeco/backend
+WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN go build -trimpath -o /server github.com/prixfixeco/backend/cmd/server
+RUN go build -trimpath -o /server github.com/dinnerdonebetter/backend/cmd/server
 
 # final stage
 FROM debian:bullseye

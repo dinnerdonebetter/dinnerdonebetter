@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/mssola/useragent"
 	"go.opentelemetry.io/otel/attribute"

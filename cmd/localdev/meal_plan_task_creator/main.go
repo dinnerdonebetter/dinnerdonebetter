@@ -9,14 +9,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	analyticsconfig "github.com/prixfixeco/backend/internal/analytics/config"
-	"github.com/prixfixeco/backend/internal/config"
-	"github.com/prixfixeco/backend/internal/database/postgres"
-	"github.com/prixfixeco/backend/internal/features/recipeanalysis"
-	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
-	"github.com/prixfixeco/backend/internal/messagequeue/redis"
-	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
-	"github.com/prixfixeco/backend/internal/workers"
+	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
+	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/workers"
 
 	_ "go.uber.org/automaxprocs"
 )

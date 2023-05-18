@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/prixfixeco/backend/internal/analytics"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/analytics"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	segment "gopkg.in/segmentio/analytics-go.v3"
 )

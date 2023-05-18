@@ -101,7 +101,7 @@ linters-settings:
   goimports:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
-    local-prefixes: github.com/prixfixeco/backend
+    local-prefixes: github.com/dinnerdonebetter/backend
   gocyclo:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
     min-complexity: 20
@@ -179,7 +179,7 @@ linters-settings:
   gci:
     sections:
       - standard # Standard section: captures all standard packages.
-      - prefix(github.com/prixfixeco/backend) # Custom section: groups all imports with the specified Prefix.
+      - prefix(github.com/dinnerdonebetter/backend) # Custom section: groups all imports with the specified Prefix.
       - prefix(github.com/prixfixeco) # Custom section: groups all imports with the specified Prefix.
       - default # Default section: contains all imports that could not be matched to another section type.
     skip-generated: true

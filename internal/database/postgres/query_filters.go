@@ -3,7 +3,7 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/Masterminds/squirrel"
 )

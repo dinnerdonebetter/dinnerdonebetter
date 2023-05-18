@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/config"
-	msgconfig "github.com/prixfixeco/backend/internal/messagequeue/config"
-	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
+	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "go.uber.org/automaxprocs"
 )

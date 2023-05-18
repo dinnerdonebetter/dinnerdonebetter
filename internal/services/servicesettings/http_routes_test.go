@@ -8,11 +8,11 @@ import (
 	"strconv"
 	"testing"
 
-	mockencoding "github.com/prixfixeco/backend/internal/encoding/mock"
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

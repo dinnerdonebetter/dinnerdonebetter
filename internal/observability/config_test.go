@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/metrics/config"
-	"github.com/prixfixeco/backend/internal/observability/metrics/prometheus"
-	tracingcfg "github.com/prixfixeco/backend/internal/observability/tracing/config"
-	"github.com/prixfixeco/backend/internal/observability/tracing/jaeger"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics/prometheus"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
 
 	"github.com/stretchr/testify/assert"
 )

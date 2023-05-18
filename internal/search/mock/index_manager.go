@@ -3,8 +3,8 @@ package mocksearch
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/search"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/search"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 )

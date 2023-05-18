@@ -1,8 +1,8 @@
 package converters
 
 import (
-	"github.com/prixfixeco/backend/internal/identifiers"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 // ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput creates a ValidIngredientPreparationDatabaseCreationInput from a ValidIngredientPreparationCreationRequestInput.

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/pkg/pointers"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 )

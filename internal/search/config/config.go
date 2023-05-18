@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/search"
-	"github.com/prixfixeco/backend/internal/search/algolia"
-	"github.com/prixfixeco/backend/internal/search/elasticsearch"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/search"
+	"github.com/dinnerdonebetter/backend/internal/search/algolia"
+	"github.com/dinnerdonebetter/backend/internal/search/elasticsearch"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/encoding"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/apiclient/requests"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient/requests"
 
 	"github.com/gorilla/websocket"
 )

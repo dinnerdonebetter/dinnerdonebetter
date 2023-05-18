@@ -1,9 +1,9 @@
 package config
 
 import (
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/logging/zap"
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/zap"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 )
 
 const (

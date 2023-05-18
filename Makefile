@@ -4,7 +4,7 @@ ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
 GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.18-stretch go
 GO_FORMAT                     := gofmt -s -w
-THIS                          := github.com/prixfixeco/backend
+THIS                          := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
 ENVIRONMENTS_DIR              := environments
@@ -19,7 +19,7 @@ CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finaliz
 ## non-PHONY folders/files
 
 regit:
-	(rm -rf .git && cd ../ && rm -rf backend2 && git clone git@github.com:prixfixeco/backend backend2 && cp -rf backend2/.git backend/.git && rm -rf backend2)
+	(rm -rf .git && cd ../ && rm -rf backend2 && git clone git@github.com:dinnerdonebetter/backend backend2 && cp -rf backend2/.git backend/.git && rm -rf backend2)
 
 clear:
 	@printf "\033[2J\033[3J\033[1;1H"
@@ -97,7 +97,7 @@ format_golang:
 .PHONY: format_imports
 format_imports:
 	@# TODO: find some way to use $THIS here instead of hardcoding the path
-	gci write --skip-generated --section standard --section "prefix(github.com/prixfixeco/backend)" --section "prefix(github.com/prixfixeco)" --section default --custom-order .
+	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/prixfixeco)" --section default --custom-order .
 
 .PHONY: terraformat
 terraformat:
@@ -166,11 +166,11 @@ check_queries:
 
 .PHONY: configs
 configs:
-	go run github.com/prixfixeco/backend/cmd/tools/gen_configs
+	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_configs
 
 .PHONY: queries
 queries:
-	go run github.com/prixfixeco/backend/cmd/tools/gen_queries
+	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_queries
 
 gen: configs queries
 
@@ -179,14 +179,14 @@ clean_ts:
 
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
-	go run github.com/prixfixeco/backend/cmd/tools/codegen/gen_typescript
+	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
 
 clean_swift:
 	rm -rf $(ARTIFACTS_DIR)/swift
 
 swift: clean_swift
 	mkdir -p $(ARTIFACTS_DIR)/swift
-	go run github.com/prixfixeco/backend/cmd/tools/codegen/gen_swift
+	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_swift
 
 ## Integration tests
 
@@ -238,7 +238,7 @@ db_init: initialize_database
 
 .PHONY: initialize_database
 initialize_database:
-	go run github.com/prixfixeco/backend/cmd/tools/db_initializer
+	go run github.com/dinnerdonebetter/backend/cmd/tools/db_initializer
 
 ## misc
 

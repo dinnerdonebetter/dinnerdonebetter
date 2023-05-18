@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/search"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/search"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	algolia "github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 )

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

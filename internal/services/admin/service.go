@@ -3,13 +3,13 @@ package admin
 import (
 	"net/http"
 
-	"github.com/prixfixeco/backend/internal/authentication"
-	"github.com/prixfixeco/backend/internal/encoding"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/routing"
-	authservice "github.com/prixfixeco/backend/internal/services/authentication"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/routing"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/alexedwards/scs/v2"
 )

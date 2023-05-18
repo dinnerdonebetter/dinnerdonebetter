@@ -3,9 +3,9 @@ package config
 import (
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/analytics/segment"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/require"
 )

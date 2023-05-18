@@ -9,7 +9,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability"
 )
 
 var errSecretNotTheRightLength = errors.New("secret is not the right length")

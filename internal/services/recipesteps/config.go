@@ -3,7 +3,7 @@ package recipesteps
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/uploads"
+	"github.com/dinnerdonebetter/backend/internal/uploads"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

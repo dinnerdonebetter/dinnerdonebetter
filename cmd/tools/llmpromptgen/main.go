@@ -6,12 +6,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/prixfixeco/backend/internal/database"
-	dbconfig "github.com/prixfixeco/backend/internal/database/config"
-	"github.com/prixfixeco/backend/internal/database/postgres"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/database"
+	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 func main() {

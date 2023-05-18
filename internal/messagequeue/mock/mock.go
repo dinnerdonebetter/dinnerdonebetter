@@ -3,7 +3,7 @@ package mockpublishers
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/messagequeue"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 
 	"github.com/stretchr/testify/mock"
 )

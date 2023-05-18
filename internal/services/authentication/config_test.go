@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	random "github.com/prixfixeco/backend/internal/random"
+	random "github.com/dinnerdonebetter/backend/internal/random"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 
 	"github.com/google/wire"
 )

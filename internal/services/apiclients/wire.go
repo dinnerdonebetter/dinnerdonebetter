@@ -1,7 +1,7 @@
 package apiclients
 
 import (
-	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 
 	"github.com/google/wire"
 )

@@ -3,7 +3,7 @@ package mockmetrics
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 
 	"github.com/stretchr/testify/mock"
 )

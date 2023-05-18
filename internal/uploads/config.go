@@ -3,7 +3,7 @@ package uploads
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

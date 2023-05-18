@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/cache"
-	"github.com/prixfixeco/backend/internal/cache/memory"
-	"github.com/prixfixeco/backend/internal/cache/redis"
+	"github.com/dinnerdonebetter/backend/internal/cache"
+	"github.com/dinnerdonebetter/backend/internal/cache/memory"
+	"github.com/dinnerdonebetter/backend/internal/cache/redis"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

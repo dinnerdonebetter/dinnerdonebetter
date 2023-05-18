@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/routing"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"

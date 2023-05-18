@@ -6,7 +6,7 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 
-	"github.com/prixfixeco/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability"
 )
 
 type (

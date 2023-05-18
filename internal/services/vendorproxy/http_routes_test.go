@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"testing"
 
-	analyticsmock "github.com/prixfixeco/backend/internal/analytics/mock"
-	ffmock "github.com/prixfixeco/backend/internal/featureflags/mock"
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	analyticsmock "github.com/dinnerdonebetter/backend/internal/analytics/mock"
+	ffmock "github.com/dinnerdonebetter/backend/internal/featureflags/mock"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

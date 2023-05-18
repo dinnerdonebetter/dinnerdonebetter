@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/prixfixeco/backend/internal/featureflags"
-	"github.com/prixfixeco/backend/internal/featureflags/launchdarkly"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/featureflags"
+	"github.com/dinnerdonebetter/backend/internal/featureflags/launchdarkly"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

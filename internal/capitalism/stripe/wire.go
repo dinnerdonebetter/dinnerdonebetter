@@ -1,7 +1,7 @@
 package stripe
 
 import (
-	"github.com/prixfixeco/backend/internal/capitalism"
+	"github.com/dinnerdonebetter/backend/internal/capitalism"
 
 	"github.com/google/wire"
 )
