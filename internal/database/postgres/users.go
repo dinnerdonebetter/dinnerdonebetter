@@ -547,39 +547,138 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	return nil
 }
 
-//go:embed queries/users/update.sql
-var updateUserQuery string
+//go:embed queries/users/update_username.sql
+var updateUsernameQuery string
 
-// UpdateUser receives a complete Requester struct and updates its record in the database.
-// NOTE: this function uses the ID provided in the input to make its query.
-func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
+// UpdateUsername updates a user's username.
+func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if updated == nil {
-		return ErrNilInputProvided
+	if userID == "" {
+		return ErrInvalidIDProvided
 	}
 
-	tracing.AttachUsernameToSpan(span, updated.Username)
-	logger := q.logger.WithValue(keys.UsernameKey, updated.Username)
-
-	args := []any{
-		updated.Username,
-		updated.FirstName,
-		updated.LastName,
-		updated.HashedPassword,
-		updated.AvatarSrc,
-		updated.TwoFactorSecret,
-		updated.TwoFactorSecretVerifiedAt,
-		updated.Birthday,
-		updated.ID,
+	if newUsername == "" {
+		return ErrEmptyInputProvided
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "user update", updateUserQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating user")
+	logger := q.logger.WithValue(keys.UsernameKey, newUsername).WithValue(keys.UserIDKey, userID)
+	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachUsernameToSpan(span, newUsername)
+
+	updateUsernameArgs := []any{
+		newUsername,
+		userID,
 	}
 
-	logger.Info("user updated")
+	if err := q.performWriteQuery(ctx, q.db, "username update", updateUsernameQuery, updateUsernameArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating username")
+	}
+
+	logger.Info("username updated")
+
+	return nil
+}
+
+//go:embed queries/users/update_email_address.sql
+var updateUserEmailAddressQuery string
+
+// UpdateUserEmailAddress updates a user's username.
+func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if newEmailAddress == "" {
+		return ErrEmptyInputProvided
+	}
+
+	logger := q.logger.WithValue(keys.UserEmailAddressKey, newEmailAddress).WithValue(keys.UserIDKey, userID)
+	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachEmailAddressToSpan(span, newEmailAddress)
+
+	updateUserEmailAddressArgs := []any{
+		newEmailAddress,
+		userID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "user email address update", updateUserEmailAddressQuery, updateUserEmailAddressArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user email address")
+	}
+
+	logger.Info("user email address updated")
+
+	return nil
+}
+
+//go:embed queries/users/update_details.sql
+var updateUserDetailsQuery string
+
+// UpdateUserDetails updates a user's username.
+func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsUpdateInput) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if input == nil {
+		return ErrEmptyInputProvided
+	}
+
+	tracing.AttachUserIDToSpan(span, userID)
+	logger := q.logger.WithValue(keys.UserIDKey, userID)
+
+	updateUserDetailsArgs := []any{
+		input.FirstName,
+		input.LastName,
+		input.Birthday,
+		userID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "user details update", updateUserDetailsQuery, updateUserDetailsArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user details")
+	}
+
+	logger.Info("user details updated")
+
+	return nil
+}
+
+//go:embed queries/users/update_avatar_src.sql
+var updateUserAvatarSrcQuery string
+
+// UpdateUserAvatar updates a user's avatar source.
+func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if newAvatarSrc == "" {
+		return ErrEmptyInputProvided
+	}
+
+	tracing.AttachUserIDToSpan(span, userID)
+	logger := q.logger.WithValue(keys.UserIDKey, userID)
+
+	updateUserAvatarSrcArgs := []any{
+		newAvatarSrc,
+		userID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "user avatar update", updateUserAvatarSrcQuery, updateUserAvatarSrcArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
+	}
+
+	logger.Info("user avatar updated")
 
 	return nil
 }
@@ -678,6 +777,40 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	}
 
 	logger.Info("user two factor secret verified")
+
+	return nil
+}
+
+/* #nosec G101 */
+//go:embed queries/users/mark_two_factor_secret_as_unverified.sql
+var markUserTwoFactorSecretAsUnverified string
+
+// MarkUserTwoFactorSecretAsUnverified marks a user's two factor secret as unverified.
+func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if newSecret == "" {
+		return ErrEmptyInputProvided
+	}
+
+	tracing.AttachUserIDToSpan(span, userID)
+	logger := q.logger.WithValue(keys.UserIDKey, userID)
+
+	args := []any{
+		newSecret,
+		userID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "user two factor secret verification", markUserTwoFactorSecretAsUnverified, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
+	}
+
+	logger.Info("user two factor secret unverified")
 
 	return nil
 }

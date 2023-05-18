@@ -127,6 +127,35 @@ type (
 		TOTPToken       string `json:"totpToken"`
 	}
 
+	// UsernameUpdateInput represents input a User would provide when updating their username.
+	UsernameUpdateInput struct {
+		_ struct{}
+
+		NewUsername     string `json:"newUsername"`
+		CurrentPassword string `json:"currentPassword"`
+		TOTPToken       string `json:"totpToken"`
+	}
+
+	// UserEmailAddressUpdateInput represents input a User would provide when updating their email address.
+	UserEmailAddressUpdateInput struct {
+		_ struct{}
+
+		NewEmailAddress string `json:"newEmailAddress"`
+		CurrentPassword string `json:"currentPassword"`
+		TOTPToken       string `json:"totpToken"`
+	}
+
+	// UserDetailsUpdateInput represents input a User would provide when updating their information.
+	UserDetailsUpdateInput struct {
+		_ struct{}
+
+		FirstName       string    `json:"firstName"`
+		LastName        string    `json:"lastName"`
+		Birthday        time.Time `json:"birthday"`
+		CurrentPassword string    `json:"currentPassword"`
+		TOTPToken       string    `json:"totpToken"`
+	}
+
 	// AvatarUpdateInput represents input a User would provide when updating their passwords.
 	AvatarUpdateInput struct {
 		_ struct{}
@@ -173,22 +202,26 @@ type (
 
 	// UserDataManager describes a structure which can manage users in persistent storage.
 	UserDataManager interface {
-		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
 		GetUser(ctx context.Context, userID string) (*User, error)
-		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
+		GetUserByUsername(ctx context.Context, username string) (*User, error)
+		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
+		GetUsers(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[User], error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
+		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
+		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
+		UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error
+		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
+		UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error
+		UpdateUserDetails(ctx context.Context, userID string, input *UserDetailsUpdateInput) error
+		UpdateUserPassword(ctx context.Context, userID, newHash string) error
+		ArchiveUser(ctx context.Context, userID string) error
+		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
+		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
+		MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error
 		GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*User, error)
 		MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error
 		GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error)
-		GetUserByUsername(ctx context.Context, username string) (*User, error)
-		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
-		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
-		GetUsers(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[User], error)
-		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
-		UpdateUser(ctx context.Context, updated *User) error
-		UpdateUserPassword(ctx context.Context, userID, newHash string) error
-		ArchiveUser(ctx context.Context, userID string) error
 	}
 
 	// UserDataService describes a structure capable of serving traffic related to users.
@@ -202,6 +235,9 @@ type (
 		NewTOTPSecretHandler(http.ResponseWriter, *http.Request)
 		TOTPSecretVerificationHandler(http.ResponseWriter, *http.Request)
 		UpdatePasswordHandler(http.ResponseWriter, *http.Request)
+		UpdateUserEmailAddressHandler(http.ResponseWriter, *http.Request)
+		UpdateUserUsernameHandler(http.ResponseWriter, *http.Request)
+		UpdateUserDetailsHandler(http.ResponseWriter, *http.Request)
 		AvatarUploadHandler(http.ResponseWriter, *http.Request)
 		ArchiveHandler(http.ResponseWriter, *http.Request)
 		CreatePasswordResetTokenHandler(http.ResponseWriter, *http.Request)
@@ -308,5 +344,38 @@ var _ validation.ValidatableWithContext = (*EmailAddressVerificationRequestInput
 func (i *EmailAddressVerificationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.Token, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*UsernameUpdateInput)(nil)
+
+// ValidateWithContext ensures our provided UsernameUpdateInput meets expectations.
+func (i *UsernameUpdateInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, i,
+		validation.Field(&i.NewUsername, validation.Required),
+		validation.Field(&i.CurrentPassword, validation.Required),
+		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*UserEmailAddressUpdateInput)(nil)
+
+// ValidateWithContext ensures our provided UserEmailAddressUpdateInput meets expectations.
+func (i *UserEmailAddressUpdateInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, i,
+		validation.Field(&i.NewEmailAddress, validation.Required),
+		validation.Field(&i.CurrentPassword, validation.Required),
+		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*UserDetailsUpdateInput)(nil)
+
+// ValidateWithContext ensures our provided UserDetailsUpdateInput meets expectations.
+func (i *UserDetailsUpdateInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, i,
+		validation.Field(&i.FirstName, validation.Required),
+		validation.Field(&i.CurrentPassword, validation.Required),
+		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
 	)
 }

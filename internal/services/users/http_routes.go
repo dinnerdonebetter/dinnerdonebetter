@@ -18,7 +18,6 @@ import (
 	"github.com/prixfixeco/backend/internal/observability"
 	"github.com/prixfixeco/backend/internal/observability/keys"
 	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/pkg/pointers"
 	"github.com/prixfixeco/backend/pkg/types"
 
 	"github.com/boombuler/barcode"
@@ -26,6 +25,8 @@ import (
 	"github.com/pquerna/otp/totp"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
+
+var _ types.UserDataService = (*service)(nil)
 
 const (
 	// UserIDURIParamKey is used to refer to user IDs in router params.
@@ -37,6 +38,47 @@ const (
 	totpSecretSize         = 64
 	passwordResetTokenSize = 32
 )
+
+// validateCredentialsForUpdateRequest takes a user's credentials and determines if they match what is on record.
+func (s *service) validateCredentialsForUpdateRequest(ctx context.Context, userID, password, totpToken string) (user *types.User, httpStatus int) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithValue(keys.UserIDKey, userID)
+
+	// fetch user data.
+	user, err := s.userDataManager.GetUser(ctx, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, http.StatusNotFound
+		}
+
+		logger.Error(err, "error encountered fetching user")
+		return nil, http.StatusInternalServerError
+	}
+
+	if user.TwoFactorSecretVerifiedAt != nil && totpToken == "" {
+		return nil, http.StatusResetContent
+	}
+
+	tfs := user.TwoFactorSecret
+	if user.TwoFactorSecretVerifiedAt == nil {
+		tfs = ""
+		totpToken = ""
+	}
+
+	// validate login.
+	valid, err := s.authenticator.CredentialsAreValid(ctx, user.HashedPassword, password, tfs, totpToken)
+	if err != nil {
+		logger.WithValue("validation_error", err).Debug("error validating credentials")
+		return nil, http.StatusBadRequest
+	} else if !valid {
+		logger.WithValue("valid", valid).Error(err, "invalid credentials")
+		return nil, http.StatusUnauthorized
+	}
+
+	return user, http.StatusOK
+}
 
 // UsernameSearchHandler is a handler for responding to username queries.
 func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Request) {
@@ -445,8 +487,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		return
 	}
 
-	if updateUserErr := s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); updateUserErr != nil {
-		observability.AcknowledgeError(updateUserErr, logger, span, "verifying user two factor secret")
+	if err := s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "verifying user two factor secret")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -456,8 +498,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		UserID:    user.ID,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -498,11 +540,11 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 
 	// fetch user
 	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
-	if errors.Is(err, sql.ErrNoRows) {
-		logger.Debug("no such user")
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
 		observability.AcknowledgeError(err, logger, span, "fetching user from database")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -517,9 +559,12 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 			return
 		} else if !valid {
 			observability.AcknowledgeError(validationErr, logger, span, "invalid credentials")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusUnauthorized)
 			return
 		}
+	} else {
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, []byte(""), http.StatusPreconditionFailed)
+		return
 	}
 
 	// document who this is for.
@@ -535,14 +580,23 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	user.TwoFactorSecret = tfs
-	user.TwoFactorSecretVerifiedAt = nil
-
 	// update the user in the database.
-	if err = s.userDataManager.UpdateUser(ctx, user); err != nil {
+	if err = s.userDataManager.MarkUserTwoFactorSecretAsUnverified(ctx, user.ID, tfs); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating 2FA secret")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	user.TwoFactorSecret = tfs
+	user.TwoFactorSecretVerifiedAt = nil
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.TwoFactorSecretChangedCustomerEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// let the requester know we're all good.
@@ -552,47 +606,6 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, result, http.StatusAccepted)
-}
-
-// validateCredentialChangeRequest takes a user's credentials and determines if they match what is on record.
-func (s *service) validateCredentialChangeRequest(ctx context.Context, userID, password, totpToken string) (user *types.User, httpStatus int) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithValue(keys.UserIDKey, userID)
-
-	// fetch user data.
-	user, err := s.userDataManager.GetUser(ctx, userID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, http.StatusNotFound
-		}
-
-		logger.Error(err, "error encountered fetching user")
-		return nil, http.StatusInternalServerError
-	}
-
-	if user.TwoFactorSecretVerifiedAt != nil && totpToken == "" {
-		return nil, http.StatusResetContent
-	}
-
-	tfs := user.TwoFactorSecret
-	if user.TwoFactorSecretVerifiedAt == nil {
-		tfs = ""
-		totpToken = ""
-	}
-
-	// validate login.
-	valid, err := s.authenticator.CredentialsAreValid(ctx, user.HashedPassword, password, tfs, totpToken)
-	if err != nil {
-		logger.WithValue("validation_error", err).Debug("error validating credentials")
-		return nil, http.StatusBadRequest
-	} else if !valid {
-		logger.WithValue("valid", valid).Error(err, "invalid credentials")
-		return nil, http.StatusUnauthorized
-	}
-
-	return user, http.StatusOK
 }
 
 // UpdatePasswordHandler updates a user's password.
@@ -629,7 +642,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// make sure everything's on the up-and-up
-	user, httpStatus := s.validateCredentialChangeRequest(
+	user, httpStatus := s.validateCredentialsForUpdateRequest(
 		ctx,
 		sessionCtxData.Requester.UserID,
 		input.CurrentPassword,
@@ -671,12 +684,212 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 		UserID:    user.ID,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	// we're all good, log the user out
 	http.SetCookie(res, &http.Cookie{MaxAge: -1})
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// UpdateUserEmailAddressHandler updates a user's email address.
+func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// decode the request.
+	input := new(types.UserEmailAddressUpdateInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+	tracing.AttachEmailAddressToSpan(span, input.NewEmailAddress)
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	// determine relevant user ID.
+	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// make sure everything's on the up-and-up
+	user, httpStatus := s.validateCredentialsForUpdateRequest(
+		ctx,
+		sessionCtxData.Requester.UserID,
+		input.CurrentPassword,
+		input.TOTPToken,
+	)
+
+	// if the above function returns something other than 200, it means some error occurred.
+	if httpStatus != http.StatusOK {
+		res.WriteHeader(httpStatus)
+		return
+	}
+
+	// update the user.
+	if err = s.userDataManager.UpdateUserEmailAddress(ctx, user.ID, input.NewEmailAddress); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.EmailAddressChangedEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// UpdateUserUsernameHandler updates a user's username.
+func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// decode the request.
+	input := new(types.UsernameUpdateInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+	tracing.AttachUsernameToSpan(span, input.NewUsername)
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	// determine relevant user ID.
+	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// make sure everything's on the up-and-up
+	user, httpStatus := s.validateCredentialsForUpdateRequest(
+		ctx,
+		sessionCtxData.Requester.UserID,
+		input.CurrentPassword,
+		input.TOTPToken,
+	)
+
+	// if the above function returns something other than 200, it means some error occurred.
+	if httpStatus != http.StatusOK {
+		res.WriteHeader(httpStatus)
+		return
+	}
+
+	// update the user.
+	if err = s.userDataManager.UpdateUserUsername(ctx, user.ID, input.NewUsername); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.UsernameChangedEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// UpdateUserDetailsHandler updates a user's basic information.
+func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// decode the request.
+	input := new(types.UserDetailsUpdateInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	// determine relevant user ID.
+	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// make sure everything's on the up-and-up
+	user, httpStatus := s.validateCredentialsForUpdateRequest(
+		ctx,
+		sessionCtxData.Requester.UserID,
+		input.CurrentPassword,
+		input.TOTPToken,
+	)
+
+	// if the above function returns something other than 200, it means some error occurred.
+	if httpStatus != http.StatusOK {
+		res.WriteHeader(httpStatus)
+		return
+	}
+
+	// update the user.
+	if err = s.userDataManager.UpdateUserDetails(ctx, user.ID, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.UserDetailsChangedEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
 	res.WriteHeader(http.StatusAccepted)
 }
 
@@ -717,9 +930,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	logger.Debug("retrieved user from database")
 
-	user.AvatarSrc = pointers.Pointer(input.Base64EncodedData)
-
-	if err = s.userDataManager.UpdateUser(ctx, user); err != nil {
+	if err = s.userDataManager.UpdateUserAvatar(ctx, user.ID, input.Base64EncodedData); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user info")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -790,8 +1001,8 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		UserID:    u.ID,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -855,8 +1066,8 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		PasswordResetToken: t,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -948,8 +1159,8 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		UserID:    t.BelongsToUser,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -1004,8 +1215,8 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		UserID:    user.ID,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -1042,8 +1253,8 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		EmailVerificationToken: verificationToken,
 	}
 
-	if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
-		observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
 	logger.WithValue("data_change_message", dcm).Debug("published data change message")

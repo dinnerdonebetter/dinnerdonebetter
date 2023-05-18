@@ -56,7 +56,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = auth
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -85,7 +85,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return((*types.User)(nil), sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -114,7 +114,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -154,7 +154,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.authenticator = auth
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -194,7 +194,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return(false, nil)
 		helper.service.authenticator = auth
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -1664,10 +1664,21 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
-		mockDB.UserDataManager.On(
-			"UpdateUser",
+
+		fakeSecret := fakes.BuildFakeID()
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
+			totpSecretSize,
+		).Return(fakeSecret, nil)
+		helper.service.secretGenerator = sg
+
+		mockDB.UserDataManager.On(
+			"MarkUserTwoFactorSecretAsUnverified",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			fakeSecret,
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 
@@ -1682,14 +1693,22 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = auth
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, auth)
+		mock.AssertExpectationsForObjects(t, mockDB, auth, sg, dataChangesPublisher)
 	})
 
-	T.Run("with no matching user in database", func(t *testing.T) {
+	T.Run("with invalid credentials", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -1708,18 +1727,28 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return((*types.User)(nil), sql.ErrNoRows)
-
+		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(false, nil)
+		helper.service.authenticator = auth
 
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB)
+		mock.AssertExpectationsForObjects(t, mockDB, auth)
 	})
 
-	T.Run("with error getting user from database", func(t *testing.T) {
+	T.Run("with error retrieving user", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -1739,7 +1768,6 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.User)(nil), errors.New("blah"))
-
 		helper.service.userDataManager = mockDB
 
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
@@ -1749,63 +1777,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
-	T.Run("without input attached to request", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(nil))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-	})
-
-	T.Run("with invalid input attached to request", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleInput := &types.TOTPSecretRefreshInput{}
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-	})
-
-	T.Run("with input attached but without user information", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-	})
-
-	T.Run("with invalid auth input info", func(t *testing.T) {
+	T.Run("with error generating new secret", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -1825,102 +1797,15 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
-		mockDB.UserDataManager.On(
-			"UpdateUser",
-			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
-		).Return(nil)
 		helper.service.userDataManager = mockDB
 
-		auth := &mockauthn.Authenticator{}
-		auth.On(
-			"CredentialsAreValid",
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			exampleInput.CurrentPassword,
-			helper.exampleUser.TwoFactorSecret,
-			exampleInput.TOTPToken,
-		).Return(false, nil)
-		helper.service.authenticator = auth
-
-		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, auth)
-	})
-
-	T.Run("with error validating login", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		mockDB.UserDataManager.On(
-			"UpdateUser",
-			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
-		).Return(nil)
-		helper.service.userDataManager = mockDB
-
-		auth := &mockauthn.Authenticator{}
-		auth.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			exampleInput.CurrentPassword,
-			helper.exampleUser.TwoFactorSecret,
-			exampleInput.TOTPToken,
-		).Return(false, errors.New("blah"))
-		helper.service.authenticator = auth
-
-		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, auth)
-	})
-
-	T.Run("with error generating secret", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		mockDB.UserDataManager.On(
-			"UpdateUser",
-			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
-		).Return(nil)
-		helper.service.userDataManager = mockDB
+			totpSecretSize,
+		).Return("", errors.New("blah"))
+		helper.service.secretGenerator = sg
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
@@ -1933,14 +1818,6 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = auth
 
-		sg := &mockrandom.Generator{}
-		sg.On(
-			"GenerateBase32EncodedString",
-			testutils.ContextMatcher,
-			totpSecretSize,
-		).Return("", errors.New("blah"))
-		helper.service.secretGenerator = sg
-
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
@@ -1948,7 +1825,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB, auth, sg)
 	})
 
-	T.Run("with error updating user in database", func(t *testing.T) {
+	T.Run("with error marking two factor secret as unverified", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -1968,10 +1845,21 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
-		mockDB.UserDataManager.On(
-			"UpdateUser",
+
+		fakeSecret := fakes.BuildFakeID()
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
+			totpSecretSize,
+		).Return(fakeSecret, nil)
+		helper.service.secretGenerator = sg
+
+		mockDB.UserDataManager.On(
+			"MarkUserTwoFactorSecretAsUnverified",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			fakeSecret,
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
@@ -1990,7 +1878,71 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, auth)
+		mock.AssertExpectationsForObjects(t, mockDB, auth, sg)
+	})
+
+	T.Run("with error publishing data change", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		fakeSecret := fakes.BuildFakeID()
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			totpSecretSize,
+		).Return(fakeSecret, nil)
+		helper.service.secretGenerator = sg
+
+		mockDB.UserDataManager.On(
+			"MarkUserTwoFactorSecretAsUnverified",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			fakeSecret,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = auth
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, auth, sg, dataChangesPublisher)
 	})
 }
 
@@ -2302,6 +2254,183 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 	})
 }
 
+func TestService_UpdateUserEmailAddressHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserEmailAddressUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = auth
+
+		mockDB.UserDataManager.On(
+			"UpdateUserEmailAddress",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput.NewEmailAddress,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.UpdateUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
+	})
+}
+
+func TestService_UpdateUserUsernameHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUsernameUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = auth
+
+		mockDB.UserDataManager.On(
+			"UpdateUserUsername",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput.NewUsername,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.UpdateUserUsernameHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
+	})
+}
+
+func TestService_UpdateUserDetailsHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = auth
+
+		mockDB.UserDataManager.On(
+			"UpdateUserDetails",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.UpdateUserDetailsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
+	})
+}
+
 func TestService_AvatarUploadHandler(T *testing.T) {
 	T.Parallel()
 
@@ -2328,9 +2457,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 
 		mockDB.UserDataManager.On(
-			"UpdateUser",
+			"UpdateUserAvatar",
 			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
+			helper.exampleUser.ID,
+			exampleInput.Base64EncodedData,
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 
@@ -2419,9 +2549,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManager.On(
-			"UpdateUser",
+			"UpdateUserAvatar",
 			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
+			helper.exampleUser.ID,
+			exampleInput.Base64EncodedData,
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
 

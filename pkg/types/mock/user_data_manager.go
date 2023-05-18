@@ -15,6 +15,26 @@ type UserDataManager struct {
 	mock.Mock
 }
 
+// UpdateUserAvatar is a mock function.
+func (m *UserDataManager) UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error {
+	return m.Called(ctx, userID, newAvatarContent).Error(0)
+}
+
+// UpdateUserUsername is a mock function.
+func (m *UserDataManager) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
+	return m.Called(ctx, userID, newUsername).Error(0)
+}
+
+// UpdateUserEmailAddress is a mock function.
+func (m *UserDataManager) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error {
+	return m.Called(ctx, userID, newEmailAddress).Error(0)
+}
+
+// UpdateUserDetails is a mock function.
+func (m *UserDataManager) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsUpdateInput) error {
+	return m.Called(ctx, userID, input).Error(0)
+}
+
 // GetUserByEmailAddressVerificationToken is a mock function.
 func (m *UserDataManager) GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*types.User, error) {
 	args := m.Called(ctx, token)
@@ -56,6 +76,11 @@ func (m *UserDataManager) MarkUserTwoFactorSecretAsVerified(ctx context.Context,
 	return m.Called(ctx, userID).Error(0)
 }
 
+// MarkUserTwoFactorSecretAsUnverified is a mock function.
+func (m *UserDataManager) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error {
+	return m.Called(ctx, userID, newSecret).Error(0)
+}
+
 // GetUserByUsername is a mock function.
 func (m *UserDataManager) GetUserByUsername(ctx context.Context, username string) (*types.User, error) {
 	args := m.Called(ctx, username)
@@ -84,11 +109,6 @@ func (m *UserDataManager) GetUsers(ctx context.Context, filter *types.QueryFilte
 func (m *UserDataManager) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	args := m.Called(ctx, input)
 	return args.Get(0).(*types.User), args.Error(1)
-}
-
-// UpdateUser is a mock function.
-func (m *UserDataManager) UpdateUser(ctx context.Context, updated *types.User) error {
-	return m.Called(ctx, updated).Error(0)
 }
 
 // UpdateUserPassword is a mock function.

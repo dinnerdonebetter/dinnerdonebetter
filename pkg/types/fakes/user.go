@@ -196,3 +196,29 @@ func BuildFakeEmailAddressVerificationRequestInput() *types.EmailAddressVerifica
 		Token: buildUniqueString(),
 	}
 }
+
+func BuildFakeUsernameUpdateInput() *types.UsernameUpdateInput {
+	return &types.UsernameUpdateInput{
+		NewUsername:     buildUniqueString(),
+		CurrentPassword: fake.Password(true, true, true, false, false, 32),
+		TOTPToken:       "123456",
+	}
+}
+
+func BuildFakeUserEmailAddressUpdateInput() *types.UserEmailAddressUpdateInput {
+	return &types.UserEmailAddressUpdateInput{
+		NewEmailAddress: fake.Email(),
+		CurrentPassword: fake.Password(true, true, true, false, false, 32),
+		TOTPToken:       "123456",
+	}
+}
+
+func BuildFakeUserDetailsUpdateInput() *types.UserDetailsUpdateInput {
+	return &types.UserDetailsUpdateInput{
+		FirstName:       buildUniqueString(),
+		LastName:        buildUniqueString(),
+		Birthday:        fake.Date(),
+		CurrentPassword: fake.Password(true, true, true, false, false, 32),
+		TOTPToken:       "123456",
+	}
+}

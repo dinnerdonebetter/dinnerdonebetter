@@ -16,7 +16,7 @@ import (
 func TestBuilder_BuildSwitchActiveHouseholdRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/users/household/select"
+	const expectedPathFormat = "/api/v1/users/household/select"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

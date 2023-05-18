@@ -73,7 +73,7 @@ func (b *Builder) BuildChangePasswordRequest(ctx context.Context, cookie *http.C
 
 	// validating here requires settings knowledge, so we do not do it.
 
-	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "password", "new")
+	uri := b.buildAPIV1URL(ctx, nil, usersBasePath, "password", "new").String()
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
@@ -102,7 +102,7 @@ func (b *Builder) BuildCycleTwoFactorSecretRequest(ctx context.Context, cookie *
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
-	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "totp_secret", "new")
+	uri := b.buildAPIV1URL(ctx, nil, usersBasePath, "totp_secret", "new").String()
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {

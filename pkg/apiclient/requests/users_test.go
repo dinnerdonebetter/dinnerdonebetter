@@ -285,3 +285,129 @@ func TestBuilder_BuildCheckUserPermissionsRequests(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 }
+
+func TestBuilder_BuildUpdateUserEmailAddressRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/users/email_address"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleInput := fakes.BuildFakeUserEmailAddressUpdateInput()
+
+		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+
+		actual, err := helper.builder.BuildUpdateUserEmailAddressRequest(helper.ctx, exampleInput)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid user ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildUpdateUserEmailAddressRequest(helper.ctx, nil)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		exampleInput := fakes.BuildFakeUserEmailAddressUpdateInput()
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		actual, err := helper.builder.BuildUpdateUserEmailAddressRequest(helper.ctx, exampleInput)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func TestBuilder_BuildUpdateUserUsernameRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/users/username"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleInput := fakes.BuildFakeUsernameUpdateInput()
+
+		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+
+		actual, err := helper.builder.BuildUpdateUserUsernameRequest(helper.ctx, exampleInput)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid user ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildUpdateUserUsernameRequest(helper.ctx, nil)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		exampleInput := fakes.BuildFakeUsernameUpdateInput()
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		actual, err := helper.builder.BuildUpdateUserUsernameRequest(helper.ctx, exampleInput)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func TestBuilder_BuildUpdateUserDetailsRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/users/details"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+
+		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+
+		actual, err := helper.builder.BuildUpdateUserDetailsRequest(helper.ctx, exampleInput)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid user ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildUpdateUserDetailsRequest(helper.ctx, nil)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		actual, err := helper.builder.BuildUpdateUserDetailsRequest(helper.ctx, exampleInput)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}

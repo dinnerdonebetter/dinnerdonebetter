@@ -163,3 +163,60 @@ func (b *Builder) BuildCheckUserPermissionsRequests(ctx context.Context, permiss
 
 	return req, nil
 }
+
+// BuildUpdateUserEmailAddressRequest builds an HTTP request for updating a user's username.
+func (b *Builder) BuildUpdateUserEmailAddressRequest(ctx context.Context, input *types.UserEmailAddressUpdateInput) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	uri := b.BuildURL(ctx, nil, usersBasePath, "email_address")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
+// BuildUpdateUserUsernameRequest builds an HTTP request for updating a user's username.
+func (b *Builder) BuildUpdateUserUsernameRequest(ctx context.Context, input *types.UsernameUpdateInput) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	uri := b.BuildURL(ctx, nil, usersBasePath, "username")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
+// BuildUpdateUserDetailsRequest builds an HTTP request for updating a user's username.
+func (b *Builder) BuildUpdateUserDetailsRequest(ctx context.Context, input *types.UserDetailsUpdateInput) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	uri := b.BuildURL(ctx, nil, usersBasePath, "details")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}

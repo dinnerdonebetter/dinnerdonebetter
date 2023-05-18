@@ -160,3 +160,66 @@ func (c *Client) CheckUserPermissions(ctx context.Context, permissions ...string
 
 	return res, nil
 }
+
+// UpdateUserEmailAddress updates a user's email address.
+func (c *Client) UpdateUserEmailAddress(ctx context.Context, input *types.UserEmailAddressUpdateInput) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	req, err := c.requestBuilder.BuildUpdateUserEmailAddressRequest(ctx, input)
+	if err != nil {
+		return observability.PrepareError(err, span, "building archive user request")
+	}
+
+	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+		return observability.PrepareError(err, span, "archiving user")
+	}
+
+	return nil
+}
+
+// UpdateUserUsername updates a user's username.
+func (c *Client) UpdateUserUsername(ctx context.Context, input *types.UsernameUpdateInput) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	req, err := c.requestBuilder.BuildUpdateUserUsernameRequest(ctx, input)
+	if err != nil {
+		return observability.PrepareError(err, span, "building archive user request")
+	}
+
+	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+		return observability.PrepareError(err, span, "archiving user")
+	}
+
+	return nil
+}
+
+// UpdateUserDetails updates a user's details.
+func (c *Client) UpdateUserDetails(ctx context.Context, input *types.UserDetailsUpdateInput) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	req, err := c.requestBuilder.BuildUpdateUserDetailsRequest(ctx, input)
+	if err != nil {
+		return observability.PrepareError(err, span, "building archive user request")
+	}
+
+	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+		return observability.PrepareError(err, span, "archiving user")
+	}
+
+	return nil
+}
