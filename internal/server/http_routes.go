@@ -111,10 +111,12 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 			usersRouter.Get("/self", s.usersService.SelfHandler)
 			usersRouter.Post("/email_address_verification", s.usersService.RequestEmailVerificationEmailHandler)
 			usersRouter.Post("/permissions/check", s.usersService.PermissionsHandler)
-
 			usersRouter.Post("/household/select", s.authService.ChangeActiveHouseholdHandler)
 			usersRouter.Put("/password/new", s.usersService.UpdatePasswordHandler)
 			usersRouter.Post("/totp_secret/new", s.usersService.NewTOTPSecretHandler)
+			usersRouter.Put("/username", s.usersService.UpdateUserUsernameHandler)
+			usersRouter.Put("/email_address", s.usersService.UpdateUserEmailAddressHandler)
+			usersRouter.Put("/details", s.usersService.UpdateUserDetailsHandler)
 
 			singleUserRoute := buildURLVarChunk(usersservice.UserIDURIParamKey, "")
 			usersRouter.Route(singleUserRoute, func(singleUserRouter routing.Router) {

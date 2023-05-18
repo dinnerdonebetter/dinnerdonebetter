@@ -56,7 +56,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = auth
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -85,7 +85,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return((*types.User)(nil), sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -114,7 +114,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -154,7 +154,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.authenticator = auth
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -194,7 +194,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		).Return(false, nil)
 		helper.service.authenticator = auth
 
-		actual, sc := helper.service.validateCredentialChangeRequest(
+		actual, sc := helper.service.validateCredentialsForUpdateRequest(
 			helper.ctx,
 			helper.exampleUser.ID,
 			examplePassword,
@@ -2251,6 +2251,183 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth)
+	})
+}
+
+func TestService_UpdateUserEmailAddressHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserEmailAddressUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = auth
+
+		mockDB.UserDataManager.On(
+			"UpdateUserEmailAddress",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput.NewEmailAddress,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.UpdateUserEmailAddressHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
+	})
+}
+
+func TestService_UpdateUserUsernameHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUsernameUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = auth
+
+		mockDB.UserDataManager.On(
+			"UpdateUserUsername",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput.NewUsername,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.UpdateUserUsernameHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
+	})
+}
+
+func TestService_UpdateUserDetailsHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"CredentialsAreValid",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = auth
+
+		mockDB.UserDataManager.On(
+			"UpdateUserDetails",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.UpdateUserDetailsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
 	})
 }
 

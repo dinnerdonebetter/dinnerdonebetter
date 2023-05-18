@@ -40,8 +40,8 @@ const (
 	passwordResetTokenSize = 32
 )
 
-// validateCredentialChangeRequest takes a user's credentials and determines if they match what is on record.
-func (s *service) validateCredentialChangeRequest(ctx context.Context, userID, password, totpToken string) (user *types.User, httpStatus int) {
+// validateCredentialsForUpdateRequest takes a user's credentials and determines if they match what is on record.
+func (s *service) validateCredentialsForUpdateRequest(ctx context.Context, userID, password, totpToken string) (user *types.User, httpStatus int) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -541,11 +541,11 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 
 	// fetch user
 	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
-	if errors.Is(err, sql.ErrNoRows) {
-		logger.Debug("no such user")
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
 		observability.AcknowledgeError(err, logger, span, "fetching user from database")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -563,6 +563,9 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusUnauthorized)
 			return
 		}
+	} else {
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, []byte(""), http.StatusPreconditionFailed)
+		return
 	}
 
 	// document who this is for.
@@ -584,6 +587,9 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	user.TwoFactorSecret = tfs
+	user.TwoFactorSecretVerifiedAt = nil
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.TwoFactorSecretChangedCustomerEventType,
@@ -637,7 +643,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// make sure everything's on the up-and-up
-	user, httpStatus := s.validateCredentialChangeRequest(
+	user, httpStatus := s.validateCredentialsForUpdateRequest(
 		ctx,
 		sessionCtxData.Requester.UserID,
 		input.CurrentPassword,
@@ -685,6 +691,206 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 
 	// we're all good, log the user out
 	http.SetCookie(res, &http.Cookie{MaxAge: -1})
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// UpdateUserEmailAddressHandler updates a user's email address.
+func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// decode the request.
+	input := new(types.UserEmailAddressUpdateInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+	tracing.AttachEmailAddressToSpan(span, input.NewEmailAddress)
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	// determine relevant user ID.
+	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// make sure everything's on the up-and-up
+	user, httpStatus := s.validateCredentialsForUpdateRequest(
+		ctx,
+		sessionCtxData.Requester.UserID,
+		input.CurrentPassword,
+		input.TOTPToken,
+	)
+
+	// if the above function returns something other than 200, it means some error occurred.
+	if httpStatus != http.StatusOK {
+		res.WriteHeader(httpStatus)
+		return
+	}
+
+	// update the user.
+	if err = s.userDataManager.UpdateUserEmailAddress(ctx, user.ID, input.NewEmailAddress); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.EmailAddressChangedEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// UpdateUserUsernameHandler updates a user's username.
+func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// decode the request.
+	input := new(types.UsernameUpdateInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+	tracing.AttachUsernameToSpan(span, input.NewUsername)
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	// determine relevant user ID.
+	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// make sure everything's on the up-and-up
+	user, httpStatus := s.validateCredentialsForUpdateRequest(
+		ctx,
+		sessionCtxData.Requester.UserID,
+		input.CurrentPassword,
+		input.TOTPToken,
+	)
+
+	// if the above function returns something other than 200, it means some error occurred.
+	if httpStatus != http.StatusOK {
+		res.WriteHeader(httpStatus)
+		return
+	}
+
+	// update the user.
+	if err = s.userDataManager.UpdateUserUsername(ctx, user.ID, input.NewUsername); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.UsernameChangedEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// UpdateUserDetailsHandler updates a user's basic information.
+func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// decode the request.
+	input := new(types.UserDetailsUpdateInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	// determine relevant user ID.
+	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// make sure everything's on the up-and-up
+	user, httpStatus := s.validateCredentialsForUpdateRequest(
+		ctx,
+		sessionCtxData.Requester.UserID,
+		input.CurrentPassword,
+		input.TOTPToken,
+	)
+
+	// if the above function returns something other than 200, it means some error occurred.
+	if httpStatus != http.StatusOK {
+		res.WriteHeader(httpStatus)
+		return
+	}
+
+	// update the user.
+	if err = s.userDataManager.UpdateUserDetails(ctx, user.ID, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.UserDetailsChangedEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
 	res.WriteHeader(http.StatusAccepted)
 }
 

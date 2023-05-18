@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/prixfixeco/backend/internal/authorization"
 	"github.com/prixfixeco/backend/internal/database"
@@ -587,7 +586,7 @@ func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
 var updateUsernameQuery string
 
 // UpdateUsername updates a user's username.
-func (q *Querier) UpdateUsername(ctx context.Context, userID, newUsername string) error {
+func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -655,7 +654,7 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 var updateUserDetailsQuery string
 
 // UpdateUserDetails updates a user's username.
-func (q *Querier) UpdateUserDetails(ctx context.Context, userID, firstName, lastName string, birthday *time.Time) error {
+func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsUpdateInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -663,7 +662,7 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID, firstName, last
 		return ErrInvalidIDProvided
 	}
 
-	if firstName == "" && lastName == "" {
+	if input == nil {
 		return ErrEmptyInputProvided
 	}
 
@@ -671,9 +670,9 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID, firstName, last
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	updateUserDetailsArgs := []any{
-		firstName,
-		lastName,
-		birthday,
+		input.FirstName,
+		input.LastName,
+		input.Birthday,
 		userID,
 	}
 

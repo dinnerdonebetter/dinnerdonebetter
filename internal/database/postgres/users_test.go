@@ -2030,7 +2030,7 @@ func TestQuerier_UpdateUsername(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		assert.NoError(t, c.UpdateUsername(ctx, exampleUser.ID, exampleNewUsername))
+		assert.NoError(t, c.UpdateUserUsername(ctx, exampleUser.ID, exampleNewUsername))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -2041,7 +2041,7 @@ func TestQuerier_UpdateUsername(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.UpdateUsername(ctx, "", t.Name()))
+		assert.Error(t, c.UpdateUserUsername(ctx, "", t.Name()))
 	})
 
 	T.Run("with error executing query", func(t *testing.T) {
@@ -2062,7 +2062,7 @@ func TestQuerier_UpdateUsername(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.UpdateUsername(ctx, exampleUser.ID, exampleNewUsername))
+		assert.Error(t, c.UpdateUserUsername(ctx, exampleUser.ID, exampleNewUsername))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -2075,14 +2075,15 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
+		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []any{
-			exampleUser.FirstName,
-			exampleUser.LastName,
-			exampleUser.Birthday,
+			exampleInput.FirstName,
+			exampleInput.LastName,
+			exampleInput.Birthday,
 			exampleUser.ID,
 		}
 
@@ -2090,12 +2091,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		assert.NoError(t, c.UpdateUserDetails(ctx,
-			exampleUser.ID,
-			exampleUser.FirstName,
-			exampleUser.LastName,
-			exampleUser.Birthday,
-		))
+		assert.NoError(t, c.UpdateUserDetails(ctx, exampleUser.ID, exampleInput))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -2104,14 +2100,15 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
+		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []any{
-			exampleUser.FirstName,
-			exampleUser.LastName,
-			exampleUser.Birthday,
+			exampleInput.FirstName,
+			exampleInput.LastName,
+			exampleInput.Birthday,
 			exampleUser.ID,
 		}
 
@@ -2119,12 +2116,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.UpdateUserDetails(ctx,
-			exampleUser.ID,
-			exampleUser.FirstName,
-			exampleUser.LastName,
-			exampleUser.Birthday,
-		))
+		assert.Error(t, c.UpdateUserDetails(ctx, exampleUser.ID, exampleInput))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

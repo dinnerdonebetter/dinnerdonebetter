@@ -372,3 +372,138 @@ func (s *usersTestSuite) TestClient_CheckUserPermissions() {
 		assert.Nil(t, perms)
 	})
 }
+
+func (s *usersTestSuite) TestClient_UpdateUserEmailAddress() {
+	const expectedPathFormat = "/api/v1/users/email_address"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserEmailAddressUpdateInput()
+
+		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUser)
+
+		err := c.UpdateUserEmailAddress(s.ctx, exampleInput)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with invalid input", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		err := c.UpdateUserEmailAddress(s.ctx, nil)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserEmailAddressUpdateInput()
+		c := buildTestClientWithInvalidURL(t)
+
+		err := c.UpdateUserEmailAddress(s.ctx, exampleInput)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		actual, err := c.GetUser(s.ctx, s.exampleUser.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func (s *usersTestSuite) TestClient_UpdateUserUsername() {
+	const expectedPathFormat = "/api/v1/users/username"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUsernameUpdateInput()
+
+		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUser)
+
+		err := c.UpdateUserUsername(s.ctx, exampleInput)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with invalid input", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		err := c.UpdateUserUsername(s.ctx, nil)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUsernameUpdateInput()
+		c := buildTestClientWithInvalidURL(t)
+
+		err := c.UpdateUserUsername(s.ctx, exampleInput)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		actual, err := c.GetUser(s.ctx, s.exampleUser.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func (s *usersTestSuite) TestClient_UpdateUserDetails() {
+	const expectedPathFormat = "/api/v1/users/details"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+
+		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUser)
+
+		err := c.UpdateUserDetails(s.ctx, exampleInput)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with invalid input", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		err := c.UpdateUserDetails(s.ctx, nil)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		c := buildTestClientWithInvalidURL(t)
+
+		err := c.UpdateUserDetails(s.ctx, exampleInput)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		actual, err := c.GetUser(s.ctx, s.exampleUser.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}

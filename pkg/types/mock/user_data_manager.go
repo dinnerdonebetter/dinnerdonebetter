@@ -15,6 +15,21 @@ type UserDataManager struct {
 	mock.Mock
 }
 
+// UpdateUserUsername is a mock function.
+func (m *UserDataManager) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
+	return m.Called(ctx, userID, newUsername).Error(0)
+}
+
+// UpdateUserEmailAddress is a mock function.
+func (m *UserDataManager) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error {
+	return m.Called(ctx, userID, newEmailAddress).Error(0)
+}
+
+// UpdateUserDetails is a mock function.
+func (m *UserDataManager) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsUpdateInput) error {
+	return m.Called(ctx, userID, input).Error(0)
+}
+
 // GetUserByEmailAddressVerificationToken is a mock function.
 func (m *UserDataManager) GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*types.User, error) {
 	args := m.Called(ctx, token)

@@ -119,11 +119,9 @@ func (c *Client) closeResponseBody(ctx context.Context, res *http.Response) {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.WithResponse(res)
-
 	if res != nil {
 		if err := res.Body.Close(); err != nil {
-			observability.AcknowledgeError(err, logger, span, "closing response body")
+			observability.AcknowledgeError(err, c.logger.WithResponse(res), span, "closing response body")
 		}
 	}
 }
@@ -170,7 +168,7 @@ func (c *Client) buildRawURL(ctx context.Context, queryParams url.Values, parts 
 	return tu.ResolveReference(u)
 }
 
-// buildVersionlessURL builds a url without the `/api/v1/` prefix. It should otherwise be identical to buildRawURL.
+// buildVersionlessURL builds a URL without the `/api/v1/` prefix. It should otherwise be identical to buildRawURL.
 func (c *Client) buildVersionlessURL(ctx context.Context, qp url.Values, parts ...string) string {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
