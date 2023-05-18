@@ -547,41 +547,6 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	return nil
 }
 
-//go:embed queries/users/update.sql
-var updateUserQuery string
-
-// UpdateUser receives a complete Requester struct and updates its record in the database.
-// NOTE: this function uses the ID provided in the input to make its query.
-func (q *Querier) UpdateUser(ctx context.Context, updated *types.User) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if updated == nil {
-		return ErrNilInputProvided
-	}
-
-	tracing.AttachUsernameToSpan(span, updated.Username)
-	logger := q.logger.WithValue(keys.UsernameKey, updated.Username)
-
-	args := []any{
-		updated.Username,
-		updated.FirstName,
-		updated.LastName,
-		updated.HashedPassword,
-		updated.AvatarSrc,
-		updated.Birthday,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "user update", updateUserQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating user")
-	}
-
-	logger.Info("user updated")
-
-	return nil
-}
-
 //go:embed queries/users/update_username.sql
 var updateUsernameQuery string
 
@@ -681,6 +646,39 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *t
 	}
 
 	logger.Info("user details updated")
+
+	return nil
+}
+
+//go:embed queries/users/update_avatar_src.sql
+var updateUserAvatarSrcQuery string
+
+// UpdateUserAvatar updates a user's avatar source.
+func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if newAvatarSrc == "" {
+		return ErrEmptyInputProvided
+	}
+
+	tracing.AttachUserIDToSpan(span, userID)
+	logger := q.logger.WithValue(keys.UserIDKey, userID)
+
+	updateUserAvatarSrcArgs := []any{
+		newAvatarSrc,
+		userID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "user avatar update", updateUserAvatarSrcQuery, updateUserAvatarSrcArgs); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
+	}
+
+	logger.Info("user avatar updated")
 
 	return nil
 }

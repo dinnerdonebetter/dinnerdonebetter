@@ -2457,9 +2457,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 
 		mockDB.UserDataManager.On(
-			"UpdateUser",
+			"UpdateUserAvatar",
 			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
+			helper.exampleUser.ID,
+			exampleInput.Base64EncodedData,
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 
@@ -2548,9 +2549,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManager.On(
-			"UpdateUser",
+			"UpdateUserAvatar",
 			testutils.ContextMatcher,
-			mock.IsType(&types.User{}),
+			helper.exampleUser.ID,
+			exampleInput.Base64EncodedData,
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
 

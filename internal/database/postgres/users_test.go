@@ -1942,73 +1942,6 @@ func TestQuerier_CreateUser(T *testing.T) {
 	})
 }
 
-func TestQuerier_UpdateUser(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUser := fakes.BuildFakeUser()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleUser.Username,
-			exampleUser.FirstName,
-			exampleUser.LastName,
-			exampleUser.HashedPassword,
-			exampleUser.AvatarSrc,
-			exampleUser.Birthday,
-			exampleUser.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateUser(ctx, exampleUser))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with nil user", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		assert.Error(t, c.UpdateUser(ctx, nil))
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUser := fakes.BuildFakeUser()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleUser.Username,
-			exampleUser.FirstName,
-			exampleUser.LastName,
-			exampleUser.HashedPassword,
-			exampleUser.AvatarSrc,
-			exampleUser.Birthday,
-			exampleUser.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateUser(ctx, exampleUser))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_UpdateUsername(T *testing.T) {
 	T.Parallel()
 
@@ -2117,6 +2050,56 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.UpdateUserDetails(ctx, exampleUser.ID, exampleInput))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_UpdateUserAvatar(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleInput := fakes.BuildFakeID()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		updateUserAvatarSrcArgs := []any{
+			exampleInput,
+			exampleUser.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateUserAvatarSrcQuery)).
+			WithArgs(interfaceToDriverValue(updateUserAvatarSrcArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.UpdateUserAvatar(ctx, exampleUser.ID, exampleInput))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleInput := fakes.BuildFakeID()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		updateUserAvatarSrcArgs := []any{
+			exampleInput,
+			exampleUser.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateUserAvatarSrcQuery)).
+			WithArgs(interfaceToDriverValue(updateUserAvatarSrcArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.UpdateUserAvatar(ctx, exampleUser.ID, exampleInput))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

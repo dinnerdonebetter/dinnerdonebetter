@@ -15,6 +15,11 @@ type UserDataManager struct {
 	mock.Mock
 }
 
+// UpdateUserAvatar is a mock function.
+func (m *UserDataManager) UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error {
+	return m.Called(ctx, userID, newAvatarContent).Error(0)
+}
+
 // UpdateUserUsername is a mock function.
 func (m *UserDataManager) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
 	return m.Called(ctx, userID, newUsername).Error(0)
@@ -104,11 +109,6 @@ func (m *UserDataManager) GetUsers(ctx context.Context, filter *types.QueryFilte
 func (m *UserDataManager) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	args := m.Called(ctx, input)
 	return args.Get(0).(*types.User), args.Error(1)
-}
-
-// UpdateUser is a mock function.
-func (m *UserDataManager) UpdateUser(ctx context.Context, updated *types.User) error {
-	return m.Called(ctx, updated).Error(0)
 }
 
 // UpdateUserPassword is a mock function.

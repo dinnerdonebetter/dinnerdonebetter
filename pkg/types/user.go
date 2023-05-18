@@ -208,21 +208,17 @@ type (
 		GetUsers(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[User], error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
-
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
-		UpdateUser(ctx context.Context, updated *User) error
+		UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
 		UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error
 		UpdateUserDetails(ctx context.Context, userID string, input *UserDetailsUpdateInput) error
 		UpdateUserPassword(ctx context.Context, userID, newHash string) error
 		ArchiveUser(ctx context.Context, userID string) error
-
 		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
-
 		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
 		MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error
-
 		GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*User, error)
 		MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error
 		GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error)
