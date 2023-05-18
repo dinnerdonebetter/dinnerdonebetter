@@ -40,6 +40,47 @@ const (
 	passwordResetTokenSize = 32
 )
 
+// validateCredentialChangeRequest takes a user's credentials and determines if they match what is on record.
+func (s *service) validateCredentialChangeRequest(ctx context.Context, userID, password, totpToken string) (user *types.User, httpStatus int) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithValue(keys.UserIDKey, userID)
+
+	// fetch user data.
+	user, err := s.userDataManager.GetUser(ctx, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, http.StatusNotFound
+		}
+
+		logger.Error(err, "error encountered fetching user")
+		return nil, http.StatusInternalServerError
+	}
+
+	if user.TwoFactorSecretVerifiedAt != nil && totpToken == "" {
+		return nil, http.StatusResetContent
+	}
+
+	tfs := user.TwoFactorSecret
+	if user.TwoFactorSecretVerifiedAt == nil {
+		tfs = ""
+		totpToken = ""
+	}
+
+	// validate login.
+	valid, err := s.authenticator.CredentialsAreValid(ctx, user.HashedPassword, password, tfs, totpToken)
+	if err != nil {
+		logger.WithValue("validation_error", err).Debug("error validating credentials")
+		return nil, http.StatusBadRequest
+	} else if !valid {
+		logger.WithValue("valid", valid).Error(err, "invalid credentials")
+		return nil, http.StatusUnauthorized
+	}
+
+	return user, http.StatusOK
+}
+
 // UsernameSearchHandler is a handler for responding to username queries.
 func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -519,7 +560,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 			return
 		} else if !valid {
 			observability.AcknowledgeError(validationErr, logger, span, "invalid credentials")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusUnauthorized)
 			return
 		}
 	}
@@ -560,47 +601,6 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, result, http.StatusAccepted)
-}
-
-// validateCredentialChangeRequest takes a user's credentials and determines if they match what is on record.
-func (s *service) validateCredentialChangeRequest(ctx context.Context, userID, password, totpToken string) (user *types.User, httpStatus int) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithValue(keys.UserIDKey, userID)
-
-	// fetch user data.
-	user, err := s.userDataManager.GetUser(ctx, userID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, http.StatusNotFound
-		}
-
-		logger.Error(err, "error encountered fetching user")
-		return nil, http.StatusInternalServerError
-	}
-
-	if user.TwoFactorSecretVerifiedAt != nil && totpToken == "" {
-		return nil, http.StatusResetContent
-	}
-
-	tfs := user.TwoFactorSecret
-	if user.TwoFactorSecretVerifiedAt == nil {
-		tfs = ""
-		totpToken = ""
-	}
-
-	// validate login.
-	valid, err := s.authenticator.CredentialsAreValid(ctx, user.HashedPassword, password, tfs, totpToken)
-	if err != nil {
-		logger.WithValue("validation_error", err).Debug("error validating credentials")
-		return nil, http.StatusBadRequest
-	} else if !valid {
-		logger.WithValue("valid", valid).Error(err, "invalid credentials")
-		return nil, http.StatusUnauthorized
-	}
-
-	return user, http.StatusOK
 }
 
 // UpdatePasswordHandler updates a user's password.

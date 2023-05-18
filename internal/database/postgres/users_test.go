@@ -2026,7 +2026,7 @@ func TestQuerier_UpdateUsername(T *testing.T) {
 			exampleUser.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
+		db.ExpectExec(formatQueryForSQLMock(updateUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
@@ -2058,7 +2058,7 @@ func TestQuerier_UpdateUsername(T *testing.T) {
 			exampleUser.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
+		db.ExpectExec(formatQueryForSQLMock(updateUsernameQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -2086,7 +2086,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 			exampleUser.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
+		db.ExpectExec(formatQueryForSQLMock(updateUserDetailsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
@@ -2115,7 +2115,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 			exampleUser.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(updateUserQuery)).
+		db.ExpectExec(formatQueryForSQLMock(updateUserDetailsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 

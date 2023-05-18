@@ -4,7 +4,7 @@ UPDATE users SET
 	last_name = $3,
 	hashed_password = $4,
 	avatar_src = $5,
-	birthday = $7,
+	birthday = $6,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $8;
+	AND id = $7;
