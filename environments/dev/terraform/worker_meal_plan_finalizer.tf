@@ -113,6 +113,7 @@ resource "google_project_iam_member" "meal_plan_finalizer_artifactregistry_reade
 
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
   depends_on = [
+    google_project_service.container_registry,
     google_project_service.cloud_run_api,
     google_cloud_scheduler_job.meal_plan_finalization,
     google_project_iam_member.meal_plan_finalizer_event_receiving,

@@ -76,6 +76,7 @@ resource "google_project_iam_member" "outbound_emailer_user" {
 
 resource "google_cloudfunctions2_function" "outbound_emailer" {
   depends_on = [
+    google_project_service.container_registry,
     google_project_service.cloud_run_api,
     google_project_iam_member.outbound_emailer_event_receiving,
     google_project_iam_member.outbound_emailer_artifactregistry_reader,
