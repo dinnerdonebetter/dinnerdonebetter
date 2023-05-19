@@ -13,7 +13,7 @@
 		"tracing": {
 			"jaeger": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "prixfixe_service",
+				"service_name": "dinner_done_better_service",
 				"spanCollectionProbability": 1
 			},
 			"provider": "jaeger"
@@ -42,7 +42,7 @@
 		"enableCORSForLocalhost": true
 	},
 	"database": {
-		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true,
@@ -234,7 +234,7 @@
 				"lifetime": 86400000000000
 			},
 			"paseto": {
-				"issuer": "prixfixe_service",
+				"issuer": "dinner_done_better_service",
 				"localModeKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 				"lifetime": 60000000000
 			},

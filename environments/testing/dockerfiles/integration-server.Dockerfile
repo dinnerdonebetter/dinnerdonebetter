@@ -12,12 +12,12 @@ COPY vendor vendor
 COPY go.mod go.mod
 COPY go.sum go.sum
 
-RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /prixfixe github.com/dinnerdonebetter/backend/cmd/server
+RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /dinnerdonebetter github.com/dinnerdonebetter/backend/cmd/server
 
 # final stage
 FROM debian:stretch
 
 # RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
-COPY --from=build-stage /prixfixe /prixfixe
+COPY --from=build-stage /dinnerdonebetter /dinnerdonebetter
 
-ENTRYPOINT ["/prixfixe"]
+ENTRYPOINT ["/dinnerdonebetter"]

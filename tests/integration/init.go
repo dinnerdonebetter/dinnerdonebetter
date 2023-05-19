@@ -39,7 +39,7 @@ var (
 	premadeAdminUser = &types.User{
 		ID:              identifiers.New(),
 		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-		EmailAddress:    "integration_tests@prixfixe.email",
+		EmailAddress:    "integration_tests@dinnerdonebetter.email",
 		Username:        "exampleUser",
 		HashedPassword:  "integration-tests-are-cool",
 	}

@@ -24,7 +24,7 @@ import (
 
 const (
 	defaultTimeout = 30 * time.Second
-	clientName     = "prixfixe_client_v1"
+	clientName     = "ddb_client_v1"
 )
 
 type authMethod struct{}

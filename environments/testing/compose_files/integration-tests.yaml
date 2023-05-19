@@ -16,7 +16,7 @@ services:
         hostname: pgdatabase
         image: postgres:13.7
         environment:
-            POSTGRES_DB: 'prixfixe'
+            POSTGRES_DB: 'dinner-done-better'
             POSTGRES_PASSWORD: 'hunter2'
             POSTGRES_USER: 'dbuser'
         ports:
@@ -93,7 +93,7 @@ services:
         build:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/meal_plan_task_creator.Dockerfile'
-    prixfixe_api_server:
+    api_server:
         # logging:
         #     driver: none
         hostname: api_server
@@ -117,13 +117,13 @@ services:
     test:
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
-            TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable'
+            TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable'
         depends_on:
             - queue_loader
             - meal_plan_finalizer
             - meal_plan_task_creator
         links:
-            - prixfixe_api_server
+            - api_server
         build:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/integration-tests.Dockerfile'

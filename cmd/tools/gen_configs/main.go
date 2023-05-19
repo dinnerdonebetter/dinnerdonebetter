@@ -72,7 +72,7 @@ const (
 	debugCookieSecret = "HEREISA32CHARSECRETWHICHISMADEUP"
 	/* #nosec G101 */
 	debugCookieSigningKey    = "DIFFERENT32CHARSECRETTHATIMADEUP"
-	devPostgresDBConnDetails = "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable"
+	devPostgresDBConnDetails = "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable"
 	defaultCookieName        = authservice.DefaultCookieName
 
 	// run modes.
@@ -89,7 +89,7 @@ const (
 	contentTypeJSON    = "application/json"
 	workerQueueAddress = "worker_queue:6379"
 
-	pasteoIssuer = "prixfixe_service"
+	pasteoIssuer = "dinner_done_better_service"
 )
 
 var (
@@ -144,7 +144,7 @@ var (
 		Jaeger: &jaeger.Config{
 			SpanCollectionProbability: 1,
 			CollectorEndpoint:         "http://tracing-server:14268/api/traces",
-			ServiceName:               "prixfixe_service",
+			ServiceName:               "dinner_done_better_service",
 		},
 	}
 )
@@ -202,7 +202,7 @@ func generatePASETOKey() []byte {
 func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	cookieConfig := authservice.CookieConfig{
 		Name:       defaultCookieName,
-		Domain:     ".prixfixe.dev",
+		Domain:     ".dinnerdonebetter.dev",
 		Lifetime:   (24 * time.Hour) * 30,
 		SecureOnly: true,
 	}
@@ -210,7 +210,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	emailConfig := emailconfig.Config{
 		Provider: emailconfig.ProviderSendgrid,
 		Sendgrid: &sendgrid.Config{
-			WebAppURL: "https://www.prixfixe.dev",
+			WebAppURL: "https://www.dinnerdonebetter.dev",
 		},
 	}
 
@@ -256,8 +256,8 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderCloudTrace,
 				CloudTrace: &cloudtrace.Config{
-					ProjectID:                 "prixfixe-dev",
-					ServiceName:               "prixfixe_api",
+					ProjectID:                 "dinner-done-better-dev",
+					ServiceName:               "dinner_done_better_api",
 					SpanCollectionProbability: 1,
 				},
 			},
@@ -276,48 +276,48 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
-				PublicMediaURLPrefix: "https://media.prixfixe.dev/avatars",
+				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/avatars",
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
 						UploadFilenameKey: "avatar",
 						Provider:          objectstorage.GCPCloudStorageProvider,
-						BucketName:        "media.prixfixe.dev",
+						BucketName:        "media.dinnerdonebetter.dev",
 						BucketPrefix:      "avatars/",
 						GCPConfig: &objectstorage.GCPConfig{
-							BucketName: "media.prixfixe.dev",
+							BucketName: "media.dinnerdonebetter.dev",
 						},
 					},
 				},
 			},
 			Recipes: recipesservice.Config{
-				// note, this should effectively be "https://media.prixfixe.dev" + bucket prefix
-				PublicMediaURLPrefix: "https://media.prixfixe.dev/recipe_media",
+				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
+				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
 						UploadFilenameKey: "recipe_media",
 						Provider:          objectstorage.GCPCloudStorageProvider,
-						BucketName:        "media.prixfixe.dev",
+						BucketName:        "media.dinnerdonebetter.dev",
 						BucketPrefix:      "recipe_media/",
 						GCPConfig: &objectstorage.GCPConfig{
-							BucketName: "media.prixfixe.dev",
+							BucketName: "media.dinnerdonebetter.dev",
 						},
 					},
 				},
 			},
 			RecipeSteps: recipestepsservice.Config{
-				// note, this should effectively be "https://media.prixfixe.dev" + bucket prefix
-				PublicMediaURLPrefix: "https://media.prixfixe.dev/recipe_media",
+				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
+				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
 				Uploads: uploads.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
 						UploadFilenameKey: "recipe_media",
 						Provider:          objectstorage.GCPCloudStorageProvider,
-						BucketName:        "media.prixfixe.dev",
+						BucketName:        "media.dinnerdonebetter.dev",
 						BucketPrefix:      "recipe_media/",
 						GCPConfig: &objectstorage.GCPConfig{
-							BucketName: "media.prixfixe.dev",
+							BucketName: "media.dinnerdonebetter.dev",
 						},
 					},
 				},

@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	clientName = "prixfixe_client_v1"
+	clientName = "ddb_client_v1"
 )
 
 // Builder is a client for interacting with v1 of our HTTP API.

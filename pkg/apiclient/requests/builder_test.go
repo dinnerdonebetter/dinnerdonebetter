@@ -114,16 +114,16 @@ func TestBuilder_BuildURL(T *testing.T) {
 			inputParts  []string
 		}{
 			{
-				expectation: "https://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/things",
+				expectation: "https://whatever.whocares.gov/api/v1/things",
 				inputParts:  []string{"things"},
 			},
 			{
-				expectation: "https://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/stuff?key=value",
+				expectation: "https://whatever.whocares.gov/api/v1/stuff?key=value",
 				inputQuery:  map[string][]string{"key": {"value"}},
 				inputParts:  []string{"stuff"},
 			},
 			{
-				expectation: "https://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff?key=value1&key=value2&yek=eulav",
+				expectation: "https://whatever.whocares.gov/api/v1/things/and/stuff?key=value1&key=value2&yek=eulav",
 				inputQuery: map[string][]string{
 					"key": {"value1", "value2"},
 					"yek": {"eulav"},
@@ -217,16 +217,16 @@ func TestBuilder_buildUnversionedURL(T *testing.T) {
 			inputParts  []string
 		}{
 			{
-				expectation: "https://prixfixe.verygoodsoftwarenotvirus.ru/things",
+				expectation: "https://whatever.whocares.gov/things",
 				inputParts:  []string{"things"},
 			},
 			{
-				expectation: "https://prixfixe.verygoodsoftwarenotvirus.ru/stuff?key=value",
+				expectation: "https://whatever.whocares.gov/stuff?key=value",
 				inputQuery:  map[string][]string{"key": {"value"}},
 				inputParts:  []string{"stuff"},
 			},
 			{
-				expectation: "https://prixfixe.verygoodsoftwarenotvirus.ru/things/and/stuff?key=value1&key=value2&yek=eulav",
+				expectation: "https://whatever.whocares.gov/things/and/stuff?key=value1&key=value2&yek=eulav",
 				inputQuery: map[string][]string{
 					"key": {"value1", "value2"},
 					"yek": {"eulav"},
@@ -264,7 +264,7 @@ func TestBuilder_BuildWebsocketURL(T *testing.T) {
 
 		require.NoError(t, err)
 
-		expected := "wss://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff"
+		expected := "wss://whatever.whocares.gov/api/v1/things/and/stuff"
 		actual := c.BuildWebsocketURL(ctx, "things", "and", "stuff")
 
 		assert.Equal(t, expected, actual)

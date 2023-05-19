@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	serverNamespace = "prixfixe_service"
+	serverNamespace = "dinner_done_better_service"
 	loggerName      = "api_server"
 )
 

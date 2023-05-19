@@ -35,11 +35,8 @@ func SetupCloudTrace(ctx context.Context, cfg *Config) (tracing.TracerProvider, 
 
 	res, err := resource.New(
 		ctx,
-		resource.WithProcess(),
 		resource.WithFromEnv(),
-		resource.WithHost(),
-		resource.WithOS(),
-		resource.WithAttributes(semconv.ServiceNameKey.String("prixfixe-api")),
+		resource.WithAttributes(semconv.ServiceNameKey.String("dinner-done-better-api")),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("setting up process runtime version: %w", err)

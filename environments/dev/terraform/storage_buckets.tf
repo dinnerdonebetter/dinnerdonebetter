@@ -1,6 +1,6 @@
 resource "google_storage_bucket" "api_media" {
   provider                    = google
-  name                        = "media.prixfixe.dev"
+  name                        = "media.dinnerdonebetter.dev"
   location                    = "US"
   uniform_bucket_level_access = false
   force_destroy               = true
@@ -15,7 +15,7 @@ resource "google_storage_bucket" "api_media" {
   }
 
   cors {
-    origin          = ["https://prixfixe.dev]"]
+    origin          = ["https://dinnerdonebetter.dev]"]
     method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
     response_header = ["*"]
     max_age_seconds = 3600

@@ -65,7 +65,7 @@ func buildTestHelper(t *testing.T) *householdsServiceHTTPRoutesTestHelper {
 	helper.req, err = http.NewRequestWithContext(
 		helper.ctx,
 		http.MethodGet,
-		"https://prixfixe.verygoodsoftwarenotvirus.ru",
+		"https://whatever.whocares.gov",
 		http.NoBody,
 	)
 	require.NotNil(t, helper.req)

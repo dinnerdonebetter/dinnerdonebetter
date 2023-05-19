@@ -162,7 +162,7 @@ func Test_zapLogger_WithRequest(T *testing.T) {
 			return t.Name()
 		}
 
-		u, err := url.ParseRequestURI("https://prixfixe.verygoodsoftwarenotvirus.ru?things=stuff")
+		u, err := url.ParseRequestURI("https://whatever.whocares.gov?things=stuff")
 		require.NoError(t, err)
 
 		assert.NotNil(t, l.WithRequest(&http.Request{

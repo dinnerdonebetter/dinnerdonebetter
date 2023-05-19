@@ -27,7 +27,7 @@ resource "google_monitoring_uptime_check_config" "api_uptime" {
     type = "uptime_url"
     labels = {
       project_id = local.project_id
-      host       = "api.prixfixe.dev"
+      host       = "api.dinnerdonebetter.dev"
     }
   }
 }
@@ -82,7 +82,7 @@ resource "google_monitoring_alert_policy" "api_latency_alert_policy" {
       query    = <<END
         fetch uptime_url
         | metric 'monitoring.googleapis.com/uptime_check/request_latency'
-        | filter (metric.checked_resource_id == 'api.prixfixe.dev')
+        | filter (metric.checked_resource_id == 'api.dinnerdonebetter.dev')
         | group_by 5m, [value_request_latency_max: max(value.request_latency)]
         | every 5m
         | group_by [], [value_request_latency_max_max: max(value_request_latency_max)]

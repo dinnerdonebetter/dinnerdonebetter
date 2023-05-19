@@ -25,13 +25,13 @@ import (
 )
 
 var (
-	customCookieDomainHeader = "X-PRIXFIXE-COOKIE-DOMAIN"
+	customCookieDomainHeader = "X-DDB-COOKIE-DOMAIN"
 
 	allowedCookiesHat    sync.Mutex
 	allowedCookieDomains = map[string]uint{
-		".prixfixe.local": 0,
-		".prixfixe.dev":   1,
-		".prixfixe.app":   2,
+		".dinnerdonebetter.local": 0,
+		".dinnerdonebetter.dev":   1,
+		".dinnerdonebetter.com":   2,
 	}
 )
 

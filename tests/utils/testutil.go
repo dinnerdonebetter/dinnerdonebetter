@@ -65,7 +65,7 @@ func BuildTestRequest(t *testing.T) *http.Request {
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodOptions,
-		"https://prixfixe.verygoodsoftwarenotvirus.ru",
+		"https://whatever.whocares.gov",
 		http.NoBody,
 	)
 

@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	/* #nosec G101 */     // `PrixFixe1!` hashed (without backticks).
+	/* #nosec G101 */
 	defaultHashedPassword = "$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho"
 	default2FASekret      = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 )
@@ -34,7 +34,7 @@ var userCollection = struct {
 		InvitationToken:        "",
 		DestinationHouseholdID: "",
 		Username:               "admin",
-		EmailAddress:           "admin@prixfixe.email",
+		EmailAddress:           "admin@dinnerdonebetter.email",
 	},
 	MomJones: &types.UserDatabaseCreationInput{
 		ID:                     identifiers.New(),

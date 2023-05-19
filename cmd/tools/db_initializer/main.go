@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	defaultDBURL  = "postgres://dbuser:hunter2@localhost:5432/prixfixe?sslmode=disable"
+	defaultDBURL  = "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable"
 	clearAllQuery = `
 DELETE FROM "users" WHERE id IS NOT NULL;
 DELETE FROM "households" WHERE id IS NOT NULL;

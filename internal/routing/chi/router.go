@@ -38,8 +38,8 @@ type router struct {
 
 var (
 	validDomains = map[string]struct{}{
-		"www.prixfixe.dev":   {},
-		"admin.prixfixe.dev": {},
+		"www.dinnerdonebetter.dev":   {},
+		"admin.dinnerdonebetter.dev": {},
 	}
 )
 

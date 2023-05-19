@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	exampleDomain    = "prixfixe.verygoodsoftwarenotvirus.ru"
+	exampleDomain    = "whatever.whocares.gov"
 	exampleURI       = "https://" + exampleDomain
 	asciiControlChar = string(byte(127))
 )

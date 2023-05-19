@@ -23,7 +23,7 @@ import (
 
 const (
 	// defaultNamespace is the default namespace under which we register metrics.
-	defaultNamespace = "prixfixe_server"
+	defaultNamespace = "dinner_done_better_server"
 
 	instrumentationVersion = "1.0.0"
 

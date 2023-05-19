@@ -180,7 +180,7 @@ linters-settings:
     sections:
       - standard # Standard section: captures all standard packages.
       - prefix(github.com/dinnerdonebetter/backend) # Custom section: groups all imports with the specified Prefix.
-      - prefix(github.com/prixfixeco) # Custom section: groups all imports with the specified Prefix.
+      - prefix(github.com/dinnerdonebetter) # Custom section: groups all imports with the specified Prefix.
       - default # Default section: contains all imports that could not be matched to another section type.
     skip-generated: true
     custom-order: true

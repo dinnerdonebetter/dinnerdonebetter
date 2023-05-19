@@ -1,5 +1,5 @@
 locals {
-  database_name = "prixfixe"
+  database_name = "dinner-done-better"
 }
 
 resource "google_sql_database_instance" "dev" {
@@ -34,7 +34,7 @@ resource "google_sql_database_instance" "dev" {
 }
 
 resource "google_sql_ssl_cert" "client_cert" {
-  common_name = "prixfixe-dev"
+  common_name = "dinner-done-better-dev"
   instance    = google_sql_database_instance.dev.name
 }
 
