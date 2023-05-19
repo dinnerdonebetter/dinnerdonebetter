@@ -150,9 +150,9 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
       // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
       // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
       DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
-      GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
-      GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
-      DATA_CHANGES_TOPIC_NAME                    = google_pubsub_topic.data_changes_topic.name
+      GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
+      GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
+      DATA_CHANGES_TOPIC_NAME                              = google_pubsub_topic.data_changes_topic.name
     }
 
     secret_environment_variables {
