@@ -114,7 +114,6 @@ resource "google_project_iam_member" "meal_plan_task_creator_artifactregistry_re
 
 resource "google_cloudfunctions2_function" "meal_plan_task_creator" {
   depends_on = [
-    google_project_service.cloud_run_api,
     google_project_iam_member.meal_plan_task_creator_event_receiving,
     google_project_iam_member.meal_plan_task_creator_artifactregistry_reader,
   ]

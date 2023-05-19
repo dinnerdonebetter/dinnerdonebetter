@@ -105,7 +105,6 @@ resource "google_cloud_run_service" "api_server" {
   location = local.gcp_region
 
   depends_on = [
-    google_project_service.cloud_run_api,
   ]
 
   traffic {
