@@ -105,7 +105,6 @@ resource "google_cloud_run_service" "api_server" {
   location = local.gcp_region
 
   depends_on = [
-    google_project_service.container_registry,
     google_project_service.cloud_run_api,
   ]
 
@@ -268,7 +267,7 @@ resource "google_cloud_run_service" "api_server" {
   }
 }
 
-resource "google_cloud_run_domain_mapping" "webapp_domain_mapping" {
+resource "google_cloud_run_domain_mapping" "api_server_domain_mapping" {
   location = local.gcp_region
   name     = "api.dinnerdonebetter.dev"
 
@@ -279,6 +278,10 @@ resource "google_cloud_run_domain_mapping" "webapp_domain_mapping" {
   spec {
     route_name = google_cloud_run_service.api_server.name
   }
+}
+
+output "instance_ip_addr" {
+  value = google_cloud_run_domain_mapping.api_server_domain_mapping.status
 }
 
 resource "cloudflare_record" "api_cname_record" {

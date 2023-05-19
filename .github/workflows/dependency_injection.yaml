@@ -1,9 +1,9 @@
-on: # [pull_request]
-  pull_request:
-    paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
+on: [gollum]
+#  pull_request:
+#    paths:
+#      - pkg/**
+#      - cmd/**
+#      - internal/**
 name: check
 jobs:
  dependency_injection:

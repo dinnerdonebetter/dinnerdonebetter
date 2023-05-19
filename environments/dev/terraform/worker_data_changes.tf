@@ -76,7 +76,6 @@ resource "google_project_iam_member" "data_changes_user" {
 
 resource "google_cloudfunctions2_function" "data_changes" {
   depends_on = [
-    google_project_service.container_registry,
     google_project_service.cloud_run_api,
     google_project_iam_member.data_changes_event_receiving,
     google_project_iam_member.data_changes_artifactregistry_reader,

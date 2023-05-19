@@ -113,7 +113,6 @@ resource "google_project_iam_member" "meal_plan_grocery_list_initializer_artifac
 
 resource "google_cloudfunctions2_function" "meal_plan_grocery_list_initializer" {
   depends_on = [
-    google_project_service.container_registry,
     google_project_service.cloud_run_api,
     google_cloud_scheduler_job.meal_plan_grocery_list_initializer,
     google_project_iam_member.meal_plan_grocery_list_initializer_event_receiving,
