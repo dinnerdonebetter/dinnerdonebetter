@@ -68,6 +68,15 @@ resource "google_project_iam_member" "data_changes_artifactregistry_reader" {
   depends_on = [google_project_iam_member.data_changes_event_receiving]
 }
 
+resource "google_project_iam_binding" "data_changes_worker_service_account_user" {
+  project = local.project_id
+  role    = "roles/iam.serviceAccountUser"
+
+  members = [
+    "serviceAccount:${google_service_account.data_changes_user_service_account.email}",
+  ]
+}
+
 resource "google_project_iam_member" "data_changes_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.data_changes_worker_role.id
