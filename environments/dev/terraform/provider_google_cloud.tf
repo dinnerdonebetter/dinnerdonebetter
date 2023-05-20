@@ -2,8 +2,8 @@ variable "GOOGLE_CLOUD_CREDENTIALS" {}
 
 locals {
   project_id    = "dinner-done-better-dev"
-  gcp_region    = "us-south1"
-  gcp_main_zone = "us-south1-b"
+  gcp_region    = "us-central1"
+  gcp_main_zone = "us-central1-b"
 }
 
 provider "google" {

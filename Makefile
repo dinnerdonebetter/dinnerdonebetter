@@ -255,7 +255,7 @@ line_count: ensure_scc_installed
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
 .PHONY: start_dev_cloud_sql_proxy
 start_dev_cloud_sql_proxy:
-	cloud_sql_proxy -dir=/cloudsql -instances='dinner-done-better-dev:us-south1:dev=tcp:5434'
+	cloud_sql_proxy -dir=/cloudsql -instances='dinner-done-better-dev:us-central1:dev=tcp:5434'
 
 .PHONY: proxy_dev_db
 proxy_dev_db: start_dev_cloud_sql_proxy
