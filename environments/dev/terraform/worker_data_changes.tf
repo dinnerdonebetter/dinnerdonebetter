@@ -74,6 +74,15 @@ resource "google_project_iam_member" "data_changes_user" {
   member  = format("serviceAccount:%s", google_service_account.data_changes_user_service_account.email)
 }
 
+resource "google_project_iam_binding" "data_changes_user_service_account_user" {
+  project = local.project_id
+  role    = "roles/iam.serviceAccountUser"
+
+  members = [
+    google_project_iam_member.data_changes_user.member,
+  ]
+}
+
 resource "google_cloudfunctions2_function" "data_changes" {
   depends_on = [
     google_project_iam_member.data_changes_event_receiving,

@@ -64,6 +64,15 @@ resource "google_project_iam_member" "meal_plan_grocery_list_initializer_user" {
   member  = format("serviceAccount:%s", google_service_account.meal_plan_grocery_list_initializer_user_service_account.email)
 }
 
+resource "google_project_iam_binding" "meal_plan_grocery_list_initializer_user_service_account_user" {
+  project = local.project_id
+  role    = "roles/iam.serviceAccountUser"
+
+  members = [
+    google_project_iam_member.meal_plan_grocery_list_initializer_user.member,
+  ]
+}
+
 resource "random_password" "meal_plan_grocery_list_initializer_user_database_password" {
   length           = 64
   special          = true
