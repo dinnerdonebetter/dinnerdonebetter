@@ -74,15 +74,6 @@ resource "google_project_iam_member" "outbound_emailer_user" {
   member  = format("serviceAccount:%s", google_service_account.outbound_emailer_user_service_account.email)
 }
 
-resource "google_project_iam_binding" "outbound_emailer_user_service_account_user" {
-  project = local.project_id
-  role    = "roles/iam.serviceAccountUser"
-
-  members = [
-    google_project_iam_member.outbound_emailer_user.member,
-  ]
-}
-
 resource "google_cloudfunctions2_function" "outbound_emailer" {
   depends_on = [
     google_project_iam_member.outbound_emailer_event_receiving,
