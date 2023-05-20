@@ -104,9 +104,6 @@ resource "google_cloud_run_service" "api_server" {
   name     = "api-server"
   location = local.gcp_region
 
-  depends_on = [
-  ]
-
   traffic {
     percent         = 100
     latest_revision = true
@@ -120,6 +117,19 @@ resource "google_cloud_run_service" "api_server" {
 
       containers {
         image = "gcr.io/dinner-done-better-dev/api_server"
+
+        startup_probe {
+          initial_delay_seconds = 15
+          timeout_seconds       = 1
+          period_seconds        = 3
+          failure_threshold     = 5
+        }
+
+        liveness_probe {
+          http_get {
+            path = "/_meta_/ready"
+          }
+        }
 
         resources {
           requests = {
@@ -138,7 +148,7 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name  = "PF_ENVIRONMENT"
+          name  = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
           value = local.environment
         }
 
@@ -256,6 +266,8 @@ resource "google_cloud_run_service" "api_server" {
         }
       }
     }
+
+
 
     metadata {
       annotations = {

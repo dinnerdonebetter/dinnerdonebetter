@@ -103,7 +103,7 @@ resource "google_cloudfunctions2_function" "outbound_emailer" {
     service_account_email          = google_service_account.outbound_emailer_user_service_account.email
 
     environment_variables = {
-      PF_ENVIRONMENT = local.environment,
+      DINNER_DONE_BETTER_SERVICE_ENVIRONMENT = local.environment,
       # TODO: use the outbound_emailer_user for this, currently it has permission denied for accessing tables
       # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
       # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html

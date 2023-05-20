@@ -54,7 +54,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		return nil
 	}
 
-	envCfg := email.GetConfigForEnvironment(os.Getenv("PF_ENVIRONMENT"))
+	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))
 	if envCfg == nil {
 		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, logger, nil, "getting environment config")
 	}
