@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
 	"github.com/stretchr/testify/assert"
 )

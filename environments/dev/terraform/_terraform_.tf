@@ -1,8 +1,8 @@
 terraform {
-  required_version = "1.3.4"
+  required_version = "1.4.6"
 
   backend "remote" {
-    organization = "prixfixe"
+    organization = "dinnerdonebetter"
 
     workspaces {
       name = "dev-backend"

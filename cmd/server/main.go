@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/build/server"
-	"github.com/prixfixeco/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/build/server"
+	"github.com/dinnerdonebetter/backend/internal/config"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	_ "go.uber.org/automaxprocs"

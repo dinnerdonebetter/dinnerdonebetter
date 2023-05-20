@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 )

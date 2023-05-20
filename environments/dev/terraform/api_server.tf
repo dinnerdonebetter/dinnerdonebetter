@@ -1,6 +1,6 @@
 locals {
   api_database_username = "api_db_user"
-  public_url            = "api.prixfixe.dev"
+  public_url            = "api.dinnerdonebetter.dev"
 }
 
 resource "google_project_iam_custom_role" "api_server_role" {
@@ -116,7 +116,7 @@ resource "google_cloud_run_service" "api_server" {
       service_account_name = google_service_account.api_user_service_account.email
 
       containers {
-        image = "gcr.io/prixfixe-dev/api_server"
+        image = "gcr.io/dinner-done-better-dev/api_server"
 
         resources {
           requests = {
@@ -135,7 +135,7 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name  = "PF_ENVIRONMENT"
+          name  = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
           value = local.environment
         }
 
@@ -155,22 +155,22 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name  = "PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"
+          name  = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
           value = google_sql_database_instance.dev.connection_name
         }
 
         env {
-          name  = "PRIXFIXE_DATABASE_NAME"
+          name  = "DINNER_DONE_BETTER_DATABASE_NAME"
           value = local.database_name
         }
 
         env {
-          name  = "PRIXFIXE_DATABASE_USER"
+          name  = "DINNER_DONE_BETTER_DATABASE_USER"
           value = local.api_database_username
         }
 
         env {
-          name = "PRIXFIXE_DATABASE_PASSWORD"
+          name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.api_user_database_password.secret_id
@@ -180,7 +180,7 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name = "PRIXFIXE_COOKIE_HASH_KEY"
+          name = "DINNER_DONE_BETTER_COOKIE_HASH_KEY"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.cookie_hash_key.secret_id
@@ -190,7 +190,7 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name = "PRIXFIXE_COOKIE_BLOCK_KEY"
+          name = "DINNER_DONE_BETTER_COOKIE_BLOCK_KEY"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.cookie_block_key.secret_id
@@ -200,7 +200,7 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name = "PRIXFIXE_PASETO_LOCAL_KEY"
+          name = "DINNER_DONE_BETTER_PASETO_LOCAL_KEY"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.paseto_local_key.secret_id
@@ -210,7 +210,7 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name = "PRIXFIXE_DATA_CHANGES_TOPIC"
+          name = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.data_changes_topic_name.secret_id
@@ -220,7 +220,7 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name = "PRIXFIXE_SENDGRID_API_TOKEN"
+          name = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.sendgrid_api_token.secret_id
@@ -230,7 +230,7 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name = "PRIXFIXE_SEGMENT_API_TOKEN"
+          name = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.segment_api_token.secret_id
@@ -254,6 +254,8 @@ resource "google_cloud_run_service" "api_server" {
       }
     }
 
+
+
     metadata {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1"
@@ -263,9 +265,9 @@ resource "google_cloud_run_service" "api_server" {
   }
 }
 
-resource "google_cloud_run_domain_mapping" "webapp_domain_mapping" {
+resource "google_cloud_run_domain_mapping" "api_server_domain_mapping" {
   location = local.gcp_region
-  name     = "api.prixfixe.dev"
+  name     = "api.dinnerdonebetter.dev"
 
   metadata {
     namespace = local.project_id
@@ -276,9 +278,13 @@ resource "google_cloud_run_domain_mapping" "webapp_domain_mapping" {
   }
 }
 
+output "instance_ip_addr" {
+  value = google_cloud_run_domain_mapping.api_server_domain_mapping.status
+}
+
 resource "cloudflare_record" "api_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
-  name    = "api.prixfixe.dev"
+  name    = "api.dinnerdonebetter.dev"
   type    = "CNAME"
   value   = "ghs.googlehosted.com"
   ttl     = 1

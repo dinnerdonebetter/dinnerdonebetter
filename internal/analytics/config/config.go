@@ -4,11 +4,11 @@ import (
 	"context"
 	"strings"
 
-	"github.com/prixfixeco/backend/internal/analytics"
-	"github.com/prixfixeco/backend/internal/analytics/rudderstack"
-	"github.com/prixfixeco/backend/internal/analytics/segment"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/analytics"
+	"github.com/dinnerdonebetter/backend/internal/analytics/rudderstack"
+	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

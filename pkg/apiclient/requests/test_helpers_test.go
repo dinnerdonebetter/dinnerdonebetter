@@ -9,18 +9,18 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/encoding"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 const (
-	exampleDomain    = "prixfixe.verygoodsoftwarenotvirus.ru"
+	exampleDomain    = "whatever.whocares.gov"
 	exampleURI       = "https://" + exampleDomain
 	asciiControlChar = string(byte(127))
 )

@@ -4,7 +4,7 @@ ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
 GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.18-stretch go
 GO_FORMAT                     := gofmt -s -w
-THIS                          := github.com/prixfixeco/backend
+THIS                          := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
 ENVIRONMENTS_DIR              := environments
@@ -19,7 +19,7 @@ CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finaliz
 ## non-PHONY folders/files
 
 regit:
-	(rm -rf .git && cd ../ && rm -rf backend2 && git clone git@github.com:prixfixeco/backend backend2 && cp -rf backend2/.git backend/.git && rm -rf backend2)
+	(rm -rf .git && cd ../ && rm -rf backend2 && git clone git@github.com:dinnerdonebetter/backend backend2 && cp -rf backend2/.git backend/.git && rm -rf backend2)
 
 clear:
 	@printf "\033[2J\033[3J\033[1;1H"
@@ -97,7 +97,7 @@ format_golang:
 .PHONY: format_imports
 format_imports:
 	@# TODO: find some way to use $THIS here instead of hardcoding the path
-	gci write --skip-generated --section standard --section "prefix(github.com/prixfixeco/backend)" --section "prefix(github.com/prixfixeco)" --section default --custom-order .
+	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order .
 
 .PHONY: terraformat
 terraformat:
@@ -166,11 +166,11 @@ check_queries:
 
 .PHONY: configs
 configs:
-	go run github.com/prixfixeco/backend/cmd/tools/gen_configs
+	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_configs
 
 .PHONY: queries
 queries:
-	go run github.com/prixfixeco/backend/cmd/tools/gen_queries
+	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_queries
 
 gen: configs queries
 
@@ -179,14 +179,14 @@ clean_ts:
 
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
-	go run github.com/prixfixeco/backend/cmd/tools/codegen/gen_typescript
+	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
 
 clean_swift:
 	rm -rf $(ARTIFACTS_DIR)/swift
 
 swift: clean_swift
 	mkdir -p $(ARTIFACTS_DIR)/swift
-	go run github.com/prixfixeco/backend/cmd/tools/codegen/gen_swift
+	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_swift
 
 ## Integration tests
 
@@ -238,7 +238,7 @@ db_init: initialize_database
 
 .PHONY: initialize_database
 initialize_database:
-	go run github.com/prixfixeco/backend/cmd/tools/db_initializer
+	go run github.com/dinnerdonebetter/backend/cmd/tools/db_initializer
 
 ## misc
 
@@ -255,13 +255,13 @@ line_count: ensure_scc_installed
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
 .PHONY: start_dev_cloud_sql_proxy
 start_dev_cloud_sql_proxy:
-	cloud_sql_proxy -dir=/cloudsql -instances='prixfixe-dev:us-central1:dev=tcp:5434'
+	cloud_sql_proxy -dir=/cloudsql -instances='dinner-done-better-dev:us-central1:dev=tcp:5434'
 
 .PHONY: proxy_dev_db
 proxy_dev_db: start_dev_cloud_sql_proxy
 
 dump_dev_db:
 	rm -f cmd/tools/db_initializer/db_dumps/dump.sql
-	for table in valid_preparations valid_measurement_units valid_instruments valid_ingredients valid_ingredient_preparations valid_ingredient_measurement_units valid_preparation_instruments recipes recipe_steps recipe_step_products recipe_step_instruments recipe_step_ingredients meals meal_recipes; do \
-		pg_dump "user=api_db_user password=`gcloud secrets versions access --secret=api_user_database_password 1` host=127.0.0.1 port=5434 sslmode=disable dbname=prixfixe" --table="$$table" --data-only --column-inserts >> cmd/tools/db_initializer/dump.sql; \
+	for table in api_clients household_invitations household_user_memberships households meal_components meal_plan_events meal_plan_grocery_list_items meal_plan_option_votes meal_plan_options meal_plan_tasks meal_plans meals password_reset_tokens recipe_media recipe_prep_task_steps recipe_prep_tasks recipe_step_completion_condition_ingredients recipe_step_completion_conditions recipe_step_ingredients recipe_step_instruments recipe_step_products recipe_step_vessels recipe_steps recipes service_setting_configurations service_settings sessions users valid_ingredient_measurement_units valid_ingredient_preparations valid_ingredient_state_ingredients valid_ingredient_states valid_ingredients valid_instruments valid_measurement_conversions valid_measurement_units valid_preparation_instruments valid_preparations webhook_trigger_events webhooks; do \
+		pg_dump "user=api_db_user password=`gcloud secrets versions access --secret=api_user_database_password 1` host=127.0.0.1 port=5434 sslmode=disable dbname=dinner-done-better" --table="$$table" --data-only --column-inserts >> cmd/tools/db_initializer/dump.sql; \
 	done

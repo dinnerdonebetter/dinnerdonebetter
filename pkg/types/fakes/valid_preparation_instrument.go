@@ -1,8 +1,8 @@
 package fakes
 
 import (
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/converters"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
 // BuildFakeValidPreparationInstrument builds a faked valid preparation instrument.

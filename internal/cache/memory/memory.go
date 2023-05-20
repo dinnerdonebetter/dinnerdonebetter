@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/prixfixeco/backend/internal/cache"
+	"github.com/dinnerdonebetter/backend/internal/cache"
 )
 
 type inMemoryCacheImpl[T cache.Cacheable] struct {

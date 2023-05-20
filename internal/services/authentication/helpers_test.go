@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/authentication"
-	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/gorilla/securecookie"
 	"github.com/stretchr/testify/assert"

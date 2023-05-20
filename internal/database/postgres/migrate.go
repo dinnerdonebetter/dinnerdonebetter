@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database"
 
 	"github.com/GuiaBolso/darwin"
 )

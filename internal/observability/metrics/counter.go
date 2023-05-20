@@ -3,7 +3,7 @@ package metrics
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"go.opentelemetry.io/otel/metric"
 )

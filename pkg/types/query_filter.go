@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 )
 
 const (

@@ -4,10 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/observability/tracing/cloudtrace"
-	"github.com/prixfixeco/backend/internal/observability/tracing/jaeger"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

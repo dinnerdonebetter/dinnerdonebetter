@@ -3,13 +3,13 @@ package integration
 import (
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/apiclient"
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/converters"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"

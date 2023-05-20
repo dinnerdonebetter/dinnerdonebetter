@@ -3,7 +3,7 @@ package mockauthn
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 
 	"github.com/stretchr/testify/mock"
 )

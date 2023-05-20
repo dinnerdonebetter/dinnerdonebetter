@@ -3,8 +3,8 @@ package observability
 import (
 	"fmt"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 // PrepareAndLogError standardizes our error handling by logging, tracing, and formatting an error consistently.

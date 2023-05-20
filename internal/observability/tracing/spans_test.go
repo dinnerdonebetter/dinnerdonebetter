@@ -53,7 +53,7 @@ func TestFormatSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		u, err := url.ParseRequestURI("https://prixfixe.verygoodsoftwarenotvirus.ru")
+		u, err := url.ParseRequestURI("https://whatever.whocares.gov")
 		require.NoError(t, err)
 
 		FormatSpan(t.Name(), &http.Request{URL: u})

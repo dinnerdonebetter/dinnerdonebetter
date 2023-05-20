@@ -6,12 +6,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/prixfixeco/backend/internal/messagequeue"
-	"github.com/prixfixeco/backend/internal/messagequeue/pubsub"
-	"github.com/prixfixeco/backend/internal/messagequeue/redis"
-	"github.com/prixfixeco/backend/internal/messagequeue/sqs"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/pubsub"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/sqs"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	ps "cloud.google.com/go/pubsub"
 )

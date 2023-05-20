@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
@@ -65,7 +65,7 @@ func BuildTestRequest(t *testing.T) *http.Request {
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodOptions,
-		"https://prixfixe.verygoodsoftwarenotvirus.ru",
+		"https://whatever.whocares.gov",
 		http.NoBody,
 	)
 

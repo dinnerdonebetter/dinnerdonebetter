@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 )
 
 func Test_tracingErrorHandler_Handle(T *testing.T) {

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/pkg/types"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"

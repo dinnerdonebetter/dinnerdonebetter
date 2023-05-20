@@ -3,9 +3,9 @@ package fakes
 import (
 	"time"
 
-	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/converters"
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
 	fake "github.com/brianvoe/gofakeit/v5"
 )

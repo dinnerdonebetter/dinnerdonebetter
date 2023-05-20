@@ -8,18 +8,18 @@ import (
 	"os"
 	"strings"
 
-	"github.com/prixfixeco/backend/internal/database"
-	dbconfig "github.com/prixfixeco/backend/internal/database/config"
-	"github.com/prixfixeco/backend/internal/database/postgres"
-	logcfg "github.com/prixfixeco/backend/internal/observability/logging/config"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/database"
+	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres"
+	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	_ "github.com/lib/pq"
 	flag "github.com/spf13/pflag"
 )
 
 const (
-	defaultDBURL  = "postgres://dbuser:hunter2@localhost:5432/prixfixe?sslmode=disable"
+	defaultDBURL  = "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable"
 	clearAllQuery = `
 DELETE FROM "users" WHERE id IS NOT NULL;
 DELETE FROM "households" WHERE id IS NOT NULL;

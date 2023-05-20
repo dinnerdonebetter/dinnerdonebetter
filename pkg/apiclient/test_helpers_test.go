@@ -14,15 +14,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 const (
-	exampleURI       = "https://prixfixe.verygoodsoftwarenotvirus.ru"
+	exampleURI       = "https://whatever.whocares.gov"
 	asciiControlChar = string(byte(127))
 )
 
@@ -112,7 +112,7 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *Client {
 	require.NotNil(t, ts)
 
 	client, err := NewClient(
-		mustParseURL("https://prixfixe.verygoodsoftwarenotvirus.ru"),
+		mustParseURL("https://whatever.whocares.gov"),
 		tracing.NewNoopTracerProvider(),
 		UsingLogger(logging.NewNoopLogger()),
 		UsingJSON(),
@@ -139,7 +139,7 @@ func buildTestClientWithInvalidURL(t *testing.T) *Client {
 	t.Helper()
 
 	l := logging.NewNoopLogger()
-	u := mustParseURL("https://prixfixe.verygoodsoftwarenotvirus.ru")
+	u := mustParseURL("https://whatever.whocares.gov")
 	u.Scheme = fmt.Sprintf(`%s://`, asciiControlChar)
 
 	c, err := NewClient(u, tracing.NewNoopTracerProvider(), UsingLogger(l), UsingDebug(true))

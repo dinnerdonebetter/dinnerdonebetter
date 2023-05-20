@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"

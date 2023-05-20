@@ -1,7 +1,7 @@
 package uploads
 
 import (
-	"github.com/prixfixeco/backend/internal/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 
 	"github.com/google/wire"
 )

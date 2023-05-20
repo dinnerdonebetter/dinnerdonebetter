@@ -30,7 +30,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.3.4
+          terraform_version: 1.4.6
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init
@@ -40,8 +40,8 @@ jobs:
 
       - name: Build API server container
         run: |
-          docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag gcr.io/dinner-done-better-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag gcr.io/dinner-done-better-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
 
       - name: Build data changes cloud function directory
         run: ./scripts/build_cloud_function.sh data_changes
@@ -70,8 +70,8 @@ jobs:
 
       - name: Push API server container
         run: |
-          docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
-          docker push gcr.io/prixfixe-dev/api_server:latest
+          docker push gcr.io/dinner-done-better-dev/api_server:${{  github.sha }}
+          docker push gcr.io/dinner-done-better-dev/api_server:latest
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
@@ -82,5 +82,5 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: 'api-server'
-          project_id: 'prixfixe-dev'
-          image: 'gcr.io/prixfixe-dev/api_server'
+          project_id: 'dinner-done-better-dev'
+          image: 'gcr.io/dinner-done-better-dev/api_server'

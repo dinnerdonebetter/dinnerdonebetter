@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/authentication"
-	"github.com/prixfixeco/backend/internal/observability"
-	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/securecookie"
@@ -25,13 +25,13 @@ import (
 )
 
 var (
-	customCookieDomainHeader = "X-PRIXFIXE-COOKIE-DOMAIN"
+	customCookieDomainHeader = "X-DDB-COOKIE-DOMAIN"
 
 	allowedCookiesHat    sync.Mutex
 	allowedCookieDomains = map[string]uint{
-		".prixfixe.local": 0,
-		".prixfixe.dev":   1,
-		".prixfixe.app":   2,
+		".dinnerdonebetter.local": 0,
+		".dinnerdonebetter.dev":   1,
+		".dinnerdonebetter.com":   2,
 	}
 )
 

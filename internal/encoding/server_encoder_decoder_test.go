@@ -11,8 +11,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -395,7 +395,7 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 		req, err := http.NewRequestWithContext(
 			ctx,
 			http.MethodGet,
-			"https://prixfixe.verygoodsoftwarenotvirus.ru",
+			"https://whatever.whocares.gov",
 			bytes.NewReader(bs),
 		)
 		require.NoError(t, err)
@@ -421,7 +421,7 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 		req, err := http.NewRequestWithContext(
 			ctx,
 			http.MethodGet,
-			"https://prixfixe.verygoodsoftwarenotvirus.ru",
+			"https://whatever.whocares.gov",
 			bytes.NewReader(bs),
 		)
 		require.NoError(t, err)
@@ -447,7 +447,7 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 		req, err := http.NewRequestWithContext(
 			ctx,
 			http.MethodGet,
-			"https://prixfixe.verygoodsoftwarenotvirus.ru",
+			"https://whatever.whocares.gov",
 			bytes.NewReader(bs),
 		)
 		require.NoError(t, err)

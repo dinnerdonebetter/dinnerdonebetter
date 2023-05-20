@@ -1,13 +1,13 @@
-module github.com/prixfixeco/backend/cmd/functions/meal_plan_grocery_list_initializer
+module github.com/dinnerdonebetter/backend/cmd/functions/meal_plan_grocery_list_initializer
 
 go 1.20
 
-replace github.com/prixfixeco/backend => ../../../
+replace github.com/dinnerdonebetter/backend => ../../../
 
 require (
 	github.com/GoogleCloudPlatform/functions-framework-go v1.6.1
 	github.com/cloudevents/sdk-go/v2 v2.12.0
-	github.com/prixfixeco/backend v0.0.0-00010101000000-000000000000
+	github.com/dinnerdonebetter/backend v0.0.0-00010101000000-000000000000
 	go.opentelemetry.io/otel v1.11.1
 	go.uber.org/automaxprocs v1.5.1
 )

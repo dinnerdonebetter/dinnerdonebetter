@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/prixfixeco/backend/internal/encoding"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
 
 	"github.com/stretchr/testify/mock"
 )

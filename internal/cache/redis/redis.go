@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/cache"
+	"github.com/dinnerdonebetter/backend/internal/cache"
 
 	"github.com/go-redis/redis/v8"
 )

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/routing"
 
 	"github.com/go-chi/chi/v5"
 )

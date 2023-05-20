@@ -3,9 +3,9 @@ package config
 import (
 	"net/http"
 
-	"github.com/prixfixeco/backend/internal/featureflags"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/featureflags"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/google/wire"
 )

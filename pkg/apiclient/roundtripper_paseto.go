@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/prixfixeco/backend/internal/observability"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 // pasetoRoundTripper is a transport that uses a cookie.

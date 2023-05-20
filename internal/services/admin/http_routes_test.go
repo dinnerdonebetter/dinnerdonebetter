@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/internal/encoding"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
-	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/alexedwards/scs/v2/mockstore"
 	"github.com/stretchr/testify/assert"
@@ -35,7 +35,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -75,7 +75,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -94,7 +94,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -132,7 +132,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -152,7 +152,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -171,7 +171,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -202,7 +202,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -234,7 +234,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -253,7 +253,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -283,7 +283,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -313,7 +313,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 

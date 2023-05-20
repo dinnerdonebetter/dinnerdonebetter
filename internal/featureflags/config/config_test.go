@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/featureflags/launchdarkly"
+	"github.com/dinnerdonebetter/backend/internal/featureflags/launchdarkly"
 
 	"github.com/stretchr/testify/assert"
 )

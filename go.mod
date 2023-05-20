@@ -1,4 +1,4 @@
-module github.com/prixfixeco/backend
+module github.com/dinnerdonebetter/backend
 
 go 1.20
 
@@ -52,7 +52,6 @@ require (
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/pflag v1.0.5
-	github.com/splitio/go-client/v6 v6.3.1
 	github.com/stretchr/testify v1.8.1
 	github.com/stripe/stripe-go/v72 v72.72.0
 	github.com/wagslane/go-password-validator v0.3.0
@@ -94,8 +93,6 @@ require (
 	github.com/aokoli/goutils v1.0.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bits-and-blooms/bitset v1.3.1 // indirect
-	github.com/bits-and-blooms/bloom/v3 v3.3.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -144,11 +141,8 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.26.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
-	github.com/redis/go-redis/v9 v9.0.2 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/splitio/go-split-commons/v4 v4.3.1 // indirect
-	github.com/splitio/go-toolkit/v5 v5.3.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect

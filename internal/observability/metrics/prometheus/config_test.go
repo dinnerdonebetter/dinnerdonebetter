@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 )

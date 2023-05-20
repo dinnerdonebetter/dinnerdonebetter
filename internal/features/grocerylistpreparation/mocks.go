@@ -3,7 +3,7 @@ package grocerylistpreparation
 import (
 	"context"
 
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 )

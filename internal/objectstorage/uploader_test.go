@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	mockrouting "github.com/prixfixeco/backend/internal/routing/mock"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

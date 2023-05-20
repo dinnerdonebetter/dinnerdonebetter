@@ -7,15 +7,15 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/prixfixeco/backend/internal/encoding"
-	"github.com/prixfixeco/backend/internal/observability"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/pkg/panicking"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
+	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
 )
 
 const (
-	clientName = "prixfixe_client_v1"
+	clientName = "ddb_client_v1"
 )
 
 // Builder is a client for interacting with v1 of our HTTP API.

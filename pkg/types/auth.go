@@ -6,9 +6,9 @@ import (
 	"encoding/gob"
 	"net/http"
 
-	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

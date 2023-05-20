@@ -41,7 +41,7 @@ resource "google_service_account" "data_changes_user_service_account" {
 }
 
 # Permissions on the service account used by the function and Eventarc trigger
-resource "google_project_iam_member" "data_changes_invoking" {
+resource "google_project_iam_member" "data_changes_worker" {
   project = local.project_id
   role    = "roles/run.invoker"
   member  = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
@@ -51,7 +51,7 @@ resource "google_project_iam_member" "data_changes_secret_accessor" {
   project    = local.project_id
   role       = "roles/secretmanager.secretAccessor"
   member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-  depends_on = [google_project_iam_member.data_changes_invoking]
+  depends_on = [google_project_iam_member.data_changes_worker]
 }
 
 resource "google_project_iam_member" "data_changes_event_receiving" {
@@ -106,31 +106,31 @@ resource "google_cloudfunctions2_function" "data_changes" {
       GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
       OUTBOUND_EMAILS_TOPIC_NAME       = google_pubsub_topic.outbound_emails_topic.name
-      PRIXFIXE_DATABASE_USER           = google_sql_user.api_user.name,
-      PRIXFIXE_DATABASE_NAME           = local.database_name,
+      DINNER_DONE_BETTER_DATABASE_USER = google_sql_user.api_user.name,
+      DINNER_DONE_BETTER_DATABASE_NAME = local.database_name,
       // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
       // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
-      PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
-      GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
-      GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
+      DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
+      GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
+      GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
     }
 
     secret_environment_variables {
-      key        = "PRIXFIXE_DATABASE_PASSWORD"
+      key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
       project_id = local.project_id
       secret     = google_secret_manager_secret.api_user_database_password.secret_id
       version    = "latest"
     }
 
     secret_environment_variables {
-      key        = "PRIXFIXE_SENDGRID_API_TOKEN"
+      key        = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
       project_id = local.project_id
       secret     = google_secret_manager_secret.sendgrid_api_token.secret_id
       version    = "latest"
     }
 
     secret_environment_variables {
-      key        = "PRIXFIXE_SEGMENT_API_TOKEN"
+      key        = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
       project_id = local.project_id
       secret     = google_secret_manager_secret.segment_api_token.secret_id
       version    = "latest"

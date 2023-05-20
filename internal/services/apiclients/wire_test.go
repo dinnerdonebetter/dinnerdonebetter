@@ -3,7 +3,7 @@ package apiclients
 import (
 	"testing"
 
-	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/database"
-	authservice "github.com/prixfixeco/backend/internal/services/authentication"
+	"github.com/dinnerdonebetter/backend/internal/database"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 
 	"github.com/alexedwards/scs/v2"
 	validation "github.com/go-ozzo/ozzo-validation/v4"

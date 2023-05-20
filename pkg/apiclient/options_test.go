@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -83,7 +83,7 @@ func TestUsingLogger(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expectedURL, err := url.Parse("https://prixfixe.verygoodsoftwarenotvirus.ru")
+		expectedURL, err := url.Parse("https://whatever.whocares.gov")
 		require.NoError(t, err)
 
 		c, err := NewClient(expectedURL, tracing.NewNoopTracerProvider(), UsingLogger(logging.NewNoopLogger()))

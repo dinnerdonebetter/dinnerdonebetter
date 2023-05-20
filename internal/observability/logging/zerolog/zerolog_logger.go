@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 
 	"github.com/rs/zerolog"
 	"go.opentelemetry.io/otel/trace"
 )
 
-const here = "github.com/prixfixeco/backend/"
+const here = "github.com/dinnerdonebetter/backend/"
 
 func init() {
 	loc, err := time.LoadLocation("America/Chicago")

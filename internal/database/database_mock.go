@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
+	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/mock"

@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/authentication"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"

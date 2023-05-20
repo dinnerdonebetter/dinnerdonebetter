@@ -18,18 +18,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/authentication"
-	mockauthn "github.com/prixfixeco/backend/internal/authentication/mock"
-	"github.com/prixfixeco/backend/internal/authorization"
-	"github.com/prixfixeco/backend/internal/encoding"
-	mockpublishers "github.com/prixfixeco/backend/internal/messagequeue/mock"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/random"
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
-	mocktypes "github.com/prixfixeco/backend/pkg/types/mock"
-	testutils "github.com/prixfixeco/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
+	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/gorilla/securecookie"
 	"github.com/o1egl/paseto"
@@ -1673,7 +1673,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1770,7 +1770,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1848,7 +1848,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1871,7 +1871,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1896,7 +1896,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1920,7 +1920,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1953,7 +1953,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -2000,7 +2000,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -2055,7 +2055,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -2118,7 +2118,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -2163,7 +2163,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -2226,7 +2226,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 

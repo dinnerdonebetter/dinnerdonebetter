@@ -10,10 +10,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	authservice "github.com/prixfixeco/backend/internal/services/authentication"
-	"github.com/prixfixeco/backend/pkg/types"
-	"github.com/prixfixeco/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"

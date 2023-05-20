@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
@@ -23,7 +23,7 @@ import (
 
 const (
 	// defaultNamespace is the default namespace under which we register metrics.
-	defaultNamespace = "prixfixe_server"
+	defaultNamespace = "dinner_done_better_server"
 
 	instrumentationVersion = "1.0.0"
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"image"
 
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 	"gonum.org/v1/gonum/graph/simple"

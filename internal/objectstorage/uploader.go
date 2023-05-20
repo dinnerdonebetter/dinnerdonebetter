@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/routing"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -29,9 +29,6 @@ const (
 var (
 	// ErrNilConfig denotes that the provided configuration is nil.
 	ErrNilConfig = errors.New("nil config provided")
-
-	// ErrBucketIsUnavailable denotes that the requested bucket is invalid.
-	ErrBucketIsUnavailable = errors.New("bucket is unavailable")
 )
 
 type (
@@ -94,7 +91,7 @@ func NewUploadManager(ctx context.Context, logger logging.Logger, tracerProvider
 	if available, err := u.bucket.IsAccessible(ctx); err != nil {
 		return nil, fmt.Errorf("verifying bucket accessibility: %w", err)
 	} else if !available {
-		return nil, ErrBucketIsUnavailable
+		return nil, fmt.Errorf("bucket %q is unavailable", cfg.BucketName)
 	}
 
 	return u, nil

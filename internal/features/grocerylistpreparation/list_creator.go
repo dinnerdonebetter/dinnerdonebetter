@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/prixfixeco/backend/internal/identifiers"
-	"github.com/prixfixeco/backend/internal/observability/keys"
-	"github.com/prixfixeco/backend/internal/observability/logging"
-	"github.com/prixfixeco/backend/internal/observability/tracing"
-	"github.com/prixfixeco/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/shopspring/decimal"
 )
