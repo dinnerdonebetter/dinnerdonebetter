@@ -118,19 +118,6 @@ resource "google_cloud_run_service" "api_server" {
       containers {
         image = "gcr.io/dinner-done-better-dev/api_server"
 
-        startup_probe {
-          initial_delay_seconds = 15
-          timeout_seconds       = 1
-          period_seconds        = 3
-          failure_threshold     = 5
-        }
-
-        liveness_probe {
-          http_get {
-            path = "/_meta_/ready"
-          }
-        }
-
         resources {
           requests = {
             memory = "128Mi"
