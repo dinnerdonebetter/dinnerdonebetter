@@ -45,6 +45,7 @@ var (
 		ProvideRecipeStepVesselDataManager,
 		ProvideServiceSettingDataManager,
 		ProvideServiceSettingConfigurationDataManager,
+		ProvideValidIngredientGroupDataManager,
 	)
 )
 
@@ -225,5 +226,10 @@ func ProvideServiceSettingDataManager(db DataManager) types.ServiceSettingDataMa
 
 // ProvideServiceSettingConfigurationDataManager is an arbitrary function for dependency injection's sake.
 func ProvideServiceSettingConfigurationDataManager(db DataManager) types.ServiceSettingConfigurationDataManager {
+	return db
+}
+
+// ProvideValidIngredientGroupDataManager is an arbitrary function for dependency injection's sake.
+func ProvideValidIngredientGroupDataManager(db DataManager) types.ValidIngredientGroupDataManager {
 	return db
 }

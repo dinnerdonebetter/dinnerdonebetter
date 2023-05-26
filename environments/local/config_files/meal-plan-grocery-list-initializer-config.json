@@ -96,6 +96,9 @@
 		"validIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"validIngredientGroups": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"validIngredientPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},

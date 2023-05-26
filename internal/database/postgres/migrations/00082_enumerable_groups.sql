@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS valid_ingredient_lists (
+CREATE TABLE IF NOT EXISTS valid_ingredient_groups (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL DEFAULT '',
     "slug" TEXT NOT NULL DEFAULT '',
@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS valid_ingredient_lists (
     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS valid_ingredient_list_entries (
+CREATE TABLE IF NOT EXISTS valid_ingredient_group_members (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "belongs_to_list" TEXT NOT NULL REFERENCES valid_ingredient_lists("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    "belongs_to_list" TEXT NOT NULL REFERENCES valid_ingredient_groups("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "valid_ingredient" TEXT NOT NULL REFERENCES valid_ingredients("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL

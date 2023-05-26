@@ -68,6 +68,17 @@ const (
 	// ArchiveValidIngredientsPermission is a household user permission.
 	ArchiveValidIngredientsPermission Permission = "archive.valid_ingredients"
 
+	// CreateValidIngredientGroupsPermission is a household user permission.
+	CreateValidIngredientGroupsPermission Permission = "create.valid_ingredient_groups"
+	// ReadValidIngredientGroupsPermission is a household user permission.
+	ReadValidIngredientGroupsPermission Permission = "read.valid_ingredient_groups"
+	// SearchValidIngredientGroupsPermission is a household user permission.
+	SearchValidIngredientGroupsPermission Permission = "search.valid_ingredient_groups"
+	// UpdateValidIngredientGroupsPermission is a household user permission.
+	UpdateValidIngredientGroupsPermission Permission = "update.valid_ingredient_groups"
+	// ArchiveValidIngredientGroupsPermission is a household user permission.
+	ArchiveValidIngredientGroupsPermission Permission = "archive.valid_ingredient_groups"
+
 	// CreateValidPreparationsPermission is a household user permission.
 	CreateValidPreparationsPermission Permission = "create.valid_preparations"
 	// ReadValidPreparationsPermission is a household user permission.
@@ -352,6 +363,10 @@ var (
 		UpdateValidIngredientsPermission.ID():  UpdateValidIngredientsPermission,
 		ArchiveValidIngredientsPermission.ID(): ArchiveValidIngredientsPermission,
 
+		CreateValidIngredientGroupsPermission.ID():  CreateValidIngredientGroupsPermission,
+		UpdateValidIngredientGroupsPermission.ID():  UpdateValidIngredientGroupsPermission,
+		ArchiveValidIngredientGroupsPermission.ID(): ArchiveValidIngredientGroupsPermission,
+
 		CreateValidPreparationsPermission.ID():  CreateValidPreparationsPermission,
 		UpdateValidPreparationsPermission.ID():  UpdateValidPreparationsPermission,
 		ArchiveValidPreparationsPermission.ID(): ArchiveValidPreparationsPermission,
@@ -483,6 +498,9 @@ var (
 
 		ReadValidIngredientsPermission.ID():   ReadValidIngredientsPermission,
 		SearchValidIngredientsPermission.ID(): SearchValidIngredientsPermission,
+
+		ReadValidIngredientGroupsPermission.ID():   ReadValidIngredientGroupsPermission,
+		SearchValidIngredientGroupsPermission.ID(): SearchValidIngredientGroupsPermission,
 
 		ReadValidPreparationsPermission.ID():   ReadValidPreparationsPermission,
 		SearchValidPreparationsPermission.ID(): SearchValidPreparationsPermission,

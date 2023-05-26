@@ -14,7 +14,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/internal/server"
+	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -36,6 +36,7 @@ import (
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
+	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/dinnerdonebetter/backend/internal/services/validingredients"
@@ -81,7 +82,7 @@ type (
 		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
 		Meta          MetaSettings              `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Events        msgconfig.Config          `json:"events" mapstructure:"events" toml:"events,omitempty"`
-		Server        server.Config             `json:"server" mapstructure:"server" toml:"server,omitempty"`
+		Server        http.Config               `json:"server" mapstructure:"server" toml:"server,omitempty"`
 		Services      ServicesConfig            `json:"services" mapstructure:"services" toml:"services,omitempty"`
 	}
 
@@ -91,6 +92,7 @@ type (
 		RecipeStepCompletionConditions  recipestepcompletionconditionsservice.Config  `json:"recipeStepCompletionConditions" mapstructure:"recipe_step_completion_conditions" toml:"recipe_step_completion_conditions,omitempty"`
 		MealPlanOptions                 mealplanoptionsservice.Config                 `json:"mealPlanOptions" mapstructure:"meal_plan_options" toml:"meal_plan_options,omitempty"`
 		ValidIngredients                validingredientsservice.Config                `json:"validIngredients" mapstructure:"valid_ingredients" toml:"valid_ingredients,omitempty"`
+		ValidIngredientGroups           validingredientgroupsservice.Config           `json:"validIngredientGroups" mapstructure:"valid_ingredient_groups" toml:"valid_ingredient_groups,omitempty"`
 		ValidIngredientPreparations     validingredientpreparationsservice.Config     `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
 		ValidPreparations               validpreparationsservice.Config               `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
 		MealPlanOptionVotes             mealplanoptionvotesservice.Config             `json:"mealPlanOptionVotes" mapstructure:"meal_plan_option_votes" toml:"meal_plan_option_votes,omitempty"`
@@ -140,6 +142,8 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v any) ([]b
 }
 
 // ValidateWithContext validates a InstanceConfig struct.
+//
+//nolint:maintidx // this thing is just gonna be how it is
 func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServices bool) error {
 	var result *multierror.Error
 
@@ -198,6 +202,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 		if err := cfg.Services.ValidIngredients.ValidateWithContext(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating ValidIngredients service portion of config: %w", err), result)
+		}
+
+		if err := cfg.Services.ValidIngredientGroups.ValidateWithContext(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating ValidIngredientGroups service portion of config: %w", err), result)
 		}
 
 		if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {

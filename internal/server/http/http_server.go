@@ -1,4 +1,4 @@
-package server
+package http
 
 import (
 	"context"
@@ -39,6 +39,7 @@ type (
 		webhooksService                        types.WebhookDataService
 		validInstrumentsService                types.ValidInstrumentDataService
 		validIngredientsService                types.ValidIngredientDataService
+		validIngredientGroupsService           types.ValidIngredientGroupDataService
 		validPreparationsService               types.ValidPreparationDataService
 		validIngredientPreparationsService     types.ValidIngredientPreparationDataService
 		recipesService                         types.RecipeDataService
@@ -88,6 +89,7 @@ func ProvideHTTPServer(
 	apiClientsService types.APIClientDataService,
 	validInstrumentsService types.ValidInstrumentDataService,
 	validIngredientsService types.ValidIngredientDataService,
+	validIngredientGroupsService types.ValidIngredientGroupDataService,
 	validPreparationsService types.ValidPreparationDataService,
 	validIngredientPreparationsService types.ValidIngredientPreparationDataService,
 	mealsService types.MealDataService,
@@ -143,6 +145,7 @@ func ProvideHTTPServer(
 		authService:                            authService,
 		validInstrumentsService:                validInstrumentsService,
 		validIngredientsService:                validIngredientsService,
+		validIngredientGroupsService:           validIngredientGroupsService,
 		validPreparationsService:               validPreparationsService,
 		validIngredientPreparationsService:     validIngredientPreparationsService,
 		mealsService:                           mealsService,

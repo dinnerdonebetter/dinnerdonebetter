@@ -12,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/server"
+	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +26,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 		t.Parallel()
 
 		cfg := &InstanceConfig{
-			Server: server.Config{
+			Server: http.Config{
 				HTTPPort:        1234,
 				Debug:           false,
 				StartupDeadline: time.Minute,

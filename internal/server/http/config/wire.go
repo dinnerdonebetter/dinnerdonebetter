@@ -50,6 +50,7 @@ var (
 			"MealPlanGroceryListItems",
 			"ValidMeasurementConversions",
 			"ValidIngredientStates",
+			"ValidIngredientGroups",
 			"RecipeStepCompletionConditions",
 			"ValidIngredientStateIngredients",
 			"RecipeStepVessels",

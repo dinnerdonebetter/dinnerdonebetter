@@ -4,13 +4,12 @@
 //go:build !wireinject
 // +build !wireinject
 
-package server
+package build
 
 import (
 	"context"
 	config8 "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	config4 "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
@@ -24,7 +23,8 @@ import (
 	config3 "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
-	"github.com/dinnerdonebetter/backend/internal/server"
+	"github.com/dinnerdonebetter/backend/internal/server/http"
+	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	"github.com/dinnerdonebetter/backend/internal/services/admin"
 	"github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -48,6 +48,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	"github.com/dinnerdonebetter/backend/internal/services/users"
+	"github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	"github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
 	"github.com/dinnerdonebetter/backend/internal/services/validingredientpreparations"
 	"github.com/dinnerdonebetter/backend/internal/services/validingredients"
@@ -66,8 +67,8 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer, error) {
-	serverConfig := cfg.Server
+func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.HTTPServer, error) {
+	httpConfig := cfg.Server
 	observabilityConfig := &cfg.Observability
 	configConfig := &observabilityConfig.Logging
 	logger, err := config2.ProvideLogger(configConfig)
@@ -153,6 +154,12 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer,
 	validingredientsConfig := &servicesConfig.ValidIngredients
 	validIngredientDataManager := database.ProvideValidIngredientDataManager(dataManager)
 	validIngredientDataService, err := validingredients.ProvideService(logger, validingredientsConfig, validIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	validingredientgroupsConfig := &servicesConfig.ValidIngredientGroups
+	validIngredientGroupDataManager := database.ProvideValidIngredientGroupDataManager(dataManager)
+	validIngredientGroupDataService, err := validingredientgroups.ProvideService(logger, validingredientgroupsConfig, validIngredientGroupDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +334,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*server.HTTPServer,
 	if err != nil {
 		return nil, err
 	}
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, dataManager, logger, serverEncoderDecoder, router, tracerProvider, service, serviceSettingDataService, serviceSettingConfigurationDataService)
+	httpServer, err := http.ProvideHTTPServer(ctx, httpConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, dataManager, logger, serverEncoderDecoder, router, tracerProvider, service, serviceSettingDataService, serviceSettingConfigurationDataService)
 	if err != nil {
 		return nil, err
 	}

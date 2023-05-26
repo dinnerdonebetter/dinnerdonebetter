@@ -16,7 +16,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/internal/server"
+	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -84,7 +84,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 			Database: dbconfig.Config{},
 			Meta:     MetaSettings{},
 			Events:   msgconfig.Config{},
-			Server: server.Config{
+			Server: http.Config{
 				StartupDeadline: time.Second,
 			},
 			Services: ServicesConfig{

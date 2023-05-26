@@ -1,4 +1,4 @@
-package server
+package http
 
 import (
 	"context"
@@ -29,6 +29,7 @@ import (
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
+	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/dinnerdonebetter/backend/internal/services/validingredients"
@@ -261,7 +262,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
 				Get(root, s.validIngredientsService.ListHandler)
 			validIngredientsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission, authorization.SearchValidIngredientsPermission)).
 				Get(searchRoot, s.validIngredientsService.SearchHandler)
 			validIngredientsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
@@ -284,6 +285,34 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 				singleValidIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientsPermission)).
 					Delete(root, s.validIngredientsService.ArchiveHandler)
+			})
+		})
+
+		// ValidIngredientGroups
+		validIngredientGroupPath := "valid_ingredient_groups"
+		validIngredientGroupsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientGroupPath)
+		validIngredientGroupIDRouteParam := buildURLVarChunk(validingredientgroupsservice.ValidIngredientGroupIDURIParamKey, "")
+		v1Router.Route(validIngredientGroupsRouteWithPrefix, func(validIngredientGroupsRouter routing.Router) {
+			validIngredientGroupsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidIngredientGroupsPermission)).
+				Post(root, s.validIngredientGroupsService.CreateHandler)
+			validIngredientGroupsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientGroupsPermission)).
+				Get(root, s.validIngredientGroupsService.ListHandler)
+			validIngredientGroupsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchValidIngredientGroupsPermission)).
+				Get(searchRoot, s.validIngredientGroupsService.SearchHandler)
+
+			validIngredientGroupsRouter.Route(validIngredientGroupIDRouteParam, func(singleValidIngredientGroupRouter routing.Router) {
+				singleValidIngredientGroupRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientGroupsPermission)).
+					Get(root, s.validIngredientGroupsService.ReadHandler)
+				singleValidIngredientGroupRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientGroupsPermission)).
+					Put(root, s.validIngredientGroupsService.UpdateHandler)
+				singleValidIngredientGroupRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientGroupsPermission)).
+					Delete(root, s.validIngredientGroupsService.ArchiveHandler)
 			})
 		})
 

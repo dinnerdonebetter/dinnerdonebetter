@@ -1,14 +1,13 @@
 //go:build wireinject
 // +build wireinject
 
-package server
+package build
 
 import (
 	"context"
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
@@ -23,7 +22,8 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
-	"github.com/dinnerdonebetter/backend/internal/server"
+	"github.com/dinnerdonebetter/backend/internal/server/http"
+	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/admin"
 	apiclientsservice "github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -47,6 +47,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
+	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/dinnerdonebetter/backend/internal/services/validingredients"
@@ -68,14 +69,14 @@ import (
 func Build(
 	ctx context.Context,
 	cfg *config.InstanceConfig,
-) (*server.HTTPServer, error) {
+) (*http.HTTPServer, error) {
 	wire.Build(
 		config.ServiceConfigProviders,
 		database.DBProviders,
 		dbconfig.Providers,
 		encoding.EncDecProviders,
 		msgconfig.MessageQueueProviders,
-		server.Providers,
+		http.Providers,
 		images.Providers,
 		chi.Providers,
 		random.Providers,
@@ -89,6 +90,7 @@ func Build(
 		adminservice.Providers,
 		validinstrumentsservice.Providers,
 		validingredientsservice.Providers,
+		validingredientgroupsservice.Providers,
 		validpreparationsservice.Providers,
 		validingredientpreparationsservice.Providers,
 		mealsservice.Providers,

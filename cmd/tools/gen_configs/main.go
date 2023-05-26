@@ -10,7 +10,6 @@ import (
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
-	"github.com/dinnerdonebetter/backend/internal/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
@@ -27,7 +26,8 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/internal/server"
+	"github.com/dinnerdonebetter/backend/internal/server/http"
+	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -49,6 +49,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
+	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/dinnerdonebetter/backend/internal/services/validingredients"
@@ -117,7 +118,7 @@ var (
 		Provider: logcfg.ProviderZerolog,
 	}
 
-	localServer = server.Config{
+	localServer = http.Config{
 		Debug:           true,
 		HTTPPort:        defaultPort,
 		StartupDeadline: time.Minute,
@@ -238,7 +239,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 		Email:     emailConfig,
 		Analytics: analyticsConfig,
-		Server: server.Config{
+		Server: http.Config{
 			Debug:           true,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
@@ -418,6 +419,9 @@ func buildDevConfig() *config.InstanceConfig {
 			ValidIngredients: validingredientsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidIngredientGroups: validingredientgroupsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidPreparations: validpreparationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -563,7 +567,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Encoding: encoding.Config{
 			ContentType: contentTypeJSON,
 		},
-		Server: server.Config{
+		Server: http.Config{
 			Debug:           false,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
@@ -632,6 +636,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredients: validingredientsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidIngredientGroups: validingredientgroupsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{

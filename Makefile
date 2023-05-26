@@ -79,7 +79,7 @@ clean_wire:
 
 .PHONY: wire
 wire: ensure_wire_installed vendor
-	wire gen $(THIS)/internal/build/server
+	wire gen $(THIS)/internal/server/http/build
 
 .PHONY: rewire
 rewire: ensure_wire_installed clean_wire wire
@@ -259,3 +259,22 @@ start_dev_cloud_sql_proxy:
 
 .PHONY: proxy_dev_db
 proxy_dev_db: start_dev_cloud_sql_proxy
+
+.PHONY: grpc # agreed
+grpc: clean_protobufs protobuf_service protobuf_types
+
+.PHONY: clean_protobufs
+clean_protobufs:
+	rm -rf internal/proto
+
+.PHONY: protobuf_service
+protobuf_service:
+	protoc --go_out=artifacts/ --go-grpc_out=artifacts/ --go_opt=paths=import --proto_path proto  --experimental_allow_proto3_optional proto/dinnerdonebetter.proto
+	mkdir -p internal/proto/services
+	mv artifacts/github.com/dinnerdonebetter/backend/internal/proto/services internal/proto
+
+.PHONY: protobuf_types
+protobuf_types:
+	protoc --go_out=artifacts/ --go-grpc_out=artifacts/ --go_opt=paths=import --proto_path proto  --experimental_allow_proto3_optional proto/valid_ingredient.proto
+	mv artifacts/github.com/dinnerdonebetter/backend/internal/proto/types internal/proto
+	grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./artifacts --grpc_out=grpc_js:./artifacts --experimental_allow_proto3_optional proto/valid_ingredient.proto
