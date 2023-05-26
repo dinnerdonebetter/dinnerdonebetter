@@ -19,8 +19,6 @@ const (
 	UserIsServiceAdminKey = "user.is_admin"
 	// UsernameKey is the standard key for referring to a username.
 	UsernameKey = "user.username"
-	// ServiceRoleKey is the standard key for referring to a user's service role.
-	ServiceRoleKey = "user.service_role"
 	// NameKey is the standard key for referring to a name.
 	NameKey = "name"
 	// SpanIDKey is the standard key for referring to a span ID.
@@ -59,10 +57,6 @@ const (
 	RequestMethodKey = "request.method"
 	// RequestURIKey is the standard key for referring to an http.Request's URI.
 	RequestURIKey = "request.uri"
-	// RequestURIPathKey is the standard key for referring to an http.Request's URI.
-	RequestURIPathKey = "request.uri.path"
-	// RequestURIQueryKey is the standard key for referring to an http.Request's URI.
-	RequestURIQueryKey = "request.uri.query"
 	// ResponseStatusKey is the standard key for referring to an http.Request's URI.
 	ResponseStatusKey = "response.status"
 	// ResponseHeadersKey is the standard key for referring to an http.Response's Headers.
@@ -91,6 +85,9 @@ const (
 
 	// ValidIngredientIDKey is the standard key for referring to a valid ingredient's ID.
 	ValidIngredientIDKey = "valid_ingredient.id"
+
+	// ValidIngredientGroupIDKey is the standard key for referring to a valid ingredient group's ID.
+	ValidIngredientGroupIDKey = "valid_ingredient_group.id"
 
 	// ValidPreparationIDKey is the standard key for referring to a valid preparation's ID.
 	ValidPreparationIDKey = "valid_preparation.id"
