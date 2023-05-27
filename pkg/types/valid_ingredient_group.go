@@ -29,22 +29,43 @@ type (
 	ValidIngredientGroup struct {
 		_ struct{}
 
-		CreatedAt     time.Time  `json:"createdAt"`
-		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt    *time.Time `json:"archivedAt"`
-		ID            string     `json:"id"`
-		Name          string     `json:"name"`
-		Slug          string     `json:"slug"`
-		Description   string     `json:"description"`
+		CreatedAt     time.Time                    `json:"createdAt"`
+		LastUpdatedAt *time.Time                   `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time                   `json:"archivedAt"`
+		ID            string                       `json:"id"`
+		Name          string                       `json:"name"`
+		Slug          string                       `json:"slug"`
+		Description   string                       `json:"description"`
+		Members       []ValidIngredientGroupMember `json:"members"`
+	}
+
+	// ValidIngredientGroupMember represents a valid ingredient group member.
+	ValidIngredientGroupMember struct {
+		_ struct{}
+
+		CreatedAt         time.Time  `json:"createdAt"`
+		ArchivedAt        *time.Time `json:"archivedAt"`
+		ID                string     `json:"id"`
+		Notes             string     `json:"notes"`
+		BelongsToGroup    string     `json:"belongsToGroup"`
+		ValidIngredientID string     `json:"validIngredientID"`
 	}
 
 	// ValidIngredientGroupCreationRequestInput represents what a user could set as input for creating valid ingredient groups.
 	ValidIngredientGroupCreationRequestInput struct {
 		_ struct{}
 
-		Name        string `json:"name"`
-		Slug        string `json:"slug"`
-		Description string `json:"description"`
+		Name        string                                           `json:"name"`
+		Slug        string                                           `json:"slug"`
+		Description string                                           `json:"description"`
+		Members     []ValidIngredientGroupMemberCreationRequestInput `json:"members"`
+	}
+
+	// ValidIngredientGroupMemberCreationRequestInput represents what a user could set as input for creating valid ingredient group members.
+	ValidIngredientGroupMemberCreationRequestInput struct {
+		_ struct{}
+
+		ValidIngredientID string `json:"validIngredientID"`
 	}
 
 	// ValidIngredientGroupDatabaseCreationInput represents what a user could set as input for creating valid ingredient groups.
@@ -55,6 +76,15 @@ type (
 		Name        string
 		Slug        string
 		Description string
+		Members     []ValidIngredientGroupMemberDatabaseCreationInput
+	}
+
+	// ValidIngredientGroupMemberDatabaseCreationInput represents what a user could set as input for creating valid ingredient groups.
+	ValidIngredientGroupMemberDatabaseCreationInput struct {
+		_ struct{}
+
+		ID                string
+		ValidIngredientID string
 	}
 
 	// ValidIngredientGroupUpdateRequestInput represents what a user could set as input for updating valid ingredient groups.
