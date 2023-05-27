@@ -39,10 +39,19 @@ func ConvertValidIngredientGroupToValidIngredientGroupCreationRequestInput(valid
 
 // ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput builds a ValidIngredientGroupDatabaseCreationInput from a ValidIngredientGroup.
 func ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(validIngredient *types.ValidIngredientGroup) *types.ValidIngredientGroupDatabaseCreationInput {
+	members := make([]*types.ValidIngredientGroupMemberDatabaseCreationInput, len(validIngredient.Members))
+	for i, member := range validIngredient.Members {
+		members[i] = &types.ValidIngredientGroupMemberDatabaseCreationInput{
+			ID:                member.ID,
+			ValidIngredientID: member.ValidIngredientID,
+		}
+	}
+
 	return &types.ValidIngredientGroupDatabaseCreationInput{
 		ID:          validIngredient.ID,
 		Name:        validIngredient.Name,
 		Description: validIngredient.Description,
 		Slug:        validIngredient.Slug,
+		Members:     members,
 	}
 }

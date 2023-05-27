@@ -5,14 +5,34 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
-// BuildFakeValidIngredientGroup builds a faked valid ingredient.
+// BuildFakeValidIngredientGroup builds a faked valid ingredient group.
 func BuildFakeValidIngredientGroup() *types.ValidIngredientGroup {
+	groupID := BuildFakeID()
+
+	var members []*types.ValidIngredientGroupMember
+	for i := 0; i < exampleQuantity; i++ {
+		newMember := BuildFakeValidIngredientGroupMember()
+		newMember.BelongsToGroup = groupID
+		members = append(members, newMember)
+	}
+
 	return &types.ValidIngredientGroup{
-		ID:          BuildFakeID(),
+		ID:          groupID,
 		Name:        buildUniqueString(),
 		Description: buildUniqueString(),
 		CreatedAt:   BuildFakeTime(),
 		Slug:        buildUniqueString(),
+		Members:     members,
+	}
+}
+
+// BuildFakeValidIngredientGroupMember builds a faked valid ingredient group.
+func BuildFakeValidIngredientGroupMember() *types.ValidIngredientGroupMember {
+	return &types.ValidIngredientGroupMember{
+		ID:                BuildFakeID(),
+		ValidIngredientID: BuildFakeID(),
+		CreatedAt:         BuildFakeTime(),
+		BelongsToGroup:    BuildFakeID(),
 	}
 }
 
@@ -34,7 +54,7 @@ func BuildFakeValidIngredientGroupList() *types.QueryFilteredResult[types.ValidI
 	}
 }
 
-// BuildFakeValidIngredientGroupUpdateRequestInput builds a faked ValidIngredientGroupUpdateRequestInput from a valid ingredient.
+// BuildFakeValidIngredientGroupUpdateRequestInput builds a faked ValidIngredientGroupUpdateRequestInput from a valid ingredient group.
 func BuildFakeValidIngredientGroupUpdateRequestInput() *types.ValidIngredientGroupUpdateRequestInput {
 	validIngredient := BuildFakeValidIngredientGroup()
 	return converters.ConvertValidIngredientGroupToValidIngredientGroupUpdateRequestInput(validIngredient)

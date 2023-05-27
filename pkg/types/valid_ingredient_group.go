@@ -29,14 +29,14 @@ type (
 	ValidIngredientGroup struct {
 		_ struct{}
 
-		CreatedAt     time.Time                    `json:"createdAt"`
-		LastUpdatedAt *time.Time                   `json:"lastUpdatedAt"`
-		ArchivedAt    *time.Time                   `json:"archivedAt"`
-		ID            string                       `json:"id"`
-		Name          string                       `json:"name"`
-		Slug          string                       `json:"slug"`
-		Description   string                       `json:"description"`
-		Members       []ValidIngredientGroupMember `json:"members"`
+		CreatedAt     time.Time                     `json:"createdAt"`
+		LastUpdatedAt *time.Time                    `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time                    `json:"archivedAt"`
+		ID            string                        `json:"id"`
+		Name          string                        `json:"name"`
+		Slug          string                        `json:"slug"`
+		Description   string                        `json:"description"`
+		Members       []*ValidIngredientGroupMember `json:"members"`
 	}
 
 	// ValidIngredientGroupMember represents a valid ingredient group member.
@@ -55,10 +55,10 @@ type (
 	ValidIngredientGroupCreationRequestInput struct {
 		_ struct{}
 
-		Name        string                                           `json:"name"`
-		Slug        string                                           `json:"slug"`
-		Description string                                           `json:"description"`
-		Members     []ValidIngredientGroupMemberCreationRequestInput `json:"members"`
+		Name        string                                            `json:"name"`
+		Slug        string                                            `json:"slug"`
+		Description string                                            `json:"description"`
+		Members     []*ValidIngredientGroupMemberCreationRequestInput `json:"members"`
 	}
 
 	// ValidIngredientGroupMemberCreationRequestInput represents what a user could set as input for creating valid ingredient group members.
@@ -76,7 +76,7 @@ type (
 		Name        string
 		Slug        string
 		Description string
-		Members     []ValidIngredientGroupMemberDatabaseCreationInput
+		Members     []*ValidIngredientGroupMemberDatabaseCreationInput
 	}
 
 	// ValidIngredientGroupMemberDatabaseCreationInput represents what a user could set as input for creating valid ingredient groups.

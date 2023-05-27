@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -28,21 +29,28 @@ func buildMockRowsFromValidIngredientGroups(includeCounts bool, filteredCount ui
 	exampleRows := sqlmock.NewRows(columns)
 
 	for _, x := range validIngredientGroups {
-		rowValues := []driver.Value{
-			x.ID,
-			x.Name,
-			x.Description,
-			x.Slug,
-			x.CreatedAt,
-			x.LastUpdatedAt,
-			x.ArchivedAt,
-		}
+		for _, y := range x.Members {
+			rowValues := []driver.Value{
+				x.ID,
+				x.Name,
+				x.Description,
+				x.Slug,
+				x.CreatedAt,
+				x.LastUpdatedAt,
+				x.ArchivedAt,
+				y.ID,
+				y.BelongsToGroup,
+				y.ValidIngredientID,
+				y.CreatedAt,
+				y.ArchivedAt,
+			}
 
-		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(validIngredientGroups))
-		}
+			if includeCounts {
+				rowValues = append(rowValues, filteredCount, len(validIngredientGroups))
+			}
 
-		exampleRows.AddRow(rowValues...)
+			exampleRows.AddRow(rowValues...)
+		}
 	}
 
 	return exampleRows
@@ -413,10 +421,17 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 
 		exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
 		exampleValidIngredientGroup.ID = "1"
+		for i := range exampleValidIngredientGroup.Members {
+			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
+			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
+			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+		}
 		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
 
 		args := []any{
 			exampleInput.ID,
@@ -429,9 +444,24 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
+		for i := range exampleInput.Members {
+			member := exampleInput.Members[i]
+			args = []any{
+				member.ID,
+				exampleInput.ID,
+				member.ValidIngredientID,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(validIngredientGroupMemberCreationQuery)).
+				WithArgs(interfaceToDriverValue(args)...).
+				WillReturnResult(newArbitraryDatabaseResult())
+		}
+
 		c.timeFunc = func() time.Time {
 			return exampleValidIngredientGroup.CreatedAt
 		}
+
+		db.ExpectCommit()
 
 		actual, err := c.CreateValidIngredientGroup(ctx, exampleInput)
 		assert.NoError(t, err)
@@ -451,15 +481,46 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with error executing query", func(t *testing.T) {
+	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
 
-		expectedErr := errors.New(t.Name())
 		exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
+		exampleValidIngredientGroup.ID = "1"
+		for i := range exampleValidIngredientGroup.Members {
+			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
+			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
+			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+		}
 		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+
+		db.ExpectBegin().WillReturnError(errors.New("blah"))
+
+		actual, err := c.CreateValidIngredientGroup(ctx, exampleInput)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error executing initial creation query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
+		exampleValidIngredientGroup.ID = "1"
+		for i := range exampleValidIngredientGroup.Members {
+			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
+			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
+			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+		}
+		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
 
 		args := []any{
 			exampleInput.ID,
@@ -470,7 +531,61 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientGroupCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
+			WillReturnError(errors.New("blah"))
+
+		c.timeFunc = func() time.Time {
+			return exampleValidIngredientGroup.CreatedAt
+		}
+
+		db.ExpectRollback()
+
+		actual, err := c.CreateValidIngredientGroup(ctx, exampleInput)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error creating member", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
+		exampleValidIngredientGroup.ID = "1"
+		for i := range exampleValidIngredientGroup.Members {
+			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
+			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
+			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+		}
+		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
+
+		args := []any{
+			exampleInput.ID,
+			exampleInput.Name,
+			exampleInput.Description,
+			exampleInput.Slug,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(validIngredientGroupCreationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		member := exampleInput.Members[0]
+		args = []any{
+			member.ID,
+			exampleInput.ID,
+			member.ValidIngredientID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(validIngredientGroupMemberCreationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		db.ExpectRollback()
 
 		c.timeFunc = func() time.Time {
 			return exampleValidIngredientGroup.CreatedAt
@@ -478,7 +593,60 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 
 		actual, err := c.CreateValidIngredientGroup(ctx, exampleInput)
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error committing transaction", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
+		exampleValidIngredientGroup.ID = "1"
+		for i := range exampleValidIngredientGroup.Members {
+			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
+			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
+			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+		}
+		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
+
+		args := []any{
+			exampleInput.ID,
+			exampleInput.Name,
+			exampleInput.Description,
+			exampleInput.Slug,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(validIngredientGroupCreationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		for i := range exampleInput.Members {
+			member := exampleInput.Members[i]
+			args = []any{
+				member.ID,
+				exampleInput.ID,
+				member.ValidIngredientID,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(validIngredientGroupMemberCreationQuery)).
+				WithArgs(interfaceToDriverValue(args)...).
+				WillReturnResult(newArbitraryDatabaseResult())
+		}
+
+		c.timeFunc = func() time.Time {
+			return exampleValidIngredientGroup.CreatedAt
+		}
+
+		db.ExpectCommit().WillReturnError(errors.New("blah"))
+
+		actual, err := c.CreateValidIngredientGroup(ctx, exampleInput)
+		assert.Error(t, err)
 		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)

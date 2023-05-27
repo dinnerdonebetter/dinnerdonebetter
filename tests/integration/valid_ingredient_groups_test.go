@@ -1,10 +1,12 @@
 package integration
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -23,6 +25,42 @@ func checkValidIngredientGroupEquality(t *testing.T, expected, actual *types.Val
 	assert.NotZero(t, actual.CreatedAt)
 }
 
+func buildValidIngredientGroupForTest(t *testing.T, ctx context.Context, creationInput *types.ValidIngredientGroup, adminClient *apiclient.Client) *types.ValidIngredientGroup {
+	t.Helper()
+
+	createdValidIngredients := []*types.ValidIngredient{}
+	for i := 0; i < 5; i++ {
+		createdValidIngredients = append(createdValidIngredients, buildValidIngredientForTest(t, ctx, adminClient))
+	}
+
+	t.Log("creating valid ingredient group")
+
+	exampleValidIngredientGroup := creationInput
+	if exampleValidIngredientGroup == nil {
+		exampleValidIngredientGroup = fakes.BuildFakeValidIngredientGroup()
+	}
+	exampleValidIngredientGroupInput := converters.ConvertValidIngredientGroupToValidIngredientGroupCreationRequestInput(exampleValidIngredientGroup)
+
+	members := []*types.ValidIngredientGroupMemberCreationRequestInput{}
+	for _, validIngredient := range createdValidIngredients {
+		members = append(members, &types.ValidIngredientGroupMemberCreationRequestInput{
+			ValidIngredientID: validIngredient.ID,
+		})
+	}
+	exampleValidIngredientGroupInput.Members = members
+
+	createdValidIngredientGroup, err := adminClient.CreateValidIngredientGroup(ctx, exampleValidIngredientGroupInput)
+	require.NoError(t, err)
+	t.Logf("valid ingredient group %q created", createdValidIngredientGroup.ID)
+	checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
+
+	createdValidIngredientGroup, err = adminClient.GetValidIngredientGroup(ctx, createdValidIngredientGroup.ID)
+	requireNotNilAndNoProblems(t, createdValidIngredientGroup, err)
+	checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
+
+	return createdValidIngredientGroup
+}
+
 func (s *TestSuite) TestValidIngredientGroups_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -31,17 +69,7 @@ func (s *TestSuite) TestValidIngredientGroups_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient group")
-			exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
-			exampleValidIngredientGroupInput := converters.ConvertValidIngredientGroupToValidIngredientGroupCreationRequestInput(exampleValidIngredientGroup)
-			createdValidIngredientGroup, err := testClients.admin.CreateValidIngredientGroup(ctx, exampleValidIngredientGroupInput)
-			require.NoError(t, err)
-			t.Logf("valid ingredient group %q created", createdValidIngredientGroup.ID)
-			checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
-
-			createdValidIngredientGroup, err = testClients.admin.GetValidIngredientGroup(ctx, createdValidIngredientGroup.ID)
-			requireNotNilAndNoProblems(t, createdValidIngredientGroup, err)
-			checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
+			createdValidIngredientGroup := buildValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
 
 			t.Log("changing valid ingredient group")
 			newValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
@@ -73,13 +101,7 @@ func (s *TestSuite) TestValidIngredientGroups_Listing() {
 			t.Log("creating valid ingredient groups")
 			var expected []*types.ValidIngredientGroup
 			for i := 0; i < 5; i++ {
-				exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
-				exampleValidIngredientGroupInput := converters.ConvertValidIngredientGroupToValidIngredientGroupCreationRequestInput(exampleValidIngredientGroup)
-				createdValidIngredientGroup, createdValidIngredientGroupErr := testClients.admin.CreateValidIngredientGroup(ctx, exampleValidIngredientGroupInput)
-				require.NoError(t, createdValidIngredientGroupErr)
-				t.Logf("valid ingredient group %q created", createdValidIngredientGroup.ID)
-
-				checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
+				createdValidIngredientGroup := buildValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
 
 				expected = append(expected, createdValidIngredientGroup)
 			}
@@ -118,12 +140,7 @@ func (s *TestSuite) TestValidIngredientGroups_Searching() {
 			searchQuery := exampleValidIngredientGroup.Name
 			for i := 0; i < 5; i++ {
 				exampleValidIngredientGroup.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				exampleValidIngredientGroupInput := converters.ConvertValidIngredientGroupToValidIngredientGroupCreationRequestInput(exampleValidIngredientGroup)
-				createdValidIngredientGroup, createdValidIngredientGroupErr := testClients.admin.CreateValidIngredientGroup(ctx, exampleValidIngredientGroupInput)
-				require.NoError(t, createdValidIngredientGroupErr)
-				checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
-				t.Logf("valid ingredient group %q created", createdValidIngredientGroup.ID)
-
+				createdValidIngredientGroup := buildValidIngredientGroupForTest(t, ctx, exampleValidIngredientGroup, testClients.admin)
 				expected = append(expected, createdValidIngredientGroup)
 			}
 

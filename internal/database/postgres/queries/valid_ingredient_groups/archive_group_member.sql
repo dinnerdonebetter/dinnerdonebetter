@@ -1,0 +1,1 @@
+UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE id = $1 AND belongs_to_group = $2;

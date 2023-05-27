@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -23,63 +24,126 @@ var (
 		"valid_ingredient_groups.created_at",
 		"valid_ingredient_groups.last_updated_at",
 		"valid_ingredient_groups.archived_at",
+		"valid_ingredient_group_members.id",
+		"valid_ingredient_group_members.belongs_to_group",
+		"valid_ingredient_group_members.valid_ingredient",
+		"valid_ingredient_group_members.created_at",
+		"valid_ingredient_group_members.archived_at",
 	}
 )
 
-// scanValidIngredientGroup takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient group struct.
-func (q *Querier) scanValidIngredientGroup(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredientGroup, filteredCount, totalCount uint64, err error) {
+// scanValidIngredientGroup is a consistent way to turn a *sql.Row into a webhook struct.
+func (q *Querier) scanValidIngredientGroup(ctx context.Context, rows database.ResultIterator) (validIngredientGroup *types.ValidIngredientGroup, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.ValidIngredientGroup{}
+	validIngredientGroup = &types.ValidIngredientGroup{}
 
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Description,
-		&x.Slug,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
+	for rows.Next() {
+		groupMember := &types.ValidIngredientGroupMember{}
+
+		targetVars := []any{
+			&validIngredientGroup.ID,
+			&validIngredientGroup.Name,
+			&validIngredientGroup.Description,
+			&validIngredientGroup.Slug,
+			&validIngredientGroup.CreatedAt,
+			&validIngredientGroup.LastUpdatedAt,
+			&validIngredientGroup.ArchivedAt,
+			&groupMember.ID,
+			&groupMember.BelongsToGroup,
+			&groupMember.ValidIngredientID,
+			&groupMember.CreatedAt,
+			&groupMember.ArchivedAt,
+		}
+
+		if err = rows.Scan(targetVars...); err != nil {
+			return nil, observability.PrepareError(err, span, "scanning validIngredientGroup")
+		}
+
+		validIngredientGroup.Members = append(validIngredientGroup.Members, groupMember)
 	}
 
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
+	if err = rows.Err(); err != nil {
+		return nil, observability.PrepareError(err, span, "fetching validIngredientGroup from database")
 	}
 
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
+	if validIngredientGroup.ID == "" {
+		return nil, sql.ErrNoRows
 	}
 
-	return x, filteredCount, totalCount, nil
+	return validIngredientGroup, nil
 }
 
-// scanValidIngredientGroups takes some database rows and turns them into a slice of valid ingredients group.
+// scanValidIngredientGroups provides a consistent way to turn sql rows into a slice of webhooks.
 func (q *Querier) scanValidIngredientGroups(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredientGroups []*types.ValidIngredientGroup, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	x := &types.ValidIngredientGroup{}
 	for rows.Next() {
-		x, fc, tc, scanErr := q.scanValidIngredientGroup(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
+		validIngredientGroup := &types.ValidIngredientGroup{}
+		groupMember := &types.ValidIngredientGroupMember{}
+
+		var (
+			lastUpdatedAt,
+			archivedAt sql.NullTime
+		)
+
+		targetVars := []any{
+			&validIngredientGroup.ID,
+			&validIngredientGroup.Name,
+			&validIngredientGroup.Description,
+			&validIngredientGroup.Slug,
+			&validIngredientGroup.CreatedAt,
+			&validIngredientGroup.LastUpdatedAt,
+			&validIngredientGroup.ArchivedAt,
+			&groupMember.ID,
+			&groupMember.BelongsToGroup,
+			&groupMember.ValidIngredientID,
+			&groupMember.CreatedAt,
+			&groupMember.ArchivedAt,
 		}
 
 		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
+			targetVars = append(targetVars, &filteredCount, &totalCount)
 		}
 
+		if err = rows.Scan(targetVars...); err != nil {
+			return nil, 0, 0, observability.PrepareError(err, span, "scanning validIngredientGroup")
+		}
+
+		if lastUpdatedAt.Valid {
+			validIngredientGroup.LastUpdatedAt = &lastUpdatedAt.Time
+		}
+		if archivedAt.Valid {
+			validIngredientGroup.ArchivedAt = &archivedAt.Time
+		}
+
+		if x.ID == "" {
+			events := x.Members
+			x = validIngredientGroup
+			x.Members = events
+		}
+
+		if x.ID != validIngredientGroup.ID {
+			validIngredientGroups = append(validIngredientGroups, x)
+			x = validIngredientGroup
+		}
+
+		x.Members = append(x.Members, groupMember)
+	}
+
+	if x.ID != "" {
 		validIngredientGroups = append(validIngredientGroups, x)
 	}
 
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
+	if err = rows.Err(); err != nil {
+		return nil, 0, 0, observability.PrepareError(err, span, "fetching webhook from database")
+	}
+
+	if len(validIngredientGroups) == 0 {
+		return nil, 0, 0, sql.ErrNoRows
 	}
 
 	return validIngredientGroups, filteredCount, totalCount, nil
@@ -133,9 +197,12 @@ func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGr
 		validIngredientGroupID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "valid ingredient group", getValidIngredientGroupQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid ingredient group", getValidIngredientGroupQuery, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredients groups from database")
+	}
 
-	validIngredientGroup, _, _, err := q.scanValidIngredientGroup(ctx, row, false)
+	validIngredientGroup, err := q.scanValidIngredientGroup(ctx, rows)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient group")
 	}
@@ -225,6 +292,11 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *types.V
 
 	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID)
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "starting transaction")
+	}
+
 	args := []any{
 		input.ID,
 		input.Name,
@@ -233,7 +305,8 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *types.V
 	}
 
 	// create the valid ingredient group.
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient group creation", validIngredientGroupCreationQuery, args); err != nil {
+	if err = q.performWriteQuery(ctx, tx, "valid ingredient group creation", validIngredientGroupCreationQuery, args); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient group creation query")
 	}
 
@@ -243,6 +316,60 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *types.V
 		Description: input.Description,
 		Slug:        input.Slug,
 		CreatedAt:   q.currentTime(),
+	}
+
+	for i := range input.Members {
+		m := input.Members[i]
+		var member *types.ValidIngredientGroupMember
+		member, err = q.CreateValidIngredientGroupMember(ctx, tx, x.ID, m)
+		if err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient group member")
+		}
+
+		x.Members = append(x.Members, member)
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
+
+	tracing.AttachValidIngredientGroupIDToSpan(span, x.ID)
+	logger.Info("valid ingredient group created")
+
+	return x, nil
+}
+
+//go:embed queries/valid_ingredient_groups/create_group_member.sql
+var validIngredientGroupMemberCreationQuery string
+
+// CreateValidIngredientGroupMember creates a valid ingredient group member in the database.
+func (q *Querier) CreateValidIngredientGroupMember(ctx context.Context, db database.SQLQueryExecutorAndTransactionManager, groupID string, input *types.ValidIngredientGroupMemberDatabaseCreationInput) (*types.ValidIngredientGroupMember, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID)
+
+	args := []any{
+		input.ID,
+		groupID,
+		input.ValidIngredientID,
+	}
+
+	// create the valid ingredient group.
+	if err := q.performWriteQuery(ctx, db, "valid ingredient group member creation", validIngredientGroupMemberCreationQuery, args); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient group member creation query")
+	}
+
+	x := &types.ValidIngredientGroupMember{
+		ID:                input.ID,
+		BelongsToGroup:    groupID,
+		ValidIngredientID: input.ValidIngredientID,
+		CreatedAt:         q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientGroupIDToSpan(span, x.ID)
