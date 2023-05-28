@@ -24,4 +24,4 @@ jobs:
        run: go install github.com/google/wire/cmd/wire@latest
 
      - name: Test dependency injection
-       run: wire gen github.com/dinnerdonebetter/backend/internal/build/server
+       run: make rewire

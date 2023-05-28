@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	serverutils "github.com/dinnerdonebetter/backend/internal/server/utils"
+	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"

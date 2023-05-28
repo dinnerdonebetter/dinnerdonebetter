@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
@@ -16,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"

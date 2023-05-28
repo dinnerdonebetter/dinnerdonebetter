@@ -10,7 +10,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -20,6 +19,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"

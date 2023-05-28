@@ -18,6 +18,7 @@ type (
 		ValidMeasurementConversion       *ValidMeasurementUnitConversion `json:"validMeasurementConversion,omitempty"`
 		ValidInstrument                  *ValidInstrument                `json:"validInstrument,omitempty"`
 		ValidIngredient                  *ValidIngredient                `json:"validIngredient,omitempty"`
+		ValidIngredientGroup             *ValidIngredientGroup           `json:"validIngredientGroup,omitempty"`
 		ValidPreparation                 *ValidPreparation               `json:"validPreparation,omitempty"`
 		ValidIngredientState             *ValidIngredientState           `json:"validIngredientState,omitempty"`
 		MealPlanGroceryListItem          *MealPlanGroceryListItem        `json:"mealPlanGroceryListItem,omitempty"`
@@ -70,6 +71,7 @@ type (
 		ValidIngredientStateIngredientID string                          `json:"validIngredientStateIngredientID"`
 		ValidMeasurementConversionID     string                          `json:"validMeasurementConversionID,omitempty"`
 		ValidIngredientStateID           string                          `json:"validIngredientStateID,omitempty"`
+		ValidIngredientGroupID           string                          `json:"validIngredientGroupID,omitempty"`
 		MealPlanEventID                  string                          `json:"mealPlanEventID,omitempty"`
 		EmailVerificationToken           string                          `json:"emailVerificationToken,omitempty"`
 	}

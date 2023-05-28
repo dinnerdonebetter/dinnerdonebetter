@@ -20,7 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	serverutils "github.com/dinnerdonebetter/backend/internal/server/utils"
+	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "github.com/lib/pq"

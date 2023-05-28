@@ -421,6 +421,11 @@ var (
 			Description: "household info fields",
 			Script:      fetchMigration("00081_household_info_fields"),
 		},
+		{
+			Version:     82,
+			Description: "valid ingredient groups",
+			Script:      fetchMigration("00082_valid_ingredient_groups"),
+		},
 	}
 )
 

@@ -1,10 +1,12 @@
 package integration
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -54,6 +56,24 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.NotZero(t, actual.CreatedAt)
 }
 
+func buildValidIngredientForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidIngredient {
+	t.Helper()
+
+	t.Log("creating valid ingredient")
+	exampleValidIngredient := fakes.BuildFakeValidIngredient()
+	exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
+	createdValidIngredient, err := adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
+	require.NoError(t, err)
+	t.Logf("valid ingredient %q created", createdValidIngredient.ID)
+	checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+	createdValidIngredient, err = adminClient.GetValidIngredient(ctx, createdValidIngredient.ID)
+	requireNotNilAndNoProblems(t, createdValidIngredient, err)
+	checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+	return createdValidIngredient
+}
+
 func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -62,17 +82,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient")
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-
-			createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+			createdValidIngredient := buildValidIngredientForTest(t, ctx, testClients.admin)
 
 			t.Log("changing valid ingredient")
 			newValidIngredient := fakes.BuildFakeValidIngredient()

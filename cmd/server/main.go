@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/build/server"
-	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/server/http/build"
+	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	_ "go.uber.org/automaxprocs"
@@ -59,7 +59,7 @@ func main() {
 	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
 
 	// build our server struct.
-	srv, err := server.Build(buildCtx, cfg)
+	srv, err := build.Build(buildCtx, cfg)
 	if err != nil {
 		panic(err)
 	}

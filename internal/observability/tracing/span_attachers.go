@@ -279,6 +279,11 @@ func AttachValidIngredientIDToSpan(span trace.Span, validIngredientID string) {
 	AttachStringToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 }
 
+// AttachValidIngredientGroupIDToSpan attaches a valid ingredient group ID to a given span.
+func AttachValidIngredientGroupIDToSpan(span trace.Span, validIngredientGroupID string) {
+	AttachStringToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+}
+
 // AttachValidPreparationIDToSpan attaches a valid preparation ID to a given span.
 func AttachValidPreparationIDToSpan(span trace.Span, validPreparationID string) {
 	AttachStringToSpan(span, keys.ValidPreparationIDKey, validPreparationID)

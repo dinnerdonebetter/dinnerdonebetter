@@ -79,7 +79,7 @@ clean_wire:
 
 .PHONY: wire
 wire: ensure_wire_installed vendor
-	wire gen $(THIS)/internal/build/server
+	wire gen $(THIS)/internal/server/http/build
 
 .PHONY: rewire
 rewire: ensure_wire_installed clean_wire wire
@@ -259,9 +259,3 @@ start_dev_cloud_sql_proxy:
 
 .PHONY: proxy_dev_db
 proxy_dev_db: start_dev_cloud_sql_proxy
-
-dump_dev_db:
-	rm -f cmd/tools/db_initializer/db_dumps/dump.sql
-	for table in api_clients household_invitations household_user_memberships households meal_components meal_plan_events meal_plan_grocery_list_items meal_plan_option_votes meal_plan_options meal_plan_tasks meal_plans meals password_reset_tokens recipe_media recipe_prep_task_steps recipe_prep_tasks recipe_step_completion_condition_ingredients recipe_step_completion_conditions recipe_step_ingredients recipe_step_instruments recipe_step_products recipe_step_vessels recipe_steps recipes service_setting_configurations service_settings sessions users valid_ingredient_measurement_units valid_ingredient_preparations valid_ingredient_state_ingredients valid_ingredient_states valid_ingredients valid_instruments valid_measurement_conversions valid_measurement_units valid_preparation_instruments valid_preparations webhook_trigger_events webhooks; do \
-		pg_dump "user=api_db_user password=`gcloud secrets versions access --secret=api_user_database_password 1` host=127.0.0.1 port=5434 sslmode=disable dbname=dinner-done-better" --table="$$table" --data-only --column-inserts >> cmd/tools/db_initializer/dump.sql; \
-	done
