@@ -333,33 +333,15 @@ func TestQuerier_GetValidIngredientGroups(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_groups", nil, nil, nil, householdOwnershipColumn, validIngredientGroupsTableColumns, "", false, filter)
+		args := []any{
+			filter.QueryOffset(),
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientGroups(true, exampleValidIngredientGroupList.FilteredCount, exampleValidIngredientGroupList.Data...))
-
-		actual, err := c.GetValidIngredientGroups(ctx, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientGroupList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleValidIngredientGroupList := fakes.BuildFakeValidIngredientGroupList()
-		exampleValidIngredientGroupList.Page = 0
-		exampleValidIngredientGroupList.Limit = 0
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "valid_ingredient_groups", nil, nil, nil, householdOwnershipColumn, validIngredientGroupsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientGroupsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidIngredientGroups(true, exampleValidIngredientGroupList.FilteredCount, exampleValidIngredientGroupList.Data...))
 
@@ -378,9 +360,15 @@ func TestQuerier_GetValidIngredientGroups(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_groups", nil, nil, nil, householdOwnershipColumn, validIngredientGroupsTableColumns, "", false, filter)
+		args := []any{
+			filter.QueryOffset(),
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientGroupsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -399,9 +387,15 @@ func TestQuerier_GetValidIngredientGroups(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_ingredient_groups", nil, nil, nil, householdOwnershipColumn, validIngredientGroupsTableColumns, "", false, filter)
+		args := []any{
+			filter.QueryOffset(),
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientGroupsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 

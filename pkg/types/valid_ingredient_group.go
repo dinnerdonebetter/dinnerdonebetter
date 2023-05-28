@@ -3,6 +3,7 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"math"
 	"net/http"
 	"time"
 
@@ -141,6 +142,7 @@ func (x *ValidIngredientGroupCreationRequestInput) ValidateWithContext(ctx conte
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Members, validation.Length(1, math.MaxUint8)),
 	)
 }
 

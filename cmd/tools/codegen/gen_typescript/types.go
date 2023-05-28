@@ -182,6 +182,11 @@ var (
 			types.ValidIngredientCreationRequestInput{},
 			types.ValidIngredientUpdateRequestInput{},
 		},
+		"validIngredientGroups": {
+			types.ValidIngredientGroup{},
+			types.ValidIngredientGroupCreationRequestInput{},
+			types.ValidIngredientGroupUpdateRequestInput{},
+		},
 		"validInstruments": {
 			types.ValidInstrument{},
 			types.ValidInstrumentCreationRequestInput{},

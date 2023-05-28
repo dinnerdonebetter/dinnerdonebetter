@@ -1,4 +1,4 @@
-INSERT INTO valid_ingredient_groups
+INSERT INTO valid_ingredient_group_members
 (
 	id,
 	belongs_to_group,

@@ -243,6 +243,9 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 	return x, nil
 }
 
+//go:embed queries/valid_ingredient_groups/get_many.sql
+var getValidIngredientGroupsQuery string
+
 // GetValidIngredientGroups fetches a list of valid ingredients group from the database that meet a particular filter.
 func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientGroup], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -250,25 +253,33 @@ func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.Qu
 
 	logger := q.logger.Clone()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	x = &types.QueryFilteredResult[types.ValidIngredientGroup]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	if filter.Page != nil {
+		x.Page = *filter.Page
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_ingredient_groups", nil, nil, nil, householdOwnershipColumn, validIngredientGroupsTableColumns, "", false, filter)
+	if filter.Limit != nil {
+		x.Limit = *filter.Limit
+	}
 
-	rows, err := q.getRows(ctx, q.db, "valid ingredients group", query, args)
+	args := []any{
+		filter.QueryOffset(),
+		filter.CreatedAfter,
+		filter.CreatedBefore,
+		filter.UpdatedAfter,
+		filter.UpdatedBefore,
+	}
+
+	rows, err := q.getRows(ctx, q.db, "valid ingredients group", getValidIngredientGroupsQuery, args)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients group list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientGroups(ctx, rows, true); err != nil {
@@ -335,7 +346,7 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *types.V
 	}
 
 	tracing.AttachValidIngredientGroupIDToSpan(span, x.ID)
-	logger.Info("valid ingredient group created")
+	logger.WithValue("member_count", len(input.Members)).Info("valid ingredient group created")
 
 	return x, nil
 }
@@ -373,7 +384,7 @@ func (q *Querier) CreateValidIngredientGroupMember(ctx context.Context, db datab
 	}
 
 	tracing.AttachValidIngredientGroupIDToSpan(span, x.ID)
-	logger.Info("valid ingredient group created")
+	logger.Info("valid ingredient group member created")
 
 	return x, nil
 }

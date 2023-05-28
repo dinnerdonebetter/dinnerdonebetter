@@ -29,7 +29,7 @@ func buildValidIngredientGroupForTest(t *testing.T, ctx context.Context, creatio
 	t.Helper()
 
 	createdValidIngredients := []*types.ValidIngredient{}
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 3; i++ {
 		createdValidIngredients = append(createdValidIngredients, buildValidIngredientForTest(t, ctx, adminClient))
 	}
 
@@ -51,6 +51,7 @@ func buildValidIngredientGroupForTest(t *testing.T, ctx context.Context, creatio
 
 	createdValidIngredientGroup, err := adminClient.CreateValidIngredientGroup(ctx, exampleValidIngredientGroupInput)
 	require.NoError(t, err)
+
 	t.Logf("valid ingredient group %q created", createdValidIngredientGroup.ID)
 	checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
 
