@@ -52,7 +52,7 @@ func ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(vali
 	for i, member := range validIngredient.Members {
 		members[i] = &types.ValidIngredientGroupMemberDatabaseCreationInput{
 			ID:                member.ID,
-			ValidIngredientID: member.ValidIngredientID,
+			ValidIngredientID: member.ValidIngredient.ID,
 		}
 	}
 

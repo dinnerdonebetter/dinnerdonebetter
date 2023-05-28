@@ -40,7 +40,44 @@ func buildMockRowsFromValidIngredientGroups(includeCounts bool, filteredCount ui
 				x.ArchivedAt,
 				y.ID,
 				y.BelongsToGroup,
-				y.ValidIngredientID,
+				y.ValidIngredient.ID,
+				y.ValidIngredient.Name,
+				y.ValidIngredient.Description,
+				y.ValidIngredient.Warning,
+				y.ValidIngredient.ContainsEgg,
+				y.ValidIngredient.ContainsDairy,
+				y.ValidIngredient.ContainsPeanut,
+				y.ValidIngredient.ContainsTreeNut,
+				y.ValidIngredient.ContainsSoy,
+				y.ValidIngredient.ContainsWheat,
+				y.ValidIngredient.ContainsShellfish,
+				y.ValidIngredient.ContainsSesame,
+				y.ValidIngredient.ContainsFish,
+				y.ValidIngredient.ContainsGluten,
+				y.ValidIngredient.AnimalFlesh,
+				y.ValidIngredient.IsMeasuredVolumetrically,
+				y.ValidIngredient.IsLiquid,
+				y.ValidIngredient.IconPath,
+				y.ValidIngredient.AnimalDerived,
+				y.ValidIngredient.PluralName,
+				y.ValidIngredient.RestrictToPreparations,
+				y.ValidIngredient.MinimumIdealStorageTemperatureInCelsius,
+				y.ValidIngredient.MaximumIdealStorageTemperatureInCelsius,
+				y.ValidIngredient.StorageInstructions,
+				y.ValidIngredient.Slug,
+				y.ValidIngredient.ContainsAlcohol,
+				y.ValidIngredient.ShoppingSuggestions,
+				y.ValidIngredient.IsStarch,
+				y.ValidIngredient.IsProtein,
+				y.ValidIngredient.IsGrain,
+				y.ValidIngredient.IsFruit,
+				y.ValidIngredient.IsSalt,
+				y.ValidIngredient.IsFat,
+				y.ValidIngredient.IsAcid,
+				y.ValidIngredient.IsHeat,
+				y.ValidIngredient.CreatedAt,
+				y.ValidIngredient.LastUpdatedAt,
+				y.ValidIngredient.ArchivedAt,
 				y.CreatedAt,
 				y.ArchivedAt,
 			}
@@ -419,6 +456,7 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
 			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
 			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+			exampleValidIngredientGroup.Members[i].ValidIngredient = types.ValidIngredient{ID: exampleValidIngredientGroup.Members[i].ValidIngredient.ID}
 		}
 		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
 
@@ -484,6 +522,7 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
 			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
 			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+			exampleValidIngredientGroup.Members[i].ValidIngredient = types.ValidIngredient{ID: exampleValidIngredientGroup.Members[i].ValidIngredient.ID}
 		}
 		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
 
@@ -508,6 +547,7 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
 			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
 			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+			exampleValidIngredientGroup.Members[i].ValidIngredient = types.ValidIngredient{ID: exampleValidIngredientGroup.Members[i].ValidIngredient.ID}
 		}
 		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
 
@@ -549,6 +589,7 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
 			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
 			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+			exampleValidIngredientGroup.Members[i].ValidIngredient = types.ValidIngredient{ID: exampleValidIngredientGroup.Members[i].ValidIngredient.ID}
 		}
 		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
 
@@ -601,6 +642,7 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 			exampleValidIngredientGroup.Members[i].ID = fmt.Sprintf("1_%d", i+1)
 			exampleValidIngredientGroup.Members[i].BelongsToGroup = "1"
 			exampleValidIngredientGroup.Members[i].CreatedAt = exampleValidIngredientGroup.CreatedAt
+			exampleValidIngredientGroup.Members[i].ValidIngredient = types.ValidIngredient{ID: exampleValidIngredientGroup.Members[i].ValidIngredient.ID}
 		}
 		exampleInput := converters.ConvertValidIngredientGroupToValidIngredientGroupDatabaseCreationInput(exampleValidIngredientGroup)
 

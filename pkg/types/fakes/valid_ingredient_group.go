@@ -29,10 +29,10 @@ func BuildFakeValidIngredientGroup() *types.ValidIngredientGroup {
 // BuildFakeValidIngredientGroupMember builds a faked valid ingredient group.
 func BuildFakeValidIngredientGroupMember() *types.ValidIngredientGroupMember {
 	return &types.ValidIngredientGroupMember{
-		ID:                BuildFakeID(),
-		ValidIngredientID: BuildFakeID(),
-		CreatedAt:         BuildFakeTime(),
-		BelongsToGroup:    BuildFakeID(),
+		ID:              BuildFakeID(),
+		ValidIngredient: *BuildFakeValidIngredient(),
+		CreatedAt:       BuildFakeTime(),
+		BelongsToGroup:  BuildFakeID(),
 	}
 }
 

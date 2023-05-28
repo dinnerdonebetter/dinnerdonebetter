@@ -423,8 +423,8 @@ var (
 		},
 		{
 			Version:     82,
-			Description: "enumerable groups",
-			Script:      fetchMigration("00082_enumerable_groups"),
+			Description: "valid ingredient groups",
+			Script:      fetchMigration("00082_valid_ingredient_groups"),
 		},
 	}
 )

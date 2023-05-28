@@ -44,12 +44,12 @@ type (
 	ValidIngredientGroupMember struct {
 		_ struct{}
 
-		CreatedAt         time.Time  `json:"createdAt"`
-		ArchivedAt        *time.Time `json:"archivedAt"`
-		ID                string     `json:"id"`
-		Notes             string     `json:"notes"`
-		BelongsToGroup    string     `json:"belongsToGroup"`
-		ValidIngredientID string     `json:"validIngredientID"`
+		CreatedAt       time.Time       `json:"createdAt"`
+		ArchivedAt      *time.Time      `json:"archivedAt"`
+		ID              string          `json:"id"`
+		Notes           string          `json:"notes"`
+		BelongsToGroup  string          `json:"belongsToGroup"`
+		ValidIngredient ValidIngredient `json:"validIngredient"`
 	}
 
 	// ValidIngredientGroupCreationRequestInput represents what a user could set as input for creating valid ingredient groups.
