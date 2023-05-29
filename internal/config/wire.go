@@ -58,6 +58,7 @@ var (
 			"VendorProxy",
 			"ServiceSettings",
 			"ServiceSettingConfigurations",
+			"UserIngredientPreferences",
 		),
 	)
 )

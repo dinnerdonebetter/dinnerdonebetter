@@ -25,12 +25,12 @@ func checkValidIngredientGroupEquality(t *testing.T, expected, actual *types.Val
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func buildValidIngredientGroupForTest(t *testing.T, ctx context.Context, creationInput *types.ValidIngredientGroup, adminClient *apiclient.Client) *types.ValidIngredientGroup {
+func createValidIngredientGroupForTest(t *testing.T, ctx context.Context, creationInput *types.ValidIngredientGroup, adminClient *apiclient.Client) *types.ValidIngredientGroup {
 	t.Helper()
 
 	createdValidIngredients := []*types.ValidIngredient{}
 	for i := 0; i < 3; i++ {
-		createdValidIngredients = append(createdValidIngredients, buildValidIngredientForTest(t, ctx, adminClient))
+		createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, adminClient))
 	}
 
 	t.Log("creating valid ingredient group")
@@ -70,7 +70,7 @@ func (s *TestSuite) TestValidIngredientGroups_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredientGroup := buildValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
+			createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
 
 			t.Log("changing valid ingredient group")
 			newValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
@@ -102,7 +102,7 @@ func (s *TestSuite) TestValidIngredientGroups_Listing() {
 			t.Log("creating valid ingredient groups")
 			var expected []*types.ValidIngredientGroup
 			for i := 0; i < 5; i++ {
-				createdValidIngredientGroup := buildValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
+				createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
 
 				expected = append(expected, createdValidIngredientGroup)
 			}
@@ -141,7 +141,7 @@ func (s *TestSuite) TestValidIngredientGroups_Searching() {
 			searchQuery := exampleValidIngredientGroup.Name
 			for i := 0; i < 5; i++ {
 				exampleValidIngredientGroup.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				createdValidIngredientGroup := buildValidIngredientGroupForTest(t, ctx, exampleValidIngredientGroup, testClients.admin)
+				createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, exampleValidIngredientGroup, testClients.admin)
 				expected = append(expected, createdValidIngredientGroup)
 			}
 

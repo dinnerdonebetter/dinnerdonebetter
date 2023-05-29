@@ -550,21 +550,23 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 //go:embed queries/users/update_username.sql
 var updateUsernameQuery string
 
-// UpdateUsername updates a user's username.
+// UpdateUserUsername updates a user's username.
 func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachUserIDToSpan(span, userID)
 
 	if newUsername == "" {
 		return ErrEmptyInputProvided
 	}
-
-	logger := q.logger.WithValue(keys.UsernameKey, newUsername).WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	logger = logger.WithValue(keys.UsernameKey, newUsername)
 	tracing.AttachUsernameToSpan(span, newUsername)
 
 	updateUsernameArgs := []any{

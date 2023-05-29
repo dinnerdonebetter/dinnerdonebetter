@@ -48,6 +48,7 @@ import (
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
+	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
 	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
@@ -425,6 +426,9 @@ func buildDevConfig() *config2.InstanceConfig {
 			ValidPreparations: validpreparationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			UserIngredientPreferences: useringredientpreferencesservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidIngredientStates: validingredientstatesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -642,6 +646,9 @@ func buildIntegrationTestsConfig() *config2.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			UserIngredientPreferences: useringredientpreferencesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientStates: validingredientstatesservice.Config{

@@ -331,6 +331,15 @@ const (
 	UpdateServiceSettingConfigurationsPermission Permission = "update.service_setting_configurations"
 	// ArchiveServiceSettingConfigurationsPermission is an admin user permission.
 	ArchiveServiceSettingConfigurationsPermission Permission = "archive.service_setting_configurations"
+
+	// CreateUserIngredientPreferencesPermission is a household user permission.
+	CreateUserIngredientPreferencesPermission Permission = "create.user_ingredient_preferences"
+	// ReadUserIngredientPreferencesPermission is a household user permission.
+	ReadUserIngredientPreferencesPermission Permission = "read.user_ingredient_preferences"
+	// UpdateUserIngredientPreferencesPermission is a household user permission.
+	UpdateUserIngredientPreferencesPermission Permission = "update.user_ingredient_preferences"
+	// ArchiveUserIngredientPreferencesPermission is a household user permission.
+	ArchiveUserIngredientPreferencesPermission Permission = "archive.user_ingredient_preferences"
 )
 
 // ID implements the gorbac Permission interface.
@@ -549,6 +558,11 @@ var (
 
 		ReadMealPlanTasksPermission.ID():   ReadMealPlanTasksPermission,
 		UpdateMealPlanTasksPermission.ID(): UpdateMealPlanTasksPermission,
+
+		CreateUserIngredientPreferencesPermission.ID():  CreateUserIngredientPreferencesPermission,
+		ReadUserIngredientPreferencesPermission.ID():    ReadUserIngredientPreferencesPermission,
+		UpdateUserIngredientPreferencesPermission.ID():  UpdateUserIngredientPreferencesPermission,
+		ArchiveUserIngredientPreferencesPermission.ID(): ArchiveUserIngredientPreferencesPermission,
 	}
 )
 
