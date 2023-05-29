@@ -8,8 +8,10 @@ package build
 
 import (
 	"context"
+
 	config8 "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	config4 "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
@@ -24,7 +26,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	"github.com/dinnerdonebetter/backend/internal/services/admin"
 	"github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -67,7 +68,7 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.HTTPServer, error) {
+func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error) {
 	httpConfig := cfg.Server
 	observabilityConfig := &cfg.Observability
 	configConfig := &observabilityConfig.Logging
@@ -334,9 +335,9 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.HTTPServer, e
 	if err != nil {
 		return nil, err
 	}
-	httpServer, err := http.ProvideHTTPServer(ctx, httpConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, dataManager, logger, serverEncoderDecoder, router, tracerProvider, service, serviceSettingDataService, serviceSettingConfigurationDataService)
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, dataManager, logger, serverEncoderDecoder, router, tracerProvider, service, serviceSettingDataService, serviceSettingConfigurationDataService)
 	if err != nil {
 		return nil, err
 	}
-	return httpServer, nil
+	return server, nil
 }

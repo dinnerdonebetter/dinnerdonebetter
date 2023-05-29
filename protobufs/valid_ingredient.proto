@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package dinnerdonebetter;
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/proto";
+import "google/protobuf/timestamp.proto";
+
+message ValidIngredient {
+  google.protobuf.Timestamp CreatedAt = 1;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
+  optional double MaximumIdealStorageTemperatureInCelsius = 4;
+  optional double MinimumIdealStorageTemperatureInCelsius = 5;
+  string IconPath = 6;
+  string Warning = 7;
+  string PluralName = 8;
+  string StorageInstructions = 9;
+  string Name = 10;
+  string ID = 11;
+  string Description = 12;
+  string Slug = 13;
+  string ShoppingSuggestions = 14;
+  bool ContainsShellfish = 15;
+  bool IsMeasuredVolumetrically = 16;
+  bool IsLiquid = 17;
+  bool ContainsPeanut = 18;
+  bool ContainsTreeNut = 19;
+  bool ContainsEgg = 20;
+  bool ContainsWheat = 21;
+  bool ContainsSoy = 22;
+  bool AnimalDerived = 23;
+  bool RestrictToPreparations = 24;
+  bool ContainsSesame = 25;
+  bool ContainsFish = 26;
+  bool ContainsGluten = 27;
+  bool ContainsDairy = 28;
+  bool ContainsAlcohol = 29;
+  bool AnimalFlesh = 30;
+  bool IsStarch = 31;
+  bool IsProtein = 32;
+  bool IsGrain = 33;
+  bool IsFruit = 34;
+  bool IsSalt = 35;
+  bool IsFat = 36;
+  bool IsAcid = 37;
+  bool IsHeat = 38;
+}
+
+message GetValidIngredientRequest {
+  string id = 1;
+}

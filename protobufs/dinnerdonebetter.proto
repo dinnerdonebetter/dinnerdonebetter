@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package dinnerdonebetter;
+
+import "google/protobuf/empty.proto";
+import "valid_ingredient.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/proto";
+
+service DinnerDoneBetter {
+  // Fetches a random valid ingredient
+  rpc GetRandomValidIngredient (google.protobuf.Empty) returns (dinnerdonebetter.ValidIngredient) {}
+}

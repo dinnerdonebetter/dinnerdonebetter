@@ -54,6 +54,7 @@ require (
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.1
 	github.com/stripe/stripe-go/v72 v72.72.0
+	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/wagslane/go-password-validator v0.3.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.28.0
 	go.opentelemetry.io/contrib/instrumentation/runtime v0.27.0
@@ -72,7 +73,6 @@ require (
 	golang.org/x/tools v0.1.12
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/genproto v0.0.0-20220518221133-4f43b3371335
-	google.golang.org/grpc v1.46.0
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/mikespook/gorbac.v2 v2.1.0
 	gopkg.in/segmentio/analytics-go.v3 v3.1.0
@@ -164,6 +164,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	google.golang.org/api v0.78.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/grpc v1.46.0 // indirect
 )
 
 require (
