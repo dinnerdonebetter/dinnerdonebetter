@@ -8,13 +8,13 @@ import (
 	"time"
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"

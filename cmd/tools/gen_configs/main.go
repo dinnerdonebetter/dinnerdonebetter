@@ -10,6 +10,7 @@ import (
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	config2 "github.com/dinnerdonebetter/backend/internal/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
@@ -27,7 +28,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -150,7 +150,7 @@ var (
 	}
 )
 
-func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig, indent, validate bool) error {
+func saveConfig(ctx context.Context, outputPath string, cfg *config2.InstanceConfig, indent, validate bool) error {
 	/* #nosec G301 */
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0o777); err != nil {
 		// okay, who gives a shit?
@@ -200,7 +200,7 @@ func generatePASETOKey() []byte {
 	return b
 }
 
-func buildDevEnvironmentServerConfig() *config.InstanceConfig {
+func buildDevEnvironmentServerConfig() *config2.InstanceConfig {
 	cookieConfig := authservice.CookieConfig{
 		Name:       defaultCookieName,
 		Domain:     ".dinnerdonebetter.dev",
@@ -220,9 +220,9 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		Segment:  &segment.Config{APIToken: ""},
 	}
 
-	cfg := &config.InstanceConfig{
+	cfg := &config2.InstanceConfig{
 		Routing: devRoutingConfig,
-		Meta: config.MetaSettings{
+		Meta: config2.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
 		},
@@ -263,7 +263,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				},
 			},
 		},
-		Services: config.ServicesConfig{
+		Services: config2.ServicesConfig{
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
 					Issuer:   pasteoIssuer,
@@ -335,10 +335,10 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, false, false)
 }
 
-func buildDevConfig() *config.InstanceConfig {
-	return &config.InstanceConfig{
+func buildDevConfig() *config2.InstanceConfig {
+	return &config2.InstanceConfig{
 		Routing: localRoutingConfig,
-		Meta: config.MetaSettings{
+		Meta: config2.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
 		},
@@ -373,7 +373,7 @@ func buildDevConfig() *config.InstanceConfig {
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
-		Services: config.ServicesConfig{
+		Services: config2.ServicesConfig{
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -543,10 +543,10 @@ func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, true, true)
 }
 
-func buildIntegrationTestsConfig() *config.InstanceConfig {
-	return &config.InstanceConfig{
+func buildIntegrationTestsConfig() *config2.InstanceConfig {
+	return &config2.InstanceConfig{
 		Routing: localRoutingConfig,
-		Meta: config.MetaSettings{
+		Meta: config2.MetaSettings{
 			Debug:   false,
 			RunMode: testingEnv,
 		},
@@ -588,7 +588,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
-		Services: config.ServicesConfig{
+		Services: config2.ServicesConfig{
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{

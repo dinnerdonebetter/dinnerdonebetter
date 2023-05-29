@@ -28,8 +28,8 @@ const (
 )
 
 type (
-	// HTTPServer is our API http server.
-	HTTPServer struct {
+	// Server is our API http server.
+	Server struct {
 		authService                            types.AuthService
 		householdsService                      types.HouseholdDataService
 		householdInvitationsService            types.HouseholdInvitationDataService
@@ -78,7 +78,7 @@ type (
 	}
 )
 
-// ProvideHTTPServer builds a new HTTPServer instance.
+// ProvideHTTPServer builds a new Server instance.
 func ProvideHTTPServer(
 	ctx context.Context,
 	serverSettings Config,
@@ -123,8 +123,8 @@ func ProvideHTTPServer(
 	vendorProxyService vendorproxy.Service,
 	serviceSettingDataService types.ServiceSettingDataService,
 	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
-) (*HTTPServer, error) {
-	srv := &HTTPServer{
+) (*Server, error) {
+	srv := &Server{
 		config: serverSettings,
 
 		// infra things,
@@ -132,7 +132,7 @@ func ProvideHTTPServer(
 		encoder:        encoder,
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),
-		httpServer:     provideStdLibHTTPServer(serverSettings.HTTPPort),
+		httpServer:     ProvideStdLibHTTPServer(serverSettings.HTTPPort),
 		dataManager:    dataManager,
 		tracerProvider: tracerProvider,
 
@@ -183,7 +183,7 @@ func ProvideHTTPServer(
 }
 
 // Shutdown shuts down the server.
-func (s *HTTPServer) Shutdown(ctx context.Context) error {
+func (s *Server) Shutdown(ctx context.Context) error {
 	s.dataManager.Close()
 
 	if flushErr := s.tracerProvider.ForceFlush(ctx); flushErr != nil {
@@ -194,7 +194,7 @@ func (s *HTTPServer) Shutdown(ctx context.Context) error {
 }
 
 // Serve serves HTTP traffic.
-func (s *HTTPServer) Serve() {
+func (s *Server) Serve() {
 	s.logger.Debug("setting up server")
 
 	s.httpServer.Handler = otelhttp.NewHandler(
@@ -243,8 +243,8 @@ const (
 	idleTimeout  = maxTimeout
 )
 
-// provideStdLibHTTPServer provides an HTTP httpServer.
-func provideStdLibHTTPServer(port uint16) *http.Server {
+// ProvideStdLibHTTPServer provides an HTTP httpServer.
+func ProvideStdLibHTTPServer(port uint16) *http.Server {
 	// heavily inspired by https://blog.cloudflare.com/exposing-go-on-the-internet/
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),

@@ -8,6 +8,7 @@ import (
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	config2 "github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
@@ -23,7 +24,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/admin"
 	apiclientsservice "github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -68,10 +68,10 @@ import (
 // Build builds a server.
 func Build(
 	ctx context.Context,
-	cfg *config.InstanceConfig,
-) (*http.HTTPServer, error) {
+	cfg *config2.InstanceConfig,
+) (*http.Server, error) {
 	wire.Build(
-		config.ServiceConfigProviders,
+		config2.ServiceConfigProviders,
 		database.DBProviders,
 		dbconfig.Providers,
 		encoding.EncDecProviders,

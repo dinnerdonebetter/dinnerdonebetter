@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	config2 "github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http/build"
-	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	_ "go.uber.org/automaxprocs"
@@ -22,15 +22,15 @@ const (
 	googleCloudIndicatorEnvVar = "RUNNING_IN_GOOGLE_CLOUD_RUN"
 )
 
-func getConfig(ctx context.Context) *config.InstanceConfig {
-	var cfg *config.InstanceConfig
+func getConfig(ctx context.Context) *config2.InstanceConfig {
+	var cfg *config2.InstanceConfig
 	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
 		client, secretManagerCreationErr := secretmanager.NewClient(ctx)
 		if secretManagerCreationErr != nil {
 			log.Fatal(secretManagerCreationErr)
 		}
 
-		c, cfgHydrateErr := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx, client)
+		c, cfgHydrateErr := config2.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx, client)
 		if cfgHydrateErr != nil {
 			log.Fatal(cfgHydrateErr)
 		}

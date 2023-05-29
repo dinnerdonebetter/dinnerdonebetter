@@ -57,7 +57,7 @@ func buildURLVarChunk(key, pattern string) string {
 }
 
 //nolint:maintidx // this thing is just gonna be how it is
-func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
+func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
