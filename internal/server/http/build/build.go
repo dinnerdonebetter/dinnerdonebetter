@@ -8,7 +8,7 @@ import (
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
-	config2 "github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
@@ -46,6 +46,7 @@ import (
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
+	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
 	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
@@ -68,10 +69,10 @@ import (
 // Build builds a server.
 func Build(
 	ctx context.Context,
-	cfg *config2.InstanceConfig,
+	cfg *config.InstanceConfig,
 ) (*http.Server, error) {
 	wire.Build(
-		config2.ServiceConfigProviders,
+		config.ServiceConfigProviders,
 		database.DBProviders,
 		dbconfig.Providers,
 		encoding.EncDecProviders,
@@ -126,6 +127,7 @@ func Build(
 		logcfg.Providers,
 		servicesettingsservice.Providers,
 		servicesettingconfigurations.Providers,
+		useringredientpreferencesservice.Providers,
 	)
 
 	return nil, nil

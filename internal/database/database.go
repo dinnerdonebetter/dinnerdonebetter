@@ -104,5 +104,6 @@ type (
 		types.ServiceSettingDataManager
 		types.ServiceSettingConfigurationDataManager
 		types.ValidIngredientGroupDataManager
+		types.UserIngredientPreferenceDataManager
 	}
 )

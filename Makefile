@@ -15,6 +15,7 @@ GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 LINTER_IMAGE                  := golangci/golangci-lint:v1.52.2
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
 CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
+WIRE_TARGETS                  := server/http/build server/rpc/build
 
 ## non-PHONY folders/files
 
@@ -75,13 +76,15 @@ revendor: clean_vendor vendor
 
 .PHONY: clean_wire
 clean_wire:
-	rm -f $(THIS)/internal/server/http/build/wire_gen.go
-	rm -f $(THIS)/internal/server/rpc/build/wire_gen.go
+	for tgt in $(WIRE_TARGETS); do \
+		rm -f $(THIS)/internal/$$tgt/wire_gen.go; \
+	done
 
 .PHONY: wire
 wire: ensure_wire_installed vendor
-	wire gen $(THIS)/internal/server/http/build
-	wire gen $(THIS)/internal/server/rpc/build
+	for tgt in $(WIRE_TARGETS); do \
+		wire gen $(THIS)/internal/$$tgt; \
+	done
 
 .PHONY: rewire
 rewire: ensure_wire_installed clean_wire wire

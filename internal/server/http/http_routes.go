@@ -28,6 +28,7 @@ import (
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
+	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
 	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
@@ -344,6 +345,28 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 				singleValidPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationsPermission)).
 					Delete(root, s.validPreparationsService.ArchiveHandler)
+			})
+		})
+
+		// UserIngredientPreferences
+		userIngredientPreferencesPath := "user_ingredient_preferences"
+		userIngredientPreferencesRouteWithPrefix := fmt.Sprintf("/%s", userIngredientPreferencesPath)
+		userIngredientPreferencesIDRouteParam := buildURLVarChunk(useringredientpreferencesservice.UserIngredientPreferenceIDURIParamKey, "")
+		v1Router.Route(userIngredientPreferencesRouteWithPrefix, func(userIngredientPreferencesRouter routing.Router) {
+			userIngredientPreferencesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateUserIngredientPreferencesPermission)).
+				Post(root, s.userIngredientPreferencesService.CreateHandler)
+			userIngredientPreferencesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadUserIngredientPreferencesPermission)).
+				Get(root, s.userIngredientPreferencesService.ListHandler)
+
+			userIngredientPreferencesRouter.Route(userIngredientPreferencesIDRouteParam, func(singleUserIngredientPreferenceRouter routing.Router) {
+				singleUserIngredientPreferenceRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateUserIngredientPreferencesPermission)).
+					Put(root, s.userIngredientPreferencesService.UpdateHandler)
+				singleUserIngredientPreferenceRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveUserIngredientPreferencesPermission)).
+					Delete(root, s.userIngredientPreferencesService.ArchiveHandler)
 			})
 		})
 

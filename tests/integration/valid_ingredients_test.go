@@ -56,7 +56,7 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func buildValidIngredientForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidIngredient {
+func createValidIngredientForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidIngredient {
 	t.Helper()
 
 	t.Log("creating valid ingredient")
@@ -82,7 +82,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredient := buildValidIngredientForTest(t, ctx, testClients.admin)
+			createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.admin)
 
 			t.Log("changing valid ingredient")
 			newValidIngredient := fakes.BuildFakeValidIngredient()

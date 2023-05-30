@@ -25,7 +25,7 @@ func checkMealPlanGroceryListItemEquality(t *testing.T, expected, actual *types.
 	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
 	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected MeasurementUnitID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID)
 	assert.Equal(t, expected.BelongsToMealPlan, actual.BelongsToMealPlan, "expected BelongsToMealPlan for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.BelongsToMealPlan, actual.BelongsToMealPlan)
-	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected IngredientID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
+	assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected ValidIngredientID for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.Ingredient.ID, actual.Ingredient.ID)
 	assert.Equal(t, expected.MaximumQuantityNeeded, actual.MaximumQuantityNeeded, "expected MaximumQuantityNeeded for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MaximumQuantityNeeded, actual.MaximumQuantityNeeded)
 	assert.Equal(t, expected.MinimumQuantityNeeded, actual.MinimumQuantityNeeded, "expected MinimumQuantityNeeded for meal plan grocery list item %s to be %v, but it was %v", expected.ID, expected.MinimumQuantityNeeded, actual.MinimumQuantityNeeded)
 

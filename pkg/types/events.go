@@ -74,6 +74,8 @@ type (
 		ValidIngredientGroupID           string                          `json:"validIngredientGroupID,omitempty"`
 		MealPlanEventID                  string                          `json:"mealPlanEventID,omitempty"`
 		EmailVerificationToken           string                          `json:"emailVerificationToken,omitempty"`
+		UserIngredientPreferenceID       string                          `json:"userIngredientPreferenceID,omitempty"`
+		UserIngredientPreferences        []*UserIngredientPreference     `json:"userIngredientPreference,omitempty"`
 	}
 
 	choreType string

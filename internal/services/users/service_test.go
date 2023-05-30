@@ -31,9 +31,8 @@ func buildTestService(t *testing.T) *service {
 	cfg := &Config{
 		Uploads: uploads.Config{
 			Storage: objectstorage.Config{
-				FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-				BucketName:       t.Name(),
-				Provider:         objectstorage.FilesystemProvider,
+				BucketName: t.Name(),
+				Provider:   objectstorage.MemoryProvider,
 			},
 			Debug: false,
 		},
@@ -82,9 +81,8 @@ func TestProvideUsersService(T *testing.T) {
 		cfg := &Config{
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
