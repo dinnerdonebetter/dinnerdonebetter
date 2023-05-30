@@ -45,7 +45,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 			"CreateUserIngredientPreference",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreferenceDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleUserIngredientPreference, nil)
+		).Return([]*types.UserIngredientPreference{helper.exampleUserIngredientPreference}, nil)
 		helper.service.userIngredientPreferenceDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -138,7 +138,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 			"CreateUserIngredientPreference",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreferenceDatabaseCreationInput) bool { return true }),
-		).Return((*types.UserIngredientPreference)(nil), errors.New("blah"))
+		).Return([]*types.UserIngredientPreference(nil), errors.New("blah"))
 		helper.service.userIngredientPreferenceDataManager = dbManager
 
 		helper.service.CreateHandler(helper.res, helper.req)
@@ -167,7 +167,7 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 			"CreateUserIngredientPreference",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreferenceDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleUserIngredientPreference, nil)
+		).Return([]*types.UserIngredientPreference{helper.exampleUserIngredientPreference}, nil)
 		helper.service.userIngredientPreferenceDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}

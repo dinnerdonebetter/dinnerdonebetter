@@ -41,14 +41,6 @@
 		"provider": "chi",
 		"enableCORSForLocalhost": true
 	},
-	"database": {
-		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
-		"debug": true,
-		"logQueries": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1500000000
-	},
 	"meta": {
 		"runMode": "testing",
 		"debug": false
@@ -86,17 +78,25 @@
 		"httpPort": 8000,
 		"debug": false
 	},
+	"database": {
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
+		"debug": true,
+		"logQueries": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1500000000
+	},
 	"services": {
-		"recipeStepCompletionConditions": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlanOptions": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validIngredients": {
+		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientGroups": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validInstruments": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepCompletionConditions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientPreparations": {
@@ -135,13 +135,13 @@
 		"vendorProxy": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validInstruments": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlanEvents": {
+		"validIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validPreparationInstruments": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"meals": {
@@ -174,16 +174,8 @@
 		"serviceSettingConfigurations": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipes": {
-			"dataChangesTopicName": "data_changes",
-			"mediaUploadPrefix": "https://media.example.website/lol",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "recipes",
-					"provider": "memory"
-				},
-				"debug": false
-			}
+		"userIngredientPreferences": {
+			"dataChangesTopicName": "data_changes"
 		},
 		"users": {
 			"dataChangesTopicName": "data_changes",
@@ -199,6 +191,17 @@
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",
 			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "recipes",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
+		"recipes": {
+			"dataChangesTopicName": "data_changes",
+			"mediaUploadPrefix": "https://media.example.website/lol",
 			"uploads": {
 				"storageConfig": {
 					"bucketName": "recipes",
@@ -232,9 +235,6 @@
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
-		},
-		"userIngredientPreferences": {
-			"dataChangesTopicName": "data_changes"
 		}
 	}
 }

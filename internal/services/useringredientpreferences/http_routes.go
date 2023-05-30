@@ -65,9 +65,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:                types.UserIngredientPreferenceCreatedCustomerEventType,
-		UserIngredientPreference: userIngredientPreference,
-		UserID:                   sessionCtxData.Requester.UserID,
+		EventType:                 types.UserIngredientPreferenceCreatedCustomerEventType,
+		UserIngredientPreferences: userIngredientPreference,
+		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -177,9 +177,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:                types.UserIngredientPreferenceUpdatedCustomerEventType,
-		UserIngredientPreference: userIngredientPreference,
-		UserID:                   sessionCtxData.Requester.UserID,
+		EventType:                 types.UserIngredientPreferenceUpdatedCustomerEventType,
+		UserIngredientPreferences: []*types.UserIngredientPreference{userIngredientPreference},
+		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

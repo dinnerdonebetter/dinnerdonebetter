@@ -7,5 +7,6 @@ CREATE TABLE IF NOT EXISTS user_ingredient_preferences (
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "last_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-    "belongs_to_user" TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "belongs_to_user" TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    UNIQUE("belongs_to_user", "ingredient")
 );

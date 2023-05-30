@@ -59,6 +59,8 @@ func createValidIngredientGroupForTest(t *testing.T, ctx context.Context, creati
 	requireNotNilAndNoProblems(t, createdValidIngredientGroup, err)
 	checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
 
+	require.Equal(t, len(createdValidIngredientGroup.Members), len(createdValidIngredients))
+
 	return createdValidIngredientGroup
 }
 

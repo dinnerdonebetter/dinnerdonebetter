@@ -16,8 +16,8 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 
 		ctx := context.Background()
 		input := &UserIngredientPreferenceCreationRequestInput{
-			IngredientID: t.Name(),
-			Rating:       1,
+			ValidIngredientID: t.Name(),
+			Rating:            1,
 		}
 
 		assert.NoError(t, input.ValidateWithContext(ctx))
@@ -28,10 +28,22 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 
 		ctx := context.Background()
 		input := &UserIngredientPreferenceCreationRequestInput{
-			IngredientID: t.Name(),
-			Rating:       math.MaxInt8,
+			ValidIngredientID: t.Name(),
+			Rating:            math.MaxInt8,
 		}
 
 		assert.Error(t, input.ValidateWithContext(ctx))
+	})
+
+	T.Run("with valid ingredient group ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		input := &UserIngredientPreferenceCreationRequestInput{
+			ValidIngredientGroupID: t.Name(),
+			Rating:                 1,
+		}
+
+		assert.NoError(t, input.ValidateWithContext(ctx))
 	})
 }

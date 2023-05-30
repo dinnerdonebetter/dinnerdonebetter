@@ -34,9 +34,9 @@ func (m *UserIngredientPreferenceDataManager) GetUserIngredientPreferences(ctx c
 }
 
 // CreateUserIngredientPreference is a mock function.
-func (m *UserIngredientPreferenceDataManager) CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceDatabaseCreationInput) (*types.UserIngredientPreference, error) {
+func (m *UserIngredientPreferenceDataManager) CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceDatabaseCreationInput) ([]*types.UserIngredientPreference, error) {
 	args := m.Called(ctx, input)
-	return args.Get(0).(*types.UserIngredientPreference), args.Error(1)
+	return args.Get(0).([]*types.UserIngredientPreference), args.Error(1)
 }
 
 // UpdateUserIngredientPreference is a mock function.

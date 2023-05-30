@@ -47,22 +47,24 @@ type (
 	UserIngredientPreferenceCreationRequestInput struct {
 		_ struct{}
 
-		IngredientID string `json:"ingredientID"`
-		Notes        string `json:"notes"`
-		Rating       int8   `json:"rating"`
-		Allergy      bool   `json:"allergy"`
+		ValidIngredientGroupID string `json:"validIngredientGroupID"`
+		ValidIngredientID      string `json:"validIngredientID"`
+		Notes                  string `json:"notes"`
+		Rating                 int8   `json:"rating"`
+		Allergy                bool   `json:"allergy"`
 	}
 
 	// UserIngredientPreferenceDatabaseCreationInput represents what a user could set as input for creating user ingredient preferences.
 	UserIngredientPreferenceDatabaseCreationInput struct {
 		_ struct{}
 
-		ID            string
-		IngredientID  string
-		Notes         string
-		BelongsToUser string
-		Rating        int8
-		Allergy       bool
+		ID                     string
+		ValidIngredientGroupID string
+		ValidIngredientID      string
+		Notes                  string
+		BelongsToUser          string
+		Rating                 int8
+		Allergy                bool
 	}
 
 	// UserIngredientPreferenceUpdateRequestInput represents what a user could set as input for updating user ingredient preferences.
@@ -80,7 +82,7 @@ type (
 		UserIngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (bool, error)
 		GetUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*UserIngredientPreference, error)
 		GetUserIngredientPreferences(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[UserIngredientPreference], error)
-		CreateUserIngredientPreference(ctx context.Context, input *UserIngredientPreferenceDatabaseCreationInput) (*UserIngredientPreference, error)
+		CreateUserIngredientPreference(ctx context.Context, input *UserIngredientPreferenceDatabaseCreationInput) ([]*UserIngredientPreference, error)
 		UpdateUserIngredientPreference(ctx context.Context, updated *UserIngredientPreference) error
 		ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error
 	}
@@ -120,7 +122,8 @@ func (x *UserIngredientPreferenceCreationRequestInput) ValidateWithContext(ctx c
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.IngredientID, validation.Required),
+		validation.Field(&x.ValidIngredientGroupID, validation.When(x.ValidIngredientID == "", validation.Required)),
+		validation.Field(&x.ValidIngredientID, validation.When(x.ValidIngredientGroupID == "", validation.Required)),
 		validation.Field(&x.Rating, validation.Min(minRating), validation.Max(maxRating)),
 	)
 }
@@ -133,7 +136,7 @@ func (x *UserIngredientPreferenceDatabaseCreationInput) ValidateWithContext(ctx 
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.IngredientID, validation.Required),
+		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.Rating, validation.Min(minRating), validation.Max(maxRating)),
 		validation.Field(&x.BelongsToUser, validation.Required),
 	)

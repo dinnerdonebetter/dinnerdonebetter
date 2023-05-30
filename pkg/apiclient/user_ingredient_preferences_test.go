@@ -94,13 +94,13 @@ func (s *userIngredientPreferencesTestSuite) TestClient_CreateUserIngredientPref
 		exampleInput := fakes.BuildFakeUserIngredientPreferenceCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserIngredientPreference)
+		c, _ := buildTestClientWithJSONResponse(t, spec, []*types.UserIngredientPreference{s.exampleUserIngredientPreference})
 
 		actual, err := c.CreateUserIngredientPreference(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleUserIngredientPreference, actual)
+		assert.Equal(t, []*types.UserIngredientPreference{s.exampleUserIngredientPreference}, actual)
 	})
 
 	s.Run("with nil input", func() {

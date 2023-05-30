@@ -157,6 +157,11 @@ var (
 			types.EmailAddressVerificationRequestInput{},
 			types.AvatarUpdateInput{},
 		},
+		"userIngredientPreferences": {
+			types.UserIngredientPreference{},
+			types.UserIngredientPreferenceCreationRequestInput{},
+			types.UserIngredientPreferenceUpdateRequestInput{},
+		},
 		"validIngredientMeasurementUnits": {
 			types.ValidIngredientMeasurementUnit{},
 			types.ValidIngredientMeasurementUnitCreationRequestInput{},

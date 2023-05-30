@@ -5,6 +5,7 @@ import (
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -283,7 +284,7 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 var userIngredientPreferenceCreationQuery string
 
 // CreateUserIngredientPreference creates a user ingredient preference in the database.
-func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceDatabaseCreationInput) (*types.UserIngredientPreference, error) {
+func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceDatabaseCreationInput) ([]*types.UserIngredientPreference, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -293,34 +294,72 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *typ
 
 	logger := q.logger.WithValue(keys.UserIngredientPreferenceIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.IngredientID,
-		input.Rating,
-		input.Notes,
-		input.Allergy,
-		input.BelongsToUser,
+	validIngredientIDs := []string{}
+	if input.ValidIngredientGroupID != "" {
+		group, err := q.GetValidIngredientGroup(ctx, input.ValidIngredientGroupID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredient group")
+		}
+
+		for _, member := range group.Members {
+			validIngredientIDs = append(validIngredientIDs, member.ValidIngredient.ID)
+		}
+	} else {
+		validIngredientIDs = append(validIngredientIDs, input.ValidIngredientID)
 	}
 
-	// create the user ingredient preference.
-	if err := q.performWriteQuery(ctx, q.db, "user ingredient preference creation", userIngredientPreferenceCreationQuery, args); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing user ingredient preference creation query")
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	x := &types.UserIngredientPreference{
-		ID:            input.ID,
-		Rating:        input.Rating,
-		Notes:         input.Notes,
-		Allergy:       input.Allergy,
-		BelongsToUser: input.BelongsToUser,
-		Ingredient:    types.ValidIngredient{ID: input.IngredientID},
-		CreatedAt:     q.currentTime(),
+	logger = logger.WithValue("valid_ingredient_ids", validIngredientIDs)
+	logger.Debug("creating user ingredient preferences")
+
+	output := []*types.UserIngredientPreference{}
+	for _, validIngredientID := range validIngredientIDs {
+		l := logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+		if validIngredientID == "" {
+			continue
+		}
+
+		id := identifiers.New()
+		args := []any{
+			id,
+			validIngredientID,
+			input.Rating,
+			input.Notes,
+			input.Allergy,
+			input.BelongsToUser,
+		}
+
+		// create the user ingredient preference.
+		if err = q.performWriteQuery(ctx, tx, "user ingredient preference creation", userIngredientPreferenceCreationQuery, args); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareAndLogError(err, l, span, "performing user ingredient preference creation query")
+		}
+
+		x := &types.UserIngredientPreference{
+			ID:            id,
+			Rating:        input.Rating,
+			Notes:         input.Notes,
+			Allergy:       input.Allergy,
+			BelongsToUser: input.BelongsToUser,
+			Ingredient:    types.ValidIngredient{ID: input.ValidIngredientID},
+			CreatedAt:     q.currentTime(),
+		}
+
+		tracing.AttachUserIngredientPreferenceIDToSpan(span, x.ID)
+		l.Info("user ingredient preference created")
+
+		output = append(output, x)
 	}
 
-	tracing.AttachUserIngredientPreferenceIDToSpan(span, x.ID)
-	logger.Info("user ingredient preference created")
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
 
-	return x, nil
+	return output, nil
 }
 
 //go:embed queries/user_ingredient_preferences/update.sql
