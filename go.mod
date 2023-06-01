@@ -23,7 +23,6 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-redis/redis/v8 v8.11.3
 	github.com/goccy/go-graphviz v0.0.9
-	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
 	github.com/gorilla/securecookie v1.1.1
@@ -54,7 +53,6 @@ require (
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.1
 	github.com/stripe/stripe-go/v72 v72.72.0
-	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/wagslane/go-password-validator v0.3.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.28.0
 	go.opentelemetry.io/contrib/instrumentation/runtime v0.27.0
@@ -73,7 +71,6 @@ require (
 	golang.org/x/tools v0.1.12
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/genproto v0.0.0-20220518221133-4f43b3371335
-	google.golang.org/protobuf v1.28.1
 	gopkg.in/mikespook/gorbac.v2 v2.1.0
 	gopkg.in/segmentio/analytics-go.v3 v3.1.0
 	resenje.org/schulze v0.2.0
@@ -106,6 +103,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/subcommands v1.0.1 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
@@ -165,6 +163,7 @@ require (
 	google.golang.org/api v0.78.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.46.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 )
 
 require (

@@ -7,8 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
+
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockconsumers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -22,7 +24,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:         logging.NewNoopLogger(),
-		encoderDecoder: mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder: mockencoding.mockencoding.NewMockEncoderDecoder(),
 		tracer:         tracing.NewTracerForTest("test"),
 		connections:    map[string][]websocketConnection{},
 		authConfig: &authservice.Config{

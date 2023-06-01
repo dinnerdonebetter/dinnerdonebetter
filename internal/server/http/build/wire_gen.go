@@ -8,6 +8,7 @@ package build
 
 import (
 	"context"
+
 	config8 "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -15,14 +16,14 @@ import (
 	config4 "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	config6 "github.com/dinnerdonebetter/backend/internal/email/config"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
+	encoding2 "github.com/dinnerdonebetter/backend/internal/encoding"
 	config7 "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	config5 "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	config2 "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	config3 "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	"github.com/dinnerdonebetter/backend/internal/services/admin"
@@ -98,8 +99,8 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 		return nil, err
 	}
 	encodingConfig := cfg.Encoding
-	contentType := encoding.ProvideContentType(encodingConfig)
-	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
+	contentType := encoding2.ProvideContentType(encodingConfig)
+	serverEncoderDecoder := encoding2.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
 	config11 := &cfg.Events
 	publisherProvider, err := config5.ProvidePublisherProvider(logger, tracerProvider, config11)
 	if err != nil {

@@ -3,7 +3,7 @@ package mockrandom
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
 	"github.com/stretchr/testify/mock"
 )

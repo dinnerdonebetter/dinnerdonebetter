@@ -9,7 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
+
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -102,7 +104,7 @@ func TestBuilder_BuildAPIClientAuthTokenRequest(T *testing.T) {
 		exampleInput := fakes.BuildFakePASETOCreationInput()
 		exampleSecretKey := []byte(strings.Repeat("A", validClientSecretSize))
 
-		clientEncoder := &mockencoding.ClientEncoder{}
+		clientEncoder := &mockencoding.mockencoding{}
 		clientEncoder.On(
 			"EncodeReader",
 			mock.Anything, // context.Context

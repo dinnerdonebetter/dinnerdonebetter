@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/featureflags/launchdarkly"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/dinnerdonebetter/backend/internal/featureflags/launchdarkly"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

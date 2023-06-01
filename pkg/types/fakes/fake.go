@@ -5,9 +5,9 @@ import (
 	"math"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 )
 
 func init() {

@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
+
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -23,7 +25,7 @@ func buildTestService() *service {
 		logger:                    logging.NewNoopLogger(),
 		mealPlanOptionDataManager: &mocktypes.MealPlanOptionDataManager{},
 		mealPlanOptionIDFetcher:   func(req *http.Request) string { return "" },
-		encoderDecoder:            mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder:            mockencoding.mockencoding.NewMockEncoderDecoder(),
 		tracer:                    tracing.NewTracerForTest("test"),
 	}
 }

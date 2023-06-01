@@ -5,14 +5,16 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
+
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -51,7 +53,7 @@ func buildTestService(t *testing.T) *service {
 		&mocktypes.HouseholdInvitationDataManager{},
 		&mocktypes.HouseholdUserMembershipDataManager{},
 		&mockauthn.Authenticator{},
-		mockencoding.NewMockEncoderDecoder(),
+		mockencoding.mockencoding.NewMockEncoderDecoder(),
 		&images.MockImageUploadProcessor{},
 		chi.NewRouteParamManager(),
 		tracing.NewNoopTracerProvider(),

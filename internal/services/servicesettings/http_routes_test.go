@@ -8,7 +8,9 @@ import (
 	"strconv"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
+
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -34,7 +36,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleServiceSetting, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder := mockencoding.mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,

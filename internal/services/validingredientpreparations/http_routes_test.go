@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
+
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -202,7 +204,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidIngredientPreparation, nil)
 		helper.service.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder := mockencoding.mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,

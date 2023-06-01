@@ -4,14 +4,16 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
+
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random"
-	mockrandom "github.com/dinnerdonebetter/backend/internal/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -26,7 +28,7 @@ func buildTestService(t *testing.T) *service {
 	return &service{
 		apiClientDataManager:      database.NewMockDatabase(),
 		logger:                    logging.NewNoopLogger(),
-		encoderDecoder:            mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder:            mockencoding.mockencoding.NewMockEncoderDecoder(),
 		authenticator:             &mockauthn.Authenticator{},
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },

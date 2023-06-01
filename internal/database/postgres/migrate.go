@@ -464,5 +464,10 @@ var (
 			Description: "user ingredient preferences",
 			Script:      fetchMigration("00083_user_ingredient_preferences"),
 		},
+		{
+			Version:     84,
+			Description: "grab bag",
+			Script:      fetchMigration("00084_grab_bag"),
+		},
 	}
 )
