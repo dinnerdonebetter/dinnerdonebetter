@@ -9,8 +9,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
@@ -45,7 +43,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		).Return(exampleHouseholdList, nil)
 		helper.service.householdDataManager = householdDataManager
 
-		encoderDecoder := mockencoding.mockencoding.NewMockEncoderDecoder()
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,

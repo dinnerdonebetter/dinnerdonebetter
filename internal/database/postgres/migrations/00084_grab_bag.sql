@@ -1,13 +1,13 @@
-ALTER TABLE users ADD COLUMN "last_accepted_tos" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
-ALTER TABLE users ADD COLUMN "last_accepted_privacy_policy" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ALTER TABLE households ADD COLUMN "last_payment_provider_sync_occurred_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
 
 -- CREATE TYPE storage_container_type AS ENUM ('uncovered', 'covered', 'on a wire rack', 'in an airtight container');
-ALTER TYPE storage_container_type ADD VALUE 'either covered or uncovered';
+ALTER TYPE storage_container_type ADD VALUE 'in a container';
 
-ALTER TABLE households ADD COLUMN "last_payment_provider_sync_occurred_on" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ALTER TABLE recipes ADD COLUMN "last_validated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ALTER TABLE recipes ADD COLUMN "yields_component_type" component_type NOT NULL DEFAULT 'unspecified';
 
-ALTER TABLE recipes ADD COLUMN "last_validated_on" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
-ALTER TABLE recipes ADD COLUMN "yields_component" component_type NOT NULL DEFAULT 'unspecified';
+ALTER TABLE users ADD COLUMN "last_accepted_tos" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ALTER TABLE users ADD COLUMN "last_accepted_privacy_policy" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
 
 ALTER TABLE recipe_step_ingredients ADD COLUMN "product_of_recipe_step_recipe_id" TEXT REFERENCES recipes("id") ON DELETE CASCADE ON UPDATE CASCADE;
 

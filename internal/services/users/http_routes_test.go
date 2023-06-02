@@ -9,8 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -228,7 +226,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		).Return(exampleUserList.Data, nil)
 		helper.service.userDataManager = mockDB
 
-		encoderDecoder := mockencoding.mockencoding.NewMockEncoderDecoder()
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,

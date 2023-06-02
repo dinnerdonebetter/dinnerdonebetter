@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
@@ -206,7 +204,7 @@ func TestValidIngredientsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidIngredient, nil)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
-		encoderDecoder := mockencoding.mockencoding.NewMockEncoderDecoder()
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,

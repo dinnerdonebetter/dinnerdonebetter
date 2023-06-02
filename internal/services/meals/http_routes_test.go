@@ -8,8 +8,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
@@ -208,7 +206,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleMeal, nil)
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.mockencoding.NewMockEncoderDecoder()
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,

@@ -338,7 +338,7 @@ issues:
       linters:
         - forcetypeassert
 
-    - path: internal/pkg/encoding/mock
+    - path: internal/encoding/mock
       linters:
         - forcetypeassert
 

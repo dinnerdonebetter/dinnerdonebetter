@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/dinnerdonebetter/backend/internal/encoding"
+
+	"github.com/stretchr/testify/mock"
 )
 
 var _ encoding.ServerEncoderDecoder = (*EncoderDecoder)(nil)

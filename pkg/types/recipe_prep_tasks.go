@@ -15,6 +15,8 @@ const (
 	RecipePrepTaskStorageTypeUncovered = "uncovered"
 	// RecipePrepTaskStorageTypeCovered is a valid storage type for a recipe step task.
 	RecipePrepTaskStorageTypeCovered = "covered"
+	// RecipePrepTaskStorageTypeInAContainer is a valid storage type for a recipe step task.
+	RecipePrepTaskStorageTypeInAContainer = "in a container"
 	// RecipePrepTaskStorageTypeWireRack is a valid storage type for a recipe step task.
 	RecipePrepTaskStorageTypeWireRack = "on a wire rack"
 	// RecipePrepTaskStorageTypeAirtightContainer is a valid storage type for a recipe step task.

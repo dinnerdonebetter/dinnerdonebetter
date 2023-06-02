@@ -8,8 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
@@ -101,7 +99,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		ed := mockencoding.mockencoding.NewMockEncoderDecoder()
+		ed := mockencoding.NewMockEncoderDecoder()
 		ed.On(
 			"DecodeRequest",
 			testutils.ContextMatcher,

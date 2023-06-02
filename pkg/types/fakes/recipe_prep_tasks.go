@@ -29,6 +29,7 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 			types.RecipePrepTaskStorageTypeCovered,
 			types.RecipePrepTaskStorageTypeAirtightContainer,
 			types.RecipePrepTaskStorageTypeWireRack,
+			types.RecipePrepTaskStorageTypeInAContainer,
 		}),
 		TaskSteps:                              recipePrepTaskSteps,
 		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer),

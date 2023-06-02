@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
@@ -25,7 +23,7 @@ func buildTestService() *service {
 	return &service{
 		logger:                       logging.NewNoopLogger(),
 		householdInvitationIDFetcher: func(req *http.Request) string { return "" },
-		encoderDecoder:               mockencoding.mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder:               mockencoding.NewMockEncoderDecoder(),
 		tracer:                       tracing.NewTracerForTest("test"),
 	}
 }

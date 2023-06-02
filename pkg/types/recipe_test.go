@@ -17,10 +17,14 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeCreationRequestInput{
-			Name:               fake.LoremIpsumSentence(exampleQuantity),
-			Source:             fake.LoremIpsumSentence(exampleQuantity),
-			Description:        fake.LoremIpsumSentence(exampleQuantity),
-			InspiredByRecipeID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                fake.LoremIpsumSentence(exampleQuantity),
+			Source:              fake.LoremIpsumSentence(exampleQuantity),
+			Slug:                fake.LoremIpsumSentence(exampleQuantity),
+			PortionName:         fake.LoremIpsumSentence(exampleQuantity),
+			PluralPortionName:   fake.LoremIpsumSentence(exampleQuantity),
+			Description:         fake.LoremIpsumSentence(exampleQuantity),
+			YieldsComponentType: MealComponentTypesMain,
+			InspiredByRecipeID:  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 				buildValidRecipeStepCreationRequestInput(),

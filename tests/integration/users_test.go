@@ -220,7 +220,7 @@ func (s *TestSuite) TestUsers_Searching() {
 }
 
 func (s *TestSuite) TestUsers_Archiving_Returns404ForNonexistentUser() {
-	s.runForEachClientExcept("should fail to archive a non-existent user", func(testClients *testClientWrapper) func() {
+	s.runForEachClientExcept("should error when archiving a non-existent user", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

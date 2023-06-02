@@ -49,7 +49,7 @@ func (s *TestSuite) TestLogin() {
 }
 
 func (s *TestSuite) TestLogin_WithoutBodyFails() {
-	s.Run("login request without body fails", func() {
+	s.Run("login request without body returns error", func() {
 		t := s.T()
 
 		ctx, span := tracing.StartSpan(context.Background())

@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
@@ -28,7 +26,7 @@ func buildTestService(t *testing.T) *service {
 	return &service{
 		apiClientDataManager:      database.NewMockDatabase(),
 		logger:                    logging.NewNoopLogger(),
-		encoderDecoder:            mockencoding.mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder:            mockencoding.NewMockEncoderDecoder(),
 		authenticator:             &mockauthn.Authenticator{},
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },

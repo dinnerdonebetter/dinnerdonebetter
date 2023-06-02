@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
@@ -53,7 +51,7 @@ func TestProvideService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			mockencoding.mockencoding.NewMockEncoderDecoder(),
+			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),

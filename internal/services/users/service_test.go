@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/encoding/mock"
-
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -53,7 +51,7 @@ func buildTestService(t *testing.T) *service {
 		&mocktypes.HouseholdInvitationDataManager{},
 		&mocktypes.HouseholdUserMembershipDataManager{},
 		&mockauthn.Authenticator{},
-		mockencoding.mockencoding.NewMockEncoderDecoder(),
+		mockencoding.NewMockEncoderDecoder(),
 		&images.MockImageUploadProcessor{},
 		chi.NewRouteParamManager(),
 		tracing.NewNoopTracerProvider(),
