@@ -8,7 +8,6 @@ package build
 
 import (
 	"context"
-
 	config8 "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -16,7 +15,7 @@ import (
 	config4 "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	config6 "github.com/dinnerdonebetter/backend/internal/email/config"
-	encoding2 "github.com/dinnerdonebetter/backend/internal/encoding"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
 	config7 "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	config5 "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
@@ -99,8 +98,8 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 		return nil, err
 	}
 	encodingConfig := cfg.Encoding
-	contentType := encoding2.ProvideContentType(encodingConfig)
-	serverEncoderDecoder := encoding2.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
+	contentType := encoding.ProvideContentType(encodingConfig)
+	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
 	config11 := &cfg.Events
 	publisherProvider, err := config5.ProvidePublisherProvider(logger, tracerProvider, config11)
 	if err != nil {

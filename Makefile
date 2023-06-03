@@ -15,7 +15,7 @@ GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.1
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
 CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
-WIRE_TARGETS                  := server/http/build server/rpc/build
+WIRE_TARGETS                  := server/http/build
 
 ## non-PHONY folders/files
 
