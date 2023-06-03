@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS meal_ratings (
     "notes" TEXT NOT NULL DEFAULT '',
     "by_user" TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    "last_updated_at" TIMESTAMP WITH TIME ZONE,
     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     UNIQUE("by_user", "meal_id")
 );
@@ -28,11 +29,11 @@ CREATE TABLE IF NOT EXISTS household_instrument_ownerships (
     "notes" TEXT NOT NULL DEFAULT '',
     "quantity" INTEGER NOT NULL DEFAULT 0,
     "valid_instrument_id" TEXT NOT NULL REFERENCES valid_instruments(id) ON DELETE CASCADE,
-    "household_id" TEXT NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+    "belongs_to_household" TEXT NOT NULL REFERENCES households(id) ON DELETE CASCADE,
     "created_at" TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     "last_updated_at" TIMESTAMP WITH TIME ZONE,
     "archived_at" TIMESTAMP WITH TIME ZONE,
-    UNIQUE ("valid_instrument_id", "household_id", "archived_at")
+    UNIQUE ("valid_instrument_id", "belongs_to_household", "archived_at")
 );
 
 CREATE TABLE IF NOT EXISTS user_feedback (
