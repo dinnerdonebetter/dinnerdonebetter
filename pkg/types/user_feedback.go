@@ -20,13 +20,13 @@ type (
 	UserFeedback struct {
 		_ struct{}
 
-		CreatedAt time.Time      `json:"createdAt"`
 		Context   map[string]any `json:"context"`
 		Prompt    string         `json:"prompt"`
 		Feedback  string         `json:"feedback"`
 		ByUser    string         `json:"byUser"`
 		ID        string         `json:"id"`
 		Rating    float32        `json:"rating"`
+		CreatedAt time.Time      `json:"createdAt"`
 	}
 
 	// UserFeedbackCreationRequestInput represents what a User could set as input for creating a user feedback.
@@ -53,7 +53,7 @@ type (
 
 	// UserFeedbackDataManager describes a structure capable of storing user feedback.
 	UserFeedbackDataManager interface {
-		GetUserFeedbacks(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[UserFeedback], error)
+		GetUserFeedback(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[UserFeedback], error)
 		CreateUserFeedback(ctx context.Context, input *UserFeedbackDatabaseCreationInput) (*UserFeedback, error)
 	}
 

@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS user_feedback (
     "prompt" TEXT NOT NULL DEFAULT '',
     "feedback" TEXT NOT NULL DEFAULT '',
     "rating" NUMERIC(14, 2),
-    "context" JSONB NOT NULL DEFAULT '{}'::JSONB,
+    "context" TEXT NOT NULL DEFAULT '{}',
     "by_user" TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );

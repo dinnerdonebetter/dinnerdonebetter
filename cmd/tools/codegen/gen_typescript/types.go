@@ -83,6 +83,20 @@ var (
 			types.MealCreationRequestInput{},
 			types.MealUpdateRequestInput{},
 		},
+		"mealRatings": {
+			types.MealRating{},
+			types.MealRatingCreationRequestInput{},
+			types.MealRatingUpdateRequestInput{},
+		},
+		"householdInstrumentOwnerships": {
+			types.HouseholdInstrumentOwnership{},
+			types.HouseholdInstrumentOwnershipCreationRequestInput{},
+			types.HouseholdInstrumentOwnershipUpdateRequestInput{},
+		},
+		"userFeedback": {
+			types.UserFeedback{},
+			types.UserFeedbackCreationRequestInput{},
+		},
 		"mealComponents": {
 			types.MealComponent{},
 			types.MealComponentCreationRequestInput{},

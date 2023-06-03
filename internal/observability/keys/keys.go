@@ -172,4 +172,13 @@ const (
 
 	// UserIngredientPreferenceIDKey is the standard key for referring to a user ingredient preference's ID.
 	UserIngredientPreferenceIDKey = "user_ingredient_preference.id"
+
+	// UserFeedbackIDKey is the standard key for referring to a user feedback's ID.
+	UserFeedbackIDKey = "user_feedback.id"
+
+	// HouseholdIngredientOwnershipIDKey is the standard key for referring to a household ingredient ownership's ID.
+	HouseholdIngredientOwnershipIDKey = "household_ingredient_ownership.id"
+
+	// MealRatingIDKey is the standard key for referring to a meal rating's ID.
+	MealRatingIDKey = "meal_rating.id"
 )
