@@ -226,11 +226,7 @@ func (x *MealCreationRequestInput) ValidateWithContext(ctx context.Context) erro
 		result = multierror.Append(result, validationErr)
 	}
 
-	if result != nil {
-		return result
-	}
-
-	return nil
+	return result.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*MealCreationRequestInput)(nil)

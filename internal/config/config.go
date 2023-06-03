@@ -199,9 +199,5 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 	}
 
-	if result != nil {
-		return result
-	}
-
-	return nil
+	return result.ErrorOrNil()
 }

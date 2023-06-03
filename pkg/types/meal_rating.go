@@ -3,10 +3,12 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -27,7 +29,8 @@ func init() {
 type (
 	// MealRating represents a meal rating.
 	MealRating struct {
-		_             struct{}
+		_ struct{}
+
 		CreatedAt     time.Time  `json:"createdAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
 		ArchivedAt    *time.Time `json:"archivedAt"`
@@ -44,7 +47,8 @@ type (
 
 	// MealRatingCreationRequestInput represents what a user could set as input for creating meal ratings.
 	MealRatingCreationRequestInput struct {
-		_            struct{}
+		_ struct{}
+
 		MealID       string  `json:"mealID"`
 		Notes        string  `json:"notes"`
 		ByUser       string  `json:"byUser"`
@@ -57,7 +61,8 @@ type (
 
 	// MealRatingDatabaseCreationInput represents what a user could set as input for creating meal ratings.
 	MealRatingDatabaseCreationInput struct {
-		_            struct{}
+		_ struct{}
+
 		ID           string
 		MealID       string
 		Notes        string
@@ -104,34 +109,77 @@ type (
 
 // Update merges an MealRatingUpdateRequestInput with a meal rating.
 func (x *MealRating) Update(input *MealRatingUpdateRequestInput) {
+	if input.MealID != nil && *input.MealID != x.MealID {
+		x.MealID = *input.MealID
+	}
+
+	if input.Taste != nil && *input.Taste != x.Taste {
+		x.Taste = *input.Taste
+	}
+
+	if input.Difficulty != nil && *input.Difficulty != x.Difficulty {
+		x.Difficulty = *input.Difficulty
+	}
+
+	if input.Cleanup != nil && *input.Cleanup != x.Cleanup {
+		x.Cleanup = *input.Cleanup
+	}
+
+	if input.Instructions != nil && *input.Instructions != x.Instructions {
+		x.Instructions = *input.Instructions
+	}
+
+	if input.Overall != nil && *input.Overall != x.Overall {
+		x.Overall = *input.Overall
+	}
+
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
 	}
-
 }
 
 var _ validation.ValidatableWithContext = (*MealRatingCreationRequestInput)(nil)
 
 // ValidateWithContext validates a MealRatingCreationRequestInput.
 func (x *MealRatingCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var errs *multierror.Error
+
+	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
+		errs = multierror.Append(errs, errors.New("meal rating must have at least one rating"))
+	}
+
+	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Notes, validation.Required),
-	)
+		validation.Field(&x.MealID, validation.Required),
+	); err != nil {
+		errs = multierror.Append(errs, err)
+	}
+
+	return errs.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*MealRatingDatabaseCreationInput)(nil)
 
 // ValidateWithContext validates a MealRatingDatabaseCreationInput.
 func (x *MealRatingDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var errs *multierror.Error
+
+	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
+		errs = multierror.Append(errs, errors.New("meal rating must have at least one rating"))
+	}
+
+	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.MealID, validation.Required),
 		validation.Field(&x.ByUser, validation.Required),
-	)
+	); err != nil {
+		errs = multierror.Append(errs, err)
+	}
+
+	return errs.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*MealRatingUpdateRequestInput)(nil)
