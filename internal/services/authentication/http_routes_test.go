@@ -47,7 +47,7 @@ func Test_service_determineCookieDomain(T *testing.T) {
 		ctx := context.Background()
 		helper := buildTestHelper(t)
 
-		req := httptest.NewRequest(http.MethodPost, "/users/login", nil)
+		req := httptest.NewRequest(http.MethodPost, "/users/login", http.NoBody)
 
 		actual := helper.service.determineCookieDomain(ctx, req)
 		assert.Equal(t, helper.service.config.Cookies.Domain, actual)
@@ -61,7 +61,7 @@ func Test_service_determineCookieDomain(T *testing.T) {
 
 		expected := ".whocares.gov"
 
-		req := httptest.NewRequest(http.MethodPost, "/users/login", nil)
+		req := httptest.NewRequest(http.MethodPost, "/users/login", http.NoBody)
 		req.Header.Set(customCookieDomainHeader, expected)
 
 		actual := helper.service.determineCookieDomain(ctx, req)

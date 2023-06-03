@@ -109,7 +109,7 @@ func Test_buildWebsocketErrorFunc(T *testing.T) {
 		encoder := encoding.ProvideServerEncoderDecoder(nil, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		res := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/", http.NoBody)
 
 		buildWebsocketErrorFunc(encoder)(res, req, 200, errors.New("blah"))
 	})

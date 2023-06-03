@@ -225,7 +225,7 @@ func Test_stripePaymentManager_HandleSubscriptionEventWebhook(T *testing.T) {
 
 		pm := buildTestPaymentManager(t)
 
-		req := httptest.NewRequest(http.MethodPost, "/webhook_update", nil)
+		req := httptest.NewRequest(http.MethodPost, "/webhook_update", http.NoBody)
 		req.Header.Set(webhookHeaderName, "bad-sig")
 
 		err := pm.HandleSubscriptionEventWebhook(req)

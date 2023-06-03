@@ -62,6 +62,7 @@ SELECT
 	recipe_step_ingredients.to_taste,
 	recipe_step_ingredients.product_percentage_to_use,
     recipe_step_ingredients.vessel_index,
+    recipe_step_ingredients.recipe_step_product_recipe_id,
 	recipe_step_ingredients.created_at,
 	recipe_step_ingredients.last_updated_at,
 	recipe_step_ingredients.archived_at,

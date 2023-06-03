@@ -12,7 +12,7 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.17.2
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
-LINTER_IMAGE                  := golangci/golangci-lint:v1.52.2
+LINTER_IMAGE                  := golangci/golangci-lint:v1.53.1
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
 CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
 WIRE_TARGETS                  := server/http/build server/rpc/build
@@ -96,7 +96,7 @@ format: format_imports format_golang
 
 .PHONY: format_golang
 format_golang:
-	fieldalignment -fix ./...
+	@until fieldalignment -fix ./...; do true; done > /dev/null
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports

@@ -1059,6 +1059,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.ToTaste,
 					ingredient.ProductPercentageToUse,
 					ingredient.VesselIndex,
+					ingredient.RecipeStepProductRecipeID,
 					ingredient.BelongsToRecipeStep,
 				}
 

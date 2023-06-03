@@ -97,6 +97,7 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			x.ToTaste,
 			x.ProductPercentageToUse,
 			x.VesselIndex,
+			x.RecipeStepProductRecipeID,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -602,6 +603,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			exampleInput.ToTaste,
 			exampleInput.ProductPercentageToUse,
 			exampleInput.VesselIndex,
+			exampleInput.RecipeStepProductRecipeID,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -656,6 +658,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			exampleInput.ToTaste,
 			exampleInput.ProductPercentageToUse,
 			exampleInput.VesselIndex,
+			exampleInput.RecipeStepProductRecipeID,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -706,6 +709,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 			exampleInput.ToTaste,
 			exampleInput.ProductPercentageToUse,
 			exampleInput.VesselIndex,
+			exampleInput.RecipeStepProductRecipeID,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -751,6 +755,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 			exampleRecipeStepIngredient.ToTaste,
 			exampleRecipeStepIngredient.ProductPercentageToUse,
 			exampleRecipeStepIngredient.VesselIndex,
+			exampleRecipeStepIngredient.RecipeStepProductRecipeID,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}
@@ -796,6 +801,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 			exampleRecipeStepIngredient.ToTaste,
 			exampleRecipeStepIngredient.ProductPercentageToUse,
 			exampleRecipeStepIngredient.VesselIndex,
+			exampleRecipeStepIngredient.RecipeStepProductRecipeID,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}

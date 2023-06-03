@@ -22,7 +22,7 @@ func TestBuildLoggingMiddleware(T *testing.T) {
 
 		hf := http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {})
 
-		req, res := httptest.NewRequest(http.MethodPost, "/nil", nil), httptest.NewRecorder()
+		req, res := httptest.NewRequest(http.MethodPost, "/nil", http.NoBody), httptest.NewRecorder()
 
 		middleware(hf).ServeHTTP(res, req)
 	})
@@ -46,7 +46,7 @@ func TestBuildLoggingMiddleware(T *testing.T) {
 			break
 		}
 
-		req, res := httptest.NewRequest(http.MethodPost, route, nil), httptest.NewRecorder()
+		req, res := httptest.NewRequest(http.MethodPost, route, http.NoBody), httptest.NewRecorder()
 
 		middleware(hf).ServeHTTP(res, req)
 	})
