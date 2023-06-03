@@ -134,3 +134,28 @@ func (c *Client) ArchiveMealPlan(ctx context.Context, mealPlanID string) error {
 
 	return nil
 }
+
+// FinalizeMealPlan gets a meal plan.
+func (c *Client) FinalizeMealPlan(ctx context.Context, mealPlanID string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	req, err := c.requestBuilder.BuildFinalizeMealPlanRequest(ctx, mealPlanID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "building get meal plan request")
+	}
+
+	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "retrieving meal plan")
+	}
+
+	return nil
+}

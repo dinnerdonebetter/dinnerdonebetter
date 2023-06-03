@@ -291,3 +291,44 @@ func (s *mealPlansTestSuite) TestClient_ArchiveMealPlan() {
 		assert.Error(t, err)
 	})
 }
+
+func (s *mealPlansTestSuite) TestClient_FinalizeMealPlan() {
+	const expectedPathFormat = "/api/v1/meal_plans/%s/finalize"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodPost, "", expectedPathFormat, s.exampleMealPlan.ID)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+
+		err := c.FinalizeMealPlan(s.ctx, s.exampleMealPlan.ID)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with invalid meal plan ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		err := c.FinalizeMealPlan(s.ctx, "")
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+
+		err := c.FinalizeMealPlan(s.ctx, s.exampleMealPlan.ID)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		err := c.FinalizeMealPlan(s.ctx, s.exampleMealPlan.ID)
+		assert.Error(t, err)
+	})
+}

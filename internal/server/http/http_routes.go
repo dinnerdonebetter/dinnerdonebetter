@@ -924,6 +924,9 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlansPermission)).
 					Delete(root, s.mealPlansService.ArchiveHandler)
+				mealPlansRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlansPermission)).
+					Post("/finalize", s.mealPlansService.FinalizeHandler)
 			})
 		})
 
