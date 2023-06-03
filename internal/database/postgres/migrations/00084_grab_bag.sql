@@ -6,7 +6,7 @@ ALTER TYPE storage_container_type ADD VALUE 'in a container';
 ALTER TABLE recipes ADD COLUMN "last_validated_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
 ALTER TABLE recipes ADD COLUMN "yields_component_type" component_type NOT NULL DEFAULT 'unspecified';
 
-ALTER TABLE users ADD COLUMN "last_accepted_tos" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ALTER TABLE users ADD COLUMN "last_accepted_terms_of_service" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
 ALTER TABLE users ADD COLUMN "last_accepted_privacy_policy" TIMESTAMP WITH TIME ZONE DEFAULT NULL;
 
 ALTER TABLE recipe_step_ingredients ADD COLUMN "product_of_recipe_step_recipe_id" TEXT REFERENCES recipes("id") ON DELETE CASCADE ON UPDATE CASCADE;

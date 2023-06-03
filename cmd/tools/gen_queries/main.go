@@ -79,9 +79,9 @@ const (
 
 var (
 	fileMap = map[string]queryFunc{
-		"webhooks/get_one.sql": buildGetOneWebhookQuery,
-		"webhooks/archive.sql": buildArchiveWebhookQuery,
-		"webhooks/create.sql":  buildCreateWebhookQuery,
+		"webhooks/get_for_user.sql": buildGetOneWebhookQuery,
+		"webhooks/archive.sql":      buildArchiveWebhookQuery,
+		"webhooks/create.sql":       buildCreateWebhookQuery,
 	}
 )
 
