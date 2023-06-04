@@ -93,10 +93,6 @@ var (
 			types.HouseholdInstrumentOwnershipCreationRequestInput{},
 			types.HouseholdInstrumentOwnershipUpdateRequestInput{},
 		},
-		"userFeedback": {
-			types.UserFeedback{},
-			types.UserFeedbackCreationRequestInput{},
-		},
 		"mealComponents": {
 			types.MealComponent{},
 			types.MealComponentCreationRequestInput{},
