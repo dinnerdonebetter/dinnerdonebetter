@@ -68,12 +68,12 @@ type (
 
 	// HouseholdInstrumentOwnershipDataManager describes a structure capable of storing household instrument ownerships permanently.
 	HouseholdInstrumentOwnershipDataManager interface {
-		HouseholdInstrumentOwnershipExists(ctx context.Context, householdInstrumentOwnershipID string) (bool, error)
-		GetHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID string) (*HouseholdInstrumentOwnership, error)
-		GetHouseholdInstrumentOwnerships(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[HouseholdInstrumentOwnership], error)
+		HouseholdInstrumentOwnershipExists(ctx context.Context, householdInstrumentOwnershipID, householdID string) (bool, error)
+		GetHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) (*HouseholdInstrumentOwnership, error)
+		GetHouseholdInstrumentOwnerships(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[HouseholdInstrumentOwnership], error)
 		CreateHouseholdInstrumentOwnership(ctx context.Context, input *HouseholdInstrumentOwnershipDatabaseCreationInput) (*HouseholdInstrumentOwnership, error)
 		UpdateHouseholdInstrumentOwnership(ctx context.Context, updated *HouseholdInstrumentOwnership) error
-		ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID string) error
+		ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) error
 	}
 
 	// HouseholdInstrumentOwnershipDataService describes a structure capable of serving traffic related to household instrument ownerships.

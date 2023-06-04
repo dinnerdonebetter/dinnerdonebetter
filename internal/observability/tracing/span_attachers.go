@@ -434,7 +434,17 @@ func AttachUserIngredientPreferenceIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.UserIngredientPreferenceIDKey, id)
 }
 
-// AttachUserFeedbackIDToSpan attaches a user ingredient preference ID to a given span.
+// AttachUserFeedbackIDToSpan attaches a user feedback ID to a given span.
 func AttachUserFeedbackIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.UserFeedbackIDKey, id)
+}
+
+// AttachHouseholdInstrumentOwnershipIDToSpan attaches a household instrument ownership ID to a given span.
+func AttachHouseholdInstrumentOwnershipIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, id)
+}
+
+// AttachMealRatingIDToSpan attaches a meal rating ID to a given span.
+func AttachMealRatingIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.MealRatingIDKey, id)
 }

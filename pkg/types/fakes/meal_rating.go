@@ -3,15 +3,22 @@ package fakes
 import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-
-	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeMealRating builds a faked valid ingredient.
 func BuildFakeMealRating() *types.MealRating {
-	var x *types.MealRating
-	fake.Struct(&x)
-	return x
+	return &types.MealRating{
+		CreatedAt:    BuildFakeTime(),
+		Notes:        buildUniqueString(),
+		ID:           buildUniqueString(),
+		MealID:       buildUniqueString(),
+		ByUser:       buildUniqueString(),
+		Taste:        float32(BuildFakeNumber()),
+		Instructions: float32(BuildFakeNumber()),
+		Overall:      float32(BuildFakeNumber()),
+		Cleanup:      float32(BuildFakeNumber()),
+		Difficulty:   float32(BuildFakeNumber()),
+	}
 }
 
 // BuildFakeMealRatingList builds a faked MealRatingList.

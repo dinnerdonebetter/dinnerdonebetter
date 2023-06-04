@@ -18,15 +18,14 @@ const (
 type (
 	// UserFeedback represents a user feedback listener, an endpoint to send an HTTP request to upon an event.
 	UserFeedback struct {
-		_ struct{}
-
+		_         struct{}
+		CreatedAt time.Time      `json:"createdAt"`
 		Context   map[string]any `json:"context"`
 		Prompt    string         `json:"prompt"`
 		Feedback  string         `json:"feedback"`
 		ByUser    string         `json:"byUser"`
 		ID        string         `json:"id"`
 		Rating    float32        `json:"rating"`
-		CreatedAt time.Time      `json:"createdAt"`
 	}
 
 	// UserFeedbackCreationRequestInput represents what a User could set as input for creating a user feedback.

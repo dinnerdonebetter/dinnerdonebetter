@@ -27,7 +27,8 @@ SELECT
 	 FROM
 		household_instrument_ownerships
 	 WHERE
-		household_instrument_ownerships.archived_at IS NULL
+		household_instrument_ownerships.belongs_to_household = $6
+     AND household_instrument_ownerships.archived_at IS NULL
 	 AND household_instrument_ownerships.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
 	 AND household_instrument_ownerships.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
 	 AND (household_instrument_ownerships.last_updated_at IS NULL OR household_instrument_ownerships.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
@@ -39,12 +40,14 @@ SELECT
 	 FROM
 		household_instrument_ownerships
 	 WHERE
-		household_instrument_ownerships.archived_at IS NULL
+		household_instrument_ownerships.belongs_to_household = $6
+		AND household_instrument_ownerships.archived_at IS NULL
 	) as total_count
 FROM household_instrument_ownerships
     INNER JOIN valid_instruments ON household_instrument_ownerships.valid_instrument_id = valid_instruments.id
 WHERE
-	household_instrument_ownerships.archived_at IS NULL
+    household_instrument_ownerships.belongs_to_household = $6
+	AND household_instrument_ownerships.archived_at IS NULL
 	AND household_instrument_ownerships.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
 	AND household_instrument_ownerships.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
 	AND (household_instrument_ownerships.last_updated_at IS NULL OR household_instrument_ownerships.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))

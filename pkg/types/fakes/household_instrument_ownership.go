@@ -3,15 +3,18 @@ package fakes
 import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-
-	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeHouseholdInstrumentOwnership builds a faked valid ingredient.
 func BuildFakeHouseholdInstrumentOwnership() *types.HouseholdInstrumentOwnership {
-	var x *types.HouseholdInstrumentOwnership
-	fake.Struct(&x)
-	return x
+	return &types.HouseholdInstrumentOwnership{
+		CreatedAt:          BuildFakeTime(),
+		ID:                 buildUniqueString(),
+		Notes:              buildUniqueString(),
+		BelongsToHousehold: buildUniqueString(),
+		Instrument:         *BuildFakeValidInstrument(),
+		Quantity:           uint16(BuildFakeNumber()),
+	}
 }
 
 // BuildFakeHouseholdInstrumentOwnershipList builds a faked HouseholdInstrumentOwnershipList.

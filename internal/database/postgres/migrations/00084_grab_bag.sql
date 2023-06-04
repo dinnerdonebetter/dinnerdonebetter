@@ -35,13 +35,3 @@ CREATE TABLE IF NOT EXISTS household_instrument_ownerships (
     "archived_at" TIMESTAMP WITH TIME ZONE,
     UNIQUE ("valid_instrument_id", "belongs_to_household", "archived_at")
 );
-
-CREATE TABLE IF NOT EXISTS user_feedback (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "prompt" TEXT NOT NULL DEFAULT '',
-    "feedback" TEXT NOT NULL DEFAULT '',
-    "rating" NUMERIC(14, 2),
-    "context" TEXT NOT NULL DEFAULT '{}',
-    "by_user" TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-);

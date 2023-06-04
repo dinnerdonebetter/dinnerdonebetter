@@ -23,4 +23,5 @@ SELECT
 FROM household_instrument_ownerships
 INNER JOIN valid_instruments ON household_instrument_ownerships.valid_instrument_id = valid_instruments.id
 WHERE household_instrument_ownerships.archived_at IS NULL
-	AND household_instrument_ownerships.id = $1;
+	AND household_instrument_ownerships.id = $1
+	AND household_instrument_ownerships.belongs_to_household = $2;

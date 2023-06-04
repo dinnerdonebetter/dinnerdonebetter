@@ -41,7 +41,7 @@ func ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRe
 // ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipDatabaseCreationInput builds a HouseholdInstrumentOwnershipDatabaseCreationInput from a HouseholdInstrumentOwnership.
 func ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipDatabaseCreationInput(x *types.HouseholdInstrumentOwnership) *types.HouseholdInstrumentOwnershipDatabaseCreationInput {
 	return &types.HouseholdInstrumentOwnershipDatabaseCreationInput{
-		ID:                 identifiers.New(),
+		ID:                 x.ID,
 		Notes:              x.Notes,
 		Quantity:           x.Quantity,
 		ValidInstrumentID:  x.Instrument.ID,
