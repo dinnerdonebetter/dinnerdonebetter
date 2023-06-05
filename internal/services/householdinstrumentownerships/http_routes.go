@@ -53,6 +53,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := converters.ConvertHouseholdInstrumentOwnershipCreationRequestInputToHouseholdInstrumentOwnershipDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, input.ID)
 

@@ -1,10 +1,12 @@
 package integration
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -29,6 +31,24 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 	assert.NotZero(t, actual.CreatedAt)
 }
 
+func createValidInstrumentForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidInstrument {
+	t.Helper()
+
+	t.Log("creating valid instrument")
+	exampleValidInstrument := fakes.BuildFakeValidInstrument()
+	exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
+	createdValidInstrument, err := adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+	require.NoError(t, err)
+	t.Logf("valid instrument %q created", createdValidInstrument.ID)
+	checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+
+	createdValidInstrument, err = adminClient.GetValidInstrument(ctx, createdValidInstrument.ID)
+	requireNotNilAndNoProblems(t, createdValidInstrument, err)
+	checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+
+	return createdValidInstrument
+}
+
 func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -37,13 +57,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid instrument")
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrument.ID)
-			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.admin)
 
 			t.Log("changing valid instrument")
 			newValidInstrument := fakes.BuildFakeValidInstrument()

@@ -87,10 +87,10 @@
 		"pingWaitPeriod": 1500000000
 	},
 	"services": {
-		"mealPlanEvents": {
+		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validIngredientGroups": {
+		"mealRatings": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstruments": {
@@ -111,7 +111,7 @@
 		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepVessels": {
+		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstrumentMeasurementUnits": {
@@ -138,16 +138,16 @@
 		"validIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validPreparationInstruments": {
+		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanOptions": {
+		"recipeStepVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"meals": {
+		"validIngredientGroups": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validIngredientStateIngredients": {
+		"recipePrepTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"websockets": {
@@ -162,7 +162,7 @@
 		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipePrepTasks": {
+		"validIngredientStateIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanGroceryListItems": {
@@ -177,12 +177,18 @@
 		"userIngredientPreferences": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"users": {
+		"householdInstrumentOwnerships": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"meals": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipes": {
 			"dataChangesTopicName": "data_changes",
-			"publicMediaURLPrefix": "",
+			"mediaUploadPrefix": "https://media.example.website/lol",
 			"uploads": {
 				"storageConfig": {
-					"bucketName": "avatars",
+					"bucketName": "recipes",
 					"provider": "memory"
 				},
 				"debug": false
@@ -199,12 +205,12 @@
 				"debug": false
 			}
 		},
-		"recipes": {
+		"users": {
 			"dataChangesTopicName": "data_changes",
-			"mediaUploadPrefix": "https://media.example.website/lol",
+			"publicMediaURLPrefix": "",
 			"uploads": {
 				"storageConfig": {
-					"bucketName": "recipes",
+					"bucketName": "avatars",
 					"provider": "memory"
 				},
 				"debug": false

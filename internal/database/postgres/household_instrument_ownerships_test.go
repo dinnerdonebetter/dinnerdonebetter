@@ -268,12 +268,13 @@ func TestQuerier_GetHouseholdInstrumentOwnerships(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []any{
+			exampleHouseholdID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
 			filter.UpdatedAfter,
 			filter.UpdatedBefore,
 			filter.QueryOffset(),
-			exampleHouseholdID,
+			filter.Limit,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInstrumentOwnershipsQuery)).
@@ -300,12 +301,13 @@ func TestQuerier_GetHouseholdInstrumentOwnerships(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []any{
+			exampleHouseholdID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
 			filter.UpdatedAfter,
 			filter.UpdatedBefore,
 			filter.QueryOffset(),
-			exampleHouseholdID,
+			filter.Limit,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInstrumentOwnershipsQuery)).
@@ -329,12 +331,13 @@ func TestQuerier_GetHouseholdInstrumentOwnerships(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []any{
+			exampleHouseholdID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
 			filter.UpdatedAfter,
 			filter.UpdatedBefore,
 			filter.QueryOffset(),
-			exampleHouseholdID,
+			filter.Limit,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInstrumentOwnershipsQuery)).
@@ -358,12 +361,13 @@ func TestQuerier_GetHouseholdInstrumentOwnerships(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []any{
+			exampleHouseholdID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
 			filter.UpdatedAfter,
 			filter.UpdatedBefore,
 			filter.QueryOffset(),
-			exampleHouseholdID,
+			filter.Limit,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInstrumentOwnershipsQuery)).

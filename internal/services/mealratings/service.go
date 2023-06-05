@@ -44,7 +44,7 @@ func ProvideService(
 ) (types.MealRatingDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up valid instruments service data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up meal ratings service data changes publisher: %w", err)
 	}
 
 	svc := &service{

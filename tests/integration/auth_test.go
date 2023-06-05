@@ -48,7 +48,7 @@ func (s *TestSuite) TestLogin() {
 	})
 }
 
-func (s *TestSuite) TestLogin_WithoutBodyFails() {
+func (s *TestSuite) TestLogin_WithoutBodyReturnsError() {
 	s.Run("login request without body returns error", func() {
 		t := s.T()
 

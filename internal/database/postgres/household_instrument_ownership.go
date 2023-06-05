@@ -218,12 +218,13 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 	}
 
 	args := []any{
+		householdID,
 		filter.CreatedAfter,
 		filter.CreatedBefore,
 		filter.UpdatedAfter,
 		filter.UpdatedBefore,
 		filter.QueryOffset(),
-		householdID,
+		filter.Limit,
 	}
 
 	rows, err := q.getRows(ctx, q.db, "household instrument ownerships", getHouseholdInstrumentOwnershipsQuery, args)

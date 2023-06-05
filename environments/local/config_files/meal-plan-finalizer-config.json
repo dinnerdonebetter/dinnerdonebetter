@@ -87,10 +87,10 @@
 		"pingWaitPeriod": 1000000000
 	},
 	"services": {
-		"mealPlanEvents": {
+		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validIngredientGroups": {
+		"mealRatings": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstruments": {
@@ -111,7 +111,7 @@
 		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepVessels": {
+		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstrumentMeasurementUnits": {
@@ -138,16 +138,16 @@
 		"validIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validPreparationInstruments": {
+		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanOptions": {
+		"recipeStepVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"meals": {
+		"validIngredientGroups": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validIngredientStateIngredients": {
+		"recipePrepTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"websockets": {
@@ -162,7 +162,7 @@
 		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipePrepTasks": {
+		"validIngredientStateIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanGroceryListItems": {
@@ -177,16 +177,22 @@
 		"userIngredientPreferences": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"users": {
+		"householdInstrumentOwnerships": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"meals": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipes": {
 			"dataChangesTopicName": "data_changes",
-			"publicMediaURLPrefix": "",
+			"mediaUploadPrefix": "https://example.website.lol",
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {
 						"rootDirectory": "/uploads"
 					},
-					"bucketName": "avatars",
-					"uploadFilenameKey": "avatar",
+					"bucketName": "recipe_media",
+					"uploadFilenameKey": "recipe_media",
 					"provider": "filesystem"
 				},
 				"debug": true
@@ -207,16 +213,16 @@
 				"debug": true
 			}
 		},
-		"recipes": {
+		"users": {
 			"dataChangesTopicName": "data_changes",
-			"mediaUploadPrefix": "https://example.website.lol",
+			"publicMediaURLPrefix": "",
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {
 						"rootDirectory": "/uploads"
 					},
-					"bucketName": "recipe_media",
-					"uploadFilenameKey": "recipe_media",
+					"bucketName": "avatars",
+					"uploadFilenameKey": "avatar",
 					"provider": "filesystem"
 				},
 				"debug": true
