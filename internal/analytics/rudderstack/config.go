@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	APIKey       string `json:"apiKey" mapstructure:"api_key" toml:"api_key"`
+	APIKey       string `json:"apiKey"       mapstructure:"api_key"        toml:"api_key"`
 	DataPlaneURL string `json:"dataPlaneURL" mapstructure:"data_plane_url" toml:"data_plane_url,omitempty"`
 }
 

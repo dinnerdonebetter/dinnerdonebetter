@@ -17,10 +17,6 @@ const (
 	serviceName string = "webhooks_service"
 )
 
-var (
-	_ types.WebhookDataService = (*service)(nil)
-)
-
 type (
 	// service handles webhooks.
 	service struct {

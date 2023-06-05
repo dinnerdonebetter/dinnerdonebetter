@@ -206,17 +206,17 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 			singleWebhookRoute := buildURLVarChunk(webhooksservice.WebhookIDURIParamKey, "")
 			webhookRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadWebhooksPermission)).
-				Get(root, s.webhooksService.ListHandler)
+				Get(root, s.webhooksService.ListWebhooksHandler)
 			webhookRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateWebhooksPermission)).
-				Post(root, s.webhooksService.CreateHandler)
+				Post(root, s.webhooksService.CreateWebhookHandler)
 			webhookRouter.Route(singleWebhookRoute, func(singleWebhookRouter routing.Router) {
 				singleWebhookRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadWebhooksPermission)).
-					Get(root, s.webhooksService.ReadHandler)
+					Get(root, s.webhooksService.ReadWebhookHandler)
 				singleWebhookRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveWebhooksPermission)).
-					Delete(root, s.webhooksService.ArchiveHandler)
+					Delete(root, s.webhooksService.ArchiveWebhookHandler)
 			})
 		})
 

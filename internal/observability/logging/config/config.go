@@ -18,7 +18,7 @@ type (
 	Config struct {
 		_ struct{}
 
-		Level    logging.Level `json:"level,omitempty"  mapstructure:"level" toml:"level"`
+		Level    logging.Level `json:"level,omitempty"    mapstructure:"level"    toml:"level"`
 		Provider string        `json:"provider,omitempty" mapstructure:"provider" toml:"provider"`
 	}
 )

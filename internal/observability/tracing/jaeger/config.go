@@ -16,8 +16,8 @@ type (
 	Config struct {
 		_ struct{}
 
-		CollectorEndpoint         string  `json:"collector_endpoint,omitempty" mapstructure:"collector_endpoint" toml:"collector_endpoint,omitempty"`
-		ServiceName               string  `json:"service_name,omitempty" mapstructure:"service_name" toml:"service_name,omitempty"`
+		CollectorEndpoint         string  `json:"collector_endpoint,omitempty"        mapstructure:"collector_endpoint"          toml:"collector_endpoint,omitempty"`
+		ServiceName               string  `json:"service_name,omitempty"              mapstructure:"service_name"                toml:"service_name,omitempty"`
 		SpanCollectionProbability float64 `json:"spanCollectionProbability,omitempty" mapstructure:"span_collection_probability" toml:"span_collection_probability,omitempty"`
 	}
 )

@@ -13,7 +13,7 @@ type Config struct {
 	_ struct{}
 
 	Storage objectstorage.Config `json:"storageConfig" mapstructure:"storage_config" toml:"storage_config,omitempty"`
-	Debug   bool                 `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
+	Debug   bool                 `json:"debug"         mapstructure:"debug"          toml:"debug,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

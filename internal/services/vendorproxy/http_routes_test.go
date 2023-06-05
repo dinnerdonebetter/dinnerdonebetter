@@ -30,7 +30,7 @@ func TestValidInstrumentsService_FeatureFlagHandler(T *testing.T) {
 		helper.service.featureFlagURLFetcher = func(req *http.Request) string { return exampleFlagName }
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodGet, "https://whatever.whocares.gov", bytes.NewBuffer([]byte("")))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodGet, "https://whatever.whocares.gov", http.NoBody)
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -67,7 +67,7 @@ func TestValidInstrumentsService_FeatureFlagHandler(T *testing.T) {
 		helper.service.featureFlagURLFetcher = func(req *http.Request) string { return exampleFlagName }
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodGet, "https://whatever.whocares.gov", bytes.NewBuffer([]byte("")))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodGet, "https://whatever.whocares.gov", http.NoBody)
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 

@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWebhooksService_CreateHandler(T *testing.T) {
+func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -56,7 +56,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
@@ -77,7 +77,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -104,7 +104,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, encoderDecoder)
@@ -124,7 +124,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
 
@@ -150,7 +150,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		).Return((*types.Webhook)(nil), errors.New("blah"))
 		helper.service.webhookDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
@@ -186,14 +186,14 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
-func TestWebhooksService_ListHandler(T *testing.T) {
+func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -221,7 +221,7 @@ func TestWebhooksService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
@@ -233,7 +233,7 @@ func TestWebhooksService_ListHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListWebhooksHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -261,7 +261,7 @@ func TestWebhooksService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
@@ -289,14 +289,14 @@ func TestWebhooksService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
 	})
 }
 
-func TestWebhooksService_ReadHandler(T *testing.T) {
+func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -322,7 +322,7 @@ func TestWebhooksService_ReadHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
@@ -334,7 +334,7 @@ func TestWebhooksService_ReadHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -361,7 +361,7 @@ func TestWebhooksService_ReadHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
@@ -389,14 +389,14 @@ func TestWebhooksService_ReadHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
 	})
 }
 
-func TestWebhooksService_ArchiveHandler(T *testing.T) {
+func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -428,7 +428,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
@@ -440,7 +440,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -467,7 +467,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -495,7 +495,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
@@ -522,7 +522,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.webhookDataManager = dataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
@@ -557,7 +557,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)

@@ -18,11 +18,11 @@ type (
 		_ struct{}
 
 		ConnectionDetails database.ConnectionDetails `json:"connectionDetails" mapstructure:"connection_details" toml:"connection_details,omitempty"`
-		Debug             bool                       `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
-		LogQueries        bool                       `json:"logQueries" mapstructure:"log_queries" toml:"log_queries,omitempty"`
-		RunMigrations     bool                       `json:"runMigrations" mapstructure:"run_migrations" toml:"run_migrations,omitempty"`
-		MaxPingAttempts   uint8                      `json:"maxPingAttempts" mapstructure:"max_ping_attempts" toml:"max_ping_attempts,omitempty"`
-		PingWaitPeriod    time.Duration              `json:"pingWaitPeriod" mapstructure:"ping_wait_period" toml:"ping_wait_period,omitempty"`
+		Debug             bool                       `json:"debug"             mapstructure:"debug"              toml:"debug,omitempty"`
+		LogQueries        bool                       `json:"logQueries"        mapstructure:"log_queries"        toml:"log_queries,omitempty"`
+		RunMigrations     bool                       `json:"runMigrations"     mapstructure:"run_migrations"     toml:"run_migrations,omitempty"`
+		MaxPingAttempts   uint8                      `json:"maxPingAttempts"   mapstructure:"max_ping_attempts"  toml:"max_ping_attempts,omitempty"`
+		PingWaitPeriod    time.Duration              `json:"pingWaitPeriod"    mapstructure:"ping_wait_period"   toml:"ping_wait_period,omitempty"`
 	}
 )
 

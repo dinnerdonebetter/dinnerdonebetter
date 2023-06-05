@@ -11,8 +11,8 @@ type (
 	Config struct {
 		_ struct{}
 
-		ProjectID                 string  `json:"projectID,omitempty" mapstructure:"project_id" toml:"project_id,omitempty"`
-		ServiceName               string  `json:"service_name,omitempty" mapstructure:"service_name" toml:"service_name,omitempty"`
+		ProjectID                 string  `json:"projectID,omitempty"                 mapstructure:"project_id"                  toml:"project_id,omitempty"`
+		ServiceName               string  `json:"service_name,omitempty"              mapstructure:"service_name"                toml:"service_name,omitempty"`
 		SpanCollectionProbability float64 `json:"spanCollectionProbability,omitempty" mapstructure:"span_collection_probability" toml:"span_collection_probability,omitempty"`
 	}
 )

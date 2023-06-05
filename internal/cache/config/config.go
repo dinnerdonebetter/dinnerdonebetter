@@ -22,8 +22,8 @@ const (
 type (
 	// Config is the configuration for the cache.
 	Config struct {
-		Memory   struct{}      `json:"memory" mapstructure:"memory" toml:"memory"`
-		Redis    *redis.Config `json:"redis" mapstructure:"redis" toml:"redis"`
+		Memory   struct{}      `json:"memory"   mapstructure:"memory"   toml:"memory"`
+		Redis    *redis.Config `json:"redis"    mapstructure:"redis"    toml:"redis"`
 		Provider string        `json:"provider" mapstructure:"provider" toml:"provider"`
 	}
 )

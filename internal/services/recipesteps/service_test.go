@@ -51,9 +51,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
@@ -93,9 +92,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},

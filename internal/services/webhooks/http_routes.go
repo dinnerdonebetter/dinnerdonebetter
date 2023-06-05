@@ -18,8 +18,12 @@ const (
 	WebhookIDURIParamKey = "webhookID"
 )
 
-// CreateHandler is our webhook creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+var (
+	_ types.WebhookDataService = (*service)(nil)
+)
+
+// CreateWebhookHandler is our webhook creation route.
+func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -77,8 +81,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, webhook, http.StatusCreated)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListWebhooksHandler is our list route.
+func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -115,8 +119,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, webhooks)
 }
 
-// ReadHandler returns a GET handler that returns an webhook.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadWebhookHandler returns a GET handler that returns an webhook.
+func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -158,8 +162,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, webhook)
 }
 
-// ArchiveHandler returns a handler that archives an webhook.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveWebhookHandler returns a handler that archives an webhook.
+func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

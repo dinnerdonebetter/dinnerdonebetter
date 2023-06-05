@@ -23,9 +23,9 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Segment     *segment.Config     `json:"segment" mapstructure:"segment" toml:"segment,omitempty"`
+		Segment     *segment.Config     `json:"segment"     mapstructure:"segment"     toml:"segment,omitempty"`
 		Rudderstack *rudderstack.Config `json:"rudderstack" mapstructure:"rudderstack" toml:"rudderstack,omitempty"`
-		Provider    string              `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
+		Provider    string              `json:"provider"    mapstructure:"provider"    toml:"provider,omitempty"`
 	}
 )
 

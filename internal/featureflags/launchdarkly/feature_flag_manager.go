@@ -25,7 +25,7 @@ var (
 
 type (
 	Config struct {
-		SDKKey      string        `json:"sdkKey" mapstructure:"sdk_key" toml:"sdk_key"`
+		SDKKey      string        `json:"sdkKey"      mapstructure:"sdk_key"      toml:"sdk_key"`
 		InitTimeout time.Duration `json:"initTimeout" mapstructure:"init_timeout" toml:"init_timeout"`
 	}
 

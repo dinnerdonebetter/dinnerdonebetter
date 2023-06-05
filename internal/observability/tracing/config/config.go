@@ -25,8 +25,8 @@ type (
 		_ struct{}
 
 		CloudTrace *cloudtrace.Config `json:"cloudTrace,omitempty" mapstructure:"cloud_trace" toml:"cloud_trace,omitempty"`
-		Jaeger     *jaeger.Config     `json:"jaeger,omitempty" mapstructure:"jaeger" toml:"jaeger,omitempty"`
-		Provider   string             `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
+		Jaeger     *jaeger.Config     `json:"jaeger,omitempty"     mapstructure:"jaeger"      toml:"jaeger,omitempty"`
+		Provider   string             `json:"provider,omitempty"   mapstructure:"provider"    toml:"provider,omitempty"`
 	}
 )
 
