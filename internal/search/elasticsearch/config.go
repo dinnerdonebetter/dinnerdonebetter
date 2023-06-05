@@ -8,10 +8,10 @@ import (
 )
 
 type Config struct {
-	Address               string        `json:"address"               mapstructure:"address"                 toml:"address,omitempty"`
-	Username              string        `json:"username"              mapstructure:"username"                toml:"username,omitempty"`
-	Password              string        `json:"password"              mapstructure:"password"                toml:"password,omitempty"`
-	IndexOperationTimeout time.Duration `json:"indexOperationTimeout" mapstructure:"index_operation_timeout" toml:"index_operation_timeout,omitempty"`
+	Address               string        `json:"address"               toml:"address,omitempty"`
+	Username              string        `json:"username"              toml:"username,omitempty"`
+	Password              string        `json:"password"              toml:"password,omitempty"`
+	IndexOperationTimeout time.Duration `json:"indexOperationTimeout" toml:"index_operation_timeout,omitempty"`
 }
 
 func (cfg *Config) provideElasticsearchClient() (*elasticsearch.Client, error) {

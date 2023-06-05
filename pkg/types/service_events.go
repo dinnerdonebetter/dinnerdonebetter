@@ -49,6 +49,8 @@ type (
 		ValidIngredientStateIngredient   *ValidIngredientStateIngredient `json:"validIngredientStateIngredient,omitempty"`
 		ServiceSetting                   *ServiceSetting                 `json:"serviceSetting,omitempty"`
 		ServiceSettingConfiguration      *ServiceSettingConfiguration    `json:"serviceSettingConfiguration,omitempty"`
+		HouseholdInstrumentOwnership     *HouseholdInstrumentOwnership   `json:"householdInstrumentOwnership,omitempty"`
+		MealRating                       *MealRating                     `json:"mealRating,omitempty"`
 		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
 		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
 		UserID                           string                          `json:"userID"`
@@ -75,6 +77,8 @@ type (
 		MealPlanEventID                  string                          `json:"mealPlanEventID,omitempty"`
 		EmailVerificationToken           string                          `json:"emailVerificationToken,omitempty"`
 		UserIngredientPreferenceID       string                          `json:"userIngredientPreferenceID,omitempty"`
+		HouseholdInstrumentOwnershipID   string                          `json:"householdInstrumentOwnershipID,omitempty"`
+		MealRatingID                     string                          `json:"mealRatingID,omitempty"`
 		UserIngredientPreferences        []*UserIngredientPreference     `json:"userIngredientPreference,omitempty"`
 	}
 

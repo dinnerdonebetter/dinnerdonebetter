@@ -27,14 +27,16 @@ import (
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/admin"
 	apiclientsservice "github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationssservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
 	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
-	"github.com/dinnerdonebetter/backend/internal/services/mealplangrocerylistitems"
+	mealplangrocerylistitemsservice "github.com/dinnerdonebetter/backend/internal/services/mealplangrocerylistitems"
 	mealplanoptionsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
-	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
+	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
+	mealratingsservice "github.com/dinnerdonebetter/backend/internal/services/mealratings"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -44,7 +46,7 @@ import (
 	recipestepproductsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
-	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
+	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
@@ -56,7 +58,7 @@ import (
 	validingredientstatesservice "github.com/dinnerdonebetter/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validinstruments"
 	validmeasurementconversionsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementconversions"
-	"github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
+	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	vendorproxyservice "github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
@@ -105,14 +107,14 @@ func Build(
 		mealplaneventsservice.Providers,
 		mealplanoptionsservice.Providers,
 		mealplanoptionvotesservice.Providers,
-		validmeasurementunits.Providers,
+		validmeasurementunitsservice.Providers,
 		validpreparationinstrumentsservice.Providers,
 		validingredientstateingredientsservice.Providers,
 		validingredientmeasurementunitsservice.Providers,
-		mealplantasks.Providers,
+		mealplantasksservice.Providers,
 		graphing.Providers,
 		recipepreptasksservice.Providers,
-		mealplangrocerylistitems.Providers,
+		mealplangrocerylistitemsservice.Providers,
 		validmeasurementconversionsservice.Providers,
 		validingredientstatesservice.Providers,
 		recipestepcompletionconditionsservice.Providers,
@@ -126,8 +128,10 @@ func Build(
 		analyticscfg.Providers,
 		logcfg.Providers,
 		servicesettingsservice.Providers,
-		servicesettingconfigurations.Providers,
+		servicesettingconfigurationsservice.Providers,
 		useringredientpreferencesservice.Providers,
+		householdinstrumentownershipsservice.Providers,
+		mealratingsservice.Providers,
 	)
 
 	return nil, nil

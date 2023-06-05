@@ -14,17 +14,17 @@ const (
 type (
 	// Config allows for the configuration of this package and its subpackages.
 	Config struct {
-		Stripe   *StripeConfig `json:"stripe"   mapstructure:"stripe"   toml:"stripe"`
-		Provider string        `json:"provider" mapstructure:"provider" toml:"provider"`
-		Enabled  bool          `json:"enabled"  mapstructure:"enabled"  toml:"enabled"`
+		Stripe   *StripeConfig `json:"stripe"   toml:"stripe"`
+		Provider string        `json:"provider" toml:"provider"`
+		Enabled  bool          `json:"enabled"  toml:"enabled"`
 	}
 
 	// StripeConfig configures our Stripe interface.
 	StripeConfig struct {
-		APIKey        string `json:"apiKey"        mapstructure:"api_key"        toml:"api_key"`
-		SuccessURL    string `json:"successURL"    mapstructure:"success_url"    toml:"success_url"`
-		CancelURL     string `json:"cancelURL"     mapstructure:"cancel_url"     toml:"cancel_url"`
-		WebhookSecret string `json:"webhookSecret" mapstructure:"webhook_secret" toml:"webhook_secret"`
+		APIKey        string `json:"apiKey"        toml:"api_key"`
+		SuccessURL    string `json:"successURL"    toml:"success_url"`
+		CancelURL     string `json:"cancelURL"     toml:"cancel_url"`
+		WebhookSecret string `json:"webhookSecret" toml:"webhook_secret"`
 	}
 )
 

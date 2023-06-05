@@ -15,9 +15,9 @@ const (
 type Config struct {
 	_ struct{}
 
-	Provider               string `json:"provider,omitempty"            mapstructure:"provider"                  toml:"provider,omitempty"`
-	EnableCORSForLocalhost bool   `json:"enableCORSForLocalhost"        mapstructure:"enable_cors_for_localhost" toml:"enable_cors_for_localhost"`
-	SilenceRouteLogging    bool   `json:"silenceRouteLogging,omitempty" mapstructure:"silence_route_logging"     toml:"silence_route_logging,omitempty"`
+	Provider               string `json:"provider,omitempty"            toml:"provider,omitempty"`
+	EnableCORSForLocalhost bool   `json:"enableCORSForLocalhost"        toml:"enable_cors_for_localhost"`
+	SilenceRouteLogging    bool   `json:"silenceRouteLogging,omitempty" toml:"silence_route_logging,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

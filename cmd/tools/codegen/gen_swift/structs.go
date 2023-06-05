@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 	"text/template"
+
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
 )
 
 const (
@@ -91,10 +93,10 @@ func swiftStruct[T any](x T) (out string, imports []string, err error) {
 			defaultValue = fmt.Sprintf("new %s()", fieldType)
 		}
 
-		if t, ok := customTypeMap[fmt.Sprintf("%s.%s", typ.Name(), fieldName)]; ok {
+		if t, ok := codegen.CustomTypeMap[fmt.Sprintf("%s.%s", typ.Name(), fieldName)]; ok {
 			fieldType = t
 			importedTypes = append(importedTypes, t)
-			defaultValue = defaultValues[t]
+			defaultValue = codegen.DefaultValues[t]
 		}
 
 		line := CodeLine{

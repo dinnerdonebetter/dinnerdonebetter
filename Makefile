@@ -52,6 +52,11 @@ ifndef $(shell command -v wire 2> /dev/null)
 	$(shell GO111MODULE=off go get -u golang.org/x/tools/...)
 endif
 
+ensure_tagalign_installed:
+ifndef $(shell command -v wire 2> /dev/null)
+	$(shell go install github.com/4meepo/tagalign/cmd/tagalign@latest)
+endif
+
 ensure_scc_installed:
 ifndef $(shell command -v scc 2> /dev/null)
 	$(shell GO111MODULE=off go install github.com/boyter/scc@latest)
@@ -97,6 +102,7 @@ format: format_imports format_golang
 .PHONY: format_golang
 format_golang:
 	@until fieldalignment -fix ./...; do true; done > /dev/null
+	@until tagalign -fix -sort -order "json,toml" ./...; do true; done > /dev/null
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports

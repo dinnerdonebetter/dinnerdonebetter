@@ -24,7 +24,7 @@ var _ types.APIClientDataService = (*service)(nil)
 type (
 	// Config manages our body validation.
 	Config struct {
-		DataChangesTopicName string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
+		DataChangesTopicName string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
 		minimumUsernameLength,
 		minimumPasswordLength uint8
 	}

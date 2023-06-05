@@ -66,6 +66,8 @@ type (
 		serviceSettingsService                 types.ServiceSettingDataService
 		serviceSettingConfigurationsService    types.ServiceSettingConfigurationDataService
 		userIngredientPreferencesService       types.UserIngredientPreferenceDataService
+		mealRatingsService                     types.MealRatingDataService
+		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -83,6 +85,11 @@ type (
 func ProvideHTTPServer(
 	ctx context.Context,
 	serverSettings Config,
+	dataManager database.DataManager,
+	logger logging.Logger,
+	encoder encoding.ServerEncoderDecoder,
+	router routing.Router,
+	tracerProvider tracing.TracerProvider,
 	authService types.AuthService,
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
@@ -116,15 +123,12 @@ func ProvideHTTPServer(
 	recipeStepVesselsService types.RecipeStepVesselDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
-	dataManager database.DataManager,
-	logger logging.Logger,
-	encoder encoding.ServerEncoderDecoder,
-	router routing.Router,
-	tracerProvider tracing.TracerProvider,
 	vendorProxyService vendorproxy.Service,
 	serviceSettingDataService types.ServiceSettingDataService,
 	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
 	userIngredientPreferencesService types.UserIngredientPreferenceDataService,
+	mealRatingsService types.MealRatingDataService,
+	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
 ) (*Server, error) {
 	srv := &Server{
 		config: serverSettings,
@@ -176,6 +180,8 @@ func ProvideHTTPServer(
 		serviceSettingsService:                 serviceSettingDataService,
 		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
 		userIngredientPreferencesService:       userIngredientPreferencesService,
+		mealRatingsService:                     mealRatingsService,
+		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
 	}
 
 	srv.setupRouter(ctx, router)

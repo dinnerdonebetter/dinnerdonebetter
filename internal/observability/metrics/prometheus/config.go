@@ -38,7 +38,7 @@ type (
 		_ struct{}
 
 		// RuntimeMetricsCollectionInterval  is the interval we collect runtime statistics at.
-		RuntimeMetricsCollectionInterval time.Duration `json:"runtimeMetricsCollectionInterval,omitempty" mapstructure:"runtime_metrics_collection_interval" toml:"runtime_metrics_collection_interval,omitempty"`
+		RuntimeMetricsCollectionInterval time.Duration `json:"runtimeMetricsCollectionInterval,omitempty" toml:"runtime_metrics_collection_interval,omitempty"`
 	}
 )
 

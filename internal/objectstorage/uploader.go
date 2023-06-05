@@ -44,13 +44,13 @@ type (
 	Config struct {
 		_ struct{}
 
-		FilesystemConfig  *FilesystemConfig `json:"filesystem,omitempty"        mapstructure:"filesystem"          toml:"filesystem,omitempty"`
-		S3Config          *S3Config         `json:"s3,omitempty"                mapstructure:"s3"                  toml:"s3,omitempty"`
-		GCPConfig         *GCPConfig        `json:"gcpConfig,omitempty"         mapstructure:"gcp_config"          toml:"gcp_config,omitempty"`
-		BucketPrefix      string            `json:"bucketPrefix,omitempty"      mapstructure:"bucket_prefix"       toml:"bucket_prefix,omitempty"`
-		BucketName        string            `json:"bucketName,omitempty"        mapstructure:"bucket_name"         toml:"bucket_name,omitempty"`
-		UploadFilenameKey string            `json:"uploadFilenameKey,omitempty" mapstructure:"upload_filename_key" toml:"upload_filename_key,omitempty"`
-		Provider          string            `json:"provider,omitempty"          mapstructure:"provider"            toml:"provider,omitempty"`
+		FilesystemConfig  *FilesystemConfig `json:"filesystem,omitempty"        toml:"filesystem,omitempty"`
+		S3Config          *S3Config         `json:"s3,omitempty"                toml:"s3,omitempty"`
+		GCPConfig         *GCPConfig        `json:"gcpConfig,omitempty"         toml:"gcp_config,omitempty"`
+		BucketPrefix      string            `json:"bucketPrefix,omitempty"      toml:"bucket_prefix,omitempty"`
+		BucketName        string            `json:"bucketName,omitempty"        toml:"bucket_name,omitempty"`
+		UploadFilenameKey string            `json:"uploadFilenameKey,omitempty" toml:"upload_filename_key,omitempty"`
+		Provider          string            `json:"provider,omitempty"          toml:"provider,omitempty"`
 	}
 )
 

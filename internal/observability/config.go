@@ -15,9 +15,9 @@ type (
 	Config struct {
 		_ struct{}
 
-		Logging loggingcfg.Config `json:"logging" mapstructure:"logging" toml:"logging,omitempty"`
-		Metrics metricscfg.Config `json:"metrics" mapstructure:"metrics" toml:"metrics,omitempty"`
-		Tracing tracingcfg.Config `json:"tracing" mapstructure:"tracing" toml:"tracing,omitempty"`
+		Logging loggingcfg.Config `json:"logging" toml:"logging,omitempty"`
+		Metrics metricscfg.Config `json:"metrics" toml:"metrics,omitempty"`
+		Tracing tracingcfg.Config `json:"tracing" toml:"tracing,omitempty"`
 	}
 )
 

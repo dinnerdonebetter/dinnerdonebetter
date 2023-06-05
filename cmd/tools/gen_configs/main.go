@@ -29,6 +29,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
 	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
@@ -37,6 +38,7 @@ import (
 	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
+	mealratingsservice "github.com/dinnerdonebetter/backend/internal/services/mealratings"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -528,6 +530,12 @@ func buildDevConfig() *config2.InstanceConfig {
 			ServiceSettingConfigurations: servicesettingconfigurations.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			MealRatings: mealratingsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -742,6 +750,12 @@ func buildIntegrationTestsConfig() *config2.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ServiceSettingConfigurations: servicesettingconfigurations.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			MealRatings: mealratingsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

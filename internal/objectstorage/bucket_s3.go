@@ -16,7 +16,7 @@ type (
 	S3Config struct {
 		_ struct{}
 
-		BucketName string `json:"bucketName" mapstructure:"bucket_name" toml:"bucket_name,omitempty"`
+		BucketName string `json:"bucketName" toml:"bucket_name,omitempty"`
 	}
 )
 

@@ -47,6 +47,8 @@ var (
 		ProvideServiceSettingConfigurationDataManager,
 		ProvideValidIngredientGroupDataManager,
 		ProvideUserIngredientPreferenceDataManager,
+		ProvideMealRatingDataManager,
+		ProvideHouseholdInstrumentOwnershipDataService,
 	)
 )
 
@@ -237,5 +239,15 @@ func ProvideValidIngredientGroupDataManager(db DataManager) types.ValidIngredien
 
 // ProvideUserIngredientPreferenceDataManager is an arbitrary function for dependency injection's sake.
 func ProvideUserIngredientPreferenceDataManager(db DataManager) types.UserIngredientPreferenceDataManager {
+	return db
+}
+
+// ProvideMealRatingDataManager is an arbitrary function for dependency injection's sake.
+func ProvideMealRatingDataManager(db DataManager) types.MealRatingDataManager {
+	return db
+}
+
+// ProvideHouseholdInstrumentOwnershipDataService is an arbitrary function for dependency injection's sake.
+func ProvideHouseholdInstrumentOwnershipDataService(db DataManager) types.HouseholdInstrumentOwnershipDataManager {
 	return db
 }

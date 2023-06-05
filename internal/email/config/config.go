@@ -27,10 +27,10 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Sendgrid *sendgrid.Config `json:"sendgrid" mapstructure:"sendgrid" toml:"sendgrid,omitempty"`
-		Mailgun  *mailgun.Config  `json:"mailgun"  mapstructure:"mailgun"  toml:"mailgun,omitempty"`
-		Mailjet  *mailjet.Config  `json:"mailjet"  mapstructure:"mailjet"  toml:"mailjet,omitempty"`
-		Provider string           `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
+		Sendgrid *sendgrid.Config `json:"sendgrid" toml:"sendgrid,omitempty"`
+		Mailgun  *mailgun.Config  `json:"mailgun"  toml:"mailgun,omitempty"`
+		Mailjet  *mailjet.Config  `json:"mailjet"  toml:"mailjet,omitempty"`
+		Provider string           `json:"provider" toml:"provider,omitempty"`
 	}
 )
 
