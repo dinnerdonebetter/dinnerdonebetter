@@ -228,3 +228,47 @@ func TestBuilder_BuildArchiveMealPlanRequest(T *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestBuilder_BuildFinalizeMealPlanRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/meal_plans/%s/finalize"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+
+		spec := newRequestSpec(true, http.MethodPost, "", expectedPathFormat, exampleMealPlan.ID)
+
+		actual, err := helper.builder.BuildFinalizeMealPlanRequest(helper.ctx, exampleMealPlan.ID)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid meal plan ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildFinalizeMealPlanRequest(helper.ctx, "")
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+
+		actual, err := helper.builder.BuildFinalizeMealPlanRequest(helper.ctx, exampleMealPlan.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}

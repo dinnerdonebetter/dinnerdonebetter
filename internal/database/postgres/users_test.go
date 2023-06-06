@@ -10,7 +10,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	mockrandom "github.com/dinnerdonebetter/backend/internal/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -50,6 +50,8 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.AccountStatus,
 			user.AccountStatusExplanation,
 			user.Birthday,
+			user.LastAcceptedTOS,
+			user.LastAcceptedPrivacyPolicy,
 			user.CreatedAt,
 			user.LastUpdatedAt,
 			user.ArchivedAt,

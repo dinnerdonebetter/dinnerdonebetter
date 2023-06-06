@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/email"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"

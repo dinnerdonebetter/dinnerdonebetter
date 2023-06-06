@@ -267,13 +267,13 @@ func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, htt
 		return observability.PrepareAndLogError(err, logger, span, "executing request")
 	}
 
-	if err = errorFromResponse(res); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "executing request")
+	if resErr := errorFromResponse(res); resErr != nil {
+		return resErr
 	}
 
 	if out != nil {
 		if err = c.unmarshalBody(ctx, res, out); err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "loading %s %d response from server", res.Request.Method, res.StatusCode)
+			return observability.PrepareAndLogError(err, logger, span, "%s %s %d", res.Request.Method, res.Request.URL.Path, res.StatusCode)
 		}
 	}
 

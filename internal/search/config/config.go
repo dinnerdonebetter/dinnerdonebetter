@@ -24,9 +24,9 @@ const (
 type Config struct {
 	_ struct{}
 
-	Algolia       *algolia.Config       `json:"algolia" mapstructure:"algolia" toml:"algolia,omitempty"`
-	Elasticsearch *elasticsearch.Config `json:"elasticsearch" mapstructure:"elasticsearch" toml:"elasticsearch,omitempty"`
-	Provider      string                `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
+	Algolia       *algolia.Config       `json:"algolia"       toml:"algolia,omitempty"`
+	Elasticsearch *elasticsearch.Config `json:"elasticsearch" toml:"elasticsearch,omitempty"`
+	Provider      string                `json:"provider"      toml:"provider,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

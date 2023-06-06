@@ -81,7 +81,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 }
 
 func (s *TestSuite) TestWebhooks_Reading_Returns404ForNonexistentWebhook() {
-	s.runForEachClientExcept("should fail to read non-existent webhook", func(testClients *testClientWrapper) func() {
+	s.runForEachClientExcept("should error when reading non-existent webhook", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -163,7 +163,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 }
 
 func (s *TestSuite) TestWebhooks_Archiving_Returns404ForNonexistentWebhook() {
-	s.runForEachClientExcept("should fail to archive a non-existent webhook", func(testClients *testClientWrapper) func() {
+	s.runForEachClientExcept("should error when archiving a non-existent webhook", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

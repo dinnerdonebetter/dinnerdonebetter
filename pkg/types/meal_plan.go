@@ -122,6 +122,7 @@ type (
 		ReadHandler(http.ResponseWriter, *http.Request)
 		UpdateHandler(http.ResponseWriter, *http.Request)
 		ArchiveHandler(http.ResponseWriter, *http.Request)
+		FinalizeHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

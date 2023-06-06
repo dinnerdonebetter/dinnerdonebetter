@@ -52,7 +52,7 @@ func Test_cookieRoundtripper_RoundTrip(T *testing.T) {
 		mrt.On("RoundTrip", mock.IsType(&http.Request{})).Return(exampleResponse, nil)
 		rt.base = mrt
 
-		req := httptest.NewRequest(http.MethodPost, c.URL().String(), nil)
+		req := httptest.NewRequest(http.MethodPost, c.URL().String(), http.NoBody)
 
 		res, err := rt.RoundTrip(req)
 		assert.NoError(t, err)
@@ -75,7 +75,7 @@ func Test_cookieRoundtripper_RoundTrip(T *testing.T) {
 		mrt.On("RoundTrip", mock.IsType(&http.Request{})).Return((*http.Response)(nil), errors.New("blah"))
 		rt.base = mrt
 
-		req := httptest.NewRequest(http.MethodPost, c.URL().String(), nil)
+		req := httptest.NewRequest(http.MethodPost, c.URL().String(), http.NoBody)
 
 		res, err := rt.RoundTrip(req)
 		assert.Error(t, err)

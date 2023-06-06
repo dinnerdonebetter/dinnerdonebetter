@@ -37,8 +37,8 @@ type (
 
 	// Config configures Mailjet to send email.
 	Config struct {
-		APIKey    string `json:"publicKey" mapstructure:"public_key" toml:"public_key,omitempty"`
-		SecretKey string `json:"secretKey" mapstructure:"secret_key" toml:"secret_key,omitempty"`
+		APIKey    string `json:"publicKey" toml:"public_key,omitempty"`
+		SecretKey string `json:"secretKey" toml:"secret_key,omitempty"`
 	}
 
 	// Emailer uses Mailjet to send email.

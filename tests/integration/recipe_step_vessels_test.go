@@ -187,7 +187,12 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 
 			t.Log("creating recipe")
 			expected := &types.Recipe{
-				Name: t.Name(),
+				Name:                     t.Name(),
+				Slug:                     "whatever-who-cares-yadda-yadda-vessels",
+				YieldsComponentType:      types.MealComponentTypesMain,
+				PortionName:              t.Name(),
+				PluralPortionName:        t.Name(),
+				MinimumEstimatedPortions: 1,
 				Steps: []*types.RecipeStep{
 					{
 						Products: []*types.RecipeStepProduct{

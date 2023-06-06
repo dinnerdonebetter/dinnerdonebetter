@@ -340,6 +340,24 @@ const (
 	UpdateUserIngredientPreferencesPermission Permission = "update.user_ingredient_preferences"
 	// ArchiveUserIngredientPreferencesPermission is a household user permission.
 	ArchiveUserIngredientPreferencesPermission Permission = "archive.user_ingredient_preferences"
+
+	// CreateHouseholdInstrumentOwnershipsPermission is a household user permission.
+	CreateHouseholdInstrumentOwnershipsPermission Permission = "create.household_instrument_ownerships"
+	// ReadHouseholdInstrumentOwnershipsPermission is a household user permission.
+	ReadHouseholdInstrumentOwnershipsPermission Permission = "read.household_instrument_ownerships"
+	// UpdateHouseholdInstrumentOwnershipsPermission is a household user permission.
+	UpdateHouseholdInstrumentOwnershipsPermission Permission = "update.household_instrument_ownerships"
+	// ArchiveHouseholdInstrumentOwnershipsPermission is a household user permission.
+	ArchiveHouseholdInstrumentOwnershipsPermission Permission = "archive.household_instrument_ownerships"
+
+	// CreateRecipeRatingsPermission is a household user permission.
+	CreateRecipeRatingsPermission Permission = "create.recipe_ratings"
+	// ReadRecipeRatingsPermission is a household user permission.
+	ReadRecipeRatingsPermission Permission = "read.recipe_ratings"
+	// UpdateRecipeRatingsPermission is a household user permission.
+	UpdateRecipeRatingsPermission Permission = "update.recipe_ratings"
+	// ArchiveRecipeRatingsPermission is a household user permission.
+	ArchiveRecipeRatingsPermission Permission = "archive.recipe_ratings"
 )
 
 // ID implements the gorbac Permission interface.
@@ -438,6 +456,10 @@ var (
 		CreateMealPlanOptionsPermission.ID():  CreateMealPlanOptionsPermission,
 		UpdateMealPlanOptionsPermission.ID():  UpdateMealPlanOptionsPermission,
 		ArchiveMealPlanOptionsPermission.ID(): ArchiveMealPlanOptionsPermission,
+
+		CreateHouseholdInstrumentOwnershipsPermission.ID():  CreateHouseholdInstrumentOwnershipsPermission,
+		UpdateHouseholdInstrumentOwnershipsPermission.ID():  UpdateHouseholdInstrumentOwnershipsPermission,
+		ArchiveHouseholdInstrumentOwnershipsPermission.ID(): ArchiveHouseholdInstrumentOwnershipsPermission,
 	}
 
 	// household member permissions.
@@ -563,6 +585,13 @@ var (
 		ReadUserIngredientPreferencesPermission.ID():    ReadUserIngredientPreferencesPermission,
 		UpdateUserIngredientPreferencesPermission.ID():  UpdateUserIngredientPreferencesPermission,
 		ArchiveUserIngredientPreferencesPermission.ID(): ArchiveUserIngredientPreferencesPermission,
+
+		ReadHouseholdInstrumentOwnershipsPermission.ID(): ReadHouseholdInstrumentOwnershipsPermission,
+
+		CreateRecipeRatingsPermission.ID():  CreateRecipeRatingsPermission,
+		ReadRecipeRatingsPermission.ID():    ReadRecipeRatingsPermission,
+		UpdateRecipeRatingsPermission.ID():  UpdateRecipeRatingsPermission,
+		ArchiveRecipeRatingsPermission.ID(): ArchiveRecipeRatingsPermission,
 	}
 )
 

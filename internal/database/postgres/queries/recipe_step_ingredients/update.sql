@@ -12,6 +12,7 @@ UPDATE recipe_step_ingredients SET
 	to_taste = $11,
 	product_percentage_to_use = $12,
     vessel_index = $13,
+    recipe_step_product_recipe_id = $14,
 	last_updated_at = NOW()
-WHERE archived_at IS NULL AND belongs_to_recipe_step = $14
-	AND id = $15;
+WHERE archived_at IS NULL AND belongs_to_recipe_step = $15
+	AND id = $16;

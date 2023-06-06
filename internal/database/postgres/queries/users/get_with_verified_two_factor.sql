@@ -15,6 +15,8 @@ SELECT
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.last_accepted_terms_of_service,
+    users.last_accepted_privacy_policy,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at

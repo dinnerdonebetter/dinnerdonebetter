@@ -20,7 +20,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 		events = append(events, event)
 	}
 
-	now := time.Now().Add(30 * time.Minute)
+	now := time.Now().Add(30 * time.Minute).Round(time.Second)
 	return &types.MealPlan{
 		ID:                     mealPlanID,
 		Notes:                  buildUniqueString(),

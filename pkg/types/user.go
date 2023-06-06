@@ -40,6 +40,8 @@ type (
 		CreatedAt                 time.Time  `json:"createdAt"`
 		PasswordLastChangedAt     *time.Time `json:"passwordLastChangedAt"`
 		LastUpdatedAt             *time.Time `json:"lastUpdatedAt"`
+		LastAcceptedTOS           *time.Time `json:"lastAcceptedTOS"`
+		LastAcceptedPrivacyPolicy *time.Time `json:"lastAcceptedPrivacyPolicy"`
 		TwoFactorSecretVerifiedAt *time.Time `json:"twoFactorSecretVerifiedAt"`
 		AvatarSrc                 *string    `json:"avatar"`
 		Birthday                  *time.Time `json:"birthday"`
@@ -62,15 +64,17 @@ type (
 	UserRegistrationInput struct {
 		_ struct{}
 
-		Birthday        *time.Time `json:"birthday,omitempty"`
-		Password        string     `json:"password"`
-		EmailAddress    string     `json:"emailAddress"`
-		InvitationToken string     `json:"invitationToken,omitempty"`
-		InvitationID    string     `json:"invitationID,omitempty"`
-		Username        string     `json:"username"`
-		FirstName       string     `json:"firstName"`
-		LastName        string     `json:"lastName"`
-		HouseholdName   string     `json:"householdName"`
+		Birthday              *time.Time `json:"birthday,omitempty"`
+		Password              string     `json:"password"`
+		EmailAddress          string     `json:"emailAddress"`
+		InvitationToken       string     `json:"invitationToken,omitempty"`
+		InvitationID          string     `json:"invitationID,omitempty"`
+		Username              string     `json:"username"`
+		FirstName             string     `json:"firstName"`
+		LastName              string     `json:"lastName"`
+		HouseholdName         string     `json:"householdName"`
+		AcceptedTOS           bool       `json:"acceptedTOS"`
+		AcceptedPrivacyPolicy bool       `json:"acceptedPrivacyPolicy"`
 	}
 
 	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.
@@ -89,6 +93,8 @@ type (
 		HouseholdName          string
 		FirstName              string
 		LastName               string
+		AcceptedTOS            bool
+		AcceptedPrivacyPolicy  bool
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
@@ -272,19 +278,6 @@ func (u *User) Update(input *User) {
 
 	if input.Birthday != nil && input.Birthday != u.Birthday {
 		u.Birthday = input.Birthday
-	}
-}
-
-// IsValidHouseholdStatus returns whether the provided string is a valid userAccountStatus.
-func IsValidHouseholdStatus(s string) bool {
-	switch s {
-	case string(GoodStandingUserAccountStatus),
-		string(UnverifiedHouseholdStatus),
-		string(BannedUserAccountStatus),
-		string(TerminatedUserAccountStatus):
-		return true
-	default:
-		return false
 	}
 }
 

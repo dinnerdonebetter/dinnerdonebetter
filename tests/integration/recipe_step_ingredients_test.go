@@ -20,6 +20,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	assert.Equal(t, expected.Ingredient, actual.Ingredient, "expected Ingredient for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Ingredient, actual.Ingredient)
 	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)
 	assert.Equal(t, expected.VesselIndex, actual.VesselIndex, "expected VesselIndex for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.VesselIndex, actual.VesselIndex)
+	assert.Equal(t, expected.RecipeStepProductRecipeID, actual.RecipeStepProductRecipeID, "expected RecipeStepProductRecipeID for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.RecipeStepProductRecipeID, actual.RecipeStepProductRecipeID)
 	assert.Equal(t, expected.ProductPercentageToUse, actual.ProductPercentageToUse, "expected ProductPercentageToUse for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.ProductPercentageToUse, actual.ProductPercentageToUse)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)

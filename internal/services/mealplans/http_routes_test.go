@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -828,6 +828,47 @@ func TestMealPlansService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+	})
+}
+
+func TestMealPlansService_FinalizeHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		dbManager := database.NewMockDatabase()
+		dbManager.MealPlanDataManager.On(
+			"GetMealPlan",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
+		).Return(helper.exampleMealPlan, nil)
+
+		dbManager.MealPlanDataManager.On(
+			"AttemptToFinalizeMealPlan",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
+		).Return(true, nil)
+		helper.service.mealPlanDataManager = dbManager
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.FinalizeHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})

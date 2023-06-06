@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 	"text/template"
+
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
 )
 
 func typescriptInterface[T any](x T) (out string, imports []string, err error) {
@@ -52,7 +54,7 @@ func typescriptInterface[T any](x T) (out string, imports []string, err error) {
 			fieldType = "number"
 		}
 
-		if t, ok := customTypeMap[fmt.Sprintf("%s.%s", typ.Name(), fieldName)]; ok {
+		if t, ok := codegen.CustomTypeMap[fmt.Sprintf("%s.%s", typ.Name(), fieldName)]; ok {
 			fieldType = t
 			importedTypes = append(importedTypes, t)
 		}

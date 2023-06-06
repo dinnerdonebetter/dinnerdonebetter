@@ -27,6 +27,8 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
 	assert.Equal(t, expected.MinimumEstimatedPortions, actual.MinimumEstimatedPortions, "expected MinimumEstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.MinimumEstimatedPortions, actual.MinimumEstimatedPortions)
+	assert.Equal(t, expected.MaximumEstimatedPortions, actual.MaximumEstimatedPortions, "expected MaximumEstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.MaximumEstimatedPortions, actual.MaximumEstimatedPortions)
+	assert.Equal(t, expected.YieldsComponentType, actual.YieldsComponentType, "expected YieldsComponentType for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsComponentType, actual.YieldsComponentType)
 	assert.Equal(t, expected.PortionName, actual.PortionName, "expected PortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PortionName, actual.PortionName)
 	assert.Equal(t, expected.PluralPortionName, actual.PluralPortionName, "expected PluralPortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PluralPortionName, actual.PluralPortionName)
 	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
@@ -220,8 +222,12 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 			t.Log("creating recipe")
 			expected := &types.Recipe{
-				Name:        "sopa de frijol",
-				Description: "",
+				Name:                     "sopa de frijol",
+				Slug:                     "sopa-de-frijol-whatever-who-cares",
+				YieldsComponentType:      types.MealComponentTypesMain,
+				PortionName:              t.Name(),
+				PluralPortionName:        t.Name(),
+				MinimumEstimatedPortions: 1,
 				Steps: []*types.RecipeStep{
 					{
 						Products: []*types.RecipeStepProduct{
@@ -294,8 +300,13 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			}
 
 			expectedInput := &types.RecipeCreationRequestInput{
-				Name:        expected.Name,
-				Description: expected.Description,
+				Name:                     expected.Name,
+				Description:              expected.Description,
+				Slug:                     expected.Slug,
+				YieldsComponentType:      expected.YieldsComponentType,
+				PortionName:              expected.PortionName,
+				PluralPortionName:        expected.PluralPortionName,
+				MinimumEstimatedPortions: expected.MinimumEstimatedPortions,
 				Steps: []*types.RecipeStepCreationRequestInput{
 					{
 						MinimumTemperatureInCelsius: expected.Steps[0].MinimumTemperatureInCelsius,
@@ -649,8 +660,12 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 
 			t.Log("creating recipe")
 			expected := &types.Recipe{
-				Name:        "sopa de frijol",
-				Description: "",
+				Name:                     "sopa de frijol",
+				Slug:                     "whatever-who-cares-sopa-de-frijol",
+				YieldsComponentType:      types.MealComponentTypesMain,
+				PortionName:              t.Name(),
+				PluralPortionName:        t.Name(),
+				MinimumEstimatedPortions: 1,
 				Steps: []*types.RecipeStep{
 					{
 						MinimumTemperatureInCelsius: nil,
@@ -714,8 +729,12 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			}
 
 			expectedInput := &types.RecipeCreationRequestInput{
-				Name:        "sopa de frijol",
-				Description: "",
+				Name:                     expected.Name,
+				Slug:                     expected.Slug,
+				YieldsComponentType:      expected.YieldsComponentType,
+				PortionName:              expected.PortionName,
+				PluralPortionName:        expected.PluralPortionName,
+				MinimumEstimatedPortions: expected.MinimumEstimatedPortions,
 				Steps: []*types.RecipeStepCreationRequestInput{
 					{
 						MinimumTemperatureInCelsius: nil,

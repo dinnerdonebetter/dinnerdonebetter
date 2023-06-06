@@ -12,10 +12,10 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.17.2
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
-LINTER_IMAGE                  := golangci/golangci-lint:v1.52.2
+LINTER_IMAGE                  := golangci/golangci-lint:v1.53.1
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
 CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
-WIRE_TARGETS                  := server/http/build server/rpc/build
+WIRE_TARGETS                  := server/http/build
 
 ## non-PHONY folders/files
 
@@ -50,6 +50,11 @@ endif
 ensure_fieldalignment_installed:
 ifndef $(shell command -v wire 2> /dev/null)
 	$(shell GO111MODULE=off go get -u golang.org/x/tools/...)
+endif
+
+ensure_tagalign_installed:
+ifndef $(shell command -v wire 2> /dev/null)
+	$(shell go install github.com/4meepo/tagalign/cmd/tagalign@latest)
 endif
 
 ensure_scc_installed:
@@ -96,7 +101,8 @@ format: format_imports format_golang
 
 .PHONY: format_golang
 format_golang:
-	fieldalignment -fix ./...
+	@until fieldalignment -fix ./...; do true; done > /dev/null
+	@until tagalign -fix -sort -order "json,toml" ./...; do true; done > /dev/null
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
@@ -185,6 +191,7 @@ clean_ts:
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
 	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
+	(cd ../frontend && make format)
 
 clean_swift:
 	rm -rf $(ARTIFACTS_DIR)/swift

@@ -95,9 +95,5 @@ func (w *MealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 		}
 	}
 
-	if errorResult == nil {
-		return nil
-	}
-
-	return errorResult
+	return errorResult.ErrorOrNil()
 }

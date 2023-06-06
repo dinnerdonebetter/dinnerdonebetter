@@ -26,8 +26,8 @@ type (
 	Config struct {
 		_ struct{}
 
-		Prometheus *prometheus.Config `json:"prometheus,omitempty" mapstructure:"prometheus" toml:"prometheus,omitempty"`
-		Provider   string             `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
+		Prometheus *prometheus.Config `json:"prometheus,omitempty" toml:"prometheus,omitempty"`
+		Provider   string             `json:"provider,omitempty"   toml:"provider,omitempty"`
 	}
 )
 

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
@@ -46,9 +46,8 @@ func TestProvideRecipesService(T *testing.T) {
 		cfg := &Config{
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
@@ -87,9 +86,8 @@ func TestProvideRecipesService(T *testing.T) {
 		cfg := &Config{
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},

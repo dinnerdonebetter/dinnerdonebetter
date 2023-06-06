@@ -33,8 +33,8 @@ var (
 type (
 	// Config configures Mailgun to send email.
 	Config struct {
-		PrivateAPIKey string `json:"privateAPIKey" mapstructure:"private_api_key" toml:"private_api_key,omitempty"`
-		Domain        string `json:"domain" mapstructure:"domain" toml:"domain,omitempty"`
+		PrivateAPIKey string `json:"privateAPIKey" toml:"private_api_key,omitempty"`
+		Domain        string `json:"domain"        toml:"domain,omitempty"`
 	}
 
 	// Emailer uses Mailgun to send email.

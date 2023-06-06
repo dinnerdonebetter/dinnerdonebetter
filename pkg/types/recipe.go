@@ -29,24 +29,24 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_ struct{}
-
+		_                        struct{}
 		CreatedAt                time.Time         `json:"createdAt"`
 		InspiredByRecipeID       *string           `json:"inspiredByRecipeID"`
 		LastUpdatedAt            *time.Time        `json:"lastUpdatedAt"`
 		ArchivedAt               *time.Time        `json:"archivedAt"`
 		MaximumEstimatedPortions *float32          `json:"maximumEstimatedPortions"`
-		PluralPortionName        string            `json:"pluralPortionName"`
-		Description              string            `json:"description"`
+		ID                       string            `json:"id"`
+		Slug                     string            `json:"slug"`
 		Name                     string            `json:"name"`
 		PortionName              string            `json:"portionName"`
-		ID                       string            `json:"id"`
-		CreatedByUser            string            `json:"belongsToUser"`
+		PluralPortionName        string            `json:"pluralPortionName"`
+		CreatedByUser            string            `json:"createdByUser"`
 		Source                   string            `json:"source"`
-		Slug                     string            `json:"slug"`
-		Media                    []*RecipeMedia    `json:"media"`
+		Description              string            `json:"description"`
+		YieldsComponentType      string            `json:"yieldsComponentType"`
 		PrepTasks                []*RecipePrepTask `json:"prepTasks"`
 		Steps                    []*RecipeStep     `json:"steps"`
+		Media                    []*RecipeMedia    `json:"media"`
 		MinimumEstimatedPortions float32           `json:"minimumEstimatedPortions"`
 		SealOfApproval           bool              `json:"sealOfApproval"`
 		EligibleForMeals         bool              `json:"eligibleForMeals"`
@@ -54,16 +54,16 @@ type (
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
-		_ struct{}
-
+		_                        struct{}
 		InspiredByRecipeID       *string                                           `json:"inspiredByRecipeID"`
 		MaximumEstimatedPortions *float32                                          `json:"maximumEstimatedPortions"`
-		Slug                     string                                            `json:"slug"`
+		PortionName              string                                            `json:"portionName"`
 		Source                   string                                            `json:"source"`
 		Description              string                                            `json:"description"`
 		PluralPortionName        string                                            `json:"pluralPortionName"`
 		Name                     string                                            `json:"name"`
-		PortionName              string                                            `json:"portionName"`
+		Slug                     string                                            `json:"slug"`
+		YieldsComponentType      string                                            `json:"yieldsComponentType"`
 		PrepTasks                []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks"`
 		Steps                    []*RecipeStepCreationRequestInput                 `json:"steps"`
 		MinimumEstimatedPortions float32                                           `json:"minimumEstimatedPortions"`
@@ -74,20 +74,20 @@ type (
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
-		_ struct{}
-
+		_                        struct{}
 		InspiredByRecipeID       *string
 		MaximumEstimatedPortions *float32
-		PluralPortionName        string
-		ID                       string
+		PortionName              string
+		Description              string
 		Name                     string
 		Slug                     string
 		Source                   string
-		PortionName              string
+		PluralPortionName        string
 		CreatedByUser            string
-		Description              string
-		PrepTasks                []*RecipePrepTaskDatabaseCreationInput
+		ID                       string
+		YieldsComponentType      string
 		Steps                    []*RecipeStepDatabaseCreationInput
+		PrepTasks                []*RecipePrepTaskDatabaseCreationInput
 		MinimumEstimatedPortions float32
 		AlsoCreateMeal           bool
 		SealOfApproval           bool
@@ -103,13 +103,13 @@ type (
 		Source                   *string  `json:"source,omitempty"`
 		Description              *string  `json:"description,omitempty"`
 		InspiredByRecipeID       *string  `json:"inspiredByRecipeID,omitempty"`
-		CreatedByUser            *string  `json:"-"`
 		SealOfApproval           *bool    `json:"sealOfApproval,omitempty"`
 		MinimumEstimatedPortions *float32 `json:"minimumEstimatedPortions,omitempty"`
 		MaximumEstimatedPortions *float32 `json:"maximumEstimatedPortions,omitempty"`
 		PortionName              *string  `json:"portionName"`
 		PluralPortionName        *string  `json:"pluralPortionName"`
 		EligibleForMeals         *bool    `json:"eligibleForMeals"`
+		YieldsComponentType      *string  `json:"yieldsComponentType"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -209,6 +209,10 @@ func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
 	if input.EligibleForMeals != nil && *input.EligibleForMeals != x.EligibleForMeals {
 		x.EligibleForMeals = *input.EligibleForMeals
 	}
+
+	if input.YieldsComponentType != nil && *input.YieldsComponentType != x.YieldsComponentType {
+		x.YieldsComponentType = *input.YieldsComponentType
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeCreationRequestInput)(nil)
@@ -231,6 +235,7 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 			}
 		}
 	}
+
 	if errResult != nil {
 		return errResult
 	}
@@ -239,7 +244,25 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.MinimumEstimatedPortions, validation.Required),
+		validation.Field(&x.PluralPortionName, validation.Required),
+		validation.Field(&x.PortionName, validation.Required),
+		validation.Field(&x.Slug, validation.Required),
 		validation.Field(&x.Steps, validation.Required),
+		validation.Field(&x.YieldsComponentType,
+			validation.Required,
+			validation.In(
+				MealComponentTypesUnspecified,
+				MealComponentTypesAmuseBouche,
+				MealComponentTypesAppetizer,
+				MealComponentTypesSoup,
+				MealComponentTypesMain,
+				MealComponentTypesSalad,
+				MealComponentTypesBeverage,
+				MealComponentTypesSide,
+				MealComponentTypesDessert,
+			),
+		),
 	)
 }
 

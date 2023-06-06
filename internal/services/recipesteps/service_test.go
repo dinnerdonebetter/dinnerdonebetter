@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -51,9 +51,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
@@ -93,9 +92,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},

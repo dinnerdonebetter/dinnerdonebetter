@@ -93,11 +93,7 @@ func (w *MealPlanTaskCreatorWorker) CreateMealPlanTasksForFinalizedMealPlans(ctx
 		}
 	}
 
-	if result == nil {
-		return nil
-	}
-
-	return result
+	return result.ErrorOrNil()
 }
 
 // DetermineCreatableMealPlanTasks determines which meal plan tasks are creatable for a recipe.

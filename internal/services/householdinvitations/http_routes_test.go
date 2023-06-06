@@ -10,11 +10,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	mockrandom "github.com/dinnerdonebetter/backend/internal/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"

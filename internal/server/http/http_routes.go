@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	apiclientsservice "github.com/dinnerdonebetter/backend/internal/services/apiclients"
+	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
 	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
@@ -19,6 +20,7 @@ import (
 	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
+	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	recipestepcompletionconditionsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
@@ -166,6 +168,30 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 					})
 				})
 			})
+
+			// HouseholdInstrumentOwnerships
+			householdInstrumentOwnershipsRouteWithPrefix := "/instruments"
+			householdInstrumentOwnershipIDRouteParam := buildURLVarChunk(householdinstrumentownershipsservice.HouseholdInstrumentOwnershipIDURIParamKey, "")
+			householdsRouter.Route(householdInstrumentOwnershipsRouteWithPrefix, func(householdInstrumentOwnershipsRouter routing.Router) {
+				householdInstrumentOwnershipsRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateHouseholdInstrumentOwnershipsPermission)).
+					Post(root, s.householdInstrumentOwnershipService.CreateHandler)
+				householdInstrumentOwnershipsRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadHouseholdInstrumentOwnershipsPermission)).
+					Get(root, s.householdInstrumentOwnershipService.ListHandler)
+
+				householdInstrumentOwnershipsRouter.Route(householdInstrumentOwnershipIDRouteParam, func(singleHouseholdInstrumentOwnershipRouter routing.Router) {
+					singleHouseholdInstrumentOwnershipRouter.
+						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadHouseholdInstrumentOwnershipsPermission)).
+						Get(root, s.householdInstrumentOwnershipService.ReadHandler)
+					singleHouseholdInstrumentOwnershipRouter.
+						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateHouseholdInstrumentOwnershipsPermission)).
+						Put(root, s.householdInstrumentOwnershipService.UpdateHandler)
+					singleHouseholdInstrumentOwnershipRouter.
+						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveHouseholdInstrumentOwnershipsPermission)).
+						Delete(root, s.householdInstrumentOwnershipService.ArchiveHandler)
+				})
+			})
 		})
 
 		v1Router.Route("/household_invitations", func(householdInvitationsRouter routing.Router) {
@@ -206,17 +232,17 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 			singleWebhookRoute := buildURLVarChunk(webhooksservice.WebhookIDURIParamKey, "")
 			webhookRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadWebhooksPermission)).
-				Get(root, s.webhooksService.ListHandler)
+				Get(root, s.webhooksService.ListWebhooksHandler)
 			webhookRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateWebhooksPermission)).
-				Post(root, s.webhooksService.CreateHandler)
+				Post(root, s.webhooksService.CreateWebhookHandler)
 			webhookRouter.Route(singleWebhookRoute, func(singleWebhookRouter routing.Router) {
 				singleWebhookRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadWebhooksPermission)).
-					Get(root, s.webhooksService.ReadHandler)
+					Get(root, s.webhooksService.ReadWebhookHandler)
 				singleWebhookRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveWebhooksPermission)).
-					Delete(root, s.webhooksService.ArchiveHandler)
+					Delete(root, s.webhooksService.ArchiveWebhookHandler)
 			})
 		})
 
@@ -656,6 +682,7 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 			recipesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 				Get(searchRoot, s.recipesService.SearchHandler)
+
 			recipesRouter.Route(recipeIDRouteParam, func(singleRecipeRouter routing.Router) {
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
@@ -676,6 +703,29 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipesPermission)).
 					Delete(root, s.recipesService.ArchiveHandler)
+
+				// RecipeRatings
+				singleRecipeRouter.Route("/ratings", func(recipeRatingsRouter routing.Router) {
+					recipeRatingsRouter.
+						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeRatingsPermission)).
+						Post(root, s.recipeRatingsService.CreateHandler)
+					recipeRatingsRouter.
+						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeRatingsPermission)).
+						Get(root, s.recipeRatingsService.ListHandler)
+
+					recipeRatingIDRouteParam := buildURLVarChunk(reciperatingsservice.RecipeRatingIDURIParamKey, "")
+					recipeRatingsRouter.Route(recipeRatingIDRouteParam, func(singleRecipeRatingRouter routing.Router) {
+						singleRecipeRatingRouter.
+							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeRatingsPermission)).
+							Get(root, s.recipeRatingsService.ReadHandler)
+						singleRecipeRatingRouter.
+							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeRatingsPermission)).
+							Put(root, s.recipeRatingsService.UpdateHandler)
+						singleRecipeRatingRouter.
+							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeRatingsPermission)).
+							Delete(root, s.recipeRatingsService.ArchiveHandler)
+					})
+				})
 			})
 		})
 
@@ -924,6 +974,9 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlansPermission)).
 					Delete(root, s.mealPlansService.ArchiveHandler)
+				mealPlansRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlansPermission)).
+					Post("/finalize", s.mealPlansService.FinalizeHandler)
 			})
 		})
 

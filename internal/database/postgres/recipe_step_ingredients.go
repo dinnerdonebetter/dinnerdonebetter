@@ -84,6 +84,7 @@ var (
 		"recipe_step_ingredients.to_taste",
 		"recipe_step_ingredients.product_percentage_to_use",
 		"recipe_step_ingredients.vessel_index",
+		"recipe_step_ingredients.recipe_step_product_recipe_id",
 		"recipe_step_ingredients.created_at",
 		"recipe_step_ingredients.last_updated_at",
 		"recipe_step_ingredients.archived_at",
@@ -171,6 +172,7 @@ func (q *Querier) scanRecipeStepIngredient(ctx context.Context, scan database.Sc
 		&x.ToTaste,
 		&x.ProductPercentageToUse,
 		&x.VesselIndex,
+		&x.RecipeStepProductRecipeID,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -458,6 +460,7 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		input.ToTaste,
 		input.ProductPercentageToUse,
 		input.VesselIndex,
+		input.RecipeStepProductRecipeID,
 		input.BelongsToRecipeStep,
 	}
 
@@ -467,21 +470,22 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 	}
 
 	x := &types.RecipeStepIngredient{
-		ID:                     input.ID,
-		Name:                   input.Name,
-		Optional:               input.Optional,
-		MeasurementUnit:        types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
-		MinimumQuantity:        input.MinimumQuantity,
-		MaximumQuantity:        input.MaximumQuantity,
-		QuantityNotes:          input.QuantityNotes,
-		IngredientNotes:        input.IngredientNotes,
-		BelongsToRecipeStep:    input.BelongsToRecipeStep,
-		RecipeStepProductID:    input.RecipeStepProductID,
-		OptionIndex:            input.OptionIndex,
-		ToTaste:                input.ToTaste,
-		ProductPercentageToUse: input.ProductPercentageToUse,
-		VesselIndex:            input.VesselIndex,
-		CreatedAt:              q.currentTime(),
+		ID:                        input.ID,
+		Name:                      input.Name,
+		Optional:                  input.Optional,
+		MeasurementUnit:           types.ValidMeasurementUnit{ID: input.MeasurementUnitID},
+		MinimumQuantity:           input.MinimumQuantity,
+		MaximumQuantity:           input.MaximumQuantity,
+		QuantityNotes:             input.QuantityNotes,
+		IngredientNotes:           input.IngredientNotes,
+		BelongsToRecipeStep:       input.BelongsToRecipeStep,
+		RecipeStepProductID:       input.RecipeStepProductID,
+		OptionIndex:               input.OptionIndex,
+		ToTaste:                   input.ToTaste,
+		ProductPercentageToUse:    input.ProductPercentageToUse,
+		VesselIndex:               input.VesselIndex,
+		RecipeStepProductRecipeID: input.RecipeStepProductRecipeID,
+		CreatedAt:                 q.currentTime(),
 	}
 
 	if input.IngredientID != nil {
@@ -527,6 +531,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 		updated.ToTaste,
 		updated.ProductPercentageToUse,
 		updated.VesselIndex,
+		updated.RecipeStepProductRecipeID,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

@@ -22,12 +22,13 @@ import (
 	config2 "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	config3 "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	"github.com/dinnerdonebetter/backend/internal/services/admin"
 	"github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	"github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	"github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	"github.com/dinnerdonebetter/backend/internal/services/households"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
@@ -38,6 +39,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	"github.com/dinnerdonebetter/backend/internal/services/meals"
 	"github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
+	"github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	"github.com/dinnerdonebetter/backend/internal/services/recipes"
 	recipestepingredients2 "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
 	"github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
@@ -76,19 +78,24 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
+	config9 := &cfg.Database
+	config10 := &observabilityConfig.Tracing
+	tracerProvider, err := config3.ProvideTracerProvider(ctx, config10, logger)
+	if err != nil {
+		return nil, err
+	}
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config9, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	encodingConfig := cfg.Encoding
+	contentType := encoding.ProvideContentType(encodingConfig)
+	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
+	routingConfig := &cfg.Routing
+	router := chi.NewRouter(logger, tracerProvider, routingConfig)
 	servicesConfig := &cfg.Services
 	authenticationConfig := &servicesConfig.Auth
-	config9 := &observabilityConfig.Tracing
-	tracerProvider, err := config3.ProvideTracerProvider(ctx, config9, logger)
-	if err != nil {
-		return nil, err
-	}
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	config10 := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config10, tracerProvider)
-	if err != nil {
-		return nil, err
-	}
 	userDataManager := database.ProvideUserDataManager(dataManager)
 	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
@@ -97,9 +104,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	encodingConfig := cfg.Encoding
-	contentType := encoding.ProvideContentType(encodingConfig)
-	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
 	config11 := &cfg.Events
 	publisherProvider, err := config5.ProvidePublisherProvider(logger, tracerProvider, config11)
 	if err != nil {
@@ -311,8 +315,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	}
 	adminUserDataManager := database.ProvideAdminUserDataManager(dataManager)
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager, tracerProvider)
-	routingConfig := &cfg.Routing
-	router := chi.NewRouter(logger, tracerProvider, routingConfig)
 	vendorproxyConfig := &servicesConfig.VendorProxy
 	config15 := &cfg.Analytics
 	eventReporter, err := config8.ProvideEventReporter(config15, logger, tracerProvider)
@@ -341,7 +343,19 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, dataManager, logger, serverEncoderDecoder, router, tracerProvider, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService)
+	reciperatingsConfig := &servicesConfig.RecipeRatings
+	recipeRatingDataManager := database.ProvideRecipeRatingDataManager(dataManager)
+	recipeRatingDataService, err := reciperatings.ProvideService(logger, reciperatingsConfig, recipeRatingDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	householdinstrumentownershipsConfig := &servicesConfig.HouseholdInstrumentOwnerships
+	householdInstrumentOwnershipDataManager := database.ProvideHouseholdInstrumentOwnershipDataService(dataManager)
+	householdInstrumentOwnershipDataService, err := householdinstrumentownerships.ProvideService(logger, householdinstrumentownershipsConfig, householdInstrumentOwnershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService)
 	if err != nil {
 		return nil, err
 	}

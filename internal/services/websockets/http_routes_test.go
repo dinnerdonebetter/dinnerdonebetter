@@ -95,7 +95,7 @@ func TestWebsocketsService_SubscribeHandler(T *testing.T) {
 		helper.req.Header.Set("Upgrade", "websocket")
 		helper.req.Header.Set("Sec-Websocket-Version", "13")
 
-		helper.service.SubscribeHandler(&arbitraryHijacker{helper.res}, helper.req)
+		helper.service.WebsocketSubscriptionHandler(&arbitraryHijacker{helper.res}, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 	})
@@ -117,10 +117,10 @@ func TestWebsocketsService_SubscribeHandler(T *testing.T) {
 		helper.req.Header.Set("Upgrade", "websocket")
 		helper.req.Header.Set("Sec-Websocket-Version", "13")
 
-		helper.service.SubscribeHandler(&arbitraryHijacker{helper.res}, helper.req)
+		helper.service.WebsocketSubscriptionHandler(&arbitraryHijacker{helper.res}, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
-		helper.service.SubscribeHandler(&arbitraryHijacker{helper.res}, helper.req)
+		helper.service.WebsocketSubscriptionHandler(&arbitraryHijacker{helper.res}, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 	})
 
@@ -134,7 +134,7 @@ func TestWebsocketsService_SubscribeHandler(T *testing.T) {
 			return nil, errors.New("blah")
 		}
 
-		helper.service.SubscribeHandler(helper.res, helper.req)
+		helper.service.WebsocketSubscriptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -151,7 +151,7 @@ func TestWebsocketsService_SubscribeHandler(T *testing.T) {
 		helper.req.Header.Set("Upgrade", "websocket")
 		helper.req.Header.Set("Sec-Websocket-Version", "13")
 
-		helper.service.SubscribeHandler(&arbitraryHijacker{helper.res}, helper.req)
+		helper.service.WebsocketSubscriptionHandler(&arbitraryHijacker{helper.res}, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -173,7 +173,7 @@ func TestWebsocketsService_SubscribeHandler(T *testing.T) {
 		helper.req.Header.Set("Upgrade", "websocket")
 		helper.req.Header.Set("Sec-Websocket-Version", "13")
 
-		helper.service.SubscribeHandler(helper.res, helper.req)
+		helper.service.WebsocketSubscriptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 	})

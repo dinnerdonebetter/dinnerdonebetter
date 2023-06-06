@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
+
 	"github.com/hashicorp/go-multierror"
 )
 
@@ -43,8 +45,8 @@ func main() {
 		errors = multierror.Append(errors, err)
 	}
 
-	for _, filename := range sortedMapKeys(filesToGenerate) {
-		typesToGenerateFor := filesToGenerate[filename]
+	for _, filename := range sortedMapKeys(codegen.TypeDefinitionFilesToGenerate) {
+		typesToGenerateFor := codegen.TypeDefinitionFilesToGenerate[filename]
 		output := ""
 		filesToImportsMapForFile := map[string]map[string]struct{}{}
 

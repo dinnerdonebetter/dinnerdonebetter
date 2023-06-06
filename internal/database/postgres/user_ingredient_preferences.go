@@ -202,7 +202,7 @@ func (q *Querier) UserIngredientPreferenceExists(ctx context.Context, userIngred
 	return result, nil
 }
 
-//go:embed queries/user_ingredient_preferences/get_one.sql
+//go:embed queries/user_ingredient_preferences/get_for_user.sql
 var getUserIngredientPreferenceQuery string
 
 // GetUserIngredientPreference fetches a user ingredient preference from the database.

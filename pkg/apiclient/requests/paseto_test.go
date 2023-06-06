@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -25,7 +25,7 @@ func Test_setSignatureForRequest(T *testing.T) {
 
 		exampleBody := []byte(t.Name())
 		exampleSecretKey := []byte(strings.Repeat("A", validClientSecretSize))
-		req := httptest.NewRequest(http.MethodPost, "/", nil)
+		req := httptest.NewRequest(http.MethodPost, "/", http.NoBody)
 		expected := "_l92KZfsYpDrPeP8CGTgHQiAtpEg3TyECry5Bd0ibdI"
 
 		assert.NoError(t, setSignatureForRequest(req, exampleBody, exampleSecretKey))

@@ -16,30 +16,30 @@ import (
 )
 
 // AttachIntToSpan attaches an int to a span.
-func AttachIntToSpan(span trace.Span, attachmentKey string, id int) {
+func AttachIntToSpan(span trace.Span, attachmentKey string, x int) {
 	if span != nil {
-		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(x)))
 	}
 }
 
 // AttachUint8ToSpan attaches a uint8 to a span.
-func AttachUint8ToSpan(span trace.Span, attachmentKey string, id uint8) {
+func AttachUint8ToSpan(span trace.Span, attachmentKey string, x uint8) {
 	if span != nil {
-		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(x)))
 	}
 }
 
 // AttachUint16ToSpan attaches a uint16 to a span.
-func AttachUint16ToSpan(span trace.Span, attachmentKey string, id uint16) {
+func AttachUint16ToSpan(span trace.Span, attachmentKey string, x uint16) {
 	if span != nil {
-		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(x)))
 	}
 }
 
 // AttachUint64ToSpan attaches a uint64 to a span.
-func AttachUint64ToSpan(span trace.Span, attachmentKey string, id uint64) {
+func AttachUint64ToSpan(span trace.Span, attachmentKey string, x uint64) {
 	if span != nil {
-		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(x)))
 	}
 }
 
@@ -90,28 +90,28 @@ func AttachEmailAddressToSpan(span trace.Span, emailAddress string) {
 }
 
 // AttachHouseholdIDToSpan provides a consistent way to attach a household's ID to a span.
-func AttachHouseholdIDToSpan(span trace.Span, householdID string) {
-	AttachStringToSpan(span, keys.HouseholdIDKey, householdID)
+func AttachHouseholdIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdIDKey, id)
 }
 
 // AttachHouseholdInvitationIDToSpan provides a consistent way to attach a household's ID to a span.
-func AttachHouseholdInvitationIDToSpan(span trace.Span, householdInvitationID string) {
-	AttachStringToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
+func AttachHouseholdInvitationIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdInvitationIDKey, id)
 }
 
 // AttachHouseholdInvitationTokenToSpan provides a consistent way to attach a household's ID to a span.
-func AttachHouseholdInvitationTokenToSpan(span trace.Span, householdInvitationTokenID string) {
-	AttachStringToSpan(span, keys.HouseholdInvitationTokenKey, householdInvitationTokenID)
+func AttachHouseholdInvitationTokenToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdInvitationTokenKey, id)
 }
 
 // AttachActiveHouseholdIDToSpan provides a consistent way to attach a household's ID to a span.
-func AttachActiveHouseholdIDToSpan(span trace.Span, householdID string) {
-	AttachStringToSpan(span, keys.ActiveHouseholdIDKey, householdID)
+func AttachActiveHouseholdIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ActiveHouseholdIDKey, id)
 }
 
 // AttachRequestingUserIDToSpan provides a consistent way to attach a user's ID to a span.
-func AttachRequestingUserIDToSpan(span trace.Span, userID string) {
-	AttachStringToSpan(span, keys.RequesterIDKey, userID)
+func AttachRequestingUserIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RequesterIDKey, id)
 }
 
 // AttachSessionContextDataToSpan provides a consistent way to attach a SessionContextData object to a span.
@@ -126,13 +126,13 @@ func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.Sessi
 }
 
 // AttachAPIClientDatabaseIDToSpan is a consistent way to attach an API client's database row ID to a span.
-func AttachAPIClientDatabaseIDToSpan(span trace.Span, clientID string) {
-	AttachStringToSpan(span, keys.APIClientDatabaseIDKey, clientID)
+func AttachAPIClientDatabaseIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.APIClientDatabaseIDKey, id)
 }
 
 // AttachAPIClientClientIDToSpan is a consistent way to attach an API client's ID to a span.
-func AttachAPIClientClientIDToSpan(span trace.Span, clientID string) {
-	AttachStringToSpan(span, keys.APIClientClientIDKey, clientID)
+func AttachAPIClientClientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.APIClientClientIDKey, id)
 }
 
 // AttachUserToSpan provides a consistent way to attach a user to a span.
@@ -144,8 +144,8 @@ func AttachUserToSpan(span trace.Span, user *types.User) {
 }
 
 // AttachUserIDToSpan provides a consistent way to attach a user's ID to a span.
-func AttachUserIDToSpan(span trace.Span, userID string) {
-	AttachStringToSpan(span, keys.UserIDKey, userID)
+func AttachUserIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.UserIDKey, id)
 }
 
 // AttachUsernameToSpan provides a consistent way to attach a user's username to a span.
@@ -154,8 +154,8 @@ func AttachUsernameToSpan(span trace.Span, username string) {
 }
 
 // AttachWebhookIDToSpan provides a consistent way to attach a webhook's ID to a span.
-func AttachWebhookIDToSpan(span trace.Span, webhookID string) {
-	AttachStringToSpan(span, keys.WebhookIDKey, webhookID)
+func AttachWebhookIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.WebhookIDKey, id)
 }
 
 // AttachURLToSpan attaches a given URI to a span.
@@ -432,4 +432,14 @@ func AttachServiceSettingConfigurationIDToSpan(span trace.Span, id string) {
 // AttachUserIngredientPreferenceIDToSpan attaches a user ingredient preference ID to a given span.
 func AttachUserIngredientPreferenceIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.UserIngredientPreferenceIDKey, id)
+}
+
+// AttachHouseholdInstrumentOwnershipIDToSpan attaches a household instrument ownership ID to a given span.
+func AttachHouseholdInstrumentOwnershipIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, id)
+}
+
+// AttachRecipeRatingIDToSpan attaches a recipe rating ID to a given span.
+func AttachRecipeRatingIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeRatingIDKey, id)
 }

@@ -99,7 +99,6 @@ type esResponse struct {
 		Hits  []*esHit
 		Total struct{ Value int }
 	}
-	Took int
 }
 
 // search executes search queries.
