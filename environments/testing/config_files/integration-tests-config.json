@@ -25,6 +25,11 @@
 		"mailjet": null,
 		"provider": ""
 	},
+	"search": {
+		"algolia": null,
+		"elasticsearch": null,
+		"provider": ""
+	},
 	"analytics": {
 		"segment": null,
 		"rudderstack": null,

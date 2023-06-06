@@ -13,7 +13,7 @@ import (
 	algolia "github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 )
 
-var _ search.IndexManager[types.ValidIngredient] = (*IndexManager[types.ValidIngredient])(nil)
+var _ search.Index[types.ValidIngredient] = (*IndexManager[types.ValidIngredient])(nil)
 
 type (
 	IndexManager[T search.Searchable] struct {
@@ -31,7 +31,7 @@ func ProvideIndexManager[T search.Searchable](
 	tracerProvider tracing.TracerProvider,
 	cfg *Config,
 	indexName string,
-) (search.IndexManager[T], error) {
+) (search.Index[T], error) {
 	im := &IndexManager[T]{
 		tracer:  tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("search_%s", indexName))),
 		logger:  logging.EnsureLogger(logger).WithName(indexName),

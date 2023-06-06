@@ -6,39 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-const (
-	IndexTypeRecipes = "recipes"
-)
-
 type (
-	Searchable interface {
-		any |
-			types.Recipe |
-			types.ValidPreparation |
-			types.ValidIngredient |
-			types.ValidInstrument |
-			types.ValidIngredientState |
-			types.ValidMeasurementUnit
-	}
-
-	// IndexSearcher is our wrapper interface for querying a text search index.
-	IndexSearcher[T Searchable] interface {
-		Search(ctx context.Context, query string) (ids []*T, err error)
-	}
-
-	// IndexManager is our wrapper interface for a text search index.
-	IndexManager[T Searchable] interface {
-		IndexSearcher[T]
-		Index(ctx context.Context, id string, value any) error
-		Delete(ctx context.Context, id string) (err error)
-		Wipe(ctx context.Context) error
-	}
-
-	IndexRequest struct {
-		Recipe    *types.Recipe `json:"recipe,omitempty"`
-		IndexType string        `json:"type"`
-	}
-
 	RecipeSearchSubset struct {
 		ID          string                   `json:"id,omitempty"`
 		Name        string                   `json:"name,omitempty"`
@@ -52,34 +20,43 @@ type (
 		Instruments []string `json:"instruments,omitempty"`
 		Vessels     []string `json:"vessels,omitempty"`
 	}
+
+	MealSearchSubset struct {
+		ID          string   `json:"id,omitempty"`
+		Name        string   `json:"name,omitempty"`
+		Description string   `json:"description,omitempty"`
+		Recipes     []string `json:"recipes,omitempty"`
+	}
+
+	Searchable interface {
+		RecipeSearchSubset |
+			MealSearchSubset |
+			types.ValidIngredient |
+			types.ValidInstrument |
+			types.ValidMeasurementUnit |
+			types.ValidPreparation |
+			types.ValidIngredientState |
+			types.ValidIngredientMeasurementUnit |
+			types.ValidMeasurementUnitConversion |
+			types.ValidPreparationInstrument |
+			types.ValidIngredientPreparation
+	}
+
+	// IndexSearcher is our wrapper interface for querying a text search index.
+	IndexSearcher[T Searchable] interface {
+		Search(ctx context.Context, query string) (ids []*T, err error)
+	}
+
+	// IndexManager is our wrapper interface for a text search index.
+	IndexManager interface {
+		Index(ctx context.Context, id string, value any) error
+		Delete(ctx context.Context, id string) (err error)
+		Wipe(ctx context.Context) error
+	}
+
+	// Index is our wrapper interface for a text search index.
+	Index[T Searchable] interface {
+		IndexSearcher[T]
+		IndexManager
+	}
 )
-
-func SubsetFromRecipe(r *types.Recipe) *RecipeSearchSubset {
-	x := &RecipeSearchSubset{
-		ID:          r.ID,
-		Name:        r.Name,
-		Description: r.Description,
-	}
-
-	for _, step := range r.Steps {
-		stepSubset := RecipeStepSearchSubset{
-			Preparation: step.Preparation.Name,
-		}
-
-		for _, ingredient := range step.Ingredients {
-			stepSubset.Ingredients = append(stepSubset.Ingredients, ingredient.Name)
-		}
-
-		for _, instrument := range step.Instruments {
-			stepSubset.Instruments = append(stepSubset.Instruments, instrument.Name)
-		}
-
-		for _, vessel := range step.Vessels {
-			stepSubset.Vessels = append(stepSubset.Vessels, vessel.Name)
-		}
-
-		x.Steps = append(x.Steps, stepSubset)
-	}
-
-	return x
-}

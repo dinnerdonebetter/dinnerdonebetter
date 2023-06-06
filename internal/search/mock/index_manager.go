@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ search.IndexManager[types.ValidIngredient] = (*IndexManager[types.ValidIngredient])(nil)
+var _ search.Index[types.ValidIngredient] = (*IndexManager[types.ValidIngredient])(nil)
 
 // IndexManager is a mock IndexManager.
 type IndexManager[T any] struct {

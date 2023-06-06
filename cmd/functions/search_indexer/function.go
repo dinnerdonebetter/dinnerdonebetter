@@ -8,6 +8,12 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
+	"go.opentelemetry.io/otel"
+	_ "go.uber.org/automaxprocs"
+
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
@@ -16,15 +22,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/search"
-	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
-	"go.opentelemetry.io/otel"
-	_ "go.uber.org/automaxprocs"
+	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 )
 
 func init() {
@@ -71,7 +69,8 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	ctx, span := tracing.NewTracer(tracerProvider.Tracer("outbound_emailer_job")).StartSpan(ctx)
+	tracer := tracing.NewTracer(tracerProvider.Tracer("search_indexer_cloud_function"))
+	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
@@ -97,38 +96,15 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 		return fmt.Errorf("event.DataAs: %v", err)
 	}
 
-	var searchIndexRequest search.IndexRequest
+	var searchIndexRequest *indexing.IndexRequest
 	if err = json.Unmarshal(msg.Message.Data, &searchIndexRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
 		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
 	}
 
-	switch searchIndexRequest.IndexType {
-	case search.IndexTypeRecipes:
-		var im search.IndexManager[search.RecipeSearchSubset]
-		im, err = searchcfg.ProvideIndexManager[search.RecipeSearchSubset](ctx, logger, tracerProvider, &cfg.Search, search.IndexTypeRecipes)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
-		var recipes *types.QueryFilteredResult[types.Recipe]
-		recipes, err = dataManager.GetRecipes(ctx, types.DefaultQueryFilter())
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting recipes")
-		}
-
-		for _, x := range recipes.Data {
-			var recipe *types.Recipe
-			recipe, err = dataManager.GetRecipe(ctx, x.ID)
-			if err != nil {
-				return observability.PrepareAndLogError(err, logger, span, "getting recipe")
-			}
-
-			toBeIndexed := search.SubsetFromRecipe(recipe)
-			if err = im.Index(ctx, recipe.ID, toBeIndexed); err != nil {
-				return observability.PrepareAndLogError(err, logger, span, "indexing recipe")
-			}
-		}
+	// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
+	if err = indexing.HandleIndexRequest(ctx, logger, tracerProvider, &cfg.Search, dataManager, searchIndexRequest); err != nil {
+		observability.AcknowledgeError(err, logger, span, "handling index request")
 	}
 
 	return nil

@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-// NoopIndexManager is a noop IndexManager.
+// NoopIndexManager is a noop Index.
 type NoopIndexManager[T any] struct{}
 
 // Search is a no-op method.

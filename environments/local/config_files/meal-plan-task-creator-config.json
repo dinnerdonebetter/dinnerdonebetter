@@ -25,6 +25,15 @@
 		"mailjet": null,
 		"provider": ""
 	},
+	"search": {
+		"algolia": {
+			"appID": "",
+			"writeAPIKey": "",
+			"timeout": 0
+		},
+		"elasticsearch": null,
+		"provider": "algolia"
+	},
 	"analytics": {
 		"segment": null,
 		"rudderstack": null,
