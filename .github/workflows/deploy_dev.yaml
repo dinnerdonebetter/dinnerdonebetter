@@ -62,6 +62,9 @@ jobs:
       - name: Build meal plan grocery list initializer cloud function directory
         run: ./scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
 
+      - name: Build meal plan grocery list initializer cloud function directory
+        run: ./scripts/build_cloud_function.sh search_indexer
+
       - name: copy API server config file
         working-directory: environments/dev
         run: |

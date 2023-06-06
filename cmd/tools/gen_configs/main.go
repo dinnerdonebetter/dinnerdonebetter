@@ -10,7 +10,7 @@ import (
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
-	config2 "github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
@@ -27,6 +27,8 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/search/algolia"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
@@ -153,7 +155,7 @@ var (
 	}
 )
 
-func saveConfig(ctx context.Context, outputPath string, cfg *config2.InstanceConfig, indent, validate bool) error {
+func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig, indent, validate bool) error {
 	/* #nosec G301 */
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0o777); err != nil {
 		// okay, who gives a shit?
@@ -194,6 +196,7 @@ var files = map[string]configFunc{
 	"environments/local/config_files/meal-plan-finalizer-config.json":                localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-task-creator-config.json":             localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-grocery-list-initializer-config.json": localDevelopmentWorkerConfig,
+	"environments/local/config_files/search-indexer-config.json":                     localDevelopmentWorkerConfig,
 	"environments/testing/config_files/integration-tests-config.json":                integrationTestConfig,
 }
 
@@ -203,7 +206,7 @@ func generatePASETOKey() []byte {
 	return b
 }
 
-func buildDevEnvironmentServerConfig() *config2.InstanceConfig {
+func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	cookieConfig := authservice.CookieConfig{
 		Name:       defaultCookieName,
 		Domain:     ".dinnerdonebetter.dev",
@@ -223,9 +226,9 @@ func buildDevEnvironmentServerConfig() *config2.InstanceConfig {
 		Segment:  &segment.Config{APIToken: ""},
 	}
 
-	cfg := &config2.InstanceConfig{
+	cfg := &config.InstanceConfig{
 		Routing: devRoutingConfig,
-		Meta: config2.MetaSettings{
+		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
 		},
@@ -247,6 +250,10 @@ func buildDevEnvironmentServerConfig() *config2.InstanceConfig {
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 		},
+		Search: searchcfg.Config{
+			Algolia:  &algolia.Config{},
+			Provider: searchcfg.AlgoliaProvider,
+		},
 		Database: dbconfig.Config{
 			Debug:           true,
 			LogQueries:      true,
@@ -266,7 +273,7 @@ func buildDevEnvironmentServerConfig() *config2.InstanceConfig {
 				},
 			},
 		},
-		Services: config2.ServicesConfig{
+		Services: config.ServicesConfig{
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
 					Issuer:   pasteoIssuer,
@@ -338,10 +345,10 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, false, false)
 }
 
-func buildDevConfig() *config2.InstanceConfig {
-	return &config2.InstanceConfig{
+func buildDevConfig() *config.InstanceConfig {
+	return &config.InstanceConfig{
 		Routing: localRoutingConfig,
-		Meta: config2.MetaSettings{
+		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
 		},
@@ -362,6 +369,10 @@ func buildDevConfig() *config2.InstanceConfig {
 				},
 			},
 		},
+		Search: searchcfg.Config{
+			Algolia:  &algolia.Config{},
+			Provider: searchcfg.AlgoliaProvider,
+		},
 		Server: localServer,
 		Database: dbconfig.Config{
 			Debug:             true,
@@ -376,7 +387,7 @@ func buildDevConfig() *config2.InstanceConfig {
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
-		Services: config2.ServicesConfig{
+		Services: config.ServicesConfig{
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -555,10 +566,10 @@ func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, true, true)
 }
 
-func buildIntegrationTestsConfig() *config2.InstanceConfig {
-	return &config2.InstanceConfig{
+func buildIntegrationTestsConfig() *config.InstanceConfig {
+	return &config.InstanceConfig{
 		Routing: localRoutingConfig,
-		Meta: config2.MetaSettings{
+		Meta: config.MetaSettings{
 			Debug:   false,
 			RunMode: testingEnv,
 		},
@@ -600,7 +611,7 @@ func buildIntegrationTestsConfig() *config2.InstanceConfig {
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
-		Services: config2.ServicesConfig{
+		Services: config.ServicesConfig{
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{

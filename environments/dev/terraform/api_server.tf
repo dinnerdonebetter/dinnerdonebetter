@@ -238,6 +238,26 @@ resource "google_cloud_run_service" "api_server" {
             }
           }
         }
+
+        env {
+          name = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.algolia_api_key.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+        env {
+          name = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.algolia_application_id.secret_id
+              key  = "latest"
+            }
+          }
+        }
       }
 
       volumes {

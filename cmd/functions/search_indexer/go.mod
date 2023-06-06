@@ -1,4 +1,4 @@
-module github.com/dinnerdonebetter/backend/cmd/functions/data_changes
+module github.com/dinnerdonebetter/backend/cmd/functions/search_indexer
 
 go 1.20
 

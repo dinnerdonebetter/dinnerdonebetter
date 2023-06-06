@@ -30,6 +30,8 @@ const (
 	gcpCookieHashKeyEnvVarKey            = "DINNER_DONE_BETTER_COOKIE_HASH_KEY"
 	gcpCookieBlockKeyEnvVarKey           = "DINNER_DONE_BETTER_COOKIE_BLOCK_KEY"
 	gcpPASETOLocalKeyEnvVarKey           = "DINNER_DONE_BETTER_PASETO_LOCAL_KEY"
+	AlgoliaAPIKeyEnvVarKey               = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
+	AlgoliaAppIDEnvVarKey                = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
 	/* #nosec G101 */
 	gcpDatabaseUserPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
 	/* #nosec G101 */
@@ -91,6 +93,9 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
+
+	cfg.Search.Algolia.APIKey = os.Getenv(AlgoliaAPIKeyEnvVarKey)
+	cfg.Search.Algolia.AppID = os.Getenv(AlgoliaAppIDEnvVarKey)
 
 	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
 	if err != nil {
@@ -212,6 +217,8 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
 	)
 
+	cfg.Search.Algolia.APIKey = os.Getenv(AlgoliaAPIKeyEnvVarKey)
+	cfg.Search.Algolia.AppID = os.Getenv(AlgoliaAppIDEnvVarKey)
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 	cfg.Database.RunMigrations = false
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)

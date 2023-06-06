@@ -143,3 +143,35 @@ resource "google_secret_manager_secret_version" "segment_api_token" {
 
   secret_data = var.SEGMENT_API_TOKEN
 }
+
+# Segment API token
+
+resource "google_secret_manager_secret" "algolia_application_id" {
+  secret_id = "algolia_application_id"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "algolia_application_id" {
+  secret = google_secret_manager_secret.algolia_application_id.id
+
+  secret_data = var.ALGOLIA_APPLICATION_ID
+}
+
+# Segment API token
+
+resource "google_secret_manager_secret" "algolia_api_key" {
+  secret_id = "algolia_api_key"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "algolia_api_key" {
+  secret = google_secret_manager_secret.algolia_api_key.id
+
+  secret_data = var.ALGOLIA_API_KEY
+}
