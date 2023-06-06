@@ -23,6 +23,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+//nolint:maintidx // this thing is just gonna be how it is
 func main() {
 	indexPtr := flag.String("index", "", "index to initialize")
 	wipePtr := flag.Bool("wipe", false, "whether to wipe the index or not")
@@ -107,7 +108,6 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	case indexing.IndexTypeMeals:
 		im, err = searchcfg.ProvideIndexManager[search.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -131,7 +131,6 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	case indexing.IndexTypeValidIngredients:
 		im, err = searchcfg.ProvideIndexManager[types.ValidIngredient](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -155,7 +154,6 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	case indexing.IndexTypeValidInstruments:
 		im, err = searchcfg.ProvideIndexManager[types.ValidInstrument](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -179,7 +177,6 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	case indexing.IndexTypeValidMeasurementUnits:
 		im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -203,7 +200,6 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	case indexing.IndexTypeValidPreparations:
 		im, err = searchcfg.ProvideIndexManager[types.ValidPreparation](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -227,7 +223,6 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	case indexing.IndexTypeValidIngredientStates:
 		im, err = searchcfg.ProvideIndexManager[types.ValidIngredientState](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -251,7 +246,6 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	case indexing.IndexTypeValidIngredientMeasurementUnits:
 		im, err = searchcfg.ProvideIndexManager[types.ValidIngredientMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -275,8 +269,7 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
-	//case indexing.IndexTypeValidMeasurementUnitConversions:
+	// case indexing.IndexTypeValidMeasurementUnitConversions:
 	//	im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnitConversion](ctx, logger, tracerProvider, cfg, index)
 	//	if err != nil {
 	//		log.Fatal(fmt.Errorf("initializing index manager: %w", err))
@@ -299,7 +292,6 @@ func main() {
 	//		thresholdMet = len(data.Data) == 0
 	//		*filter.Page++
 	//	}
-	//	break
 	case indexing.IndexTypeValidPreparationInstruments:
 		im, err = searchcfg.ProvideIndexManager[types.ValidPreparationInstrument](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -323,7 +315,6 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	case indexing.IndexTypeValidIngredientPreparations:
 		im, err = searchcfg.ProvideIndexManager[types.ValidIngredientPreparation](ctx, logger, tracerProvider, cfg, index)
 		if err != nil {
@@ -347,6 +338,5 @@ func main() {
 			thresholdMet = len(data.Data) == 0
 			*filter.Page++
 		}
-		break
 	}
 }

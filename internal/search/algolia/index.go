@@ -28,8 +28,8 @@ func (m *IndexManager[T]) Index(ctx context.Context, id string, value any) error
 	}
 
 	var newValue map[string]any
-	if err = json.Unmarshal(jsonEncoded, &newValue); err != nil {
-		return err
+	if unmarshalErr := json.Unmarshal(jsonEncoded, &newValue); unmarshalErr != nil {
+		return unmarshalErr
 	}
 
 	// we make a huge, albeit safe assumption here.
