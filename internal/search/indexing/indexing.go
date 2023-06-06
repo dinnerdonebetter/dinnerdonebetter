@@ -226,7 +226,7 @@ func SubsetFromMeal(r *types.Meal) *search.MealSearchSubset {
 }
 
 type IndexRequest struct {
+	Value     any    `json:"any"`
 	RowID     string `json:"rowID"`
 	IndexType string `json:"type"`
-	Value     any    `json:"any"`
 }
