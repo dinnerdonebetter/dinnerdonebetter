@@ -292,12 +292,13 @@ func (q *Querier) buildListQuery(
 	}
 
 	actualGroupBys := []string{fmt.Sprintf("%s.%s", tableName, "id")}
-	if groupBys != nil {
-		actualGroupBys = append(actualGroupBys, groupBys...)
+	for _, groupBy := range groupBys {
+		if groupBy != actualGroupBys[0] {
+			actualGroupBys = append(actualGroupBys, groupBy)
+		}
 	}
 
-	builder = builder.GroupBy(actualGroupBys...)
-	builder = builder.OrderBy(fmt.Sprintf("%s.%s", tableName, "id"))
+	builder = builder.GroupBy(actualGroupBys...).OrderBy(fmt.Sprintf("%s.%s", tableName, "id"))
 
 	if filter != nil {
 		builder = applyFilterToQueryBuilder(filter, tableName, builder)
@@ -364,8 +365,10 @@ func (q *Querier) buildListQueryWithILike(
 	builder = builder.Where(equalsWhere)
 
 	actualGroupBys := []string{fmt.Sprintf("%s.%s", tableName, "id")}
-	if groupBys != nil {
-		actualGroupBys = append(actualGroupBys, groupBys...)
+	for _, groupBy := range groupBys {
+		if groupBy != actualGroupBys[0] {
+			actualGroupBys = append(actualGroupBys, groupBy)
+		}
 	}
 
 	builder = builder.GroupBy(actualGroupBys...)

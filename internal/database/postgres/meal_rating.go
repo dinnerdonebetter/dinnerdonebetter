@@ -153,9 +153,6 @@ func (q *Querier) GetMealRating(ctx context.Context, mealRatingID string) (*type
 	return mealRating, nil
 }
 
-//go:embed queries/meal_ratings/get_many.sql
-var getMealRatingsQuery string
-
 // GetMealRatings fetches a list of meal ratings from the database that meet a particular filter.
 func (q *Querier) GetMealRatings(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealRating], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -179,15 +176,9 @@ func (q *Querier) GetMealRatings(ctx context.Context, filter *types.QueryFilter)
 		filter = types.DefaultQueryFilter()
 	}
 
-	args := []any{
-		filter.CreatedAfter,
-		filter.CreatedBefore,
-		filter.UpdatedAfter,
-		filter.UpdatedBefore,
-		filter.QueryOffset(),
-	}
+	query, args := q.buildListQuery(ctx, "meal_ratings", nil, nil, nil, "", mealRatingsTableColumns, "", false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "meal ratings", getMealRatingsQuery, args)
+	rows, err := q.getRows(ctx, q.db, "meal ratings", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal ratings list retrieval query")
 	}
@@ -265,6 +256,12 @@ func (q *Querier) UpdateMealRating(ctx context.Context, updated *types.MealRatin
 	tracing.AttachMealRatingIDToSpan(span, updated.ID)
 
 	args := []any{
+		updated.MealID,
+		updated.Taste,
+		updated.Difficulty,
+		updated.Cleanup,
+		updated.Instructions,
+		updated.Overall,
 		updated.Notes,
 		updated.ID,
 	}

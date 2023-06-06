@@ -3,13 +3,13 @@ package integration
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func checkMealRatingEquality(t *testing.T, expected, actual *types.MealRating) {
@@ -18,7 +18,6 @@ func checkMealRatingEquality(t *testing.T, expected, actual *types.MealRating) {
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal rating %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.MealID, actual.MealID, "expected MealID for meal rating %s to be %v, but it was %v", expected.ID, expected.MealID, actual.MealID)
-	assert.Equal(t, expected.ByUser, actual.ByUser, "expected ByUser for meal rating %s to be %v, but it was %v", expected.ID, expected.ByUser, actual.ByUser)
 	assert.Equal(t, expected.Taste, actual.Taste, "expected Taste for meal rating %s to be %v, but it was %v", expected.ID, expected.Taste, actual.Taste)
 	assert.Equal(t, expected.Instructions, actual.Instructions, "expected Instructions for meal rating %s to be %v, but it was %v", expected.ID, expected.Instructions, actual.Instructions)
 	assert.Equal(t, expected.Overall, actual.Overall, "expected Overall for meal rating %s to be %v, but it was %v", expected.ID, expected.Overall, actual.Overall)
@@ -52,6 +51,7 @@ func (s *TestSuite) TestMealRatings_CompleteLifecycle() {
 
 			t.Log("changing meal rating")
 			newMealRating := fakes.BuildFakeMealRating()
+			newMealRating.MealID = createdMeal.ID
 			createdMealRating.Update(converters.ConvertMealRatingToMealRatingUpdateRequestInput(newMealRating))
 			assert.NoError(t, testClients.admin.UpdateMealRating(ctx, createdMealRating))
 

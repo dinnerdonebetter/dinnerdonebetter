@@ -667,10 +667,7 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 					Delete(root, s.mealsService.ArchiveHandler)
 
 				// MealRatings
-				mealRatingPath := "ratings"
-				mealRatingsRouteWithPrefix := fmt.Sprintf("/%s", mealRatingPath)
-				mealRatingIDRouteParam := buildURLVarChunk(mealratingsservice.MealRatingIDURIParamKey, "")
-				singleMealRouter.Route(mealRatingsRouteWithPrefix, func(mealRatingsRouter routing.Router) {
+				singleMealRouter.Route("/ratings", func(mealRatingsRouter routing.Router) {
 					mealRatingsRouter.
 						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealRatingsPermission)).
 						Post(root, s.mealRatingsService.CreateHandler)
@@ -678,7 +675,11 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealRatingsPermission)).
 						Get(root, s.mealRatingsService.ListHandler)
 
+					mealRatingIDRouteParam := buildURLVarChunk(mealratingsservice.MealRatingIDURIParamKey, "")
 					mealRatingsRouter.Route(mealRatingIDRouteParam, func(singleMealRatingRouter routing.Router) {
+						singleMealRatingRouter.
+							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealRatingsPermission)).
+							Get(root, s.mealRatingsService.ReadHandler)
 						singleMealRatingRouter.
 							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealRatingsPermission)).
 							Put(root, s.mealRatingsService.UpdateHandler)

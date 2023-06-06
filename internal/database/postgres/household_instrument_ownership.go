@@ -185,9 +185,6 @@ func (q *Querier) GetHouseholdInstrumentOwnership(ctx context.Context, household
 	return householdInstrumentOwnership, nil
 }
 
-//go:embed queries/household_instrument_ownerships/get_many.sql
-var getHouseholdInstrumentOwnershipsQuery string
-
 // GetHouseholdInstrumentOwnerships fetches a list of household instrument ownerships from the database that meet a particular filter.
 func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.HouseholdInstrumentOwnership], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -217,17 +214,9 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 		filter = types.DefaultQueryFilter()
 	}
 
-	args := []any{
-		householdID,
-		filter.CreatedAfter,
-		filter.CreatedBefore,
-		filter.UpdatedAfter,
-		filter.UpdatedBefore,
-		filter.QueryOffset(),
-		filter.Limit,
-	}
+	query, args := q.buildListQuery(ctx, "household_instrument_ownerships", []string{"valid_instruments ON valid_instruments.id = household_instrument_ownerships.valid_instrument_id"}, []string{"household_instrument_ownerships.id", "valid_instruments.id"}, nil, householdOwnershipColumn, householdInstrumentOwnershipsTableColumns, householdID, false, filter)
 
-	rows, err := q.getRows(ctx, q.db, "household instrument ownerships", getHouseholdInstrumentOwnershipsQuery, args)
+	rows, err := q.getRows(ctx, q.db, "household instrument ownerships", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing household instrument ownerships list retrieval query")
 	}

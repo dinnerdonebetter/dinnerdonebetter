@@ -243,15 +243,9 @@ func TestQuerier_GetMealRatings(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []any{
-			filter.CreatedAfter,
-			filter.CreatedBefore,
-			filter.UpdatedAfter,
-			filter.UpdatedBefore,
-			filter.QueryOffset(),
-		}
+		query, args := c.buildListQuery(ctx, "meal_ratings", nil, nil, nil, "", mealRatingsTableColumns, "", false, filter)
 
-		db.ExpectQuery(formatQueryForSQLMock(getMealRatingsQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealRating(true, exampleMealRatingList.FilteredCount, exampleMealRatingList.Data...))
 
@@ -273,15 +267,9 @@ func TestQuerier_GetMealRatings(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []any{
-			filter.CreatedAfter,
-			filter.CreatedBefore,
-			filter.UpdatedAfter,
-			filter.UpdatedBefore,
-			filter.QueryOffset(),
-		}
+		query, args := c.buildListQuery(ctx, "meal_ratings", nil, nil, nil, "", mealRatingsTableColumns, "", false, filter)
 
-		db.ExpectQuery(formatQueryForSQLMock(getMealRatingsQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealRating(true, exampleMealRatingList.FilteredCount, exampleMealRatingList.Data...))
 
@@ -300,15 +288,9 @@ func TestQuerier_GetMealRatings(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []any{
-			filter.CreatedAfter,
-			filter.CreatedBefore,
-			filter.UpdatedAfter,
-			filter.UpdatedBefore,
-			filter.QueryOffset(),
-		}
+		query, args := c.buildListQuery(ctx, "meal_ratings", nil, nil, nil, "", mealRatingsTableColumns, "", false, filter)
 
-		db.ExpectQuery(formatQueryForSQLMock(getMealRatingsQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -327,15 +309,9 @@ func TestQuerier_GetMealRatings(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []any{
-			filter.CreatedAfter,
-			filter.CreatedBefore,
-			filter.UpdatedAfter,
-			filter.UpdatedBefore,
-			filter.QueryOffset(),
-		}
+		query, args := c.buildListQuery(ctx, "meal_ratings", nil, nil, nil, "", mealRatingsTableColumns, "", false, filter)
 
-		db.ExpectQuery(formatQueryForSQLMock(getMealRatingsQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
@@ -449,6 +425,12 @@ func TestQuerier_UpdateMealRating(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []any{
+			exampleMealRating.MealID,
+			exampleMealRating.Taste,
+			exampleMealRating.Difficulty,
+			exampleMealRating.Cleanup,
+			exampleMealRating.Instructions,
+			exampleMealRating.Overall,
 			exampleMealRating.Notes,
 			exampleMealRating.ID,
 		}
@@ -480,6 +462,12 @@ func TestQuerier_UpdateMealRating(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []any{
+			exampleMealRating.MealID,
+			exampleMealRating.Taste,
+			exampleMealRating.Difficulty,
+			exampleMealRating.Cleanup,
+			exampleMealRating.Instructions,
+			exampleMealRating.Overall,
 			exampleMealRating.Notes,
 			exampleMealRating.ID,
 		}

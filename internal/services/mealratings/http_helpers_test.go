@@ -23,6 +23,7 @@ type mealRatingsServiceHTTPRoutesTestHelper struct {
 	service              *service
 	exampleUser          *types.User
 	exampleHousehold     *types.Household
+	exampleMeal          *types.Meal
 	exampleMealRating    *types.MealRating
 	exampleCreationInput *types.MealRatingCreationRequestInput
 	exampleUpdateInput   *types.MealRatingUpdateRequestInput
@@ -38,9 +39,15 @@ func buildTestHelper(t *testing.T) *mealRatingsServiceHTTPRoutesTestHelper {
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleMeal = fakes.BuildFakeMeal()
 	helper.exampleMealRating = fakes.BuildFakeMealRating()
+	helper.exampleMealRating.MealID = helper.exampleMeal.ID
 	helper.exampleCreationInput = converters.ConvertMealRatingToMealRatingCreationRequestInput(helper.exampleMealRating)
 	helper.exampleUpdateInput = converters.ConvertMealRatingToMealRatingUpdateRequestInput(helper.exampleMealRating)
+
+	helper.service.mealIDFetcher = func(*http.Request) string {
+		return helper.exampleMeal.ID
+	}
 
 	helper.service.mealRatingIDFetcher = func(*http.Request) string {
 		return helper.exampleMealRating.ID

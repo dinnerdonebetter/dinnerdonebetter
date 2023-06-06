@@ -14,11 +14,11 @@ import (
 )
 
 const (
-	// MealRatingIDURIParamKey is a standard string that we'll use to refer to valid instrument IDs with.
+	// MealRatingIDURIParamKey is a standard string that we'll use to refer to meal rating IDs with.
 	MealRatingIDURIParamKey = "mealRatingID"
 )
 
-// CreateHandler is our valid instrument creation route.
+// CreateHandler is our meal rating creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -53,12 +53,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := converters.ConvertMealRatingCreationRequestInputToMealRatingDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
+	input.ByUser = sessionCtxData.Requester.UserID
 
 	tracing.AttachMealRatingIDToSpan(span, input.ID)
 
 	mealRating, err := s.mealRatingDataManager.CreateMealRating(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid instrument")
+		observability.AcknowledgeError(err, logger, span, "creating meal rating")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -76,7 +77,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealRating, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid instrument.
+// ReadHandler returns a GET handler that returns a meal rating.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -95,18 +96,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine valid instrument ID.
+	// determine meal rating ID.
 	mealRatingID := s.mealRatingIDFetcher(req)
 	tracing.AttachMealRatingIDToSpan(span, mealRatingID)
 	logger = logger.WithValue(keys.MealRatingIDKey, mealRatingID)
 
-	// fetch valid instrument from database.
+	// fetch meal rating from database.
 	x, err := s.mealRatingDataManager.GetMealRating(ctx, mealRatingID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid instrument")
+		observability.AcknowledgeError(err, logger, span, "retrieving meal rating")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -145,7 +146,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		// in the event no rows exist, return an empty list.
 		mealRatings = &types.QueryFilteredResult[types.MealRating]{Data: []*types.MealRating{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid instruments")
+		observability.AcknowledgeError(err, logger, span, "retrieving meal ratings")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -154,7 +155,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, mealRatings)
 }
 
-// UpdateHandler returns a handler that updates a valid instrument.
+// UpdateHandler returns a handler that updates a meal rating.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -187,27 +188,27 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// determine valid instrument ID.
+	// determine meal rating ID.
 	mealRatingID := s.mealRatingIDFetcher(req)
 	tracing.AttachMealRatingIDToSpan(span, mealRatingID)
 	logger = logger.WithValue(keys.MealRatingIDKey, mealRatingID)
 
-	// fetch valid instrument from database.
+	// fetch meal rating from database.
 	mealRating, err := s.mealRatingDataManager.GetMealRating(ctx, mealRatingID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid instrument for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving meal rating for update")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	// update the valid instrument.
+	// update the meal rating.
 	mealRating.Update(input)
 
 	if err = s.mealRatingDataManager.UpdateMealRating(ctx, mealRating); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid instrument")
+		observability.AcknowledgeError(err, logger, span, "updating meal rating")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -226,7 +227,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, mealRating)
 }
 
-// ArchiveHandler returns a handler that archives a valid instrument.
+// ArchiveHandler returns a handler that archives a meal rating.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -245,14 +246,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine valid instrument ID.
+	// determine meal rating ID.
 	mealRatingID := s.mealRatingIDFetcher(req)
 	tracing.AttachMealRatingIDToSpan(span, mealRatingID)
 	logger = logger.WithValue(keys.MealRatingIDKey, mealRatingID)
 
 	exists, existenceCheckErr := s.mealRatingDataManager.MealRatingExists(ctx, mealRatingID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid instrument existence")
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal rating existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
@@ -261,7 +262,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if err = s.mealRatingDataManager.ArchiveMealRating(ctx, mealRatingID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid instrument")
+		observability.AcknowledgeError(err, logger, span, "archiving meal rating")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

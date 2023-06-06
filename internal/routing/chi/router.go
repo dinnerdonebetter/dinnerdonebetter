@@ -133,14 +133,16 @@ func (r *router) WithMiddleware(middleware ...routing.Middleware) routing.Router
 
 // LogRoutes logs the described routes.
 func (r *router) LogRoutes() {
-	if err := chi.Walk(r.router, func(method, route string, _ http.Handler, _ ...func(http.Handler) http.Handler) error {
+	routerWalkFunc := func(method, route string, _ http.Handler, _ ...func(http.Handler) http.Handler) error {
 		r.logger.WithValues(map[string]any{
 			"method": method,
 			"route":  route,
-		}).Debug("route found")
+		}).Info("route found")
 
 		return nil
-	}); err != nil {
+	}
+
+	if err := chi.Walk(r.router, routerWalkFunc); err != nil {
 		r.logger.Error(err, "logging routes")
 	}
 }

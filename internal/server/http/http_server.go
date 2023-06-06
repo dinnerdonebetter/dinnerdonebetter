@@ -195,8 +195,8 @@ func ProvideHTTPServer(
 func (s *Server) Shutdown(ctx context.Context) error {
 	s.dataManager.Close()
 
-	if flushErr := s.tracerProvider.ForceFlush(ctx); flushErr != nil {
-		s.logger.Error(flushErr, "flushing traces")
+	if err := s.tracerProvider.ForceFlush(ctx); err != nil {
+		s.logger.Error(err, "flushing traces")
 	}
 
 	return s.httpServer.Shutdown(ctx)
