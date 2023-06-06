@@ -104,6 +104,18 @@ resource "google_cloud_run_service" "api_server" {
   name     = "api-server"
   location = local.gcp_region
 
+  depends_on = [
+    google_secret_manager_secret.api_user_database_password,
+    google_secret_manager_secret.cookie_hash_key,
+    google_secret_manager_secret.cookie_block_key,
+    google_secret_manager_secret.paseto_local_key,
+    google_secret_manager_secret.data_changes_topic_name,
+    google_secret_manager_secret.sendgrid_api_token,
+    google_secret_manager_secret.segment_api_token,
+    google_secret_manager_secret.algolia_api_key,
+    google_secret_manager_secret.algolia_application_id,
+  ]
+
   traffic {
     percent         = 100
     latest_revision = true
