@@ -1,4 +1,4 @@
-package mealratings
+package reciperatings
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
-	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
+	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -19,15 +19,15 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                logging.NewNoopLogger(),
-		mealRatingDataManager: &mocktypes.MealRatingDataManager{},
-		mealRatingIDFetcher:   func(req *http.Request) string { return "" },
-		encoderDecoder:        mockencoding.NewMockEncoderDecoder(),
-		tracer:                tracing.NewTracerForTest("test"),
+		logger:                  logging.NewNoopLogger(),
+		recipeRatingDataManager: &mocktypes.RecipeRatingDataManager{},
+		recipeRatingIDFetcher:   func(req *http.Request) string { return "" },
+		encoderDecoder:          mockencoding.NewMockEncoderDecoder(),
+		tracer:                  tracing.NewTracerForTest("test"),
 	}
 }
 
-func TestProvideMealRatingsService(T *testing.T) {
+func TestProvideRecipeRatingsService(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -38,11 +38,11 @@ func TestProvideMealRatingsService(T *testing.T) {
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			MealRatingIDURIParamKey,
+			RecipeRatingIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			mealsservice.MealIDURIParamKey,
+			recipesservice.RecipeIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
@@ -55,7 +55,7 @@ func TestProvideMealRatingsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			&mocktypes.MealRatingDataManager{},
+			&mocktypes.RecipeRatingDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -83,7 +83,7 @@ func TestProvideMealRatingsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			&mocktypes.MealRatingDataManager{},
+			&mocktypes.RecipeRatingDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

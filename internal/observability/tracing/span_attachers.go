@@ -439,7 +439,7 @@ func AttachHouseholdInstrumentOwnershipIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, id)
 }
 
-// AttachMealRatingIDToSpan attaches a meal rating ID to a given span.
-func AttachMealRatingIDToSpan(span trace.Span, id string) {
-	AttachStringToSpan(span, keys.MealRatingIDKey, id)
+// AttachRecipeRatingIDToSpan attaches a recipe rating ID to a given span.
+func AttachRecipeRatingIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeRatingIDKey, id)
 }

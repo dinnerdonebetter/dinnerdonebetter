@@ -5,10 +5,10 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertMealRatingToMealRatingUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
-func ConvertMealRatingToMealRatingUpdateRequestInput(x *types.MealRating) *types.MealRatingUpdateRequestInput {
-	out := &types.MealRatingUpdateRequestInput{
-		MealID:       &x.MealID,
+// ConvertRecipeRatingToRecipeRatingUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
+func ConvertRecipeRatingToRecipeRatingUpdateRequestInput(x *types.RecipeRating) *types.RecipeRatingUpdateRequestInput {
+	out := &types.RecipeRatingUpdateRequestInput{
+		MealID:       &x.RecipeID,
 		Taste:        &x.Taste,
 		Difficulty:   &x.Difficulty,
 		Cleanup:      &x.Cleanup,
@@ -21,9 +21,9 @@ func ConvertMealRatingToMealRatingUpdateRequestInput(x *types.MealRating) *types
 	return out
 }
 
-// ConvertMealRatingCreationRequestInputToMealRatingDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ConvertMealRatingCreationRequestInputToMealRatingDatabaseCreationInput(x *types.MealRatingCreationRequestInput) *types.MealRatingDatabaseCreationInput {
-	out := &types.MealRatingDatabaseCreationInput{
+// ConvertRecipeRatingCreationRequestInputToRecipeRatingDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
+func ConvertRecipeRatingCreationRequestInputToRecipeRatingDatabaseCreationInput(x *types.RecipeRatingCreationRequestInput) *types.RecipeRatingDatabaseCreationInput {
+	out := &types.RecipeRatingDatabaseCreationInput{
 		ID:           identifiers.New(),
 		MealID:       x.MealID,
 		Notes:        x.Notes,
@@ -38,10 +38,10 @@ func ConvertMealRatingCreationRequestInputToMealRatingDatabaseCreationInput(x *t
 	return out
 }
 
-// ConvertMealRatingToMealRatingCreationRequestInput builds a MealRatingCreationRequestInput from a Ingredient.
-func ConvertMealRatingToMealRatingCreationRequestInput(x *types.MealRating) *types.MealRatingCreationRequestInput {
-	return &types.MealRatingCreationRequestInput{
-		MealID:       x.MealID,
+// ConvertRecipeRatingToRecipeRatingCreationRequestInput builds a RecipeRatingCreationRequestInput from a Ingredient.
+func ConvertRecipeRatingToRecipeRatingCreationRequestInput(x *types.RecipeRating) *types.RecipeRatingCreationRequestInput {
+	return &types.RecipeRatingCreationRequestInput{
+		MealID:       x.RecipeID,
 		Notes:        x.Notes,
 		ByUser:       x.ByUser,
 		Taste:        x.Taste,
@@ -52,11 +52,11 @@ func ConvertMealRatingToMealRatingCreationRequestInput(x *types.MealRating) *typ
 	}
 }
 
-// ConvertMealRatingToMealRatingDatabaseCreationInput builds a MealRatingDatabaseCreationInput from a MealRating.
-func ConvertMealRatingToMealRatingDatabaseCreationInput(x *types.MealRating) *types.MealRatingDatabaseCreationInput {
-	return &types.MealRatingDatabaseCreationInput{
+// ConvertRecipeRatingToRecipeRatingDatabaseCreationInput builds a RecipeRatingDatabaseCreationInput from a RecipeRating.
+func ConvertRecipeRatingToRecipeRatingDatabaseCreationInput(x *types.RecipeRating) *types.RecipeRatingDatabaseCreationInput {
+	return &types.RecipeRatingDatabaseCreationInput{
 		ID:           x.ID,
-		MealID:       x.MealID,
+		MealID:       x.RecipeID,
 		Notes:        x.Notes,
 		ByUser:       x.ByUser,
 		Taste:        x.Taste,

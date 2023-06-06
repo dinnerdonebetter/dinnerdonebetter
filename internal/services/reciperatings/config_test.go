@@ -1,4 +1,4 @@
-package mealratings
+package reciperatings
 
 import (
 	"context"

@@ -8,43 +8,43 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ types.MealRatingDataManager = (*MealRatingDataManager)(nil)
+var _ types.RecipeRatingDataManager = (*RecipeRatingDataManager)(nil)
 
-// MealRatingDataManager is a mocked types.MealRatingDataManager for testing.
-type MealRatingDataManager struct {
+// RecipeRatingDataManager is a mocked types.RecipeRatingDataManager for testing.
+type RecipeRatingDataManager struct {
 	mock.Mock
 }
 
-// MealRatingExists is a mock function.
-func (m *MealRatingDataManager) MealRatingExists(ctx context.Context, mealRatingID string) (bool, error) {
-	args := m.Called(ctx, mealRatingID)
+// RecipeRatingExists is a mock function.
+func (m *RecipeRatingDataManager) RecipeRatingExists(ctx context.Context, recipeRatingID string) (bool, error) {
+	args := m.Called(ctx, recipeRatingID)
 	return args.Bool(0), args.Error(1)
 }
 
-// GetMealRating is a mock function.
-func (m *MealRatingDataManager) GetMealRating(ctx context.Context, mealRatingID string) (*types.MealRating, error) {
-	args := m.Called(ctx, mealRatingID)
-	return args.Get(0).(*types.MealRating), args.Error(1)
+// GetRecipeRating is a mock function.
+func (m *RecipeRatingDataManager) GetRecipeRating(ctx context.Context, recipeRatingID string) (*types.RecipeRating, error) {
+	args := m.Called(ctx, recipeRatingID)
+	return args.Get(0).(*types.RecipeRating), args.Error(1)
 }
 
-// GetMealRatings is a mock function.
-func (m *MealRatingDataManager) GetMealRatings(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.MealRating], error) {
+// GetRecipeRatings is a mock function.
+func (m *RecipeRatingDataManager) GetRecipeRatings(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeRating], error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.MealRating]), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.RecipeRating]), args.Error(1)
 }
 
-// CreateMealRating is a mock function.
-func (m *MealRatingDataManager) CreateMealRating(ctx context.Context, input *types.MealRatingDatabaseCreationInput) (*types.MealRating, error) {
+// CreateRecipeRating is a mock function.
+func (m *RecipeRatingDataManager) CreateRecipeRating(ctx context.Context, input *types.RecipeRatingDatabaseCreationInput) (*types.RecipeRating, error) {
 	args := m.Called(ctx, input)
-	return args.Get(0).(*types.MealRating), args.Error(1)
+	return args.Get(0).(*types.RecipeRating), args.Error(1)
 }
 
-// UpdateMealRating is a mock function.
-func (m *MealRatingDataManager) UpdateMealRating(ctx context.Context, updated *types.MealRating) error {
+// UpdateRecipeRating is a mock function.
+func (m *RecipeRatingDataManager) UpdateRecipeRating(ctx context.Context, updated *types.RecipeRating) error {
 	return m.Called(ctx, updated).Error(0)
 }
 
-// ArchiveMealRating is a mock function.
-func (m *MealRatingDataManager) ArchiveMealRating(ctx context.Context, mealRatingID string) error {
-	return m.Called(ctx, mealRatingID).Error(0)
+// ArchiveRecipeRating is a mock function.
+func (m *RecipeRatingDataManager) ArchiveRecipeRating(ctx context.Context, recipeRatingID string) error {
+	return m.Called(ctx, recipeRatingID).Error(0)
 }

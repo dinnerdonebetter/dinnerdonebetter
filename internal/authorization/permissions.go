@@ -350,14 +350,14 @@ const (
 	// ArchiveHouseholdInstrumentOwnershipsPermission is a household user permission.
 	ArchiveHouseholdInstrumentOwnershipsPermission Permission = "archive.household_instrument_ownerships"
 
-	// CreateMealRatingsPermission is a household user permission.
-	CreateMealRatingsPermission Permission = "create.meal_ratings"
-	// ReadMealRatingsPermission is a household user permission.
-	ReadMealRatingsPermission Permission = "read.meal_ratings"
-	// UpdateMealRatingsPermission is a household user permission.
-	UpdateMealRatingsPermission Permission = "update.meal_ratings"
-	// ArchiveMealRatingsPermission is a household user permission.
-	ArchiveMealRatingsPermission Permission = "archive.meal_ratings"
+	// CreateRecipeRatingsPermission is a household user permission.
+	CreateRecipeRatingsPermission Permission = "create.recipe_ratings"
+	// ReadRecipeRatingsPermission is a household user permission.
+	ReadRecipeRatingsPermission Permission = "read.recipe_ratings"
+	// UpdateRecipeRatingsPermission is a household user permission.
+	UpdateRecipeRatingsPermission Permission = "update.recipe_ratings"
+	// ArchiveRecipeRatingsPermission is a household user permission.
+	ArchiveRecipeRatingsPermission Permission = "archive.recipe_ratings"
 )
 
 // ID implements the gorbac Permission interface.
@@ -588,10 +588,10 @@ var (
 
 		ReadHouseholdInstrumentOwnershipsPermission.ID(): ReadHouseholdInstrumentOwnershipsPermission,
 
-		CreateMealRatingsPermission.ID():  CreateMealRatingsPermission,
-		ReadMealRatingsPermission.ID():    ReadMealRatingsPermission,
-		UpdateMealRatingsPermission.ID():  UpdateMealRatingsPermission,
-		ArchiveMealRatingsPermission.ID(): ArchiveMealRatingsPermission,
+		CreateRecipeRatingsPermission.ID():  CreateRecipeRatingsPermission,
+		ReadRecipeRatingsPermission.ID():    ReadRecipeRatingsPermission,
+		UpdateRecipeRatingsPermission.ID():  UpdateRecipeRatingsPermission,
+		ArchiveRecipeRatingsPermission.ID(): ArchiveRecipeRatingsPermission,
 	}
 )
 

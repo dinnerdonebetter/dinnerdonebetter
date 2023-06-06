@@ -1,6 +1,6 @@
-UPDATE meal_ratings
+UPDATE recipe_ratings
 SET
-	meal_id = $1,
+	recipe_id = $1,
     taste = $2,
     difficulty = $3,
     cleanup = $4,

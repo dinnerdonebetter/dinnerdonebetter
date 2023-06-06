@@ -5,13 +5,13 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
-// BuildFakeMealRating builds a faked valid ingredient.
-func BuildFakeMealRating() *types.MealRating {
-	return &types.MealRating{
+// BuildFakeRecipeRating builds a faked valid ingredient.
+func BuildFakeRecipeRating() *types.RecipeRating {
+	return &types.RecipeRating{
 		CreatedAt:    BuildFakeTime(),
 		Notes:        buildUniqueString(),
 		ID:           buildUniqueString(),
-		MealID:       buildUniqueString(),
+		RecipeID:     buildUniqueString(),
 		ByUser:       buildUniqueString(),
 		Taste:        float32(BuildFakeNumber()),
 		Instructions: float32(BuildFakeNumber()),
@@ -21,14 +21,14 @@ func BuildFakeMealRating() *types.MealRating {
 	}
 }
 
-// BuildFakeMealRatingList builds a faked MealRatingList.
-func BuildFakeMealRatingList() *types.QueryFilteredResult[types.MealRating] {
-	var examples []*types.MealRating
+// BuildFakeRecipeRatingList builds a faked RecipeRatingList.
+func BuildFakeRecipeRatingList() *types.QueryFilteredResult[types.RecipeRating] {
+	var examples []*types.RecipeRating
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeMealRating())
+		examples = append(examples, BuildFakeRecipeRating())
 	}
 
-	return &types.QueryFilteredResult[types.MealRating]{
+	return &types.QueryFilteredResult[types.RecipeRating]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
@@ -39,14 +39,14 @@ func BuildFakeMealRatingList() *types.QueryFilteredResult[types.MealRating] {
 	}
 }
 
-// BuildFakeMealRatingUpdateRequestInput builds a faked MealRatingUpdateRequestInput from a valid ingredient.
-func BuildFakeMealRatingUpdateRequestInput() *types.MealRatingUpdateRequestInput {
-	mealRating := BuildFakeMealRating()
-	return converters.ConvertMealRatingToMealRatingUpdateRequestInput(mealRating)
+// BuildFakeRecipeRatingUpdateRequestInput builds a faked RecipeRatingUpdateRequestInput from a valid ingredient.
+func BuildFakeRecipeRatingUpdateRequestInput() *types.RecipeRatingUpdateRequestInput {
+	recipeRating := BuildFakeRecipeRating()
+	return converters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(recipeRating)
 }
 
-// BuildFakeMealRatingCreationRequestInput builds a faked MealRatingCreationRequestInput.
-func BuildFakeMealRatingCreationRequestInput() *types.MealRatingCreationRequestInput {
-	mealRating := BuildFakeMealRating()
-	return converters.ConvertMealRatingToMealRatingCreationRequestInput(mealRating)
+// BuildFakeRecipeRatingCreationRequestInput builds a faked RecipeRatingCreationRequestInput.
+func BuildFakeRecipeRatingCreationRequestInput() *types.RecipeRatingCreationRequestInput {
+	recipeRating := BuildFakeRecipeRating()
+	return converters.ConvertRecipeRatingToRecipeRatingCreationRequestInput(recipeRating)
 }

@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBuilder_BuildGetMealRatingRequest(T *testing.T) {
+func TestBuilder_BuildGetRecipeRatingRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meals/%s/ratings/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/ratings/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -21,11 +21,11 @@ func TestBuilder_BuildGetMealRatingRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealID := fakes.BuildFakeID()
-		exampleMealRating := fakes.BuildFakeMealRating()
+		exampleRecipeRating := fakes.BuildFakeRecipeRating()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleMealID, exampleMealRating.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleMealID, exampleRecipeRating.ID)
 
-		actual, err := helper.builder.BuildGetMealRatingRequest(helper.ctx, exampleMealID, exampleMealRating.ID)
+		actual, err := helper.builder.BuildGetRecipeRatingRequest(helper.ctx, exampleMealID, exampleRecipeRating.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -38,7 +38,7 @@ func TestBuilder_BuildGetMealRatingRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetMealRatingRequest(helper.ctx, exampleMealID, "")
+		actual, err := helper.builder.BuildGetRecipeRatingRequest(helper.ctx, exampleMealID, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -50,18 +50,18 @@ func TestBuilder_BuildGetMealRatingRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealID := fakes.BuildFakeID()
-		exampleMealRating := fakes.BuildFakeMealRating()
+		exampleRecipeRating := fakes.BuildFakeRecipeRating()
 
-		actual, err := helper.builder.BuildGetMealRatingRequest(helper.ctx, exampleMealID, exampleMealRating.ID)
+		actual, err := helper.builder.BuildGetRecipeRatingRequest(helper.ctx, exampleMealID, exampleRecipeRating.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildGetMealRatingsRequest(T *testing.T) {
+func TestBuilder_BuildGetRecipeRatingsRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meals/%s/ratings"
+	const expectedPathFormat = "/api/v1/recipes/%s/ratings"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -72,7 +72,7 @@ func TestBuilder_BuildGetMealRatingsRequest(T *testing.T) {
 		filter := (*types.QueryFilter)(nil)
 		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealID)
 
-		actual, err := helper.builder.BuildGetMealRatingsRequest(helper.ctx, exampleMealID, filter)
+		actual, err := helper.builder.BuildGetRecipeRatingsRequest(helper.ctx, exampleMealID, filter)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -87,16 +87,16 @@ func TestBuilder_BuildGetMealRatingsRequest(T *testing.T) {
 		exampleMealID := fakes.BuildFakeID()
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetMealRatingsRequest(helper.ctx, exampleMealID, filter)
+		actual, err := helper.builder.BuildGetRecipeRatingsRequest(helper.ctx, exampleMealID, filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildCreateMealRatingRequest(T *testing.T) {
+func TestBuilder_BuildCreateRecipeRatingRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/meals/%s/ratings"
+	const expectedPath = "/api/v1/recipes/%s/ratings"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -104,11 +104,11 @@ func TestBuilder_BuildCreateMealRatingRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeMealRatingCreationRequestInput()
+		exampleInput := fakes.BuildFakeRecipeRatingCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleMealID)
 
-		actual, err := helper.builder.BuildCreateMealRatingRequest(helper.ctx, exampleMealID, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeRatingRequest(helper.ctx, exampleMealID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -121,7 +121,7 @@ func TestBuilder_BuildCreateMealRatingRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateMealRatingRequest(helper.ctx, exampleMealID, nil)
+		actual, err := helper.builder.BuildCreateRecipeRatingRequest(helper.ctx, exampleMealID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -133,7 +133,7 @@ func TestBuilder_BuildCreateMealRatingRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateMealRatingRequest(helper.ctx, exampleMealID, &types.MealRatingCreationRequestInput{})
+		actual, err := helper.builder.BuildCreateRecipeRatingRequest(helper.ctx, exampleMealID, &types.RecipeRatingCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -145,29 +145,29 @@ func TestBuilder_BuildCreateMealRatingRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeMealRatingCreationRequestInput()
+		exampleInput := fakes.BuildFakeRecipeRatingCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateMealRatingRequest(helper.ctx, exampleMealID, exampleInput)
+		actual, err := helper.builder.BuildCreateRecipeRatingRequest(helper.ctx, exampleMealID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildUpdateMealRatingRequest(T *testing.T) {
+func TestBuilder_BuildUpdateRecipeRatingRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meals/%s/ratings/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/ratings/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		exampleMealRating := fakes.BuildFakeMealRating()
+		exampleRecipeRating := fakes.BuildFakeRecipeRating()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleMealRating.MealID, exampleMealRating.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleRecipeRating.RecipeID, exampleRecipeRating.ID)
 
-		actual, err := helper.builder.BuildUpdateMealRatingRequest(helper.ctx, exampleMealRating)
+		actual, err := helper.builder.BuildUpdateRecipeRatingRequest(helper.ctx, exampleRecipeRating)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -178,7 +178,7 @@ func TestBuilder_BuildUpdateMealRatingRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildUpdateMealRatingRequest(helper.ctx, nil)
+		actual, err := helper.builder.BuildUpdateRecipeRatingRequest(helper.ctx, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -189,18 +189,18 @@ func TestBuilder_BuildUpdateMealRatingRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleMealRating := fakes.BuildFakeMealRating()
+		exampleRecipeRating := fakes.BuildFakeRecipeRating()
 
-		actual, err := helper.builder.BuildUpdateMealRatingRequest(helper.ctx, exampleMealRating)
+		actual, err := helper.builder.BuildUpdateRecipeRatingRequest(helper.ctx, exampleRecipeRating)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildArchiveMealRatingRequest(T *testing.T) {
+func TestBuilder_BuildArchiveRecipeRatingRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/meals/%s/ratings/%s"
+	const expectedPathFormat = "/api/v1/recipes/%s/ratings/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -208,11 +208,11 @@ func TestBuilder_BuildArchiveMealRatingRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		exampleMealID := fakes.BuildFakeID()
-		exampleMealRating := fakes.BuildFakeMealRating()
+		exampleRecipeRating := fakes.BuildFakeRecipeRating()
 
-		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleMealID, exampleMealRating.ID)
+		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleMealID, exampleRecipeRating.ID)
 
-		actual, err := helper.builder.BuildArchiveMealRatingRequest(helper.ctx, exampleMealID, exampleMealRating.ID)
+		actual, err := helper.builder.BuildArchiveRecipeRatingRequest(helper.ctx, exampleMealID, exampleRecipeRating.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -225,7 +225,7 @@ func TestBuilder_BuildArchiveMealRatingRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildArchiveMealRatingRequest(helper.ctx, exampleMealID, "")
+		actual, err := helper.builder.BuildArchiveRecipeRatingRequest(helper.ctx, exampleMealID, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -237,9 +237,9 @@ func TestBuilder_BuildArchiveMealRatingRequest(T *testing.T) {
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
 		exampleMealID := fakes.BuildFakeID()
-		exampleMealRating := fakes.BuildFakeMealRating()
+		exampleRecipeRating := fakes.BuildFakeRecipeRating()
 
-		actual, err := helper.builder.BuildArchiveMealRatingRequest(helper.ctx, exampleMealID, exampleMealRating.ID)
+		actual, err := helper.builder.BuildArchiveRecipeRatingRequest(helper.ctx, exampleMealID, exampleRecipeRating.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

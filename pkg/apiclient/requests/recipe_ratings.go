@@ -11,31 +11,31 @@ import (
 )
 
 const (
-	mealRatingsBasePath = "ratings"
+	recipeRatingsBasePath = "ratings"
 )
 
-// BuildGetMealRatingRequest builds an HTTP request for fetching a valid instrument.
-func (b *Builder) BuildGetMealRatingRequest(ctx context.Context, mealID, mealRatingID string) (*http.Request, error) {
+// BuildGetRecipeRatingRequest builds an HTTP request for fetching a recipe rating.
+func (b *Builder) BuildGetRecipeRatingRequest(ctx context.Context, recipeID, recipeRatingID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if mealID == "" {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if mealRatingID == "" {
+	if recipeRatingID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealRatingIDToSpan(span, mealRatingID)
+	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		mealsBasePath,
-		mealID,
-		mealRatingsBasePath,
-		mealRatingID,
+		recipesBasePath,
+		recipeID,
+		recipeRatingsBasePath,
+		recipeRatingID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -47,22 +47,22 @@ func (b *Builder) BuildGetMealRatingRequest(ctx context.Context, mealID, mealRat
 	return req, nil
 }
 
-// BuildGetMealRatingsRequest builds an HTTP request for fetching a list of valid instruments.
-func (b *Builder) BuildGetMealRatingsRequest(ctx context.Context, mealID string, filter *types.QueryFilter) (*http.Request, error) {
+// BuildGetRecipeRatingsRequest builds an HTTP request for fetching a list of recipe ratings.
+func (b *Builder) BuildGetRecipeRatingsRequest(ctx context.Context, recipeID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if mealID == "" {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	uri := b.BuildURL(
 		ctx,
 		filter.ToValues(),
-		mealsBasePath,
-		mealID,
-		mealRatingsBasePath,
+		recipesBasePath,
+		recipeID,
+		recipeRatingsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -75,15 +75,15 @@ func (b *Builder) BuildGetMealRatingsRequest(ctx context.Context, mealID string,
 	return req, nil
 }
 
-// BuildCreateMealRatingRequest builds an HTTP request for creating a valid instrument.
-func (b *Builder) BuildCreateMealRatingRequest(ctx context.Context, mealID string, input *types.MealRatingCreationRequestInput) (*http.Request, error) {
+// BuildCreateRecipeRatingRequest builds an HTTP request for creating a recipe rating.
+func (b *Builder) BuildCreateRecipeRatingRequest(ctx context.Context, recipeID string, input *types.RecipeRatingCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if mealID == "" {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -96,9 +96,9 @@ func (b *Builder) BuildCreateMealRatingRequest(ctx context.Context, mealID strin
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		mealsBasePath,
-		mealID,
-		mealRatingsBasePath,
+		recipesBasePath,
+		recipeID,
+		recipeRatingsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -110,27 +110,27 @@ func (b *Builder) BuildCreateMealRatingRequest(ctx context.Context, mealID strin
 	return req, nil
 }
 
-// BuildUpdateMealRatingRequest builds an HTTP request for updating a valid instrument.
-func (b *Builder) BuildUpdateMealRatingRequest(ctx context.Context, mealRating *types.MealRating) (*http.Request, error) {
+// BuildUpdateRecipeRatingRequest builds an HTTP request for updating a recipe rating.
+func (b *Builder) BuildUpdateRecipeRatingRequest(ctx context.Context, recipeRating *types.RecipeRating) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if mealRating == nil {
+	if recipeRating == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachMealRatingIDToSpan(span, mealRating.ID)
+	tracing.AttachRecipeRatingIDToSpan(span, recipeRating.ID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		mealsBasePath,
-		mealRating.MealID,
-		mealRatingsBasePath,
-		mealRating.ID,
+		recipesBasePath,
+		recipeRating.RecipeID,
+		recipeRatingsBasePath,
+		recipeRating.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := converters.ConvertMealRatingToMealRatingUpdateRequestInput(mealRating)
+	input := converters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(recipeRating)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
@@ -140,28 +140,28 @@ func (b *Builder) BuildUpdateMealRatingRequest(ctx context.Context, mealRating *
 	return req, nil
 }
 
-// BuildArchiveMealRatingRequest builds an HTTP request for archiving a valid instrument.
-func (b *Builder) BuildArchiveMealRatingRequest(ctx context.Context, mealID, mealRatingID string) (*http.Request, error) {
+// BuildArchiveRecipeRatingRequest builds an HTTP request for archiving a recipe rating.
+func (b *Builder) BuildArchiveRecipeRatingRequest(ctx context.Context, recipeID, recipeRatingID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if mealID == "" {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if mealRatingID == "" {
+	if recipeRatingID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealRatingIDToSpan(span, mealRatingID)
+	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		mealsBasePath,
-		mealID,
-		mealRatingsBasePath,
-		mealRatingID,
+		recipesBasePath,
+		recipeID,
+		recipeRatingsBasePath,
+		recipeRatingID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 

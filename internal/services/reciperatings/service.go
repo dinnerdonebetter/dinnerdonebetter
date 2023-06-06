@@ -1,4 +1,4 @@
-package mealratings
+package reciperatings
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
+	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -18,15 +18,15 @@ const (
 	serviceName string = "valid_instruments_service"
 )
 
-var _ types.MealRatingDataService = (*service)(nil)
+var _ types.RecipeRatingDataService = (*service)(nil)
 
 type (
 	// service handles valid instruments.
 	service struct {
 		logger                    logging.Logger
-		mealRatingDataManager     types.MealRatingDataManager
-		mealIDFetcher             func(*http.Request) string
-		mealRatingIDFetcher       func(*http.Request) string
+		recipeRatingDataManager   types.RecipeRatingDataManager
+		recipeIDFetcher           func(*http.Request) string
+		recipeRatingIDFetcher     func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
 		encoderDecoder            encoding.ServerEncoderDecoder
@@ -34,27 +34,27 @@ type (
 	}
 )
 
-// ProvideService builds a new MealRatingsService.
+// ProvideService builds a new RecipeRatingsService.
 func ProvideService(
 	logger logging.Logger,
 	cfg *Config,
-	mealRatingDataManager types.MealRatingDataManager,
+	recipeRatingDataManager types.RecipeRatingDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
-) (types.MealRatingDataService, error) {
+) (types.RecipeRatingDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up meal ratings service data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up recipe ratings service data changes publisher: %w", err)
 	}
 
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
-		mealIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(mealsservice.MealIDURIParamKey),
-		mealRatingIDFetcher:       routeParamManager.BuildRouteParamStringIDFetcher(MealRatingIDURIParamKey),
+		recipeIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(recipesservice.RecipeIDURIParamKey),
+		recipeRatingIDFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(RecipeRatingIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
-		mealRatingDataManager:     mealRatingDataManager,
+		recipeRatingDataManager:   recipeRatingDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),

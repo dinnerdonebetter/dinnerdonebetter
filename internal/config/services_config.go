@@ -14,9 +14,9 @@ import (
 	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
-	mealratingsservice "github.com/dinnerdonebetter/backend/internal/services/mealratings"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
 	"github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
+	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	recipestepcompletionconditionsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
@@ -52,7 +52,7 @@ type (
 		_ struct{}
 
 		ValidPreparationInstruments     validpreparationinstrumentsservice.Config     `json:"validPreparationInstruments"     toml:"valid_preparation_instruments,omitempty"`
-		MealRatings                     mealratingsservice.Config                     `json:"mealRatings"                     toml:"meal_ratings,omitempty"`
+		RecipeRatings                   reciperatingsservice.Config                   `json:"recipeRatings"                   toml:"recipe_ratings,omitempty"`
 		ValidInstruments                validinstrumentsservice.Config                `json:"validInstruments"                toml:"valid_instruments,omitempty"`
 		RecipeStepCompletionConditions  recipestepcompletionconditionsservice.Config  `json:"recipeStepCompletionConditions"  toml:"recipe_step_completion_conditions,omitempty"`
 		ValidIngredientPreparations     validingredientpreparationsservice.Config     `json:"validIngredientPreparations"     toml:"valid_ingredient_preparations,omitempty"`

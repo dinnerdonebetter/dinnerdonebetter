@@ -105,7 +105,7 @@ type (
 		types.ServiceSettingConfigurationDataManager
 		types.ValidIngredientGroupDataManager
 		types.UserIngredientPreferenceDataManager
-		types.MealRatingDataManager
+		types.RecipeRatingDataManager
 		types.HouseholdInstrumentOwnershipDataManager
 	}
 )

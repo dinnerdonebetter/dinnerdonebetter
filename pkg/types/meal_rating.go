@@ -12,23 +12,23 @@ import (
 )
 
 const (
-	// MealRatingCreatedCustomerEventType indicates a meal rating was created.
-	MealRatingCreatedCustomerEventType CustomerEventType = "meal_rating_created"
-	// MealRatingUpdatedCustomerEventType indicates a meal rating was updated.
-	MealRatingUpdatedCustomerEventType CustomerEventType = "meal_rating_updated"
-	// MealRatingArchivedCustomerEventType indicates a meal rating was archived.
-	MealRatingArchivedCustomerEventType CustomerEventType = "meal_rating_archived"
+	// RecipeRatingCreatedCustomerEventType indicates a recipe rating was created.
+	RecipeRatingCreatedCustomerEventType CustomerEventType = "recipe_rating_created"
+	// RecipeRatingUpdatedCustomerEventType indicates a recipe rating was updated.
+	RecipeRatingUpdatedCustomerEventType CustomerEventType = "recipe_rating_updated"
+	// RecipeRatingArchivedCustomerEventType indicates a recipe rating was archived.
+	RecipeRatingArchivedCustomerEventType CustomerEventType = "recipe_rating_archived"
 )
 
 func init() {
-	gob.Register(new(MealRating))
-	gob.Register(new(MealRatingCreationRequestInput))
-	gob.Register(new(MealRatingUpdateRequestInput))
+	gob.Register(new(RecipeRating))
+	gob.Register(new(RecipeRatingCreationRequestInput))
+	gob.Register(new(RecipeRatingUpdateRequestInput))
 }
 
 type (
-	// MealRating represents a meal rating.
-	MealRating struct {
+	// RecipeRating represents a recipe rating.
+	RecipeRating struct {
 		_ struct{}
 
 		CreatedAt     time.Time  `json:"createdAt"`
@@ -36,7 +36,7 @@ type (
 		ArchivedAt    *time.Time `json:"archivedAt"`
 		Notes         string     `json:"notes"`
 		ID            string     `json:"id"`
-		MealID        string     `json:"mealID"`
+		RecipeID      string     `json:"mealID"`
 		ByUser        string     `json:"byUser"`
 		Taste         float32    `json:"taste"`
 		Instructions  float32    `json:"instructions"`
@@ -45,8 +45,8 @@ type (
 		Difficulty    float32    `json:"difficulty"`
 	}
 
-	// MealRatingCreationRequestInput represents what a user could set as input for creating meal ratings.
-	MealRatingCreationRequestInput struct {
+	// RecipeRatingCreationRequestInput represents what a user could set as input for creating recipe ratings.
+	RecipeRatingCreationRequestInput struct {
 		_ struct{}
 
 		MealID       string  `json:"mealID"`
@@ -59,8 +59,8 @@ type (
 		Overall      float32 `json:"overall"`
 	}
 
-	// MealRatingDatabaseCreationInput represents what a user could set as input for creating meal ratings.
-	MealRatingDatabaseCreationInput struct {
+	// RecipeRatingDatabaseCreationInput represents what a user could set as input for creating recipe ratings.
+	RecipeRatingDatabaseCreationInput struct {
 		_ struct{}
 
 		ID           string
@@ -74,8 +74,8 @@ type (
 		Overall      float32
 	}
 
-	// MealRatingUpdateRequestInput represents what a user could set as input for updating meal ratings.
-	MealRatingUpdateRequestInput struct {
+	// RecipeRatingUpdateRequestInput represents what a user could set as input for updating recipe ratings.
+	RecipeRatingUpdateRequestInput struct {
 		_ struct{}
 
 		MealID       *string  `json:"mealID"`
@@ -88,18 +88,18 @@ type (
 		ByUser       *string  `json:"byUser"`
 	}
 
-	// MealRatingDataManager describes a structure capable of storing meal ratings permanently.
-	MealRatingDataManager interface {
-		MealRatingExists(ctx context.Context, mealRatingID string) (bool, error)
-		GetMealRating(ctx context.Context, mealRatingID string) (*MealRating, error)
-		GetMealRatings(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[MealRating], error)
-		CreateMealRating(ctx context.Context, input *MealRatingDatabaseCreationInput) (*MealRating, error)
-		UpdateMealRating(ctx context.Context, updated *MealRating) error
-		ArchiveMealRating(ctx context.Context, mealRatingID string) error
+	// RecipeRatingDataManager describes a structure capable of storing recipe ratings permanently.
+	RecipeRatingDataManager interface {
+		RecipeRatingExists(ctx context.Context, recipeRatingID string) (bool, error)
+		GetRecipeRating(ctx context.Context, recipeRatingID string) (*RecipeRating, error)
+		GetRecipeRatings(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[RecipeRating], error)
+		CreateRecipeRating(ctx context.Context, input *RecipeRatingDatabaseCreationInput) (*RecipeRating, error)
+		UpdateRecipeRating(ctx context.Context, updated *RecipeRating) error
+		ArchiveRecipeRating(ctx context.Context, recipeRatingID string) error
 	}
 
-	// MealRatingDataService describes a structure capable of serving traffic related to meal ratings.
-	MealRatingDataService interface {
+	// RecipeRatingDataService describes a structure capable of serving traffic related to recipe ratings.
+	RecipeRatingDataService interface {
 		ListHandler(http.ResponseWriter, *http.Request)
 		ReadHandler(http.ResponseWriter, *http.Request)
 		CreateHandler(http.ResponseWriter, *http.Request)
@@ -108,10 +108,10 @@ type (
 	}
 )
 
-// Update merges an MealRatingUpdateRequestInput with a meal rating.
-func (x *MealRating) Update(input *MealRatingUpdateRequestInput) {
-	if input.MealID != nil && *input.MealID != x.MealID {
-		x.MealID = *input.MealID
+// Update merges an RecipeRatingUpdateRequestInput with a recipe rating.
+func (x *RecipeRating) Update(input *RecipeRatingUpdateRequestInput) {
+	if input.MealID != nil && *input.MealID != x.RecipeID {
+		x.RecipeID = *input.MealID
 	}
 
 	if input.Taste != nil && *input.Taste != x.Taste {
@@ -139,14 +139,14 @@ func (x *MealRating) Update(input *MealRatingUpdateRequestInput) {
 	}
 }
 
-var _ validation.ValidatableWithContext = (*MealRatingCreationRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*RecipeRatingCreationRequestInput)(nil)
 
-// ValidateWithContext validates a MealRatingCreationRequestInput.
-func (x *MealRatingCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a RecipeRatingCreationRequestInput.
+func (x *RecipeRatingCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	var errs *multierror.Error
 
 	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
-		errs = multierror.Append(errs, errors.New("meal rating must have at least one rating"))
+		errs = multierror.Append(errs, errors.New("recipe rating must have at least one rating"))
 	}
 
 	if err := validation.ValidateStructWithContext(
@@ -160,14 +160,14 @@ func (x *MealRatingCreationRequestInput) ValidateWithContext(ctx context.Context
 	return errs.ErrorOrNil()
 }
 
-var _ validation.ValidatableWithContext = (*MealRatingDatabaseCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*RecipeRatingDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a MealRatingDatabaseCreationInput.
-func (x *MealRatingDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a RecipeRatingDatabaseCreationInput.
+func (x *RecipeRatingDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
 	var errs *multierror.Error
 
 	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
-		errs = multierror.Append(errs, errors.New("meal rating must have at least one rating"))
+		errs = multierror.Append(errs, errors.New("recipe rating must have at least one rating"))
 	}
 
 	if err := validation.ValidateStructWithContext(
@@ -183,10 +183,10 @@ func (x *MealRatingDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 	return errs.ErrorOrNil()
 }
 
-var _ validation.ValidatableWithContext = (*MealRatingUpdateRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*RecipeRatingUpdateRequestInput)(nil)
 
-// ValidateWithContext validates a MealRatingUpdateRequestInput.
-func (x *MealRatingUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a RecipeRatingUpdateRequestInput.
+func (x *RecipeRatingUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

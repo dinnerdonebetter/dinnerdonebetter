@@ -90,7 +90,7 @@
 		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealRatings": {
+		"recipeRatings": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstruments": {

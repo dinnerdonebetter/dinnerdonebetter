@@ -8,9 +8,9 @@ ALTER TABLE users ADD COLUMN "last_accepted_privacy_policy" TIMESTAMP WITH TIME 
 
 ALTER TABLE recipe_step_ingredients ADD COLUMN "recipe_step_product_recipe_id" TEXT DEFAULT NULL REFERENCES recipes("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-CREATE TABLE IF NOT EXISTS meal_ratings (
+CREATE TABLE IF NOT EXISTS recipe_ratings (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "meal_id" TEXT NOT NULL REFERENCES meals("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    "recipe_id" TEXT NOT NULL REFERENCES recipes("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "taste"  NUMERIC(14, 2),
     "difficulty"  NUMERIC(14, 2),
     "cleanup"  NUMERIC(14, 2),
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS meal_ratings (
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "last_updated_at" TIMESTAMP WITH TIME ZONE,
     "archived_at" TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-    UNIQUE("by_user", "meal_id")
+    UNIQUE("by_user", "recipe_id")
 );
 
 CREATE TABLE IF NOT EXISTS household_instrument_ownerships (

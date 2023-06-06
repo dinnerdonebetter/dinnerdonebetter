@@ -1,4 +1,4 @@
-package mealratings
+package reciperatings
 
 import (
 	"context"
@@ -16,7 +16,7 @@ import (
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 )
 
-type mealRatingsServiceHTTPRoutesTestHelper struct {
+type recipeRatingsServiceHTTPRoutesTestHelper struct {
 	ctx                  context.Context
 	req                  *http.Request
 	res                  *httptest.ResponseRecorder
@@ -24,15 +24,15 @@ type mealRatingsServiceHTTPRoutesTestHelper struct {
 	exampleUser          *types.User
 	exampleHousehold     *types.Household
 	exampleMeal          *types.Meal
-	exampleMealRating    *types.MealRating
-	exampleCreationInput *types.MealRatingCreationRequestInput
-	exampleUpdateInput   *types.MealRatingUpdateRequestInput
+	exampleRecipeRating  *types.RecipeRating
+	exampleCreationInput *types.RecipeRatingCreationRequestInput
+	exampleUpdateInput   *types.RecipeRatingUpdateRequestInput
 }
 
-func buildTestHelper(t *testing.T) *mealRatingsServiceHTTPRoutesTestHelper {
+func buildTestHelper(t *testing.T) *recipeRatingsServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &mealRatingsServiceHTTPRoutesTestHelper{}
+	helper := &recipeRatingsServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
@@ -40,17 +40,17 @@ func buildTestHelper(t *testing.T) *mealRatingsServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleMeal = fakes.BuildFakeMeal()
-	helper.exampleMealRating = fakes.BuildFakeMealRating()
-	helper.exampleMealRating.MealID = helper.exampleMeal.ID
-	helper.exampleCreationInput = converters.ConvertMealRatingToMealRatingCreationRequestInput(helper.exampleMealRating)
-	helper.exampleUpdateInput = converters.ConvertMealRatingToMealRatingUpdateRequestInput(helper.exampleMealRating)
+	helper.exampleRecipeRating = fakes.BuildFakeRecipeRating()
+	helper.exampleRecipeRating.RecipeID = helper.exampleMeal.ID
+	helper.exampleCreationInput = converters.ConvertRecipeRatingToRecipeRatingCreationRequestInput(helper.exampleRecipeRating)
+	helper.exampleUpdateInput = converters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(helper.exampleRecipeRating)
 
-	helper.service.mealIDFetcher = func(*http.Request) string {
+	helper.service.recipeIDFetcher = func(*http.Request) string {
 		return helper.exampleMeal.ID
 	}
 
-	helper.service.mealRatingIDFetcher = func(*http.Request) string {
-		return helper.exampleMealRating.ID
+	helper.service.recipeRatingIDFetcher = func(*http.Request) string {
+		return helper.exampleRecipeRating.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{

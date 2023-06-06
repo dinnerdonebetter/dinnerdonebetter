@@ -9,14 +9,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMealRatingCreationRequestInput_ValidateWithContext(T *testing.T) {
+func TestRecipeRatingCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &MealRatingCreationRequestInput{
+		x := &RecipeRatingCreationRequestInput{
 			MealID:     t.Name(),
 			Difficulty: 1.0,
 		}
@@ -25,14 +25,14 @@ func TestMealRatingCreationRequestInput_ValidateWithContext(T *testing.T) {
 	})
 }
 
-func TestMealRatingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
+func TestRecipeRatingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &MealRatingDatabaseCreationInput{
+		x := &RecipeRatingDatabaseCreationInput{
 			ID:         t.Name(),
 			MealID:     t.Name(),
 			ByUser:     t.Name(),
@@ -43,14 +43,14 @@ func TestMealRatingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	})
 }
 
-func TestMealRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
+func TestRecipeRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &MealRatingUpdateRequestInput{
+		x := &RecipeRatingUpdateRequestInput{
 			ByUser:     pointers.Pointer(t.Name()),
 			MealID:     pointers.Pointer(t.Name()),
 			Difficulty: pointers.Pointer[float32](1.0),

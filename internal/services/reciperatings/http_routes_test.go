@@ -1,4 +1,4 @@
-package mealratings
+package reciperatings
 
 import (
 	"bytes"
@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMealRatingsService_CreateHandler(T *testing.T) {
+func TestRecipeRatingsService_CreateHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -32,7 +32,7 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -41,12 +41,12 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealRatingDataManager.On(
-			"CreateMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"CreateRecipeRating",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealRatingDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleMealRating, nil)
-		helper.service.mealRatingDataManager = dbManager
+			mock.MatchedBy(func(*types.RecipeRatingDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleRecipeRating, nil)
+		helper.service.recipeRatingDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -85,7 +85,7 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.MealRatingCreationRequestInput{}
+		exampleCreationInput := &types.RecipeRatingCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -104,7 +104,7 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -125,7 +125,7 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -134,12 +134,12 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealRatingDataManager.On(
-			"CreateMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"CreateRecipeRating",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealRatingDatabaseCreationInput) bool { return true }),
-		).Return((*types.MealRating)(nil), errors.New("blah"))
-		helper.service.mealRatingDataManager = dbManager
+			mock.MatchedBy(func(*types.RecipeRatingDatabaseCreationInput) bool { return true }),
+		).Return((*types.RecipeRating)(nil), errors.New("blah"))
+		helper.service.recipeRatingDataManager = dbManager
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
@@ -154,7 +154,7 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -163,12 +163,12 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealRatingDataManager.On(
-			"CreateMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"CreateRecipeRating",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealRatingDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleMealRating, nil)
-		helper.service.mealRatingDataManager = dbManager
+			mock.MatchedBy(func(*types.RecipeRatingDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleRecipeRating, nil)
+		helper.service.recipeRatingDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -186,7 +186,7 @@ func TestMealRatingsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestMealRatingsService_ReadHandler(T *testing.T) {
+func TestRecipeRatingsService_ReadHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -194,20 +194,20 @@ func TestMealRatingsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"GetMealRating",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"GetRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
-		).Return(helper.exampleMealRating, nil)
-		helper.service.mealRatingDataManager = mealRatingDataManager
+			helper.exampleRecipeRating.ID,
+		).Return(helper.exampleRecipeRating, nil)
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.MealRating{}),
+			mock.IsType(&types.RecipeRating{}),
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -215,7 +215,7 @@ func TestMealRatingsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -247,13 +247,13 @@ func TestMealRatingsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"GetMealRating",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"GetRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
-		).Return((*types.MealRating)(nil), sql.ErrNoRows)
-		helper.service.mealRatingDataManager = mealRatingDataManager
+			helper.exampleRecipeRating.ID,
+		).Return((*types.RecipeRating)(nil), sql.ErrNoRows)
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -267,7 +267,7 @@ func TestMealRatingsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, encoderDecoder)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -275,13 +275,13 @@ func TestMealRatingsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"GetMealRating",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"GetRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
-		).Return((*types.MealRating)(nil), errors.New("blah"))
-		helper.service.mealRatingDataManager = mealRatingDataManager
+			helper.exampleRecipeRating.ID,
+		).Return((*types.RecipeRating)(nil), errors.New("blah"))
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -295,11 +295,11 @@ func TestMealRatingsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, encoderDecoder)
 	})
 }
 
-func TestMealRatingsService_ListHandler(T *testing.T) {
+func TestRecipeRatingsService_ListHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -307,22 +307,22 @@ func TestMealRatingsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleMealRatingList := fakes.BuildFakeMealRatingList()
+		exampleRecipeRatingList := fakes.BuildFakeRecipeRatingList()
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"GetMealRatings",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"GetRecipeRatings",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleMealRatingList, nil)
-		helper.service.mealRatingDataManager = mealRatingDataManager
+		).Return(exampleRecipeRatingList, nil)
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.MealRating]{}),
+			mock.IsType(&types.QueryFilteredResult[types.RecipeRating]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -330,7 +330,7 @@ func TestMealRatingsService_ListHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -362,20 +362,20 @@ func TestMealRatingsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"GetMealRatings",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"GetRecipeRatings",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.MealRating])(nil), sql.ErrNoRows)
-		helper.service.mealRatingDataManager = mealRatingDataManager
+		).Return((*types.QueryFilteredResult[types.RecipeRating])(nil), sql.ErrNoRows)
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.MealRating]{}),
+			mock.IsType(&types.QueryFilteredResult[types.RecipeRating]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -383,7 +383,7 @@ func TestMealRatingsService_ListHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving valid instruments from database", func(t *testing.T) {
@@ -391,13 +391,13 @@ func TestMealRatingsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"GetMealRatings",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"GetRecipeRatings",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.MealRating])(nil), errors.New("blah"))
-		helper.service.mealRatingDataManager = mealRatingDataManager
+		).Return((*types.QueryFilteredResult[types.RecipeRating])(nil), errors.New("blah"))
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -411,11 +411,11 @@ func TestMealRatingsService_ListHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, encoderDecoder)
 	})
 }
 
-func TestMealRatingsService_UpdateHandler(T *testing.T) {
+func TestRecipeRatingsService_UpdateHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -424,7 +424,7 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -433,18 +433,18 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealRatingDataManager.On(
-			"GetMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"GetRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
-		).Return(helper.exampleMealRating, nil)
+			helper.exampleRecipeRating.ID,
+		).Return(helper.exampleRecipeRating, nil)
 
-		dbManager.MealRatingDataManager.On(
-			"UpdateMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"UpdateRecipeRating",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealRating) bool { return true }),
+			mock.MatchedBy(func(*types.RecipeRating) bool { return true }),
 		).Return(nil)
-		helper.service.mealRatingDataManager = dbManager
+		helper.service.recipeRatingDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -467,7 +467,7 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.MealRatingUpdateRequestInput{}
+		exampleCreationInput := &types.RecipeRatingUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -513,7 +513,7 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -521,19 +521,19 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"GetMealRating",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"GetRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
-		).Return((*types.MealRating)(nil), sql.ErrNoRows)
-		helper.service.mealRatingDataManager = mealRatingDataManager
+			helper.exampleRecipeRating.ID,
+		).Return((*types.RecipeRating)(nil), sql.ErrNoRows)
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager)
 	})
 
 	T.Run("with error retrieving valid instrument from database", func(t *testing.T) {
@@ -542,7 +542,7 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -550,19 +550,19 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"GetMealRating",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"GetRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
-		).Return((*types.MealRating)(nil), errors.New("blah"))
-		helper.service.mealRatingDataManager = mealRatingDataManager
+			helper.exampleRecipeRating.ID,
+		).Return((*types.RecipeRating)(nil), errors.New("blah"))
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -571,7 +571,7 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -580,18 +580,18 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealRatingDataManager.On(
-			"GetMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"GetRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
-		).Return(helper.exampleMealRating, nil)
+			helper.exampleRecipeRating.ID,
+		).Return(helper.exampleRecipeRating, nil)
 
-		dbManager.MealRatingDataManager.On(
-			"UpdateMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"UpdateRecipeRating",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealRating) bool { return true }),
+			mock.MatchedBy(func(*types.RecipeRating) bool { return true }),
 		).Return(errors.New("blah"))
-		helper.service.mealRatingDataManager = dbManager
+		helper.service.recipeRatingDataManager = dbManager
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
@@ -606,7 +606,7 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeMealRatingUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeRecipeRatingUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -615,18 +615,18 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealRatingDataManager.On(
-			"GetMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"GetRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
-		).Return(helper.exampleMealRating, nil)
+			helper.exampleRecipeRating.ID,
+		).Return(helper.exampleRecipeRating, nil)
 
-		dbManager.MealRatingDataManager.On(
-			"UpdateMealRating",
+		dbManager.RecipeRatingDataManager.On(
+			"UpdateRecipeRating",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealRating) bool { return true }),
+			mock.MatchedBy(func(*types.RecipeRating) bool { return true }),
 		).Return(nil)
-		helper.service.mealRatingDataManager = dbManager
+		helper.service.recipeRatingDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -644,7 +644,7 @@ func TestMealRatingsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestMealRatingsService_ArchiveHandler(T *testing.T) {
+func TestRecipeRatingsService_ArchiveHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -652,19 +652,19 @@ func TestMealRatingsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"MealRatingExists",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"RecipeRatingExists",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
+			helper.exampleRecipeRating.ID,
 		).Return(true, nil)
 
-		mealRatingDataManager.On(
-			"ArchiveMealRating",
+		recipeRatingDataManager.On(
+			"ArchiveRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
+			helper.exampleRecipeRating.ID,
 		).Return(nil)
-		helper.service.mealRatingDataManager = mealRatingDataManager
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -678,7 +678,7 @@ func TestMealRatingsService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -710,13 +710,13 @@ func TestMealRatingsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"MealRatingExists",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"RecipeRatingExists",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
+			helper.exampleRecipeRating.ID,
 		).Return(false, nil)
-		helper.service.mealRatingDataManager = mealRatingDataManager
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -730,7 +730,7 @@ func TestMealRatingsService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, encoderDecoder)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
@@ -738,19 +738,19 @@ func TestMealRatingsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"MealRatingExists",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"RecipeRatingExists",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
+			helper.exampleRecipeRating.ID,
 		).Return(false, errors.New("blah"))
-		helper.service.mealRatingDataManager = mealRatingDataManager
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -758,25 +758,25 @@ func TestMealRatingsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"MealRatingExists",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"RecipeRatingExists",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
+			helper.exampleRecipeRating.ID,
 		).Return(true, nil)
 
-		mealRatingDataManager.On(
-			"ArchiveMealRating",
+		recipeRatingDataManager.On(
+			"ArchiveRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
+			helper.exampleRecipeRating.ID,
 		).Return(errors.New("blah"))
-		helper.service.mealRatingDataManager = mealRatingDataManager
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager)
 	})
 
 	T.Run("with error publishing to message queue", func(t *testing.T) {
@@ -784,19 +784,19 @@ func TestMealRatingsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealRatingDataManager := &mocktypes.MealRatingDataManager{}
-		mealRatingDataManager.On(
-			"MealRatingExists",
+		recipeRatingDataManager := &mocktypes.RecipeRatingDataManager{}
+		recipeRatingDataManager.On(
+			"RecipeRatingExists",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
+			helper.exampleRecipeRating.ID,
 		).Return(true, nil)
 
-		mealRatingDataManager.On(
-			"ArchiveMealRating",
+		recipeRatingDataManager.On(
+			"ArchiveRecipeRating",
 			testutils.ContextMatcher,
-			helper.exampleMealRating.ID,
+			helper.exampleRecipeRating.ID,
 		).Return(nil)
-		helper.service.mealRatingDataManager = mealRatingDataManager
+		helper.service.recipeRatingDataManager = recipeRatingDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -810,6 +810,6 @@ func TestMealRatingsService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealRatingDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, recipeRatingDataManager, dataChangesPublisher)
 	})
 }

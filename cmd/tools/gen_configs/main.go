@@ -38,9 +38,9 @@ import (
 	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
-	mealratingsservice "github.com/dinnerdonebetter/backend/internal/services/mealratings"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
+	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	recipestepcompletionconditionsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
@@ -530,7 +530,7 @@ func buildDevConfig() *config2.InstanceConfig {
 			ServiceSettingConfigurations: servicesettingconfigurations.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			MealRatings: mealratingsservice.Config{
+			RecipeRatings: reciperatingsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
@@ -752,7 +752,7 @@ func buildIntegrationTestsConfig() *config2.InstanceConfig {
 			ServiceSettingConfigurations: servicesettingconfigurations.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			MealRatings: mealratingsservice.Config{
+			RecipeRatings: reciperatingsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{

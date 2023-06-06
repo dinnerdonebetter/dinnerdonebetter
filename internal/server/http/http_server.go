@@ -66,7 +66,7 @@ type (
 		serviceSettingsService                 types.ServiceSettingDataService
 		serviceSettingConfigurationsService    types.ServiceSettingConfigurationDataService
 		userIngredientPreferencesService       types.UserIngredientPreferenceDataService
-		mealRatingsService                     types.MealRatingDataService
+		recipeRatingsService                   types.RecipeRatingDataService
 		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
@@ -127,7 +127,7 @@ func ProvideHTTPServer(
 	serviceSettingDataService types.ServiceSettingDataService,
 	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
 	userIngredientPreferencesService types.UserIngredientPreferenceDataService,
-	mealRatingsService types.MealRatingDataService,
+	recipeRatingsService types.RecipeRatingDataService,
 	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
 ) (*Server, error) {
 	srv := &Server{
@@ -180,7 +180,7 @@ func ProvideHTTPServer(
 		serviceSettingsService:                 serviceSettingDataService,
 		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
 		userIngredientPreferencesService:       userIngredientPreferencesService,
-		mealRatingsService:                     mealRatingsService,
+		recipeRatingsService:                   recipeRatingsService,
 		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
 	}
 

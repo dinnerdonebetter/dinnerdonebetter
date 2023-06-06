@@ -59,7 +59,7 @@ var (
 			"ServiceSettings",
 			"ServiceSettingConfigurations",
 			"UserIngredientPreferences",
-			"MealRatings",
+			"RecipeRatings",
 			"HouseholdInstrumentOwnerships",
 		),
 	)

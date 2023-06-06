@@ -1,4 +1,4 @@
-package mealratings
+package reciperatings
 
 import (
 	"database/sql"
@@ -14,11 +14,11 @@ import (
 )
 
 const (
-	// MealRatingIDURIParamKey is a standard string that we'll use to refer to meal rating IDs with.
-	MealRatingIDURIParamKey = "mealRatingID"
+	// RecipeRatingIDURIParamKey is a standard string that we'll use to refer to recipe rating IDs with.
+	RecipeRatingIDURIParamKey = "recipeRatingID"
 )
 
-// CreateHandler is our meal rating creation route.
+// CreateHandler is our recipe rating creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -38,7 +38,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// read parsed input struct from request body.
-	providedInput := new(types.MealRatingCreationRequestInput)
+	providedInput := new(types.RecipeRatingCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -51,33 +51,33 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := converters.ConvertMealRatingCreationRequestInputToMealRatingDatabaseCreationInput(providedInput)
+	input := converters.ConvertRecipeRatingCreationRequestInputToRecipeRatingDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 	input.ByUser = sessionCtxData.Requester.UserID
 
-	tracing.AttachMealRatingIDToSpan(span, input.ID)
+	tracing.AttachRecipeRatingIDToSpan(span, input.ID)
 
-	mealRating, err := s.mealRatingDataManager.CreateMealRating(ctx, input)
+	recipeRating, err := s.recipeRatingDataManager.CreateRecipeRating(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating meal rating")
+		observability.AcknowledgeError(err, logger, span, "creating recipe rating")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:  types.MealRatingCreatedCustomerEventType,
-		MealRating: mealRating,
-		UserID:     sessionCtxData.Requester.UserID,
+		EventType:    types.RecipeRatingCreatedCustomerEventType,
+		RecipeRating: recipeRating,
+		UserID:       sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealRating, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipeRating, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a meal rating.
+// ReadHandler returns a GET handler that returns a recipe rating.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -96,18 +96,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine meal rating ID.
-	mealRatingID := s.mealRatingIDFetcher(req)
-	tracing.AttachMealRatingIDToSpan(span, mealRatingID)
-	logger = logger.WithValue(keys.MealRatingIDKey, mealRatingID)
+	// determine recipe rating ID.
+	recipeRatingID := s.recipeRatingIDFetcher(req)
+	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 
-	// fetch meal rating from database.
-	x, err := s.mealRatingDataManager.GetMealRating(ctx, mealRatingID)
+	// fetch recipe rating from database.
+	x, err := s.recipeRatingDataManager.GetRecipeRating(ctx, recipeRatingID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving meal rating")
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe rating")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -141,21 +141,21 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	mealRatings, err := s.mealRatingDataManager.GetMealRatings(ctx, filter)
+	recipeRatings, err := s.recipeRatingDataManager.GetRecipeRatings(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		mealRatings = &types.QueryFilteredResult[types.MealRating]{Data: []*types.MealRating{}}
+		recipeRatings = &types.QueryFilteredResult[types.RecipeRating]{Data: []*types.RecipeRating{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving meal ratings")
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe ratings")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealRatings)
+	s.encoderDecoder.RespondWithData(ctx, res, recipeRatings)
 }
 
-// UpdateHandler returns a handler that updates a meal rating.
+// UpdateHandler returns a handler that updates a recipe rating.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -175,7 +175,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.MealRatingUpdateRequestInput)
+	input := new(types.RecipeRatingUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -188,35 +188,35 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// determine meal rating ID.
-	mealRatingID := s.mealRatingIDFetcher(req)
-	tracing.AttachMealRatingIDToSpan(span, mealRatingID)
-	logger = logger.WithValue(keys.MealRatingIDKey, mealRatingID)
+	// determine recipe rating ID.
+	recipeRatingID := s.recipeRatingIDFetcher(req)
+	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 
-	// fetch meal rating from database.
-	mealRating, err := s.mealRatingDataManager.GetMealRating(ctx, mealRatingID)
+	// fetch recipe rating from database.
+	recipeRating, err := s.recipeRatingDataManager.GetRecipeRating(ctx, recipeRatingID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving meal rating for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe rating for update")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	// update the meal rating.
-	mealRating.Update(input)
+	// update the recipe rating.
+	recipeRating.Update(input)
 
-	if err = s.mealRatingDataManager.UpdateMealRating(ctx, mealRating); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating meal rating")
+	if err = s.recipeRatingDataManager.UpdateRecipeRating(ctx, recipeRating); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating recipe rating")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:  types.MealRatingUpdatedCustomerEventType,
-		MealRating: mealRating,
-		UserID:     sessionCtxData.Requester.UserID,
+		EventType:    types.RecipeRatingUpdatedCustomerEventType,
+		RecipeRating: recipeRating,
+		UserID:       sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -224,10 +224,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealRating)
+	s.encoderDecoder.RespondWithData(ctx, res, recipeRating)
 }
 
-// ArchiveHandler returns a handler that archives a meal rating.
+// ArchiveHandler returns a handler that archives a recipe rating.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -246,14 +246,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine meal rating ID.
-	mealRatingID := s.mealRatingIDFetcher(req)
-	tracing.AttachMealRatingIDToSpan(span, mealRatingID)
-	logger = logger.WithValue(keys.MealRatingIDKey, mealRatingID)
+	// determine recipe rating ID.
+	recipeRatingID := s.recipeRatingIDFetcher(req)
+	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 
-	exists, existenceCheckErr := s.mealRatingDataManager.MealRatingExists(ctx, mealRatingID)
+	exists, existenceCheckErr := s.recipeRatingDataManager.RecipeRatingExists(ctx, recipeRatingID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal rating existence")
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking recipe rating existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
@@ -261,14 +261,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.mealRatingDataManager.ArchiveMealRating(ctx, mealRatingID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving meal rating")
+	if err = s.recipeRatingDataManager.ArchiveRecipeRating(ctx, recipeRatingID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving recipe rating")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.MealRatingArchivedCustomerEventType,
+		EventType: types.RecipeRatingArchivedCustomerEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 

@@ -116,10 +116,10 @@ var (
 			types.MealCreationRequestInput{},
 			types.MealUpdateRequestInput{},
 		},
-		"mealRatings": {
-			types.MealRating{},
-			types.MealRatingCreationRequestInput{},
-			types.MealRatingUpdateRequestInput{},
+		"recipeRatings": {
+			types.RecipeRating{},
+			types.RecipeRatingCreationRequestInput{},
+			types.RecipeRatingUpdateRequestInput{},
 		},
 		"householdInstrumentOwnerships": {
 			types.HouseholdInstrumentOwnership{},

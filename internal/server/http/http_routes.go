@@ -18,9 +18,9 @@ import (
 	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
-	mealratingsservice "github.com/dinnerdonebetter/backend/internal/services/mealratings"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
+	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	recipestepcompletionconditionsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
@@ -665,29 +665,6 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 				singleMealRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealsPermission)).
 					Delete(root, s.mealsService.ArchiveHandler)
-
-				// MealRatings
-				singleMealRouter.Route("/ratings", func(mealRatingsRouter routing.Router) {
-					mealRatingsRouter.
-						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealRatingsPermission)).
-						Post(root, s.mealRatingsService.CreateHandler)
-					mealRatingsRouter.
-						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealRatingsPermission)).
-						Get(root, s.mealRatingsService.ListHandler)
-
-					mealRatingIDRouteParam := buildURLVarChunk(mealratingsservice.MealRatingIDURIParamKey, "")
-					mealRatingsRouter.Route(mealRatingIDRouteParam, func(singleMealRatingRouter routing.Router) {
-						singleMealRatingRouter.
-							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealRatingsPermission)).
-							Get(root, s.mealRatingsService.ReadHandler)
-						singleMealRatingRouter.
-							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealRatingsPermission)).
-							Put(root, s.mealRatingsService.UpdateHandler)
-						singleMealRatingRouter.
-							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealRatingsPermission)).
-							Delete(root, s.mealRatingsService.ArchiveHandler)
-					})
-				})
 			})
 		})
 
@@ -705,6 +682,7 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 			recipesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 				Get(searchRoot, s.recipesService.SearchHandler)
+
 			recipesRouter.Route(recipeIDRouteParam, func(singleRecipeRouter routing.Router) {
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
@@ -725,6 +703,29 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipesPermission)).
 					Delete(root, s.recipesService.ArchiveHandler)
+
+				// RecipeRatings
+				singleRecipeRouter.Route("/ratings", func(recipeRatingsRouter routing.Router) {
+					recipeRatingsRouter.
+						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeRatingsPermission)).
+						Post(root, s.recipeRatingsService.CreateHandler)
+					recipeRatingsRouter.
+						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeRatingsPermission)).
+						Get(root, s.recipeRatingsService.ListHandler)
+
+					recipeRatingIDRouteParam := buildURLVarChunk(reciperatingsservice.RecipeRatingIDURIParamKey, "")
+					recipeRatingsRouter.Route(recipeRatingIDRouteParam, func(singleRecipeRatingRouter routing.Router) {
+						singleRecipeRatingRouter.
+							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeRatingsPermission)).
+							Get(root, s.recipeRatingsService.ReadHandler)
+						singleRecipeRatingRouter.
+							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeRatingsPermission)).
+							Put(root, s.recipeRatingsService.UpdateHandler)
+						singleRecipeRatingRouter.
+							WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeRatingsPermission)).
+							Delete(root, s.recipeRatingsService.ArchiveHandler)
+					})
+				})
 			})
 		})
 

@@ -36,9 +36,9 @@ import (
 	mealplanoptionvotesservice "github.com/dinnerdonebetter/backend/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
-	mealratingsservice "github.com/dinnerdonebetter/backend/internal/services/mealratings"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
+	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	recipestepcompletionconditionsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
@@ -131,7 +131,7 @@ func Build(
 		servicesettingconfigurationsservice.Providers,
 		useringredientpreferencesservice.Providers,
 		householdinstrumentownershipsservice.Providers,
-		mealratingsservice.Providers,
+		reciperatingsservice.Providers,
 	)
 
 	return nil, nil
