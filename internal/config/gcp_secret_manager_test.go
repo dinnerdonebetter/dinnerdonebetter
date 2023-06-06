@@ -46,11 +46,11 @@ import (
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
+	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
 type mockSecretVersionAccessor struct {
@@ -142,6 +142,8 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		require.NoError(t, os.Setenv(gcpPASETOLocalKeyEnvVarKey, "fake_paseto_local_key"))
 		require.NoError(t, os.Setenv(gcpSendgridTokenEnvVarKey, "fake_sendgrid_token"))
 		require.NoError(t, os.Setenv(gcpSegmentTokenEnvVarKey, "fake_segment_token"))
+		require.NoError(t, os.Setenv(gcpAlgoliaAPIKeyEnvVarKey, "fake_algolia_api_key"))
+		require.NoError(t, os.Setenv(gcpAlgoliaAppIDEnvVarKey, "fake_algolia_app_id"))
 
 		ctx := context.Background()
 		client := &mockSecretVersionAccessor{}
@@ -177,6 +179,8 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		require.NoError(t, os.Unsetenv(gcpPASETOLocalKeyEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpSendgridTokenEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpSegmentTokenEnvVarKey))
+		require.NoError(t, os.Unsetenv(gcpAlgoliaAPIKeyEnvVarKey))
+		require.NoError(t, os.Unsetenv(gcpAlgoliaAppIDEnvVarKey))
 
 		mock.AssertExpectationsForObjects(t, client)
 	})

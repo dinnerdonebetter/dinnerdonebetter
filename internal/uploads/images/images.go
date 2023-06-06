@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	headerContentType = "Content-IndexType"
+	headerContentType = "Content-Type"
 
 	imagePNG  = "image/png"
 	imageJPEG = "image/jpeg"

@@ -78,6 +78,8 @@ resource "google_cloudfunctions2_function" "search_indexer" {
   depends_on = [
     google_project_iam_member.search_indexer_event_receiving,
     google_project_iam_member.search_indexer_artifactregistry_reader,
+    google_secret_manager_secret.algolia_api_key,
+    google_secret_manager_secret.algolia_application_id,
   ]
 
   name        = "search-indexer"

@@ -15,6 +15,7 @@ gcloud iam service-accounts add-iam-policy-binding meal-plan-finalizer-worker@$(
 gcloud iam service-accounts add-iam-policy-binding mp-grocery-list-init-worker@$(GCP_PROJECT).iam.gserviceaccount.com --member serviceAccount:terraform-cloud@$(GCP_PROJECT).iam.gserviceaccount.com --role roles/iam.serviceAccountUser
 gcloud iam service-accounts add-iam-policy-binding meal-plan-task-create-worker@$(GCP_PROJECT).iam.gserviceaccount.com --member serviceAccount:terraform-cloud@$(GCP_PROJECT).iam.gserviceaccount.com --role roles/iam.serviceAccountUser
 gcloud iam service-accounts add-iam-policy-binding meal-plan-task-create-worker@$(GCP_PROJECT).iam.gserviceaccount.com --member serviceAccount:terraform-cloud@$(GCP_PROJECT).iam.gserviceaccount.com --role roles/iam.serviceAccountUser
+gcloud iam service-accounts add-iam-policy-binding search-indexer-worker@$(GCP_PROJECT).iam.gserviceaccount.com --member serviceAccount:terraform-cloud@$(GCP_PROJECT).iam.gserviceaccount.com --role roles/iam.serviceAccountUser
 ```
 
 You might get an error about not being the verified owner of a given domain. That's because you need to go to the Google Webmaster's admin interface thing and add the above terraform cloud service account as a verified owner.
