@@ -21,5 +21,9 @@ terraform {
       source  = "hashicorp/archive"
       version = "2.2.0"
     }
+    algolia = {
+      source = "philippe-vandermoere/algolia"
+      version = "0.7.0"
+    }
   }
 }
