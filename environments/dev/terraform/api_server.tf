@@ -262,13 +262,14 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.algolia_application_id.secret_id
-              key  = "latest"
-            }
-          }
+          name  = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
+          value = var.ALGOLIA_APPLICATION_ID
+          #          value_from {
+          #            secret_key_ref {
+          #              name = google_secret_manager_secret.algolia_application_id.secret_id
+          #              key  = "latest"
+          #            }
+          #          }
         }
       }
 
