@@ -136,6 +136,8 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.ServiceSettings.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ServiceSettingConfigurations.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.UserIngredientPreferences.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeRatings.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.HouseholdInstrumentOwnerships.DataChangesTopicName = dataChangesTopicName
 
 	if validationErr := cfg.ValidateWithContext(ctx, true); validationErr != nil {
 		return nil, validationErr
