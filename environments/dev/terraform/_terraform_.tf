@@ -22,7 +22,7 @@ terraform {
       version = "2.2.0"
     }
     algolia = {
-      source = "philippe-vandermoere/algolia"
+      source  = "philippe-vandermoere/algolia"
       version = "0.7.0"
     }
   }
