@@ -14,17 +14,28 @@ import (
 )
 
 const (
-	IndexTypeRecipes                         = "recipes"
-	IndexTypeMeals                           = "meals"
-	IndexTypeValidIngredients                = "valid_ingredients"
-	IndexTypeValidInstruments                = "valid_instruments"
-	IndexTypeValidMeasurementUnits           = "valid_measurement_units"
-	IndexTypeValidPreparations               = "valid_preparations"
-	IndexTypeValidIngredientStates           = "valid_ingredient_states"
+	// IndexTypeRecipes represents the recipes index.
+	IndexTypeRecipes = "recipes"
+	// IndexTypeMeals represents the meals index.
+	IndexTypeMeals = "meals"
+	// IndexTypeValidIngredients represents the valid_ingredients index.
+	IndexTypeValidIngredients = "valid_ingredients"
+	// IndexTypeValidInstruments represents the valid_instruments index.
+	IndexTypeValidInstruments = "valid_instruments"
+	// IndexTypeValidMeasurementUnits represents the valid_measurement_units index.
+	IndexTypeValidMeasurementUnits = "valid_measurement_units"
+	// IndexTypeValidPreparations represents the  valid_preparations index.
+	IndexTypeValidPreparations = "valid_preparations"
+	// IndexTypeValidIngredientStates represents the valid_ingredient_states index.
+	IndexTypeValidIngredientStates = "valid_ingredient_states"
+	// IndexTypeValidIngredientMeasurementUnits represents the valid_ingredient_measurement_units index.
 	IndexTypeValidIngredientMeasurementUnits = "valid_ingredient_measurement_units"
+	// IndexTypeValidPreparationInstruments represents the valid_preparation_instruments index.
+	IndexTypeValidPreparationInstruments = "valid_preparation_instruments"
+	// IndexTypeValidIngredientPreparations represents the valid_ingredient_preparations index.
+	IndexTypeValidIngredientPreparations = "valid_ingredient_preparations"
+	// IndexTypeValidMeasurementUnitConversions represents the valid_measurement_unit_conversions index.
 	IndexTypeValidMeasurementUnitConversions = "valid_measurement_unit_conversions"
-	IndexTypeValidPreparationInstruments     = "valid_preparation_instruments"
-	IndexTypeValidIngredientPreparations     = "valid_ingredient_preparations"
 )
 
 var (
@@ -50,7 +61,7 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 
 	switch searchIndexRequest.IndexType {
 	case IndexTypeRecipes:
-		im, err = config.ProvideIndexManager[search.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
+		im, err = config.ProvideIndexManager[RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -61,14 +72,14 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 			return observability.PrepareAndLogError(err, logger, span, "getting meal")
 		}
 
-		toBeIndexed = SubsetFromRecipe(recipe)
+		toBeIndexed = RecipeSearchSubsetFromRecipe(recipe)
 		if err = im.Index(ctx, recipe.ID, toBeIndexed); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "indexing meal")
 		}
 
 		return nil
 	case IndexTypeMeals:
-		im, err = config.ProvideIndexManager[search.MealSearchSubset](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
+		im, err = config.ProvideIndexManager[MealSearchSubset](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -79,7 +90,7 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 			return observability.PrepareAndLogError(err, logger, span, "getting meal")
 		}
 
-		toBeIndexed = SubsetFromMeal(meal)
+		toBeIndexed = MealSearchSubsetFromMeal(meal)
 	case IndexTypeValidIngredients:
 		im, err = config.ProvideIndexManager[types.ValidIngredient](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
@@ -136,29 +147,39 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		toBeIndexed, err = dataManager.GetValidIngredientMeasurementUnit(ctx, searchIndexRequest.RowID)
+		var validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit
+		validIngredientMeasurementUnit, err = dataManager.GetValidIngredientMeasurementUnit(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient measurement unit")
 		}
+
+		toBeIndexed = ValidIngredientMeasurementUnitSearchSubsetFromValidIngredientMeasurementUnit(validIngredientMeasurementUnit)
 	case IndexTypeValidMeasurementUnitConversions:
 		im, err = config.ProvideIndexManager[types.ValidMeasurementUnitConversion](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		toBeIndexed, err = dataManager.GetValidMeasurementConversion(ctx, searchIndexRequest.RowID)
+		var validMeasurementUnitConversion *types.ValidMeasurementUnitConversion
+		validMeasurementUnitConversion, err = dataManager.GetValidMeasurementUnitConversion(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid measurement unit conversion")
 		}
+
+		toBeIndexed = ValidMeasurementUnitConversionSearchSubsetFromValidMeasurementUnitConversion(validMeasurementUnitConversion)
 	case IndexTypeValidPreparationInstruments:
 		im, err = config.ProvideIndexManager[types.ValidPreparationInstrument](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
-		toBeIndexed, err = dataManager.GetValidPreparationInstrument(ctx, searchIndexRequest.RowID)
+
+		var validPreparationInstrument *types.ValidPreparationInstrument
+		validPreparationInstrument, err = dataManager.GetValidPreparationInstrument(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid preparation instrument")
 		}
+
+		toBeIndexed = ValidPreparationInstrumentSearchSubsetFromValidPreparationInstrument(validPreparationInstrument)
 	case IndexTypeValidIngredientPreparations:
 		im, err = config.ProvideIndexManager[types.ValidIngredientPreparation](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
@@ -174,59 +195,23 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 		return nil
 	}
 
-	if err = im.Index(ctx, searchIndexRequest.RowID, toBeIndexed); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "indexing meal")
+	if searchIndexRequest.Delete {
+		if err = im.Delete(ctx, searchIndexRequest.RowID); err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "deleting data")
+		}
+
+		return nil
+	} else {
+		if err = im.Index(ctx, searchIndexRequest.RowID, toBeIndexed); err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "indexing data")
+		}
 	}
 
 	return nil
 }
 
-func SubsetFromRecipe(r *types.Recipe) *search.RecipeSearchSubset {
-	x := &search.RecipeSearchSubset{
-		ID:          r.ID,
-		Name:        r.Name,
-		Description: r.Description,
-	}
-
-	for _, step := range r.Steps {
-		stepSubset := search.RecipeStepSearchSubset{
-			Preparation: step.Preparation.Name,
-		}
-
-		for _, ingredient := range step.Ingredients {
-			stepSubset.Ingredients = append(stepSubset.Ingredients, ingredient.Name)
-		}
-
-		for _, instrument := range step.Instruments {
-			stepSubset.Instruments = append(stepSubset.Instruments, instrument.Name)
-		}
-
-		for _, vessel := range step.Vessels {
-			stepSubset.Vessels = append(stepSubset.Vessels, vessel.Name)
-		}
-
-		x.Steps = append(x.Steps, stepSubset)
-	}
-
-	return x
-}
-
-func SubsetFromMeal(r *types.Meal) *search.MealSearchSubset {
-	x := &search.MealSearchSubset{
-		ID:          r.ID,
-		Name:        r.Name,
-		Description: r.Description,
-	}
-
-	for _, component := range r.Components {
-		x.Recipes = append(x.Recipes, component.Recipe.Name)
-	}
-
-	return x
-}
-
 type IndexRequest struct {
-	Value     any    `json:"any"`
 	RowID     string `json:"rowID"`
 	IndexType string `json:"type"`
+	Delete    bool   `json:"delete"`
 }

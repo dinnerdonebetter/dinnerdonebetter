@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBuilder_BuildGetValidMeasurementConversionRequest(T *testing.T) {
+func TestBuilder_BuildGetValidMeasurementUnitConversionRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/%s"
@@ -24,7 +24,7 @@ func TestBuilder_BuildGetValidMeasurementConversionRequest(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleValidMeasurementConversion.ID)
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionRequest(helper.ctx, exampleValidMeasurementConversion.ID)
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementConversion.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -35,7 +35,7 @@ func TestBuilder_BuildGetValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionRequest(helper.ctx, "")
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -48,13 +48,13 @@ func TestBuilder_BuildGetValidMeasurementConversionRequest(T *testing.T) {
 
 		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionRequest(helper.ctx, exampleValidMeasurementConversion.ID)
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementConversion.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildGetValidMeasurementConversionsFromUnitRequest(T *testing.T) {
+func TestBuilder_BuildGetValidMeasurementUnitConversionsFromUnitRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/from_unit/%s"
@@ -68,7 +68,7 @@ func TestBuilder_BuildGetValidMeasurementConversionsFromUnitRequest(T *testing.T
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleValidMeasurementUnit.ID)
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionsFromUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionsFromUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -79,7 +79,7 @@ func TestBuilder_BuildGetValidMeasurementConversionsFromUnitRequest(T *testing.T
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionsFromUnitRequest(helper.ctx, "")
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionsFromUnitRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -92,13 +92,13 @@ func TestBuilder_BuildGetValidMeasurementConversionsFromUnitRequest(T *testing.T
 
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionsFromUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionsFromUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildGetValidMeasurementConversionsToUnitRequest(T *testing.T) {
+func TestBuilder_BuildGetValidMeasurementUnitConversionsToUnitRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/to_unit/%s"
@@ -112,7 +112,7 @@ func TestBuilder_BuildGetValidMeasurementConversionsToUnitRequest(T *testing.T) 
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleValidMeasurementUnit.ID)
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionsToUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionsToUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -123,7 +123,7 @@ func TestBuilder_BuildGetValidMeasurementConversionsToUnitRequest(T *testing.T) 
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionsToUnitRequest(helper.ctx, "")
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionsToUnitRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -136,7 +136,7 @@ func TestBuilder_BuildGetValidMeasurementConversionsToUnitRequest(T *testing.T) 
 
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
-		actual, err := helper.builder.BuildGetValidMeasurementConversionsToUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionsToUnitRequest(helper.ctx, exampleValidMeasurementUnit.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

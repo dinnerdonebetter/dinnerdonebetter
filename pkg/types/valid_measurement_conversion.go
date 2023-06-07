@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	// ValidMeasurementConversionCreatedCustomerEventType indicates a valid measurement conversion was created.
-	ValidMeasurementConversionCreatedCustomerEventType CustomerEventType = "valid_measurement_conversion_created"
-	// ValidMeasurementConversionUpdatedCustomerEventType indicates a valid measurement conversion was updated.
-	ValidMeasurementConversionUpdatedCustomerEventType CustomerEventType = "valid_measurement_conversion_updated"
-	// ValidMeasurementConversionArchivedCustomerEventType indicates a valid measurement conversion was archived.
-	ValidMeasurementConversionArchivedCustomerEventType CustomerEventType = "valid_measurement_conversion_archived"
+	// ValidMeasurementUnitConversionCreatedCustomerEventType indicates a valid measurement conversion was created.
+	ValidMeasurementUnitConversionCreatedCustomerEventType CustomerEventType = "valid_measurement_unit_conversion_created"
+	// ValidMeasurementUnitConversionUpdatedCustomerEventType indicates a valid measurement conversion was updated.
+	ValidMeasurementUnitConversionUpdatedCustomerEventType CustomerEventType = "valid_measurement_unit_conversion_updated"
+	// ValidMeasurementUnitConversionArchivedCustomerEventType indicates a valid measurement conversion was archived.
+	ValidMeasurementUnitConversionArchivedCustomerEventType CustomerEventType = "valid_measurement_unit_conversion_archived"
 )
 
 func init() {
@@ -77,12 +77,12 @@ type (
 	// ValidMeasurementConversionDataManager describes a structure capable of storing valid measurement conversions permanently.
 	ValidMeasurementConversionDataManager interface {
 		ValidMeasurementConversionExists(ctx context.Context, validMeasurementConversionID string) (bool, error)
-		GetValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) (*ValidMeasurementUnitConversion, error)
+		GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementConversionID string) (*ValidMeasurementUnitConversion, error)
 		CreateValidMeasurementConversion(ctx context.Context, input *ValidMeasurementConversionDatabaseCreationInput) (*ValidMeasurementUnitConversion, error)
 		UpdateValidMeasurementConversion(ctx context.Context, updated *ValidMeasurementUnitConversion) error
 		ArchiveValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) error
-		GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementUnitConversion, error)
-		GetValidMeasurementConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementUnitConversion, error)
+		GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementUnitConversion, error)
+		GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementUnitConversion, error)
 	}
 
 	// ValidMeasurementConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.

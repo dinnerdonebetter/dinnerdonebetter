@@ -9,8 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// GetValidMeasurementConversion gets a valid measurement conversion.
-func (c *Client) GetValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) (*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversion gets a valid measurement conversion.
+func (c *Client) GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementConversionID string) (*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -22,7 +22,7 @@ func (c *Client) GetValidMeasurementConversion(ctx context.Context, validMeasure
 	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
 	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
 
-	req, err := c.requestBuilder.BuildGetValidMeasurementConversionRequest(ctx, validMeasurementConversionID)
+	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionRequest(ctx, validMeasurementConversionID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
 	}
@@ -35,8 +35,8 @@ func (c *Client) GetValidMeasurementConversion(ctx context.Context, validMeasure
 	return validMeasurementConversion, nil
 }
 
-// GetValidMeasurementConversionsFromUnit gets a valid measurement conversion.
-func (c *Client) GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversionsFromUnit gets a valid measurement conversion.
+func (c *Client) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -48,7 +48,7 @@ func (c *Client) GetValidMeasurementConversionsFromUnit(ctx context.Context, val
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	req, err := c.requestBuilder.BuildGetValidMeasurementConversionsFromUnitRequest(ctx, validMeasurementUnitID)
+	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionsFromUnitRequest(ctx, validMeasurementUnitID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
 	}
@@ -61,8 +61,8 @@ func (c *Client) GetValidMeasurementConversionsFromUnit(ctx context.Context, val
 	return validMeasurementConversion, nil
 }
 
-// GetValidMeasurementConversionToUnit gets a valid measurement conversion.
-func (c *Client) GetValidMeasurementConversionToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversionToUnit gets a valid measurement conversion.
+func (c *Client) GetValidMeasurementUnitConversionToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -74,7 +74,7 @@ func (c *Client) GetValidMeasurementConversionToUnit(ctx context.Context, validM
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	req, err := c.requestBuilder.BuildGetValidMeasurementConversionsToUnitRequest(ctx, validMeasurementUnitID)
+	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionsToUnitRequest(ctx, validMeasurementUnitID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid measurement conversion request")
 	}

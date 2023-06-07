@@ -35,6 +35,9 @@ func (m *IndexManager[T]) Index(ctx context.Context, id string, value any) error
 	// we make a huge, albeit safe assumption here.
 	newValue["objectID"] = newValue["id"]
 	delete(newValue, "id")
+	delete(newValue, "createdAt")
+	delete(newValue, "lastUpdatedAt")
+	delete(newValue, "archivedAt")
 
 	if _, err = m.client.SaveObject(newValue); err != nil {
 		return err

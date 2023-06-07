@@ -11,7 +11,6 @@ resource "google_project_iam_custom_role" "search_indexer_role" {
     "cloudsql.instances.connect",
     "cloudsql.instances.get",
     "pubsub.topics.list",
-    "pubsub.topics.publish",
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",

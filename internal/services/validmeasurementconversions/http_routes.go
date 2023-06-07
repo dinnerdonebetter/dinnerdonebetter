@@ -66,9 +66,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:                  types.ValidMeasurementConversionCreatedCustomerEventType,
-		ValidMeasurementConversion: validMeasurementConversion,
-		UserID:                     sessionCtxData.Requester.UserID,
+		EventType:                      types.ValidMeasurementUnitConversionCreatedCustomerEventType,
+		ValidMeasurementUnitConversion: validMeasurementConversion,
+		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -103,7 +103,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
 
 	// fetch valid measurement conversion from database.
-	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementConversion(ctx, validMeasurementConversionID)
+	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementUnitConversion(ctx, validMeasurementConversionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -156,7 +156,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
 
 	// fetch valid measurement conversion from database.
-	validMeasurementConversion, err := s.validMeasurementConversionDataManager.GetValidMeasurementConversion(ctx, validMeasurementConversionID)
+	validMeasurementConversion, err := s.validMeasurementConversionDataManager.GetValidMeasurementUnitConversion(ctx, validMeasurementConversionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -176,9 +176,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:                  types.ValidMeasurementConversionUpdatedCustomerEventType,
-		ValidMeasurementConversion: validMeasurementConversion,
-		UserID:                     sessionCtxData.Requester.UserID,
+		EventType:                      types.ValidMeasurementUnitConversionUpdatedCustomerEventType,
+		ValidMeasurementUnitConversion: validMeasurementConversion,
+		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -230,7 +230,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidMeasurementConversionArchivedCustomerEventType,
+		EventType: types.ValidMeasurementUnitConversionArchivedCustomerEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
@@ -266,7 +266,7 @@ func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	// fetch valid measurement conversion from database.
-	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementConversionsFromUnit(ctx, validMeasurementUnitID)
+	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementUnitConversionsFromUnit(ctx, validMeasurementUnitID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -304,7 +304,7 @@ func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Re
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	// fetch valid measurement conversion from database.
-	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementConversionsToUnit(ctx, validMeasurementUnitID)
+	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementUnitConversionsToUnit(ctx, validMeasurementUnitID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

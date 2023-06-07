@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -25,14 +26,14 @@ import (
 
 //nolint:maintidx // this thing is just gonna be how it is
 func main() {
-	indexPtr := flag.String("index", "", "index to initialize")
-	wipePtr := flag.Bool("wipe", false, "whether to wipe the index or not")
+	indicesPtr := flag.String("indices", "", "indices to initialize")
+	wipePtr := flag.Bool("wipe", false, "whether to wipe the indices or not")
 
 	flag.Parse()
 
-	index := *indexPtr
-	if index == "" {
-		log.Fatal("index is required")
+	indices := strings.Split(*indicesPtr, ",")
+	if len(indices) == 0 {
+		log.Fatal("indices are required")
 	}
 
 	ctx := context.Background()
@@ -56,14 +57,11 @@ func main() {
 		log.Fatal(fmt.Errorf("initializing database client: %w", err))
 	}
 
-	filter := types.DefaultQueryFilter()
-	filter.Limit = pointers.Pointer(uint8(50))
-
 	var (
 		im               search.IndexManager
-		thresholdMet     bool
 		indexRequestChan = make(chan *indexing.IndexRequest)
 		wipeOnce         sync.Once
+		waitGroup        sync.WaitGroup
 	)
 
 	go func() {
@@ -81,262 +79,307 @@ func main() {
 			if err = indexing.HandleIndexRequest(ctx, logger, tracerProvider, cfg, dataManager, x); err != nil {
 				observability.AcknowledgeError(err, logger, nil, "indexing row")
 			}
+
+			waitGroup.Done()
 		}
 	}()
 
-	switch index {
-	case indexing.IndexTypeRecipes:
-		im, err = searchcfg.ProvideIndexManager[search.RecipeSearchSubset](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+	for i, index := range indices {
+		if i > 0 {
+			waitGroup.Wait()
 		}
 
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.Recipe]
-			data, err = dataManager.GetRecipes(ctx, filter)
+		filter := types.DefaultQueryFilter()
+		filter.Limit = pointers.Pointer(uint8(50))
+		thresholdMet := false
+
+		switch index {
+		case indexing.IndexTypeRecipes:
+			im, err = searchcfg.ProvideIndexManager[indexing.RecipeSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting Recipe data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeRecipes,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.Recipe]
+				data, err = dataManager.GetRecipes(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting Recipe data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeRecipes,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	case indexing.IndexTypeMeals:
-		im, err = searchcfg.ProvideIndexManager[search.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.Meal]
-			data, err = dataManager.GetMeals(ctx, filter)
+		case indexing.IndexTypeMeals:
+			im, err = searchcfg.ProvideIndexManager[indexing.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting Meal data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeMeals,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.Meal]
+				data, err = dataManager.GetMeals(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting Meal data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeMeals,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	case indexing.IndexTypeValidIngredients:
-		im, err = searchcfg.ProvideIndexManager[types.ValidIngredient](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.ValidIngredient]
-			data, err = dataManager.GetValidIngredients(ctx, filter)
+		case indexing.IndexTypeValidIngredients:
+			im, err = searchcfg.ProvideIndexManager[types.ValidIngredient](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting ValidIngredient data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeValidIngredients,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidIngredient]
+				data, err = dataManager.GetValidIngredients(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidIngredient data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeValidIngredients,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	case indexing.IndexTypeValidInstruments:
-		im, err = searchcfg.ProvideIndexManager[types.ValidInstrument](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.ValidInstrument]
-			data, err = dataManager.GetValidInstruments(ctx, filter)
+		case indexing.IndexTypeValidInstruments:
+			im, err = searchcfg.ProvideIndexManager[types.ValidInstrument](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting ValidInstrument data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeValidInstruments,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidInstrument]
+				data, err = dataManager.GetValidInstruments(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidInstrument data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeValidInstruments,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	case indexing.IndexTypeValidMeasurementUnits:
-		im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.ValidMeasurementUnit]
-			data, err = dataManager.GetValidMeasurementUnits(ctx, filter)
+		case indexing.IndexTypeValidMeasurementUnits:
+			im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting ValidMeasurementUnit data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeValidMeasurementUnits,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidMeasurementUnit]
+				data, err = dataManager.GetValidMeasurementUnits(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidMeasurementUnit data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeValidMeasurementUnits,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	case indexing.IndexTypeValidPreparations:
-		im, err = searchcfg.ProvideIndexManager[types.ValidPreparation](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.ValidPreparation]
-			data, err = dataManager.GetValidPreparations(ctx, filter)
+		case indexing.IndexTypeValidPreparations:
+			im, err = searchcfg.ProvideIndexManager[types.ValidPreparation](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting ValidPreparation data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeValidPreparations,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidPreparation]
+				data, err = dataManager.GetValidPreparations(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidPreparation data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeValidPreparations,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	case indexing.IndexTypeValidIngredientStates:
-		im, err = searchcfg.ProvideIndexManager[types.ValidIngredientState](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.ValidIngredientState]
-			data, err = dataManager.GetValidIngredientStates(ctx, filter)
+		case indexing.IndexTypeValidIngredientStates:
+			im, err = searchcfg.ProvideIndexManager[types.ValidIngredientState](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting ValidIngredientState data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeValidIngredientStates,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidIngredientState]
+				data, err = dataManager.GetValidIngredientStates(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidIngredientState data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeValidIngredientStates,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	case indexing.IndexTypeValidIngredientMeasurementUnits:
-		im, err = searchcfg.ProvideIndexManager[types.ValidIngredientMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
-			data, err = dataManager.GetValidIngredientMeasurementUnits(ctx, filter)
+		case indexing.IndexTypeValidIngredientMeasurementUnits:
+			im, err = searchcfg.ProvideIndexManager[types.ValidIngredientMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting ValidIngredientMeasurementUnit data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeValidIngredientMeasurementUnits,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
+				data, err = dataManager.GetValidIngredientMeasurementUnits(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidIngredientMeasurementUnit data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeValidIngredientMeasurementUnits,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	// case indexing.IndexTypeValidMeasurementUnitConversions:
-	//	im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnitConversion](ctx, logger, tracerProvider, cfg, index)
-	//	if err != nil {
-	//		log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-	//	}
-	//
-	//	for !thresholdMet {
-	//		var data *types.QueryFilteredResult[types.ValidMeasurementUnitConversion]
-	//		data, err = dataManager.GetValidMeasur(ctx, filter)
-	//		if err != nil {
-	//			log.Fatal(fmt.Errorf("getting ValidMeasurementUnitConversion data: %w", err))
-	//		}
-	//
-	//		for _, x := range data.Data {
-	//			indexRequestChan <- &indexing.IndexRequest{
-	//				RowID:     x.ID,
-	//				IndexType: indexing.IndexTypeValidMeasurementUnitConversions,
-	//			}
-	//		}
-	//
-	//		thresholdMet = len(data.Data) == 0
-	//		*filter.Page++
-	//	}
-	case indexing.IndexTypeValidPreparationInstruments:
-		im, err = searchcfg.ProvideIndexManager[types.ValidPreparationInstrument](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.ValidPreparationInstrument]
-			data, err = dataManager.GetValidPreparationInstruments(ctx, filter)
+		case indexing.IndexTypeValidMeasurementUnitConversions:
+			im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnitConversion](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting ValidPreparationInstrument data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeValidPreparationInstruments,
+			for !thresholdMet {
+				var measurementUnits *types.QueryFilteredResult[types.ValidMeasurementUnit]
+				measurementUnits, err = dataManager.GetValidMeasurementUnits(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidMeasurementUnit data: %w", err))
 				}
+
+				for _, y := range measurementUnits.Data {
+					var fromUnit []*types.ValidMeasurementUnitConversion
+					fromUnit, err = dataManager.GetValidMeasurementUnitConversionsFromUnit(ctx, y.ID)
+					if err != nil {
+						log.Fatal(fmt.Errorf("getting ValidMeasurementUnitConversion data: %w", err))
+					}
+
+					for _, z := range fromUnit {
+						indexRequestChan <- &indexing.IndexRequest{
+							RowID:     z.ID,
+							IndexType: indexing.IndexTypeValidMeasurementUnitConversions,
+						}
+						waitGroup.Add(1)
+					}
+
+					var toUnit []*types.ValidMeasurementUnitConversion
+					toUnit, err = dataManager.GetValidMeasurementUnitConversionsToUnit(ctx, y.ID)
+					if err != nil {
+						log.Fatal(fmt.Errorf("getting ValidMeasurementUnitConversion data: %w", err))
+					}
+
+					for _, z := range toUnit {
+						indexRequestChan <- &indexing.IndexRequest{
+							RowID:     z.ID,
+							IndexType: indexing.IndexTypeValidMeasurementUnitConversions,
+						}
+						waitGroup.Add(1)
+					}
+				}
+
+				thresholdMet = len(measurementUnits.Data) == 0
+				*filter.Page++
 			}
-
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
-		}
-	case indexing.IndexTypeValidIngredientPreparations:
-		im, err = searchcfg.ProvideIndexManager[types.ValidIngredientPreparation](ctx, logger, tracerProvider, cfg, index)
-		if err != nil {
-			log.Fatal(fmt.Errorf("initializing index manager: %w", err))
-		}
-
-		for !thresholdMet {
-			var data *types.QueryFilteredResult[types.ValidIngredientPreparation]
-			data, err = dataManager.GetValidIngredientPreparations(ctx, filter)
+		case indexing.IndexTypeValidPreparationInstruments:
+			im, err = searchcfg.ProvideIndexManager[types.ValidPreparationInstrument](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("getting ValidIngredientPreparation data: %w", err))
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			for _, x := range data.Data {
-				indexRequestChan <- &indexing.IndexRequest{
-					RowID:     x.ID,
-					IndexType: indexing.IndexTypeValidIngredientPreparations,
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidPreparationInstrument]
+				data, err = dataManager.GetValidPreparationInstruments(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidPreparationInstrument data: %w", err))
 				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeValidPreparationInstruments,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
+			}
+		case indexing.IndexTypeValidIngredientPreparations:
+			im, err = searchcfg.ProvideIndexManager[types.ValidIngredientPreparation](ctx, logger, tracerProvider, cfg, index)
+			if err != nil {
+				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
 			}
 
-			thresholdMet = len(data.Data) == 0
-			*filter.Page++
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidIngredientPreparation]
+				data, err = dataManager.GetValidIngredientPreparations(ctx, filter)
+				if err != nil {
+					log.Fatal(fmt.Errorf("getting ValidIngredientPreparation data: %w", err))
+				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: indexing.IndexTypeValidIngredientPreparations,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
+			}
 		}
 	}
 }

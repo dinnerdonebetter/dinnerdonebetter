@@ -7,30 +7,8 @@ import (
 )
 
 type (
-	RecipeSearchSubset struct {
-		ID          string                   `json:"id,omitempty"`
-		Name        string                   `json:"name,omitempty"`
-		Description string                   `json:"description,omitempty"`
-		Steps       []RecipeStepSearchSubset `json:"steps,omitempty"`
-	}
-
-	RecipeStepSearchSubset struct {
-		Preparation string   `json:"preparation,omitempty"`
-		Ingredients []string `json:"ingredients,omitempty"`
-		Instruments []string `json:"instruments,omitempty"`
-		Vessels     []string `json:"vessels,omitempty"`
-	}
-
-	MealSearchSubset struct {
-		ID          string   `json:"id,omitempty"`
-		Name        string   `json:"name,omitempty"`
-		Description string   `json:"description,omitempty"`
-		Recipes     []string `json:"recipes,omitempty"`
-	}
-
 	Searchable interface {
-		RecipeSearchSubset |
-			MealSearchSubset |
+		any | // TODO: just make these the subset types
 			types.ValidIngredient |
 			types.ValidInstrument |
 			types.ValidMeasurementUnit |

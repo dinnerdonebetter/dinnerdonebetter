@@ -205,7 +205,7 @@ func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
+func TestQuerier_GetValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -224,7 +224,7 @@ func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidMeasurementConversions(false, 0, exampleValidMeasurementConversion))
 
-		actual, err := c.GetValidMeasurementConversion(ctx, exampleValidMeasurementConversion.ID)
+		actual, err := c.GetValidMeasurementUnitConversion(ctx, exampleValidMeasurementConversion.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidMeasurementConversion, actual)
 
@@ -237,7 +237,7 @@ func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetValidMeasurementConversion(ctx, "")
+		actual, err := c.GetValidMeasurementUnitConversion(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -258,7 +258,7 @@ func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetValidMeasurementConversion(ctx, exampleValidMeasurementConversion.ID)
+		actual, err := c.GetValidMeasurementUnitConversion(ctx, exampleValidMeasurementConversion.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -266,7 +266,7 @@ func TestQuerier_GetValidMeasurementConversion(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetValidMeasurementConversionsFromUnit(T *testing.T) {
+func TestQuerier_GetValidMeasurementUnitConversionsFromUnit(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -286,7 +286,7 @@ func TestQuerier_GetValidMeasurementConversionsFromUnit(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getValidMeasurementConversionsFromUnitArgs)...).
 			WillReturnRows(buildMockRowsFromValidMeasurementConversions(false, 0, exampleValidMeasurementConversions...))
 
-		actual, err := c.GetValidMeasurementConversionsFromUnit(ctx, exampleValidMeasurementUnit.ID)
+		actual, err := c.GetValidMeasurementUnitConversionsFromUnit(ctx, exampleValidMeasurementUnit.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidMeasurementConversions, actual)
 
@@ -294,7 +294,7 @@ func TestQuerier_GetValidMeasurementConversionsFromUnit(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetValidMeasurementConversionsToUnit(T *testing.T) {
+func TestQuerier_GetValidMeasurementUnitConversionsToUnit(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -314,7 +314,7 @@ func TestQuerier_GetValidMeasurementConversionsToUnit(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getValidMeasurementConversionsToUnitArgs)...).
 			WillReturnRows(buildMockRowsFromValidMeasurementConversions(false, 0, exampleValidMeasurementConversions...))
 
-		actual, err := c.GetValidMeasurementConversionsToUnit(ctx, exampleValidMeasurementUnit.ID)
+		actual, err := c.GetValidMeasurementUnitConversionsToUnit(ctx, exampleValidMeasurementUnit.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidMeasurementConversions, actual)
 

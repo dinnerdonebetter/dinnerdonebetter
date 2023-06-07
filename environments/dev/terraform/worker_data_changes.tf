@@ -106,6 +106,7 @@ resource "google_cloudfunctions2_function" "data_changes" {
       GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
       OUTBOUND_EMAILS_TOPIC_NAME       = google_pubsub_topic.outbound_emails_topic.name
+      SEARCH_INDEXING_TOPIC_NAME       = google_pubsub_topic.search_index_requests_topic.name
       DINNER_DONE_BETTER_DATABASE_USER = google_sql_user.api_user.name,
       DINNER_DONE_BETTER_DATABASE_NAME = local.database_name,
       // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.

@@ -47,7 +47,7 @@ func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
 			t.Logf("valid measurement conversion %q created", createdValidMeasurementConversion.ID)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
-			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID)
+			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
 
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
@@ -57,7 +57,7 @@ func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
 			require.NoError(t, testClients.admin.UpdateValidMeasurementConversion(ctx, createdValidMeasurementConversion))
 
 			t.Log("fetching changed valid measurement conversion")
-			actual, err := testClients.admin.GetValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID)
+			actual, err := testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid measurement conversion equality
@@ -92,12 +92,12 @@ func (s *TestSuite) TestValidMeasurementConversions_GetFromUnits() {
 			t.Logf("valid measurement conversion %q created", createdValidMeasurementConversion.ID)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
-			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID)
+			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
 			t.Log("fetching from units")
-			fromUnits, err := testClients.admin.GetValidMeasurementConversionsFromUnit(ctx, createdValidMeasurementUnit1.ID)
+			fromUnits, err := testClients.admin.GetValidMeasurementUnitConversionsFromUnit(ctx, createdValidMeasurementUnit1.ID)
 			requireNotNilAndNoProblems(t, fromUnits, err)
 			require.Equal(t, 1, len(fromUnits))
 
@@ -129,12 +129,12 @@ func (s *TestSuite) TestValidMeasurementConversions_GetToUnits() {
 			t.Logf("valid measurement conversion %q created", createdValidMeasurementConversion.ID)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
-			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID)
+			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
 			t.Log("fetching from units")
-			fromUnits, err := testClients.admin.GetValidMeasurementConversionToUnit(ctx, createdValidMeasurementUnit2.ID)
+			fromUnits, err := testClients.admin.GetValidMeasurementUnitConversionToUnit(ctx, createdValidMeasurementUnit2.ID)
 			requireNotNilAndNoProblems(t, fromUnits, err)
 			require.Equal(t, 1, len(fromUnits))
 

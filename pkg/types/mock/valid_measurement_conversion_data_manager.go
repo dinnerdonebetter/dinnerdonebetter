@@ -15,15 +15,15 @@ type ValidMeasurementConversionDataManager struct {
 	mock.Mock
 }
 
-// GetValidMeasurementConversionsFromUnit is a mock function.
-func (m *ValidMeasurementConversionDataManager) GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversionsFromUnit is a mock function.
+func (m *ValidMeasurementConversionDataManager) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	returnValues := m.Called(ctx, validMeasurementUnitID)
 
 	return returnValues.Get(0).([]*types.ValidMeasurementUnitConversion), returnValues.Error(1)
 }
 
-// GetValidMeasurementConversionsToUnit is a mock function.
-func (m *ValidMeasurementConversionDataManager) GetValidMeasurementConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversionsToUnit is a mock function.
+func (m *ValidMeasurementConversionDataManager) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	returnValues := m.Called(ctx, validMeasurementUnitID)
 
 	return returnValues.Get(0).([]*types.ValidMeasurementUnitConversion), returnValues.Error(1)
@@ -35,8 +35,8 @@ func (m *ValidMeasurementConversionDataManager) ValidMeasurementConversionExists
 	return args.Bool(0), args.Error(1)
 }
 
-// GetValidMeasurementConversion is a mock function.
-func (m *ValidMeasurementConversionDataManager) GetValidMeasurementConversion(ctx context.Context, validPreparationID string) (*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversion is a mock function.
+func (m *ValidMeasurementConversionDataManager) GetValidMeasurementUnitConversion(ctx context.Context, validPreparationID string) (*types.ValidMeasurementUnitConversion, error) {
 	args := m.Called(ctx, validPreparationID)
 	return args.Get(0).(*types.ValidMeasurementUnitConversion), args.Error(1)
 }

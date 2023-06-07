@@ -1,8 +1,7 @@
-package searchindexer
+package searchdataindexscheduler
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -11,11 +10,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/email"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
@@ -26,25 +25,11 @@ import (
 
 func init() {
 	// Register a CloudEvent function with the Functions Framework
-	functions.CloudEvent("IndexDataForSearch", IndexDataForSearch)
+	functions.CloudEvent("ScheduleIndexOperation", ScheduleIndexOperation)
 }
 
-// MessagePublishedData contains the full Pub/Sub message
-// See the documentation for more details:
-// https://cloud.google.com/eventarc/docs/cloudevents#pubsub
-type MessagePublishedData struct {
-	Message PubSubMessage
-}
-
-// PubSubMessage is the payload of a Pub/Sub event.
-// See the documentation for more details:
-// https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
-type PubSubMessage struct {
-	Data []byte `json:"data"`
-}
-
-// IndexDataForSearch handles a data change.
-func IndexDataForSearch(ctx context.Context, e event.Event) error {
+// ScheduleIndexOperation handles a search index schedule request.
+func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
@@ -83,21 +68,21 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 	cancel()
 	defer dataManager.Close()
 
-	var msg MessagePublishedData
-	if err = e.DataAs(&msg); err != nil {
-		return fmt.Errorf("event.DataAs: %v", err)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
 	}
 
-	var searchIndexRequest *indexing.IndexRequest
-	if err = json.Unmarshal(msg.Message.Data, &searchIndexRequest); err != nil {
-		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
+	defer publisherProvider.Close()
+
+	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("SEARCH_INDEXING_TOPIC_NAME"))
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "configuring search indexing publisher")
 	}
 
-	// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
-	if err = indexing.HandleIndexRequest(ctx, logger, tracerProvider, &cfg.Search, dataManager, searchIndexRequest); err != nil {
-		observability.AcknowledgeError(err, logger, span, "handling index request")
-	}
+	defer searchDataIndexPublisher.Stop()
+
+	// figure out what records to join
 
 	return nil
 }
