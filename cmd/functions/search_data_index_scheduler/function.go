@@ -36,7 +36,7 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 		return nil
 	}
 
-	cfg, err := config.GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

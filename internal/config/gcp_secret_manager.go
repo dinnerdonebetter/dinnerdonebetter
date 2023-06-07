@@ -324,6 +324,7 @@ func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.C
 	}
 
 	cfg.Analytics.Provider = ""
+	cfg.Email.Provider = ""
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr
