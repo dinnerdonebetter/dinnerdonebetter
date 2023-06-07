@@ -136,7 +136,7 @@ type (
 		RecipeScale   *float32 `json:"recipeScale"`
 	}
 
-	// MealSearchSubset is a subset of Meal fields for search indexing.
+	// MealSearchSubset represents the subset of values suitable to index for search.
 	MealSearchSubset struct {
 		ID          string    `json:"id,omitempty"`
 		Name        string    `json:"name,omitempty"`

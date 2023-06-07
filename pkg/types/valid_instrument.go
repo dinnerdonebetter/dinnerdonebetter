@@ -114,6 +114,16 @@ type (
 		IsExclusivelyVessel            *bool   `json:"isExclusivelyVessel,omitempty"`
 	}
 
+	// ValidInstrumentSearchSubset represents the subset of values suitable to index for search.
+	ValidInstrumentSearchSubset struct {
+		_ struct{}
+
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		PluralName  string `json:"pluralName"`
+		Description string `json:"description"`
+	}
+
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
 	ValidInstrumentDataManager interface {
 		ValidInstrumentExists(ctx context.Context, validInstrumentID string) (bool, error)

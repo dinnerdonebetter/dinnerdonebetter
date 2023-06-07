@@ -112,7 +112,7 @@ type (
 		YieldsComponentType      *string  `json:"yieldsComponentType"`
 	}
 
-	// RecipeSearchSubset is a subset of Recipe fields for search indexing.
+	// RecipeSearchSubset represents the subset of values suitable to index for search.
 	RecipeSearchSubset struct {
 		ID          string                    `json:"id,omitempty"`
 		Name        string                    `json:"name,omitempty"`

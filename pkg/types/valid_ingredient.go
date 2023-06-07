@@ -234,6 +234,17 @@ type (
 		IsHeat                                  *bool    `json:"is_heat"`
 	}
 
+	// ValidIngredientSearchSubset represents the subset of values suitable to index for search.
+	ValidIngredientSearchSubset struct {
+		_ struct{}
+
+		PluralName          string `json:"pluralName"`
+		Name                string `json:"name"`
+		ID                  string `json:"id"`
+		Description         string `json:"description"`
+		ShoppingSuggestions string `json:"shoppingSuggestions"`
+	}
+
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
 	ValidIngredientDataManager interface {
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)

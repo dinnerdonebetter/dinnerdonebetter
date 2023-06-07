@@ -98,50 +98,65 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		toBeIndexed, err = dataManager.GetValidIngredient(ctx, searchIndexRequest.RowID)
+		var validIngredient *types.ValidIngredient
+		validIngredient, err = dataManager.GetValidIngredient(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient")
 		}
+
+		toBeIndexed = converters.ConvertValidIngredientToValidIngredientSearchSubset(validIngredient)
 	case IndexTypeValidInstruments:
 		im, err = config.ProvideIndexManager[types.ValidInstrument](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		toBeIndexed, err = dataManager.GetValidInstrument(ctx, searchIndexRequest.RowID)
+		var validInstrument *types.ValidInstrument
+		validInstrument, err = dataManager.GetValidInstrument(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid instrument")
 		}
+
+		toBeIndexed = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(validInstrument)
 	case IndexTypeValidMeasurementUnits:
 		im, err = config.ProvideIndexManager[types.ValidMeasurementUnit](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		toBeIndexed, err = dataManager.GetValidMeasurementUnit(ctx, searchIndexRequest.RowID)
+		var validMeasurementUnit *types.ValidMeasurementUnit
+		validMeasurementUnit, err = dataManager.GetValidMeasurementUnit(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid measurement unit")
 		}
+
+		toBeIndexed = converters.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(validMeasurementUnit)
 	case IndexTypeValidPreparations:
 		im, err = config.ProvideIndexManager[types.ValidPreparation](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		toBeIndexed, err = dataManager.GetValidPreparation(ctx, searchIndexRequest.RowID)
+		var validPreparation *types.ValidPreparation
+		validPreparation, err = dataManager.GetValidPreparation(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid preparation")
 		}
+
+		toBeIndexed = converters.ConvertValidPreparationToValidPreparationSearchSubset(validPreparation)
 	case IndexTypeValidIngredientStates:
 		im, err = config.ProvideIndexManager[types.ValidIngredientState](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		toBeIndexed, err = dataManager.GetValidIngredientState(ctx, searchIndexRequest.RowID)
+		var validIngredientState *types.ValidIngredientState
+		validIngredientState, err = dataManager.GetValidIngredientState(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state")
 		}
+
+		toBeIndexed = converters.ConvertValidIngredientStateToValidIngredientStateSearchSubset(validIngredientState)
 	case IndexTypeValidIngredientMeasurementUnits:
 		im, err = config.ProvideIndexManager[types.ValidIngredientMeasurementUnit](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
 		if err != nil {

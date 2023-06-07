@@ -258,3 +258,14 @@ func ConvertValidIngredientToNullableValidIngredient(x *types.ValidIngredient) *
 		IsHeat:                                  &x.IsHeat,
 	}
 }
+
+// ConvertValidIngredientToValidIngredientSearchSubset converts a ValidIngredient to a ValidIngredientSearchSubset.
+func ConvertValidIngredientToValidIngredientSearchSubset(x *types.ValidIngredient) *types.ValidIngredientSearchSubset {
+	return &types.ValidIngredientSearchSubset{
+		ID:                  x.ID,
+		Name:                x.Name,
+		PluralName:          x.PluralName,
+		Description:         x.Description,
+		ShoppingSuggestions: x.ShoppingSuggestions,
+	}
+}

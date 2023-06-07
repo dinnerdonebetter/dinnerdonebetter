@@ -106,3 +106,13 @@ func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPrepara
 		MaximumVesselCount:          validPreparation.MaximumVesselCount,
 	}
 }
+
+// ConvertValidPreparationToValidPreparationSearchSubset converts a ValidPreparation to a ValidPreparationSearchSubset.
+func ConvertValidPreparationToValidPreparationSearchSubset(x *types.ValidPreparation) *types.ValidPreparationSearchSubset {
+	return &types.ValidPreparationSearchSubset{
+		ID:          x.ID,
+		Name:        x.Name,
+		PastTense:   x.PastTense,
+		Description: x.Description,
+	}
+}

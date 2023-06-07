@@ -126,6 +126,16 @@ type (
 		MaximumVesselCount          *int32  `json:"maximumVesselCount,omitempty"`
 	}
 
+	// ValidPreparationSearchSubset represents the subset of values suitable to index for search.
+	ValidPreparationSearchSubset struct {
+		_ struct{}
+
+		PastTense   string `json:"pastTense"`
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	}
+
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
 	ValidPreparationDataManager interface {
 		ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error)

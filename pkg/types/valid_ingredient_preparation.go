@@ -66,7 +66,7 @@ type (
 		ValidIngredientID  *string `json:"validIngredientID,omitempty"`
 	}
 
-	// ValidIngredientPreparationSearchSubset is a subset of ValidIngredientPreparation fields for search indexing.
+	// ValidIngredientPreparationSearchSubset represents the subset of values suitable to index for search.
 	ValidIngredientPreparationSearchSubset struct {
 		ID          string  `json:"id,omitempty"`
 		Notes       string  `json:"notes,omitempty"`

@@ -120,7 +120,7 @@ type (
 		BelongsToRecipe               string            `json:"belongsToRecipe"`
 	}
 
-	// RecipeStepSearchSubset is a subset of RecipeStep fields for search indexing.
+	// RecipeStepSearchSubset represents the subset of values suitable to index for search.
 	RecipeStepSearchSubset struct {
 		Preparation string    `json:"preparation,omitempty"`
 		Ingredients []NamedID `json:"ingredients,omitempty"`
