@@ -24,7 +24,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-//nolint:maintidx // this thing is just gonna be how it is
 func main() {
 	indicesPtr := flag.String("indices", "", "indices to initialize")
 	wipePtr := flag.Bool("wipe", false, "whether to wipe the indices or not")

@@ -55,3 +55,14 @@ func ConvertValidPreparationInstrumentToValidPreparationInstrumentSearchSubset(x
 
 	return y
 }
+
+func ConvertValidIngredientPreparationToValidIngredientPreparationSearchSubset(x *types.ValidIngredientPreparation) *types.ValidIngredientPreparationSearchSubset {
+	y := &types.ValidIngredientPreparationSearchSubset{
+		ID:          x.ID,
+		Notes:       x.Notes,
+		Ingredient:  types.NamedID{ID: x.Ingredient.ID, Name: x.Ingredient.Name},
+		Preparation: types.NamedID{ID: x.Preparation.ID, Name: x.Preparation.Name},
+	}
+
+	return y
+}

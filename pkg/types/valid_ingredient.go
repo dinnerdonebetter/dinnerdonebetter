@@ -263,8 +263,6 @@ type (
 )
 
 // Update merges an ValidIngredientUpdateRequestInput with a valid ingredient.
-//
-//nolint:maintidx // i'm working on a reflection based solution to this problem
 func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

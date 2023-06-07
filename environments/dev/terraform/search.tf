@@ -83,12 +83,30 @@ resource "algolia_index" "valid_ingredient_measurement_units_index" {
 
 resource "algolia_index" "valid_measurement_unit_conversions_index" {
   name = "valid_measurement_unit_conversions"
+
+  searchable_attributes = [
+    "notes",
+    "fromMeasurementUnit.name",
+    "toMeasurementUnit.name",
+  ]
 }
 
 resource "algolia_index" "valid_preparation_instruments_index" {
   name = "valid_preparation_instruments"
+
+  searchable_attributes = [
+    "notes",
+    "instrument.name",
+    "preparation.name",
+  ]
 }
 
 resource "algolia_index" "valid_ingredient_preparations_index" {
   name = "valid_ingredient_preparations"
+
+  searchable_attributes = [
+    "notes",
+    "ingredient.name",
+    "preparation.name",
+  ]
 }

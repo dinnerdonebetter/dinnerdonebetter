@@ -187,10 +187,13 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		toBeIndexed, err = dataManager.GetValidIngredientPreparation(ctx, searchIndexRequest.RowID)
+		var validIngredientPreparation *types.ValidIngredientPreparation
+		validIngredientPreparation, err = dataManager.GetValidIngredientPreparation(ctx, searchIndexRequest.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient preparation")
 		}
+
+		toBeIndexed = converters.ConvertValidIngredientPreparationToValidIngredientPreparationSearchSubset(validIngredientPreparation)
 	default:
 		logger.Info("invalid index type specified, exiting")
 		return nil

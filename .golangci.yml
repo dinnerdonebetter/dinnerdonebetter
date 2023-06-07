@@ -243,7 +243,6 @@ linters:
     - execinquery                                         # a linter about query string checker in Query function which reads your Go src files and warning it finds
     - grouper                                             # An analyzer to analyze expression groups.
     - loggercheck                                         # Checks key value pairs for common logger libraries (kitlog,klog,logr,zap).
-    - maintidx                                            # measures the maintainability index of each function.
     - nilnil                                              # Checks that there is no simultaneous return of nil error and an invalid value.
     - nosprintfhostport                                   # Checks for misuse of Sprintf to construct a host with port in a URL.
     - reassign                                            # Checks that package variables are not reassigned
@@ -276,6 +275,7 @@ linters:
     - gofumpt          # Gofumpt checks whether code was gofumpt-ed.
     - interfacebloat   # A linter that checks the number of methods inside an interface.
     - lll              # Reports long lines
+    - maintidx         # measures the maintainability index of each function.
     - makezero         # Finds slice declarations with non-zero initial length
     - nestif           # Reports deeply nested if statements
     - nlreturn         # nlreturn checks for a new line before return and branch statements to increase code clarity
@@ -312,7 +312,6 @@ issues:
         - unparam
         - unused
         - forcetypeassert
-        - maintidx
         - nilnil
 
     - path: wire\.go
