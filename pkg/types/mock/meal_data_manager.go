@@ -60,3 +60,8 @@ func (m *MealDataManager) UpdateMeal(ctx context.Context, updated *types.Meal) e
 func (m *MealDataManager) ArchiveMeal(ctx context.Context, recipeID, householdID string) error {
 	return m.Called(ctx, recipeID, householdID).Error(0)
 }
+
+// MarkMealAsIndexed is a mock function.
+func (m *MealDataManager) MarkMealAsIndexed(ctx context.Context, mealID string) error {
+	return m.Called(ctx, mealID).Error(0)
+}

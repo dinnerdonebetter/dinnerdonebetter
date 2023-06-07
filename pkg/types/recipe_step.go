@@ -122,6 +122,8 @@ type (
 
 	// RecipeStepSearchSubset represents the subset of values suitable to index for search.
 	RecipeStepSearchSubset struct {
+		_ struct{}
+
 		Preparation string    `json:"preparation,omitempty"`
 		Ingredients []NamedID `json:"ingredients,omitempty"`
 		Instruments []NamedID `json:"instruments,omitempty"`

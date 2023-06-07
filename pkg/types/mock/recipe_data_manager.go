@@ -60,3 +60,8 @@ func (m *RecipeDataManager) UpdateRecipe(ctx context.Context, updated *types.Rec
 func (m *RecipeDataManager) ArchiveRecipe(ctx context.Context, recipeID, householdID string) error {
 	return m.Called(ctx, recipeID, householdID).Error(0)
 }
+
+// MarkRecipeAsIndexed is a mock function.
+func (m *RecipeDataManager) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
+	return m.Called(ctx, recipeID).Error(0)
+}

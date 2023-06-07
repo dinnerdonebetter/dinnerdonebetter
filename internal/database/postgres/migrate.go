@@ -469,5 +469,10 @@ var (
 			Description: "grab bag",
 			Script:      fetchMigration("00084_grab_bag"),
 		},
+		{
+			Version:     85,
+			Description: "new last indexed field",
+			Script:      fetchMigration("00085_new_last_indexed_field"),
+		},
 	}
 )

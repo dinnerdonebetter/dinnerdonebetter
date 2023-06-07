@@ -138,6 +138,8 @@ type (
 
 	// MealSearchSubset represents the subset of values suitable to index for search.
 	MealSearchSubset struct {
+		_ struct{}
+
 		ID          string    `json:"id,omitempty"`
 		Name        string    `json:"name,omitempty"`
 		Description string    `json:"description,omitempty"`
@@ -151,6 +153,7 @@ type (
 		GetMeals(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
 		SearchForMeals(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
 		CreateMeal(ctx context.Context, input *MealDatabaseCreationInput) (*Meal, error)
+		MarkMealAsIndexed(ctx context.Context, mealID string) error
 		ArchiveMeal(ctx context.Context, mealID, userID string) error
 	}
 

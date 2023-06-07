@@ -74,14 +74,6 @@ type (
 		Notes             *string  `json:"notes,omitempty"`
 	}
 
-	// ValidMeasurementUnitConversionSearchSubset is a subset of ValidMeasurementUnitConversion fields for search indexing.
-	ValidMeasurementUnitConversionSearchSubset struct {
-		ID                  string  `json:"id,omitempty"`
-		Notes               string  `json:"notes,omitempty"`
-		FromMeasurementUnit NamedID `json:"fromMeasurementUnit,omitempty"`
-		ToMeasurementUnit   NamedID `json:"toMeasurementUnit,omitempty"`
-	}
-
 	// ValidMeasurementConversionDataManager describes a structure capable of storing valid measurement conversions permanently.
 	ValidMeasurementConversionDataManager interface {
 		ValidMeasurementConversionExists(ctx context.Context, validMeasurementConversionID string) (bool, error)

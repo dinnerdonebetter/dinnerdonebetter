@@ -130,10 +130,10 @@ type (
 	ValidPreparationSearchSubset struct {
 		_ struct{}
 
-		PastTense   string `json:"pastTense"`
-		ID          string `json:"id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		PastTense   string `json:"pastTense,omitempty"`
+		ID          string `json:"id,omitempty"`
+		Name        string `json:"name,omitempty"`
+		Description string `json:"description,omitempty"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -145,6 +145,7 @@ type (
 		SearchForValidPreparations(ctx context.Context, query string) ([]*ValidPreparation, error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error
+		MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error
 		ArchiveValidPreparation(ctx context.Context, validPreparationID string) error
 	}
 

@@ -44,25 +44,3 @@ func ConvertValidPreparationInstrumentToValidPreparationInstrumentDatabaseCreati
 		ValidInstrumentID:  validPreparationInstrument.Instrument.ID,
 	}
 }
-
-func ConvertValidPreparationInstrumentToValidPreparationInstrumentSearchSubset(x *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentSearchSubset {
-	y := &types.ValidPreparationInstrumentSearchSubset{
-		ID:          x.ID,
-		Notes:       x.Notes,
-		Instrument:  types.NamedID{ID: x.Instrument.ID, Name: x.Instrument.Name},
-		Preparation: types.NamedID{ID: x.Preparation.ID, Name: x.Preparation.Name},
-	}
-
-	return y
-}
-
-func ConvertValidIngredientPreparationToValidIngredientPreparationSearchSubset(x *types.ValidIngredientPreparation) *types.ValidIngredientPreparationSearchSubset {
-	y := &types.ValidIngredientPreparationSearchSubset{
-		ID:          x.ID,
-		Notes:       x.Notes,
-		Ingredient:  types.NamedID{ID: x.Ingredient.ID, Name: x.Ingredient.Name},
-		Preparation: types.NamedID{ID: x.Preparation.ID, Name: x.Preparation.Name},
-	}
-
-	return y
-}

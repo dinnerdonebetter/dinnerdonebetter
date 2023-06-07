@@ -60,3 +60,8 @@ func (m *ValidInstrumentDataManager) UpdateValidInstrument(ctx context.Context, 
 func (m *ValidInstrumentDataManager) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	return m.Called(ctx, validInstrumentID).Error(0)
 }
+
+// MarkValidInstrumentAsIndexed is a mock function.
+func (m *ValidInstrumentDataManager) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error {
+	return m.Called(ctx, validInstrumentID).Error(0)
+}

@@ -60,3 +60,8 @@ func (m *ValidPreparationDataManager) UpdateValidPreparation(ctx context.Context
 func (m *ValidPreparationDataManager) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	return m.Called(ctx, validPreparationID).Error(0)
 }
+
+// MarkValidPreparationAsIndexed is a mock function.
+func (m *ValidPreparationDataManager) MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error {
+	return m.Called(ctx, validPreparationID).Error(0)
+}

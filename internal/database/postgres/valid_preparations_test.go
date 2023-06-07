@@ -712,3 +712,58 @@ func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 }
+
+func TestQuerier_MarkValidPreparationAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidPreparation.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidPreparationLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkValidPreparationAsIndexed(ctx, exampleValidPreparation.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkValidPreparationAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidPreparation.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidPreparationLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkValidPreparationAsIndexed(ctx, exampleValidPreparation.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}

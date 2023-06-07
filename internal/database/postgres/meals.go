@@ -401,6 +401,35 @@ func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQ
 	return nil
 }
 
+//go:embed queries/meals/update_last_indexed_at.sql
+var updateMealLastIndexedAtQuery string
+
+// MarkMealAsIndexed updates a particular meal's last_indexed_at value.
+func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealIDKey, mealID)
+	tracing.AttachMealIDToSpan(span, mealID)
+
+	args := []any{
+		mealID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "meal last_indexed_at", updateMealLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking meal as indexed")
+	}
+
+	logger.Info("meal marked as indexed")
+
+	return nil
+}
+
 //go:embed queries/meals/archive.sql
 var archiveMealQuery string
 

@@ -60,3 +60,8 @@ func (m *ValidMeasurementUnitDataManager) UpdateValidMeasurementUnit(ctx context
 func (m *ValidMeasurementUnitDataManager) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
 	return m.Called(ctx, validMeasurementUnitID).Error(0)
 }
+
+// MarkValidMeasurementUnitAsIndexed is a mock function.
+func (m *ValidMeasurementUnitDataManager) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error {
+	return m.Called(ctx, validMeasurementUnitID).Error(0)
+}

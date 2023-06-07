@@ -238,11 +238,11 @@ type (
 	ValidIngredientSearchSubset struct {
 		_ struct{}
 
-		PluralName          string `json:"pluralName"`
-		Name                string `json:"name"`
-		ID                  string `json:"id"`
-		Description         string `json:"description"`
-		ShoppingSuggestions string `json:"shoppingSuggestions"`
+		PluralName          string `json:"pluralName,omitempty"`
+		Name                string `json:"name,omitempty"`
+		ID                  string `json:"id,omitempty"`
+		Description         string `json:"description,omitempty"`
+		ShoppingSuggestions string `json:"shoppingSuggestions,omitempty"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
@@ -256,6 +256,7 @@ type (
 		SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *QueryFilter) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
+		MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error
 	}
 

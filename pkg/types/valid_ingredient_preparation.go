@@ -66,14 +66,6 @@ type (
 		ValidIngredientID  *string `json:"validIngredientID,omitempty"`
 	}
 
-	// ValidIngredientPreparationSearchSubset represents the subset of values suitable to index for search.
-	ValidIngredientPreparationSearchSubset struct {
-		ID          string  `json:"id,omitempty"`
-		Notes       string  `json:"notes,omitempty"`
-		Ingredient  NamedID `json:"ingredient,omitempty"`
-		Preparation NamedID `json:"preparation,omitempty"`
-	}
-
 	// ValidIngredientPreparationDataManager describes a structure capable of storing valid ingredient preparations permanently.
 	ValidIngredientPreparationDataManager interface {
 		ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (bool, error)

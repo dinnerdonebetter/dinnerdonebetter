@@ -408,6 +408,35 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 	return nil
 }
 
+//go:embed queries/valid_measurement_units/update_last_indexed_at.sql
+var updateValidMeasurementUnitLastIndexedAtQuery string
+
+// MarkValidMeasurementUnitAsIndexed updates a particular valid measurement unit's last_indexed_at value.
+func (q *Querier) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if validMeasurementUnitID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+
+	args := []any{
+		validMeasurementUnitID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "valid measurement unit last_indexed_at", updateValidMeasurementUnitLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking valid measurement unit as indexed")
+	}
+
+	logger.Info("valid measurement unit marked as indexed")
+
+	return nil
+}
+
 //go:embed queries/valid_measurement_units/archive.sql
 var archiveValidMeasurementUnitQuery string
 

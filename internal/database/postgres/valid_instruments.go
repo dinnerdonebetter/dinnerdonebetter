@@ -371,6 +371,35 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 	return nil
 }
 
+//go:embed queries/valid_instruments/update_last_indexed_at.sql
+var updateValidInstrumentLastIndexedAtQuery string
+
+// MarkValidInstrumentAsIndexed updates a particular valid instrument's last_indexed_at value.
+func (q *Querier) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if validInstrumentID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+
+	args := []any{
+		validInstrumentID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "valid instrument last_indexed_at", updateValidInstrumentLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking valid instrument as indexed")
+	}
+
+	logger.Info("valid instrument marked as indexed")
+
+	return nil
+}
+
 //go:embed queries/valid_instruments/archive.sql
 var archiveValidInstrumentQuery string
 

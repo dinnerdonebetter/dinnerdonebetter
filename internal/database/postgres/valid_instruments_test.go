@@ -757,3 +757,58 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 }
+
+func TestQuerier_MarkValidInstrumentAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidInstrument := fakes.BuildFakeValidInstrument()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidInstrument.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidInstrumentLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkValidInstrumentAsIndexed(ctx, exampleValidInstrument.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkValidInstrumentAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidInstrument := fakes.BuildFakeValidInstrument()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidInstrument.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidInstrumentLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkValidInstrumentAsIndexed(ctx, exampleValidInstrument.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}

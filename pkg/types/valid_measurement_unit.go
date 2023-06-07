@@ -113,10 +113,10 @@ type (
 	ValidMeasurementUnitSearchSubset struct {
 		_ struct{}
 
-		Name        string `json:"name"`
-		ID          string `json:"id"`
-		Description string `json:"description"`
-		PluralName  string `json:"pluralName"`
+		Name        string `json:"name,omitempty"`
+		ID          string `json:"id,omitempty"`
+		Description string `json:"description,omitempty"`
+		PluralName  string `json:"pluralName,omitempty"`
 	}
 
 	// ValidMeasurementUnitDataManager describes a structure capable of storing valid measurement units permanently.
@@ -128,6 +128,7 @@ type (
 		ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
 		CreateValidMeasurementUnit(ctx context.Context, input *ValidMeasurementUnitDatabaseCreationInput) (*ValidMeasurementUnit, error)
 		UpdateValidMeasurementUnit(ctx context.Context, updated *ValidMeasurementUnit) error
+		MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error
 		ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error
 	}
 

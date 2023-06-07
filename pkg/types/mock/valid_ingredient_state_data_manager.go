@@ -54,3 +54,8 @@ func (m *ValidIngredientStateDataManager) UpdateValidIngredientState(ctx context
 func (m *ValidIngredientStateDataManager) ArchiveValidIngredientState(ctx context.Context, validIngredientStateID string) error {
 	return m.Called(ctx, validIngredientStateID).Error(0)
 }
+
+// MarkValidIngredientStateAsIndexed is a mock function.
+func (m *ValidIngredientStateDataManager) MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientStateID string) error {
+	return m.Called(ctx, validIngredientStateID).Error(0)
+}

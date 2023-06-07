@@ -118,10 +118,10 @@ type (
 	ValidInstrumentSearchSubset struct {
 		_ struct{}
 
-		ID          string `json:"id"`
-		Name        string `json:"name"`
-		PluralName  string `json:"pluralName"`
-		Description string `json:"description"`
+		ID          string `json:"id,omitempty"`
+		Name        string `json:"name,omitempty"`
+		PluralName  string `json:"pluralName,omitempty"`
+		Description string `json:"description,omitempty"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
@@ -133,6 +133,7 @@ type (
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
+		MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
 	}
 

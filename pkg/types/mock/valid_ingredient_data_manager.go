@@ -71,3 +71,8 @@ func (m *ValidIngredientDataManager) UpdateValidIngredient(ctx context.Context, 
 func (m *ValidIngredientDataManager) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
 	return m.Called(ctx, validIngredientID).Error(0)
 }
+
+// MarkValidIngredientAsIndexed is a mock function.
+func (m *ValidIngredientDataManager) MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error {
+	return m.Called(ctx, validIngredientID).Error(0)
+}

@@ -29,14 +29,6 @@ const (
 	IndexTypeValidPreparations = "valid_preparations"
 	// IndexTypeValidIngredientStates represents the valid_ingredient_states index.
 	IndexTypeValidIngredientStates = "valid_ingredient_states"
-	// IndexTypeValidIngredientMeasurementUnits represents the valid_ingredient_measurement_units index.
-	IndexTypeValidIngredientMeasurementUnits = "valid_ingredient_measurement_units"
-	// IndexTypeValidPreparationInstruments represents the valid_preparation_instruments index.
-	IndexTypeValidPreparationInstruments = "valid_preparation_instruments"
-	// IndexTypeValidIngredientPreparations represents the valid_ingredient_preparations index.
-	IndexTypeValidIngredientPreparations = "valid_ingredient_preparations"
-	// IndexTypeValidMeasurementUnitConversions represents the valid_measurement_unit_conversions index.
-	IndexTypeValidMeasurementUnitConversions = "valid_measurement_unit_conversions"
 )
 
 var (
@@ -157,58 +149,6 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 		}
 
 		toBeIndexed = converters.ConvertValidIngredientStateToValidIngredientStateSearchSubset(validIngredientState)
-	case IndexTypeValidIngredientMeasurementUnits:
-		im, err = config.ProvideIndexManager[types.ValidIngredientMeasurementUnit](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
-		var validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit
-		validIngredientMeasurementUnit, err = dataManager.GetValidIngredientMeasurementUnit(ctx, searchIndexRequest.RowID)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient measurement unit")
-		}
-
-		toBeIndexed = converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitSearchSubset(validIngredientMeasurementUnit)
-	case IndexTypeValidMeasurementUnitConversions:
-		im, err = config.ProvideIndexManager[types.ValidMeasurementUnitConversion](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
-		var validMeasurementUnitConversion *types.ValidMeasurementUnitConversion
-		validMeasurementUnitConversion, err = dataManager.GetValidMeasurementUnitConversion(ctx, searchIndexRequest.RowID)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting valid measurement unit conversion")
-		}
-
-		toBeIndexed = converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionSearchSubset(validMeasurementUnitConversion)
-	case IndexTypeValidPreparationInstruments:
-		im, err = config.ProvideIndexManager[types.ValidPreparationInstrument](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
-		var validPreparationInstrument *types.ValidPreparationInstrument
-		validPreparationInstrument, err = dataManager.GetValidPreparationInstrument(ctx, searchIndexRequest.RowID)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting valid preparation instrument")
-		}
-
-		toBeIndexed = converters.ConvertValidPreparationInstrumentToValidPreparationInstrumentSearchSubset(validPreparationInstrument)
-	case IndexTypeValidIngredientPreparations:
-		im, err = config.ProvideIndexManager[types.ValidIngredientPreparation](ctx, logger, tracerProvider, searchConfig, searchIndexRequest.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
-		var validIngredientPreparation *types.ValidIngredientPreparation
-		validIngredientPreparation, err = dataManager.GetValidIngredientPreparation(ctx, searchIndexRequest.RowID)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient preparation")
-		}
-
-		toBeIndexed = converters.ConvertValidIngredientPreparationToValidIngredientPreparationSearchSubset(validIngredientPreparation)
 	default:
 		logger.Info("invalid index type specified, exiting")
 		return nil

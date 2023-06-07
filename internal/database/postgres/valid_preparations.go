@@ -381,6 +381,35 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	return nil
 }
 
+//go:embed queries/valid_preparations/update_last_indexed_at.sql
+var updateValidPreparationLastIndexedAtQuery string
+
+// MarkValidPreparationAsIndexed updates a particular valid preparation's last_indexed_at value.
+func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if validPreparationID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+
+	args := []any{
+		validPreparationID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "valid preparation last_indexed_at", updateValidPreparationLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking valid preparation as indexed")
+	}
+
+	logger.Info("valid preparation marked as indexed")
+
+	return nil
+}
+
 //go:embed queries/valid_preparations/archive.sql
 var archiveValidPreparationQuery string
 

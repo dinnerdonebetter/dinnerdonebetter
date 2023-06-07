@@ -114,6 +114,8 @@ type (
 
 	// RecipeSearchSubset represents the subset of values suitable to index for search.
 	RecipeSearchSubset struct {
+		_ struct{}
+
 		ID          string                    `json:"id,omitempty"`
 		Name        string                    `json:"name,omitempty"`
 		Description string                    `json:"description,omitempty"`
@@ -129,6 +131,7 @@ type (
 		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
+		MarkRecipeAsIndexed(ctx context.Context, recipeID string) error
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error
 	}
 

@@ -541,6 +541,35 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 	return nil
 }
 
+//go:embed queries/valid_ingredients/update_last_indexed_at.sql
+var updateValidIngredientLastIndexedAtQuery string
+
+// MarkValidIngredientAsIndexed updates a particular valid ingredient's last_indexed_at value.
+func (q *Querier) MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if validIngredientID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+
+	args := []any{
+		validIngredientID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "valid ingredient last_indexed_at", updateValidIngredientLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking valid ingredient as indexed")
+	}
+
+	logger.Info("valid ingredient marked as indexed")
+
+	return nil
+}
+
 //go:embed queries/valid_ingredients/archive.sql
 var archiveValidIngredientQuery string
 

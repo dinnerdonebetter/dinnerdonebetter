@@ -91,13 +91,14 @@ type (
 
 	// ValidIngredientStateDataManager describes a structure capable of storing valid ingredient states permanently.
 	ValidIngredientStateDataManager interface {
-		ValidIngredientStateExists(ctx context.Context, validPreparationID string) (bool, error)
-		GetValidIngredientState(ctx context.Context, validPreparationID string) (*ValidIngredientState, error)
+		ValidIngredientStateExists(ctx context.Context, validIngredientState string) (bool, error)
+		GetValidIngredientState(ctx context.Context, validIngredientState string) (*ValidIngredientState, error)
 		GetValidIngredientStates(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientState], error)
 		SearchForValidIngredientStates(ctx context.Context, query string) ([]*ValidIngredientState, error)
 		CreateValidIngredientState(ctx context.Context, input *ValidIngredientStateDatabaseCreationInput) (*ValidIngredientState, error)
 		UpdateValidIngredientState(ctx context.Context, updated *ValidIngredientState) error
-		ArchiveValidIngredientState(ctx context.Context, validPreparationID string) error
+		MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientState string) error
+		ArchiveValidIngredientState(ctx context.Context, validIngredientState string) error
 	}
 
 	// ValidIngredientStateDataService describes a structure capable of serving traffic related to valid ingredient states.
