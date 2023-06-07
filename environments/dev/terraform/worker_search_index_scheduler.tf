@@ -141,6 +141,7 @@ resource "google_cloudfunctions2_function" "search_data_index_scheduler" {
     service_account_email          = google_service_account.search_data_index_scheduler_user_service_account.email
 
     environment_variables = {
+      DINNER_DONE_BETTER_SERVICE_ENVIRONMENT = local.environment,
       # TODO: use the search_data_index_scheduler_user for this, currently it has permission denied for accessing tables
       # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
       # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
