@@ -39,7 +39,9 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.Sendgrid, validation.When(strings.EqualFold(strings.TrimSpace(cfg.Provider), ProviderSendgrid), validation.Required)),
+		validation.Field(&cfg.Sendgrid, validation.When(cfg.Provider == ProviderSendgrid, validation.Required)),
+		validation.Field(&cfg.Mailgun, validation.When(cfg.Provider == ProviderMailgun, validation.Required)),
+		validation.Field(&cfg.Mailjet, validation.When(cfg.Provider == ProviderMailjet, validation.Required)),
 	)
 }
 

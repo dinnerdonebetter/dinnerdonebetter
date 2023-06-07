@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
@@ -323,8 +324,8 @@ func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.C
 		return nil, err
 	}
 
-	cfg.Analytics.Provider = ""
-	cfg.Email.Provider = ""
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr
