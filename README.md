@@ -21,30 +21,38 @@ It's a good idea to run `make quicktest lint integration_tests` before commits.
 2. run `make dev`
 3. [http://localhost:8000/](http://localhost:8000/)
 
-## Infrastructure
+## infrastructure
 
 ```mermaid
-flowchart TD
-    APIServer
-    Cron(GCP Cloud Scheduler)
-    DataChangesWorker(Data Changes Worker)
-    MealPlanFinalizerWorker(Meal Plan Finalizer)
-    MealPlanGroceryListInitializerWorker(Meal Plan Grocery List Initializer)
-    MealPlanTaskCreatorWorker(Meal Plan Task Creator)
-    OutboundEmailerWorker(Outbound Emailer)
-    SearchDataIndexSchedulerWorker(Search Data Index Scheduler)
-    SearchDataIndexerWorker(Search Data Indexer)
+flowchart LR
+    APIServer("`API Server`")
+    PublicInternet("`Public Internet`")
+    Sendgrid("`Sendgrid`")
+    Segment("`Segment`")
+    Algolia("`Algolia`")
+    Cron("`GCP Cloud Scheduler`")
+    DataChangesWorker("`Data Changes Worker`")
+    MealPlanFinalizerWorker("`Meal Plan Finalizer`")
+    MealPlanGroceryListInitializerWorker("`Grocery List Initializer`")
+    MealPlanTaskCreatorWorker("`Meal Plan Task Creator`")
+    OutboundEmailerWorker("`Outbound Emailer`")
+    SearchDataIndexSchedulerWorker("`Data Index Scheduler`")
+    SearchDataIndexerWorker("`Search Data Indexer`")
+    PublicInternet-->APIServer
     Cron-->MealPlanGroceryListInitializerWorker
     Cron-->SearchDataIndexSchedulerWorker
     Cron-->MealPlanTaskCreatorWorker
     Cron-->MealPlanFinalizerWorker
     DataChangesWorker-->OutboundEmailerWorker
     DataChangesWorker-->SearchDataIndexerWorker
-    OutboundEmailerWorker-->DataChangesWorker
     MealPlanGroceryListInitializerWorker-->DataChangesWorker
     MealPlanTaskCreatorWorker-->DataChangesWorker
     MealPlanFinalizerWorker-->DataChangesWorker
     SearchDataIndexSchedulerWorker-->SearchDataIndexerWorker
+    SearchDataIndexerWorker-->Algolia
     APIServer-->DataChangesWorker
-    APIServer-->SearchDataIndexerWorker
+    DataChangesWorker-->Segment
+    OutboundEmailerWorker-->Segment
+    OutboundEmailerWorker-->Sendgrid
+    Algolia-->APIServer
 ```

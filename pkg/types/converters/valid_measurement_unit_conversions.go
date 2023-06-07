@@ -67,3 +67,14 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreati
 
 	return x
 }
+
+func ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionSearchSubset(x *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionSearchSubset {
+	y := &types.ValidMeasurementUnitConversionSearchSubset{
+		ID:                  x.ID,
+		Notes:               x.Notes,
+		FromMeasurementUnit: types.NamedID{ID: x.From.ID, Name: x.From.Name},
+		ToMeasurementUnit:   types.NamedID{ID: x.To.ID, Name: x.To.Name},
+	}
+
+	return y
+}

@@ -53,10 +53,14 @@ func main() {
 	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracing.NewNoopTracerProvider())
-	if err != nil {
-		log.Fatal(fmt.Errorf("initializing database client: %w", err))
+	if dataManager != nil {
+		defer dataManager.Close()
 	}
-	defer dataManager.Close()
+
+	if err != nil {
+		log.Println(fmt.Errorf("initializing database client: %w", err))
+		return
+	}
 
 	var (
 		im               search.IndexManager
@@ -71,7 +75,8 @@ func main() {
 				if *wipePtr {
 					log.Println("wiping index")
 					if err = im.Wipe(ctx); err != nil {
-						log.Fatal(fmt.Errorf("wiping index: %w", err))
+						log.Println(fmt.Errorf("wiping index: %w", err))
+						return
 					}
 					log.Println("wiped index")
 				}
@@ -96,16 +101,18 @@ func main() {
 
 		switch index {
 		case indexing.IndexTypeRecipes:
-			im, err = searchcfg.ProvideIndexManager[indexing.RecipeSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = searchcfg.ProvideIndexManager[types.RecipeSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.Recipe]
 				data, err = dataManager.GetRecipes(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting Recipe data: %w", err))
+					log.Println(fmt.Errorf("getting Recipe data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -120,16 +127,18 @@ func main() {
 				*filter.Page++
 			}
 		case indexing.IndexTypeMeals:
-			im, err = searchcfg.ProvideIndexManager[indexing.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			im, err = searchcfg.ProvideIndexManager[types.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.Meal]
 				data, err = dataManager.GetMeals(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting Meal data: %w", err))
+					log.Println(fmt.Errorf("getting Meal data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -146,14 +155,16 @@ func main() {
 		case indexing.IndexTypeValidIngredients:
 			im, err = searchcfg.ProvideIndexManager[types.ValidIngredient](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.ValidIngredient]
 				data, err = dataManager.GetValidIngredients(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidIngredient data: %w", err))
+					log.Println(fmt.Errorf("getting ValidIngredient data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -170,14 +181,16 @@ func main() {
 		case indexing.IndexTypeValidInstruments:
 			im, err = searchcfg.ProvideIndexManager[types.ValidInstrument](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.ValidInstrument]
 				data, err = dataManager.GetValidInstruments(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidInstrument data: %w", err))
+					log.Println(fmt.Errorf("getting ValidInstrument data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -194,14 +207,16 @@ func main() {
 		case indexing.IndexTypeValidMeasurementUnits:
 			im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.ValidMeasurementUnit]
 				data, err = dataManager.GetValidMeasurementUnits(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidMeasurementUnit data: %w", err))
+					log.Println(fmt.Errorf("getting ValidMeasurementUnit data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -218,14 +233,16 @@ func main() {
 		case indexing.IndexTypeValidPreparations:
 			im, err = searchcfg.ProvideIndexManager[types.ValidPreparation](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.ValidPreparation]
 				data, err = dataManager.GetValidPreparations(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidPreparation data: %w", err))
+					log.Println(fmt.Errorf("getting ValidPreparation data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -242,14 +259,16 @@ func main() {
 		case indexing.IndexTypeValidIngredientStates:
 			im, err = searchcfg.ProvideIndexManager[types.ValidIngredientState](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.ValidIngredientState]
 				data, err = dataManager.GetValidIngredientStates(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidIngredientState data: %w", err))
+					log.Println(fmt.Errorf("getting ValidIngredientState data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -266,14 +285,16 @@ func main() {
 		case indexing.IndexTypeValidIngredientMeasurementUnits:
 			im, err = searchcfg.ProvideIndexManager[types.ValidIngredientMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
 				data, err = dataManager.GetValidIngredientMeasurementUnits(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidIngredientMeasurementUnit data: %w", err))
+					log.Println(fmt.Errorf("getting ValidIngredientMeasurementUnit data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -290,21 +311,24 @@ func main() {
 		case indexing.IndexTypeValidMeasurementUnitConversions:
 			im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnitConversion](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var measurementUnits *types.QueryFilteredResult[types.ValidMeasurementUnit]
 				measurementUnits, err = dataManager.GetValidMeasurementUnits(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidMeasurementUnit data: %w", err))
+					log.Println(fmt.Errorf("getting ValidMeasurementUnit data: %w", err))
+					return
 				}
 
 				for _, y := range measurementUnits.Data {
 					var fromUnit []*types.ValidMeasurementUnitConversion
 					fromUnit, err = dataManager.GetValidMeasurementUnitConversionsFromUnit(ctx, y.ID)
 					if err != nil {
-						log.Fatal(fmt.Errorf("getting ValidMeasurementUnitConversion data: %w", err))
+						log.Println(fmt.Errorf("getting ValidMeasurementUnitConversion data: %w", err))
+						return
 					}
 
 					for _, z := range fromUnit {
@@ -318,7 +342,8 @@ func main() {
 					var toUnit []*types.ValidMeasurementUnitConversion
 					toUnit, err = dataManager.GetValidMeasurementUnitConversionsToUnit(ctx, y.ID)
 					if err != nil {
-						log.Fatal(fmt.Errorf("getting ValidMeasurementUnitConversion data: %w", err))
+						log.Println(fmt.Errorf("getting ValidMeasurementUnitConversion data: %w", err))
+						return
 					}
 
 					for _, z := range toUnit {
@@ -336,14 +361,16 @@ func main() {
 		case indexing.IndexTypeValidPreparationInstruments:
 			im, err = searchcfg.ProvideIndexManager[types.ValidPreparationInstrument](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.ValidPreparationInstrument]
 				data, err = dataManager.GetValidPreparationInstruments(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidPreparationInstrument data: %w", err))
+					log.Println(fmt.Errorf("getting ValidPreparationInstrument data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {
@@ -360,14 +387,16 @@ func main() {
 		case indexing.IndexTypeValidIngredientPreparations:
 			im, err = searchcfg.ProvideIndexManager[types.ValidIngredientPreparation](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
-				log.Fatal(fmt.Errorf("initializing index manager: %w", err))
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
 			}
 
 			for !thresholdMet {
 				var data *types.QueryFilteredResult[types.ValidIngredientPreparation]
 				data, err = dataManager.GetValidIngredientPreparations(ctx, filter)
 				if err != nil {
-					log.Fatal(fmt.Errorf("getting ValidIngredientPreparation data: %w", err))
+					log.Println(fmt.Errorf("getting ValidIngredientPreparation data: %w", err))
+					return
 				}
 
 				for _, x := range data.Data {

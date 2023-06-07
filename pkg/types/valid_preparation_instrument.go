@@ -66,6 +66,14 @@ type (
 		ValidInstrumentID  *string `json:"validInstrumentID,omitempty"`
 	}
 
+	// ValidPreparationInstrumentSearchSubset is a subset of ValidPreparationInstrument fields for search indexing.
+	ValidPreparationInstrumentSearchSubset struct {
+		ID          string  `json:"id,omitempty"`
+		Notes       string  `json:"notes,omitempty"`
+		Instrument  NamedID `json:"instrument,omitempty"`
+		Preparation NamedID `json:"preparation,omitempty"`
+	}
+
 	// ValidPreparationInstrumentDataManager describes a structure capable of storing valid preparation instruments permanently.
 	ValidPreparationInstrumentDataManager interface {
 		ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (bool, error)

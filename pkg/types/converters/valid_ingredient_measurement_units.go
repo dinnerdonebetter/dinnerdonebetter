@@ -54,3 +54,14 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDataba
 		MaximumAllowableQuantity: validIngredientMeasurementUnit.MaximumAllowableQuantity,
 	}
 }
+
+func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitSearchSubset(x *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitSearchSubset {
+	y := &types.ValidIngredientMeasurementUnitSearchSubset{
+		ID:              x.ID,
+		Notes:           x.Notes,
+		MeasurementUnit: types.NamedID{ID: x.MeasurementUnit.ID, Name: x.MeasurementUnit.Name},
+		Ingredient:      types.NamedID{ID: x.Ingredient.ID, Name: x.Ingredient.Name},
+	}
+
+	return y
+}

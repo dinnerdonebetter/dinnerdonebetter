@@ -132,7 +132,6 @@ require (
 	github.com/segmentio/backo-go v1.0.1 // indirect
 	github.com/sendgrid/rest v2.6.5+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible // indirect
-	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/objx v0.5.0 // indirect

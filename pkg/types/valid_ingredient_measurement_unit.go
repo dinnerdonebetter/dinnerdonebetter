@@ -74,6 +74,14 @@ type (
 		MaximumAllowableQuantity *float32 `json:"maximumAllowableQuantity,omitempty"`
 	}
 
+	// ValidIngredientMeasurementUnitSearchSubset is a subset of ValidIngredientMeasurementUnit fields for search indexing.
+	ValidIngredientMeasurementUnitSearchSubset struct {
+		ID              string  `json:"id,omitempty"`
+		Notes           string  `json:"notes,omitempty"`
+		MeasurementUnit NamedID `json:"measurementUnit,omitempty"`
+		Ingredient      NamedID `json:"ingredient,omitempty"`
+	}
+
 	// ValidIngredientMeasurementUnitDataManager describes a structure capable of storing valid ingredient measurement units permanently.
 	ValidIngredientMeasurementUnitDataManager interface {
 		ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (bool, error)

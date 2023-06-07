@@ -123,3 +123,17 @@ func ConvertRecipeToRecipeDatabaseCreationInput(input *types.Recipe) *types.Reci
 		YieldsComponentType:      input.YieldsComponentType,
 	}
 }
+
+func ConvertRecipeToRecipeSearchSubset(r *types.Recipe) *types.RecipeSearchSubset {
+	x := &types.RecipeSearchSubset{
+		ID:          r.ID,
+		Name:        r.Name,
+		Description: r.Description,
+	}
+
+	for _, step := range r.Steps {
+		x.Steps = append(x.Steps, ConvertRecipeStepToRecipeStepSearchSubset(step))
+	}
+
+	return x
+}
