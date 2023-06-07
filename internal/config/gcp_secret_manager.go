@@ -315,3 +315,19 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 
 	return cfg, nil
 }
+
+// GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Analytics.Provider = ""
+
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
+	}
+
+	return cfg, nil
+}
