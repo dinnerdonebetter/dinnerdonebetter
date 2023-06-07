@@ -54,7 +54,7 @@ resource "google_storage_bucket_object" "search_data_index_scheduler_archive" {
 }
 
 resource "google_service_account" "search_data_index_scheduler_user_service_account" {
-  account_id   = "search-data-index-scheduler-worker"
+  account_id   = "search-data-index-scheduler"
   display_name = "Search Data Index Scheduler"
 }
 
