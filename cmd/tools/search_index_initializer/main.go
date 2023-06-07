@@ -56,6 +56,7 @@ func main() {
 	if err != nil {
 		log.Fatal(fmt.Errorf("initializing database client: %w", err))
 	}
+	defer dataManager.Close()
 
 	var (
 		im               search.IndexManager
