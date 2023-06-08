@@ -84,6 +84,9 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 
 	// figure out what records to join
 	chosenIndex := indexing.AllIndexTypes[rand.Intn(len(indexing.AllIndexTypes))]
+	logger = logger.WithValue("chosen_index_type", chosenIndex)
+
+	logger.Info("index type chosen")
 
 	switch chosenIndex {
 	case indexing.IndexTypeValidPreparations:
@@ -104,6 +107,8 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 		logger.Info("unhandled index type chosen, exiting")
 		return nil
 	}
+
+	logger.WithValue("count", len(ids)).Info("publishing search index requests")
 
 	for _, id := range ids {
 		indexReq := &indexing.IndexRequest{
