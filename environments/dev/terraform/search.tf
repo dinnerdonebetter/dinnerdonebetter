@@ -2,16 +2,31 @@
 
 locals {
   default_algolia_ranking_criteria = ["typo", "words", "filters", "proximity", "attribute", "exact", "custom"]
+
+  # common rankings
+  name_and_description_custom_ranking = [
+    "desc(name)",
+    "desc(description)",
+  ]
+
+  name_plural_name_and_description_custom_ranking = [
+    "desc(name)",
+    "desc(pluralName)",
+    "desc(description)",
+  ]
+
+  name_past_tense_and_description_custom_ranking = [
+    "desc(name)",
+    "desc(pastTense)",
+    "desc(description)",
+  ]
 }
 
 resource "algolia_index" "recipes_index" {
   name = "recipes"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(description)",
-  ]
+  ranking        = concat(local.name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  custom_ranking = local.name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -22,11 +37,8 @@ resource "algolia_index" "recipes_index" {
 resource "algolia_index" "meals_index" {
   name = "meals"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(description)",
-  ]
+  ranking        = concat(local.name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  custom_ranking = local.name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -37,12 +49,8 @@ resource "algolia_index" "meals_index" {
 resource "algolia_index" "valid_ingredients_index" {
   name = "valid_ingredients"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pluralName)",
-    "desc(description)",
-  ]
+  ranking        = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  custom_ranking = local.name_plural_name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -54,12 +62,8 @@ resource "algolia_index" "valid_ingredients_index" {
 resource "algolia_index" "valid_instruments_index" {
   name = "valid_instruments"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pluralName)",
-    "desc(description)",
-  ]
+  ranking        = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  custom_ranking = local.name_plural_name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -71,12 +75,8 @@ resource "algolia_index" "valid_instruments_index" {
 resource "algolia_index" "valid_measurement_units_index" {
   name = "valid_measurement_units"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pluralName)",
-    "desc(description)",
-  ]
+  ranking        = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  custom_ranking = local.name_plural_name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -88,12 +88,8 @@ resource "algolia_index" "valid_measurement_units_index" {
 resource "algolia_index" "valid_preparations_index" {
   name = "valid_preparations"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pastTense)",
-    "desc(description)",
-  ]
+  ranking        = concat(local.name_past_tense_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  custom_ranking = local.name_past_tense_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -105,12 +101,8 @@ resource "algolia_index" "valid_preparations_index" {
 resource "algolia_index" "valid_ingredient_states_index" {
   name = "valid_ingredient_states"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pastTense)",
-    "desc(description)",
-  ]
+  ranking        = concat(local.name_past_tense_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  custom_ranking = local.name_past_tense_and_description_custom_ranking
 
   searchable_attributes = [
     "name",

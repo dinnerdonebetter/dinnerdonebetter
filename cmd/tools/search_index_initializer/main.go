@@ -14,7 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zap"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 	"github.com/dinnerdonebetter/backend/internal/search"
@@ -36,7 +36,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	logger := zap.NewZapLogger(logging.DebugLevel)
+	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 	tracerProvider := tracing.NewNoopTracerProvider()
 
 	cfg := &searchcfg.Config{
