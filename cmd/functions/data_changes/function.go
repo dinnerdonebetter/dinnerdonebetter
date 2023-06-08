@@ -319,22 +319,6 @@ func handleSearchIndexUpdates(
 		}
 
 		return nil
-	case types.ValidMeasurementUnitConversionCreatedCustomerEventType,
-		types.ValidMeasurementUnitConversionUpdatedCustomerEventType,
-		types.ValidMeasurementUnitConversionArchivedCustomerEventType:
-		if changeMessage.ValidMeasurementUnitConversion == nil {
-			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidMeasurementUnitConversion")
-		}
-
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
-			RowID:     changeMessage.ValidMeasurementUnitConversion.ID,
-			IndexType: indexing.IndexTypeValidMeasurementUnitConversions,
-			Delete:    changeMessage.EventType == types.ValidMeasurementUnitConversionArchivedCustomerEventType,
-		}); err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
-		}
-
-		return nil
 	default:
 		logger.Debug("event type not handled for search indexing")
 		return nil
