@@ -25,8 +25,8 @@ locals {
 resource "algolia_index" "recipes_index" {
   name = "recipes"
 
-  ranking        = concat(local.name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
-  custom_ranking = local.name_and_description_custom_ranking
+  ranking = concat(local.name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  # custom_ranking = local.name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -37,8 +37,8 @@ resource "algolia_index" "recipes_index" {
 resource "algolia_index" "meals_index" {
   name = "meals"
 
-  ranking        = concat(local.name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
-  custom_ranking = local.name_and_description_custom_ranking
+  ranking = concat(local.name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  # custom_ranking = local.name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -49,8 +49,8 @@ resource "algolia_index" "meals_index" {
 resource "algolia_index" "valid_ingredients_index" {
   name = "valid_ingredients"
 
-  ranking        = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
-  custom_ranking = local.name_plural_name_and_description_custom_ranking
+  ranking = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  # custom_ranking = local.name_plural_name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -62,8 +62,8 @@ resource "algolia_index" "valid_ingredients_index" {
 resource "algolia_index" "valid_instruments_index" {
   name = "valid_instruments"
 
-  ranking        = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
-  custom_ranking = local.name_plural_name_and_description_custom_ranking
+  ranking = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  # custom_ranking = local.name_plural_name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -75,8 +75,8 @@ resource "algolia_index" "valid_instruments_index" {
 resource "algolia_index" "valid_measurement_units_index" {
   name = "valid_measurement_units"
 
-  ranking        = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
-  custom_ranking = local.name_plural_name_and_description_custom_ranking
+  ranking = concat(local.name_plural_name_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  # custom_ranking = local.name_plural_name_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -88,8 +88,8 @@ resource "algolia_index" "valid_measurement_units_index" {
 resource "algolia_index" "valid_preparations_index" {
   name = "valid_preparations"
 
-  ranking        = concat(local.name_past_tense_and_description_custom_ranking, local.default_algolia_ranking_criteria)
-  custom_ranking = local.name_past_tense_and_description_custom_ranking
+  ranking = concat(local.name_past_tense_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  # custom_ranking = local.name_past_tense_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
@@ -101,8 +101,8 @@ resource "algolia_index" "valid_preparations_index" {
 resource "algolia_index" "valid_ingredient_states_index" {
   name = "valid_ingredient_states"
 
-  ranking        = concat(local.name_past_tense_and_description_custom_ranking, local.default_algolia_ranking_criteria)
-  custom_ranking = local.name_past_tense_and_description_custom_ranking
+  ranking = concat(local.name_past_tense_and_description_custom_ranking, local.default_algolia_ranking_criteria)
+  # custom_ranking = local.name_past_tense_and_description_custom_ranking
 
   searchable_attributes = [
     "name",
