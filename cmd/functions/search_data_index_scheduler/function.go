@@ -2,7 +2,10 @@ package searchdataindexscheduler
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -14,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
@@ -76,7 +80,41 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 
 	defer searchDataIndexPublisher.Stop()
 
+	var ids []string
+
 	// figure out what records to join
+	chosenIndex := indexing.AllIndexTypes[rand.Intn(len(indexing.AllIndexTypes))]
+
+	switch chosenIndex {
+	case indexing.IndexTypeValidPreparations:
+		ids, err = dataManager.GetValidPreparationIDsThatNeedSearchIndexing(ctx)
+		if err != nil {
+			if !errors.Is(err, sql.ErrNoRows) {
+				observability.AcknowledgeError(err, logger, span, "getting valid preparation IDs that need search indexing")
+			}
+			return nil
+		}
+	case indexing.IndexTypeRecipes:
+	case indexing.IndexTypeMeals:
+	case indexing.IndexTypeValidIngredients:
+	case indexing.IndexTypeValidInstruments:
+	case indexing.IndexTypeValidMeasurementUnits:
+	case indexing.IndexTypeValidIngredientStates:
+	default:
+		logger.Info("unhandled index type chosen, exiting")
+		return nil
+	}
+
+	for _, id := range ids {
+		indexReq := &indexing.IndexRequest{
+			RowID:     id,
+			IndexType: chosenIndex,
+		}
+		if err = searchDataIndexPublisher.Publish(ctx, indexReq); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing search index request")
+		}
+	}
 
 	return nil
+
 }

@@ -65,3 +65,9 @@ func (m *ValidPreparationDataManager) ArchiveValidPreparation(ctx context.Contex
 func (m *ValidPreparationDataManager) MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error {
 	return m.Called(ctx, validPreparationID).Error(0)
 }
+
+// GetValidPreparationIDsThatNeedSearchIndexing is a mock function.
+func (m *ValidPreparationDataManager) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}

@@ -265,6 +265,24 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 	return x, nil
 }
 
+//go:embed generated_queries/valid_preparations/get_needing_indexing.sql
+var validPreparationsNeedingIndexingQuery string
+
+// GetValidPreparationIDsThatNeedSearchIndexing fetches a list of valid preparations from the database that meet a particular filter.
+func (q *Querier) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.getRows(ctx, q.db, "valid preparations", validPreparationsNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
+}
+
 //go:embed queries/valid_preparations/create.sql
 var validPreparationCreationQuery string
 

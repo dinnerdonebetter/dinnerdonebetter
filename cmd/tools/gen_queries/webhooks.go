@@ -27,23 +27,23 @@ var (
 	}
 
 	rawWebhooksTableColumns = []string{
-		webhooksColumn("id"),
+		webhooksColumn(id),
 		webhooksColumn("name"),
 		webhooksColumn("content_type"),
 		webhooksColumn("url"),
 		webhooksColumn("method"),
-		webhooksColumn("created_at"),
-		webhooksColumn("last_updated_at"),
-		webhooksColumn("archived_at"),
-		webhooksColumn("belongs_to_household"),
+		webhooksColumn(createdAt),
+		webhooksColumn(lastUpdatedAt),
+		webhooksColumn(archivedAt),
+		webhooksColumn(belongsToHousehold),
 	}
 
 	rawWebhookTriggerEventsTableColumns = []string{
-		webhookTriggerEventsColumns("id"),
+		webhookTriggerEventsColumns(id),
 		webhookTriggerEventsColumns("trigger_event"),
 		webhookTriggerEventsColumns("belongs_to_webhook"),
-		webhookTriggerEventsColumns("created_at"),
-		webhookTriggerEventsColumns("archived_at"),
+		webhookTriggerEventsColumns(createdAt),
+		webhookTriggerEventsColumns(archivedAt),
 	}
 
 	fullWebhooksTableColumns = mergeSlicesAtIndex(rawWebhooksTableColumns, rawWebhookTriggerEventsTableColumns, 5)

@@ -457,6 +457,34 @@ func TestQuerier_GetValidPreparations(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidPreparationThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleValidPreparation := range exampleValidPreparationList.Data {
+			exampleIDs = append(exampleIDs, exampleValidPreparation.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validPreparationsNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetValidPreparationIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateValidPreparation(T *testing.T) {
 	T.Parallel()
 

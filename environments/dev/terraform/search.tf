@@ -2,20 +2,10 @@
 
 locals {
   default_algolia_ranking_criteria = ["custom", "exact", "typo", "words", "attribute", "filters", "proximity"]
-  name_and_description_custom_ranking = [
-    "desc(name)",
-    "desc(description)",
-  ]
 }
 
 resource "algolia_index" "recipes_index" {
   name = "recipes"
-
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(description)",
-  ]
 
   searchable_attributes = [
     "name",
@@ -26,12 +16,6 @@ resource "algolia_index" "recipes_index" {
 resource "algolia_index" "meals_index" {
   name = "meals"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(description)",
-  ]
-
   searchable_attributes = [
     "name",
     "description",
@@ -40,13 +24,6 @@ resource "algolia_index" "meals_index" {
 
 resource "algolia_index" "valid_ingredients_index" {
   name = "valid_ingredients"
-
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pluralName)",
-    "desc(description)",
-  ]
 
   searchable_attributes = [
     "name",
@@ -58,13 +35,6 @@ resource "algolia_index" "valid_ingredients_index" {
 resource "algolia_index" "valid_instruments_index" {
   name = "valid_instruments"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pluralName)",
-    "desc(description)",
-  ]
-
   searchable_attributes = [
     "name",
     "pluralName",
@@ -74,13 +44,6 @@ resource "algolia_index" "valid_instruments_index" {
 
 resource "algolia_index" "valid_measurement_units_index" {
   name = "valid_measurement_units"
-
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pluralName)",
-    "desc(description)",
-  ]
 
   searchable_attributes = [
     "name",
@@ -92,13 +55,6 @@ resource "algolia_index" "valid_measurement_units_index" {
 resource "algolia_index" "valid_preparations_index" {
   name = "valid_preparations"
 
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pastTense)",
-    "desc(description)",
-  ]
-
   searchable_attributes = [
     "name",
     "pastTense",
@@ -108,13 +64,6 @@ resource "algolia_index" "valid_preparations_index" {
 
 resource "algolia_index" "valid_ingredient_states_index" {
   name = "valid_ingredient_states"
-
-  ranking = local.default_algolia_ranking_criteria
-  custom_ranking = [
-    "desc(name)",
-    "desc(pastTense)",
-    "desc(description)",
-  ]
 
   searchable_attributes = [
     "name",
