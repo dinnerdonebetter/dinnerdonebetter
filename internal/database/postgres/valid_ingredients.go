@@ -377,6 +377,24 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 	return x, nil
 }
 
+//go:embed generated_queries/valid_ingredients/get_needing_indexing.sql
+var validIngredientsNeedingIndexingQuery string
+
+// GetValidIngredientIDsThatNeedSearchIndexing fetches a list of valid ingredients from the database that meet a particular filter.
+func (q *Querier) GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.getRows(ctx, q.db, "valid ingredients needing indexing", validIngredientsNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
+}
+
 //go:embed queries/valid_ingredients/create.sql
 var validIngredientCreationQuery string
 

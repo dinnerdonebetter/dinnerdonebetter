@@ -76,3 +76,9 @@ func (m *ValidIngredientDataManager) ArchiveValidIngredient(ctx context.Context,
 func (m *ValidIngredientDataManager) MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error {
 	return m.Called(ctx, validIngredientID).Error(0)
 }
+
+// GetValidIngredientIDsThatNeedSearchIndexing is a mock function.
+func (m *ValidIngredientDataManager) GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}

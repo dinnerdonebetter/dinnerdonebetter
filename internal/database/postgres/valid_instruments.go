@@ -279,6 +279,24 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 	return x, nil
 }
 
+//go:embed generated_queries/valid_instruments/get_needing_indexing.sql
+var validInstrumentsNeedingIndexingQuery string
+
+// GetValidInstrumentIDsThatNeedSearchIndexing fetches a list of valid instruments from the database that meet a particular filter.
+func (q *Querier) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.getRows(ctx, q.db, "valid instruments needing indexing", validInstrumentsNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
+}
+
 //go:embed queries/valid_instruments/create.sql
 var validInstrumentCreationQuery string
 

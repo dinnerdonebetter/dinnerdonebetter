@@ -65,3 +65,9 @@ func (m *ValidMeasurementUnitDataManager) ArchiveValidMeasurementUnit(ctx contex
 func (m *ValidMeasurementUnitDataManager) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error {
 	return m.Called(ctx, validMeasurementUnitID).Error(0)
 }
+
+// GetValidMeasurementUnitIDsThatNeedSearchIndexing is a mock function.
+func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}

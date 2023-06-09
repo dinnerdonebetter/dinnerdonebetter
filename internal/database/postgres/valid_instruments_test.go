@@ -534,6 +534,34 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidInstrumentThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleValidInstrument := range exampleValidInstrumentList.Data {
+			exampleIDs = append(exampleIDs, exampleValidInstrument.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validInstrumentsNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetValidInstrumentIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateValidInstrument(T *testing.T) {
 	T.Parallel()
 

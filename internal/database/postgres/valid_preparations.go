@@ -275,7 +275,7 @@ func (q *Querier) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Conte
 
 	logger := q.logger.Clone()
 
-	rows, err := q.getRows(ctx, q.db, "valid preparations", validPreparationsNeedingIndexingQuery, nil)
+	rows, err := q.getRows(ctx, q.db, "valid preparations needing indexing", validPreparationsNeedingIndexingQuery, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}

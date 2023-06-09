@@ -249,6 +249,24 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 	return x, nil
 }
 
+//go:embed generated_queries/meals/get_needing_indexing.sql
+var mealsNeedingIndexingQuery string
+
+// GetMealIDsThatNeedSearchIndexing fetches a list of meal IDs from the database that meet a particular filter.
+func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.getRows(ctx, q.db, "meals needing indexing", mealsNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
+}
+
 // SearchForMeals fetches a list of recipes from the database that match a query.
 func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

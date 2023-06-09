@@ -824,6 +824,34 @@ func TestQuerier_GetRecipes(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetRecipeThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleRecipeList := fakes.BuildFakeRecipeList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleRecipe := range exampleRecipeList.Data {
+			exampleIDs = append(exampleIDs, exampleRecipe.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(recipesNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetRecipeIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_getRecipeIDsForMeal(T *testing.T) {
 	T.Parallel()
 

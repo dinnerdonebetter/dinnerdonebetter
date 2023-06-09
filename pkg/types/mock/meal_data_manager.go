@@ -65,3 +65,9 @@ func (m *MealDataManager) ArchiveMeal(ctx context.Context, recipeID, householdID
 func (m *MealDataManager) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 	return m.Called(ctx, mealID).Error(0)
 }
+
+// GetMealIDsThatNeedSearchIndexing is a mock function.
+func (m *MealDataManager) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}

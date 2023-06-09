@@ -319,6 +319,24 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 	return x, nil
 }
 
+//go:embed generated_queries/valid_measurement_units/get_needing_indexing.sql
+var validMeasurementUnitsNeedingIndexingQuery string
+
+// GetValidMeasurementUnitIDsThatNeedSearchIndexing fetches a list of valid measurement units from the database that meet a particular filter.
+func (q *Querier) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.getRows(ctx, q.db, "valid measurement units needing indexing", validMeasurementUnitsNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
+}
+
 //go:embed queries/valid_measurement_units/create.sql
 var validMeasurementUnitCreationQuery string
 

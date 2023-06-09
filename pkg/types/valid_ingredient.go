@@ -258,6 +258,7 @@ type (
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
 		MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error
+		GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 	}
 
 	// ValidIngredientDataService describes a structure capable of serving traffic related to valid ingredients.

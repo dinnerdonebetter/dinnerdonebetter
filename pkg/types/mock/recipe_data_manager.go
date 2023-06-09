@@ -65,3 +65,9 @@ func (m *RecipeDataManager) ArchiveRecipe(ctx context.Context, recipeID, househo
 func (m *RecipeDataManager) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
 	return m.Called(ctx, recipeID).Error(0)
 }
+
+// GetRecipeIDsThatNeedSearchIndexing is a mock function.
+func (m *RecipeDataManager) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}

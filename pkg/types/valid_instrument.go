@@ -135,6 +135,7 @@ type (
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
 		MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
+		GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 	}
 
 	// ValidInstrumentDataService describes a structure capable of serving traffic related to valid instruments.

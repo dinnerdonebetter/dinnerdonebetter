@@ -401,6 +401,34 @@ func TestQuerier_GetValidIngredientStates(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidIngredientStateThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleValidIngredientState := range exampleValidIngredientStateList.Data {
+			exampleIDs = append(exampleIDs, exampleValidIngredientState.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validIngredientStatesNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetValidIngredientStateIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateValidIngredientState(T *testing.T) {
 	T.Parallel()
 

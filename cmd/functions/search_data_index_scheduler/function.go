@@ -88,27 +88,44 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 
 	logger.Info("index type chosen")
 
+	var actionFunc func(context.Context) ([]string, error)
+
 	switch chosenIndex {
 	case indexing.IndexTypeValidPreparations:
-		ids, err = dataManager.GetValidPreparationIDsThatNeedSearchIndexing(ctx)
-		if err != nil {
-			if !errors.Is(err, sql.ErrNoRows) {
-				observability.AcknowledgeError(err, logger, span, "getting valid preparation IDs that need search indexing")
-			}
-			return nil
-		}
+		actionFunc = dataManager.GetValidPreparationIDsThatNeedSearchIndexing
 	case indexing.IndexTypeRecipes:
+		actionFunc = dataManager.GetRecipeIDsThatNeedSearchIndexing
 	case indexing.IndexTypeMeals:
+		actionFunc = dataManager.GetMealIDsThatNeedSearchIndexing
 	case indexing.IndexTypeValidIngredients:
+		actionFunc = dataManager.GetValidIngredientIDsThatNeedSearchIndexing
 	case indexing.IndexTypeValidInstruments:
+		actionFunc = dataManager.GetValidInstrumentIDsThatNeedSearchIndexing
 	case indexing.IndexTypeValidMeasurementUnits:
+		actionFunc = dataManager.GetValidMeasurementUnitIDsThatNeedSearchIndexing
 	case indexing.IndexTypeValidIngredientStates:
+		actionFunc = dataManager.GetValidIngredientStateIDsThatNeedSearchIndexing
 	default:
 		logger.Info("unhandled index type chosen, exiting")
 		return nil
 	}
 
-	logger.WithValue("count", len(ids)).Info("publishing search index requests")
+	if actionFunc != nil {
+		ids, err = actionFunc(ctx)
+		if err != nil {
+			if !errors.Is(err, sql.ErrNoRows) {
+				observability.AcknowledgeError(err, logger, span, "getting valid ingredient state IDs that need search indexing")
+			}
+			return nil
+		}
+	} else {
+		logger.Info("unspecified action function, exiting")
+		return nil
+	}
+
+	if len(ids) > 0 {
+		logger.WithValue("count", len(ids)).Info("publishing search index requests")
+	}
 
 	for _, id := range ids {
 		indexReq := &indexing.IndexRequest{
