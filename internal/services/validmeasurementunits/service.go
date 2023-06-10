@@ -56,7 +56,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up valid ingredients service data changes publisher: %w", err)
 	}
 
-	searchIndex, err := searchcfg.ProvideIndex[types.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeValidPreparations)
+	searchIndex, err := searchcfg.ProvideIndex[types.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeValidMeasurementUnits)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing valid preparation index manager")
 	}
