@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -15,9 +14,7 @@ import (
 )
 
 const (
-	counterName        metrics.CounterName = "households"
-	counterDescription string              = "the number of households managed by the households service"
-	serviceName        string              = "households_service"
+	serviceName string = "households_service"
 )
 
 var _ types.HouseholdDataService = (*service)(nil)

@@ -727,7 +727,7 @@ func Test_determineWinner(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		expected := "blah blah blah"
-		exampleWinners := []schulze.Score{
+		exampleWinners := []schulze.Result[string]{
 			{
 				Choice: t.Name(),
 				Wins:   1,
@@ -754,7 +754,7 @@ func Test_determineWinner(T *testing.T) {
 
 		expectedA := "blah blah blah"
 		expectedB := "beeble beeble"
-		exampleWinners := []schulze.Score{
+		exampleWinners := []schulze.Result[string]{
 			{
 				Choice: expectedA,
 				Wins:   3,

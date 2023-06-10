@@ -480,7 +480,7 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	return nil
 }
 
-func (q *Querier) determineWinner(winners []schulze.Score) string {
+func (q *Querier) determineWinner(winners []schulze.Result[string]) string {
 	var (
 		highestScore int
 		scoreWinners []string
@@ -504,14 +504,14 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 	defer span.End()
 
 	candidateMap := map[string]struct{}{}
-	votesByUser := map[string]schulze.Ballot{}
+	votesByUser := map[string]schulze.Ballot[string]{}
 
 	logger := q.logger.WithValue("options.count", len(options))
 
 	for _, option := range options {
 		for _, v := range option.Votes {
 			if votesByUser[v.ByUser] == nil {
-				votesByUser[v.ByUser] = schulze.Ballot{}
+				votesByUser[v.ByUser] = schulze.Ballot[string]{}
 			}
 
 			if !v.Abstain {
@@ -527,11 +527,11 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 		candidates = append(candidates, c)
 	}
 
-	e := schulze.NewVoting(candidates...)
+	e := schulze.NewVoting[string](candidates)
 	for _, vote := range votesByUser {
-		if voteErr := e.Vote(vote); voteErr != nil {
+		if _, err := e.Vote(vote); err != nil {
 			// this actually can never happen because we use uints for ranks, lol
-			observability.AcknowledgeError(voteErr, logger, span, "an invalid vote was received")
+			observability.AcknowledgeError(err, logger, span, "an invalid vote was received")
 		}
 	}
 

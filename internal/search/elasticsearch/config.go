@@ -19,13 +19,12 @@ func (cfg *Config) provideElasticsearchClient() (*elasticsearch.Client, error) {
 		Addresses: []string{
 			cfg.Address,
 		},
-		Username:             cfg.Username,
-		Password:             cfg.Password,
-		RetryOnStatus:        nil,
-		EnableRetryOnTimeout: true,
-		MaxRetries:           10,
-		Transport:            nil,
-		Logger:               nil,
+		Username:      cfg.Username,
+		Password:      cfg.Password,
+		RetryOnStatus: nil,
+		MaxRetries:    10,
+		Transport:     nil,
+		Logger:        nil,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("initializing search client: %w", err)

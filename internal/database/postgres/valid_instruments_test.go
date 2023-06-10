@@ -556,7 +556,7 @@ func TestQuerier_GetValidInstrumentsWithIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidInstruments(false, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.Data...))
+			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.Data...))
 
 		actual, err := c.GetValidInstrumentsWithIDs(ctx, exampleIDs)
 		assert.NoError(t, err)

@@ -4,12 +4,6 @@
 			"level": 0,
 			"provider": "zerolog"
 		},
-		"metrics": {
-			"prometheus": {
-				"runtimeMetricsCollectionInterval": 1000000000
-			},
-			"provider": "prometheus"
-		},
 		"tracing": {
 			"jaeger": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces",

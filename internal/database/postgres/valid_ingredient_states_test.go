@@ -423,7 +423,7 @@ func TestQuerier_GetValidIngredientStatesWithIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientStates(false, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.Data...))
+			WillReturnRows(buildMockRowsFromValidIngredientStates(true, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.Data...))
 
 		actual, err := c.GetValidIngredientStatesWithIDs(ctx, exampleIDs)
 		assert.NoError(t, err)

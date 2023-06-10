@@ -578,7 +578,7 @@ func TestQuerier_GetValidMeasurementUnitsWithIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.Data...))
+			WillReturnRows(buildMockRowsFromValidMeasurementUnits(true, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.Data...))
 
 		actual, err := c.GetValidMeasurementUnitsWithIDs(ctx, exampleIDs)
 		assert.NoError(t, err)
