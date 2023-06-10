@@ -160,7 +160,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	useDB := s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
 	query := req.URL.Query().Get(types.SearchQueryKey)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
@@ -189,6 +189,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	var validPreparations []*types.ValidPreparation
 	if useDB {
+		validPreparations, err = s.validPreparationDataManager.SearchForValidPreparations(ctx, query)
+	} else {
 		var validPreparationSubsets []*types.ValidPreparationSearchSubset
 		validPreparationSubsets, err = s.searchIndex.Search(ctx, query)
 		if err != nil {
@@ -203,9 +205,6 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		}
 
 		validPreparations, err = s.validPreparationDataManager.GetValidPreparationsWithIDs(ctx, ids)
-	} else {
-		// fetch valid preparations from database.
-		validPreparations, err = s.validPreparationDataManager.SearchForValidPreparations(ctx, query)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
