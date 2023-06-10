@@ -67,6 +67,12 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 	for _, hit := range res.Hits {
 		var x *T
 
+		// we make the same assumption here, sort of
+		if _, ok := hit["objectID"]; ok {
+			hit["id"] = hit["objectID"]
+			delete(hit, "objectID")
+		}
+
 		var encodedAsJSON []byte
 		encodedAsJSON, err = json.Marshal(hit)
 		if err != nil {
