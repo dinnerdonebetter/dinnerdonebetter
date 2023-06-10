@@ -118,6 +118,13 @@ resource "google_cloudfunctions2_function" "search_indexer" {
     }
 
     secret_environment_variables {
+      key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.api_user_database_password.secret_id
+      version    = "latest"
+    }
+
+    secret_environment_variables {
       key        = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
       project_id = local.project_id
       secret     = google_secret_manager_secret.algolia_api_key.secret_id

@@ -55,9 +55,9 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 		return nil, ErrEmptyQueryProvided
 	}
 
-	res, err := m.client.Search(query)
-	if err != nil {
-		return nil, err
+	res, searchErr := m.client.Search(query)
+	if searchErr != nil {
+		return nil, searchErr
 	}
 
 	results := []*T{}
@@ -71,13 +71,13 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 		}
 
 		var encodedAsJSON []byte
-		encodedAsJSON, err = json.Marshal(hit)
+		encodedAsJSON, err := json.Marshal(hit)
 		if err != nil {
 			return nil, err
 		}
 
-		if err = json.Unmarshal(encodedAsJSON, &x); err != nil {
-			return nil, err
+		if unmarshalErr := json.Unmarshal(encodedAsJSON, &x); unmarshalErr != nil {
+			return nil, unmarshalErr
 		}
 
 		results = append(results, x)

@@ -9,15 +9,16 @@ import (
 )
 
 type QuerySpec struct {
-	where       any
-	queryFilter *types.QueryFilter
-	table       string
-	orderBy     string
-	columns     []string
-	joins       []string
-	groupBys    []string
-	limit       uint64
-	offset      uint64
+	where         any
+	queryFilter   *types.QueryFilter
+	table         string
+	orderBy       string
+	columns       []string
+	joins         []string
+	groupBys      []string
+	limit         uint64
+	offset        uint64
+	includeCounts bool
 }
 
 func (s *QuerySpec) Table(table string) {
@@ -50,6 +51,10 @@ func (s *QuerySpec) WithOffset(offset uint64) {
 
 func (s *QuerySpec) WithQueryFilter(filter *types.QueryFilter) {
 	s.queryFilter = filter
+}
+
+func (s *QuerySpec) WithCounts() {
+	s.includeCounts = true
 }
 
 func (s *QuerySpec) Select() (query string, args []any) {
