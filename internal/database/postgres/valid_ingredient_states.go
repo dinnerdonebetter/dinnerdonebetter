@@ -9,6 +9,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
+)
+
+const (
+	validIngredientStatesTable = "valid_ingredient_states"
 )
 
 var (
@@ -203,7 +209,7 @@ func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *types.Qu
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_ingredient_states", nil, nil, nil, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, validIngredientStatesTable, nil, nil, nil, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "valid ingredient states", query, args)
 	if err != nil {
@@ -215,6 +221,29 @@ func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *types.Qu
 	}
 
 	return x, nil
+}
+
+// GetValidIngredientStatesWithIDs fetches a list of valid ingredientStates from the database that meet a particular filter.
+func (q *Querier) GetValidIngredientStatesWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredientState, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	where := squirrel.Eq{"valid_ingredient_states.id": ids}
+	query, args := q.buildListQuery(ctx, validIngredientStatesTable, nil, nil, where, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, nil)
+
+	rows, err := q.getRows(ctx, q.db, "valid ingredient states with IDs", query, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states id list retrieval query")
+	}
+
+	ingredientStates, _, _, err := q.scanValidIngredientStates(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient states")
+	}
+
+	return ingredientStates, nil
 }
 
 //go:embed generated_queries/valid_ingredient_states/get_needing_indexing.sql

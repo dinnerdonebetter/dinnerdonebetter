@@ -71,3 +71,9 @@ func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnitIDsThatNeedSear
 	returnValues := m.Called(ctx)
 	return returnValues.Get(0).([]string), returnValues.Error(1)
 }
+
+// GetValidMeasurementUnitsWithIDs is a mock function.
+func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*types.ValidMeasurementUnit, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.ValidMeasurementUnit), returnValues.Error(1)
+}

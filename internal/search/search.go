@@ -2,22 +2,52 @@ package search
 
 import (
 	"context"
+	"errors"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+const (
+	// IndexTypeRecipes represents the recipes index.
+	IndexTypeRecipes = "recipes"
+	// IndexTypeMeals represents the meals index.
+	IndexTypeMeals = "meals"
+	// IndexTypeValidIngredients represents the valid_ingredients index.
+	IndexTypeValidIngredients = "valid_ingredients"
+	// IndexTypeValidInstruments represents the valid_instruments index.
+	IndexTypeValidInstruments = "valid_instruments"
+	// IndexTypeValidMeasurementUnits represents the valid_measurement_units index.
+	IndexTypeValidMeasurementUnits = "valid_measurement_units"
+	// IndexTypeValidPreparations represents the  valid_preparations index.
+	IndexTypeValidPreparations = "valid_preparations"
+	// IndexTypeValidIngredientStates represents the valid_ingredient_states index.
+	IndexTypeValidIngredientStates = "valid_ingredient_states"
+)
+
+var (
+	ErrNilIndexRequest = errors.New("nil index request")
+
+	// AllIndexTypes is a list of all index types.
+	AllIndexTypes = []string{
+		IndexTypeRecipes,
+		IndexTypeMeals,
+		IndexTypeValidIngredients,
+		IndexTypeValidInstruments,
+		IndexTypeValidMeasurementUnits,
+		IndexTypeValidPreparations,
+		IndexTypeValidIngredientStates,
+	}
+)
+
 type (
 	Searchable interface {
-		any | // TODO: just make these the subset types
-			types.ValidIngredient |
-			types.ValidInstrument |
-			types.ValidMeasurementUnit |
-			types.ValidPreparation |
-			types.ValidIngredientState |
-			types.ValidIngredientMeasurementUnit |
-			types.ValidMeasurementUnitConversion |
-			types.ValidPreparationInstrument |
-			types.ValidIngredientPreparation
+		types.RecipeSearchSubset |
+			types.MealSearchSubset |
+			types.ValidIngredientSearchSubset |
+			types.ValidInstrumentSearchSubset |
+			types.ValidMeasurementUnitSearchSubset |
+			types.ValidPreparationSearchSubset |
+			types.ValidIngredientStateSearchSubset
 	}
 
 	// IndexSearcher is our wrapper interface for querying a text search index.

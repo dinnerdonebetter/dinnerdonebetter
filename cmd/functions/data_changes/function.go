@@ -21,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/search"
 	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -168,7 +169,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.Recipe.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.RecipeArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -184,7 +185,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.Meal.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.MealArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -200,7 +201,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidIngredient.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidIngredientArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -216,7 +217,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidInstrument.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidInstrumentArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -232,7 +233,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidMeasurementUnit.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidMeasurementUnitArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -248,7 +249,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidPreparation.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidPreparationArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -264,7 +265,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidIngredientState.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidIngredientStateArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -280,7 +281,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidIngredientMeasurementUnit.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidIngredientMeasurementUnitArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -296,7 +297,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidPreparationInstrument.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidPreparationInstrumentArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
@@ -312,7 +313,7 @@ func handleSearchIndexUpdates(
 
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.ValidIngredientPreparation.ID,
-			IndexType: indexing.IndexTypeRecipes,
+			IndexType: search.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidIngredientPreparationArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")

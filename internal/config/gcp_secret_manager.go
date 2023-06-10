@@ -97,10 +97,12 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
 
-	cfg.Search.Provider = searchcfg.AlgoliaProvider
-	cfg.Search.Algolia = &algolia.Config{
-		APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
-		AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
+	cfg.Search = searchcfg.Config{
+		Provider: searchcfg.AlgoliaProvider,
+		Algolia: &algolia.Config{
+			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
+			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
+		},
 	}
 
 	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
@@ -223,10 +225,12 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
 	)
 
-	cfg.Search.Provider = searchcfg.AlgoliaProvider
-	cfg.Search.Algolia = &algolia.Config{
-		APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
-		AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
+	cfg.Search = searchcfg.Config{
+		Provider: searchcfg.AlgoliaProvider,
+		Algolia: &algolia.Config{
+			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
+			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
+		},
 	}
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)

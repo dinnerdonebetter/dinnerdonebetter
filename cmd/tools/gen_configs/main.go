@@ -333,6 +333,9 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 					},
 				},
 			},
+			ValidPreparations: validpreparationsservice.Config{
+				UseSearchService: true,
+			},
 		},
 	}
 

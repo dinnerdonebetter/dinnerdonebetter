@@ -148,6 +148,7 @@ type (
 		MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error
 		ArchiveValidPreparation(ctx context.Context, validPreparationID string) error
 		GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*ValidPreparation, error)
 	}
 
 	// ValidPreparationDataService describes a structure capable of serving traffic related to valid preparations.

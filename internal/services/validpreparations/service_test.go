@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +20,10 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                      logging.NewNoopLogger(),
+		logger: logging.NewNoopLogger(),
+		cfg: &Config{
+			UseSearchService: false,
+		},
 		validPreparationDataManager: &mocktypes.ValidPreparationDataManager{},
 		validPreparationIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:              mockencoding.NewMockEncoderDecoder(),
@@ -53,6 +57,7 @@ func TestProvideValidPreparationsService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
+			&searchcfg.Config{Provider: ""},
 			&mocktypes.ValidPreparationDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -83,6 +88,7 @@ func TestProvideValidPreparationsService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
+			&searchcfg.Config{Provider: ""},
 			&mocktypes.ValidPreparationDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,

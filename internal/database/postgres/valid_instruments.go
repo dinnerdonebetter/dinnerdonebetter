@@ -9,6 +9,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
+)
+
+const (
+	validInstrumentsTable = "valid_instruments"
 )
 
 var (
@@ -265,7 +271,7 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 		filter = types.DefaultQueryFilter()
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, validInstrumentsTable, nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "valid instruments", query, args)
 	if err != nil {
@@ -277,6 +283,29 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 	}
 
 	return x, nil
+}
+
+// GetValidInstrumentsWithIDs fetches a list of valid instruments from the database that meet a particular filter.
+func (q *Querier) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	where := squirrel.Eq{"valid_instruments.id": ids}
+	query, args := q.buildListQuery(ctx, validInstrumentsTable, nil, nil, where, householdOwnershipColumn, validInstrumentsTableColumns, "", false, nil)
+
+	rows, err := q.getRows(ctx, q.db, "valid instruments", query, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments id list retrieval query")
+	}
+
+	instruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid instruments")
+	}
+
+	return instruments, nil
 }
 
 //go:embed generated_queries/valid_instruments/get_needing_indexing.sql

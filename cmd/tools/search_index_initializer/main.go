@@ -99,8 +99,8 @@ func main() {
 		thresholdMet := false
 
 		switch index {
-		case indexing.IndexTypeRecipes:
-			im, err = searchcfg.ProvideIndexManager[types.RecipeSearchSubset](ctx, logger, tracerProvider, cfg, index)
+		case search.IndexTypeRecipes:
+			im, err = searchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -117,7 +117,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &indexing.IndexRequest{
 						RowID:     x.ID,
-						IndexType: indexing.IndexTypeRecipes,
+						IndexType: search.IndexTypeRecipes,
 					}
 					waitGroup.Add(1)
 				}
@@ -125,8 +125,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case indexing.IndexTypeMeals:
-			im, err = searchcfg.ProvideIndexManager[types.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
+		case search.IndexTypeMeals:
+			im, err = searchcfg.ProvideIndex[types.MealSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -143,7 +143,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &indexing.IndexRequest{
 						RowID:     x.ID,
-						IndexType: indexing.IndexTypeMeals,
+						IndexType: search.IndexTypeMeals,
 					}
 					waitGroup.Add(1)
 				}
@@ -151,8 +151,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case indexing.IndexTypeValidIngredients:
-			im, err = searchcfg.ProvideIndexManager[types.ValidIngredient](ctx, logger, tracerProvider, cfg, index)
+		case search.IndexTypeValidIngredients:
+			im, err = searchcfg.ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -169,7 +169,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &indexing.IndexRequest{
 						RowID:     x.ID,
-						IndexType: indexing.IndexTypeValidIngredients,
+						IndexType: search.IndexTypeValidIngredients,
 					}
 					waitGroup.Add(1)
 				}
@@ -177,8 +177,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case indexing.IndexTypeValidInstruments:
-			im, err = searchcfg.ProvideIndexManager[types.ValidInstrument](ctx, logger, tracerProvider, cfg, index)
+		case search.IndexTypeValidInstruments:
+			im, err = searchcfg.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -195,7 +195,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &indexing.IndexRequest{
 						RowID:     x.ID,
-						IndexType: indexing.IndexTypeValidInstruments,
+						IndexType: search.IndexTypeValidInstruments,
 					}
 					waitGroup.Add(1)
 				}
@@ -203,8 +203,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case indexing.IndexTypeValidMeasurementUnits:
-			im, err = searchcfg.ProvideIndexManager[types.ValidMeasurementUnit](ctx, logger, tracerProvider, cfg, index)
+		case search.IndexTypeValidMeasurementUnits:
+			im, err = searchcfg.ProvideIndex[types.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -221,7 +221,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &indexing.IndexRequest{
 						RowID:     x.ID,
-						IndexType: indexing.IndexTypeValidMeasurementUnits,
+						IndexType: search.IndexTypeValidMeasurementUnits,
 					}
 					waitGroup.Add(1)
 				}
@@ -229,8 +229,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case indexing.IndexTypeValidPreparations:
-			im, err = searchcfg.ProvideIndexManager[types.ValidPreparation](ctx, logger, tracerProvider, cfg, index)
+		case search.IndexTypeValidPreparations:
+			im, err = searchcfg.ProvideIndex[types.ValidPreparationSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -247,7 +247,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &indexing.IndexRequest{
 						RowID:     x.ID,
-						IndexType: indexing.IndexTypeValidPreparations,
+						IndexType: search.IndexTypeValidPreparations,
 					}
 					waitGroup.Add(1)
 				}
@@ -255,8 +255,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case indexing.IndexTypeValidIngredientStates:
-			im, err = searchcfg.ProvideIndexManager[types.ValidIngredientState](ctx, logger, tracerProvider, cfg, index)
+		case search.IndexTypeValidIngredientStates:
+			im, err = searchcfg.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -273,7 +273,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &indexing.IndexRequest{
 						RowID:     x.ID,
-						IndexType: indexing.IndexTypeValidIngredientStates,
+						IndexType: search.IndexTypeValidIngredientStates,
 					}
 					waitGroup.Add(1)
 				}

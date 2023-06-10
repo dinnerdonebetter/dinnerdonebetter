@@ -14,8 +14,8 @@ var (
 	ErrEmptyQueryProvided = errors.New("empty search query provided")
 )
 
-// Index implements our IndexManager interface.
-func (m *IndexManager[T]) Index(ctx context.Context, id string, value any) error {
+// Index implements our indexManager interface.
+func (m *indexManager[T]) Index(ctx context.Context, id string, value any) error {
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -46,8 +46,8 @@ func (m *IndexManager[T]) Index(ctx context.Context, id string, value any) error
 	return nil
 }
 
-// Search implements our IndexManager interface.
-func (m *IndexManager[T]) Search(ctx context.Context, query string) ([]*T, error) {
+// Search implements our indexManager interface.
+func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error) {
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -85,8 +85,8 @@ func (m *IndexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 	return results, nil
 }
 
-// Delete implements our IndexManager interface.
-func (m *IndexManager[T]) Delete(ctx context.Context, id string) error {
+// Delete implements our indexManager interface.
+func (m *indexManager[T]) Delete(ctx context.Context, id string) error {
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -101,8 +101,8 @@ func (m *IndexManager[T]) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-// Wipe implements our IndexManager interface.
-func (m *IndexManager[T]) Wipe(ctx context.Context) error {
+// Wipe implements our indexManager interface.
+func (m *indexManager[T]) Wipe(ctx context.Context) error {
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 

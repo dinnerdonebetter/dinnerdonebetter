@@ -112,7 +112,7 @@ func (m *MockDatabase) ProvideSessionStore() scs.Store {
 }
 
 // Migrate satisfies the DataManager interface.
-func (m *MockDatabase) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) error {
+func (m *MockDatabase) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error {
 	return m.Called(ctx, waitPeriod, maxAttempts).Error(0)
 }
 
@@ -127,7 +127,7 @@ func (m *MockDatabase) DB() *sql.DB {
 }
 
 // IsReady satisfies the DataManager interface.
-func (m *MockDatabase) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) (ready bool) {
+func (m *MockDatabase) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool) {
 	return m.Called(ctx, waitPeriod, maxAttempts).Bool(0)
 }
 

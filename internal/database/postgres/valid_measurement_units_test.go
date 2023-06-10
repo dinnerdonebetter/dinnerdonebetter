@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -551,6 +552,37 @@ func TestQuerier_GetValidMeasurementUnits(T *testing.T) {
 		actual, err := c.GetValidMeasurementUnits(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidMeasurementUnitsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
+
+		exampleIDs := []string{}
+		for _, exampleValidMeasurementUnit := range exampleValidMeasurementUnitList.Data {
+			exampleIDs = append(exampleIDs, exampleValidMeasurementUnit.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		where := squirrel.Eq{"valid_measurement_units.id": exampleIDs}
+		query, args := c.buildListQuery(ctx, validMeasurementUnitsTable, nil, nil, where, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.Data...))
+
+		actual, err := c.GetValidMeasurementUnitsWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidMeasurementUnitList.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

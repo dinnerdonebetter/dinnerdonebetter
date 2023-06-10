@@ -108,7 +108,8 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"validPreparations": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"mealPlanOptionVotes": {
 			"dataChangesTopicName": "data_changes"

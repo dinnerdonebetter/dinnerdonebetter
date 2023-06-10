@@ -63,8 +63,8 @@ type (
 	DataManager interface {
 		DB() *sql.DB
 		Close()
-		Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) error
-		IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) (ready bool)
+		Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error
+		IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool)
 		ProvideSessionStore() scs.Store
 
 		types.MealPlanTaskDataManager

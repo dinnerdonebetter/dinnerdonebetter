@@ -17,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/search"
 	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
@@ -91,19 +92,19 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 	var actionFunc func(context.Context) ([]string, error)
 
 	switch chosenIndex {
-	case indexing.IndexTypeValidPreparations:
+	case search.IndexTypeValidPreparations:
 		actionFunc = dataManager.GetValidPreparationIDsThatNeedSearchIndexing
-	case indexing.IndexTypeRecipes:
+	case search.IndexTypeRecipes:
 		actionFunc = dataManager.GetRecipeIDsThatNeedSearchIndexing
-	case indexing.IndexTypeMeals:
+	case search.IndexTypeMeals:
 		actionFunc = dataManager.GetMealIDsThatNeedSearchIndexing
-	case indexing.IndexTypeValidIngredients:
+	case search.IndexTypeValidIngredients:
 		actionFunc = dataManager.GetValidIngredientIDsThatNeedSearchIndexing
-	case indexing.IndexTypeValidInstruments:
+	case search.IndexTypeValidInstruments:
 		actionFunc = dataManager.GetValidInstrumentIDsThatNeedSearchIndexing
-	case indexing.IndexTypeValidMeasurementUnits:
+	case search.IndexTypeValidMeasurementUnits:
 		actionFunc = dataManager.GetValidMeasurementUnitIDsThatNeedSearchIndexing
-	case indexing.IndexTypeValidIngredientStates:
+	case search.IndexTypeValidIngredientStates:
 		actionFunc = dataManager.GetValidIngredientStateIDsThatNeedSearchIndexing
 	default:
 		logger.Info("unhandled index type chosen, exiting")

@@ -169,8 +169,9 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 		return nil, err
 	}
 	validpreparationsConfig := &servicesConfig.ValidPreparations
+	config14 := &cfg.Search
 	validPreparationDataManager := database.ProvideValidPreparationDataManager(dataManager)
-	validPreparationDataService, err := validpreparations.ProvideService(ctx, logger, validpreparationsConfig, validPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validPreparationDataService, err := validpreparations.ProvideService(ctx, logger, validpreparationsConfig, config14, validPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -289,9 +290,9 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	config14 := &servicesConfig.RecipeStepCompletionConditions
+	config15 := &servicesConfig.RecipeStepCompletionConditions
 	recipeStepCompletionConditionDataManager := database.ProvideRecipeStepCompletionConditionDataManager(dataManager)
-	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config14, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config15, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -316,8 +317,8 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	adminUserDataManager := database.ProvideAdminUserDataManager(dataManager)
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager, tracerProvider)
 	vendorproxyConfig := &servicesConfig.VendorProxy
-	config15 := &cfg.Analytics
-	eventReporter, err := config8.ProvideEventReporter(config15, logger, tracerProvider)
+	config16 := &cfg.Analytics
+	eventReporter, err := config8.ProvideEventReporter(config16, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

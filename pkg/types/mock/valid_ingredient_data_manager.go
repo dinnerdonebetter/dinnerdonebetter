@@ -82,3 +82,9 @@ func (m *ValidIngredientDataManager) GetValidIngredientIDsThatNeedSearchIndexing
 	returnValues := m.Called(ctx)
 	return returnValues.Get(0).([]string), returnValues.Error(1)
 }
+
+// GetValidIngredientsWithIDs is a mock function.
+func (m *ValidIngredientDataManager) GetValidIngredientsWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredient, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.ValidIngredient), returnValues.Error(1)
+}

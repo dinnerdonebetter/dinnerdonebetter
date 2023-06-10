@@ -71,3 +71,9 @@ func (m *ValidInstrumentDataManager) GetValidInstrumentIDsThatNeedSearchIndexing
 	returnValues := m.Called(ctx)
 	return returnValues.Get(0).([]string), returnValues.Error(1)
 }
+
+// GetValidInstrumentsWithIDs is a mock function.
+func (m *ValidInstrumentDataManager) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.ValidInstrument), returnValues.Error(1)
+}

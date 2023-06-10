@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -396,6 +397,37 @@ func TestQuerier_GetValidIngredientStates(T *testing.T) {
 		actual, err := c.GetValidIngredientStates(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidIngredientStatesWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
+
+		exampleIDs := []string{}
+		for _, exampleValidIngredientState := range exampleValidIngredientStateList.Data {
+			exampleIDs = append(exampleIDs, exampleValidIngredientState.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		where := squirrel.Eq{"valid_ingredient_states.id": exampleIDs}
+		query, args := c.buildListQuery(ctx, validIngredientStatesTable, nil, nil, where, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidIngredientStates(false, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.Data...))
+
+		actual, err := c.GetValidIngredientStatesWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientStateList.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

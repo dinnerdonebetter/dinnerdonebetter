@@ -131,6 +131,7 @@ type (
 		MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error
 		ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error
 		GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*ValidMeasurementUnit, error)
 	}
 
 	// ValidMeasurementUnitDataService describes a structure capable of serving traffic related to valid measurement units.

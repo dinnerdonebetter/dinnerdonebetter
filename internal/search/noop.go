@@ -2,14 +2,18 @@ package search
 
 import (
 	"context"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
+
+var _ Index[types.ValidPreparationSearchSubset] = (*NoopIndexManager[types.ValidPreparationSearchSubset])(nil)
 
 // NoopIndexManager is a noop Index.
 type NoopIndexManager[T any] struct{}
 
 // Search is a no-op method.
-func (*NoopIndexManager[T]) Search(context.Context, string) ([]string, error) {
-	return []string{}, nil
+func (*NoopIndexManager[T]) Search(context.Context, string) ([]*T, error) {
+	return []*T{}, nil
 }
 
 // Index is a no-op method.

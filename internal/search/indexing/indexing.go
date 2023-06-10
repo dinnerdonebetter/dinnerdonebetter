@@ -14,35 +14,18 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
-const (
-	// IndexTypeRecipes represents the recipes index.
-	IndexTypeRecipes = "recipes"
-	// IndexTypeMeals represents the meals index.
-	IndexTypeMeals = "meals"
-	// IndexTypeValidIngredients represents the valid_ingredients index.
-	IndexTypeValidIngredients = "valid_ingredients"
-	// IndexTypeValidInstruments represents the valid_instruments index.
-	IndexTypeValidInstruments = "valid_instruments"
-	// IndexTypeValidMeasurementUnits represents the valid_measurement_units index.
-	IndexTypeValidMeasurementUnits = "valid_measurement_units"
-	// IndexTypeValidPreparations represents the  valid_preparations index.
-	IndexTypeValidPreparations = "valid_preparations"
-	// IndexTypeValidIngredientStates represents the valid_ingredient_states index.
-	IndexTypeValidIngredientStates = "valid_ingredient_states"
-)
-
 var (
 	ErrNilIndexRequest = errors.New("nil index request")
 
 	// AllIndexTypes is a list of all index types.
 	AllIndexTypes = []string{
-		IndexTypeRecipes,
-		IndexTypeMeals,
-		IndexTypeValidIngredients,
-		IndexTypeValidInstruments,
-		IndexTypeValidMeasurementUnits,
-		IndexTypeValidPreparations,
-		IndexTypeValidIngredientStates,
+		search.IndexTypeRecipes,
+		search.IndexTypeMeals,
+		search.IndexTypeValidIngredients,
+		search.IndexTypeValidInstruments,
+		search.IndexTypeValidMeasurementUnits,
+		search.IndexTypeValidPreparations,
+		search.IndexTypeValidIngredientStates,
 	}
 )
 
@@ -65,8 +48,8 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 	)
 
 	switch indexReq.IndexType {
-	case IndexTypeRecipes:
-		im, err = config.ProvideIndexManager[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
+	case search.IndexTypeRecipes:
+		im, err = config.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -79,8 +62,8 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 
 		toBeIndexed = converters.ConvertRecipeToRecipeSearchSubset(recipe)
 		markAsIndexedFunc = func() error { return dataManager.MarkRecipeAsIndexed(ctx, indexReq.RowID) }
-	case IndexTypeMeals:
-		im, err = config.ProvideIndexManager[types.MealSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
+	case search.IndexTypeMeals:
+		im, err = config.ProvideIndex[types.MealSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -93,8 +76,8 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 
 		toBeIndexed = converters.ConvertMealToMealSearchSubset(meal)
 		markAsIndexedFunc = func() error { return dataManager.MarkMealAsIndexed(ctx, indexReq.RowID) }
-	case IndexTypeValidIngredients:
-		im, err = config.ProvideIndexManager[types.ValidIngredient](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
+	case search.IndexTypeValidIngredients:
+		im, err = config.ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -107,8 +90,8 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 
 		toBeIndexed = converters.ConvertValidIngredientToValidIngredientSearchSubset(validIngredient)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientAsIndexed(ctx, indexReq.RowID) }
-	case IndexTypeValidInstruments:
-		im, err = config.ProvideIndexManager[types.ValidInstrument](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
+	case search.IndexTypeValidInstruments:
+		im, err = config.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -121,8 +104,8 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 
 		toBeIndexed = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(validInstrument)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidInstrumentAsIndexed(ctx, indexReq.RowID) }
-	case IndexTypeValidMeasurementUnits:
-		im, err = config.ProvideIndexManager[types.ValidMeasurementUnit](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
+	case search.IndexTypeValidMeasurementUnits:
+		im, err = config.ProvideIndex[types.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -135,8 +118,8 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 
 		toBeIndexed = converters.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(validMeasurementUnit)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidMeasurementUnitAsIndexed(ctx, indexReq.RowID) }
-	case IndexTypeValidPreparations:
-		im, err = config.ProvideIndexManager[types.ValidPreparation](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
+	case search.IndexTypeValidPreparations:
+		im, err = config.ProvideIndex[types.ValidPreparationSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -149,8 +132,8 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 
 		toBeIndexed = converters.ConvertValidPreparationToValidPreparationSearchSubset(validPreparation)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidPreparationAsIndexed(ctx, indexReq.RowID) }
-	case IndexTypeValidIngredientStates:
-		im, err = config.ProvideIndexManager[types.ValidIngredientState](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
+	case search.IndexTypeValidIngredientStates:
+		im, err = config.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}

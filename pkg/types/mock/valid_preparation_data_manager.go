@@ -71,3 +71,9 @@ func (m *ValidPreparationDataManager) GetValidPreparationIDsThatNeedSearchIndexi
 	returnValues := m.Called(ctx)
 	return returnValues.Get(0).([]string), returnValues.Error(1)
 }
+
+// GetValidPreparationsWithIDs is a mock function.
+func (m *ValidPreparationDataManager) GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*types.ValidPreparation, error) {
+	args := m.Called(ctx, ids)
+	return args.Get(0).([]*types.ValidPreparation), args.Error(1)
+}

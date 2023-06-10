@@ -29,7 +29,7 @@ func (q *Querier) migrationFunc() {
 }
 
 // Migrate is a simple wrapper around the core querier Migrate call.
-func (q *Querier) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) error {
+func (q *Querier) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

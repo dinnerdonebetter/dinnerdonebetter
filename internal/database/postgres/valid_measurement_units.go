@@ -9,9 +9,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
 )
 
 const (
+	validMeasurementUnitsTable = "valid_measurement_units"
+
 	validMeasurementUnitsOnRecipeStepIngredientsJoinClause = `valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id`
 	validMeasurementUnitsOnRecipeStepProductsJoinClause    = `valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id`
 )
@@ -305,7 +309,7 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_measurement_units", nil, nil, nil, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, validMeasurementUnitsTable, nil, nil, nil, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "valid measurement units", query, args)
 	if err != nil {
@@ -317,6 +321,29 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 	}
 
 	return x, nil
+}
+
+// GetValidMeasurementUnitsWithIDs fetches a list of valid measurement unit from the database that meet a particular filter.
+func (q *Querier) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*types.ValidMeasurementUnit, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	where := squirrel.Eq{validMeasurementUnitsTable + "." + "id": ids}
+	query, args := q.buildListQuery(ctx, validMeasurementUnitsTable, nil, nil, where, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, nil)
+
+	rows, err := q.getRows(ctx, q.db, "valid measurement unit", query, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement unit id list retrieval query")
+	}
+
+	measurementUnits, _, _, err := q.scanValidMeasurementUnits(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement units")
+	}
+
+	return measurementUnits, nil
 }
 
 //go:embed generated_queries/valid_measurement_units/get_needing_indexing.sql
