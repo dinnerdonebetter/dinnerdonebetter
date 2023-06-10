@@ -338,7 +338,7 @@ func (q *Querier) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []str
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement unit id list retrieval query")
 	}
 
-	measurementUnits, _, _, err := q.scanValidMeasurementUnits(ctx, rows, false)
+	measurementUnits, _, _, err := q.scanValidMeasurementUnits(ctx, rows, true)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement units")
 	}

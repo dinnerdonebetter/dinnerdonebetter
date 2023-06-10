@@ -4,7 +4,6 @@ import (
 	"context"
 
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -16,7 +15,6 @@ type (
 		_ struct{}
 
 		Logging loggingcfg.Config `json:"logging" toml:"logging,omitempty"`
-		Metrics metricscfg.Config `json:"metrics" toml:"metrics,omitempty"`
 		Tracing tracingcfg.Config `json:"tracing" toml:"tracing,omitempty"`
 	}
 )
@@ -26,7 +24,6 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.Metrics),
 		validation.Field(&cfg.Tracing),
 	)
 }

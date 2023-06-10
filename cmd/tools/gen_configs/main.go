@@ -21,8 +21,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics/prometheus"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
@@ -136,13 +134,6 @@ var (
 		BlockKey:   debugCookieSigningKey,
 		Lifetime:   authservice.DefaultCookieLifetime,
 		SecureOnly: false,
-	}
-
-	localMetricsConfig = metricscfg.Config{
-		Provider: "prometheus",
-		Prometheus: &prometheus.Config{
-			RuntimeMetricsCollectionInterval: time.Second,
-		},
 	}
 
 	localTracingConfig = tracingcfg.Config{
@@ -263,7 +254,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 		Observability: observability.Config{
 			Logging: devEnvLogConfig,
-			Metrics: metricscfg.Config{},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderCloudTrace,
 				CloudTrace: &cloudtrace.Config{
@@ -403,7 +393,6 @@ func buildDevConfig() *config.InstanceConfig {
 		},
 		Observability: observability.Config{
 			Logging: localLogConfig,
-			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
@@ -627,7 +616,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				Level:    logging.InfoLevel,
 				Provider: logcfg.ProviderZerolog,
 			},
-			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{

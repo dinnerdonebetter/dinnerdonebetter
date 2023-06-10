@@ -300,7 +300,7 @@ func (q *Querier) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) 
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments id list retrieval query")
 	}
 
-	instruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
+	instruments, _, _, err := q.scanValidInstruments(ctx, rows, true)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid instruments")
 	}

@@ -11,7 +11,6 @@ import (
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 
@@ -37,11 +36,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			Encoding: encoding.Config{
 				ContentType: "application/json",
 			},
-			Observability: observability.Config{
-				Metrics: config.Config{
-					Provider: "",
-				},
-			},
+			Observability: observability.Config{},
 			Services: ServicesConfig{
 				Auth: authservice.Config{
 					Cookies: authservice.CookieConfig{

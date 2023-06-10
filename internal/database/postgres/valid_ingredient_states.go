@@ -238,7 +238,7 @@ func (q *Querier) GetValidIngredientStatesWithIDs(ctx context.Context, ids []str
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states id list retrieval query")
 	}
 
-	ingredientStates, _, _, err := q.scanValidIngredientStates(ctx, rows, false)
+	ingredientStates, _, _, err := q.scanValidIngredientStates(ctx, rows, true)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient states")
 	}

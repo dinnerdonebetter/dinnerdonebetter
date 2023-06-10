@@ -4,8 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics/prometheus"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
 
@@ -26,12 +24,6 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 					CollectorEndpoint:         "0.0.0.0",
 					ServiceName:               t.Name(),
 					SpanCollectionProbability: 1,
-				},
-			},
-			Metrics: config.Config{
-				Provider: config.ProviderPrometheus,
-				Prometheus: &prometheus.Config{
-					RuntimeMetricsCollectionInterval: config.DefaultMetricsCollectionInterval,
 				},
 			},
 		}

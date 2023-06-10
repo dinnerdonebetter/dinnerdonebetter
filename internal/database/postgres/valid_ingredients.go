@@ -398,7 +398,7 @@ func (q *Querier) GetValidIngredientsWithIDs(ctx context.Context, ids []string) 
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients id list retrieval query")
 	}
 
-	ingredients, _, _, err := q.scanValidIngredients(ctx, rows, false)
+	ingredients, _, _, err := q.scanValidIngredients(ctx, rows, true)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
 	}
