@@ -236,7 +236,10 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 	cfg.Database.RunMigrations = false
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
-	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
+	cfg.Analytics = analyticscfg.Config{
+		Segment:  &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)},
+		Provider: analyticscfg.ProviderSegment,
+	}
 
 	return cfg, nil
 }
@@ -323,6 +326,23 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 
 // GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{}
+
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
+	}
+
+	return cfg, nil
+}
+
+// GetSearchDataIndexerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return nil, err
