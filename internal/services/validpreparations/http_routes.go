@@ -161,18 +161,19 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+
 	query := req.URL.Query().Get(types.SearchQueryKey)
+	tracing.AttachSearchQueryToSpan(span, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
 		WithValue(keys.FilterSortByKey, filter.SortBy).
 		WithValue(keys.SearchQueryKey, query).
 		WithValue("using_database", useDB)
-
-	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -184,8 +185,6 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-
-	logger.Info("searching for valid preparations")
 
 	var validPreparations []*types.ValidPreparation
 	if useDB {

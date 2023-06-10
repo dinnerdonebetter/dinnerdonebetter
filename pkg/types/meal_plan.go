@@ -133,7 +133,6 @@ func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
 	}
 }
 
-var errTooFewUniqueMeals = errors.New("too many instances of the same meal")
 var errInvalidVotingDeadline = errors.New("invalid voting deadline")
 
 var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)

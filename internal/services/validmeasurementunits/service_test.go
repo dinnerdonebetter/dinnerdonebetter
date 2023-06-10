@@ -25,6 +25,9 @@ func buildTestService() *service {
 		validMeasurementUnitIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                  mockencoding.NewMockEncoderDecoder(),
 		tracer:                          tracing.NewTracerForTest("test"),
+		cfg: &Config{
+			UseSearchService: false,
+		},
 	}
 }
 

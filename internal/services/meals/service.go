@@ -21,8 +21,6 @@ const (
 	serviceName string = "meals_service"
 )
 
-var _ types.MealDataService = (*service)(nil)
-
 type (
 	// service handles meals.
 	service struct {

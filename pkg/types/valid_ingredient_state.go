@@ -100,6 +100,7 @@ type (
 		MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientState string) error
 		ArchiveValidIngredientState(ctx context.Context, validIngredientState string) error
 		GetValidIngredientStateIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetValidIngredientStatesWithIDs(ctx context.Context, ids []string) ([]*ValidIngredientState, error)
 	}
 
 	// ValidIngredientStateDataService describes a structure capable of serving traffic related to valid ingredient states.

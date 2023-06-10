@@ -59,3 +59,9 @@ func (m *ValidIngredientStateDataManager) ArchiveValidIngredientState(ctx contex
 func (m *ValidIngredientStateDataManager) MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientStateID string) error {
 	return m.Called(ctx, validIngredientStateID).Error(0)
 }
+
+// GetValidIngredientStatesWithIDs is a mock function.
+func (m *ValidIngredientStateDataManager) GetValidIngredientStatesWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredientState, error) {
+	args := m.Called(ctx, ids)
+	return args.Get(0).([]*types.ValidIngredientState), args.Error(1)
+}

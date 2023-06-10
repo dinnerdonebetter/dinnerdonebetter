@@ -15,7 +15,9 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -457,6 +459,47 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validIngredientDataManager, encoderDecoder)
+	})
+
+	T.Run("using external service", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.cfg.UseSearchService = true
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		expectedIDs := []string{}
+		validIngredientSearchSubsets := make([]*types.ValidIngredientSearchSubset, len(exampleValidIngredientList.Data))
+		for i := range exampleValidIngredientList.Data {
+			expectedIDs = append(expectedIDs, exampleValidIngredientList.Data[i].ID)
+			validIngredientSearchSubsets[i] = converters.ConvertValidIngredientToValidIngredientSearchSubset(exampleValidIngredientList.Data[i])
+		}
+
+		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
+		searchIndex.On(
+			"Search",
+			testutils.ContextMatcher,
+			exampleQuery,
+		).Return(validIngredientSearchSubsets, nil)
+		helper.service.searchIndex = searchIndex
+
+		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
+		validIngredientDataManager.On(
+			"GetValidIngredientsWithIDs",
+			testutils.ContextMatcher,
+			expectedIDs,
+		).Return(exampleValidIngredientList.Data, nil)
+		helper.service.validIngredientDataManager = validIngredientDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {

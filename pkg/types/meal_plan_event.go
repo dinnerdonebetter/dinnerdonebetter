@@ -140,18 +140,6 @@ func (x *MealPlanEventCreationRequestInput) ValidateWithContext(ctx context.Cont
 		return errStartsAfterItEnds
 	}
 
-	mealCounts := map[string]uint{}
-	for _, option := range x.Options {
-		if _, ok := mealCounts[option.MealID]; !ok {
-			mealCounts[option.MealID] = 1
-		} else {
-			mealCounts[option.MealID]++
-			if mealCounts[option.MealID] >= 3 {
-				return errTooFewUniqueMeals
-			}
-		}
-	}
-
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

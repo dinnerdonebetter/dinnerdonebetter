@@ -649,21 +649,21 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 		v1Router.Route(mealsRouteWithPrefix, func(mealsRouter routing.Router) {
 			mealsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealsPermission)).
-				Post(root, s.mealsService.CreateHandler)
+				Post(root, s.mealsService.CreateMealHandler)
 			mealsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
-				Get(root, s.mealsService.ListHandler)
+				Get(root, s.mealsService.ListMealsHandler)
 			mealsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
-				Get(searchRoot, s.mealsService.SearchHandler)
+				Get(searchRoot, s.mealsService.SearchMealsHandler)
 
 			mealsRouter.Route(mealIDRouteParam, func(singleMealRouter routing.Router) {
 				singleMealRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
-					Get(root, s.mealsService.ReadHandler)
+					Get(root, s.mealsService.ReadMealHandler)
 				singleMealRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealsPermission)).
-					Delete(root, s.mealsService.ArchiveHandler)
+					Delete(root, s.mealsService.ArchiveMealHandler)
 			})
 		})
 

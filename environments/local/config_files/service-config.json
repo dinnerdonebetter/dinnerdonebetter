@@ -199,7 +199,6 @@
 			"searchFromDatabase": false
 		},
 		"recipes": {
-			"searchFromDatabase": false,
 			"dataChangesTopicName": "data_changes",
 			"mediaUploadPrefix": "https://example.website.lol",
 			"uploads": {
@@ -212,7 +211,8 @@
 					"provider": "filesystem"
 				},
 				"debug": true
-			}
+			},
+			"searchFromDatabase": false
 		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://example.website.lol",

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -18,8 +19,10 @@ const (
 	MealIDURIParamKey = "mealID"
 )
 
-// CreateHandler is our meal creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+var _ types.MealDataService = (*service)(nil)
+
+// CreateMealHandler is our meal creation route.
+func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -78,8 +81,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, meal, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a meal.
-func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+// ReadMealHandler returns a GET handler that returns a meal.
+func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -117,8 +120,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, x)
 }
 
-// ListHandler is our list route.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+// ListMealsHandler is our list route.
+func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -156,23 +159,27 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, meals)
 }
 
-// SearchHandler is our list route.
-func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
+// SearchMealsHandler is our list route.
+func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
 	tracing.AttachRequestToSpan(span, req)
 
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+
+	query := req.URL.Query().Get(types.SearchQueryKey)
+	tracing.AttachSearchQueryToSpan(span, query)
+
 	filter := types.ExtractQueryFilterFromRequest(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, filter.SortBy)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
-
-	searchQuery := req.URL.Query().Get(types.SearchQueryKey)
-	tracing.AttachSearchQueryToSpan(span, searchQuery)
-	logger = logger.WithValue(keys.SearchQueryKey, searchQuery)
+		WithValue(keys.FilterSortByKey, filter.SortBy).
+		WithValue(keys.SearchQueryKey, query).
+		WithValue("using_database", useDB)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -185,22 +192,46 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	recipes, err := s.mealDataManager.SearchForMeals(ctx, searchQuery, filter)
+	meals := &types.QueryFilteredResult[types.Meal]{
+		Pagination: filter.ToPagination(),
+	}
+	if useDB {
+		meals, err = s.mealDataManager.SearchForMeals(ctx, query, filter)
+	} else {
+		var mealSubsets []*types.MealSearchSubset
+		mealSubsets, err = s.searchIndex.Search(ctx, query)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "searching for meals")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			return
+		}
+
+		ids := []string{}
+		for _, mealSubset := range mealSubsets {
+			ids = append(ids, mealSubset.ID)
+		}
+
+		meals.Data, err = s.mealDataManager.GetMealsWithIDs(ctx, ids)
+	}
+
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipes = &types.QueryFilteredResult[types.Meal]{Data: []*types.Meal{}}
+		meals = &types.QueryFilteredResult[types.Meal]{
+			Pagination: filter.ToPagination(),
+			Data:       []*types.Meal{},
+		}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving meals")
+		observability.AcknowledgeError(err, logger, span, "searching for meals")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, recipes)
+	s.encoderDecoder.RespondWithData(ctx, res, meals)
 }
 
-// ArchiveHandler returns a handler that archives a meal.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveMealHandler returns a handler that archives a meal.
+func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

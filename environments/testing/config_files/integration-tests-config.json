@@ -195,7 +195,6 @@
 			"searchFromDatabase": false
 		},
 		"recipes": {
-			"searchFromDatabase": false,
 			"dataChangesTopicName": "data_changes",
 			"mediaUploadPrefix": "https://media.example.website/lol",
 			"uploads": {
@@ -204,7 +203,8 @@
 					"provider": "memory"
 				},
 				"debug": false
-			}
+			},
+			"searchFromDatabase": false
 		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",

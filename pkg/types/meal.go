@@ -161,11 +161,11 @@ type (
 
 	// MealDataService describes a structure capable of serving traffic related to meals.
 	MealDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListMealsHandler(http.ResponseWriter, *http.Request)
+		CreateMealHandler(http.ResponseWriter, *http.Request)
+		ReadMealHandler(http.ResponseWriter, *http.Request)
+		SearchMealsHandler(http.ResponseWriter, *http.Request)
+		ArchiveMealHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

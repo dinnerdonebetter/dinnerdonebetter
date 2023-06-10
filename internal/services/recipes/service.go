@@ -45,7 +45,7 @@ type (
 		timeFunc                  func() time.Time
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		recipeIDFetcher           func(*http.Request) string
-		cfg                       Config
+		cfg                       *Config
 	}
 )
 
@@ -94,7 +94,7 @@ func ProvideService(
 		recipeIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(RecipeIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		recipeDataManager:         recipeDataManager,
-		cfg:                       *cfg,
+		cfg:                       cfg,
 		recipeMediaDataManager:    recipeMediaDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,

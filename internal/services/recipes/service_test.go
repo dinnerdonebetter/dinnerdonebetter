@@ -29,6 +29,9 @@ func buildTestService() *service {
 		recipeIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:    mockencoding.NewMockEncoderDecoder(),
 		tracer:            tracing.NewTracerForTest("test"),
+		cfg: &Config{
+			UseSearchService: false,
+		},
 	}
 }
 
