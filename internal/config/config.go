@@ -14,6 +14,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 
 	"github.com/hashicorp/go-multierror"
@@ -40,6 +41,7 @@ type (
 		_             struct{}
 		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
 		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
+		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`
 		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
 		FeatureFlags  featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
 		Encoding      encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
@@ -80,6 +82,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		"Server":        cfg.Server.ValidateWithContext,
 		"Email":         cfg.Email.ValidateWithContext,
 		"FeatureFlags":  cfg.FeatureFlags.ValidateWithContext,
+		"Search":        cfg.Search.ValidateWithContext,
 	}
 
 	for name, validator := range validatorsToRun {

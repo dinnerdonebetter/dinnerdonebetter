@@ -136,6 +136,16 @@ type (
 		RecipeScale   *float32 `json:"recipeScale"`
 	}
 
+	// MealSearchSubset represents the subset of values suitable to index for search.
+	MealSearchSubset struct {
+		_ struct{}
+
+		ID          string    `json:"id,omitempty"`
+		Name        string    `json:"name,omitempty"`
+		Description string    `json:"description,omitempty"`
+		Recipes     []NamedID `json:"recipes,omitempty"`
+	}
+
 	// MealDataManager describes a structure capable of storing meals permanently.
 	MealDataManager interface {
 		MealExists(ctx context.Context, mealID string) (bool, error)
@@ -143,16 +153,19 @@ type (
 		GetMeals(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
 		SearchForMeals(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
 		CreateMeal(ctx context.Context, input *MealDatabaseCreationInput) (*Meal, error)
+		MarkMealAsIndexed(ctx context.Context, mealID string) error
 		ArchiveMeal(ctx context.Context, mealID, userID string) error
+		GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetMealsWithIDs(ctx context.Context, ids []string) ([]*Meal, error)
 	}
 
 	// MealDataService describes a structure capable of serving traffic related to meals.
 	MealDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		SearchHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListMealsHandler(http.ResponseWriter, *http.Request)
+		CreateMealHandler(http.ResponseWriter, *http.Request)
+		ReadMealHandler(http.ResponseWriter, *http.Request)
+		SearchMealsHandler(http.ResponseWriter, *http.Request)
+		ArchiveMealHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

@@ -7,9 +7,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/search"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -23,6 +26,7 @@ var _ types.ValidIngredientStateDataService = (*service)(nil)
 type (
 	// service handles valid ingredient states.
 	service struct {
+		cfg                             *Config
 		logger                          logging.Logger
 		validIngredientStateDataManager types.ValidIngredientStateDataManager
 		validIngredientStateIDFetcher   func(*http.Request) string
@@ -30,14 +34,16 @@ type (
 		dataChangesPublisher            messagequeue.Publisher
 		encoderDecoder                  encoding.ServerEncoderDecoder
 		tracer                          tracing.Tracer
+		searchIndex                     search.IndexSearcher[types.ValidIngredientStateSearchSubset]
 	}
 )
 
 // ProvideService builds a new ValidIngredientStatesService.
 func ProvideService(
-	_ context.Context,
+	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
+	searchConfig *searchcfg.Config,
 	validIngredientStateDataManager types.ValidIngredientStateDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
@@ -49,7 +55,13 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up valid ingredient states service data changes publisher: %w", err)
 	}
 
+	searchIndex, err := searchcfg.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeValidIngredientStates)
+	if err != nil {
+		return nil, observability.PrepareError(err, nil, "initializing valid ingredient state index manager")
+	}
+
 	svc := &service{
+		cfg:                             cfg,
 		logger:                          logging.EnsureLogger(logger).WithName(serviceName),
 		validIngredientStateIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientStateIDURIParamKey),
 		sessionContextDataFetcher:       authservice.FetchContextFromRequest,
@@ -57,6 +69,7 @@ func ProvideService(
 		dataChangesPublisher:            dataChangesPublisher,
 		encoderDecoder:                  encoder,
 		tracer:                          tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		searchIndex:                     searchIndex,
 	}
 
 	return svc, nil

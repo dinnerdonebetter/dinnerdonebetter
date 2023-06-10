@@ -60,3 +60,9 @@ func (m *ValidIngredientStateIngredientDataManager) UpdateValidIngredientStateIn
 func (m *ValidIngredientStateIngredientDataManager) ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) error {
 	return m.Called(ctx, validIngredientStateIngredientID).Error(0)
 }
+
+// GetValidIngredientStateIDsThatNeedSearchIndexing is a mock function.
+func (m *ValidIngredientStateDataManager) GetValidIngredientStateIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}

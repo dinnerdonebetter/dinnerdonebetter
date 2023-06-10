@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -24,6 +25,9 @@ func buildTestService() *service {
 		validIngredientStateIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                  mockencoding.NewMockEncoderDecoder(),
 		tracer:                          tracing.NewTracerForTest("test"),
+		cfg: &Config{
+			UseSearchService: false,
+		},
 	}
 }
 
@@ -53,6 +57,7 @@ func TestProvideValidIngredientStatesService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
+			&searchcfg.Config{},
 			&mocktypes.ValidIngredientStateDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -83,6 +88,7 @@ func TestProvideValidIngredientStatesService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
+			&searchcfg.Config{},
 			&mocktypes.ValidIngredientStateDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,

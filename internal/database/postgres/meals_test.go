@@ -437,6 +437,61 @@ func TestQuerier_GetMeals(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetMealsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		exampleMealList := fakes.BuildFakeMealList()
+		exampleIDs := make([]string, len(exampleMealList.Data))
+		for i, exampleMeal := range exampleMealList.Data {
+			exampleIDs[i] = exampleMeal.ID
+		}
+
+		for _, exampleMeal := range exampleMealList.Data {
+			prepareMockToSuccessfullyGetMeal(t, exampleMeal, db)
+		}
+
+		actual, err := c.GetMealsWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleMealList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetMealThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleMealList := fakes.BuildFakeMealList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleMeal := range exampleMealList.Data {
+			exampleIDs = append(exampleIDs, exampleMeal.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(mealsNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetMealIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_SearchForMeals(T *testing.T) {
 	T.Parallel()
 
@@ -920,6 +975,61 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveMeal(ctx, exampleMeal.ID, exampleHouseholdID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkMealAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleMeal := fakes.BuildFakeMeal()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleMeal.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateMealLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkMealAsIndexed(ctx, exampleMeal.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkMealAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleMeal := fakes.BuildFakeMeal()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleMeal.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateMealLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkMealAsIndexed(ctx, exampleMeal.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

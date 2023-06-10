@@ -21,7 +21,7 @@ type (
 		Debug             bool                       `json:"debug"             toml:"debug,omitempty"`
 		LogQueries        bool                       `json:"logQueries"        toml:"log_queries,omitempty"`
 		RunMigrations     bool                       `json:"runMigrations"     toml:"run_migrations,omitempty"`
-		MaxPingAttempts   uint8                      `json:"maxPingAttempts"   toml:"max_ping_attempts,omitempty"`
+		MaxPingAttempts   uint64                     `json:"maxPingAttempts"   toml:"max_ping_attempts,omitempty"`
 		PingWaitPeriod    time.Duration              `json:"pingWaitPeriod"    toml:"ping_wait_period,omitempty"`
 	}
 )

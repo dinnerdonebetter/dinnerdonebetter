@@ -17,7 +17,7 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step product %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.Type, actual.Type, "expected Type for recipe step product %s to be %v, but it was %v", expected.ID, expected.Type, actual.Type)
+	assert.Equal(t, expected.Type, actual.Type, "expected IndexType for recipe step product %s to be %v, but it was %v", expected.ID, expected.Type, actual.Type)
 	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected MeasurementUnit.ID for recipe step product %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID)
 	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step product %s to be %v, but it was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
 	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step product %s to be %v, but it was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)

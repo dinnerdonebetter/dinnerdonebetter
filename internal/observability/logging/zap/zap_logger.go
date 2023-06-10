@@ -26,13 +26,15 @@ func NewZapLogger(lvl logging.Level) logging.Logger {
 		if err != nil {
 			panic(err)
 		}
-		return &zapLogger{logger: l}
+
+		return &zapLogger{logger: l.WithOptions(zap.AddCallerSkip(1))}
 	default:
 		l, err := zap.NewProduction()
 		if err != nil {
 			panic(err)
 		}
-		return &zapLogger{logger: l}
+
+		return &zapLogger{logger: l.WithOptions(zap.AddCallerSkip(1))}
 	}
 }
 

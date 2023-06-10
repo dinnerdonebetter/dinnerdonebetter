@@ -112,6 +112,16 @@ type (
 		YieldsComponentType      *string  `json:"yieldsComponentType"`
 	}
 
+	// RecipeSearchSubset represents the subset of values suitable to index for search.
+	RecipeSearchSubset struct {
+		_ struct{}
+
+		ID          string                    `json:"id,omitempty"`
+		Name        string                    `json:"name,omitempty"`
+		Description string                    `json:"description,omitempty"`
+		Steps       []*RecipeStepSearchSubset `json:"steps,omitempty"`
+	}
+
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
@@ -121,7 +131,10 @@ type (
 		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
+		MarkRecipeAsIndexed(ctx context.Context, recipeID string) error
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error
+		GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetRecipesWithIDs(ctx context.Context, ids []string) ([]*Recipe, error)
 	}
 
 	// RecipeDataService describes a structure capable of serving traffic related to recipes.

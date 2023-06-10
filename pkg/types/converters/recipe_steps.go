@@ -180,3 +180,23 @@ func ConvertRecipeStepToRecipeStepDatabaseCreationInput(recipeStep *types.Recipe
 		CompletionConditions:          completionConditions,
 	}
 }
+
+func ConvertRecipeStepToRecipeStepSearchSubset(x *types.RecipeStep) *types.RecipeStepSearchSubset {
+	stepSubset := &types.RecipeStepSearchSubset{
+		Preparation: x.Preparation.Name,
+	}
+
+	for _, ingredient := range x.Ingredients {
+		stepSubset.Ingredients = append(stepSubset.Ingredients, types.NamedID{ID: ingredient.ID, Name: ingredient.Name})
+	}
+
+	for _, instrument := range x.Instruments {
+		stepSubset.Instruments = append(stepSubset.Instruments, types.NamedID{ID: instrument.ID, Name: instrument.Name})
+	}
+
+	for _, vessel := range x.Vessels {
+		stepSubset.Vessels = append(stepSubset.Vessels, types.NamedID{ID: vessel.ID, Name: vessel.Name})
+	}
+
+	return stepSubset
+}

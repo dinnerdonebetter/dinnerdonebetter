@@ -60,3 +60,20 @@ func (m *ValidInstrumentDataManager) UpdateValidInstrument(ctx context.Context, 
 func (m *ValidInstrumentDataManager) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	return m.Called(ctx, validInstrumentID).Error(0)
 }
+
+// MarkValidInstrumentAsIndexed is a mock function.
+func (m *ValidInstrumentDataManager) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error {
+	return m.Called(ctx, validInstrumentID).Error(0)
+}
+
+// GetValidInstrumentIDsThatNeedSearchIndexing is a mock function.
+func (m *ValidInstrumentDataManager) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}
+
+// GetValidInstrumentsWithIDs is a mock function.
+func (m *ValidInstrumentDataManager) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.ValidInstrument), returnValues.Error(1)
+}

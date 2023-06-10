@@ -824,6 +824,61 @@ func TestQuerier_GetRecipes(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetRecipesWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		exampleRecipeList := fakes.BuildFakeRecipeList()
+		exampleIDs := make([]string, len(exampleRecipeList.Data))
+		for i, exampleRecipe := range exampleRecipeList.Data {
+			exampleIDs[i] = exampleRecipe.ID
+		}
+
+		for _, exampleRecipe := range exampleRecipeList.Data {
+			prepareMockToSuccessfullyGetRecipe(t, exampleRecipe, "", db)
+		}
+
+		actual, err := c.GetRecipesWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetRecipeThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleRecipeList := fakes.BuildFakeRecipeList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleRecipe := range exampleRecipeList.Data {
+			exampleIDs = append(exampleIDs, exampleRecipe.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(recipesNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetRecipeIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_getRecipeIDsForMeal(T *testing.T) {
 	T.Parallel()
 
@@ -2046,5 +2101,60 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Instruments[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Instruments[0].RecipeStepProductID)
+	})
+}
+
+func TestQuerier_MarkRecipeAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleRecipe.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateRecipeLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkRecipeAsIndexed(ctx, exampleRecipe.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkRecipeAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleRecipe.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateRecipeLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkRecipeAsIndexed(ctx, exampleRecipe.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
 	})
 }

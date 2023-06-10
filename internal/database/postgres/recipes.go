@@ -375,6 +375,44 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	return x, nil
 }
 
+// GetRecipesWithIDs fetches a list of recipes from the database that meet a particular filter.
+func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types.Recipe, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	recipes := []*types.Recipe{}
+	for _, id := range ids {
+		r, err := q.getRecipe(ctx, id, "")
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe")
+		}
+
+		recipes = append(recipes, r)
+	}
+
+	return recipes, nil
+}
+
+//go:embed generated_queries/recipes/get_needing_indexing.sql
+var recipesNeedingIndexingQuery string
+
+// GetRecipeIDsThatNeedSearchIndexing fetches a list of recipe IDs from the database that meet a particular filter.
+func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.getRows(ctx, q.db, "recipes needing indexing", recipesNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
+}
+
 //go:embed queries/recipes/ids_for_meal.sql
 var getRecipesForMealQuery string
 
@@ -641,6 +679,35 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	}
 
 	logger.Info("recipe updated")
+
+	return nil
+}
+
+//go:embed queries/recipes/update_last_indexed_at.sql
+var updateRecipeLastIndexedAtQuery string
+
+// MarkRecipeAsIndexed updates a particular recipe's last_indexed_at value.
+func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	args := []any{
+		recipeID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "recipe last_indexed_at", updateRecipeLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking recipe as indexed")
+	}
+
+	logger.Info("recipe marked as indexed")
 
 	return nil
 }

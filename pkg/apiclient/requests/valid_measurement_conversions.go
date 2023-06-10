@@ -14,8 +14,8 @@ const (
 	validMeasurementConversionsBasePath = "valid_measurement_conversions"
 )
 
-// BuildGetValidMeasurementConversionRequest builds an HTTP request for fetching a valid measurement conversion.
-func (b *Builder) BuildGetValidMeasurementConversionRequest(ctx context.Context, validMeasurementConversionID string) (*http.Request, error) {
+// BuildGetValidMeasurementUnitConversionRequest builds an HTTP request for fetching a valid measurement conversion.
+func (b *Builder) BuildGetValidMeasurementUnitConversionRequest(ctx context.Context, validMeasurementConversionID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -40,8 +40,8 @@ func (b *Builder) BuildGetValidMeasurementConversionRequest(ctx context.Context,
 	return req, nil
 }
 
-// BuildGetValidMeasurementConversionsFromUnitRequest builds an HTTP request for fetching a valid measurement conversion.
-func (b *Builder) BuildGetValidMeasurementConversionsFromUnitRequest(ctx context.Context, validMeasurementUnitID string) (*http.Request, error) {
+// BuildGetValidMeasurementUnitConversionsFromUnitRequest builds an HTTP request for fetching a valid measurement conversion.
+func (b *Builder) BuildGetValidMeasurementUnitConversionsFromUnitRequest(ctx context.Context, validMeasurementUnitID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -67,8 +67,8 @@ func (b *Builder) BuildGetValidMeasurementConversionsFromUnitRequest(ctx context
 	return req, nil
 }
 
-// BuildGetValidMeasurementConversionsToUnitRequest builds an HTTP request for fetching a valid measurement conversion.
-func (b *Builder) BuildGetValidMeasurementConversionsToUnitRequest(ctx context.Context, validMeasurementUnitID string) (*http.Request, error) {
+// BuildGetValidMeasurementUnitConversionsToUnitRequest builds an HTTP request for fetching a valid measurement conversion.
+func (b *Builder) BuildGetValidMeasurementUnitConversionsToUnitRequest(ctx context.Context, validMeasurementUnitID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 

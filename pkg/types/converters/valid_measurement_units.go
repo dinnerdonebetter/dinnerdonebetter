@@ -108,3 +108,13 @@ func ConvertValidMeasurementUnitToNullableValidMeasurementUnit(input *types.Vali
 		Imperial:      &input.Imperial,
 	}
 }
+
+// ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset converts a ValidMeasurementUnit to a ValidMeasurementUnitSearchSubset.
+func ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(x *types.ValidMeasurementUnit) *types.ValidMeasurementUnitSearchSubset {
+	return &types.ValidMeasurementUnitSearchSubset{
+		ID:          x.ID,
+		Name:        x.Name,
+		PluralName:  x.PluralName,
+		Description: x.Description,
+	}
+}

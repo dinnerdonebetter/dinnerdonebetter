@@ -151,14 +151,15 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 		return nil, err
 	}
 	validinstrumentsConfig := &servicesConfig.ValidInstruments
+	config14 := &cfg.Search
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
-	validInstrumentDataService, err := validinstruments.ProvideService(logger, validinstrumentsConfig, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validInstrumentDataService, err := validinstruments.ProvideService(ctx, logger, validinstrumentsConfig, config14, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	validingredientsConfig := &servicesConfig.ValidIngredients
 	validIngredientDataManager := database.ProvideValidIngredientDataManager(dataManager)
-	validIngredientDataService, err := validingredients.ProvideService(logger, validingredientsConfig, validIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientDataService, err := validingredients.ProvideService(ctx, logger, validingredientsConfig, config14, validIngredientDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +171,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	}
 	validpreparationsConfig := &servicesConfig.ValidPreparations
 	validPreparationDataManager := database.ProvideValidPreparationDataManager(dataManager)
-	validPreparationDataService, err := validpreparations.ProvideService(ctx, logger, validpreparationsConfig, validPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validPreparationDataService, err := validpreparations.ProvideService(ctx, logger, validpreparationsConfig, config14, validPreparationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	}
 	mealsConfig := &servicesConfig.Meals
 	mealDataManager := database.ProvideMealDataManager(dataManager)
-	mealDataService, err := meals.ProvideService(logger, mealsConfig, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	mealDataService, err := meals.ProvideService(ctx, logger, mealsConfig, config14, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +191,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
 	recipeMediaDataManager := database.ProvideRecipeMediaDataManager(dataManager)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
-	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider)
+	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, config14, recipeDataManager, recipeMediaDataManager, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -237,13 +238,13 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	}
 	validmeasurementunitsConfig := &servicesConfig.ValidMeasurementUnits
 	validMeasurementUnitDataManager := database.ProvideValidMeasurementUnitDataManager(dataManager)
-	validMeasurementUnitDataService, err := validmeasurementunits.ProvideService(logger, validmeasurementunitsConfig, validMeasurementUnitDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validMeasurementUnitDataService, err := validmeasurementunits.ProvideService(ctx, logger, validmeasurementunitsConfig, config14, validMeasurementUnitDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	validingredientstatesConfig := &servicesConfig.ValidIngredientStates
 	validIngredientStateDataManager := database.ProvideValidIngredientStateDataManager(dataManager)
-	validIngredientStateDataService, err := validingredientstates.ProvideService(ctx, logger, validingredientstatesConfig, validIngredientStateDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validIngredientStateDataService, err := validingredientstates.ProvideService(ctx, logger, validingredientstatesConfig, config14, validIngredientStateDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -289,9 +290,9 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	config14 := &servicesConfig.RecipeStepCompletionConditions
+	config15 := &servicesConfig.RecipeStepCompletionConditions
 	recipeStepCompletionConditionDataManager := database.ProvideRecipeStepCompletionConditionDataManager(dataManager)
-	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config14, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	recipeStepCompletionConditionDataService, err := recipestepingredients2.ProvideService(logger, config15, recipeStepCompletionConditionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -316,8 +317,8 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	adminUserDataManager := database.ProvideAdminUserDataManager(dataManager)
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager, tracerProvider)
 	vendorproxyConfig := &servicesConfig.VendorProxy
-	config15 := &cfg.Analytics
-	eventReporter, err := config8.ProvideEventReporter(config15, logger, tracerProvider)
+	config16 := &cfg.Analytics
+	eventReporter, err := config8.ProvideEventReporter(config16, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

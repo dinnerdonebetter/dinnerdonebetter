@@ -60,3 +60,20 @@ func (m *ValidMeasurementUnitDataManager) UpdateValidMeasurementUnit(ctx context
 func (m *ValidMeasurementUnitDataManager) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
 	return m.Called(ctx, validMeasurementUnitID).Error(0)
 }
+
+// MarkValidMeasurementUnitAsIndexed is a mock function.
+func (m *ValidMeasurementUnitDataManager) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error {
+	return m.Called(ctx, validMeasurementUnitID).Error(0)
+}
+
+// GetValidMeasurementUnitIDsThatNeedSearchIndexing is a mock function.
+func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}
+
+// GetValidMeasurementUnitsWithIDs is a mock function.
+func (m *ValidMeasurementUnitDataManager) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*types.ValidMeasurementUnit, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.ValidMeasurementUnit), returnValues.Error(1)
+}

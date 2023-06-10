@@ -120,6 +120,16 @@ type (
 		BelongsToRecipe               string            `json:"belongsToRecipe"`
 	}
 
+	// RecipeStepSearchSubset represents the subset of values suitable to index for search.
+	RecipeStepSearchSubset struct {
+		_ struct{}
+
+		Preparation string    `json:"preparation,omitempty"`
+		Ingredients []NamedID `json:"ingredients,omitempty"`
+		Instruments []NamedID `json:"instruments,omitempty"`
+		Vessels     []NamedID `json:"vessels,omitempty"`
+	}
+
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
 	RecipeStepDataManager interface {
 		RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (bool, error)

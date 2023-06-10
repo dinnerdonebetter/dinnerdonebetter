@@ -9,9 +9,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
 )
 
 const (
+	validPreparationsTable = "valid_preparations"
+
 	validPreparationsOnRecipeStepsJoinClause = "valid_preparations ON recipe_steps.preparation_id=valid_preparations.id"
 )
 
@@ -251,7 +255,7 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, validPreparationsTable, nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "valid preparations", query, args)
 	if err != nil {
@@ -263,6 +267,47 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 	}
 
 	return x, nil
+}
+
+// GetValidPreparationsWithIDs fetches a list of valid preparations from the database that meet a particular filter.
+func (q *Querier) GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*types.ValidPreparation, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	where := squirrel.Eq{"valid_preparations.id": ids}
+	query, args := q.buildListQuery(ctx, validPreparationsTable, nil, nil, where, householdOwnershipColumn, validPreparationsTableColumns, "", false, nil)
+
+	rows, err := q.getRows(ctx, q.db, "valid preparations", query, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations id list retrieval query")
+	}
+
+	preparations, _, _, err := q.scanValidPreparations(ctx, rows, true)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid preparations")
+	}
+
+	return preparations, nil
+}
+
+//go:embed generated_queries/valid_preparations/get_needing_indexing.sql
+var validPreparationsNeedingIndexingQuery string
+
+// GetValidPreparationIDsThatNeedSearchIndexing fetches a list of valid preparations from the database that meet a particular filter.
+func (q *Querier) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	rows, err := q.getRows(ctx, q.db, "valid preparations needing indexing", validPreparationsNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
 }
 
 //go:embed queries/valid_preparations/create.sql
@@ -377,6 +422,35 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	}
 
 	logger.Info("valid preparation updated")
+
+	return nil
+}
+
+//go:embed queries/valid_preparations/update_last_indexed_at.sql
+var updateValidPreparationLastIndexedAtQuery string
+
+// MarkValidPreparationAsIndexed updates a particular valid preparation's last_indexed_at value.
+func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if validPreparationID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+
+	args := []any{
+		validPreparationID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "valid preparation last_indexed_at", updateValidPreparationLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking valid preparation as indexed")
+	}
+
+	logger.Info("valid preparation marked as indexed")
 
 	return nil
 }

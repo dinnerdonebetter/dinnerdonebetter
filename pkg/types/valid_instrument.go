@@ -114,6 +114,16 @@ type (
 		IsExclusivelyVessel            *bool   `json:"isExclusivelyVessel,omitempty"`
 	}
 
+	// ValidInstrumentSearchSubset represents the subset of values suitable to index for search.
+	ValidInstrumentSearchSubset struct {
+		_ struct{}
+
+		ID          string `json:"id,omitempty"`
+		Name        string `json:"name,omitempty"`
+		PluralName  string `json:"pluralName,omitempty"`
+		Description string `json:"description,omitempty"`
+	}
+
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
 	ValidInstrumentDataManager interface {
 		ValidInstrumentExists(ctx context.Context, validInstrumentID string) (bool, error)
@@ -123,7 +133,10 @@ type (
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
+		MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
+		GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*ValidInstrument, error)
 	}
 
 	// ValidInstrumentDataService describes a structure capable of serving traffic related to valid instruments.

@@ -9,15 +9,18 @@ import (
 	"os"
 	"strconv"
 
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
+	"github.com/dinnerdonebetter/backend/internal/search/algolia"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	"github.com/googleapis/gax-go/v2"
-	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
 const (
@@ -30,6 +33,8 @@ const (
 	gcpCookieHashKeyEnvVarKey            = "DINNER_DONE_BETTER_COOKIE_HASH_KEY"
 	gcpCookieBlockKeyEnvVarKey           = "DINNER_DONE_BETTER_COOKIE_BLOCK_KEY"
 	gcpPASETOLocalKeyEnvVarKey           = "DINNER_DONE_BETTER_PASETO_LOCAL_KEY"
+	gcpAlgoliaAPIKeyEnvVarKey            = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
+	gcpAlgoliaAppIDEnvVarKey             = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
 	/* #nosec G101 */
 	gcpDatabaseUserPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
 	/* #nosec G101 */
@@ -91,6 +96,14 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
+
+	cfg.Search = searchcfg.Config{
+		Provider: searchcfg.AlgoliaProvider,
+		Algolia: &algolia.Config{
+			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
+			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
+		},
+	}
 
 	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
 	if err != nil {
@@ -212,10 +225,21 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
 	)
 
+	cfg.Search = searchcfg.Config{
+		Provider: searchcfg.AlgoliaProvider,
+		Algolia: &algolia.Config{
+			APIKey: os.Getenv(gcpAlgoliaAPIKeyEnvVarKey),
+			AppID:  os.Getenv(gcpAlgoliaAppIDEnvVarKey),
+		},
+	}
+
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 	cfg.Database.RunMigrations = false
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
-	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
+	cfg.Analytics = analyticscfg.Config{
+		Segment:  &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)},
+		Provider: analyticscfg.ProviderSegment,
+	}
 
 	return cfg, nil
 }
@@ -292,6 +316,40 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 	}
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
+
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
+	}
+
+	return cfg, nil
+}
+
+// GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{}
+
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
+	}
+
+	return cfg, nil
+}
+
+// GetSearchDataIndexerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr

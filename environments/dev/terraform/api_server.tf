@@ -104,6 +104,18 @@ resource "google_cloud_run_service" "api_server" {
   name     = "api-server"
   location = local.gcp_region
 
+  depends_on = [
+    google_secret_manager_secret.api_user_database_password,
+    google_secret_manager_secret.cookie_hash_key,
+    google_secret_manager_secret.cookie_block_key,
+    google_secret_manager_secret.paseto_local_key,
+    google_secret_manager_secret.data_changes_topic_name,
+    google_secret_manager_secret.sendgrid_api_token,
+    google_secret_manager_secret.segment_api_token,
+    google_secret_manager_secret.algolia_api_key,
+    google_secret_manager_secret.algolia_application_id,
+  ]
+
   traffic {
     percent         = 100
     latest_revision = true
@@ -234,6 +246,26 @@ resource "google_cloud_run_service" "api_server" {
           value_from {
             secret_key_ref {
               name = google_secret_manager_secret.segment_api_token.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+        env {
+          name = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.algolia_api_key.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+        env {
+          name = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.algolia_application_id.secret_id
               key  = "latest"
             }
           }

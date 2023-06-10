@@ -15,7 +15,9 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -456,6 +458,47 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, encoderDecoder)
+	})
+
+	T.Run("using external service", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.cfg.UseSearchService = true
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		expectedIDs := []string{}
+		validInstrumentSearchSubsets := make([]*types.ValidInstrumentSearchSubset, len(exampleValidInstrumentList.Data))
+		for i := range exampleValidInstrumentList.Data {
+			expectedIDs = append(expectedIDs, exampleValidInstrumentList.Data[i].ID)
+			validInstrumentSearchSubsets[i] = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrumentList.Data[i])
+		}
+
+		searchIndex := &mocksearch.IndexManager[types.ValidInstrumentSearchSubset]{}
+		searchIndex.On(
+			"Search",
+			testutils.ContextMatcher,
+			exampleQuery,
+		).Return(validInstrumentSearchSubsets, nil)
+		helper.service.searchIndex = searchIndex
+
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager.On(
+			"GetValidInstrumentsWithIDs",
+			testutils.ContextMatcher,
+			expectedIDs,
+		).Return(exampleValidInstrumentList.Data, nil)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {

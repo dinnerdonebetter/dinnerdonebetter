@@ -1,6 +1,7 @@
 package meals
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -10,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -23,6 +25,9 @@ func buildTestService() *service {
 		mealIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:  mockencoding.NewMockEncoderDecoder(),
 		tracer:          tracing.NewTracerForTest("test"),
+		cfg: &Config{
+			UseSearchService: false,
+		},
 	}
 }
 
@@ -46,8 +51,10 @@ func TestProvideMealsService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
+			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
+			&searchcfg.Config{},
 			&mocktypes.MealDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -72,8 +79,10 @@ func TestProvideMealsService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
+			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
+			&searchcfg.Config{},
 			&mocktypes.MealDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,

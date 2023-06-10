@@ -109,7 +109,7 @@ func (q *Querier) ProvideSessionStore() scs.Store {
 }
 
 // IsReady is a simple wrapper around the core querier IsReady call.
-func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) (ready bool) {
+func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

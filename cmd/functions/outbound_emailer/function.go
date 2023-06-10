@@ -45,7 +45,7 @@ type PubSubMessage struct {
 	Data []byte `json:"data"`
 }
 
-// SendEmail handles a data change.
+// SendEmail handles sending an email.
 func SendEmail(ctx context.Context, e event.Event) error {
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
@@ -104,7 +104,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	var emailDeliveryRequest email.DeliveryRequest
 	if err = json.Unmarshal(msg.Message.Data, &emailDeliveryRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshalling delivery request message")
 	}
 
 	logger = logger.WithValue("template", emailDeliveryRequest.Template)

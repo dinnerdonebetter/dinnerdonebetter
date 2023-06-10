@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"strconv"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -15,7 +16,9 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -430,14 +433,13 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 	T.Parallel()
 
 	const exampleQuery = "example"
+	exampleRecipeList := fakes.BuildFakeRecipeList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
-
-		exampleRecipeList := fakes.BuildFakeRecipeList()
 
 		recipeDataManager := &mocktypes.RecipeDataManager{}
 		recipeDataManager.On(
@@ -462,6 +464,49 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, encoderDecoder)
+	})
+
+	T.Run("using external service", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.cfg.UseSearchService = true
+
+		exampleLimit := uint8(123)
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		expectedIDs := []string{}
+		recipeSearchSubsets := make([]*types.RecipeSearchSubset, len(exampleRecipeList.Data))
+		for i := range exampleRecipeList.Data {
+			expectedIDs = append(expectedIDs, exampleRecipeList.Data[i].ID)
+			recipeSearchSubsets[i] = converters.ConvertRecipeToRecipeSearchSubset(exampleRecipeList.Data[i])
+		}
+
+		searchIndex := &mocksearch.IndexManager[types.RecipeSearchSubset]{}
+		searchIndex.On(
+			"Search",
+			testutils.ContextMatcher,
+			exampleQuery,
+		).Return(recipeSearchSubsets, nil)
+		helper.service.searchIndex = searchIndex
+
+		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager.On(
+			"GetRecipesWithIDs",
+			testutils.ContextMatcher,
+			expectedIDs,
+		).Return(exampleRecipeList.Data, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, searchIndex)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {

@@ -69,7 +69,7 @@ func init() {
 		ConnectionDetails: database.ConnectionDetails(dbAddr),
 		Debug:             false,
 		RunMigrations:     false,
-		MaxPingAttempts:   100,
+		MaxPingAttempts:   500,
 	}
 
 	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg, tracing.NewNoopTracerProvider())

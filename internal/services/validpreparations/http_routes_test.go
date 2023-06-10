@@ -15,7 +15,9 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -456,6 +458,47 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validPreparationDataManager, encoderDecoder)
+	})
+
+	T.Run("using external service", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.cfg.UseSearchService = true
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		expectedIDs := []string{}
+		validPreparationSearchSubsets := make([]*types.ValidPreparationSearchSubset, len(exampleValidPreparationList.Data))
+		for i := range exampleValidPreparationList.Data {
+			expectedIDs = append(expectedIDs, exampleValidPreparationList.Data[i].ID)
+			validPreparationSearchSubsets[i] = converters.ConvertValidPreparationToValidPreparationSearchSubset(exampleValidPreparationList.Data[i])
+		}
+
+		searchIndex := &mocksearch.IndexManager[types.ValidPreparationSearchSubset]{}
+		searchIndex.On(
+			"Search",
+			testutils.ContextMatcher,
+			exampleQuery,
+		).Return(validPreparationSearchSubsets, nil)
+		helper.service.searchIndex = searchIndex
+
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager.On(
+			"GetValidPreparationsWithIDs",
+			testutils.ContextMatcher,
+			expectedIDs,
+		).Return(exampleValidPreparationList.Data, nil)
+		helper.service.validPreparationDataManager = validPreparationDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {

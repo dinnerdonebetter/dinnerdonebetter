@@ -15,7 +15,7 @@ type (
 	DataChangeMessage struct {
 		_                                struct{}
 		HouseholdInvitation              *HouseholdInvitation            `json:"householdInvitation,omitempty"`
-		ValidMeasurementConversion       *ValidMeasurementUnitConversion `json:"validMeasurementConversion,omitempty"`
+		ValidMeasurementUnitConversion   *ValidMeasurementUnitConversion `json:"validMeasurementUnitConversion,omitempty"`
 		ValidInstrument                  *ValidInstrument                `json:"validInstrument,omitempty"`
 		ValidIngredient                  *ValidIngredient                `json:"validIngredient,omitempty"`
 		ValidIngredientGroup             *ValidIngredientGroup           `json:"validIngredientGroup,omitempty"`
@@ -71,7 +71,7 @@ type (
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
 		EventType                        CustomerEventType               `json:"messageType"`
 		ValidIngredientStateIngredientID string                          `json:"validIngredientStateIngredientID"`
-		ValidMeasurementConversionID     string                          `json:"validMeasurementConversionID,omitempty"`
+		ValidMeasurementUnitConversionID string                          `json:"validMeasurementUnitConversionID,omitempty"`
 		ValidIngredientStateID           string                          `json:"validIngredientStateID,omitempty"`
 		ValidIngredientGroupID           string                          `json:"validIngredientGroupID,omitempty"`
 		MealPlanEventID                  string                          `json:"mealPlanEventID,omitempty"`

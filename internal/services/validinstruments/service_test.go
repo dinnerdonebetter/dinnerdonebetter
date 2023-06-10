@@ -1,6 +1,7 @@
 package validinstruments
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -10,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -23,6 +25,9 @@ func buildTestService() *service {
 		validInstrumentIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:             mockencoding.NewMockEncoderDecoder(),
 		tracer:                     tracing.NewTracerForTest("test"),
+		cfg: &Config{
+			UseSearchService: false,
+		},
 	}
 }
 
@@ -32,6 +37,7 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
 		rpm := mockrouting.NewRouteParamManager()
@@ -48,8 +54,10 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
+			ctx,
 			logger,
 			cfg,
+			&searchcfg.Config{},
 			&mocktypes.ValidInstrumentDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -66,6 +74,7 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 	T.Run("with error providing data changes producer", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{
@@ -76,8 +85,10 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
+			ctx,
 			logger,
 			cfg,
+			&searchcfg.Config{},
 			&mocktypes.ValidInstrumentDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,

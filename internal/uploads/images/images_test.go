@@ -39,7 +39,7 @@ func newAvatarUploadRequest(t *testing.T, filename string, avatar io.Reader) *ht
 
 	require.NoError(t, writer.Close())
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://tests.verygoodsoftwarenotvirus.ru", body)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://whatever.whocares.gov", body)
 	require.NoError(t, err)
 
 	req.Header.Set(headerContentType, writer.FormDataContentType())

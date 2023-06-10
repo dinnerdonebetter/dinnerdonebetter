@@ -244,8 +244,8 @@ func (q *Querier) ValidMeasurementConversionExists(ctx context.Context, validMea
 //go:embed queries/valid_measurement_conversions/get_one.sql
 var getValidMeasurementConversionQuery string
 
-// GetValidMeasurementConversion fetches a valid measurement conversion from the database.
-func (q *Querier) GetValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) (*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversion fetches a valid measurement conversion from the database.
+func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementConversionID string) (*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -274,8 +274,8 @@ func (q *Querier) GetValidMeasurementConversion(ctx context.Context, validMeasur
 //go:embed queries/valid_measurement_conversions/get_all_from_measurement_unit.sql
 var getValidMeasurementConversionsFromUnitQuery string
 
-// GetValidMeasurementConversionsFromUnit fetches a valid measurement conversions from a given measurement unit.
-func (q *Querier) GetValidMeasurementConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversionsFromUnit fetches a valid measurement conversions from a given measurement unit.
+func (q *Querier) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -307,8 +307,8 @@ func (q *Querier) GetValidMeasurementConversionsFromUnit(ctx context.Context, va
 //go:embed queries/valid_measurement_conversions/get_all_to_measurement_unit.sql
 var getValidMeasurementConversionsToUnitQuery string
 
-// GetValidMeasurementConversionsToUnit fetches a valid measurement conversions to a given measurement unit.
-func (q *Querier) GetValidMeasurementConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+// GetValidMeasurementUnitConversionsToUnit fetches a valid measurement conversions to a given measurement unit.
+func (q *Querier) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

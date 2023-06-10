@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -401,6 +402,65 @@ func TestQuerier_GetValidIngredientStates(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidIngredientStatesWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
+
+		exampleIDs := []string{}
+		for _, exampleValidIngredientState := range exampleValidIngredientStateList.Data {
+			exampleIDs = append(exampleIDs, exampleValidIngredientState.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		where := squirrel.Eq{"valid_ingredient_states.id": exampleIDs}
+		query, args := c.buildListQuery(ctx, validIngredientStatesTable, nil, nil, where, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidIngredientStates(false, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.Data...))
+
+		actual, err := c.GetValidIngredientStatesWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientStateList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidIngredientStateThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleValidIngredientState := range exampleValidIngredientStateList.Data {
+			exampleIDs = append(exampleIDs, exampleValidIngredientState.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validIngredientStatesNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetValidIngredientStateIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateValidIngredientState(T *testing.T) {
 	T.Parallel()
 
@@ -604,6 +664,61 @@ func TestQuerier_ArchiveValidIngredientState(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveValidIngredientState(ctx, exampleValidIngredientState.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkValidIngredientStateAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidIngredientState.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidIngredientStateLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkValidIngredientStateAsIndexed(ctx, exampleValidIngredientState.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkValidIngredientStateAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidIngredientState.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidIngredientStateLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkValidIngredientStateAsIndexed(ctx, exampleValidIngredientState.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

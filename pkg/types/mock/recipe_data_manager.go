@@ -60,3 +60,20 @@ func (m *RecipeDataManager) UpdateRecipe(ctx context.Context, updated *types.Rec
 func (m *RecipeDataManager) ArchiveRecipe(ctx context.Context, recipeID, householdID string) error {
 	return m.Called(ctx, recipeID, householdID).Error(0)
 }
+
+// MarkRecipeAsIndexed is a mock function.
+func (m *RecipeDataManager) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
+	return m.Called(ctx, recipeID).Error(0)
+}
+
+// GetRecipeIDsThatNeedSearchIndexing is a mock function.
+func (m *RecipeDataManager) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}
+
+// GetRecipesWithIDs is a mock function.
+func (m *RecipeDataManager) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types.Recipe, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.Recipe), returnValues.Error(1)
+}

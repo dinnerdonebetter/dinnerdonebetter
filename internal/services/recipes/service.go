@@ -11,9 +11,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/search"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
@@ -29,19 +32,20 @@ var _ types.RecipeDataService = (*service)(nil)
 type (
 	// service handles recipes.
 	service struct {
+		logger                    logging.Logger
 		tracer                    tracing.Tracer
-		encoderDecoder            encoding.ServerEncoderDecoder
 		recipeDataManager         types.RecipeDataManager
 		recipeMediaDataManager    types.RecipeMediaDataManager
 		recipeAnalyzer            recipeanalysis.RecipeAnalyzer
 		imageUploadProcessor      images.MediaUploadProcessor
-		logger                    logging.Logger
+		encoderDecoder            encoding.ServerEncoderDecoder
 		dataChangesPublisher      messagequeue.Publisher
+		searchIndex               search.IndexSearcher[types.RecipeSearchSubset]
 		uploadManager             uploads.UploadManager
 		timeFunc                  func() time.Time
-		recipeIDFetcher           func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		cfg                       Config
+		recipeIDFetcher           func(*http.Request) string
+		cfg                       *Config
 	}
 )
 
@@ -56,6 +60,7 @@ func ProvideService(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
+	searchConfig *searchcfg.Config,
 	recipeDataManager types.RecipeDataManager,
 	recipeMediaDataManager types.RecipeMediaDataManager,
 	recipeGrapher recipeanalysis.RecipeAnalyzer,
@@ -79,12 +84,17 @@ func ProvideService(
 		return nil, fmt.Errorf("initializing recipe service upload manager: %w", err)
 	}
 
+	searchIndex, err := searchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, search.IndexTypeRecipes)
+	if err != nil {
+		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
+	}
+
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		recipeIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(RecipeIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		recipeDataManager:         recipeDataManager,
-		cfg:                       *cfg,
+		cfg:                       cfg,
 		recipeMediaDataManager:    recipeMediaDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
@@ -93,6 +103,7 @@ func ProvideService(
 		uploadManager:             uploader,
 		imageUploadProcessor:      imageUploadProcessor,
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		searchIndex:               searchIndex,
 	}
 
 	return svc, nil

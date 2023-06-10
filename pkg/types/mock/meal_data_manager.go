@@ -60,3 +60,20 @@ func (m *MealDataManager) UpdateMeal(ctx context.Context, updated *types.Meal) e
 func (m *MealDataManager) ArchiveMeal(ctx context.Context, recipeID, householdID string) error {
 	return m.Called(ctx, recipeID, householdID).Error(0)
 }
+
+// MarkMealAsIndexed is a mock function.
+func (m *MealDataManager) MarkMealAsIndexed(ctx context.Context, mealID string) error {
+	return m.Called(ctx, mealID).Error(0)
+}
+
+// GetMealIDsThatNeedSearchIndexing is a mock function.
+func (m *MealDataManager) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	returnValues := m.Called(ctx)
+	return returnValues.Get(0).([]string), returnValues.Error(1)
+}
+
+// GetMealsWithIDs is a mock function.
+func (m *MealDataManager) GetMealsWithIDs(ctx context.Context, ids []string) ([]*types.Meal, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.Meal), returnValues.Error(1)
+}

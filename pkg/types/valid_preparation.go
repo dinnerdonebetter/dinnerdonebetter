@@ -126,6 +126,16 @@ type (
 		MaximumVesselCount          *int32  `json:"maximumVesselCount,omitempty"`
 	}
 
+	// ValidPreparationSearchSubset represents the subset of values suitable to index for search.
+	ValidPreparationSearchSubset struct {
+		_ struct{}
+
+		PastTense   string `json:"pastTense,omitempty"`
+		ID          string `json:"id,omitempty"`
+		Name        string `json:"name,omitempty"`
+		Description string `json:"description,omitempty"`
+	}
+
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
 	ValidPreparationDataManager interface {
 		ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error)
@@ -135,7 +145,10 @@ type (
 		SearchForValidPreparations(ctx context.Context, query string) ([]*ValidPreparation, error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error
+		MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error
 		ArchiveValidPreparation(ctx context.Context, validPreparationID string) error
+		GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*ValidPreparation, error)
 	}
 
 	// ValidPreparationDataService describes a structure capable of serving traffic related to valid preparations.

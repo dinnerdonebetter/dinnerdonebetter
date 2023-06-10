@@ -14,7 +14,7 @@ SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.1
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
-CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator
+CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_indexer search_data_index_scheduler
 WIRE_TARGETS                  := server/http/build
 
 ## non-PHONY folders/files
