@@ -284,7 +284,7 @@ func (q *Querier) GetValidPreparationsWithIDs(ctx context.Context, ids []string)
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations id list retrieval query")
 	}
 
-	preparations, _, _, err := q.scanValidPreparations(ctx, rows, false)
+	preparations, _, _, err := q.scanValidPreparations(ctx, rows, true)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid preparations")
 	}

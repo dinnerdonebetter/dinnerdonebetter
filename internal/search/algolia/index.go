@@ -35,9 +35,6 @@ func (m *indexManager[T]) Index(ctx context.Context, id string, value any) error
 	// we make a huge, albeit safe assumption here.
 	newValue["objectID"] = newValue["id"]
 	delete(newValue, "id")
-	delete(newValue, "createdAt")
-	delete(newValue, "lastUpdatedAt")
-	delete(newValue, "archivedAt")
 
 	if _, err = m.client.SaveObject(newValue); err != nil {
 		return err
@@ -79,8 +76,8 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 			return nil, err
 		}
 
-		if unmarshalErr := json.Unmarshal(encodedAsJSON, &x); unmarshalErr != nil {
-			return nil, unmarshalErr
+		if err = json.Unmarshal(encodedAsJSON, &x); err != nil {
+			return nil, err
 		}
 
 		results = append(results, x)

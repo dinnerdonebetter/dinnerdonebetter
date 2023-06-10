@@ -479,7 +479,7 @@ func TestQuerier_GetValidPreparationsWithIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidPreparations(false, exampleValidPreparationList.FilteredCount, exampleValidPreparationList.Data...))
+			WillReturnRows(buildMockRowsFromValidPreparations(true, exampleValidPreparationList.FilteredCount, exampleValidPreparationList.Data...))
 
 		actual, err := c.GetValidPreparationsWithIDs(ctx, exampleIDs)
 		assert.NoError(t, err)
