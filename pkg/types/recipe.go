@@ -134,6 +134,7 @@ type (
 		MarkRecipeAsIndexed(ctx context.Context, recipeID string) error
 		ArchiveRecipe(ctx context.Context, recipeID, userID string) error
 		GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetRecipesWithIDs(ctx context.Context, ids []string) ([]*Recipe, error)
 	}
 
 	// RecipeDataService describes a structure capable of serving traffic related to recipes.

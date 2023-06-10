@@ -437,6 +437,33 @@ func TestQuerier_GetMeals(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetMealsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		exampleMealList := fakes.BuildFakeMealList()
+		exampleIDs := make([]string, len(exampleMealList.Data))
+		for i, exampleMeal := range exampleMealList.Data {
+			exampleIDs[i] = exampleMeal.ID
+		}
+
+		for _, exampleMeal := range exampleMealList.Data {
+			prepareMockToSuccessfullyGetMeal(t, exampleMeal, db)
+		}
+
+		actual, err := c.GetMealsWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleMealList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_GetMealThatNeedSearchIndexing(T *testing.T) {
 	T.Parallel()
 

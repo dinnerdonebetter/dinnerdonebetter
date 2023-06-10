@@ -71,3 +71,9 @@ func (m *RecipeDataManager) GetRecipeIDsThatNeedSearchIndexing(ctx context.Conte
 	returnValues := m.Called(ctx)
 	return returnValues.Get(0).([]string), returnValues.Error(1)
 }
+
+// GetRecipesWithIDs is a mock function.
+func (m *RecipeDataManager) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types.Recipe, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.Recipe), returnValues.Error(1)
+}

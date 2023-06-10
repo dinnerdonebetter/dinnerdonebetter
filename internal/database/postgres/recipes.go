@@ -375,6 +375,26 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	return x, nil
 }
 
+// GetRecipesWithIDs fetches a list of recipes from the database that meet a particular filter.
+func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types.Recipe, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	recipes := []*types.Recipe{}
+	for _, id := range ids {
+		r, err := q.getRecipe(ctx, id, "")
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe")
+		}
+
+		recipes = append(recipes, r)
+	}
+
+	return recipes, nil
+}
+
 //go:embed generated_queries/recipes/get_needing_indexing.sql
 var recipesNeedingIndexingQuery string
 

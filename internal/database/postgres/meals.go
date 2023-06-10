@@ -249,6 +249,26 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 	return x, nil
 }
 
+// GetMealsWithIDs fetches a list of meals from the database that have IDs within a given set.
+func (q *Querier) GetMealsWithIDs(ctx context.Context, ids []string) ([]*types.Meal, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	meals := []*types.Meal{}
+	for _, id := range ids {
+		r, err := q.GetMeal(ctx, id)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "getting meal")
+		}
+
+		meals = append(meals, r)
+	}
+
+	return meals, nil
+}
+
 //go:embed generated_queries/meals/get_needing_indexing.sql
 var mealsNeedingIndexingQuery string
 

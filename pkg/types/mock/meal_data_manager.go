@@ -71,3 +71,9 @@ func (m *MealDataManager) GetMealIDsThatNeedSearchIndexing(ctx context.Context) 
 	returnValues := m.Called(ctx)
 	return returnValues.Get(0).([]string), returnValues.Error(1)
 }
+
+// GetMealsWithIDs is a mock function.
+func (m *MealDataManager) GetMealsWithIDs(ctx context.Context, ids []string) ([]*types.Meal, error) {
+	returnValues := m.Called(ctx, ids)
+	return returnValues.Get(0).([]*types.Meal), returnValues.Error(1)
+}

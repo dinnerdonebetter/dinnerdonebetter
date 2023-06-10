@@ -156,6 +156,7 @@ type (
 		MarkMealAsIndexed(ctx context.Context, mealID string) error
 		ArchiveMeal(ctx context.Context, mealID, userID string) error
 		GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetMealsWithIDs(ctx context.Context, ids []string) ([]*Meal, error)
 	}
 
 	// MealDataService describes a structure capable of serving traffic related to meals.

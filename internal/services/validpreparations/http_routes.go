@@ -185,6 +185,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	logger.Info("searching for valid preparations")
+
 	var validPreparations []*types.ValidPreparation
 	if useDB {
 		var validPreparationSubsets []*types.ValidPreparationSearchSubset

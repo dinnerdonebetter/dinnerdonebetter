@@ -303,6 +303,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			},
 			Recipes: recipesservice.Config{
 				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
+				UseSearchService:     true,
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
 				Uploads: uploads.Config{
 					Debug: true,
@@ -333,7 +334,22 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 					},
 				},
 			},
+			ValidIngredients: validingredientsservice.Config{
+				UseSearchService: true,
+			},
+			ValidIngredientStates: validingredientstatesservice.Config{
+				UseSearchService: true,
+			},
+			ValidInstruments: validinstrumentsservice.Config{
+				UseSearchService: true,
+			},
+			ValidMeasurementUnits: validmeasurementunitsservice.Config{
+				UseSearchService: true,
+			},
 			ValidPreparations: validpreparationsservice.Config{
+				UseSearchService: true,
+			},
+			Meals: mealsservice.Config{
 				UseSearchService: true,
 			},
 		},

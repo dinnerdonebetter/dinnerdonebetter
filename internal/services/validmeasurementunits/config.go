@@ -11,6 +11,7 @@ type Config struct {
 	_ struct{}
 
 	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
+	UseSearchService     bool   `json:"searchFromDatabase"             toml:"search_from_database,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

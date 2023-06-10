@@ -99,7 +99,8 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstruments": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"recipeStepCompletionConditions": {
 			"dataChangesTopicName": "data_changes"
@@ -130,7 +131,8 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"validMeasurementUnits": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"recipeStepProducts": {
 			"dataChangesTopicName": "data_changes"
@@ -142,7 +144,8 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredients": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
@@ -160,7 +163,8 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientStates": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"validMeasurementConversions": {
 			"dataChangesTopicName": "data_changes"
@@ -187,9 +191,11 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"meals": {
-			"dataChangesTopicName": "data_changes"
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"recipes": {
+			"searchFromDatabase": false,
 			"dataChangesTopicName": "data_changes",
 			"mediaUploadPrefix": "https://media.example.website/lol",
 			"uploads": {

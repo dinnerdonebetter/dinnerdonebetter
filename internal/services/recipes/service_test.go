@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -64,6 +65,7 @@ func TestProvideRecipesService(T *testing.T) {
 			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
+			&searchcfg.Config{},
 			&mocktypes.RecipeDataManager{},
 			&mocktypes.RecipeMediaDataManager{},
 			&recipeanalysis.MockRecipeAnalyzer{},
@@ -100,6 +102,7 @@ func TestProvideRecipesService(T *testing.T) {
 			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
+			&searchcfg.Config{},
 			&mocktypes.RecipeDataManager{},
 			&mocktypes.RecipeMediaDataManager{},
 			&recipeanalysis.MockRecipeAnalyzer{},
