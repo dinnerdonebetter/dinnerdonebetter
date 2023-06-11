@@ -86,15 +86,15 @@ resource "google_cloudfunctions2_function" "search_indexer" {
   description = format("Search Indexer (%s)", data.archive_file.search_indexer_function.output_md5)
 
   build_config {
-    runtime = local.go_runtime
-    #    entry_point = "IndexDataForSearch"
-    #
-    #    source {
-    #      storage_source {
-    #        bucket = google_storage_bucket.search_indexer_bucket.name
-    #        object = google_storage_bucket_object.search_indexer_archive.name
-    #      }
-    #    }
+    runtime     = local.go_runtime
+    entry_point = "IndexDataForSearch"
+
+    source {
+      storage_source {
+        bucket = google_storage_bucket.search_indexer_bucket.name
+        object = google_storage_bucket_object.search_indexer_archive.name
+      }
+    }
   }
 
   service_config {

@@ -123,15 +123,15 @@ resource "google_cloudfunctions2_function" "search_data_index_scheduler" {
   location    = local.gcp_region
 
   build_config {
-    runtime = local.go_runtime
-    #    entry_point = "ScheduleIndexOperation"
-    #
-    #    source {
-    #      storage_source {
-    #        bucket = google_storage_bucket.search_data_index_scheduler_bucket.name
-    #        object = google_storage_bucket_object.search_data_index_scheduler_archive.name
-    #      }
-    #    }
+    runtime     = local.go_runtime
+    entry_point = "ScheduleIndexOperation"
+
+    source {
+      storage_source {
+        bucket = google_storage_bucket.search_data_index_scheduler_bucket.name
+        object = google_storage_bucket_object.search_data_index_scheduler_archive.name
+      }
+    }
   }
 
   service_config {

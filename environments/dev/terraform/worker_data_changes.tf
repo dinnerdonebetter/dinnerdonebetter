@@ -87,13 +87,13 @@ resource "google_cloudfunctions2_function" "data_changes" {
   build_config {
     runtime = local.go_runtime
     #    entry_point = "ProcessDataChange"
-    #
-    #    source {
-    #      storage_source {
-    #        bucket = google_storage_bucket.data_changes_bucket.name
-    #        object = google_storage_bucket_object.data_changes_archive.name
-    #      }
-    #    }
+
+    source {
+      storage_source {
+        bucket = google_storage_bucket.data_changes_bucket.name
+        object = google_storage_bucket_object.data_changes_archive.name
+      }
+    }
   }
 
   service_config {
