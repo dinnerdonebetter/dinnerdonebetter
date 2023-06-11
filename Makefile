@@ -150,7 +150,7 @@ golang_lint:
 		--rm \
 		--volume $(PWD):$(PWD) \
 		--workdir=$(PWD) \
-		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml ./...
+		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
 lint: docker_lint queries_lint golang_lint # terraform_lint
