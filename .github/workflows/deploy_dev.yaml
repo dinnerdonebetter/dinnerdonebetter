@@ -29,7 +29,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -73,16 +73,6 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Build API server container
-        run: |
-          docker build --tag gcr.io/dinner-done-better-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag gcr.io/dinner-done-better-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-
-      - name: Push API server container
-        run: |
-          docker push gcr.io/dinner-done-better-dev/api_server:${{  github.sha }}
-          docker push gcr.io/dinner-done-better-dev/api_server:latest
-
       - name: Build search data index scheduler container
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
@@ -92,6 +82,16 @@ jobs:
         run: |
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest
+
+      - name: Build API server container
+        run: |
+          docker build --tag gcr.io/dinner-done-better-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag gcr.io/dinner-done-better-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+
+      - name: Push API server container
+        run: |
+          docker push gcr.io/dinner-done-better-dev/api_server:${{  github.sha }}
+          docker push gcr.io/dinner-done-better-dev/api_server:latest
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
