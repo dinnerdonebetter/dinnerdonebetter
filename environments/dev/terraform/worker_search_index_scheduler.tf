@@ -241,13 +241,6 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
           }
         }
 
-        resources {
-          limits {
-            cpu    = "1"
-            memory = "128Mi"
-          }
-        }
-
         volume_mounts {
           name       = "cloudsql"
           mount_path = "/cloudsql"
