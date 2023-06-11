@@ -42,11 +42,6 @@ jobs:
         id: init
         run: terraform init
 
-      - name: Build API server container
-        run: |
-          docker build --tag gcr.io/dinner-done-better-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag gcr.io/dinner-done-better-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-
       - name: Build data changes cloud function directory
         run: ./scripts/build_cloud_function.sh data_changes
 
@@ -77,6 +72,11 @@ jobs:
         working-directory: environments/dev/terraform
         id: validate
         run: terraform validate -no-color
+
+      - name: Build API server container
+        run: |
+          docker build --tag gcr.io/dinner-done-better-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag gcr.io/dinner-done-better-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
 
       - name: Push API server container
         run: |

@@ -103,7 +103,8 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 func (cfg *InstanceConfig) Commit() string {
 	if info, ok := debug.ReadBuildInfo(); ok {
-		for _, setting := range info.Settings {
+		for i := range info.Settings {
+			setting := info.Settings[i]
 			if setting.Key == "vcs.revision" {
 				return setting.Value
 			}
