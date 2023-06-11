@@ -195,6 +195,7 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
     template {
       execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
       max_retries           = 1
+      service_account       = google_service_account.search_data_index_scheduler_user_service_account.email
 
       volumes {
         name = "cloudsql"

@@ -20,20 +20,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search"
 	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
-func init() {
-	// Register a CloudEvent function with the Functions Framework
-	functions.CloudEvent("ScheduleIndexOperation", ScheduleIndexOperation)
-}
-
-// ScheduleIndexOperation handles a search index schedule request.
-func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
+func main() error {
+	ctx := context.Background()
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
@@ -139,5 +131,4 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 	}
 
 	return nil
-
 }
