@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"strings"
@@ -24,18 +25,17 @@ import (
 	_ "go.uber.org/automaxprocs"
 )
 
-func main() error {
+func main() {
 	ctx := context.Background()
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		logger.Info("CEASE_OPERATION is set to true, exiting")
-		return nil
 	}
 
 	cfg, err := config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
-		return fmt.Errorf("error getting config: %w", err)
+		log.Fatal(fmt.Errorf("error getting config: %w", err))
 	}
 
 	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
@@ -53,7 +53,7 @@ func main() error {
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, &cfg.Database, tracerProvider)
 	if err != nil {
 		cancel()
-		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
+		log.Fatal(observability.PrepareError(err, span, "establishing database connection"))
 	}
 
 	cancel()
@@ -61,14 +61,14 @@ func main() error {
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
+		log.Fatal(observability.PrepareError(err, span, "configuring queue manager"))
 	}
 
 	defer publisherProvider.Close()
 
 	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("SEARCH_INDEXING_TOPIC_NAME"))
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring search indexing publisher")
+		log.Fatal(observability.PrepareError(err, span, "configuring search indexing publisher"))
 	}
 
 	defer searchDataIndexPublisher.Stop()
@@ -100,7 +100,7 @@ func main() error {
 		actionFunc = dataManager.GetValidIngredientStateIDsThatNeedSearchIndexing
 	default:
 		logger.Info("unhandled index type chosen, exiting")
-		return nil
+		return
 	}
 
 	if actionFunc != nil {
@@ -109,11 +109,11 @@ func main() error {
 			if !errors.Is(err, sql.ErrNoRows) {
 				observability.AcknowledgeError(err, logger, span, "getting valid ingredient state IDs that need search indexing")
 			}
-			return nil
+			return
 		}
 	} else {
 		logger.Info("unspecified action function, exiting")
-		return nil
+		return
 	}
 
 	if len(ids) > 0 {
@@ -129,6 +129,4 @@ func main() error {
 			observability.AcknowledgeError(err, logger, span, "publishing search index request")
 		}
 	}
-
-	return nil
 }
