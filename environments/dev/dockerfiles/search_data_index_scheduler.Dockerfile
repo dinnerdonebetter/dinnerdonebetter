@@ -3,9 +3,9 @@ FROM golang:1.20-bullseye AS build-stage
 
 WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
-COPY . .
+COPY cmd/functions/search_data_index_scheduler .
 
-RUN go build -trimpath -o /action github.com/dinnerdonebetter/backend/cmd/functions/search_data_index_scheduler
+RUN go build -trimpath -o /action
 
 # final stage
 FROM debian:bullseye
