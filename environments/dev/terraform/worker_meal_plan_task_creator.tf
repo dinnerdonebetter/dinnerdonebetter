@@ -129,17 +129,17 @@ resource "google_cloudfunctions2_function" "meal_plan_task_creator" {
     service_account_email = google_service_account.meal_plan_task_creator_user_service_account.email
   }
 
-  build_config {
-    runtime     = local.go_runtime
-    entry_point = "CreateMealPlanTasks"
-
-    source {
-      storage_source {
-        bucket = google_storage_bucket.meal_plan_task_creator_bucket.name
-        object = google_storage_bucket_object.meal_plan_task_creator_archive.name
-      }
-    }
-  }
+  #  build_config {
+  #    runtime     = local.go_runtime
+  #    entry_point = "CreateMealPlanTasks"
+  #
+  #    source {
+  #      storage_source {
+  #        bucket = google_storage_bucket.meal_plan_task_creator_bucket.name
+  #        object = google_storage_bucket_object.meal_plan_task_creator_archive.name
+  #      }
+  #    }
+  #  }
 
   service_config {
     available_memory               = "128Mi"

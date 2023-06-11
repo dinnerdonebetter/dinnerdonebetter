@@ -122,17 +122,17 @@ resource "google_cloudfunctions2_function" "meal_plan_grocery_list_initializer" 
   description = "Meal Plan Grocery List Initializer"
   location    = local.gcp_region
 
-  build_config {
-    runtime     = local.go_runtime
-    entry_point = "InitializeGroceryListsItemsForMealPlans"
-
-    source {
-      storage_source {
-        bucket = google_storage_bucket.meal_plan_grocery_list_initializer_bucket.name
-        object = google_storage_bucket_object.meal_plan_grocery_list_initializer_archive.name
-      }
-    }
-  }
+  #  build_config {
+  #    runtime     = local.go_runtime
+  #    entry_point = "InitializeGroceryListsItemsForMealPlans"
+  #
+  #    source {
+  #      storage_source {
+  #        bucket = google_storage_bucket.meal_plan_grocery_list_initializer_bucket.name
+  #        object = google_storage_bucket_object.meal_plan_grocery_list_initializer_archive.name
+  #      }
+  #    }
+  #  }
 
   service_config {
     available_memory               = "128Mi"
