@@ -85,8 +85,8 @@ resource "google_cloudfunctions2_function" "data_changes" {
   description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
 
   build_config {
-    runtime = local.go_runtime
-    #    entry_point = "ProcessDataChange"
+    runtime     = local.go_runtime
+    entry_point = "ProcessDataChange"
 
     source {
       storage_source {

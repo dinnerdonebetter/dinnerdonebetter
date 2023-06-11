@@ -105,6 +105,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 		},
 	}
 
+	// TODO: get this from the env var DATA_CHANGES_TOPIC_NAME, dump GOOGLE_CLOUD_SECRET_STORE_PREFIX
 	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
 	if err != nil {
 		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)

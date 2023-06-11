@@ -18,23 +18,23 @@ locals {
   search_data_index_scheduler_database_username = "search_data_index_scheduler_db_user"
 }
 
-resource "google_pubsub_topic" "search_data_index_scheduler_topic" {
-  name = "search_data_index_scheduler_work"
-}
+#resource "google_pubsub_topic" "search_data_index_scheduler_topic" {
+#  name = "search_data_index_scheduler_work"
+#}
 
-resource "google_cloud_scheduler_job" "search_data_index_scheduling" {
-  project = local.project_id
-  region  = local.gcp_region
-  name    = "search-data-index-scheduler"
-
-  schedule  = "*/10 * * * *" # every ten minutes
-  time_zone = "America/Chicago"
-
-  pubsub_target {
-    topic_name = google_pubsub_topic.search_data_index_scheduler_topic.id
-    data       = base64encode("{}")
-  }
-}
+#resource "google_cloud_scheduler_job" "search_data_index_scheduling" {
+#  project = local.project_id
+#  region  = local.gcp_region
+#  name    = "search-data-index-scheduler"
+#
+#  schedule  = "*/10 * * * *" # every ten minutes
+#  time_zone = "America/Chicago"
+#
+#  pubsub_target {
+#    topic_name = google_pubsub_topic.search_data_index_scheduler_topic.id
+#    data       = base64encode("{}")
+#  }
+#}
 
 resource "google_storage_bucket" "search_data_index_scheduler_bucket" {
   name     = "search-data-index-scheduler-cloud-function"
@@ -111,64 +111,182 @@ resource "google_project_iam_member" "search_data_index_scheduler_artifactregist
   depends_on = [google_project_iam_member.search_data_index_scheduler_event_receiving]
 }
 
-resource "google_cloudfunctions2_function" "search_data_index_scheduler" {
-  depends_on = [
-    google_cloud_scheduler_job.search_data_index_scheduling,
-    google_project_iam_member.search_data_index_scheduler_event_receiving,
-    google_project_iam_member.search_data_index_scheduler_artifactregistry_reader,
-  ]
+#resource "google_cloudfunctions2_function" "search_data_index_scheduler" {
+#  depends_on = [
+#    google_cloud_scheduler_job.search_data_index_scheduling,
+#    google_project_iam_member.search_data_index_scheduler_event_receiving,
+#    google_project_iam_member.search_data_index_scheduler_artifactregistry_reader,
+#  ]
+#
+#  name        = "search-data-index-scheduler"
+#  description = "Search Data Index Scheduler"
+#  location    = local.gcp_region
+#
+#  build_config {
+#    runtime     = local.go_runtime
+#    entry_point = "ScheduleIndexOperation"
+#
+#    source {
+#      storage_source {
+#        bucket = google_storage_bucket.search_data_index_scheduler_bucket.name
+#        object = google_storage_bucket_object.search_data_index_scheduler_archive.name
+#      }
+#    }
+#  }
+#
+#  service_config {
+#    available_memory               = "128Mi"
+#    ingress_settings               = "ALLOW_INTERNAL_ONLY"
+#    all_traffic_on_latest_revision = true
+#    service_account_email          = google_service_account.search_data_index_scheduler_user_service_account.email
+#
+#    environment_variables = {
+#      DINNER_DONE_BETTER_SERVICE_ENVIRONMENT = local.environment,
+#      # TODO: use the search_data_index_scheduler_user for this, currently it has permission denied for accessing tables
+#      # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
+#      # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
+#      DINNER_DONE_BETTER_DATABASE_USER = google_sql_user.api_user.name,
+#      DINNER_DONE_BETTER_DATABASE_NAME = local.database_name,
+#      // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
+#      // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
+#      DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
+#      GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
+#      GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
+#      DATA_CHANGES_TOPIC_NAME                              = google_pubsub_topic.data_changes_topic.name
+#      SEARCH_INDEXING_TOPIC_NAME                           = google_pubsub_topic.search_index_requests_topic.name
+#    }
+#
+#    secret_environment_variables {
+#      key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
+#      project_id = local.project_id
+#      secret     = google_secret_manager_secret.api_user_database_password.secret_id
+#      version    = "latest"
+#    }
+#  }
+#
+#  event_trigger {
+#    trigger_region        = local.gcp_region
+#    event_type            = local.pubsub_topic_publish_event
+#    pubsub_topic          = google_pubsub_topic.search_data_index_scheduler_topic.id
+#    retry_policy          = "RETRY_POLICY_RETRY"
+#    service_account_email = google_service_account.search_data_index_scheduler_user_service_account.email
+#  }
+#}
 
-  name        = "search-data-index-scheduler"
-  description = "Search Data Index Scheduler"
-  location    = local.gcp_region
+resource "google_artifact_registry_repository" "index_scheduler_repository" {
+  location      = local.gcp_region
+  repository_id = "search-data-index-scheduler"
+  description   = "the container image for the search data index scheduler"
+  format        = "DOCKER"
 
-  build_config {
-    runtime     = local.go_runtime
-    entry_point = "ScheduleIndexOperation"
+  docker_config {
+    immutable_tags = true
+  }
+}
 
-    source {
-      storage_source {
-        bucket = google_storage_bucket.search_data_index_scheduler_bucket.name
-        object = google_storage_bucket_object.search_data_index_scheduler_archive.name
+resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
+  name     = "search-data-index-scheduler"
+  location = local.gcp_region
+
+  template {
+    task_count  = 1
+    parallelism = 1
+
+    template {
+      execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
+      max_retries           = 1
+
+      volumes {
+        name = "cloudsql"
+        cloud_sql_instance {
+          instances = [google_sql_database_instance.dev.connection_name]
+        }
+      }
+
+      containers {
+        image = format("gcr.io/dinner-done-better-dev/%s", google_artifact_registry_repository.index_scheduler_repository.name)
+
+        env {
+          name  = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
+          value = google_sql_database_instance.dev.connection_name
+        }
+
+        env {
+          name  = "GOOGLE_CLOUD_SECRET_STORE_PREFIX"
+          value = format("projects/%d/secrets", data.google_project.project.number)
+        }
+
+        env {
+          name  = "GOOGLE_CLOUD_PROJECT_ID"
+          value = data.google_project.project.project_id
+        }
+
+        env {
+          name  = "DATA_CHANGES_TOPIC_NAME"
+          value = google_pubsub_topic.data_changes_topic.name
+        }
+
+        env {
+          name  = "SEARCH_INDEXING_TOPIC_NAME"
+          value = google_pubsub_topic.search_index_requests_topic.name
+        }
+
+        env {
+          name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
+          value_source {
+            secret_key_ref {
+              secret  = google_secret_manager_secret.api_user_database_password.secret_id
+              version = "latest"
+            }
+          }
+        }
+
+        resources {
+          limits {
+            cpu    = "1"
+            memory = "128Mi"
+          }
+        }
+
+        volume_mounts {
+          name       = "cloudsql"
+          mount_path = "/cloudsql"
+        }
       }
     }
   }
 
-  service_config {
-    available_memory               = "128Mi"
-    ingress_settings               = "ALLOW_INTERNAL_ONLY"
-    all_traffic_on_latest_revision = true
-    service_account_email          = google_service_account.search_data_index_scheduler_user_service_account.email
+  lifecycle {
+    ignore_changes = [
+      launch_stage,
+    ]
+  }
+}
 
-    environment_variables = {
-      DINNER_DONE_BETTER_SERVICE_ENVIRONMENT = local.environment,
-      # TODO: use the search_data_index_scheduler_user for this, currently it has permission denied for accessing tables
-      # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
-      # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
-      DINNER_DONE_BETTER_DATABASE_USER = google_sql_user.api_user.name,
-      DINNER_DONE_BETTER_DATABASE_NAME = local.database_name,
-      // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
-      // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
-      DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
-      GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
-      GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
-      DATA_CHANGES_TOPIC_NAME                              = google_pubsub_topic.data_changes_topic.name
-      SEARCH_INDEXING_TOPIC_NAME                           = google_pubsub_topic.search_index_requests_topic.name
-    }
+resource "google_cloud_scheduler_job" "run_data_index_scheduler" {
+  name             = "scheduled-data-indexing"
+  description      = "Runs the search data index scheduler every 10 minutes"
+  schedule         = "*/10 * * * *"
+  time_zone        = "America/Chicago"
+  attempt_deadline = "320s"
 
-    secret_environment_variables {
-      key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
-      project_id = local.project_id
-      secret     = google_secret_manager_secret.api_user_database_password.secret_id
-      version    = "latest"
+  retry_config {
+    retry_count = 1
+  }
+
+
+  http_target {
+    http_method = "POST"
+    uri         = "https://${google_cloud_run_v2_job.search_data_index_scheduler.location}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${data.google_project.project.number}/jobs/${google_cloud_run_v2_job.search_data_index_scheduler.name}:run"
+
+    oauth_token {
+      service_account_email = google_service_account.search_data_index_scheduler_user_service_account.email
     }
   }
 
-  event_trigger {
-    trigger_region        = local.gcp_region
-    event_type            = local.pubsub_topic_publish_event
-    pubsub_topic          = google_pubsub_topic.search_data_index_scheduler_topic.id
-    retry_policy          = "RETRY_POLICY_RETRY"
-    service_account_email = google_service_account.search_data_index_scheduler_user_service_account.email
-  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_cloud_run_v2_job.search_data_index_scheduler,
+  ]
 }
