@@ -173,10 +173,10 @@ resource "google_project_iam_member" "search_data_index_scheduler_artifactregist
 #  }
 #}
 
-resource "google_artifact_registry_repository" "index_scheduler_repository" {
+resource "google_artifact_registry_repository" "dev_repository" {
   location      = local.gcp_region
-  repository_id = "search-data-index-scheduler"
-  description   = "the container image for the search data index scheduler"
+  repository_id = "dev"
+  description   = "the container images for the dev environment"
   format        = "DOCKER"
 
   docker_config {
@@ -205,7 +205,7 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
       }
 
       containers {
-        image = format("gcr.io/dinner-done-better-dev/%s", google_artifact_registry_repository.index_scheduler_repository.name)
+        image = format("%s-docker.pkg.dev/%s/%s", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name, "search-data-index-scheduler")
 
         env {
           name  = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
