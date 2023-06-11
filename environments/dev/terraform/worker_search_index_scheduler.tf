@@ -178,10 +178,6 @@ resource "google_artifact_registry_repository" "dev_repository" {
   repository_id = "containers"
   description   = "the container images for the dev environment"
   format        = "DOCKER"
-
-  docker_config {
-    immutable_tags = true
-  }
 }
 
 resource "google_cloud_run_v2_job" "search_data_index_scheduler" {

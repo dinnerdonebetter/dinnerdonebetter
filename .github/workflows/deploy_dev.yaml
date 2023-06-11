@@ -85,8 +85,8 @@ jobs:
 
 #      - name: Build search data index scheduler container
 #        run: |
-#          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-#          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+#          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+#          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
 #
 #      - name: Push search data index scheduler container
 #        run: |
