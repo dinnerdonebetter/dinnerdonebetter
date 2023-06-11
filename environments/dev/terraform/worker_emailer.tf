@@ -84,17 +84,17 @@ resource "google_cloudfunctions2_function" "outbound_emailer" {
   location    = local.gcp_region
   description = format("Outbound Emailer (%s)", data.archive_file.outbound_emailer_function.output_md5)
 
-  #  build_config {
-  #    runtime     = local.go_runtime
-  #    entry_point = "SendEmail"
-  #
-  #    source {
-  #      storage_source {
-  #        bucket = google_storage_bucket.outbound_emailer_bucket.name
-  #        object = google_storage_bucket_object.outbound_emailer_archive.name
-  #      }
-  #    }
-  #  }
+  build_config {
+    runtime = local.go_runtime
+    #    entry_point = "SendEmail"
+    #
+    #    source {
+    #      storage_source {
+    #        bucket = google_storage_bucket.outbound_emailer_bucket.name
+    #        object = google_storage_bucket_object.outbound_emailer_archive.name
+    #      }
+    #    }
+  }
 
   service_config {
     available_memory               = "128Mi"

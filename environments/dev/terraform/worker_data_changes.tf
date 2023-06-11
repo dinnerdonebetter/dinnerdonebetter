@@ -84,17 +84,17 @@ resource "google_cloudfunctions2_function" "data_changes" {
   location    = local.gcp_region
   description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
 
-  #  build_config {
-  #    runtime     = local.go_runtime
-  #    entry_point = "ProcessDataChange"
-  #
-  #    source {
-  #      storage_source {
-  #        bucket = google_storage_bucket.data_changes_bucket.name
-  #        object = google_storage_bucket_object.data_changes_archive.name
-  #      }
-  #    }
-  #  }
+  build_config {
+    runtime = local.go_runtime
+    #    entry_point = "ProcessDataChange"
+    #
+    #    source {
+    #      storage_source {
+    #        bucket = google_storage_bucket.data_changes_bucket.name
+    #        object = google_storage_bucket_object.data_changes_archive.name
+    #      }
+    #    }
+  }
 
   service_config {
     available_memory               = "128Mi"
