@@ -29,6 +29,9 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push
+        run: gcloud auth configure-docker gcr.io
+
+      - name: Authorize Docker push
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Setup Terraform
