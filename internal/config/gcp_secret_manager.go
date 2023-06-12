@@ -204,13 +204,6 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		return nil, errors.New("config is nil")
 	}
 
-	rawPort := os.Getenv(gcpPortEnvVarKey)
-	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
-	if portParseErr != nil {
-		return nil, fmt.Errorf("parsing port: %w", portParseErr)
-	}
-	cfg.Server.HTTPPort = uint16(port)
-
 	socketDir, isSet := os.LookupEnv(gcpDatabaseSocketDirEnvVarKey)
 	if !isSet {
 		socketDir = googleCloudCloudSQLSocket

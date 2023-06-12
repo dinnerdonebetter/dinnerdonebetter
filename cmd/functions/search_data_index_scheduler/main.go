@@ -29,8 +29,6 @@ func main() {
 	ctx := context.Background()
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
-	logger.Info("job started")
-
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		logger.Info("CEASE_OPERATION is set to true, exiting")
 	}
