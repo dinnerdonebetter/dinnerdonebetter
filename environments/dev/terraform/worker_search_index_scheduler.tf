@@ -1,3 +1,7 @@
+locals {
+  search_data_index_scheduler_database_username = "search_data_index_scheduler_db_user"
+}
+
 resource "google_project_iam_custom_role" "search_data_index_scheduler_role" {
   role_id     = "search_data_index_scheduler_role"
   title       = "Search data index scheduler role"
@@ -14,8 +18,15 @@ resource "google_project_iam_custom_role" "search_data_index_scheduler_role" {
   ]
 }
 
-locals {
-  search_data_index_scheduler_database_username = "search_data_index_scheduler_db_user"
+resource "google_service_account" "search_data_index_scheduler_user_service_account" {
+  account_id   = "search-data-index-scheduler"
+  display_name = "Search Data Index Scheduler"
+}
+
+resource "google_project_iam_member" "search_data_index_scheduler_user" {
+  project = local.project_id
+  role    = google_project_iam_custom_role.search_data_index_scheduler_role.id
+  member  = format("serviceAccount:%s", google_service_account.search_data_index_scheduler_user_service_account.email)
 }
 
 resource "google_storage_bucket" "search_data_index_scheduler_bucket" {
@@ -35,63 +46,52 @@ resource "google_storage_bucket_object" "search_data_index_scheduler_archive" {
   source = "${path.module}/search_data_index_scheduler_cloud_function.zip"
 }
 
-resource "google_service_account" "search_data_index_scheduler_user_service_account" {
-  account_id   = "search-data-index-scheduler"
-  display_name = "Search Data Index Scheduler"
-}
-
-resource "google_project_iam_member" "search_data_index_scheduler_user" {
-  project = local.project_id
-  role    = google_project_iam_custom_role.search_data_index_scheduler_role.id
-  member  = format("serviceAccount:%s", google_service_account.search_data_index_scheduler_user_service_account.email)
-}
-
-resource "random_password" "search_data_index_scheduler_user_database_password" {
-  length           = 64
-  special          = true
-  override_special = "#$*-_=+[]"
-}
-
-resource "google_secret_manager_secret" "search_data_index_scheduler_user_database_password" {
-  secret_id = "search_data_index_scheduler_user_database_password"
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_version" "search_data_index_scheduler_user_database_password" {
-  secret = google_secret_manager_secret.search_data_index_scheduler_user_database_password.id
-
-  secret_data = random_password.search_data_index_scheduler_user_database_password.result
-}
-
-resource "google_sql_user" "search_data_index_scheduler_user" {
-  name     = local.search_data_index_scheduler_database_username
-  instance = google_sql_database_instance.dev.name
-  password = random_password.search_data_index_scheduler_user_database_password.result
-}
+#resource "random_password" "search_data_index_scheduler_user_database_password" {
+#  length           = 64
+#  special          = true
+#  override_special = "#$*-_=+[]"
+#}
+#
+#resource "google_secret_manager_secret" "search_data_index_scheduler_user_database_password" {
+#  secret_id = "search_data_index_scheduler_user_database_password"
+#
+#  replication {
+#    automatic = true
+#  }
+#}
+#
+#resource "google_secret_manager_secret_version" "search_data_index_scheduler_user_database_password" {
+#  secret = google_secret_manager_secret.search_data_index_scheduler_user_database_password.id
+#
+#  secret_data = random_password.search_data_index_scheduler_user_database_password.result
+#}
+#
+#resource "google_sql_user" "search_data_index_scheduler_user" {
+#  name     = local.search_data_index_scheduler_database_username
+#  instance = google_sql_database_instance.dev.name
+#  password = random_password.search_data_index_scheduler_user_database_password.result
+#}
 
 # Permissions on the service account used by the function and Eventarc trigger
-resource "google_project_iam_member" "search_data_index_scheduler_invoking" {
-  project = local.project_id
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
-}
+#resource "google_project_iam_member" "search_data_index_scheduler_invoking" {
+#  project = local.project_id
+#  role    = "roles/run.invoker"
+#  member  = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
+#}
 
-resource "google_project_iam_member" "search_data_index_scheduler_event_receiving" {
-  project    = local.project_id
-  role       = "roles/eventarc.eventReceiver"
-  member     = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
-  depends_on = [google_project_iam_member.search_data_index_scheduler_invoking]
-}
+#resource "google_project_iam_member" "search_data_index_scheduler_event_receiving" {
+#  project    = local.project_id
+#  role       = "roles/eventarc.eventReceiver"
+#  member     = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
+#  depends_on = [google_project_iam_member.search_data_index_scheduler_invoking]
+#}
 
-resource "google_project_iam_member" "search_data_index_scheduler_artifactregistry_reader" {
-  project    = local.project_id
-  role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
-  depends_on = [google_project_iam_member.search_data_index_scheduler_event_receiving]
-}
+#resource "google_project_iam_member" "search_data_index_scheduler_artifactregistry_reader" {
+#  project    = local.project_id
+#  role       = "roles/artifactregistry.reader"
+#  member     = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
+#  depends_on = [google_project_iam_member.search_data_index_scheduler_event_receiving]
+#}
 
 resource "google_artifact_registry_repository" "dev_repository" {
   location      = local.gcp_region
