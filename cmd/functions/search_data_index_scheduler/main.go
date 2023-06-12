@@ -60,7 +60,7 @@ func main() {
 
 	if err = dataManager.DB().PingContext(ctx); err != nil {
 		cancel()
-		log.Fatal(observability.PrepareError(err, span, "pinging database at %s", cfg.Database.ConnectionDetails))
+		log.Fatal(observability.PrepareError(err, span, "pinging database"))
 	}
 
 	cancel()

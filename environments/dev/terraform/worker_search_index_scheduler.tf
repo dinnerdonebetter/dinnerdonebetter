@@ -124,6 +124,16 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
         image = format("%s-docker.pkg.dev/%s/%s/search-data-index-scheduler", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
         env {
+          name  = "DINNER_DONE_BETTER_DATABASE_USER"
+          value = google_sql_user.api_user.name
+        }
+
+        env {
+          name  = "DINNER_DONE_BETTER_DATABASE_NAME"
+          value = local.database_name
+        }
+
+        env {
           name  = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
           value = google_sql_database_instance.dev.connection_name
         }
