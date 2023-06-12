@@ -277,11 +277,9 @@ func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	rows, err := q.getRows(ctx, q.db, "meals needing indexing", mealsNeedingIndexingQuery, nil)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing meals list retrieval query")
 	}
 
 	return q.scanIDs(ctx, rows)

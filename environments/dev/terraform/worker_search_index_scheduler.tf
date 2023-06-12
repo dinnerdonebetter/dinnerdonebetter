@@ -18,24 +18,6 @@ locals {
   search_data_index_scheduler_database_username = "search_data_index_scheduler_db_user"
 }
 
-#resource "google_pubsub_topic" "search_data_index_scheduler_topic" {
-#  name = "search_data_index_scheduler_work"
-#}
-
-#resource "google_cloud_scheduler_job" "search_data_index_scheduling" {
-#  project = local.project_id
-#  region  = local.gcp_region
-#  name    = "search-data-index-scheduler"
-#
-#  schedule  = "*/10 * * * *" # every ten minutes
-#  time_zone = "America/Chicago"
-#
-#  pubsub_target {
-#    topic_name = google_pubsub_topic.search_data_index_scheduler_topic.id
-#    data       = base64encode("{}")
-#  }
-#}
-
 resource "google_storage_bucket" "search_data_index_scheduler_bucket" {
   name     = "search-data-index-scheduler-cloud-function"
   location = "US"
@@ -110,68 +92,6 @@ resource "google_project_iam_member" "search_data_index_scheduler_artifactregist
   member     = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
   depends_on = [google_project_iam_member.search_data_index_scheduler_event_receiving]
 }
-
-#resource "google_cloudfunctions2_function" "search_data_index_scheduler" {
-#  depends_on = [
-#    google_cloud_scheduler_job.search_data_index_scheduling,
-#    google_project_iam_member.search_data_index_scheduler_event_receiving,
-#    google_project_iam_member.search_data_index_scheduler_artifactregistry_reader,
-#  ]
-#
-#  name        = "search-data-index-scheduler"
-#  description = "Search Data Index Scheduler"
-#  location    = local.gcp_region
-#
-#  build_config {
-#    runtime     = local.go_runtime
-#    entry_point = "ScheduleIndexOperation"
-#
-#    source {
-#      storage_source {
-#        bucket = google_storage_bucket.search_data_index_scheduler_bucket.name
-#        object = google_storage_bucket_object.search_data_index_scheduler_archive.name
-#      }
-#    }
-#  }
-#
-#  service_config {
-#    available_memory               = "128Mi"
-#    ingress_settings               = "ALLOW_INTERNAL_ONLY"
-#    all_traffic_on_latest_revision = true
-#    service_account_email          = google_service_account.search_data_index_scheduler_user_service_account.email
-#
-#    environment_variables = {
-#      DINNER_DONE_BETTER_SERVICE_ENVIRONMENT = local.environment,
-#      # TODO: use the search_data_index_scheduler_user for this, currently it has permission denied for accessing tables
-#      # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
-#      # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
-#      DINNER_DONE_BETTER_DATABASE_USER = google_sql_user.api_user.name,
-#      DINNER_DONE_BETTER_DATABASE_NAME = local.database_name,
-#      // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.
-#      // You have to go into the Cloud Run interface and deploy a new revision with a database connection, which will persist upon further deployments.
-#      DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
-#      GOOGLE_CLOUD_SECRET_STORE_PREFIX                     = format("projects/%d/secrets", data.google_project.project.number)
-#      GOOGLE_CLOUD_PROJECT_ID                              = data.google_project.project.project_id
-#      DATA_CHANGES_TOPIC_NAME                              = google_pubsub_topic.data_changes_topic.name
-#      SEARCH_INDEXING_TOPIC_NAME                           = google_pubsub_topic.search_index_requests_topic.name
-#    }
-#
-#    secret_environment_variables {
-#      key        = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
-#      project_id = local.project_id
-#      secret     = google_secret_manager_secret.api_user_database_password.secret_id
-#      version    = "latest"
-#    }
-#  }
-#
-#  event_trigger {
-#    trigger_region        = local.gcp_region
-#    event_type            = local.pubsub_topic_publish_event
-#    pubsub_topic          = google_pubsub_topic.search_data_index_scheduler_topic.id
-#    retry_policy          = "RETRY_POLICY_RETRY"
-#    service_account_email = google_service_account.search_data_index_scheduler_user_service_account.email
-#  }
-#}
 
 resource "google_artifact_registry_repository" "dev_repository" {
   location      = local.gcp_region

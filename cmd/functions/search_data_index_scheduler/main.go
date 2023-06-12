@@ -38,6 +38,8 @@ func main() {
 		log.Fatal(fmt.Errorf("error getting config: %w", err))
 	}
 
+	logger = logger.WithValue("commit", cfg.Commit())
+
 	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if err != nil {
 		logger.Error(err, "initializing tracer")
@@ -82,7 +84,6 @@ func main() {
 	logger.Info("index type chosen")
 
 	var actionFunc func(context.Context) ([]string, error)
-
 	switch chosenIndex {
 	case search.IndexTypeValidPreparations:
 		actionFunc = dataManager.GetValidPreparationIDsThatNeedSearchIndexing
@@ -107,7 +108,7 @@ func main() {
 		ids, err = actionFunc(ctx)
 		if err != nil {
 			if !errors.Is(err, sql.ErrNoRows) {
-				observability.AcknowledgeError(err, logger, span, "getting valid ingredient state IDs that need search indexing")
+				log.Fatal(observability.PrepareError(err, span, "getting %s IDs that need search indexing", chosenIndex))
 			}
 			return
 		}

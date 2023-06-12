@@ -414,11 +414,9 @@ func (q *Querier) GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Contex
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	rows, err := q.getRows(ctx, q.db, "valid ingredients needing indexing", validIngredientsNeedingIndexingQuery, nil)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid ingredients list retrieval query")
 	}
 
 	return q.scanIDs(ctx, rows)

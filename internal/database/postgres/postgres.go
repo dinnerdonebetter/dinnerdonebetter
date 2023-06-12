@@ -215,11 +215,11 @@ func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor
 
 	rows, err := querier.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing read query")
+		return nil, observability.PrepareError(err, span, "performing read query")
 	}
 
-	if rowsErr := rows.Err(); rowsErr != nil {
-		return nil, observability.PrepareError(rowsErr, span, "scanning results")
+	if err = rows.Err(); err != nil {
+		return nil, observability.PrepareError(err, span, "scanning results")
 	}
 
 	if q.logQueries {
