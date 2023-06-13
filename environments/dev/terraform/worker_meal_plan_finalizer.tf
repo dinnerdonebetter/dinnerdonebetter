@@ -57,8 +57,8 @@ resource "google_project_iam_member" "meal_plan_finalizer_user" {
 }
 
 resource "google_cloud_run_v2_job" "meal_plan_finalizer" {
-  name        = "meal-plan-finalizer"
-  location    = local.gcp_region
+  name     = "meal-plan-finalizer"
+  location = local.gcp_region
 
   template {
     task_count  = 1
@@ -110,11 +110,6 @@ resource "google_cloud_run_v2_job" "meal_plan_finalizer" {
         }
 
         env {
-          name  = "SEARCH_INDEXING_TOPIC_NAME"
-          value = google_pubsub_topic.search_index_requests_topic.name
-        }
-
-        env {
           name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
           value_source {
             secret_key_ref {
@@ -150,9 +145,9 @@ resource "google_cloud_run_v2_job" "meal_plan_finalizer" {
 }
 
 resource "google_cloud_scheduler_job" "meal_plan_finalization" {
-  project = local.project_id
-  region  = local.gcp_region
-  name    = "meal-plan-finalizer"
+  project          = local.project_id
+  region           = local.gcp_region
+  name             = "meal-plan-finalizer"
   description      = "Runs the meal plan finalizer every 10 minutes"
   schedule         = "*/10 * * * *"
   time_zone        = "America/Chicago"
