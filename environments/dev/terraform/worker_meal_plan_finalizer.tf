@@ -11,6 +11,12 @@ resource "google_project_iam_custom_role" "meal_plan_finalizer_role" {
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
+    "eventarc.events.receiveAuditLogWritten",
+    "eventarc.events.receiveEvent",
+    "run.jobs.run",
+    "run.routes.invoke",
+    "artifactregistry.dockerimages.get",
+    "artifactregistry.dockerimages.list",
   ]
 }
 
@@ -90,34 +96,7 @@ resource "google_sql_user" "meal_plan_finalizer_user" {
   password = random_password.meal_plan_finalizer_user_database_password.result
 }
 
-# Permissions on the service account used by the function and Eventarc trigger
-resource "google_project_iam_member" "meal_plan_finalizer_invoking" {
-  project = local.project_id
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
-}
-
-resource "google_project_iam_member" "meal_plan_finalizer_event_receiving" {
-  project    = local.project_id
-  role       = "roles/eventarc.eventReceiver"
-  member     = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
-  depends_on = [google_project_iam_member.meal_plan_finalizer_invoking]
-}
-
-resource "google_project_iam_member" "meal_plan_finalizer_artifactregistry_reader" {
-  project    = local.project_id
-  role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${google_service_account.meal_plan_finalizer_user_service_account.email}"
-  depends_on = [google_project_iam_member.meal_plan_finalizer_event_receiving]
-}
-
 resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
-  depends_on = [
-    google_cloud_scheduler_job.meal_plan_finalization,
-    google_project_iam_member.meal_plan_finalizer_event_receiving,
-    google_project_iam_member.meal_plan_finalizer_artifactregistry_reader,
-  ]
-
   name        = "meal-plan-finalizer"
   description = "Meal Plan Finalizer"
   location    = local.gcp_region
@@ -132,6 +111,7 @@ resource "google_cloudfunctions2_function" "meal_plan_finalizer" {
         object = google_storage_bucket_object.meal_plan_finalizer_archive.name
       }
     }
+    worker_pool = google_cloudbuild_worker_pool.pool.id
   }
 
   service_config {

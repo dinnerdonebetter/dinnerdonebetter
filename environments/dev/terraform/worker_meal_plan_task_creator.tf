@@ -11,6 +11,12 @@ resource "google_project_iam_custom_role" "meal_plan_task_creator_role" {
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
+    "eventarc.events.receiveAuditLogWritten",
+    "eventarc.events.receiveEvent",
+    "run.jobs.run",
+    "run.routes.invoke",
+    "artifactregistry.dockerimages.get",
+    "artifactregistry.dockerimages.list",
   ]
 }
 
@@ -64,60 +70,8 @@ resource "google_project_iam_member" "meal_plan_task_creator_user" {
   member  = format("serviceAccount:%s", google_service_account.meal_plan_task_creator_user_service_account.email)
 }
 
-resource "random_password" "meal_plan_task_creator_user_database_password" {
-  length           = 64
-  special          = true
-  override_special = "#$*-_=+[]"
-}
-
-resource "google_secret_manager_secret" "meal_plan_task_creator_user_database_password" {
-  secret_id = "meal_plan_task_creator_user_database_password"
-
-  replication {
-    automatic = true
-  }
-}
-
-
-resource "google_sql_user" "meal_plan_task_creator_user" {
-  name     = local.meal_plan_task_creator_database_username
-  instance = google_sql_database_instance.dev.name
-  password = random_password.meal_plan_task_creator_user_database_password.result
-}
-
-resource "google_secret_manager_secret_version" "meal_plan_task_creator_user_database_password" {
-  secret = google_secret_manager_secret.meal_plan_task_creator_user_database_password.id
-
-  secret_data = random_password.meal_plan_task_creator_user_database_password.result
-}
-
-# Permissions on the service account used by the function and Eventarc trigger
-resource "google_project_iam_member" "meal_plan_task_creator_invoking" {
-  project = local.project_id
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.meal_plan_task_creator_user_service_account.email}"
-}
-
-resource "google_project_iam_member" "meal_plan_task_creator_event_receiving" {
-  project    = local.project_id
-  role       = "roles/eventarc.eventReceiver"
-  member     = "serviceAccount:${google_service_account.meal_plan_task_creator_user_service_account.email}"
-  depends_on = [google_project_iam_member.meal_plan_task_creator_invoking]
-}
-
-resource "google_project_iam_member" "meal_plan_task_creator_artifactregistry_reader" {
-  project    = local.project_id
-  role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${google_service_account.meal_plan_task_creator_user_service_account.email}"
-  depends_on = [google_project_iam_member.meal_plan_task_creator_event_receiving]
-}
 
 resource "google_cloudfunctions2_function" "meal_plan_task_creator" {
-  depends_on = [
-    google_project_iam_member.meal_plan_task_creator_event_receiving,
-    google_project_iam_member.meal_plan_task_creator_artifactregistry_reader,
-  ]
-
   name        = "meal-plan-task-creation"
   description = "Meal Plan Task Creator"
   location    = local.gcp_region
@@ -139,6 +93,7 @@ resource "google_cloudfunctions2_function" "meal_plan_task_creator" {
         object = google_storage_bucket_object.meal_plan_task_creator_archive.name
       }
     }
+    worker_pool = google_cloudbuild_worker_pool.pool.id
   }
 
   service_config {

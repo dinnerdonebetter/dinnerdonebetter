@@ -14,6 +14,12 @@ resource "google_project_iam_custom_role" "search_indexer_role" {
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
+    "eventarc.events.receiveAuditLogWritten",
+    "eventarc.events.receiveEvent",
+    "run.jobs.run",
+    "run.routes.invoke",
+    "artifactregistry.dockerimages.get",
+    "artifactregistry.dockerimages.list",
   ]
 }
 
@@ -39,34 +45,6 @@ resource "google_service_account" "search_indexer_user_service_account" {
   display_name = "Search Indexer Worker"
 }
 
-# Permissions on the service account used by the function and Eventarc trigger
-resource "google_project_iam_member" "search_indexer_invoking" {
-  project = local.project_id
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.search_indexer_user_service_account.email}"
-}
-
-resource "google_project_iam_member" "search_indexer_secret_accessor" {
-  project    = local.project_id
-  role       = "roles/secretmanager.secretAccessor"
-  member     = "serviceAccount:${google_service_account.search_indexer_user_service_account.email}"
-  depends_on = [google_project_iam_member.search_indexer_invoking]
-}
-
-resource "google_project_iam_member" "search_indexer_event_receiving" {
-  project    = local.project_id
-  role       = "roles/eventarc.eventReceiver"
-  member     = "serviceAccount:${google_service_account.search_indexer_user_service_account.email}"
-  depends_on = [google_project_iam_member.search_indexer_secret_accessor]
-}
-
-resource "google_project_iam_member" "search_indexer_artifactregistry_reader" {
-  project    = local.project_id
-  role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${google_service_account.search_indexer_user_service_account.email}"
-  depends_on = [google_project_iam_member.search_indexer_event_receiving]
-}
-
 resource "google_project_iam_member" "search_indexer_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.search_indexer_role.id
@@ -75,8 +53,6 @@ resource "google_project_iam_member" "search_indexer_user" {
 
 resource "google_cloudfunctions2_function" "search_indexer" {
   depends_on = [
-    google_project_iam_member.search_indexer_event_receiving,
-    google_project_iam_member.search_indexer_artifactregistry_reader,
     google_secret_manager_secret.algolia_api_key,
     google_secret_manager_secret.algolia_application_id,
   ]
