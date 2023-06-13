@@ -35,13 +35,6 @@ resource "google_project_iam_member" "search_data_index_scheduler_user" {
   member  = format("serviceAccount:%s", google_service_account.search_data_index_scheduler_user_service_account.email)
 }
 
-resource "google_artifact_registry_repository" "dev_repository" {
-  location      = local.gcp_region
-  repository_id = "containers"
-  description   = "the container images for the dev environment"
-  format        = "DOCKER"
-}
-
 resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
   name     = "search-data-index-scheduler"
   location = local.gcp_region

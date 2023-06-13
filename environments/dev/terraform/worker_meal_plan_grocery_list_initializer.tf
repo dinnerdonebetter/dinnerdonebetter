@@ -115,7 +115,6 @@ resource "google_cloudfunctions2_function" "meal_plan_grocery_list_initializer" 
         object = google_storage_bucket_object.meal_plan_grocery_list_initializer_archive.name
       }
     }
-    worker_pool = google_cloudbuild_worker_pool.pool.id
   }
 
   service_config {

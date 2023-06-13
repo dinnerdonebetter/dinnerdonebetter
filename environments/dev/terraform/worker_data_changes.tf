@@ -74,7 +74,6 @@ resource "google_cloudfunctions2_function" "data_changes" {
         object = google_storage_bucket_object.data_changes_archive.name
       }
     }
-    worker_pool = google_cloudbuild_worker_pool.pool.id
   }
 
   service_config {

@@ -21,11 +21,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search"
 	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 
+	"github.com/hashicorp/go-multierror"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
-func main() {
+func doTheThing() error {
 	ctx := context.Background()
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
@@ -45,8 +46,8 @@ func main() {
 		logger.Error(err, "initializing tracer")
 	}
 	otel.SetTracerProvider(tracerProvider)
-
 	tracer := tracing.NewTracer(tracerProvider.Tracer("search_indexer_cloud_function"))
+
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -55,37 +56,34 @@ func main() {
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, &cfg.Database, tracerProvider)
 	if err != nil {
 		cancel()
-		log.Fatal(observability.PrepareError(err, span, "establishing database connection"))
+		return observability.PrepareError(err, span, "establishing database connection")
 	}
 
 	if err = dataManager.DB().PingContext(ctx); err != nil {
 		cancel()
-		log.Fatal(observability.PrepareError(err, span, "pinging database"))
+		return observability.PrepareError(err, span, "pinging database")
 	}
+	defer dataManager.Close()
 
 	cancel()
-	defer dataManager.Close()
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
-		log.Fatal(observability.PrepareError(err, span, "configuring queue manager"))
+		return observability.PrepareError(err, span, "configuring queue manager")
 	}
-
 	defer publisherProvider.Close()
 
 	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("SEARCH_INDEXING_TOPIC_NAME"))
 	if err != nil {
-		log.Fatal(observability.PrepareError(err, span, "configuring search indexing publisher"))
+		return observability.PrepareError(err, span, "configuring search indexing publisher")
 	}
-
 	defer searchDataIndexPublisher.Stop()
 
-	var ids []string
-
 	// figure out what records to join
+	//nolint:gosec // not important to use crypto/rand here
 	chosenIndex := indexing.AllIndexTypes[rand.Intn(len(indexing.AllIndexTypes))]
-	logger = logger.WithValue("chosen_index_type", chosenIndex)
 
+	logger = logger.WithValue("chosen_index_type", chosenIndex)
 	logger.Info("index type chosen")
 
 	var actionFunc func(context.Context) ([]string, error)
@@ -106,33 +104,39 @@ func main() {
 		actionFunc = dataManager.GetValidIngredientStateIDsThatNeedSearchIndexing
 	default:
 		logger.Info("unhandled index type chosen, exiting")
-		return
+		return nil
 	}
 
-	if actionFunc != nil {
-		ids, err = actionFunc(ctx)
-		if err != nil {
-			if !errors.Is(err, sql.ErrNoRows) {
-				log.Fatal(observability.PrepareError(err, span, "getting %s IDs that need search indexing", chosenIndex))
-			}
-			return
+	var ids []string
+	ids, err = actionFunc(ctx)
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			observability.AcknowledgeError(err, logger, span, "getting %s IDs that need search indexing", chosenIndex)
+			return err
 		}
-	} else {
-		logger.Info("unspecified action function, exiting")
-		return
+		return nil
 	}
 
 	if len(ids) > 0 {
 		logger.WithValue("count", len(ids)).Info("publishing search index requests")
 	}
 
+	var errs *multierror.Error
 	for _, id := range ids {
 		indexReq := &indexing.IndexRequest{
 			RowID:     id,
 			IndexType: chosenIndex,
 		}
 		if err = searchDataIndexPublisher.Publish(ctx, indexReq); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing search index request")
+			errs = multierror.Append(errs, err)
 		}
+	}
+
+	return errs.ErrorOrNil()
+}
+
+func main() {
+	if err := doTheThing(); err != nil {
+		log.Fatal(err)
 	}
 }

@@ -67,7 +67,6 @@ resource "google_cloudfunctions2_function" "outbound_emailer" {
         object = google_storage_bucket_object.outbound_emailer_archive.name
       }
     }
-    worker_pool = google_cloudbuild_worker_pool.pool.id
   }
 
   service_config {
