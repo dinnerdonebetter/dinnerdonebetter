@@ -15,6 +15,12 @@ resource "google_project_iam_custom_role" "search_data_index_scheduler_role" {
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
+    "eventarc.events.receiveAuditLogWritten",
+    "eventarc.events.receiveEvent",
+    "run.jobs.run",
+    "run.routes.invoke",
+    "artifactregistry.dockerimages.get",
+    "artifactregistry.dockerimages.list",
   ]
 }
 
