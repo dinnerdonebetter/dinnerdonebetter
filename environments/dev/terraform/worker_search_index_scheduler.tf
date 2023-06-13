@@ -35,70 +35,6 @@ resource "google_project_iam_member" "search_data_index_scheduler_user" {
   member  = format("serviceAccount:%s", google_service_account.search_data_index_scheduler_user_service_account.email)
 }
 
-resource "google_storage_bucket" "search_data_index_scheduler_bucket" {
-  name     = "search-data-index-scheduler-cloud-function"
-  location = "US"
-}
-
-data "archive_file" "search_data_index_scheduler_function" {
-  type        = "zip"
-  source_dir  = "${path.module}/search_data_index_scheduler_cloud_function"
-  output_path = "${path.module}/search_data_index_scheduler_cloud_function.zip"
-}
-
-resource "google_storage_bucket_object" "search_data_index_scheduler_archive" {
-  name   = format("search_data_index_scheduler_function-%s.zip", data.archive_file.search_data_index_scheduler_function.output_md5)
-  bucket = google_storage_bucket.search_data_index_scheduler_bucket.name
-  source = "${path.module}/search_data_index_scheduler_cloud_function.zip"
-}
-
-#resource "random_password" "search_data_index_scheduler_user_database_password" {
-#  length           = 64
-#  special          = true
-#  override_special = "#$*-_=+[]"
-#}
-#
-#resource "google_secret_manager_secret" "search_data_index_scheduler_user_database_password" {
-#  secret_id = "search_data_index_scheduler_user_database_password"
-#
-#  replication {
-#    automatic = true
-#  }
-#}
-#
-#resource "google_secret_manager_secret_version" "search_data_index_scheduler_user_database_password" {
-#  secret = google_secret_manager_secret.search_data_index_scheduler_user_database_password.id
-#
-#  secret_data = random_password.search_data_index_scheduler_user_database_password.result
-#}
-#
-#resource "google_sql_user" "search_data_index_scheduler_user" {
-#  name     = local.search_data_index_scheduler_database_username
-#  instance = google_sql_database_instance.dev.name
-#  password = random_password.search_data_index_scheduler_user_database_password.result
-#}
-
-# Permissions on the service account used by the function and Eventarc trigger
-#resource "google_project_iam_member" "search_data_index_scheduler_invoking" {
-#  project = local.project_id
-#  role    = "roles/run.invoker"
-#  member  = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
-#}
-
-#resource "google_project_iam_member" "search_data_index_scheduler_event_receiving" {
-#  project    = local.project_id
-#  role       = "roles/eventarc.eventReceiver"
-#  member     = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
-#  depends_on = [google_project_iam_member.search_data_index_scheduler_invoking]
-#}
-
-#resource "google_project_iam_member" "search_data_index_scheduler_artifactregistry_reader" {
-#  project    = local.project_id
-#  role       = "roles/artifactregistry.reader"
-#  member     = "serviceAccount:${google_service_account.search_data_index_scheduler_user_service_account.email}"
-#  depends_on = [google_project_iam_member.search_data_index_scheduler_event_receiving]
-#}
-
 resource "google_artifact_registry_repository" "dev_repository" {
   location      = local.gcp_region
   repository_id = "containers"
@@ -209,7 +145,6 @@ resource "google_cloud_scheduler_job" "run_data_index_scheduler" {
       service_account_email = google_service_account.search_data_index_scheduler_user_service_account.email
     }
   }
-
 
   # Use an explicit depends_on clause to wait until API is enabled
   depends_on = [
