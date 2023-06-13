@@ -86,6 +86,16 @@ jobs:
           docker push gcr.io/dinner-done-better-dev/api_server:${{  github.sha }}
           docker push gcr.io/dinner-done-better-dev/api_server:latest
 
+      - name: Build meal plan finalizer container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+
+      - name: Push meal plan finalizer container
+        run: |
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: environments/dev/terraform
