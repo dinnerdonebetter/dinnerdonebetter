@@ -14,7 +14,8 @@ SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.1
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
-CLOUD_FUNCTIONS               := data_changes outbound_emailer meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_indexer search_data_index_scheduler
+CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
+CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
 
 ## non-PHONY folders/files
@@ -70,8 +71,11 @@ vendor:
 	if [ ! -f go.mod ]; then go mod init; fi
 	go mod tidy
 	go mod vendor
-	for cloudFunction in $(CLOUD_FUNCTIONS); do \
-  		(cd cmd/functions/$$cloudFunction && go mod tidy) \
+	for thing in $(CLOUD_FUNCTIONS); do \
+  		(cd cmd/functions/$$thing && go mod tidy) \
+	done
+	for thing in $(CLOUD_JOB); do \
+  		(cd cmd/jobs/$$thing && go mod tidy) \
 	done
 
 .PHONY: revendor
@@ -209,14 +213,11 @@ wipe_docker:
 .PHONY: docker_wipe
 docker_wipe: wipe_docker
 
-.PHONY: lintegration_tests # this is just a handy lil' helper I use sometimes
-lintegration_tests: lint clear integration-tests
+.PHONY: integration-tests
+integration-tests: integration_tests
 
 .PHONY: integration_tests
 integration_tests: integration_tests_postgres
-
-.PHONY: integration-tests
-integration-tests: integration_tests_postgres
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:

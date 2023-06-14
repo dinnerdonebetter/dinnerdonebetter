@@ -118,7 +118,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			t.Log("creating meal plan")
 			exampleMealPlan := &types.MealPlan{
 				Notes:          t.Name(),
-				Status:         string(types.AwaitingVotesMealPlanStatus),
+				Status:         string(types.MealPlanStatusAwaitingVotes),
 				VotingDeadline: now.Add(baseDeadline),
 				ElectionMethod: types.MealPlanElectionMethodSchulze,
 				Events: []*types.MealPlanEvent{
@@ -231,7 +231,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 
 			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
-			assert.Equal(t, string(types.FinalizedMealPlanStatus), createdMealPlan.Status)
+			assert.Equal(t, string(types.MealPlanStatusFinalized), createdMealPlan.Status)
 
 			for _, event := range createdMealPlan.Events {
 				selectionMade := false
@@ -308,7 +308,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			t.Log("creating meal plan")
 			exampleMealPlan := &types.MealPlan{
 				Notes:          t.Name(),
-				Status:         string(types.AwaitingVotesMealPlanStatus),
+				Status:         string(types.MealPlanStatusAwaitingVotes),
 				VotingDeadline: now.Add(baseDeadline),
 				ElectionMethod: types.MealPlanElectionMethodSchulze,
 				Events: []*types.MealPlanEvent{
@@ -393,7 +393,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
-			assert.Equal(t, string(types.AwaitingVotesMealPlanStatus), createdMealPlan.Status)
+			assert.Equal(t, string(types.MealPlanStatusAwaitingVotes), createdMealPlan.Status)
 
 			createdMealPlan.VotingDeadline = time.Now().Add(-10 * time.Hour)
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
@@ -402,7 +402,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
-			assert.Equal(t, string(types.FinalizedMealPlanStatus), createdMealPlan.Status)
+			assert.Equal(t, string(types.MealPlanStatusFinalized), createdMealPlan.Status)
 
 			for _, event := range createdMealPlan.Events {
 				selectionMade := false

@@ -316,6 +316,7 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	householdID := sessionCtxData.ActiveHouseholdID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
@@ -325,7 +326,7 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// fetch meal plan from database.
-	mealPlan, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+	mealPlan, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -336,7 +337,7 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the meal plan.
-	worked, err := s.mealPlanDataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, sessionCtxData.ActiveHouseholdID)
+	worked, err := s.mealPlanDataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, householdID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "finalizing meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -350,7 +351,7 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 		dcm := &types.DataChangeMessage{
 			EventType:   types.MealPlanFinalizedCustomerEventType,
 			MealPlan:    mealPlan,
-			HouseholdID: sessionCtxData.ActiveHouseholdID,
+			HouseholdID: householdID,
 			UserID:      sessionCtxData.Requester.UserID,
 		}
 
@@ -358,7 +359,7 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
 
-		mealPlan.Status = string(types.FinalizedMealPlanStatus)
+		mealPlan.Status = string(types.MealPlanStatusFinalized)
 
 		// encode our response and peace.
 		s.encoderDecoder.RespondWithData(ctx, res, mealPlan)
