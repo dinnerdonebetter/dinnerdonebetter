@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN go build -trimpath -o /action github.com/dinnerdonebetter/backend/cmd/functions/meal_plan_grocery_list_initializer
+RUN go build -trimpath -o /action github.com/dinnerdonebetter/backend/cmd/jobs/meal_plan_grocery_list_initializer
 
 # final stage
 FROM debian:bullseye

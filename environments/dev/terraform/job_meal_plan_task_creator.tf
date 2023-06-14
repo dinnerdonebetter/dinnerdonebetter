@@ -112,7 +112,7 @@ resource "google_cloud_run_v2_job" "meal_plan_task_creator" {
 resource "google_cloud_scheduler_job" "meal_plan_task_creator_scheduler" {
   project          = local.project_id
   region           = local.gcp_region
-  name             = "meal-plan-finalizer"
+  name             = "meal-plan-task-creator"
   description      = "Runs the meal plan task creator every 10 minutes"
   schedule         = "*/10 * * * *"
   time_zone        = "America/Chicago"
