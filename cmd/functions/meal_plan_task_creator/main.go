@@ -1,8 +1,9 @@
-package mealplanfinalizerfunction
+package main
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -17,26 +18,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
-func init() {
-	// Register a CloudEvent function with the Functions Framework
-	functions.CloudEvent("CreateMealPlanTasks", CreateMealPlanTasks)
-}
-
-// PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
-// https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
-type PubSubMessage struct {
-	Data []byte `json:"data"`
-}
-
-// CreateMealPlanTasks is our cloud function entrypoint.
-func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
+func doTheThing() error {
+	ctx := context.Background()
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
@@ -100,4 +87,10 @@ func CreateMealPlanTasks(ctx context.Context, _ event.Event) error {
 	}
 
 	return nil
+}
+
+func main() {
+	if err := doTheThing(); err != nil {
+		log.Fatal(err)
+	}
 }

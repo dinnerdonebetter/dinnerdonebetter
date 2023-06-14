@@ -97,6 +97,13 @@ jobs:
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest
 
+      - name: Build and push meal plan task creator container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: environments/dev/terraform
