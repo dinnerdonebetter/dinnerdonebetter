@@ -3,7 +3,6 @@ package workers
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
@@ -15,12 +14,11 @@ import (
 type (
 	// MealPlanFinalizationWorker finalizes meal plans.
 	MealPlanFinalizationWorker struct {
-		logger                 logging.Logger
-		tracer                 tracing.Tracer
-		encoder                encoding.ClientEncoder
-		dataManager            database.DataManager
-		postUpdatesPublisher   messagequeue.Publisher
-		analyticsEventReporter analytics.EventReporter
+		logger               logging.Logger
+		tracer               tracing.Tracer
+		encoder              encoding.ClientEncoder
+		dataManager          database.DataManager
+		postUpdatesPublisher messagequeue.Publisher
 	}
 )
 
@@ -29,18 +27,16 @@ func ProvideMealPlanFinalizationWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
 	postUpdatesPublisher messagequeue.Publisher,
-	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 ) *MealPlanFinalizationWorker {
 	n := "meal_plan_finalizer"
 
 	return &MealPlanFinalizationWorker{
-		logger:                 logging.EnsureLogger(logger).WithName(n),
-		tracer:                 tracing.NewTracer(tracerProvider.Tracer(n)),
-		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		dataManager:            dataManager,
-		postUpdatesPublisher:   postUpdatesPublisher,
-		analyticsEventReporter: analyticsEventReporter,
+		logger:               logging.EnsureLogger(logger).WithName(n),
+		tracer:               tracing.NewTracer(tracerProvider.Tracer(n)),
+		encoder:              encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
+		dataManager:          dataManager,
+		postUpdatesPublisher: postUpdatesPublisher,
 	}
 }
 

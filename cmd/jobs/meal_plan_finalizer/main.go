@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
@@ -45,13 +44,6 @@ func doTheThing() error {
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
 	defer span.End()
 
-	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
-	}
-
-	defer analyticsEventReporter.Close()
-
 	// manual db timeout until I find out what's wrong
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, &cfg.Database, tracerProvider)
@@ -81,7 +73,6 @@ func doTheThing() error {
 		logger,
 		dataManager,
 		dataChangesPublisher,
-		analyticsEventReporter,
 		tracerProvider,
 	)
 
