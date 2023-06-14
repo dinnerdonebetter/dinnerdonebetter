@@ -20,31 +20,6 @@ resource "google_project_iam_custom_role" "meal_plan_finalizer_role" {
   ]
 }
 
-locals {
-  meal_plan_finalizer_database_username = "meal_plan_finalizer_db_user"
-}
-
-resource "google_pubsub_topic" "meal_plan_finalizer_topic" {
-  name = "meal_plan_finalizer_work"
-}
-
-resource "google_storage_bucket" "meal_plan_finalizer_bucket" {
-  name     = "meal-plan-finalizer-cloud-function"
-  location = "US"
-}
-
-data "archive_file" "meal_plan_finalizer_function" {
-  type        = "zip"
-  source_dir  = "${path.module}/meal_plan_finalizer_cloud_function"
-  output_path = "${path.module}/meal_plan_finalizer_cloud_function.zip"
-}
-
-resource "google_storage_bucket_object" "meal_plan_finalizer_archive" {
-  name   = format("meal_plan_finalizer_function-%s.zip", data.archive_file.meal_plan_finalizer_function.output_md5)
-  bucket = google_storage_bucket.meal_plan_finalizer_bucket.name
-  source = "${path.module}/meal_plan_finalizer_cloud_function.zip"
-}
-
 resource "google_service_account" "meal_plan_finalizer_user_service_account" {
   account_id   = "meal-plan-finalizer-worker"
   display_name = "Meal Plans Finalizer"
@@ -114,16 +89,6 @@ resource "google_cloud_run_v2_job" "meal_plan_finalizer" {
           value_source {
             secret_key_ref {
               secret  = google_secret_manager_secret.api_user_database_password.secret_id
-              version = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
-          value_source {
-            secret_key_ref {
-              secret  = google_secret_manager_secret.segment_api_token.secret_id
               version = "latest"
             }
           }

@@ -1,7 +1,3 @@
-locals {
-  search_data_index_scheduler_database_username = "search_data_index_scheduler_db_user"
-}
-
 resource "google_project_iam_custom_role" "search_data_index_scheduler_role" {
   role_id     = "search_data_index_scheduler_role"
   title       = "Search data index scheduler role"
