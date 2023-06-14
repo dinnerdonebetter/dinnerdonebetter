@@ -76,23 +76,17 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Build API server container
+      - name: Build and push API server container
         run: |
           docker build --tag gcr.io/dinner-done-better-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker build --tag gcr.io/dinner-done-better-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-
-      - name: Push API server container
-        run: |
           docker push gcr.io/dinner-done-better-dev/api_server:${{  github.sha }}
           docker push gcr.io/dinner-done-better-dev/api_server:latest
 
-      - name: Build meal plan finalizer container
+      - name: Build and push meal plan finalizer container
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
-
-      - name: Push meal plan finalizer container
-        run: |
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest
 
@@ -100,13 +94,10 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: environments/dev/terraform
 
-      - name: Build search data index scheduler container
+      - name: Build and push search data index scheduler container
         run: |
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
           docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
-
-      - name: Push search data index scheduler container
-        run: |
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest
 

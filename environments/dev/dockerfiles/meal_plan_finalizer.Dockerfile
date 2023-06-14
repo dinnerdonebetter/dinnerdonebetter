@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN go build -trimpath -o /action github.com/dinnerdonebetter/backend/cmd/functions/meal_plan_finalizer
+RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /action github.com/dinnerdonebetter/backend/cmd/functions/meal_plan_finalizer
 
 # final stage
 FROM debian:bullseye

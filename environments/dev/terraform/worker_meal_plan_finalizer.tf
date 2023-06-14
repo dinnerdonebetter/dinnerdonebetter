@@ -77,7 +77,7 @@ resource "google_cloud_run_v2_job" "meal_plan_finalizer" {
       }
 
       containers {
-        image = format("%s-docker.pkg.dev/%s/%s/meal-plan-finalizer-worker", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
+        image = format("%s-docker.pkg.dev/%s/%s/meal-plan-finalizer", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
         env {
           name  = "DINNER_DONE_BETTER_DATABASE_USER"
