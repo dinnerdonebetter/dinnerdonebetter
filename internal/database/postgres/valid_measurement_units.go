@@ -354,11 +354,9 @@ func (q *Querier) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.C
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
-
 	rows, err := q.getRows(ctx, q.db, "valid measurement units needing indexing", validMeasurementUnitsNeedingIndexingQuery, nil)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid measurement units list retrieval query")
 	}
 
 	return q.scanIDs(ctx, rows)

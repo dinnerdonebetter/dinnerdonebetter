@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
@@ -61,11 +60,6 @@ func main() {
 
 	cfg.Database.RunMigrations = false
 
-	cdp, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
 		log.Fatal(err)
@@ -87,7 +81,6 @@ func main() {
 		logger,
 		dataManager,
 		dataChangesPublisher,
-		cdp,
 		tracerProvider,
 	)
 

@@ -502,7 +502,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
-			types.AwaitingVotesMealPlanStatus,
+			types.MealPlanStatusAwaitingVotes,
 			exampleInput.VotingDeadline,
 			exampleInput.BelongsToHousehold,
 			exampleInput.CreatedByUser,
@@ -610,7 +610,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
-			types.AwaitingVotesMealPlanStatus,
+			types.MealPlanStatusAwaitingVotes,
 			exampleInput.VotingDeadline,
 			exampleInput.BelongsToHousehold,
 			exampleInput.CreatedByUser,
@@ -663,7 +663,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		args := []any{
 			exampleInput.ID,
 			exampleInput.Notes,
-			types.AwaitingVotesMealPlanStatus,
+			types.MealPlanStatusAwaitingVotes,
 			exampleInput.VotingDeadline,
 			exampleInput.BelongsToHousehold,
 			exampleInput.CreatedByUser,
@@ -1012,7 +1012,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		}
 
 		finalizeOptionsArgs := []any{
-			types.FinalizedMealPlanStatus,
+			types.MealPlanStatusFinalized,
 			exampleMealPlan.ID,
 		}
 
@@ -1029,7 +1029,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with only some votes in", func(t *testing.T) {
+	T.Run("with only some votes in, and voting deadline has passed", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -1058,6 +1058,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		}
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
+		exampleMealPlan.VotingDeadline = time.Now().Add(-1 * time.Hour).Round(time.Second)
 		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
 		exampleMealPlan.Events = []*types.MealPlanEvent{
 			{

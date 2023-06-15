@@ -1,13 +1,13 @@
-package mealplanfinalizerfunction
+package main
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
 
-	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
@@ -17,20 +17,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
-func init() {
-	// Register a CloudEvent function with the Functions Framework
-	functions.CloudEvent("FinalizeMealPlans", FinalizeMealPlans)
-}
-
-// FinalizeMealPlans is our cloud function entrypoint.
-func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
+func doTheThing() error {
+	ctx := context.Background()
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
@@ -51,13 +43,6 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 
 	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
 	defer span.End()
-
-	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
-	}
-
-	defer analyticsEventReporter.Close()
 
 	// manual db timeout until I find out what's wrong
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
@@ -88,13 +73,12 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 		logger,
 		dataManager,
 		dataChangesPublisher,
-		analyticsEventReporter,
 		tracerProvider,
 	)
 
 	changedCount, err := mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx, nil)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "finalizing meal plans: %w")
+		return observability.PrepareAndLogError(err, logger, span, "finalizing meal plans")
 	}
 
 	if changedCount > 0 {
@@ -102,4 +86,10 @@ func FinalizeMealPlans(ctx context.Context, _ event.Event) error {
 	}
 
 	return nil
+}
+
+func main() {
+	if err := doTheThing(); err != nil {
+		log.Fatal(err)
+	}
 }

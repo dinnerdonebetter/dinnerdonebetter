@@ -310,10 +310,6 @@ resource "google_cloud_run_domain_mapping" "api_server_domain_mapping" {
   }
 }
 
-output "instance_ip_addr" {
-  value = google_cloud_run_domain_mapping.api_server_domain_mapping.status
-}
-
 resource "cloudflare_record" "api_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "api.dinnerdonebetter.dev"

@@ -105,6 +105,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 		},
 	}
 
+	// TODO: get this from the env var DATA_CHANGES_TOPIC_NAME, dump GOOGLE_CLOUD_SECRET_STORE_PREFIX
 	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
 	if err != nil {
 		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)
@@ -203,13 +204,6 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		return nil, errors.New("config is nil")
 	}
 
-	rawPort := os.Getenv(gcpPortEnvVarKey)
-	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
-	if portParseErr != nil {
-		return nil, fmt.Errorf("parsing port: %w", portParseErr)
-	}
-	cfg.Server.HTTPPort = uint16(port)
-
 	socketDir, isSet := os.LookupEnv(gcpDatabaseSocketDirEnvVarKey)
 	if !isSet {
 		socketDir = googleCloudCloudSQLSocket
@@ -267,6 +261,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 		return nil, err
 	}
 
+	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
@@ -283,6 +278,7 @@ func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.
 		return nil, err
 	}
 
+	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
@@ -299,6 +295,7 @@ func GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(c
 		return nil, err
 	}
 
+	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
@@ -315,6 +312,7 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 		return nil, err
 	}
 
+	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {

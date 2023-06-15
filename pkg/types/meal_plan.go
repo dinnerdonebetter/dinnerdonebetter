@@ -25,10 +25,10 @@ const (
 	// MealPlanFinalizedCustomerEventType indicates a meal plan was finalized.
 	MealPlanFinalizedCustomerEventType CustomerEventType = "meal_plan_finalized"
 
-	// AwaitingVotesMealPlanStatus indicates a household invitation is pending.
-	AwaitingVotesMealPlanStatus MealPlanStatus = "awaiting_votes"
-	// FinalizedMealPlanStatus indicates a household invitation was accepted.
-	FinalizedMealPlanStatus MealPlanStatus = "finalized"
+	// MealPlanStatusAwaitingVotes indicates a household invitation is pending.
+	MealPlanStatusAwaitingVotes MealPlanStatus = "awaiting_votes"
+	// MealPlanStatusFinalized indicates a household invitation was accepted.
+	MealPlanStatusFinalized MealPlanStatus = "finalized"
 )
 
 func init() {

@@ -15,6 +15,12 @@ resource "google_project_iam_custom_role" "data_changes_worker_role" {
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
+    "eventarc.events.receiveAuditLogWritten",
+    "eventarc.events.receiveEvent",
+    "run.jobs.run",
+    "run.routes.invoke",
+    "artifactregistry.dockerimages.get",
+    "artifactregistry.dockerimages.list",
   ]
 }
 
@@ -47,27 +53,6 @@ resource "google_project_iam_member" "data_changes_worker" {
   member  = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
 }
 
-resource "google_project_iam_member" "data_changes_secret_accessor" {
-  project    = local.project_id
-  role       = "roles/secretmanager.secretAccessor"
-  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-  depends_on = [google_project_iam_member.data_changes_worker]
-}
-
-resource "google_project_iam_member" "data_changes_event_receiving" {
-  project    = local.project_id
-  role       = "roles/eventarc.eventReceiver"
-  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-  depends_on = [google_project_iam_member.data_changes_secret_accessor]
-}
-
-resource "google_project_iam_member" "data_changes_artifactregistry_reader" {
-  project    = local.project_id
-  role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-  depends_on = [google_project_iam_member.data_changes_event_receiving]
-}
-
 resource "google_project_iam_member" "data_changes_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.data_changes_worker_role.id
@@ -75,11 +60,6 @@ resource "google_project_iam_member" "data_changes_user" {
 }
 
 resource "google_cloudfunctions2_function" "data_changes" {
-  depends_on = [
-    google_project_iam_member.data_changes_event_receiving,
-    google_project_iam_member.data_changes_artifactregistry_reader,
-  ]
-
   name        = "data-changes"
   location    = local.gcp_region
   description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)

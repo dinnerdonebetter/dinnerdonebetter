@@ -1,10 +1,11 @@
-package searchdataindexscheduler
+package main
 
 import (
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"strings"
@@ -20,39 +21,33 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search"
 	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
+	"github.com/hashicorp/go-multierror"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
-func init() {
-	// Register a CloudEvent function with the Functions Framework
-	functions.CloudEvent("ScheduleIndexOperation", ScheduleIndexOperation)
-}
-
-// ScheduleIndexOperation handles a search index schedule request.
-func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
+func doTheThing() error {
+	ctx := context.Background()
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		logger.Info("CEASE_OPERATION is set to true, exiting")
-		return nil
 	}
 
 	cfg, err := config.GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
-		return fmt.Errorf("error getting config: %w", err)
+		log.Fatal(fmt.Errorf("error getting config: %w", err))
 	}
+
+	logger = logger.WithValue("commit", cfg.Commit())
 
 	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if err != nil {
 		logger.Error(err, "initializing tracer")
 	}
 	otel.SetTracerProvider(tracerProvider)
-
 	tracer := tracing.NewTracer(tracerProvider.Tracer("search_indexer_cloud_function"))
+
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -61,36 +56,37 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, &cfg.Database, tracerProvider)
 	if err != nil {
 		cancel()
-		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
+		return observability.PrepareError(err, span, "establishing database connection")
 	}
 
-	cancel()
+	if err = dataManager.DB().PingContext(ctx); err != nil {
+		cancel()
+		return observability.PrepareError(err, span, "pinging database")
+	}
 	defer dataManager.Close()
+
+	cancel()
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
+		return observability.PrepareError(err, span, "configuring queue manager")
 	}
-
 	defer publisherProvider.Close()
 
 	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("SEARCH_INDEXING_TOPIC_NAME"))
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring search indexing publisher")
+		return observability.PrepareError(err, span, "configuring search indexing publisher")
 	}
-
 	defer searchDataIndexPublisher.Stop()
 
-	var ids []string
-
 	// figure out what records to join
+	//nolint:gosec // not important to use crypto/rand here
 	chosenIndex := indexing.AllIndexTypes[rand.Intn(len(indexing.AllIndexTypes))]
-	logger = logger.WithValue("chosen_index_type", chosenIndex)
 
+	logger = logger.WithValue("chosen_index_type", chosenIndex)
 	logger.Info("index type chosen")
 
 	var actionFunc func(context.Context) ([]string, error)
-
 	switch chosenIndex {
 	case search.IndexTypeValidPreparations:
 		actionFunc = dataManager.GetValidPreparationIDsThatNeedSearchIndexing
@@ -111,16 +107,13 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 		return nil
 	}
 
-	if actionFunc != nil {
-		ids, err = actionFunc(ctx)
-		if err != nil {
-			if !errors.Is(err, sql.ErrNoRows) {
-				observability.AcknowledgeError(err, logger, span, "getting valid ingredient state IDs that need search indexing")
-			}
-			return nil
+	var ids []string
+	ids, err = actionFunc(ctx)
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			observability.AcknowledgeError(err, logger, span, "getting %s IDs that need search indexing", chosenIndex)
+			return err
 		}
-	} else {
-		logger.Info("unspecified action function, exiting")
 		return nil
 	}
 
@@ -128,16 +121,22 @@ func ScheduleIndexOperation(ctx context.Context, _ event.Event) error {
 		logger.WithValue("count", len(ids)).Info("publishing search index requests")
 	}
 
+	var errs *multierror.Error
 	for _, id := range ids {
 		indexReq := &indexing.IndexRequest{
 			RowID:     id,
 			IndexType: chosenIndex,
 		}
 		if err = searchDataIndexPublisher.Publish(ctx, indexReq); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing search index request")
+			errs = multierror.Append(errs, err)
 		}
 	}
 
-	return nil
+	return errs.ErrorOrNil()
+}
 
+func main() {
+	if err := doTheThing(); err != nil {
+		log.Fatal(err)
+	}
 }

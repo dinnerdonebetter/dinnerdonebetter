@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -27,7 +26,6 @@ func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
 		zerolog.NewZerologLogger(logging.DebugLevel),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
-		&analytics.MockEventReporter{},
 		tracing.NewNoopTracerProvider(),
 	)
 	assert.NotNil(t, worker)
@@ -45,7 +43,6 @@ func TestProvideChoresWorker(T *testing.T) {
 			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
-			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)

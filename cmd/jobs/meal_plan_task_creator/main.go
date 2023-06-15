@@ -1,15 +1,15 @@
-package mealplanfinalizerfunction
+package main
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -18,20 +18,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
-func init() {
-	// Register a CloudEvent function with the Functions Framework
-	functions.CloudEvent("InitializeGroceryListsItemsForMealPlans", InitializeGroceryListsItemsForMealPlans)
-}
-
-// InitializeGroceryListsItemsForMealPlans is our cloud function entrypoint.
-func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event) error {
+func doTheThing() error {
+	ctx := context.Background()
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
@@ -39,7 +31,7 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event)
 		return nil
 	}
 
-	cfg, err := config.GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
@@ -50,7 +42,7 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event)
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_grocery_list_items_init_job")).StartSpan(ctx)
+	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_task_creator_job")).StartSpan(ctx)
 	defer span.End()
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
@@ -81,19 +73,24 @@ func InitializeGroceryListsItemsForMealPlans(ctx context.Context, _ event.Event)
 
 	defer dataChangesPublisher.Stop()
 
-	mealPlanGroceryListInitializationWorker := workers.ProvideMealPlanGroceryListInitializer(
+	mealPlanTaskCreationEnsurerWorker := workers.ProvideMealPlanTaskCreationEnsurerWorker(
 		logger,
 		dataManager,
 		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
 		dataChangesPublisher,
 		analyticsEventReporter,
 		tracerProvider,
-		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)
 
-	if err = mealPlanGroceryListInitializationWorker.InitializeGroceryListsForFinalizedMealPlans(ctx, nil); err != nil {
+	if err = mealPlanTaskCreationEnsurerWorker.CreateMealPlanTasksForFinalizedMealPlans(ctx, nil); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "handling message")
 	}
 
 	return nil
+}
+
+func main() {
+	if err := doTheThing(); err != nil {
+		log.Fatal(err)
+	}
 }

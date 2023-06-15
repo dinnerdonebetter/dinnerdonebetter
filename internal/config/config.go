@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
@@ -98,4 +99,17 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 	}
 
 	return result.ErrorOrNil()
+}
+
+func (cfg *InstanceConfig) Commit() string {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for i := range info.Settings {
+			setting := info.Settings[i]
+			if setting.Key == "vcs.revision" {
+				return setting.Value
+			}
+		}
+	}
+
+	return ""
 }
