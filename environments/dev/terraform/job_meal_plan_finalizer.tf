@@ -113,8 +113,8 @@ resource "google_cloud_scheduler_job" "meal_plan_finalization" {
   project          = local.project_id
   region           = local.gcp_region
   name             = "meal-plan-finalizer"
-  description      = "Runs the meal plan finalizer every minute"
-  schedule         = "* * * * *"
+  description      = "Runs the meal plan finalizer every 2 minutes"
+  schedule         = "*/2 * * * *"
   time_zone        = "America/Chicago"
   attempt_deadline = "320s"
 
