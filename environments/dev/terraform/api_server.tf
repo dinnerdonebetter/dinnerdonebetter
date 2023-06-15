@@ -109,8 +109,6 @@ resource "google_cloud_run_v2_service" "api_server" {
     percent = 100
   }
 
-  autogenerate_revision_name = true
-
   depends_on = [
     google_sql_database_instance.dev,
     google_service_account.api_user_service_account,
