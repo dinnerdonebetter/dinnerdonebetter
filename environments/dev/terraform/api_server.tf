@@ -67,9 +67,9 @@ data "google_iam_policy" "public_access" {
 }
 
 resource "google_cloud_run_service_iam_policy" "public_access" {
-  location = google_cloud_run_v2_service.api_server.location
-  project  = google_cloud_run_v2_service.api_server.project
-  service  = google_cloud_run_v2_service.api_server.name
+  location    = google_cloud_run_v2_service.api_server.location
+  project     = google_cloud_run_v2_service.api_server.project
+  service     = google_cloud_run_v2_service.api_server.name
   policy_data = data.google_iam_policy.public_access.policy_data
 }
 
