@@ -8,7 +8,7 @@ on: [pull_request]
 
 name: deploy
 jobs:
-  dev:
+  infrastructure:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -45,10 +45,6 @@ jobs:
         id: init
         run: terraform init
 
-      - name: Terraform Validate
-        working-directory: environments/dev/terraform
-        id: validate
-        run: terraform validate -no-color
 
       - name: Build data changes cloud function directory
         run: ./scripts/build_cloud_function.sh data_changes
@@ -64,6 +60,11 @@ jobs:
         run: |
           cp config_files/service-config.json terraform/service-config.json
 
+      - name: Terraform Validate
+        working-directory: environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
       # this has to be built before Terraform deploys the container to Cloud Run
       - name: Build and push API server container
         run: |
@@ -77,7 +78,7 @@ jobs:
         working-directory: environments/dev/terraform
 
   deploy-api-server:
-    needs: [dev]
+    needs: [infrastructure]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -100,7 +101,7 @@ jobs:
           image: 'gcr.io/dinner-done-better-dev/api_server'
 
   search-container:
-    needs: [dev]
+    needs: [infrastructure]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -130,7 +131,7 @@ jobs:
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest
 
   meal-plan-finalizer-container:
-    needs: [dev]
+    needs: [infrastructure]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -161,7 +162,7 @@ jobs:
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest
 
   meal-plan-grocery-list-init-container:
-    needs: [dev]
+    needs: [infrastructure]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -191,7 +192,7 @@ jobs:
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest
 
   meal-plan-task-creator-container:
-    needs: [dev]
+    needs: [infrastructure]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
