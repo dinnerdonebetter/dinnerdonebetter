@@ -67,10 +67,9 @@ data "google_iam_policy" "public_access" {
 }
 
 resource "google_cloud_run_service_iam_policy" "public_access" {
-  location = google_cloud_run_service.api_server.location
-  project  = google_cloud_run_service.api_server.project
-  service  = google_cloud_run_service.api_server.name
-
+  location    = google_cloud_run_v2_service.api_server.location
+  project     = google_cloud_run_v2_service.api_server.project
+  service     = google_cloud_run_v2_service.api_server.name
   policy_data = data.google_iam_policy.public_access.policy_data
 }
 
@@ -100,11 +99,19 @@ resource "google_sql_user" "api_user" {
   password = random_password.api_user_database_password.result
 }
 
-resource "google_cloud_run_service" "api_server" {
+resource "google_cloud_run_v2_service" "api_server" {
   name     = "api-server"
   location = local.gcp_region
+  ingress  = "INGRESS_TRAFFIC_ALL"
+
+  traffic {
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+    percent = 100
+  }
 
   depends_on = [
+    google_sql_database_instance.dev,
+    google_service_account.api_user_service_account,
     google_secret_manager_secret.api_user_database_password,
     google_secret_manager_secret.cookie_hash_key,
     google_secret_manager_secret.cookie_block_key,
@@ -116,182 +123,169 @@ resource "google_cloud_run_service" "api_server" {
     google_secret_manager_secret.algolia_application_id,
   ]
 
-  traffic {
-    percent         = 100
-    latest_revision = true
-  }
-
-  autogenerate_revision_name = true
-
   template {
-    spec {
-      service_account_name = google_service_account.api_user_service_account.email
+    service_account = google_service_account.api_user_service_account.email
 
-      containers {
-        image = "gcr.io/dinner-done-better-dev/api_server"
+    scaling {
+      max_instance_count = 1
+    }
 
-        resources {
-          requests = {
-            memory = "128Mi"
-          }
-        }
-
-        volume_mounts {
-          name       = "config"
-          mount_path = "/config"
-        }
-
-        env {
-          name  = "RUNNING_IN_GOOGLE_CLOUD_RUN"
-          value = "true"
-        }
-
-        env {
-          name  = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
-          value = local.environment
-        }
-
-        env {
-          name  = "GOOGLE_CLOUD_SECRET_STORE_PREFIX"
-          value = format("projects/%d/secrets", data.google_project.project.number)
-        }
-
-        env {
-          name  = "GOOGLE_CLOUD_PROJECT_ID"
-          value = data.google_project.project.project_id
-        }
-
-        env {
-          name  = "CONFIGURATION_FILEPATH"
-          value = "/config/service-config.json"
-        }
-
-        env {
-          name  = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
-          value = google_sql_database_instance.dev.connection_name
-        }
-
-        env {
-          name  = "DINNER_DONE_BETTER_DATABASE_NAME"
-          value = local.database_name
-        }
-
-        env {
-          name  = "DINNER_DONE_BETTER_DATABASE_USER"
-          value = local.api_database_username
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.api_user_database_password.secret_id
-              key  = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_COOKIE_HASH_KEY"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.cookie_hash_key.secret_id
-              key  = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_COOKIE_BLOCK_KEY"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.cookie_block_key.secret_id
-              key  = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_PASETO_LOCAL_KEY"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.paseto_local_key.secret_id
-              key  = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.data_changes_topic_name.secret_id
-              key  = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.sendgrid_api_token.secret_id
-              key  = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.segment_api_token.secret_id
-              key  = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.algolia_api_key.secret_id
-              key  = "latest"
-            }
-          }
-        }
-
-        env {
-          name = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.algolia_application_id.secret_id
-              key  = "latest"
-            }
-          }
-        }
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.dev.connection_name]
       }
+    }
 
-      volumes {
-        name = "config"
-        secret {
-          secret_name  = google_secret_manager_secret.api_service_config.secret_id
-          default_mode = 256 # 0400
-          items {
-            key  = "latest"
-            path = "service-config.json"
-            mode = 256 # 0400
-          }
+    volumes {
+      name = "config"
+      secret {
+        secret       = google_secret_manager_secret.api_service_config.secret_id
+        default_mode = 256 # 0400
+        items {
+          version = "latest"
+          path    = "service-config.json"
+          mode    = 256 # 0400
         }
       }
     }
 
+    containers {
+      image = "us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server"
 
+      env {
+        name  = "RUNNING_IN_GOOGLE_CLOUD_RUN"
+        value = "true"
+      }
 
-    metadata {
-      annotations = {
-        "autoscaling.knative.dev/maxScale"      = "1"
-        "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.dev.connection_name
+      env {
+        name  = "DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"
+        value = local.environment
+      }
+
+      env {
+        name  = "GOOGLE_CLOUD_SECRET_STORE_PREFIX"
+        value = format("projects/%d/secrets", data.google_project.project.number)
+      }
+
+      env {
+        name  = "GOOGLE_CLOUD_PROJECT_ID"
+        value = data.google_project.project.project_id
+      }
+
+      env {
+        name  = "DINNER_DONE_BETTER_DATABASE_INSTANCE_CONNECTION_NAME"
+        value = google_sql_database_instance.dev.connection_name
+      }
+
+      env {
+        name  = "DINNER_DONE_BETTER_DATABASE_NAME"
+        value = local.database_name
+      }
+
+      env {
+        name  = "DINNER_DONE_BETTER_DATABASE_USER"
+        value = local.api_database_username
+      }
+
+      env {
+        name  = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC"
+        value = google_pubsub_topic.data_changes_topic.name
+      }
+
+      env {
+        name  = "CONFIGURATION_FILEPATH"
+        value = "/config/service-config.json"
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.api_user_database_password.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_COOKIE_HASH_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.cookie_hash_key.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_COOKIE_BLOCK_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.cookie_block_key.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_PASETO_LOCAL_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.paseto_local_key.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.sendgrid_api_token.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.segment_api_token.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.algolia_api_key.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.algolia_application_id.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
+
+      volume_mounts {
+        name       = "config"
+        mount_path = "/config"
       }
     }
   }
@@ -306,7 +300,7 @@ resource "google_cloud_run_domain_mapping" "api_server_domain_mapping" {
   }
 
   spec {
-    route_name = google_cloud_run_service.api_server.name
+    route_name = google_cloud_run_v2_service.api_server.name
   }
 }
 

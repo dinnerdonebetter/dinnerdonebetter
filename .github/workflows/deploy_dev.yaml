@@ -45,7 +45,6 @@ jobs:
         id: init
         run: terraform init
 
-
       - name: Build data changes cloud function directory
         run: ./scripts/build_cloud_function.sh data_changes
 
@@ -84,13 +83,23 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push API server container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest
+
       # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
       - id: deploy-api-server
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: 'api-server'
           project_id: 'dinner-done-better-dev'
-          image: 'gcr.io/dinner-done-better-dev/api_server'
+          image: 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server'
 
   search-container:
     needs: [infrastructure]
@@ -144,7 +153,6 @@ jobs:
 
       - name: Authorize Docker push
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
-
 
       - name: Build and push meal plan finalizer container
         run: |

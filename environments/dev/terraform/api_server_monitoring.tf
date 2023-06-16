@@ -5,7 +5,7 @@ resource "google_monitoring_service" "api_service" {
   basic_service {
     service_type = "CLOUD_RUN"
     service_labels = {
-      service_name = google_cloud_run_service.api_server.name
+      service_name = google_cloud_run_v2_service.api_server.name
       location     = local.gcp_region
     }
   }
