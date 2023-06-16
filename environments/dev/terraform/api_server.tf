@@ -137,6 +137,19 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
     }
 
+    volumes {
+      name = "config"
+      secret {
+        secret       = google_secret_manager_secret.api_service_config.secret_id
+        default_mode = 256 # 0400
+        items {
+          version = "latest"
+          path    = "service-config.json"
+          mode    = 256 # 0400
+        }
+      }
+    }
+
     containers {
       image = "us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server"
 
@@ -263,6 +276,11 @@ resource "google_cloud_run_v2_service" "api_server" {
       volume_mounts {
         name       = "cloudsql"
         mount_path = "/cloudsql"
+      }
+
+      volume_mounts {
+        name       = "config"
+        mount_path = "/config"
       }
     }
   }
