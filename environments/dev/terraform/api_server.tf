@@ -194,6 +194,11 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
 
       env {
+        name  = "CONFIGURATION_FILEPATH"
+        value = "/config/service-config.json"
+      }
+
+      env {
         name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
         value_source {
           secret_key_ref {
