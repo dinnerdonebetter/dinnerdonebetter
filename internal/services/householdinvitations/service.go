@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	serviceName string = "household_invitations_service"
+	serviceName = "household_invitations_service"
 )
 
 var (

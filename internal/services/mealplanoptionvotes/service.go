@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	serviceName string = "meal_plan_option_votes_service"
+	serviceName = "meal_plan_option_votes_service"
 )
 
 var _ types.MealPlanOptionVoteDataService = (*service)(nil)

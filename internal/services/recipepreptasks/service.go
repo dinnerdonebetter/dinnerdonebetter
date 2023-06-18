@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	serviceName string = "recipe_prep_tasks_service"
+	serviceName = "recipe_prep_tasks_service"
 )
 
 var _ types.RecipePrepTaskDataService = (*service)(nil)

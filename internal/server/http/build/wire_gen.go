@@ -26,7 +26,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	"github.com/dinnerdonebetter/backend/internal/services/admin"
-	"github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	"github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
@@ -97,7 +96,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
 	userDataManager := database.ProvideUserDataManager(dataManager)
-	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
 	cookieConfig := authenticationConfig.Cookies
 	sessionManager, err := config4.ProvideSessionManager(cookieConfig, dataManager)
@@ -121,7 +119,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer, featureFlagManager)
+	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer, featureFlagManager)
 	if err != nil {
 		return nil, err
 	}
@@ -142,11 +140,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	}
 	householdinvitationsConfig := &servicesConfig.HouseholdInvitations
 	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, emailer, generator)
-	if err != nil {
-		return nil, err
-	}
-	apiclientsConfig := apiclients.ProvideConfig(authenticationConfig)
-	apiClientDataService, err := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, routeParamManager, apiclientsConfig, tracerProvider, generator, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -356,7 +349,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService)
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService)
 	if err != nil {
 		return nil, err
 	}

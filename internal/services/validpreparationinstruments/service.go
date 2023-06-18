@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	serviceName string = "valid_preparation_instruments_service"
+	serviceName = "valid_preparation_instruments_service"
 )
 
 var _ types.ValidPreparationInstrumentDataService = (*service)(nil)

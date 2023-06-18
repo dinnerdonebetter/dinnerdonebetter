@@ -2,16 +2,11 @@ package authentication
 
 import (
 	"context"
-	"crypto/hmac"
-	"crypto/sha256"
 	"database/sql"
-	"encoding/base64"
 	"errors"
-	"math"
 	"net/http"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -19,9 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/securecookie"
-	"github.com/o1egl/paseto"
 )
 
 var (
@@ -363,163 +356,6 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	s.encoderDecoder.RespondWithData(ctx, res, statusResponse)
-}
-
-const (
-	pasetoRequestTimeThreshold = 2 * time.Minute
-)
-
-// PASETOHandler returns the user info for the user making the request.
-func (s *service) PASETOHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	input := new(types.PASETOCreationInput)
-	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
-		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
-		return
-	}
-
-	if err := input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	requestedHousehold := input.HouseholdID
-	logger = logger.WithValue(keys.APIClientClientIDKey, input.ClientID)
-
-	if requestedHousehold != "" {
-		logger = logger.WithValue("requested_household", requestedHousehold)
-	}
-
-	reqTime := time.Unix(0, input.RequestTime)
-	if time.Until(reqTime) > pasetoRequestTimeThreshold || time.Since(reqTime) > pasetoRequestTimeThreshold {
-		logger.WithValue("provided_request_time", reqTime.String()).Debug("PASETO request denied because its time is out of threshold")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-		return
-	}
-
-	sum, err := base64.RawURLEncoding.DecodeString(req.Header.Get(signatureHeaderKey))
-	if err != nil || len(sum) == 0 {
-		logger.WithValue("sum_length", len(sum)).Error(err, "invalid signature")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-		return
-	}
-
-	client, clientRetrievalErr := s.apiClientManager.GetAPIClientByClientID(ctx, input.ClientID)
-	if clientRetrievalErr != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching API client")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-		return
-	}
-
-	mac := hmac.New(sha256.New, client.ClientSecret)
-	if _, macWriteErr := mac.Write(s.encoderDecoder.MustEncodeJSON(ctx, input)); macWriteErr != nil {
-		// sha256.digest.Write does not ever return an error, so this branch will remain "uncovered" :(
-		observability.AcknowledgeError(err, logger, span, "writing HMAC message for comparison")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-		return
-	}
-
-	if !hmac.Equal(sum, mac.Sum(nil)) {
-		logger.Info("invalid credentials passed to PASETO creation route")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-		return
-	}
-
-	user, err := s.userDataManager.GetUser(ctx, client.BelongsToUser)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving user")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-		return
-	}
-
-	logger = logger.WithValue(keys.UserIDKey, user.ID)
-
-	sessionCtxData, err := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, user.ID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving perms for API client")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-		return
-	}
-
-	var requestedHouseholdID string
-
-	if requestedHousehold != "" {
-		if _, isMember := sessionCtxData.HouseholdPermissions[requestedHousehold]; !isMember {
-			logger.Debug("invalid household ID requested for token")
-			s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-			return
-		}
-
-		logger.WithValue("requested_household", requestedHousehold).Debug("setting token household ID to requested household")
-		requestedHouseholdID = requestedHousehold
-		sessionCtxData.ActiveHouseholdID = requestedHousehold
-	} else {
-		requestedHouseholdID = sessionCtxData.ActiveHouseholdID
-	}
-
-	logger = logger.WithValue(keys.HouseholdIDKey, requestedHouseholdID)
-
-	// Encrypt data
-	tokenRes, err := s.buildPASETOResponse(ctx, sessionCtxData, client)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "encrypting PASETO")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	logger.Info("PASETO issued")
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, tokenRes, http.StatusAccepted)
-}
-
-func (s *service) buildPASETOToken(ctx context.Context, sessionCtxData *types.SessionContextData, client *types.APIClient) paseto.JSONToken {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	now := time.Now().UTC()
-	lifetime := time.Duration(math.Min(float64(maxPASETOLifetime), float64(s.config.PASETO.Lifetime)))
-	expiry := now.Add(lifetime)
-
-	jsonToken := paseto.JSONToken{
-		Audience:   client.BelongsToUser,
-		Subject:    client.BelongsToUser,
-		Jti:        uuid.NewString(),
-		Issuer:     s.config.PASETO.Issuer,
-		IssuedAt:   now,
-		NotBefore:  now,
-		Expiration: expiry,
-	}
-
-	jsonToken.Set(pasetoDataKey, base64.RawURLEncoding.EncodeToString(sessionCtxData.ToBytes()))
-
-	return jsonToken
-}
-
-func (s *service) buildPASETOResponse(ctx context.Context, sessionCtxData *types.SessionContextData, client *types.APIClient) (*types.PASETOResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	jsonToken := s.buildPASETOToken(ctx, sessionCtxData, client)
-
-	// Encrypt data
-	token, err := paseto.NewV2().Encrypt(s.config.PASETO.LocalModeKey, jsonToken, "")
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "encrypting PASETO")
-	}
-
-	tokenRes := &types.PASETOResponse{
-		Token:     token,
-		ExpiresAt: jsonToken.Expiration.String(),
-	}
-
-	return tokenRes, nil
 }
 
 // CycleCookieSecretHandler rotates the cookie building secret with a new random secret.

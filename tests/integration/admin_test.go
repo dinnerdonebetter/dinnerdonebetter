@@ -45,14 +45,12 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 			switch testClients.authType {
 			case cookieAuthType:
 				user, _, userClient, _ = createUserAndClientForTest(ctx, t, nil)
-			case pasetoAuthType:
-				user, _, _, userClient = createUserAndClientForTest(ctx, t, nil)
 			default:
 				log.Panicf("invalid auth type: %q", testClients.authType)
 			}
 
 			// Assert that user can access service
-			_, initialCheckErr := userClient.GetAPIClients(ctx, nil)
+			_, initialCheckErr := userClient.GetWebhooks(ctx, nil)
 			require.NoError(t, initialCheckErr)
 
 			input := &types.UserAccountStatusUpdateInput{
@@ -64,7 +62,7 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 			assert.NoError(t, testClients.admin.UpdateUserAccountStatus(ctx, input))
 
 			// Assert user can no longer access service
-			_, subsequentCheckErr := userClient.GetAPIClients(ctx, nil)
+			_, subsequentCheckErr := userClient.GetWebhooks(ctx, nil)
 			assert.Error(t, subsequentCheckErr)
 
 			// Clean up.

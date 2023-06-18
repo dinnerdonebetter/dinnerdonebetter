@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	serviceName string = "meals_service"
+	serviceName = "meals_service"
 )
 
 type (

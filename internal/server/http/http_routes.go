@@ -8,7 +8,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	apiclientsservice "github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -69,8 +68,6 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 			res.WriteHeader(http.StatusOK)
 		})
 	})
-
-	router.Post("/paseto", s.authService.PASETOHandler)
 
 	authenticatedRouter := router.WithMiddleware(s.authService.UserAttributionMiddleware)
 	authenticatedRouter.Get("/auth/status", s.authService.StatusHandler)
@@ -203,26 +200,6 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 				singleHouseholdInvitationRouter.Put("/cancel", s.householdInvitationsService.CancelInviteHandler)
 				singleHouseholdInvitationRouter.Put("/accept", s.householdInvitationsService.AcceptInviteHandler)
 				singleHouseholdInvitationRouter.Put("/reject", s.householdInvitationsService.RejectInviteHandler)
-			})
-		})
-
-		// API Clients
-		v1Router.Route("/api_clients", func(clientRouter routing.Router) {
-			clientRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAPIClientsPermission)).
-				Get(root, s.apiClientsService.ListHandler)
-			clientRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateAPIClientsPermission)).
-				Post(root, s.apiClientsService.CreateHandler)
-
-			singleClientRoute := buildURLVarChunk(apiclientsservice.APIClientIDURIParamKey, "")
-			clientRouter.Route(singleClientRoute, func(singleClientRouter routing.Router) {
-				singleClientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAPIClientsPermission)).
-					Get(root, s.apiClientsService.ReadHandler)
-				singleClientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveAPIClientsPermission)).
-					Delete(root, s.apiClientsService.ArchiveHandler)
 			})
 		})
 

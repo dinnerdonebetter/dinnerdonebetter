@@ -32,7 +32,6 @@ var (
 		ProvideMealPlanOptionVoteDataManager,
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
-		ProvideAPIClientDataManager,
 		ProvidePasswordResetTokenDataManager,
 		ProvideWebhookDataManager,
 		ProvideRecipePrepTaskDataManager,
@@ -164,11 +163,6 @@ func ProvideUserDataManager(db DataManager) types.UserDataManager {
 
 // ProvideAdminUserDataManager is an arbitrary function for dependency injection's sake.
 func ProvideAdminUserDataManager(db DataManager) types.AdminUserDataManager {
-	return db
-}
-
-// ProvideAPIClientDataManager is an arbitrary function for dependency injection's sake.
-func ProvideAPIClientDataManager(db DataManager) types.APIClientDataManager {
 	return db
 }
 

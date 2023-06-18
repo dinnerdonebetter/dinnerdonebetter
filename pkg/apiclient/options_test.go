@@ -156,17 +156,3 @@ func TestUsingCookie(T *testing.T) {
 		assert.Nil(t, c)
 	})
 }
-
-func TestUsingPASETO(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		c, err := NewClient(mustParseURL(exampleURI), tracing.NewNoopTracerProvider(), UsingPASETO(t.Name(), []byte(t.Name())))
-		assert.NoError(t, err)
-		assert.NotNil(t, c)
-
-		assert.True(t, c.authMethod == pasetoAuthMethod)
-	})
-}

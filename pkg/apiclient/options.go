@@ -105,18 +105,3 @@ func UsingCookie(cookie *http.Cookie) func(*Client) error {
 		return nil
 	}
 }
-
-// UsingPASETO sets the authCookie value on the client.
-func UsingPASETO(clientID string, secretKey []byte) func(*Client) error {
-	return func(c *Client) error {
-		prt := newPASETORoundTripper(c, clientID, secretKey)
-
-		c.authMethod = pasetoAuthMethod
-		c.authedClient.Transport = prt
-		c.authHeaderBuilder = prt
-		c.websocketDialer = websocket.DefaultDialer
-		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
-
-		return nil
-	}
-}

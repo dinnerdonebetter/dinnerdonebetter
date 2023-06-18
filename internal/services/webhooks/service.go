@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	serviceName string = "webhooks_service"
+	serviceName = "webhooks_service"
 )
 
 type (

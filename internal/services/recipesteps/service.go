@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	serviceName string = "recipe_steps_service"
+	serviceName = "recipe_steps_service"
 )
 
 var _ types.RecipeStepDataService = (*service)(nil)

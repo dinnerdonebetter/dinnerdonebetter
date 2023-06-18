@@ -5,6 +5,6 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN go build -o /server github.com/dinnerdonebetter/backend/cmd/services/api_server/http
+RUN go build -o /server github.com/dinnerdonebetter/backend/cmd/services/api/http
 
 ENTRYPOINT /server

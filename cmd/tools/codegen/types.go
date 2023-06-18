@@ -44,11 +44,6 @@ var (
 		"admin": {
 			types.ModifyUserPermissionsInput{},
 		},
-		"apiClients": {
-			types.APIClient{},
-			types.APIClientCreationRequestInput{},
-			types.APIClientCreationResponse{},
-		},
 		"auth": {
 			types.ChangeActiveHouseholdInput{},
 			types.PASETOCreationInput{},

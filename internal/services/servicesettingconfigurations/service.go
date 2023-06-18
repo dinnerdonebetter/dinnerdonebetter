@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	serviceName string = "service_settings_service"
+	serviceName = "service_settings_service"
 )
 
 var _ types.ServiceSettingConfigurationDataService = (*service)(nil)

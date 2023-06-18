@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	serviceName string = "vendor_proxy_service"
+	serviceName = "vendor_proxy_service"
 )
 
 type (

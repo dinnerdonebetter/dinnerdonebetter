@@ -13,7 +13,6 @@ sql:
       - "internal/database/postgres/queries/admin"
       - "internal/database/postgres/queries/meal_components"
       - "internal/database/postgres/queries/users"
-      - "internal/database/postgres/queries/api_clients"
       - "internal/database/postgres/queries/meals"
       - "internal/database/postgres/queries/valid_ingredient_measurement_units"
       - "internal/database/postgres/queries/household_invitations"

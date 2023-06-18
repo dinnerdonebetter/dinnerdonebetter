@@ -1,4 +1,4 @@
-package apiclients
+package oauth2
 
 import (
 	"context"
@@ -15,30 +15,25 @@ import (
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 )
 
-type apiClientsServiceHTTPRoutesTestHelper struct {
+type webhooksServiceHTTPRoutesTestHelper struct {
 	ctx              context.Context
 	req              *http.Request
 	res              *httptest.ResponseRecorder
-	service          *service
+	service          *Service
 	exampleUser      *types.User
 	exampleHousehold *types.Household
-	exampleAPIClient *types.APIClient
-	exampleInput     *types.APIClientCreationRequestInput
 }
 
-func buildTestHelper(t *testing.T) *apiClientsServiceHTTPRoutesTestHelper {
+func newTestHelper(t *testing.T) *webhooksServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &apiClientsServiceHTTPRoutesTestHelper{}
+	helper := &webhooksServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
-	helper.service = buildTestService(t)
+	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
-	helper.exampleAPIClient = fakes.BuildFakeAPIClient()
-	helper.exampleAPIClient.BelongsToUser = helper.exampleUser.ID
-	helper.exampleInput = fakes.BuildFakeAPIClientCreationInputFromClient(helper.exampleAPIClient)
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
@@ -56,9 +51,6 @@ func buildTestHelper(t *testing.T) *apiClientsServiceHTTPRoutesTestHelper {
 	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
 		return sessionCtxData, nil
-	}
-	helper.service.urlClientIDExtractor = func(*http.Request) string {
-		return helper.exampleAPIClient.ID
 	}
 
 	req := testutils.BuildTestRequest(t)
