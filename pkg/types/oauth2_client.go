@@ -20,14 +20,13 @@ type (
 	OAuth2Client struct {
 		_ struct{}
 
-		CreatedAt     time.Time  `json:"createdAt"`
-		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt    *time.Time `json:"archivedAt"`
-		Name          string     `json:"name"`
-		Description   string     `json:"description"`
-		ClientID      string     `json:"clientID"`
-		ID            string     `json:"id"`
-		ClientSecret  string     `json:"-"`
+		CreatedAt    time.Time  `json:"createdAt"`
+		ArchivedAt   *time.Time `json:"archivedAt"`
+		Name         string     `json:"name"`
+		Description  string     `json:"description"`
+		ClientID     string     `json:"clientID"`
+		ID           string     `json:"id"`
+		ClientSecret string     `json:"-"`
 	}
 
 	// OAuth2ClientCreationRequestInput is a struct for use when creating OAuth2 clients.

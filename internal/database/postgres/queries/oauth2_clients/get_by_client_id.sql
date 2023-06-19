@@ -1,12 +1,10 @@
 SELECT
-	api_clients.id,
-	api_clients.name,
-	api_clients.client_id,
-	api_clients.secret_key,
-	api_clients.created_at,
-	api_clients.last_updated_at,
-	api_clients.archived_at,
-	api_clients.belongs_to_user
-FROM api_clients
-WHERE api_clients.archived_at IS NULL
-	AND api_clients.client_id = $1;
+	oauth2_clients.id,
+	oauth2_clients.name,
+	oauth2_clients.client_id,
+	oauth2_clients.client_secret,
+	oauth2_clients.created_at,
+	oauth2_clients.archived_at
+FROM oauth2_clients
+WHERE oauth2_clients.archived_at IS NULL
+	AND oauth2_clients.client_id = $1;

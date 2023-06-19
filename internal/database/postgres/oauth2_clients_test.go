@@ -34,7 +34,6 @@ func buildMockRowsFromOAuth2Clients(includeCounts bool, filteredCount uint64, cl
 			c.ClientID,
 			c.ClientSecret,
 			c.CreatedAt,
-			c.LastUpdatedAt,
 			c.ArchivedAt,
 		}
 

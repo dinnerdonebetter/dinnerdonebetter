@@ -474,5 +474,10 @@ var (
 			Description: "new last indexed field",
 			Script:      fetchMigration("00085_new_last_indexed_field"),
 		},
+		{
+			Version:     86,
+			Description: "oauth2 clients",
+			Script:      fetchMigration("00086_oauth2_clients"),
+		},
 	}
 )

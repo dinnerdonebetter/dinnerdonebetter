@@ -66,7 +66,7 @@ SELECT
                 OR valid_ingredient_groups.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
             )
         OFFSET COALESCE($1, 0)
-    ) as filtered_count,
+    ) AS filtered_count,
     (
         SELECT
             COUNT(valid_ingredient_groups.id)
@@ -74,7 +74,7 @@ SELECT
             valid_ingredient_groups
         WHERE
             valid_ingredient_groups.archived_at IS NULL
-    ) as total_count
+    ) AS total_count
 FROM valid_ingredient_groups
   JOIN valid_ingredient_group_members ON valid_ingredient_groups.id = valid_ingredient_group_members.belongs_to_group
   JOIN valid_ingredients ON valid_ingredients.id = valid_ingredient_group_members.valid_ingredient

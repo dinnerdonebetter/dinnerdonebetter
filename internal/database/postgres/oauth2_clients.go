@@ -20,9 +20,8 @@ var (
 		"oauth2_clients.id",
 		"oauth2_clients.name",
 		"oauth2_clients.client_id",
-		"oauth2_clients.secret_key",
+		"oauth2_clients.client_secret",
 		"oauth2_clients.created_at",
-		"oauth2_clients.last_updated_at",
 		"oauth2_clients.archived_at",
 	}
 )
@@ -40,7 +39,6 @@ func (q *Querier) scanOAuth2Client(ctx context.Context, scan database.Scanner, i
 		&client.ClientID,
 		&client.ClientSecret,
 		&client.CreatedAt,
-		&client.LastUpdatedAt,
 		&client.ArchivedAt,
 	}
 
