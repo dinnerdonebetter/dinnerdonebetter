@@ -56,6 +56,7 @@ func NewMockDatabase() *MockDatabase {
 		UserIngredientPreferenceDataManager:       &mocktypes.UserIngredientPreferenceDataManager{},
 		HouseholdInstrumentOwnershipDataManager:   &mocktypes.HouseholdInstrumentOwnershipDataManager{},
 		RecipeRatingDataManager:                   &mocktypes.RecipeRatingDataManager{},
+		OAuth2ClientDataManager:                   &mocktypes.OAuth2ClientDataManager{},
 	}
 }
 
@@ -102,6 +103,7 @@ type MockDatabase struct {
 	*mocktypes.UserIngredientPreferenceDataManager
 	*mocktypes.HouseholdInstrumentOwnershipDataManager
 	*mocktypes.RecipeRatingDataManager
+	*mocktypes.OAuth2ClientDataManager
 
 	mock.Mock
 }

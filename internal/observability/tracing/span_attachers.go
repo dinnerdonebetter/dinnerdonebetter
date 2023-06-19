@@ -443,3 +443,13 @@ func AttachHouseholdInstrumentOwnershipIDToSpan(span trace.Span, id string) {
 func AttachRecipeRatingIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.RecipeRatingIDKey, id)
 }
+
+// AttachOAuth2ClientIDToSpan attaches a recipe rating ID to a given span.
+func AttachOAuth2ClientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
+}
+
+// AttachOAuth2ClientClientIDToSpan attaches a recipe rating ID to a given span.
+func AttachOAuth2ClientClientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
+}

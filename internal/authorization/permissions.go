@@ -4,6 +4,8 @@ import (
 	"gopkg.in/mikespook/gorbac.v2"
 )
 
+var _ gorbac.Permission = (*Permission)(nil)
+
 type (
 	// Permission is a simple string alias.
 	Permission string
@@ -358,6 +360,13 @@ const (
 	UpdateRecipeRatingsPermission Permission = "update.recipe_ratings"
 	// ArchiveRecipeRatingsPermission is a household user permission.
 	ArchiveRecipeRatingsPermission Permission = "archive.recipe_ratings"
+
+	// CreateOAuth2ClientsPermission is a household admin permission.
+	CreateOAuth2ClientsPermission Permission = "create.oauth2_clients"
+	// ReadOAuth2ClientsPermission is a household admin permission.
+	ReadOAuth2ClientsPermission Permission = "read.oauth2_clients"
+	// ArchiveOAuth2ClientsPermission is a household admin permission.
+	ArchiveOAuth2ClientsPermission Permission = "archive.oauth2_clients"
 )
 
 // ID implements the gorbac Permission interface.
@@ -377,6 +386,9 @@ var (
 		UpdateUserStatusPermission.ID():  UpdateUserStatusPermission,
 		ReadUserPermission.ID():          ReadUserPermission,
 		SearchUserPermission.ID():        SearchUserPermission,
+
+		CreateOAuth2ClientsPermission.ID():  CreateOAuth2ClientsPermission,
+		ArchiveOAuth2ClientsPermission.ID(): ArchiveOAuth2ClientsPermission,
 
 		ArchiveServiceSettingsPermission.ID(): ArchiveServiceSettingsPermission,
 
@@ -469,6 +481,7 @@ var (
 		CreateAPIClientsPermission.ID():  CreateAPIClientsPermission,
 		ReadAPIClientsPermission.ID():    ReadAPIClientsPermission,
 		ArchiveAPIClientsPermission.ID(): ArchiveAPIClientsPermission,
+		ReadOAuth2ClientsPermission.ID(): ReadOAuth2ClientsPermission,
 
 		ReadServiceSettingsPermission.ID():   ReadServiceSettingsPermission,
 		SearchServiceSettingsPermission.ID(): SearchServiceSettingsPermission,

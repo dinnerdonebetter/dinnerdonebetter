@@ -112,7 +112,7 @@ format_golang:
 .PHONY: format_imports
 format_imports:
 	@# TODO: find some way to use $THIS here instead of hardcoding the path
-	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order .
+	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 
 .PHONY: terraformat
 terraformat:

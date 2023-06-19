@@ -3,7 +3,6 @@ module github.com/dinnerdonebetter/backend
 go 1.20
 
 require (
-	cloud.google.com/go/cloudsqlconn v1.2.4
 	cloud.google.com/go/pubsub v1.31.0
 	cloud.google.com/go/secretmanager v1.11.0
 	github.com/DATA-DOG/go-sqlmock v1.5.0
@@ -23,6 +22,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.8.1
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/cors v1.2.1
+	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/goccy/go-graphviz v0.1.1
@@ -67,6 +67,7 @@ require (
 	go.uber.org/zap v1.24.0
 	gocloud.dev v0.29.0
 	golang.org/x/net v0.10.0
+	golang.org/x/oauth2 v0.8.0
 	golang.org/x/tools v0.9.3
 	gonum.org/v1/gonum v0.13.0
 	gopkg.in/mikespook/gorbac.v2 v2.3.0
@@ -129,6 +130,7 @@ require (
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/geo v0.0.0-20230421003525-6adc56603217 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
@@ -181,9 +183,14 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/tidwall/btree v0.0.0-20191029221954-400434d76274 // indirect
+	github.com/tidwall/buntdb v1.1.2 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
+	github.com/tidwall/grect v0.0.0-20161006141115-ba9a043346eb // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tidwall/rtree v0.0.0-20180113144539-6cd427091e0e // indirect
+	github.com/tidwall/tinyqueue v0.0.0-20180302190814-1e39f5511563 // indirect
 	github.com/twpayne/go-geom v1.5.2 // indirect
 	github.com/twpayne/go-kml/v2 v2.0.1 // indirect
 	github.com/vanng822/css v1.0.1 // indirect
@@ -195,10 +202,8 @@ require (
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
 	golang.org/x/image v0.7.0 // indirect
 	golang.org/x/mod v0.10.0 // indirect
-	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sync v0.2.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
-	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.126.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

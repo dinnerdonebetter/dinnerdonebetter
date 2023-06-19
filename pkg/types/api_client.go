@@ -63,7 +63,7 @@ type (
 	APIClientDataManager interface {
 		GetAPIClientByClientID(ctx context.Context, clientID string) (*APIClient, error)
 		GetAPIClientByDatabaseID(ctx context.Context, clientID, ownerUserID string) (*APIClient, error)
-		GetAPIClients(ctx context.Context, owneruserID string, filter *QueryFilter) (*QueryFilteredResult[APIClient], error)
+		GetAPIClients(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[APIClient], error)
 		CreateAPIClient(ctx context.Context, input *APIClientDatabaseCreationInput) (*APIClient, error)
 		ArchiveAPIClient(ctx context.Context, clientID, ownerUserID string) error
 	}

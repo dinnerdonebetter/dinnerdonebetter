@@ -79,6 +79,7 @@ type (
 		UserIngredientPreferenceID       string                          `json:"userIngredientPreferenceID,omitempty"`
 		HouseholdInstrumentOwnershipID   string                          `json:"householdInstrumentOwnershipID,omitempty"`
 		RecipeRatingID                   string                          `json:"recipeRatingID,omitempty"`
+		OAuth2ClientID                   string                          `json:"oauth2ClientID,omitempty"`
 		UserIngredientPreferences        []*UserIngredientPreference     `json:"userIngredientPreference,omitempty"`
 	}
 

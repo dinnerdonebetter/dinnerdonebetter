@@ -178,4 +178,10 @@ const (
 
 	// RecipeRatingIDKey is the standard key for referring to a recipe rating's ID.
 	RecipeRatingIDKey = "recipe_rating.id"
+
+	// OAuth2ClientIDKey is the standard key for referring to a recipe rating's ID.
+	OAuth2ClientIDKey = "oauth2_clients.id"
+
+	// OAuth2ClientClientIDKey is the standard key for referring to a recipe rating's ID.
+	OAuth2ClientClientIDKey = "oauth2_clients.client_id"
 )
