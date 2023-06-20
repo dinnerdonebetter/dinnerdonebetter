@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
-	"strconv"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -59,7 +57,7 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.cookie, s.cookieClient, s.pasetoClient = createUserAndClientForTest(s.ctx, t, nil)
+	s.user, s.cookie, s.cookieClient, _ = createUserAndClientForTest(s.ctx, t, nil)
 	s.adminCookieClient, s.adminPASETOClient = buildAdminCookieAndPASETOClients(s.ctx, t)
 }
 
@@ -70,22 +68,8 @@ func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testCli
 	}
 }
 
-func (s *TestSuite) runForPASETOClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	if x, _ := strconv.ParseBool(os.Getenv("SKIP_PASETO_TESTS")); x {
-		return
-	}
-
-	for a, c := range s.eachClientExcept(cookieAuthType) {
-		authType, testClients := a, c
-		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
-	}
-}
-
 func (s *TestSuite) runForEachClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	for a, c := range s.eachClientExcept() {
-		authType, testClients := a, c
-		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
-	}
+	s.runForEachClientExcept(name, subtestBuilder)
 }
 
 func (s *TestSuite) runForEachClientExcept(name string, subtestBuilder func(*testClientWrapper) func(), exceptions ...string) {
@@ -100,7 +84,6 @@ func (s *TestSuite) eachClientExcept(exceptions ...string) map[string]*testClien
 
 	clients := map[string]*testClientWrapper{
 		cookieAuthType: {authType: cookieAuthType, user: s.cookieClient, admin: s.adminCookieClient},
-		pasetoAuthType: {authType: pasetoAuthType, user: s.pasetoClient, admin: s.adminPASETOClient},
 	}
 
 	for _, name := range exceptions {

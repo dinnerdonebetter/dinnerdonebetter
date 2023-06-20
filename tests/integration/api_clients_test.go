@@ -23,7 +23,7 @@ func checkAPIClientEquality(t *testing.T, expected, actual *types.APIClient) {
 }
 
 func (s *TestSuite) TestAPIClients_Creating() {
-	s.runForEachClientExcept("should be possible to create API clients", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be possible to create API clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -53,7 +53,7 @@ func (s *TestSuite) TestAPIClients_Creating() {
 }
 
 func (s *TestSuite) TestAPIClients_Listing() {
-	s.runForEachClientExcept("should be possible to read API clients in a list", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be possible to read API clients in a list", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -99,7 +99,7 @@ func (s *TestSuite) TestAPIClients_Listing() {
 }
 
 func (s *TestSuite) TestAPIClients_Reading_Returns404ForNonexistentAPIClient() {
-	s.runForEachClientExcept("should not be possible to read non-existent API clients", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should not be possible to read non-existent API clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -114,7 +114,7 @@ func (s *TestSuite) TestAPIClients_Reading_Returns404ForNonexistentAPIClient() {
 }
 
 func (s *TestSuite) TestAPIClients_Reading() {
-	s.runForEachClientExcept("should be possible to read API clients", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be possible to read API clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -146,11 +146,8 @@ func (s *TestSuite) TestAPIClients_Reading() {
 	})
 }
 
-func (s *TestSuite) TestAPIClients_Archiving_Returns404ForNonexistentAPIClient() {
-}
-
 func (s *TestSuite) TestAPIClients_Archiving() {
-	s.runForEachClientExcept("should be possible to archive API clients", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be possible to archive API clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -174,7 +171,7 @@ func (s *TestSuite) TestAPIClients_Archiving() {
 		}
 	})
 
-	s.runForEachClientExcept("should not be possible to archive non-existent API clients", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should not be possible to archive non-existent API clients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

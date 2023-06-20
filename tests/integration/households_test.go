@@ -759,7 +759,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			defer span.End()
 
 			// create users
-			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t, nil)
+			futureOwner, _, futureOwnerClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 			// fetch household data
 			householdCreationInput := &types.HouseholdCreationRequestInput{

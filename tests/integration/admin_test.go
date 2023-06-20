@@ -1,10 +1,7 @@
 package integration
 
 import (
-	"log"
-
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -13,7 +10,7 @@ import (
 )
 
 func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
-	s.runForEachClientExcept("should not be possible to ban a user that does not exist", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should not be possible to ban a user that does not exist", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -30,26 +27,14 @@ func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
 }
 
 func (s *TestSuite) TestAdmin_BanningUsers() {
-	s.runForEachClientExcept("should be possible to ban users", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be possible to ban users", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			var (
-				user       *types.User
-				userClient *apiclient.Client
-			)
-
-			switch testClients.authType {
-			case cookieAuthType:
-				user, _, userClient, _ = createUserAndClientForTest(ctx, t, nil)
-			case pasetoAuthType:
-				user, _, _, userClient = createUserAndClientForTest(ctx, t, nil)
-			default:
-				log.Panicf("invalid auth type: %q", testClients.authType)
-			}
+			user, _, userClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 			// Assert that user can access service
 			_, initialCheckErr := userClient.GetAPIClients(ctx, nil)
