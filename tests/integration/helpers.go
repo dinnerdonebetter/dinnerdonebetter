@@ -165,13 +165,13 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 	adminCookie, err := testutils.GetLoginCookie(ctx, urlToUse, premadeAdminUser)
 	require.NoError(t, err)
 
-	cClient, err := initializeCookiePoweredClient(ctx, adminCookie)
+	adminCookieClient, err := initializeCookiePoweredClient(ctx, adminCookie)
 	require.NoError(t, err)
 
 	code, err := totp.GenerateCode(premadeAdminUser.TwoFactorSecret, time.Now().UTC())
 	require.NoError(t, err)
 
-	apiClient, err := cClient.CreateAPIClient(ctx, adminCookie, &types.APIClientCreationRequestInput{
+	apiClient, err := adminCookieClient.CreateAPIClient(ctx, adminCookie, &types.APIClientCreationRequestInput{
 		Name: fmt.Sprintf("admin_paseto_client_%d", time.Now().UnixNano()),
 		UserLoginInput: types.UserLoginInput{
 			Username:  premadeAdminUser.Username,
@@ -187,5 +187,5 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 	PASETOClient, err := initializePASETOPoweredClient(apiClient.ClientID, secretKey)
 	require.NoError(t, err)
 
-	return cClient, PASETOClient
+	return adminCookieClient, PASETOClient
 }

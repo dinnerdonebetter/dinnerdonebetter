@@ -39,6 +39,7 @@ import (
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
+	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/oauth2clients"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -554,6 +555,11 @@ func buildDevConfig() *config.InstanceConfig {
 			},
 			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
+			},
+			OAuth2Clients: oauth2clientsservice.Config{
+				DataChangesTopicName:  dataChangesTopicName,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
 			},
 		},
 	}

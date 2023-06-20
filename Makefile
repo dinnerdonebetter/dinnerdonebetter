@@ -12,8 +12,8 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.17.2
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
-LINTER_IMAGE                  := golangci/golangci-lint:v1.53.1
-CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
+LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
+CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.43.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
 CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
@@ -90,13 +90,13 @@ clean_wire:
 	done
 
 .PHONY: wire
-wire: ensure_wire_installed vendor
+wire: ensure_wire_installed
 	for tgt in $(WIRE_TARGETS); do \
 		wire gen $(THIS)/internal/$$tgt; \
 	done
 
 .PHONY: rewire
-rewire: ensure_wire_installed clean_wire wire
+rewire: clean_wire wire
 
 ## formatting
 

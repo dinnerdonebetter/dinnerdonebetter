@@ -147,16 +147,6 @@ func (s *TestSuite) TestAPIClients_Reading() {
 }
 
 func (s *TestSuite) TestAPIClients_Archiving_Returns404ForNonexistentAPIClient() {
-	s.runForEachClientExcept("should not be possible to archive non-existent API clients", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-			defer span.End()
-
-			assert.Error(t, testClients.user.ArchiveAPIClient(ctx, nonexistentID))
-		}
-	})
 }
 
 func (s *TestSuite) TestAPIClients_Archiving() {
@@ -181,6 +171,17 @@ func (s *TestSuite) TestAPIClients_Archiving() {
 
 			// Clean up API client.
 			assert.NoError(t, testClients.user.ArchiveAPIClient(ctx, createdAPIClient.ID))
+		}
+	})
+
+	s.runForEachClientExcept("should not be possible to archive non-existent API clients", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
+			defer span.End()
+
+			assert.Error(t, testClients.user.ArchiveAPIClient(ctx, nonexistentID))
 		}
 	})
 }

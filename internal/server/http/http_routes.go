@@ -19,6 +19,7 @@ import (
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
+	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/oauth2clients"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -223,6 +224,26 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 				singleClientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveAPIClientsPermission)).
 					Delete(root, s.apiClientsService.ArchiveHandler)
+			})
+		})
+
+		// OAuth2 Clients
+		v1Router.Route("/oauth2_clients", func(clientRouter routing.Router) {
+			clientRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadOAuth2ClientsPermission)).
+				Get(root, s.oauth2ClientsService.ListHandler)
+			clientRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateOAuth2ClientsPermission)).
+				Post(root, s.oauth2ClientsService.CreateHandler)
+
+			singleClientRoute := buildURLVarChunk(oauth2clientsservice.OAuth2ClientIDURIParamKey, "")
+			clientRouter.Route(singleClientRoute, func(singleClientRouter routing.Router) {
+				singleClientRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadOAuth2ClientsPermission)).
+					Get(root, s.oauth2ClientsService.ReadHandler)
+				singleClientRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveOAuth2ClientsPermission)).
+					Delete(root, s.oauth2ClientsService.ArchiveHandler)
 			})
 		})
 

@@ -42,3 +42,11 @@ func ConvertOAuth2ClientToOAuth2ClientCreationInput(client *types.OAuth2Client) 
 		Description: client.Description,
 	}
 }
+
+// ConvertOAuth2ClientToOAuth2ClientCreationResponse builds a faked OAuth2ClientCreationRequestInput.
+func ConvertOAuth2ClientToOAuth2ClientCreationResponse(client *types.OAuth2Client) *types.OAuth2ClientCreationResponse {
+	return &types.OAuth2ClientCreationResponse{
+		Name:        client.Name,
+		Description: client.Description,
+	}
+}

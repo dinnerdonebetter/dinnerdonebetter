@@ -38,6 +38,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	"github.com/dinnerdonebetter/backend/internal/services/meals"
+	"github.com/dinnerdonebetter/backend/internal/services/oauth2clients"
 	"github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	"github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	"github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -351,12 +352,18 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 		return nil, err
 	}
 	householdinstrumentownershipsConfig := &servicesConfig.HouseholdInstrumentOwnerships
-	householdInstrumentOwnershipDataManager := database.ProvideHouseholdInstrumentOwnershipDataService(dataManager)
+	householdInstrumentOwnershipDataManager := database.ProvideHouseholdInstrumentOwnershipDataManager(dataManager)
 	householdInstrumentOwnershipDataService, err := householdinstrumentownerships.ProvideService(logger, householdinstrumentownershipsConfig, householdInstrumentOwnershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService)
+	oAuth2ClientDataManager := database.ProvideOAuth2ClientDataManager(dataManager)
+	oauth2clientsConfig := oauth2clients.ProvideConfig(authenticationConfig)
+	oAuth2ClientDataService, err := oauth2clients.ProvideOAuth2ClientsService(logger, oAuth2ClientDataManager, userDataManager, authenticator, serverEncoderDecoder, routeParamManager, oauth2clientsConfig, tracerProvider, generator, publisherProvider)
+	if err != nil {
+		return nil, err
+	}
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService)
 	if err != nil {
 		return nil, err
 	}

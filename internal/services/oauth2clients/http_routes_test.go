@@ -245,7 +245,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.service.cfg.minimumPasswordLength = math.MaxUint8
+		helper.service.cfg.MinimumPasswordLength = math.MaxUint8
 		helper.exampleInput.Password = ""
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 

@@ -22,13 +22,6 @@ const (
 var _ types.OAuth2ClientDataService = (*service)(nil)
 
 type (
-	// Config manages our body validation.
-	Config struct {
-		DataChangesTopicName string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
-		minimumUsernameLength,
-		minimumPasswordLength uint8
-	}
-
 	// service manages our OAuth2 clients via HTTP.
 	service struct {
 		logger                    logging.Logger

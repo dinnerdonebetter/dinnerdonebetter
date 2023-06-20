@@ -107,6 +107,6 @@ type (
 		types.UserIngredientPreferenceDataManager
 		types.RecipeRatingDataManager
 		types.HouseholdInstrumentOwnershipDataManager
-		// types.OAuth2ClientDataManager
+		types.OAuth2ClientDataManager
 	}
 )

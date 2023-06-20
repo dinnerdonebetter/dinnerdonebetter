@@ -178,6 +178,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			defer span.End()
 
 			logger := s.logger.WithRequest(req)
+			logger.Debug("checking permissions in middleware")
 
 			// check for a session context data first.
 			sessionContextData, err := s.sessionContextDataFetcher(req)
@@ -189,6 +190,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 
 			logger = sessionContextData.AttachToLogger(logger)
 			isServiceAdmin := sessionContextData.Requester.ServicePermissions.IsServiceAdmin()
+			logger = logger.WithValue("is_service_admin", isServiceAdmin)
 
 			if _, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]; !allowed && !isServiceAdmin {
 				logger.Info("not authorized for household")

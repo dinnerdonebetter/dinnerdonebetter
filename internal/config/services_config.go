@@ -15,6 +15,7 @@ import (
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
+	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/oauth2clients"
 	"github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -49,46 +50,46 @@ import (
 type (
 	// ServicesConfig collects the various service configurations.
 	ServicesConfig struct {
-		_ struct{}
-
-		ValidPreparationInstruments     validpreparationinstrumentsservice.Config     `json:"validPreparationInstruments"     toml:"valid_preparation_instruments,omitempty"`
-		RecipeRatings                   reciperatingsservice.Config                   `json:"recipeRatings"                   toml:"recipe_ratings,omitempty"`
-		ValidInstruments                validinstrumentsservice.Config                `json:"validInstruments"                toml:"valid_instruments,omitempty"`
+		_                               struct{}
+		ValidIngredientGroups           validingredientgroupsservice.Config           `json:"validIngredientGroups"           toml:"valid_ingredient_groups,omitempty"`
+		ServiceSettingConfigurations    servicesettingconfigurationsservice.Config    `json:"serviceSettingConfigurations"    toml:"service_setting_configurations,omitempty"`
+		RecipeStepVessels               recipestepvesselsservice.Config               `json:"recipeStepVessels"               toml:"recipe_step_vessels,omitempty"`
 		RecipeStepCompletionConditions  recipestepcompletionconditionsservice.Config  `json:"recipeStepCompletionConditions"  toml:"recipe_step_completion_conditions,omitempty"`
 		ValidIngredientPreparations     validingredientpreparationsservice.Config     `json:"validIngredientPreparations"     toml:"valid_ingredient_preparations,omitempty"`
-		ValidPreparations               validpreparationsservice.Config               `json:"validPreparations"               toml:"valid_preparations,omitempty"`
+		ValidPreparationInstruments     validpreparationinstrumentsservice.Config     `json:"validPreparationInstruments"     toml:"valid_preparation_instruments,omitempty"`
 		MealPlanOptionVotes             mealplanoptionvotesservice.Config             `json:"mealPlanOptionVotes"             toml:"meal_plan_option_votes,omitempty"`
 		MealPlans                       mealplansservice.Config                       `json:"mealPlans"                       toml:"meal_plans,omitempty"`
 		MealPlanOptions                 mealplanoptionsservice.Config                 `json:"mealPlanOptions"                 toml:"meal_plan_options,omitempty"`
 		ValidInstrumentMeasurementUnits validingredientmeasurementunitsservice.Config `json:"validInstrumentMeasurementUnits" toml:"valid_ingredient_measurement_units,omitempty"`
 		RecipeStepInstruments           recipestepinstrumentsservice.Config           `json:"recipeStepInstruments"           toml:"recipe_step_instruments,omitempty"`
 		RecipeStepIngredients           recipestepingredientsservice.Config           `json:"recipeStepIngredients"           toml:"recipe_step_ingredients,omitempty"`
-		ValidMeasurementUnits           validmeasurementunitsservice.Config           `json:"validMeasurementUnits"           toml:"valid_measurement_units,omitempty"`
-		RecipeStepProducts              recipestepproductsservice.Config              `json:"recipeStepProducts"              toml:"recipe_step_products,omitempty"`
+		HouseholdInstrumentOwnerships   householdinstrumentownershipsservice.Config   `json:"householdInstrumentOwnerships"   toml:"household_instrument_ownerships,omitempty"`
+		RecipePrepTasks                 recipepreptasks.Config                        `json:"recipePrepTasks"                 toml:"recipe_prep_tasks,omitempty"`
 		Households                      householdsservice.Config                      `json:"households"                      toml:"households,omitempty"`
 		VendorProxy                     vendorproxyservice.Config                     `json:"vendorProxy"                     toml:"vendor_proxy,omitempty"`
-		ValidIngredients                validingredientsservice.Config                `json:"validIngredients"                toml:"valid_ingredients,omitempty"`
+		UserIngredientPreferences       useringredientpreferencesservice.Config       `json:"userIngredientPreferences"       toml:"user_ingredient_preferences,omitempty"`
 		MealPlanEvents                  mealplaneventsservice.Config                  `json:"mealPlanEvents"                  toml:"meal_plan_events,omitempty"`
-		RecipeStepVessels               recipestepvesselsservice.Config               `json:"recipeStepVessels"               toml:"recipe_step_vessels,omitempty"`
-		ValidIngredientGroups           validingredientgroupsservice.Config           `json:"validIngredientGroups"           toml:"valid_ingredient_groups,omitempty"`
-		RecipePrepTasks                 recipepreptasks.Config                        `json:"recipePrepTasks"                 toml:"recipe_prep_tasks,omitempty"`
+		RecipeRatings                   reciperatingsservice.Config                   `json:"recipeRatings"                   toml:"recipe_ratings,omitempty"`
+		ServiceSettings                 servicesettingsservice.Config                 `json:"serviceSettings"                 toml:"service_settings,omitempty"`
+		RecipeStepProducts              recipestepproductsservice.Config              `json:"recipeStepProducts"              toml:"recipe_step_products,omitempty"`
 		Websockets                      websocketsservice.Config                      `json:"websockets"                      toml:"websockets,omitempty"`
-		ValidIngredientStates           validingredientstates.Config                  `json:"validIngredientStates"           toml:"valid_ingredient_states,omitempty"`
+		MealPlanGroceryListItems        mealplangrocerylistitems.Config               `json:"mealPlanGroceryListItems"        toml:"meal_plan_grocery_list_items,omitempty"`
 		ValidMeasurementConversions     validmeasurementconversions.Config            `json:"validMeasurementConversions"     toml:"valid_measurement_conversions,omitempty"`
 		MealPlanTasks                   mealplantasks.Config                          `json:"mealPlanTasks"                   toml:"meal_plan_tasks,omitempty"`
 		ValidIngredientStateIngredients validingredientstateingredients.Config        `json:"validIngredientStateIngredients" toml:"valid_ingredient_state_ingredients,omitempty"`
-		MealPlanGroceryListItems        mealplangrocerylistitems.Config               `json:"mealPlanGroceryListItems"        toml:"meal_plan_grocery_list_items,omitempty"`
-		ServiceSettings                 servicesettingsservice.Config                 `json:"serviceSettings"                 toml:"service_settings,omitempty"`
-		ServiceSettingConfigurations    servicesettingconfigurationsservice.Config    `json:"serviceSettingConfigurations"    toml:"service_setting_configurations,omitempty"`
-		UserIngredientPreferences       useringredientpreferencesservice.Config       `json:"userIngredientPreferences"       toml:"user_ingredient_preferences,omitempty"`
-		HouseholdInstrumentOwnerships   householdinstrumentownershipsservice.Config   `json:"householdInstrumentOwnerships"   toml:"household_instrument_ownerships,omitempty"`
-		Meals                           mealsservice.Config                           `json:"meals"                           toml:"meals,omitempty"`
-		Recipes                         recipesservice.Config                         `json:"recipes"                         toml:"recipes,omitempty"`
-		RecipeSteps                     recipestepsservice.Config                     `json:"recipeSteps"                     toml:"recipe_steps,omitempty"`
 		Users                           usersservice.Config                           `json:"users"                           toml:"users,omitempty"`
+		RecipeSteps                     recipestepsservice.Config                     `json:"recipeSteps"                     toml:"recipe_steps,omitempty"`
+		OAuth2Clients                   oauth2clientsservice.Config                   `json:"oauth2Clients"                   toml:"oauth2_clients,omitempty"`
+		Meals                           mealsservice.Config                           `json:"meals"                           toml:"meals,omitempty"`
+		ValidMeasurementUnits           validmeasurementunitsservice.Config           `json:"validMeasurementUnits"           toml:"valid_measurement_units,omitempty"`
+		ValidIngredientStates           validingredientstates.Config                  `json:"validIngredientStates"           toml:"valid_ingredient_states,omitempty"`
 		Webhooks                        webhooksservice.Config                        `json:"webhooks"                        toml:"webhooks,omitempty"`
+		ValidIngredients                validingredientsservice.Config                `json:"validIngredients"                toml:"valid_ingredients,omitempty"`
+		ValidPreparations               validpreparationsservice.Config               `json:"validPreparations"               toml:"valid_preparations,omitempty"`
 		HouseholdInvitations            householdinvitationsservice.Config            `json:"householdInvitations"            toml:"household_invitations,omitempty"`
-		Auth                            authservice.Config                            `json:"auth"                            toml:"household_invitations,omitempty"`
+		ValidInstruments                validinstrumentsservice.Config                `json:"validInstruments"                toml:"valid_instruments,omitempty"`
+		Recipes                         recipesservice.Config                         `json:"recipes"                         toml:"recipes,omitempty"`
+		Auth                            authservice.Config                            `json:"auth"                            toml:"auth,omitempty"`
 	}
 )
 

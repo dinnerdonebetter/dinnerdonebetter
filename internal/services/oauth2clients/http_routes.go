@@ -93,7 +93,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = input.ValidateWithContext(ctx, s.cfg.minimumUsernameLength, s.cfg.minimumPasswordLength); err != nil {
+	if err = input.ValidateWithContext(ctx, s.cfg.MinimumUsernameLength, s.cfg.MinimumPasswordLength); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return

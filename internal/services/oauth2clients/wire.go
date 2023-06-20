@@ -18,7 +18,7 @@ var (
 func ProvideConfig(cfg *authservice.Config) *Config {
 	return &Config{
 		DataChangesTopicName:  cfg.DataChangesTopicName,
-		minimumUsernameLength: cfg.MinimumUsernameLength,
-		minimumPasswordLength: cfg.MinimumPasswordLength,
+		MinimumUsernameLength: cfg.MinimumUsernameLength,
+		MinimumPasswordLength: cfg.MinimumPasswordLength,
 	}
 }
