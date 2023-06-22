@@ -62,45 +62,43 @@ type (
 
 	// OAuth2ClientToken represents a user-authorized OAuth2 client's token.
 	OAuth2ClientToken struct {
-		_ struct{}
-
-		ID                  string        `json:"id"`
-		ClientID            string        `json:"clientID"`
-		BelongsToUser       string        `json:"belongsToUser"`
+		_                   struct{}
+		RefreshCreateAt     time.Time     `json:"refreshCreateAt"`
+		AccessCreateAt      time.Time     `json:"accessCreateAt"`
+		CodeCreateAt        time.Time     `json:"codeCreateAt"`
 		RedirectURI         string        `json:"redirectURI"`
 		Scope               string        `json:"scope"`
 		Code                string        `json:"code"`
 		CodeChallenge       string        `json:"codeChallenge"`
 		CodeChallengeMethod string        `json:"codeChallengeMethod"`
-		CodeCreateAt        time.Time     `json:"codeCreateAt"`
-		CodeExpiresIn       time.Duration `json:"codeExpiresIn"`
+		BelongsToUser       string        `json:"belongsToUser"`
 		Access              string        `json:"access"`
-		AccessCreateAt      time.Time     `json:"accessCreateAt"`
-		AccessExpiresIn     time.Duration `json:"accessExpiresIn"`
+		ClientID            string        `json:"clientID"`
 		Refresh             string        `json:"refresh"`
-		RefreshCreateAt     time.Time     `json:"refreshCreateAt"`
+		ID                  string        `json:"id"`
+		CodeExpiresIn       time.Duration `json:"codeExpiresIn"`
+		AccessExpiresIn     time.Duration `json:"accessExpiresIn"`
 		RefreshExpiresIn    time.Duration `json:"refreshExpiresIn"`
 	}
 
 	// OAuth2ClientTokenDatabaseCreationInput represents a user-authorized OAuth2 client's token's database creation input.
 	OAuth2ClientTokenDatabaseCreationInput struct {
-		_ struct{}
-
-		ID                  string
-		ClientID            string
-		BelongsToUser       string
+		_                   struct{}
+		RefreshCreateAt     time.Time
+		AccessCreateAt      time.Time
+		CodeCreateAt        time.Time
 		RedirectURI         string
 		Scope               string
 		Code                string
 		CodeChallenge       string
 		CodeChallengeMethod string
-		CodeCreateAt        time.Time
-		CodeExpiresIn       time.Duration
+		BelongsToUser       string
 		Access              string
-		AccessCreateAt      time.Time
-		AccessExpiresIn     time.Duration
+		ClientID            string
 		Refresh             string
-		RefreshCreateAt     time.Time
+		ID                  string
+		CodeExpiresIn       time.Duration
+		AccessExpiresIn     time.Duration
 		RefreshExpiresIn    time.Duration
 	}
 
