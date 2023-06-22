@@ -60,6 +60,50 @@ type (
 		ID           string `json:"id"`
 	}
 
+	// OAuth2ClientToken represents a user-authorized OAuth2 client's token.
+	OAuth2ClientToken struct {
+		_ struct{}
+
+		ID                  string        `json:"id"`
+		ClientID            string        `json:"clientID"`
+		BelongsToUser       string        `json:"belongsToUser"`
+		RedirectURI         string        `json:"redirectURI"`
+		Scope               string        `json:"scope"`
+		Code                string        `json:"code"`
+		CodeChallenge       string        `json:"codeChallenge"`
+		CodeChallengeMethod string        `json:"codeChallengeMethod"`
+		CodeCreateAt        time.Time     `json:"codeCreateAt"`
+		CodeExpiresIn       time.Duration `json:"codeExpiresIn"`
+		Access              string        `json:"access"`
+		AccessCreateAt      time.Time     `json:"accessCreateAt"`
+		AccessExpiresIn     time.Duration `json:"accessExpiresIn"`
+		Refresh             string        `json:"refresh"`
+		RefreshCreateAt     time.Time     `json:"refreshCreateAt"`
+		RefreshExpiresIn    time.Duration `json:"refreshExpiresIn"`
+	}
+
+	// OAuth2ClientTokenDatabaseCreationInput represents a user-authorized OAuth2 client's token's database creation input.
+	OAuth2ClientTokenDatabaseCreationInput struct {
+		_ struct{}
+
+		ID                  string
+		ClientID            string
+		BelongsToUser       string
+		RedirectURI         string
+		Scope               string
+		Code                string
+		CodeChallenge       string
+		CodeChallengeMethod string
+		CodeCreateAt        time.Time
+		CodeExpiresIn       time.Duration
+		Access              string
+		AccessCreateAt      time.Time
+		AccessExpiresIn     time.Duration
+		Refresh             string
+		RefreshCreateAt     time.Time
+		RefreshExpiresIn    time.Duration
+	}
+
 	// OAuth2ClientDataManager handles OAuth2 clients.
 	OAuth2ClientDataManager interface {
 		GetOAuth2ClientByClientID(ctx context.Context, clientID string) (*OAuth2Client, error)
