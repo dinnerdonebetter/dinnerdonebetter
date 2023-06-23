@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -45,9 +46,9 @@ func buildTestService(t *testing.T) *service {
 		logger,
 		cfg,
 		&mockauthn.Authenticator{},
-		&mocktypes.UserDataManager{},
-		&mocktypes.APIClientDataManager{},
-		&mocktypes.HouseholdUserMembershipDataManager{},
+		&mocktypes.UserDataManagerMock{},
+		&mocktypes.APIClientDataManagerMock{},
+		&mocktypes.HouseholdUserMembershipDataManagerMock{},
 		scs.New(),
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
@@ -55,6 +56,7 @@ func buildTestService(t *testing.T) *service {
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		&email.MockEmailer{},
 		&featureflags.NoopFeatureFlagManager{},
+		&oauth2.Service{},
 	)
 	require.NoError(t, err)
 
@@ -83,9 +85,9 @@ func TestProvideService(T *testing.T) {
 			logger,
 			cfg,
 			&mockauthn.Authenticator{},
-			&mocktypes.UserDataManager{},
-			&mocktypes.APIClientDataManager{},
-			&mocktypes.HouseholdUserMembershipDataManager{},
+			&mocktypes.UserDataManagerMock{},
+			&mocktypes.APIClientDataManagerMock{},
+			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			scs.New(),
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
@@ -93,6 +95,7 @@ func TestProvideService(T *testing.T) {
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
 			&featureflags.NoopFeatureFlagManager{},
+			&oauth2.Service{},
 		)
 
 		assert.NotNil(t, s)
@@ -123,9 +126,9 @@ func TestProvideService(T *testing.T) {
 				},
 			},
 			&mockauthn.Authenticator{},
-			&mocktypes.UserDataManager{},
-			&mocktypes.APIClientDataManager{},
-			&mocktypes.HouseholdUserMembershipDataManager{},
+			&mocktypes.UserDataManagerMock{},
+			&mocktypes.APIClientDataManagerMock{},
+			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			scs.New(),
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
@@ -133,6 +136,7 @@ func TestProvideService(T *testing.T) {
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
 			&featureflags.NoopFeatureFlagManager{},
+			&oauth2.Service{},
 		)
 
 		assert.Nil(t, s)

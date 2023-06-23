@@ -221,7 +221,7 @@ func (s *Server) Serve() {
 		s.panicker.Panic(err)
 	}
 
-	s.logger.WithValue("listening_on", s.httpServer.Addr).Debug("Listening for HTTP requests")
+	s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTP requests")
 
 	if s.config.HTTPSCertificateFile != "" && s.config.HTTPSCertificateKeyFile != "" {
 		// returns ErrServerClosed on graceful close.

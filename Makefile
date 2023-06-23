@@ -243,15 +243,26 @@ dev: $(ARTIFACTS_DIR)
 	# --abort-on-container-exit \
 	--always-recreate-deps
 
-.PHONY: init_db
-init_db: initialize_database
+.PHONY: start_infra
+start_infra:
+	docker-compose \
+	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
+	--detach \
+	postgres worker_queue
 
-.PHONY: db_init
-db_init: initialize_database
+.PHONY: start_postgres
+start_postgres:
+	docker-compose \
+	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
+	--detach \
+	postgres
 
-.PHONY: initialize_database
-initialize_database:
-	go run github.com/dinnerdonebetter/backend/cmd/tools/db_initializer
+.PHONY: start_redis
+start_redis:
+	docker-compose \
+	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
+	--detach \
+	queue
 
 ## misc
 

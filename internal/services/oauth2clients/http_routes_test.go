@@ -37,7 +37,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientList()
 
 		mockDB := database.NewMockDatabase()
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
@@ -88,7 +88,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
@@ -117,7 +117,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
@@ -161,7 +161,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -192,7 +192,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
 			testutils.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
@@ -272,7 +272,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -301,13 +301,13 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		mockDB := database.NewMockDatabase()
 
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
 			testutils.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
@@ -346,13 +346,13 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
 			testutils.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
@@ -391,7 +391,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -416,7 +416,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
 
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
 			testutils.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
@@ -445,7 +445,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -476,7 +476,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
 
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
 			testutils.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
@@ -503,7 +503,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -533,7 +533,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
 			testutils.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
@@ -562,7 +562,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -593,7 +593,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
-		mockDB.OAuth2ClientDataManager.On(
+		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
 			testutils.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
@@ -623,7 +623,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManager{}
+		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"GetOAuth2ClientByDatabaseID",
 			testutils.ContextMatcher,
@@ -675,7 +675,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManager{}
+		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"GetOAuth2ClientByDatabaseID",
 			testutils.ContextMatcher,
@@ -703,7 +703,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManager{}
+		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"GetOAuth2ClientByDatabaseID",
 			testutils.ContextMatcher,
@@ -735,7 +735,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManager{}
+		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
 			testutils.ContextMatcher,
@@ -786,7 +786,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManager{}
+		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
 			testutils.ContextMatcher,
@@ -814,7 +814,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManager{}
+		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
 			testutils.ContextMatcher,
@@ -842,7 +842,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManager{}
+		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
 			testutils.ContextMatcher,

@@ -41,7 +41,7 @@ func TestProvideAPIClientsService(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
-		mockAPIClientDataManager := &mocktypes.APIClientDataManager{}
+		mockAPIClientDataManager := &mocktypes.APIClientDataManagerMock{}
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
@@ -59,7 +59,7 @@ func TestProvideAPIClientsService(T *testing.T) {
 		s, err := ProvideAPIClientsService(
 			logging.NewNoopLogger(),
 			mockAPIClientDataManager,
-			&mocktypes.UserDataManager{},
+			&mocktypes.UserDataManagerMock{},
 			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,

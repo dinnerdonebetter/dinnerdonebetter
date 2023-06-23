@@ -49,12 +49,8 @@ func newTestHelper(t *testing.T) *webhooksServiceHTTPRoutesTestHelper {
 	}
 
 	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
-		return sessionCtxData, nil
-	}
 
 	req := testutils.BuildTestRequest(t)
-
 	helper.req = req.WithContext(context.WithValue(req.Context(), types.SessionContextDataKey, sessionCtxData))
 	helper.res = httptest.NewRecorder()
 

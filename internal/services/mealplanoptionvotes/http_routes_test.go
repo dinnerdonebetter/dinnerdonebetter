@@ -40,14 +40,14 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
@@ -60,7 +60,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -75,7 +75,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
-		dbManager.MealPlanDataManager.On(
+		dbManager.MealPlanDataManagerMock.On(
 			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -149,7 +149,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -179,7 +179,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -209,14 +209,14 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
@@ -245,14 +245,14 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
@@ -265,7 +265,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -280,7 +280,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
-		dbManager.MealPlanDataManager.On(
+		dbManager.MealPlanDataManagerMock.On(
 			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -317,14 +317,14 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
@@ -337,7 +337,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -371,14 +371,14 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
@@ -391,7 +391,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -406,7 +406,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 
-		dbManager.MealPlanDataManager.On(
+		dbManager.MealPlanDataManagerMock.On(
 			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -443,14 +443,14 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
@@ -463,7 +463,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -479,7 +479,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		dbManager.MealPlanDataManager.On(
+		dbManager.MealPlanDataManagerMock.On(
 			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -509,14 +509,14 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanEventDataManager.On(
+		dbManager.MealPlanEventDataManagerMock.On(
 			"MealPlanEventIsEligibleForVoting",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionVotesDatabaseCreationInput) bool { return true }),
@@ -529,7 +529,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"FinalizeMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -544,7 +544,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 
-		dbManager.MealPlanDataManager.On(
+		dbManager.MealPlanDataManagerMock.On(
 			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -576,7 +576,7 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -632,7 +632,7 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -663,7 +663,7 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -700,7 +700,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 		exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVoteList()
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -756,7 +756,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -788,7 +788,7 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -832,7 +832,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -841,7 +841,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"UpdateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanOptionVote,
@@ -924,7 +924,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -956,7 +956,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -965,7 +965,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"UpdateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanOptionVote,
@@ -994,7 +994,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1026,7 +1026,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1035,7 +1035,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"UpdateMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanOptionVote,
@@ -1067,7 +1067,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1076,7 +1076,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1131,7 +1131,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1162,7 +1162,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1185,7 +1185,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1194,7 +1194,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1217,7 +1217,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -1226,7 +1226,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionVoteDataManager.On(
+		dbManager.MealPlanOptionVoteDataManagerMock.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,

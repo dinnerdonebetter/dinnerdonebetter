@@ -40,6 +40,12 @@
 	"encoding": {
 		"contentType": "application/json"
 	},
+	"oauth2": {
+		"domain": "http://localhost:9000",
+		"accessTokenLifespan": 3600000000000,
+		"refreshTokenLifespan": 3600000000000,
+		"debug": false
+	},
 	"services": {
 		"validIngredientGroups": {
 			"dataChangesTopicName": "data_changes"

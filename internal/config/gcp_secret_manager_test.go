@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
@@ -86,6 +87,11 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 			Events:   msgconfig.Config{},
 			Server: http.Config{
 				StartupDeadline: time.Second,
+			},
+			OAuth2: oauth2.Config{
+				Domain:               t.Name(),
+				AccessTokenLifespan:  time.Hour,
+				RefreshTokenLifespan: time.Hour,
 			},
 			Services: ServicesConfig{
 				ValidMeasurementUnits:           validmeasurementunits.Config{},

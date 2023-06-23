@@ -60,48 +60,6 @@ type (
 		ID           string `json:"id"`
 	}
 
-	// OAuth2ClientToken represents a user-authorized OAuth2 client's token.
-	OAuth2ClientToken struct {
-		_                   struct{}
-		RefreshCreateAt     time.Time     `json:"refreshCreateAt"`
-		AccessCreateAt      time.Time     `json:"accessCreateAt"`
-		CodeCreateAt        time.Time     `json:"codeCreateAt"`
-		RedirectURI         string        `json:"redirectURI"`
-		Scope               string        `json:"scope"`
-		Code                string        `json:"code"`
-		CodeChallenge       string        `json:"codeChallenge"`
-		CodeChallengeMethod string        `json:"codeChallengeMethod"`
-		BelongsToUser       string        `json:"belongsToUser"`
-		Access              string        `json:"access"`
-		ClientID            string        `json:"clientID"`
-		Refresh             string        `json:"refresh"`
-		ID                  string        `json:"id"`
-		CodeExpiresIn       time.Duration `json:"codeExpiresIn"`
-		AccessExpiresIn     time.Duration `json:"accessExpiresIn"`
-		RefreshExpiresIn    time.Duration `json:"refreshExpiresIn"`
-	}
-
-	// OAuth2ClientTokenDatabaseCreationInput represents a user-authorized OAuth2 client's token's database creation input.
-	OAuth2ClientTokenDatabaseCreationInput struct {
-		_                   struct{}
-		RefreshCreateAt     time.Time
-		AccessCreateAt      time.Time
-		CodeCreateAt        time.Time
-		RedirectURI         string
-		Scope               string
-		Code                string
-		CodeChallenge       string
-		CodeChallengeMethod string
-		BelongsToUser       string
-		Access              string
-		ClientID            string
-		Refresh             string
-		ID                  string
-		CodeExpiresIn       time.Duration
-		AccessExpiresIn     time.Duration
-		RefreshExpiresIn    time.Duration
-	}
-
 	// OAuth2ClientDataManager handles OAuth2 clients.
 	OAuth2ClientDataManager interface {
 		GetOAuth2ClientByClientID(ctx context.Context, clientID string) (*OAuth2Client, error)
@@ -117,6 +75,11 @@ type (
 		CreateHandler(http.ResponseWriter, *http.Request)
 		ReadHandler(http.ResponseWriter, *http.Request)
 		ArchiveHandler(http.ResponseWriter, *http.Request)
+	}
+
+	OAuth2Service interface {
+		AuthorizeHandler(res http.ResponseWriter, req *http.Request)
+		TokenHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

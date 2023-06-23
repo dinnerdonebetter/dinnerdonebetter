@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base32"
 	"encoding/base64"
+	"encoding/hex"
 	"io"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -31,6 +32,7 @@ func init() {
 type (
 	// Generator should generate random strings securely.
 	Generator interface {
+		GenerateHexEncodedString(ctx context.Context, length int) (string, error)
 		GenerateBase32EncodedString(context.Context, int) (string, error)
 		GenerateBase64EncodedString(context.Context, int) (string, error)
 		GenerateRawBytes(context.Context, int) ([]byte, error)
@@ -46,10 +48,15 @@ type (
 // NewGenerator builds a new Generator.
 func NewGenerator(logger logging.Logger, tracerProvider tracing.TracerProvider) Generator {
 	return &standardGenerator{
-		logger:     logging.EnsureLogger(logger).WithName("random_string_generator"),
+		logger:     logging.EnsureLogger(logger).WithName("random_generator"),
 		tracer:     tracing.NewTracer(tracerProvider.Tracer("secret_generator")),
 		randReader: rand.Reader,
 	}
+}
+
+// GenerateHexEncodedString generates a one-off value with an anonymous Generator.
+func GenerateHexEncodedString(ctx context.Context, length int) (string, error) {
+	return defaultGenerator.GenerateHexEncodedString(ctx, length)
 }
 
 // GenerateBase32EncodedString generates a one-off value with an anonymous Generator.
@@ -67,38 +74,8 @@ func GenerateRawBytes(ctx context.Context, length int) ([]byte, error) {
 	return defaultGenerator.GenerateRawBytes(ctx, length)
 }
 
-// GenerateBase32EncodedString generates a base64-encoded string of a securely random byte array of a given length.
-func (g *standardGenerator) GenerateBase32EncodedString(ctx context.Context, length int) (string, error) {
-	_, span := tracing.StartSpan(ctx)
-	defer span.End()
-
-	tracing.AttachIntToSpan(span, "generated_string.requested_length", length)
-
-	b := make([]byte, length)
-	if _, err := g.randReader.Read(b); err != nil {
-		return "", observability.PrepareError(err, span, "reading from secure random source")
-	}
-
-	return base32.StdEncoding.EncodeToString(b), nil
-}
-
-// GenerateBase64EncodedString generates a base64-encoded string of a securely random byte array of a given length.
-func (g *standardGenerator) GenerateBase64EncodedString(ctx context.Context, length int) (string, error) {
-	_, span := tracing.StartSpan(ctx)
-	defer span.End()
-
-	tracing.AttachIntToSpan(span, "generated_string.requested_length", length)
-
-	b := make([]byte, length)
-	if _, err := g.randReader.Read(b); err != nil {
-		return "", observability.PrepareError(err, span, "reading from secure random source")
-	}
-
-	return base64.RawURLEncoding.EncodeToString(b), nil
-}
-
-// GenerateRawBytes generates a securely random byte array.
-func (g *standardGenerator) GenerateRawBytes(ctx context.Context, length int) ([]byte, error) {
+// generateSecret generates a securely random byte array of a given length.
+func (g *standardGenerator) generateSecret(ctx context.Context, length int) ([]byte, error) {
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
@@ -110,4 +87,59 @@ func (g *standardGenerator) GenerateRawBytes(ctx context.Context, length int) ([
 	}
 
 	return b, nil
+}
+
+// GenerateRawBytes generates a securely random byte array.
+func (g *standardGenerator) GenerateRawBytes(ctx context.Context, length int) ([]byte, error) {
+	_, span := tracing.StartSpan(ctx)
+	defer span.End()
+
+	tracing.AttachIntToSpan(span, "rand_gen.requested_length", length)
+
+	return g.generateSecret(ctx, length)
+}
+
+// GenerateHexEncodedString generates a base64-encoded string of a securely random byte array of a given length.
+func (g *standardGenerator) GenerateHexEncodedString(ctx context.Context, length int) (string, error) {
+	_, span := tracing.StartSpan(ctx)
+	defer span.End()
+
+	tracing.AttachIntToSpan(span, "rand_gen.requested_length", length)
+
+	b, err := g.GenerateRawBytes(ctx, length)
+	if err != nil {
+		return "", observability.PrepareError(err, span, "reading from secure random source")
+	}
+
+	return hex.EncodeToString(b), nil
+}
+
+// GenerateBase32EncodedString generates a base64-encoded string of a securely random byte array of a given length.
+func (g *standardGenerator) GenerateBase32EncodedString(ctx context.Context, length int) (string, error) {
+	_, span := tracing.StartSpan(ctx)
+	defer span.End()
+
+	tracing.AttachIntToSpan(span, "rand_gen.requested_length", length)
+
+	b, err := g.GenerateRawBytes(ctx, length)
+	if err != nil {
+		return "", observability.PrepareError(err, span, "reading from secure random source")
+	}
+
+	return base32.StdEncoding.EncodeToString(b), nil
+}
+
+// GenerateBase64EncodedString generates a base64-encoded string of a securely random byte array of a given length.
+func (g *standardGenerator) GenerateBase64EncodedString(ctx context.Context, length int) (string, error) {
+	_, span := tracing.StartSpan(ctx)
+	defer span.End()
+
+	tracing.AttachIntToSpan(span, "rand_gen.requested_length", length)
+
+	b, err := g.GenerateRawBytes(ctx, length)
+	if err != nil {
+		return "", observability.PrepareError(err, span, "reading from secure random source")
+	}
+
+	return base64.RawURLEncoding.EncodeToString(b), nil
 }

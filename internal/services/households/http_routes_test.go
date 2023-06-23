@@ -34,7 +34,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 
 		exampleHouseholdList := fakes.BuildFakeHouseholdList()
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHouseholds",
 			testutils.ContextMatcher,
@@ -87,7 +87,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHouseholds",
 			testutils.ContextMatcher,
@@ -117,7 +117,7 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHouseholds",
 			testutils.ContextMatcher,
@@ -159,7 +159,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"CreateHousehold",
 			testutils.ContextMatcher,
@@ -252,7 +252,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"CreateHousehold",
 			testutils.ContextMatcher,
@@ -281,7 +281,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"CreateHousehold",
 			testutils.ContextMatcher,
@@ -313,7 +313,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -366,7 +366,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -394,7 +394,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -426,7 +426,7 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -479,7 +479,7 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -507,7 +507,7 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -548,7 +548,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -646,7 +646,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -675,7 +675,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -707,7 +707,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		helper.exampleHousehold = fakes.BuildFakeHousehold()
 		helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -741,7 +741,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
@@ -778,7 +778,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"ArchiveHousehold",
 			testutils.ContextMatcher,
@@ -830,7 +830,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"ArchiveHousehold",
 			testutils.ContextMatcher,
@@ -859,7 +859,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"ArchiveHousehold",
 			testutils.ContextMatcher,
@@ -888,7 +888,7 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"ArchiveHousehold",
 			testutils.ContextMatcher,
@@ -930,7 +930,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"ModifyUserPermissions",
 			testutils.ContextMatcher,
@@ -1024,7 +1024,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"ModifyUserPermissions",
 			testutils.ContextMatcher,
@@ -1055,7 +1055,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"ModifyUserPermissions",
 			testutils.ContextMatcher,
@@ -1098,7 +1098,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"TransferHouseholdOwnership",
 			testutils.ContextMatcher,
@@ -1191,7 +1191,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"TransferHouseholdOwnership",
 			testutils.ContextMatcher,
@@ -1221,7 +1221,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"TransferHouseholdOwnership",
 			testutils.ContextMatcher,
@@ -1256,7 +1256,7 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 
 		exampleReason := t.Name()
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"RemoveUserFromHousehold",
 			testutils.ContextMatcher,
@@ -1313,7 +1313,7 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		exampleReason := t.Name()
 		helper.req.URL.RawQuery = fmt.Sprintf("reason=%s", url.QueryEscape(exampleReason))
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"RemoveUserFromHousehold",
 			testutils.ContextMatcher,
@@ -1344,7 +1344,7 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 
 		exampleReason := t.Name()
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"RemoveUserFromHousehold",
 			testutils.ContextMatcher,
@@ -1379,7 +1379,7 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"MarkHouseholdAsUserDefault",
 			testutils.ContextMatcher,
@@ -1431,7 +1431,7 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"MarkHouseholdAsUserDefault",
 			testutils.ContextMatcher,
@@ -1460,7 +1460,7 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"MarkHouseholdAsUserDefault",
 			testutils.ContextMatcher,

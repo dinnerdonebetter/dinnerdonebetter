@@ -556,3 +556,13 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 
 	res.WriteHeader(http.StatusAccepted)
 }
+
+// AuthorizeHandler proxies the oauth2 service.
+func (s *service) AuthorizeHandler(res http.ResponseWriter, req *http.Request) {
+	s.oauth2Service.AuthorizeHandler(res, req)
+}
+
+// TokenHandler proxies the oauth2 service.
+func (s *service) TokenHandler(res http.ResponseWriter, req *http.Request) {
+	s.oauth2Service.TokenHandler(res, req)
+}

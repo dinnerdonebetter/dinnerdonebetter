@@ -41,7 +41,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"CreateHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnershipDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"CreateHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnershipDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"CreateHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnershipDatabaseCreationInput) bool { return true }),
@@ -194,7 +194,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"GetHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
@@ -248,7 +248,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"GetHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
@@ -277,7 +277,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"GetHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
@@ -312,7 +312,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 
 		exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipList()
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"GetHouseholdInstrumentOwnerships",
 			testutils.ContextMatcher,
@@ -366,7 +366,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"GetHouseholdInstrumentOwnerships",
 			testutils.ContextMatcher,
@@ -396,7 +396,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"GetHouseholdInstrumentOwnerships",
 			testutils.ContextMatcher,
@@ -439,14 +439,14 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
 
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"UpdateHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnership) bool { return true }),
@@ -528,7 +528,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"GetHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
@@ -558,7 +558,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"GetHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
@@ -589,14 +589,14 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
 
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"UpdateHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnership) bool { return true }),
@@ -625,14 +625,14 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
 
-		dbManager.HouseholdInstrumentOwnershipDataManager.On(
+		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"UpdateHouseholdInstrumentOwnership",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnership) bool { return true }),
@@ -663,7 +663,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"HouseholdInstrumentOwnershipExists",
 			testutils.ContextMatcher,
@@ -723,7 +723,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"HouseholdInstrumentOwnershipExists",
 			testutils.ContextMatcher,
@@ -752,7 +752,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"HouseholdInstrumentOwnershipExists",
 			testutils.ContextMatcher,
@@ -773,7 +773,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"HouseholdInstrumentOwnershipExists",
 			testutils.ContextMatcher,
@@ -801,7 +801,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManager{}
+		householdInstrumentOwnershipDataManager := &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{}
 		householdInstrumentOwnershipDataManager.On(
 			"HouseholdInstrumentOwnershipExists",
 			testutils.ContextMatcher,

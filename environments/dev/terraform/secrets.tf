@@ -44,6 +44,27 @@ resource "google_secret_manager_secret_version" "outbound_emails_topic_name" {
   secret_data = google_pubsub_topic.outbound_emails_topic.name
 }
 
+# API server oauth2 token encryption key
+
+resource "random_string" "oauth2_token_encryption_key" {
+  length  = 64
+  special = false
+}
+
+resource "google_secret_manager_secret" "oauth2_token_encryption_key" {
+  secret_id = "oauth2_token_encryption_key"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "oauth2_token_encryption_key" {
+  secret = google_secret_manager_secret.oauth2_token_encryption_key.id
+
+  secret_data = random_string.oauth2_token_encryption_key.result
+}
+
 # API server cookie hash key
 
 resource "random_string" "cookie_hash_key" {

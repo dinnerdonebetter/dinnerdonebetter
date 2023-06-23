@@ -21,7 +21,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                      logging.NewNoopLogger(),
-		recipeStepVesselDataManager: &mocktypes.RecipeStepVesselDataManager{},
+		recipeStepVesselDataManager: &mocktypes.RecipeStepVesselDataManagerMock{},
 		recipeStepVesselIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:              mockencoding.NewMockEncoderDecoder(),
 		tracer:                      tracing.NewTracerForTest("test"),
@@ -58,7 +58,7 @@ func TestProvideRecipeStepVesselsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.RecipeStepVesselDataManager{},
+			&mocktypes.RecipeStepVesselDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -84,7 +84,7 @@ func TestProvideRecipeStepVesselsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.RecipeStepVesselDataManager{},
+			&mocktypes.RecipeStepVesselDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

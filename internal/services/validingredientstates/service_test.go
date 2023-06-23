@@ -21,7 +21,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                          logging.NewNoopLogger(),
-		validIngredientStateDataManager: &mocktypes.ValidIngredientStateDataManager{},
+		validIngredientStateDataManager: &mocktypes.ValidIngredientStateDataManagerMock{},
 		validIngredientStateIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                  mockencoding.NewMockEncoderDecoder(),
 		tracer:                          tracing.NewTracerForTest("test"),
@@ -58,7 +58,7 @@ func TestProvideValidIngredientStatesService(T *testing.T) {
 			logger,
 			&cfg,
 			&searchcfg.Config{},
-			&mocktypes.ValidIngredientStateDataManager{},
+			&mocktypes.ValidIngredientStateDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -89,7 +89,7 @@ func TestProvideValidIngredientStatesService(T *testing.T) {
 			logger,
 			&cfg,
 			&searchcfg.Config{},
-			&mocktypes.ValidIngredientStateDataManager{},
+			&mocktypes.ValidIngredientStateDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

@@ -39,7 +39,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.AdminUserDataManager{}
+		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
@@ -98,7 +98,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.AdminUserDataManager{}
+		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
@@ -257,7 +257,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.AdminUserDataManager{}
+		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
@@ -287,7 +287,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.AdminUserDataManager{}
+		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,
@@ -321,7 +321,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		mockHandler.ExpectDelete("", errors.New("blah"))
 		helper.service.sessionManager.Store = mockHandler
 
-		userDataManager := &mocktypes.AdminUserDataManager{}
+		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
 			testutils.ContextMatcher,

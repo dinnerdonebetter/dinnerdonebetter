@@ -21,6 +21,7 @@ var (
 			"Search",
 			"Server",
 			"Services",
+			"OAuth2",
 		),
 		wire.FieldsOf(
 			new(*ServicesConfig),

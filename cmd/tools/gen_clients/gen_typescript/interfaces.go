@@ -7,7 +7,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
+	codegen "github.com/dinnerdonebetter/backend/cmd/tools/gen_clients"
 )
 
 func typescriptInterface[T any](x T) (out string, imports []string, err error) {

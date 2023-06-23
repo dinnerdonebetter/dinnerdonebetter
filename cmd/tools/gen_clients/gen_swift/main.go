@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
+	codegen "github.com/dinnerdonebetter/backend/cmd/tools/gen_clients"
 
 	"github.com/hashicorp/go-multierror"
 )

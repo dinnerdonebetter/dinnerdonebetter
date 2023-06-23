@@ -3,8 +3,11 @@ package oauth2
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/go-oauth2/oauth2/v4"
 )
@@ -12,11 +15,12 @@ import (
 var _ oauth2.TokenStore = (*oauth2TokenStoreImpl)(nil)
 
 type oauth2TokenStoreImpl struct {
-	tracer tracing.Tracer
-	logger logging.Logger
-	// dataManager database.DataManager
+	tracer      tracing.Tracer
+	logger      logging.Logger
+	dataManager types.OAuth2ClientTokenDataManager
 }
 
+// Create implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo) error {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -24,9 +28,34 @@ func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo
 	logger := s.logger.WithValue("info", info)
 	logger.Debug("Create invoked")
 
+	input := &types.OAuth2ClientTokenDatabaseCreationInput{
+		RefreshCreateAt:     info.GetRefreshCreateAt(),
+		AccessCreateAt:      info.GetAccessCreateAt(),
+		CodeCreateAt:        info.GetCodeCreateAt(),
+		RedirectURI:         info.GetRedirectURI(),
+		Scope:               info.GetScope(),
+		Code:                info.GetCode(),
+		CodeChallenge:       info.GetCodeChallenge(),
+		CodeChallengeMethod: info.GetCodeChallengeMethod().String(),
+		BelongsToUser:       info.GetUserID(),
+		Access:              info.GetAccess(),
+		ClientID:            info.GetClientID(),
+		Refresh:             info.GetRefresh(),
+		ID:                  identifiers.New(),
+		CodeExpiresIn:       info.GetCodeExpiresIn(),
+		AccessExpiresIn:     info.GetAccessExpiresIn(),
+		RefreshExpiresIn:    info.GetRefreshExpiresIn(),
+	}
+
+	_, err := s.dataManager.CreateOAuth2ClientToken(ctx, input)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "creating oauth2 client token")
+	}
+
 	return nil
 }
 
+// RemoveByCode implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) RemoveByCode(ctx context.Context, code string) error {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -34,9 +63,14 @@ func (s *oauth2TokenStoreImpl) RemoveByCode(ctx context.Context, code string) er
 	logger := s.logger.WithValue("code", code)
 	logger.Debug("RemoveByCode invoked")
 
+	if err := s.dataManager.ArchiveOAuth2ClientTokenByCode(ctx, code); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by code")
+	}
+
 	return nil
 }
 
+// RemoveByAccess implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) RemoveByAccess(ctx context.Context, access string) error {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -44,9 +78,14 @@ func (s *oauth2TokenStoreImpl) RemoveByAccess(ctx context.Context, access string
 	logger := s.logger.WithValue("access", access)
 	logger.Debug("RemoveByAccess invoked")
 
+	if err := s.dataManager.ArchiveOAuth2ClientTokenByAccess(ctx, access); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by access")
+	}
+
 	return nil
 }
 
+// RemoveByRefresh implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) RemoveByRefresh(ctx context.Context, refresh string) error {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -54,9 +93,14 @@ func (s *oauth2TokenStoreImpl) RemoveByRefresh(ctx context.Context, refresh stri
 	logger := s.logger.WithValue("refresh", refresh)
 	logger.Debug("RemoveByRefresh invoked")
 
+	if err := s.dataManager.ArchiveOAuth2ClientTokenByRefresh(ctx, refresh); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by refresh")
+	}
+
 	return nil
 }
 
+// GetByCode implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) GetByCode(ctx context.Context, code string) (oauth2.TokenInfo, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -64,9 +108,15 @@ func (s *oauth2TokenStoreImpl) GetByCode(ctx context.Context, code string) (oaut
 	logger := s.logger.WithValue("code", code)
 	logger.Debug("GetByCode invoked")
 
-	return nil, nil
+	token, err := s.dataManager.GetOAuth2ClientTokenByCode(ctx, code)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by code")
+	}
+
+	return convertTokenToImpl(token), nil
 }
 
+// GetByAccess implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) GetByAccess(ctx context.Context, access string) (oauth2.TokenInfo, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -74,9 +124,15 @@ func (s *oauth2TokenStoreImpl) GetByAccess(ctx context.Context, access string) (
 	logger := s.logger.WithValue("access", access)
 	logger.Debug("GetByAccess invoked")
 
-	return nil, nil
+	token, err := s.dataManager.GetOAuth2ClientTokenByAccess(ctx, access)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by code")
+	}
+
+	return convertTokenToImpl(token), nil
 }
 
+// GetByRefresh implements the requisite oauth2 interface.
 func (s *oauth2TokenStoreImpl) GetByRefresh(ctx context.Context, refresh string) (oauth2.TokenInfo, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -84,5 +140,10 @@ func (s *oauth2TokenStoreImpl) GetByRefresh(ctx context.Context, refresh string)
 	logger := s.logger.WithValue("refresh", refresh)
 	logger.Debug("GetByRefresh invoked")
 
-	return nil, nil
+	token, err := s.dataManager.GetOAuth2ClientTokenByRefresh(ctx, refresh)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by code")
+	}
+
+	return convertTokenToImpl(token), nil
 }

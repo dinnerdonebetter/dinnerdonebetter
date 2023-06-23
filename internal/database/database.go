@@ -108,5 +108,6 @@ type (
 		types.RecipeRatingDataManager
 		types.HouseholdInstrumentOwnershipDataManager
 		types.OAuth2ClientDataManager
+		types.OAuth2ClientTokenDataManager
 	}
 )

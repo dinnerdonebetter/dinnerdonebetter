@@ -37,7 +37,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 		exampleAPIClientList := fakes.BuildFakeAPIClientList()
 
 		mockDB := database.NewMockDatabase()
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"GetAPIClients",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -89,7 +89,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"GetAPIClients",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -119,7 +119,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"GetAPIClients",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -164,7 +164,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -195,7 +195,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
 			apiClientCreationInputMatcher,
@@ -275,7 +275,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -304,13 +304,13 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		mockDB := database.NewMockDatabase()
 
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
 			apiClientCreationInputMatcher,
@@ -349,13 +349,13 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
 			apiClientCreationInputMatcher,
@@ -394,7 +394,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -419,7 +419,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
 
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
 			apiClientCreationInputMatcher,
@@ -448,7 +448,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -479,7 +479,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return([]byte(nil), errors.New("blah"))
 		helper.service.secretGenerator = sg
 
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
 			apiClientCreationInputMatcher,
@@ -506,7 +506,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -536,7 +536,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
 			apiClientCreationInputMatcher,
@@ -565,7 +565,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
+		mockDB.UserDataManagerMock.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
@@ -596,7 +596,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
-		mockDB.APIClientDataManager.On(
+		mockDB.APIClientDataManagerMock.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
 			apiClientCreationInputMatcher,
@@ -626,7 +626,7 @@ func TestAPIClientsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByDatabaseID",
 			testutils.ContextMatcher,
@@ -679,7 +679,7 @@ func TestAPIClientsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByDatabaseID",
 			testutils.ContextMatcher,
@@ -708,7 +708,7 @@ func TestAPIClientsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByDatabaseID",
 			testutils.ContextMatcher,
@@ -741,7 +741,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
@@ -793,7 +793,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
@@ -822,7 +822,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
@@ -851,7 +851,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,

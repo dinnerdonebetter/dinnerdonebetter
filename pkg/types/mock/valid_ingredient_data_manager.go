@@ -8,83 +8,83 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ types.ValidIngredientDataManager = (*ValidIngredientDataManager)(nil)
+var _ types.ValidIngredientDataManager = (*ValidIngredientDataManagerMock)(nil)
 
-// ValidIngredientDataManager is a mocked types.ValidIngredientDataManager for testing.
-type ValidIngredientDataManager struct {
+// ValidIngredientDataManagerMock is a mocked types.ValidIngredientDataManager for testing.
+type ValidIngredientDataManagerMock struct {
 	mock.Mock
 }
 
-func (m *ValidIngredientDataManager) SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+func (m *ValidIngredientDataManagerMock) SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
 	args := m.Called(ctx, ingredientStateID, query, filter)
 	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
 }
 
 // ValidIngredientExists is a mock function.
-func (m *ValidIngredientDataManager) ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error) {
+func (m *ValidIngredientDataManagerMock) ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error) {
 	args := m.Called(ctx, validIngredientID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetValidIngredient is a mock function.
-func (m *ValidIngredientDataManager) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
+func (m *ValidIngredientDataManagerMock) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
 	args := m.Called(ctx, validIngredientID)
 	return args.Get(0).(*types.ValidIngredient), args.Error(1)
 }
 
 // GetRandomValidIngredient is a mock function.
-func (m *ValidIngredientDataManager) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
+func (m *ValidIngredientDataManagerMock) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(*types.ValidIngredient), args.Error(1)
 }
 
 // SearchForValidIngredients is a mock function.
-func (m *ValidIngredientDataManager) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+func (m *ValidIngredientDataManagerMock) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
 	args := m.Called(ctx, query, filter)
 	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
 }
 
 // SearchForValidIngredientsForPreparation is a mock function.
-func (m *ValidIngredientDataManager) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+func (m *ValidIngredientDataManagerMock) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
 	args := m.Called(ctx, preparationID, query, filter)
 	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), args.Error(1)
 }
 
 // GetValidIngredients is a mock function.
-func (m *ValidIngredientDataManager) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+func (m *ValidIngredientDataManagerMock) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
 	args := m.Called(ctx, filter)
 	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), args.Error(1)
 }
 
 // CreateValidIngredient is a mock function.
-func (m *ValidIngredientDataManager) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
+func (m *ValidIngredientDataManagerMock) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
 	args := m.Called(ctx, input)
 	return args.Get(0).(*types.ValidIngredient), args.Error(1)
 }
 
 // UpdateValidIngredient is a mock function.
-func (m *ValidIngredientDataManager) UpdateValidIngredient(ctx context.Context, updated *types.ValidIngredient) error {
+func (m *ValidIngredientDataManagerMock) UpdateValidIngredient(ctx context.Context, updated *types.ValidIngredient) error {
 	return m.Called(ctx, updated).Error(0)
 }
 
 // ArchiveValidIngredient is a mock function.
-func (m *ValidIngredientDataManager) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
+func (m *ValidIngredientDataManagerMock) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
 	return m.Called(ctx, validIngredientID).Error(0)
 }
 
 // MarkValidIngredientAsIndexed is a mock function.
-func (m *ValidIngredientDataManager) MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error {
+func (m *ValidIngredientDataManagerMock) MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error {
 	return m.Called(ctx, validIngredientID).Error(0)
 }
 
 // GetValidIngredientIDsThatNeedSearchIndexing is a mock function.
-func (m *ValidIngredientDataManager) GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+func (m *ValidIngredientDataManagerMock) GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	returnValues := m.Called(ctx)
 	return returnValues.Get(0).([]string), returnValues.Error(1)
 }
 
 // GetValidIngredientsWithIDs is a mock function.
-func (m *ValidIngredientDataManager) GetValidIngredientsWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredient, error) {
+func (m *ValidIngredientDataManagerMock) GetValidIngredientsWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredient, error) {
 	returnValues := m.Called(ctx, ids)
 	return returnValues.Get(0).([]*types.ValidIngredient), returnValues.Error(1)
 }

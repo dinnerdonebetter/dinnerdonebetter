@@ -19,7 +19,6 @@ func TestConfig_Validate(T *testing.T) {
 			AccessTokenLifespan:  1,
 			RefreshTokenLifespan: 1,
 			Domain:               t.Name(),
-			DataChangesTopicName: t.Name(),
 			Debug:                false,
 		}
 

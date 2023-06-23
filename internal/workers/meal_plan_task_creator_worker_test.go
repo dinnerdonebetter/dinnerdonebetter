@@ -58,7 +58,7 @@ func TestMealPlanTaskCreationEnsurerWorker_HandleMessage(T *testing.T) {
 		ctx := context.Background()
 
 		mdm := database.NewMockDatabase()
-		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
+		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
 		w.dataManager = mdm
 
 		err := w.CreateMealPlanTasksForFinalizedMealPlans(ctx, []byte("{}"))
@@ -86,7 +86,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		expected := map[string][]*types.MealPlanTaskDatabaseCreationInput{}
 
 		mdm := database.NewMockDatabase()
-		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
+		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
 		w.dataManager = mdm
 
 		actual, err := w.DetermineCreatableMealPlanTasks(ctx)
@@ -200,7 +200,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		exampleFinalizedMealPlanResults := []*types.FinalizedMealPlanDatabaseResult{exampleFinalizedMealPlanResult}
 
 		mdm := database.NewMockDatabase()
-		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
+		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
 
 		expectedReturnResults := []*types.MealPlanTaskDatabaseCreationInput{
 			{
@@ -211,10 +211,10 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 
 		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		for _, result := range exampleFinalizedMealPlanResults {
-			mdm.MealPlanEventDataManager.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
+			mdm.MealPlanEventDataManagerMock.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
 
 			for _, recipeID := range result.RecipeIDs {
-				mdm.RecipeDataManager.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
+				mdm.RecipeDataManagerMock.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
 
 				mockAnalyzer.On(
 					"GenerateMealPlanTasksForRecipe",
@@ -394,7 +394,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		exampleFinalizedMealPlanResults := []*types.FinalizedMealPlanDatabaseResult{exampleFinalizedMealPlanResult}
 
 		mdm := database.NewMockDatabase()
-		mdm.MealPlanDataManager.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
+		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
 
 		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		expectedReturnResults := []*types.MealPlanTaskDatabaseCreationInput{
@@ -405,10 +405,10 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		}
 
 		for _, result := range exampleFinalizedMealPlanResults {
-			mdm.MealPlanEventDataManager.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
+			mdm.MealPlanEventDataManagerMock.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
 
 			for _, recipeID := range result.RecipeIDs {
-				mdm.RecipeDataManager.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
+				mdm.RecipeDataManagerMock.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
 
 				mockAnalyzer.On(
 					"GenerateMealPlanTasksForRecipe",

@@ -41,7 +41,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.WebhookDataManager.On(
+		dbManager.WebhookDataManagerMock.On(
 			"CreateWebhook",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.WebhookDatabaseCreationInput) bool { return true }),
@@ -143,7 +143,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.WebhookDataManager.On(
+		dbManager.WebhookDataManagerMock.On(
 			"CreateWebhook",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.WebhookDatabaseCreationInput) bool { return true }),
@@ -171,7 +171,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.WebhookDataManager.On(
+		dbManager.WebhookDataManagerMock.On(
 			"CreateWebhook",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.WebhookDatabaseCreationInput) bool { return true }),
@@ -203,7 +203,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 
 		exampleWebhookList := fakes.BuildFakeWebhookList()
 
-		wd := &mocktypes.WebhookDataManager{}
+		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhooks",
 			testutils.ContextMatcher,
@@ -243,7 +243,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.WebhookDataManager{}
+		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhooks",
 			testutils.ContextMatcher,
@@ -272,7 +272,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.WebhookDataManager{}
+		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhooks",
 			testutils.ContextMatcher,
@@ -304,7 +304,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.WebhookDataManager{}
+		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhook",
 			testutils.ContextMatcher,
@@ -344,7 +344,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.WebhookDataManager{}
+		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhook",
 			testutils.ContextMatcher,
@@ -372,7 +372,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.WebhookDataManager{}
+		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhook",
 			testutils.ContextMatcher,
@@ -404,7 +404,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		dataManager := &mocktypes.WebhookDataManager{}
+		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
 			testutils.ContextMatcher,
@@ -450,7 +450,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.WebhookDataManager{}
+		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"WebhookExists",
 			testutils.ContextMatcher,
@@ -478,7 +478,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.WebhookDataManager{}
+		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"WebhookExists",
 			testutils.ContextMatcher,
@@ -506,7 +506,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		dataManager := &mocktypes.WebhookDataManager{}
+		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
 			testutils.ContextMatcher,
@@ -533,7 +533,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		dataManager := &mocktypes.WebhookDataManager{}
+		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
 			testutils.ContextMatcher,

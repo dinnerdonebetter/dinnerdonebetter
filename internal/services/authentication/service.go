@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -50,6 +51,7 @@ type (
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
 		tracer                     tracing.Tracer
 		dataChangesPublisher       messagequeue.Publisher
+		oauth2Service              *oauth2.Service
 	}
 )
 
@@ -68,6 +70,7 @@ func ProvideService(
 	secretGenerator random.Generator,
 	emailer email.Emailer,
 	featureFlagManager featureflags.FeatureFlagManager,
+	oauth2Service *oauth2.Service,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
@@ -95,6 +98,7 @@ func ProvideService(
 		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
+		oauth2Service:              oauth2Service,
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {

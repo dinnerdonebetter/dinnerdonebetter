@@ -17,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
+	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -208,9 +209,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 
 	emailConfig := emailconfig.Config{
 		Provider: emailconfig.ProviderSendgrid,
-		Sendgrid: &sendgrid.Config{
-			WebAppURL: "https://www.dinnerdonebetter.dev",
-		},
+		Sendgrid: &sendgrid.Config{},
 	}
 
 	analyticsConfig := analyticsconfig.Config{
@@ -245,6 +244,12 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		Search: searchcfg.Config{
 			Algolia:  &algolia.Config{},
 			Provider: searchcfg.AlgoliaProvider,
+		},
+		OAuth2: oauth2.Config{
+			Domain:               "https://dinnerdonebetter.dev",
+			AccessTokenLifespan:  time.Hour,
+			RefreshTokenLifespan: time.Hour,
+			Debug:                false,
 		},
 		Database: dbconfig.Config{
 			Debug:           true,
@@ -382,6 +387,12 @@ func buildDevConfig() *config.InstanceConfig {
 		Search: searchcfg.Config{
 			Algolia:  &algolia.Config{},
 			Provider: searchcfg.AlgoliaProvider,
+		},
+		OAuth2: oauth2.Config{
+			Domain:               "http://localhost:9000",
+			AccessTokenLifespan:  time.Hour,
+			RefreshTokenLifespan: time.Hour,
+			Debug:                false,
 		},
 		Server: localServer,
 		Database: dbconfig.Config{
@@ -608,6 +619,12 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Debug:           false,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
+		},
+		OAuth2: oauth2.Config{
+			Domain:               "http://localhost:9000",
+			AccessTokenLifespan:  time.Hour,
+			RefreshTokenLifespan: time.Hour,
+			Debug:                false,
 		},
 		Database: dbconfig.Config{
 			Debug:             true,

@@ -2,7 +2,11 @@ package oauth2
 
 import (
 	"net/http"
+
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
+
+var _ types.OAuth2Service = (*Service)(nil)
 
 // AuthorizeHandler is our oauth2 auth route.
 func (s *Service) AuthorizeHandler(res http.ResponseWriter, req *http.Request) {

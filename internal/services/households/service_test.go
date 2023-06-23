@@ -19,8 +19,8 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                         logging.NewNoopLogger(),
-		householdDataManager:           &mocktypes.HouseholdDataManager{},
-		householdMembershipDataManager: &mocktypes.HouseholdUserMembershipDataManager{},
+		householdDataManager:           &mocktypes.HouseholdDataManagerMock{},
+		householdMembershipDataManager: &mocktypes.HouseholdUserMembershipDataManagerMock{},
 		householdIDFetcher:             func(req *http.Request) string { return "" },
 		encoderDecoder:                 mockencoding.NewMockEncoderDecoder(),
 		tracer:                         tracing.NewTracerForTest("test"),
@@ -53,9 +53,9 @@ func TestProvideHouseholdsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.HouseholdDataManager{},
-			&mocktypes.HouseholdInvitationDataManager{},
-			&mocktypes.HouseholdUserMembershipDataManager{},
+			&mocktypes.HouseholdDataManagerMock{},
+			&mocktypes.HouseholdInvitationDataManagerMock{},
+			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -82,9 +82,9 @@ func TestProvideHouseholdsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.HouseholdDataManager{},
-			&mocktypes.HouseholdInvitationDataManager{},
-			&mocktypes.HouseholdUserMembershipDataManager{},
+			&mocktypes.HouseholdDataManagerMock{},
+			&mocktypes.HouseholdInvitationDataManagerMock{},
+			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,

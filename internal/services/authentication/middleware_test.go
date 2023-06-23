@@ -142,7 +142,7 @@ func TestAuthenticationService_CookieAuthenticationMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdUserMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdUserMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdUserMembershipDataManager.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -184,7 +184,7 @@ func TestAuthenticationService_UserAttributionMiddleware(T *testing.T) {
 			HouseholdPermissions: helper.examplePermCheckers,
 		}
 
-		mockHouseholdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		mockHouseholdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		mockHouseholdMembershipManager.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -213,7 +213,7 @@ func TestAuthenticationService_UserAttributionMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mockHouseholdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		mockHouseholdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		mockHouseholdMembershipManager.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -293,7 +293,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 			HouseholdPermissions: helper.examplePermCheckers,
 		}
 
-		mockUserDataManager := &mocktypes.UserDataManager{}
+		mockUserDataManager := &mocktypes.UserDataManagerMock{}
 		mockUserDataManager.On(
 			"GetSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -336,7 +336,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 			HouseholdPermissions: helper.examplePermCheckers,
 		}
 
-		mockUserDataManager := &mocktypes.UserDataManager{}
+		mockUserDataManager := &mocktypes.UserDataManagerMock{}
 		mockUserDataManager.On(
 			"GetSessionContextDataForUser",
 			testutils.ContextMatcher,

@@ -20,7 +20,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                              logging.NewNoopLogger(),
-		userIngredientPreferenceDataManager: &mocktypes.UserIngredientPreferenceDataManager{},
+		userIngredientPreferenceDataManager: &mocktypes.UserIngredientPreferenceDataManagerMock{},
 		userIngredientPreferenceIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                      mockencoding.NewMockEncoderDecoder(),
 		tracer:                              tracing.NewTracerForTest("test"),
@@ -53,7 +53,7 @@ func TestProvideUserIngredientPreferencesService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
-			&mocktypes.UserIngredientPreferenceDataManager{},
+			&mocktypes.UserIngredientPreferenceDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -83,7 +83,7 @@ func TestProvideUserIngredientPreferencesService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
-			&mocktypes.UserIngredientPreferenceDataManager{},
+			&mocktypes.UserIngredientPreferenceDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

@@ -17,13 +17,6 @@ services:
             driver: none
         ports:
             - '5432:5432'
-    tracing-server:
-        image: jaegertracing/all-in-one:1.22.0
-        logging:
-            driver: none
-        ports:
-          - "16686:16686"
-          - "14268:14268"
     queue_loader:
       environment:
         TARGET_ADDRESS: 'http://api_server:8000'

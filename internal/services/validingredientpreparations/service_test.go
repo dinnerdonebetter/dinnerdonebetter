@@ -19,7 +19,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                                logging.NewNoopLogger(),
-		validIngredientPreparationDataManager: &mocktypes.ValidIngredientPreparationDataManager{},
+		validIngredientPreparationDataManager: &mocktypes.ValidIngredientPreparationDataManagerMock{},
 		validIngredientPreparationIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                        mockencoding.NewMockEncoderDecoder(),
 		tracer:                                tracing.NewTracerForTest("test"),
@@ -56,7 +56,7 @@ func TestProvideValidIngredientPreparationsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.ValidIngredientPreparationDataManager{},
+			&mocktypes.ValidIngredientPreparationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -82,7 +82,7 @@ func TestProvideValidIngredientPreparationsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.ValidIngredientPreparationDataManager{},
+			&mocktypes.ValidIngredientPreparationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

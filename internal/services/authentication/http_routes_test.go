@@ -196,7 +196,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -215,7 +215,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -252,7 +252,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetAdminUserByUsername",
 			testutils.ContextMatcher,
@@ -271,7 +271,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -311,7 +311,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		expectedCookieDomain := ".whocares.gov"
 		helper.req.Header.Set(customCookieDomainHeader, expectedCookieDomain)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -330,7 +330,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -405,7 +405,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -434,7 +434,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -466,7 +466,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -495,7 +495,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -535,7 +535,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -575,7 +575,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -615,7 +615,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -656,7 +656,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -696,7 +696,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -715,7 +715,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -744,7 +744,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -763,7 +763,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -796,7 +796,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -815,7 +815,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -849,7 +849,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -868,7 +868,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -914,7 +914,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return("", errors.New("blah"))
 		helper.service.cookieManager = cb
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -933,7 +933,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -970,7 +970,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return("", errors.New("blah"))
 		helper.service.cookieManager = cb
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -989,7 +989,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -1018,7 +1018,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -1037,7 +1037,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -1079,7 +1079,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1168,7 +1168,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1199,7 +1199,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1230,7 +1230,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1265,7 +1265,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1301,7 +1301,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1340,7 +1340,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1376,7 +1376,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1415,7 +1415,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1677,7 +1677,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByClientID",
 			testutils.ContextMatcher,
@@ -1685,7 +1685,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientManager = apiClientDataManager
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1693,7 +1693,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -1774,7 +1774,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByClientID",
 			testutils.ContextMatcher,
@@ -1782,7 +1782,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientManager = apiClientDataManager
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1790,7 +1790,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -1957,7 +1957,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByClientID",
 			testutils.ContextMatcher,
@@ -2004,7 +2004,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByClientID",
 			testutils.ContextMatcher,
@@ -2012,7 +2012,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientManager = apiClientDataManager
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -2059,7 +2059,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByClientID",
 			testutils.ContextMatcher,
@@ -2067,7 +2067,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientManager = apiClientDataManager
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -2075,7 +2075,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -2122,7 +2122,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByClientID",
 			testutils.ContextMatcher,
@@ -2167,7 +2167,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByClientID",
 			testutils.ContextMatcher,
@@ -2175,7 +2175,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientManager = apiClientDataManager
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -2185,7 +2185,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 
 		delete(helper.sessionCtxData.HouseholdPermissions, helper.exampleHousehold.ID)
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -2230,7 +2230,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager := &mocktypes.APIClientDataManagerMock{}
 		apiClientDataManager.On(
 			"GetAPIClientByClientID",
 			testutils.ContextMatcher,
@@ -2238,7 +2238,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientManager = apiClientDataManager
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -2246,7 +2246,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,

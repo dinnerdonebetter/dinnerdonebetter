@@ -41,7 +41,7 @@ func TestProvideOAuth2ClientsService(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
-		mockOAuth2ClientDataManager := &mocktypes.OAuth2ClientDataManager{}
+		mockOAuth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
@@ -59,7 +59,7 @@ func TestProvideOAuth2ClientsService(T *testing.T) {
 		s, err := ProvideOAuth2ClientsService(
 			logging.NewNoopLogger(),
 			mockOAuth2ClientDataManager,
-			&mocktypes.UserDataManager{},
+			&mocktypes.UserDataManagerMock{},
 			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,

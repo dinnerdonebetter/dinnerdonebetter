@@ -46,7 +46,7 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeDatabaseCreationInput) bool { return true }),
@@ -139,7 +139,7 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeDatabaseCreationInput) bool { return true }),
@@ -168,7 +168,7 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeDatabaseCreationInput) bool { return true }),
@@ -202,7 +202,7 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -258,7 +258,7 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -289,7 +289,7 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -323,7 +323,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
@@ -376,7 +376,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
@@ -405,7 +405,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
@@ -441,7 +441,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
@@ -494,7 +494,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		).Return(recipeSearchSubsets, nil)
 		helper.service.searchIndex = searchIndex
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipesWithIDs",
 			testutils.ContextMatcher,
@@ -526,7 +526,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
@@ -557,7 +557,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
@@ -592,14 +592,14 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleUser.ID,
 		).Return(helper.exampleRecipe, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe,
@@ -681,7 +681,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
@@ -711,7 +711,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
@@ -742,14 +742,14 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleUser.ID,
 		).Return(helper.exampleRecipe, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe,
@@ -778,14 +778,14 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleUser.ID,
 		).Return(helper.exampleRecipe, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe,
@@ -817,13 +817,13 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -875,7 +875,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
@@ -903,7 +903,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
@@ -924,13 +924,13 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -951,13 +951,13 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -992,7 +992,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -1041,7 +1041,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -1064,7 +1064,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,

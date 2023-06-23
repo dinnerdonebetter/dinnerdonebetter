@@ -17,6 +17,7 @@ import (
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	graphing "github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -134,6 +135,7 @@ func Build(
 		householdinstrumentownershipsservice.Providers,
 		reciperatingsservice.Providers,
 		oauth2clientsservice.Providers,
+		oauth2.Providers,
 	)
 
 	return nil, nil
