@@ -20,7 +20,7 @@ const (
 	OAuth2ClientIDURIParamKey = "oauth2ClientID"
 
 	clientIDSize     = 32
-	clientSecretSize = 128
+	clientSecretSize = 32
 )
 
 // ListHandler is a handler that returns a list of OAuth2 clients.
@@ -87,7 +87,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch creation input from session context data.
 	input := new(types.OAuth2ClientCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
-		s.logger.Error(err, "error encountered decoding request body")
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
@@ -136,13 +135,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	dbInput := converters.ConvertOAuth2ClientCreationRequestInputToOAuth2ClientDatabaseCreationInput(input)
 
 	// set some data.
-	if dbInput.ClientID, err = s.secretGenerator.GenerateBase64EncodedString(ctx, clientIDSize); err != nil {
+	if dbInput.ClientID, err = s.secretGenerator.GenerateHexEncodedString(ctx, clientIDSize); err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating client id")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	if dbInput.ClientSecret, err = s.secretGenerator.GenerateBase64EncodedString(ctx, clientSecretSize); err != nil {
+	if dbInput.ClientSecret, err = s.secretGenerator.GenerateHexEncodedString(ctx, clientSecretSize); err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating client secret")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return

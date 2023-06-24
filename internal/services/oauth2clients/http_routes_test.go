@@ -181,12 +181,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		sg := &mockrandom.Generator{}
 		sg.On(
-			"GenerateBase64EncodedString",
+			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
 			clientIDSize,
 		).Return(helper.exampleOAuth2Client.ClientID, nil)
 		sg.On(
-			"GenerateBase64EncodedString",
+			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
 			clientSecretSize,
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)
@@ -410,7 +410,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		sg := &mockrandom.Generator{}
 		sg.On(
-			"GenerateBase64EncodedString",
+			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
 			clientIDSize,
 		).Return("", errors.New("blah"))
@@ -465,15 +465,10 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		sg := &mockrandom.Generator{}
 		sg.On(
-			"GenerateBase64EncodedString",
+			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
 			clientIDSize,
-		).Return(helper.exampleOAuth2Client.ClientID, nil)
-		sg.On(
-			"GenerateBase64EncodedString",
-			testutils.ContextMatcher,
-			clientSecretSize,
-		).Return("", errors.New("blah"))
+		).Return(helper.exampleOAuth2Client.ClientID, nil).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
 
 		mockDB.OAuth2ClientDataManagerMock.On(
@@ -522,12 +517,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		sg := &mockrandom.Generator{}
 		sg.On(
-			"GenerateBase64EncodedString",
+			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
 			clientIDSize,
 		).Return(helper.exampleOAuth2Client.ClientID, nil)
 		sg.On(
-			"GenerateBase64EncodedString",
+			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
 			clientSecretSize,
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)
@@ -582,12 +577,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		sg := &mockrandom.Generator{}
 		sg.On(
-			"GenerateBase64EncodedString",
+			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
 			clientIDSize,
 		).Return(helper.exampleOAuth2Client.ClientID, nil)
 		sg.On(
-			"GenerateBase64EncodedString",
+			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
 			clientSecretSize,
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)

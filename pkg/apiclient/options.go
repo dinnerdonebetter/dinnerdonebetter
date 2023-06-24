@@ -1,6 +1,10 @@
 package apiclient
 
 import (
+	"context"
+	"crypto/sha256"
+	"encoding/base64"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -10,6 +14,8 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/apiclient/requests"
 
 	"github.com/gorilla/websocket"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"golang.org/x/oauth2"
 )
 
 type option func(*Client) error
@@ -93,7 +99,7 @@ func UsingCookie(cookie *http.Cookie) func(*Client) error {
 			return ErrCookieRequired
 		}
 
-		crt := newCookieRoundTripper(c, cookie)
+		crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, cookie)
 		c.authMethod = cookieAuthMethod
 		c.authedClient.Transport = crt
 		c.authHeaderBuilder = crt
@@ -101,6 +107,75 @@ func UsingCookie(cookie *http.Cookie) func(*Client) error {
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
 
 		c.logger.Debug("set client auth cookie")
+
+		return nil
+	}
+}
+
+// UsingOAuth2 sets the client to use OAuth2.
+func UsingOAuth2(ctx context.Context, clientID, clientSecret string) func(*Client) error {
+	genCodeChallengeS256 := func(s string) string {
+		s256 := sha256.Sum256([]byte(s))
+		return base64.URLEncoding.EncodeToString(s256[:])
+	}
+
+	return func(c *Client) error {
+		oauth2Config := oauth2.Config{
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+			Scopes:       []string{"household_member"},
+			RedirectURL:  "http://localhost:9094/oauth2",
+			Endpoint: oauth2.Endpoint{
+				AuthURL:  c.URL().String() + "/oauth2/authorize",
+				TokenURL: c.URL().String() + "/oauth2/token",
+			},
+		}
+
+		// TODO: ephemeral server, change redirect URL?
+
+		req, err := http.NewRequestWithContext(
+			ctx,
+			http.MethodGet,
+			oauth2Config.AuthCodeURL(
+				"",
+				oauth2.SetAuthURLParam("code_challenge", genCodeChallengeS256("s256example")),
+				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
+			),
+			http.NoBody,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to get oauth2 code: %w", err)
+		}
+
+		res, err := otelhttp.DefaultClient.Do(req)
+		if err != nil {
+			return fmt.Errorf("failed to get oauth2 code: %w", err)
+		}
+		defer func() {
+			if closeErr := res.Body.Close(); closeErr != nil {
+				c.logger.Error(err, "failed to close oauth2 response body")
+			}
+		}()
+
+		code := res.Header.Get("code")
+
+		token, err := oauth2Config.Exchange(ctx, code,
+			oauth2.SetAuthURLParam("code_verifier", "s256example"),
+		)
+		if err != nil {
+			return err
+		}
+
+		c.authMethod = oauth2AuthMethod
+		c.authedClient.Transport = &oauth2.Transport{
+			Source: oauth2.ReuseTokenSource(token, oauth2.StaticTokenSource(token)),
+			Base:   otelhttp.DefaultClient.Transport,
+		}
+
+		// TODO: set authHeaderBuilder
+		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
+
+		c.logger.Debug("set client oauth2 token")
 
 		return nil
 	}

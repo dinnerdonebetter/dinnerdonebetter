@@ -3,13 +3,14 @@ package apiclient
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
-// cookieRoundtripper is a transport that uses a cookie.
+// cookieRoundtripper is a http.Transport that uses a cookie.
 type cookieRoundtripper struct {
 	cookie *http.Cookie
 
@@ -20,12 +21,12 @@ type cookieRoundtripper struct {
 	base http.RoundTripper
 }
 
-func newCookieRoundTripper(client *Client, cookie *http.Cookie) *cookieRoundtripper {
+func newCookieRoundTripper(logger logging.Logger, tracer tracing.Tracer, timeout time.Duration, cookie *http.Cookie) *cookieRoundtripper {
 	return &cookieRoundtripper{
 		cookie: cookie,
-		logger: client.logger,
-		tracer: client.tracer,
-		base:   newDefaultRoundTripper(client.unauthenticatedClient.Timeout),
+		logger: logger,
+		tracer: tracer,
+		base:   newDefaultRoundTripper(timeout),
 	}
 }
 

@@ -38,13 +38,10 @@ func TestIntegration(t *testing.T) {
 type TestSuite struct {
 	suite.Suite
 
-	ctx    context.Context
-	user   *types.User
-	cookie *http.Cookie
-	cookieClient,
-	pasetoClient,
-	adminCookieClient,
-	adminPASETOClient *apiclient.Client
+	ctx                             context.Context
+	user                            *types.User
+	cookie                          *http.Cookie
+	cookieClient, adminCookieClient *apiclient.Client
 }
 
 var _ suite.SetupTestSuite = (*TestSuite)(nil)

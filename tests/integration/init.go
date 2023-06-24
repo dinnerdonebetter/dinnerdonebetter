@@ -20,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -35,6 +36,8 @@ var (
 	urlToUse       string
 	parsedURLToUse *url.URL
 	dbmanager      database.DataManager
+
+	createdClientID, createdClientSecret string
 
 	premadeAdminUser = &types.User{
 		ID:              identifiers.New(),
@@ -101,6 +104,28 @@ func init() {
 	if err = dbmanager.MarkUserTwoFactorSecretAsVerified(ctx, premadeAdminUser.ID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		panic(err)
 	}
+
+	clientID, err := random.GenerateHexEncodedString(ctx, 32)
+	if err != nil {
+		panic(err)
+	}
+	clientSecret, err := random.GenerateHexEncodedString(ctx, 32)
+	if err != nil {
+		panic(err)
+	}
+
+	createdClient, err := dbmanager.CreateOAuth2Client(ctx, &types.OAuth2ClientDatabaseCreationInput{
+		ID:           identifiers.New(),
+		Name:         "integration_client",
+		Description:  "integration test client",
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	createdClientID, createdClientSecret = createdClient.ClientID, createdClient.ClientSecret
 
 	db, err := sql.Open("postgres", dbAddr)
 	if err != nil {

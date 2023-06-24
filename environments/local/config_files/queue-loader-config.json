@@ -40,11 +40,54 @@
 	"encoding": {
 		"contentType": "application/json"
 	},
-	"oauth2": {
-		"domain": "http://localhost:9000",
-		"accessTokenLifespan": 3600000000000,
-		"refreshTokenLifespan": 3600000000000,
-		"debug": false
+	"routing": {
+		"provider": "chi",
+		"enableCORSForLocalhost": true
+	},
+	"meta": {
+		"runMode": "development",
+		"debug": true
+	},
+	"events": {
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		},
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		}
+	},
+	"server": {
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
+		"debug": true
+	},
+	"database": {
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
+		"debug": true,
+		"logQueries": false,
+		"runMigrations": false,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000
 	},
 	"services": {
 		"validIngredientGroups": {
@@ -223,59 +266,16 @@
 				"localModeKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 				"lifetime": 60000000000
 			},
+			"oauth2": {
+				"domain": "http://localhost:9000",
+				"accessTokenLifespan": 3600000000000,
+				"refreshTokenLifespan": 3600000000000,
+				"debug": false
+			},
 			"debug": true,
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
 		}
-	},
-	"routing": {
-		"provider": "chi",
-		"enableCORSForLocalhost": true
-	},
-	"meta": {
-		"runMode": "development",
-		"debug": true
-	},
-	"events": {
-		"consumers": {
-			"provider": "redis",
-			"sqs": {
-				"messageQueueAddress": ""
-			},
-			"pubsub": {},
-			"redis": {
-				"username": "",
-				"queueAddress": [
-					"worker_queue:6379"
-				]
-			}
-		},
-		"publishers": {
-			"provider": "redis",
-			"sqs": {
-				"messageQueueAddress": ""
-			},
-			"pubsub": {},
-			"redis": {
-				"username": "",
-				"queueAddress": [
-					"worker_queue:6379"
-				]
-			}
-		}
-	},
-	"server": {
-		"startupDeadline": 60000000000,
-		"httpPort": 8000,
-		"debug": true
-	},
-	"database": {
-		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
-		"debug": true,
-		"logQueries": false,
-		"runMigrations": false,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000
 	}
 }

@@ -32,6 +32,7 @@ type authMethod struct{}
 var (
 	cookieAuthMethod   = new(authMethod)
 	pasetoAuthMethod   = new(authMethod)
+	oauth2AuthMethod   = new(authMethod)
 	defaultContentType = encoding.ContentTypeJSON
 
 	errInvalidResponseCode = errors.New("invalid response code")
