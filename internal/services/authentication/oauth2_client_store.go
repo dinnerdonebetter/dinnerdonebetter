@@ -1,4 +1,4 @@
-package oauth2
+package authentication
 
 import (
 	"context"
@@ -21,10 +21,10 @@ type oauth2ClientStoreImpl struct {
 	domain      string
 }
 
-func newOAuth2ClientStore(domain string, logger logging.Logger, tracerProvider tracing.TracerProvider, dataManager types.OAuth2ClientDataManager) oauth2.ClientStore {
+func newOAuth2ClientStore(domain string, logger logging.Logger, tracer tracing.Tracer, dataManager types.OAuth2ClientDataManager) oauth2.ClientStore {
 	return &oauth2ClientStoreImpl{
 		domain:      domain,
-		tracer:      tracing.NewTracer(tracerProvider.Tracer("oauth2_client_store")),
+		tracer:      tracer,
 		logger:      logging.EnsureLogger(logger),
 		dataManager: dataManager,
 	}

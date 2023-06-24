@@ -248,21 +248,8 @@ start_infra:
 	docker-compose \
 	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
 	--detach \
+	--remove-orphans \
 	postgres worker_queue
-
-.PHONY: start_postgres
-start_postgres:
-	docker-compose \
-	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
-	--detach \
-	postgres
-
-.PHONY: start_redis
-start_redis:
-	docker-compose \
-	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
-	--detach \
-	queue
 
 ## misc
 

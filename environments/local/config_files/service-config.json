@@ -131,7 +131,7 @@
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {
-						"rootDirectory": "/uploads"
+						"rootDirectory": "artifacts/uploads"
 					},
 					"bucketName": "avatars",
 					"uploadFilenameKey": "avatar",
@@ -146,7 +146,7 @@
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {
-						"rootDirectory": "/uploads"
+						"rootDirectory": "artifacts/uploads"
 					},
 					"bucketName": "recipe_media",
 					"uploadFilenameKey": "recipe_media",
@@ -199,7 +199,7 @@
 			"uploads": {
 				"storageConfig": {
 					"filesystem": {
-						"rootDirectory": "/uploads"
+						"rootDirectory": "artifacts/uploads"
 					},
 					"bucketName": "recipe_media",
 					"uploadFilenameKey": "recipe_media",
@@ -213,7 +213,7 @@
 			"dataChanges": "data_changes",
 			"cookies": {
 				"name": "ddb_api_cookie",
-				"domain": ".whatever.gov",
+				"domain": ".localhost",
 				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
 				"lifetime": 86400000000000
@@ -247,7 +247,7 @@
 			"redis": {
 				"username": "",
 				"queueAddress": [
-					"worker_queue:6379"
+					"localhost:6379"
 				]
 			}
 		},
@@ -260,7 +260,7 @@
 			"redis": {
 				"username": "",
 				"queueAddress": [
-					"worker_queue:6379"
+					"localhost:6379"
 				]
 			}
 		}
@@ -271,7 +271,7 @@
 		"debug": true
 	},
 	"database": {
-		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
+		"connectionDetails": "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable",
 		"debug": true,
 		"logQueries": true,
 		"runMigrations": true,

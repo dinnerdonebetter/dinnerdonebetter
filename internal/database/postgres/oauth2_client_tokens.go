@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -20,6 +21,10 @@ func (q *Querier) scanOAuth2ClientToken(ctx context.Context, scan database.Scann
 
 	x = &types.OAuth2ClientToken{}
 
+	var (
+		codeExpiresAt, accessExpiresAt, refreshExpiresAt time.Time
+	)
+
 	targetVars := []any{
 		&x.ID,
 		&x.ClientID,
@@ -30,18 +35,22 @@ func (q *Querier) scanOAuth2ClientToken(ctx context.Context, scan database.Scann
 		&x.CodeChallenge,
 		&x.CodeChallengeMethod,
 		&x.CodeCreateAt,
-		&x.CodeExpiresIn,
+		&codeExpiresAt,
 		&x.Access,
 		&x.AccessCreateAt,
-		&x.AccessExpiresIn,
+		&accessExpiresAt,
 		&x.Refresh,
 		&x.RefreshCreateAt,
-		&x.RefreshExpiresIn,
+		&refreshExpiresAt,
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, observability.PrepareError(err, span, "")
 	}
+
+	x.CodeExpiresIn = codeExpiresAt.Sub(x.CodeCreateAt)
+	x.AccessExpiresIn = accessExpiresAt.Sub(x.AccessCreateAt)
+	x.RefreshExpiresIn = refreshExpiresAt.Sub(x.RefreshCreateAt)
 
 	return x, nil
 }

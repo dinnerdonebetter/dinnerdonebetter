@@ -17,7 +17,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
-	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -245,12 +244,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			Algolia:  &algolia.Config{},
 			Provider: searchcfg.AlgoliaProvider,
 		},
-		OAuth2: oauth2.Config{
-			Domain:               "https://dinnerdonebetter.dev",
-			AccessTokenLifespan:  time.Hour,
-			RefreshTokenLifespan: time.Hour,
-			Debug:                false,
-		},
 		Database: dbconfig.Config{
 			Debug:           true,
 			LogQueries:      true,
@@ -274,6 +267,12 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				PASETO: authservice.PASETOConfig{
 					Issuer:   pasteoIssuer,
 					Lifetime: defaultPASETOLifetime,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "https://dinnerdonebetter.dev",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
 				},
 				Cookies:               cookieConfig,
 				Debug:                 true,
@@ -388,12 +387,6 @@ func buildDevConfig() *config.InstanceConfig {
 			Algolia:  &algolia.Config{},
 			Provider: searchcfg.AlgoliaProvider,
 		},
-		OAuth2: oauth2.Config{
-			Domain:               "http://localhost:9000",
-			AccessTokenLifespan:  time.Hour,
-			RefreshTokenLifespan: time.Hour,
-			Debug:                false,
-		},
 		Server: localServer,
 		Database: dbconfig.Config{
 			Debug:             true,
@@ -408,6 +401,25 @@ func buildDevConfig() *config.InstanceConfig {
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			Auth: authservice.Config{
+				PASETO: authservice.PASETOConfig{
+					Issuer:       pasteoIssuer,
+					Lifetime:     defaultPASETOLifetime,
+					LocalModeKey: examplePASETOKey,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "http://localhost:9000",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
+				},
+				Cookies:               localCookies,
+				Debug:                 true,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -427,19 +439,6 @@ func buildDevConfig() *config.InstanceConfig {
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
-			},
-			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:       pasteoIssuer,
-					Lifetime:     defaultPASETOLifetime,
-					LocalModeKey: examplePASETOKey,
-				},
-				Cookies:               localCookies,
-				Debug:                 true,
-				EnableUserSignup:      true,
-				MinimumUsernameLength: 3,
-				MinimumPasswordLength: 8,
-				DataChangesTopicName:  dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -620,12 +619,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 		},
-		OAuth2: oauth2.Config{
-			Domain:               "http://localhost:9000",
-			AccessTokenLifespan:  time.Hour,
-			RefreshTokenLifespan: time.Hour,
-			Debug:                false,
-		},
 		Database: dbconfig.Config{
 			Debug:             true,
 			RunMigrations:     true,
@@ -642,6 +635,32 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			Auth: authservice.Config{
+				PASETO: authservice.PASETOConfig{
+					Issuer:       pasteoIssuer,
+					Lifetime:     defaultPASETOLifetime,
+					LocalModeKey: examplePASETOKey,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "http://localhost:9000",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
+				},
+				Cookies: authservice.CookieConfig{
+					Name:       defaultCookieName,
+					Domain:     defaultCookieDomain,
+					HashKey:    debugCookieSecret,
+					BlockKey:   debugCookieSigningKey,
+					Lifetime:   authservice.DefaultCookieLifetime,
+					SecureOnly: false,
+				},
+				Debug:                 false,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -658,26 +677,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
-			},
-			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:       pasteoIssuer,
-					Lifetime:     defaultPASETOLifetime,
-					LocalModeKey: examplePASETOKey,
-				},
-				Cookies: authservice.CookieConfig{
-					Name:       defaultCookieName,
-					Domain:     defaultCookieDomain,
-					HashKey:    debugCookieSecret,
-					BlockKey:   debugCookieSigningKey,
-					Lifetime:   authservice.DefaultCookieLifetime,
-					SecureOnly: false,
-				},
-				Debug:                 false,
-				EnableUserSignup:      true,
-				MinimumUsernameLength: 3,
-				MinimumPasswordLength: 8,
-				DataChangesTopicName:  dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,

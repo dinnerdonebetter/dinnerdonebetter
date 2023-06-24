@@ -1,4 +1,4 @@
-package oauth2
+package authentication
 
 import (
 	"time"

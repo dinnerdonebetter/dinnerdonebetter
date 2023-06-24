@@ -77,7 +77,9 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 	authenticatedRouter.Get("/auth/status", s.authService.StatusHandler)
 
 	router.Route("/oauth2", func(userRouter routing.Router) {
-		userRouter.Post("/authorize", s.authService.AuthorizeHandler)
+		userRouter.
+			WithMiddleware(s.authService.CookieRequirementMiddleware, s.authService.UserAttributionMiddleware).
+			Get("/authorize", s.authService.AuthorizeHandler)
 		userRouter.Post("/token", s.authService.TokenHandler)
 	})
 

@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	featureflagsconfig "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
@@ -47,13 +46,12 @@ type (
 		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
 		FeatureFlags  featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
 		Encoding      encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
-		OAuth2        oauth2.Config             `json:"oauth2"        toml:"oauth2,omitempty"`
-		Services      ServicesConfig            `json:"services"      toml:"services,omitempty"`
 		Routing       routing.Config            `json:"routing"       toml:"routing,omitempty"`
 		Meta          MetaSettings              `json:"meta"          toml:"meta,omitempty"`
 		Events        msgconfig.Config          `json:"events"        toml:"events,omitempty"`
 		Server        http.Config               `json:"server"        toml:"server,omitempty"`
 		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`
+		Services      ServicesConfig            `json:"services"      toml:"services,omitempty"`
 	}
 )
 
@@ -86,7 +84,6 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		"Email":         cfg.Email.ValidateWithContext,
 		"FeatureFlags":  cfg.FeatureFlags.ValidateWithContext,
 		"Search":        cfg.Search.ValidateWithContext,
-		"OAuth2":        cfg.OAuth2.ValidateWithContext,
 	}
 
 	for name, validator := range validators {

@@ -8,7 +8,8 @@ import (
 type (
 	// OAuth2ClientToken represents a user-authorized OAuth2 client's token.
 	OAuth2ClientToken struct {
-		_                   struct{}
+		_ struct{}
+
 		RefreshCreateAt     time.Time     `json:"refreshCreateAt"`
 		AccessCreateAt      time.Time     `json:"accessCreateAt"`
 		CodeCreateAt        time.Time     `json:"codeCreateAt"`
@@ -29,7 +30,8 @@ type (
 
 	// OAuth2ClientTokenDatabaseCreationInput represents a user-authorized OAuth2 client's token's database creation input.
 	OAuth2ClientTokenDatabaseCreationInput struct {
-		_                   struct{}
+		_ struct{}
+
 		RefreshCreateAt     time.Time
 		AccessCreateAt      time.Time
 		CodeCreateAt        time.Time

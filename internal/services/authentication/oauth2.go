@@ -1,11 +1,10 @@
-package oauth2
+package authentication
 
 import (
 	"context"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -17,51 +16,35 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 )
 
-const (
-	serviceName = "oauth2_service"
-)
-
-type (
-	// Service handles oauth2.
-	Service struct {
-		logger         logging.Logger
-		tracer         tracing.Tracer
-		encoderDecoder encoding.ServerEncoderDecoder
-		oauth2Server   *server.Server
-	}
-)
-
-// ProvideOAuth2Service builds a new oauth2 Service.
-func ProvideOAuth2Service(
+func ProvideOAuth2ServerImplementation(
 	_ context.Context,
 	logger logging.Logger,
-	cfg *Config,
+	tracer tracing.Tracer,
+	cfg *OAuth2Config,
 	dataManager database.DataManager,
-	encoder encoding.ServerEncoderDecoder,
-	tracerProvider tracing.TracerProvider,
-) (*Service, error) {
+) *server.Server {
 	manager := manage.NewManager()
 	manager.MapAuthorizeGenerate(generates.NewAuthorizeGenerate())
 	manager.MapAccessGenerate(generates.NewAccessGenerate())
 
 	// token memory store
 	manager.MapTokenStorage(&oauth2TokenStoreImpl{
-		tracer:      tracing.NewTracer(tracerProvider.Tracer("oauth2_token_store")),
+		tracer:      tracer,
 		logger:      logging.EnsureLogger(logger),
 		dataManager: dataManager,
 	})
 
 	// client memory store
-	manager.MapClientStorage(newOAuth2ClientStore(cfg.Domain, logger, tracerProvider, dataManager))
+	manager.MapClientStorage(newOAuth2ClientStore(cfg.Domain, logger, tracer, dataManager))
 
 	oauth2ServerConfig := &server.Config{
 		TokenType: "Bearer",
 		AllowedResponseTypes: []oauth2.ResponseType{
-			oauth2.Token,
+			// oauth2.Token,
+			oauth2.Code,
 		},
 		AllowedGrantTypes: []oauth2.GrantType{
-			// oauth2.ClientCredentials,
-			oauth2.PasswordCredentials,
+			oauth2.AuthorizationCode,
 			oauth2.Refreshing,
 		},
 		AllowedCodeChallengeMethods: []oauth2.CodeChallengeMethod{
@@ -72,7 +55,15 @@ func ProvideOAuth2Service(
 	oauth2Server := server.NewServer(oauth2ServerConfig, manager)
 
 	oauth2Server.UserAuthorizationHandler = func(res http.ResponseWriter, req *http.Request) (userID string, err error) {
-		return "", errors.ErrAccessDenied
+		_, span := tracer.StartCustomSpan(req.Context(), "oauth2_server.UserAuthorizationHandler")
+		defer span.End()
+
+		sessionCtx, err := FetchContextFromRequest(req)
+		if err != nil {
+			return "", errors.ErrAccessDenied
+		}
+
+		return sessionCtx.Requester.UserID, nil
 	}
 
 	oauth2Server.PasswordAuthorizationHandler = func(ctx context.Context, clientID, username, password string) (userID string, err error) {
@@ -120,12 +111,5 @@ func ProvideOAuth2Service(
 		observability.AcknowledgeError(res.Error, logger, nil, "oauth2 response error")
 	})
 
-	s := &Service{
-		logger:         logging.EnsureLogger(logger).WithName(serviceName),
-		encoderDecoder: encoder,
-		oauth2Server:   oauth2Server,
-		tracer:         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
-	}
-
-	return s, nil
+	return oauth2Server
 }

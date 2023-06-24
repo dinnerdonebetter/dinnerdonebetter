@@ -19,7 +19,6 @@ import (
 	config7 "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	config5 "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	config2 "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	config3 "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
@@ -98,8 +97,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	servicesConfig := &cfg.Services
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	userDataManager := database.ProvideUserDataManager(dataManager)
-	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
 	cookieConfig := authenticationConfig.Cookies
 	sessionManager, err := config4.ProvideSessionManager(cookieConfig, dataManager)
@@ -123,16 +120,12 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	oauth2Config := &cfg.OAuth2
-	service, err := oauth2.ProvideOAuth2Service(ctx, logger, oauth2Config, dataManager, serverEncoderDecoder, tracerProvider)
-	if err != nil {
-		return nil, err
-	}
-	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer, featureFlagManager, service)
+	authService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer, featureFlagManager)
 	if err != nil {
 		return nil, err
 	}
 	usersConfig := &servicesConfig.Users
+	userDataManager := database.ProvideUserDataManager(dataManager)
 	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
@@ -152,6 +145,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
+	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
 	apiclientsConfig := apiclients.ProvideConfig(authenticationConfig)
 	apiClientDataService, err := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, routeParamManager, apiclientsConfig, tracerProvider, generator, publisherProvider)
 	if err != nil {
@@ -329,7 +323,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	vendorproxyService, err := vendorproxy.ProvideService(logger, vendorproxyConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, featureFlagManager, eventReporter)
+	service, err := vendorproxy.ProvideService(logger, vendorproxyConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, featureFlagManager, eventReporter)
 	if err != nil {
 		return nil, err
 	}
@@ -369,7 +363,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, vendorproxyService, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService)
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService)
 	if err != nil {
 		return nil, err
 	}

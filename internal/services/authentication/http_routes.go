@@ -557,12 +557,17 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// AuthorizeHandler proxies the oauth2 service.
+var _ types.OAuth2Service = (*service)(nil)
+
+// AuthorizeHandler is our oauth2 auth route.
 func (s *service) AuthorizeHandler(res http.ResponseWriter, req *http.Request) {
-	s.oauth2Service.AuthorizeHandler(res, req)
+	if err := s.oauth2Server.HandleAuthorizeRequest(res, req); err != nil {
+		http.Error(res, err.Error(), http.StatusBadRequest)
+	}
 }
 
-// TokenHandler proxies the oauth2 service.
 func (s *service) TokenHandler(res http.ResponseWriter, req *http.Request) {
-	s.oauth2Service.TokenHandler(res, req)
+	if err := s.oauth2Server.HandleTokenRequest(res, req); err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+	}
 }

@@ -14,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/oauth2"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
@@ -88,12 +87,22 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 			Server: http.Config{
 				StartupDeadline: time.Second,
 			},
-			OAuth2: oauth2.Config{
-				Domain:               t.Name(),
-				AccessTokenLifespan:  time.Hour,
-				RefreshTokenLifespan: time.Hour,
-			},
 			Services: ServicesConfig{
+				RecipeStepProducts:              recipestepproductsservice.Config{},
+				RecipeStepInstruments:           recipestepinstrumentsservice.Config{},
+				RecipeStepIngredients:           recipestepingredientsservice.Config{},
+				MealPlans:                       mealplansservice.Config{},
+				MealPlanOptions:                 mealplanoptionsservice.Config{},
+				Households:                      householdsservice.Config{},
+				HouseholdInvitations:            householdinvitationsservice.Config{},
+				Websockets:                      websocketsservice.Config{},
+				Webhooks:                        webhooksservice.Config{},
+				Users:                           usersservice.Config{},
+				RecipePrepTasks:                 recipepreptasksservice.Config{},
+				RecipeStepCompletionConditions:  recipestepcompletionconditionsservice.Config{},
+				ValidIngredientStates:           validingredientstatesservice.Config{},
+				ServiceSettings:                 servicesettings.Config{},
+				ServiceSettingConfigurations:    servicesettingconfigurations.Config{},
 				ValidMeasurementUnits:           validmeasurementunits.Config{},
 				ValidInstruments:                validinstrumentsservice.Config{},
 				ValidIngredients:                validingredientsservice.Config{},
@@ -109,21 +118,6 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				RecipeSteps: recipestepsservice.Config{
 					PublicMediaURLPrefix: t.Name(),
 				},
-				RecipeStepProducts:             recipestepproductsservice.Config{},
-				RecipeStepInstruments:          recipestepinstrumentsservice.Config{},
-				RecipeStepIngredients:          recipestepingredientsservice.Config{},
-				MealPlans:                      mealplansservice.Config{},
-				MealPlanOptions:                mealplanoptionsservice.Config{},
-				Households:                     householdsservice.Config{},
-				HouseholdInvitations:           householdinvitationsservice.Config{},
-				Websockets:                     websocketsservice.Config{},
-				Webhooks:                       webhooksservice.Config{},
-				Users:                          usersservice.Config{},
-				RecipePrepTasks:                recipepreptasksservice.Config{},
-				RecipeStepCompletionConditions: recipestepcompletionconditionsservice.Config{},
-				ValidIngredientStates:          validingredientstatesservice.Config{},
-				ServiceSettings:                servicesettings.Config{},
-				ServiceSettingConfigurations:   servicesettingconfigurations.Config{},
 				Auth: authservice.Config{
 					MinimumPasswordLength: 8,
 					MinimumUsernameLength: 8,

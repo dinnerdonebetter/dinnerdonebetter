@@ -14,7 +14,6 @@ SELECT
 	oauth2_client_tokens.access_expires_at,
 	oauth2_client_tokens.refresh,
 	oauth2_client_tokens.refresh_created_at,
-	oauth2_client_tokens.refresh_expires_at,
+	oauth2_client_tokens.refresh_expires_at
 FROM oauth2_client_tokens
-WHERE oauth2_client_tokens.archived_at IS NULL
-	AND oauth2_client_tokens.id = $1;
+WHERE oauth2_client_tokens.code = $1;

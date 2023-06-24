@@ -48,6 +48,7 @@ type (
 		DataChangesTopicName  string       `json:"dataChanges,omitempty"           toml:"data_changes,omitempty"`
 		Cookies               CookieConfig `json:"cookies,omitempty"               toml:"cookies,omitempty"`
 		PASETO                PASETOConfig `json:"paseto,omitempty"                toml:"paseto,omitempty"`
+		OAuth2                OAuth2Config `json:"oauth2,omitempty"                toml:"oauth2,omitempty"`
 		Debug                 bool         `json:"debug,omitempty"                 toml:"debug,omitempty"`
 		EnableUserSignup      bool         `json:"enableUserSignup,omitempty"      toml:"enable_user_signup,omitempty"`
 		MinimumUsernameLength uint8        `json:"minimumUsernameLength,omitempty" toml:"minimum_username_length,omitempty"`
@@ -85,5 +86,26 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&cfg.PASETO, validation.Required),
 		validation.Field(&cfg.MinimumUsernameLength, validation.Required),
 		validation.Field(&cfg.MinimumPasswordLength, validation.Required),
+	)
+}
+
+// OAuth2Config represents our database configuration.
+type OAuth2Config struct {
+	_ struct{}
+
+	Domain               string        `json:"domain"               toml:"domain,omitempty"`
+	AccessTokenLifespan  time.Duration `json:"accessTokenLifespan"  toml:"access_token_lifespan,omitempty"`
+	RefreshTokenLifespan time.Duration `json:"refreshTokenLifespan" toml:"refresh_token_lifespan,omitempty"`
+	Debug                bool          `json:"debug"                toml:"debug,omitempty"`
+}
+
+var _ validation.ValidatableWithContext = (*OAuth2Config)(nil)
+
+// ValidateWithContext validates a OAuth2Config struct.
+func (cfg OAuth2Config) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, &cfg,
+		validation.Field(&cfg.AccessTokenLifespan, validation.Required),
+		validation.Field(&cfg.RefreshTokenLifespan, validation.Required),
+		validation.Field(&cfg.Domain, validation.Required),
 	)
 }

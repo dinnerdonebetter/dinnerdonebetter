@@ -189,7 +189,7 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
 
       env {
-        name  = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC"
+        name  = "DATA_CHANGES_TOPIC_NAME"
         value = google_pubsub_topic.data_changes_topic.name
       }
 
