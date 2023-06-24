@@ -60,7 +60,7 @@ resource "google_cloud_run_v2_job" "email_prober" {
   }
 }
 
-resource "google_cloud_scheduler_job" "run_data_index_scheduler" {
+resource "google_cloud_scheduler_job" "run_email_prober" {
   name             = "email-prober-schedule"
   description      = "Runs the email prober once a month"
   schedule         = "0 0 1 * *"
