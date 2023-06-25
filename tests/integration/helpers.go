@@ -2,15 +2,13 @@ package integration
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
@@ -40,7 +38,7 @@ func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
 	require.NotNil(t, i)
 }
 
-func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, cookie *http.Cookie, cookieClient, pasetoClient *apiclient.Client) {
+func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, cookie *http.Cookie, client *apiclient.Client) {
 	t.Helper()
 
 	if input == nil {
@@ -59,29 +57,22 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	cookie, err = testutils.GetLoginCookie(ctx, urlToUse, user)
 	require.NoError(t, err)
 
-	cookieClient, err = initializeCookiePoweredClient(ctx, cookie)
+	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 
-	apiClient, err := cookieClient.CreateAPIClient(ctx, cookie, &types.APIClientCreationRequestInput{
-		Name: t.Name(),
-		UserLoginInput: types.UserLoginInput{
-			Username:  user.Username,
-			Password:  user.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, user),
-		},
-	})
+	loginInput := &types.UserLoginInput{
+		Username:  user.Username,
+		Password:  user.HashedPassword,
+		TOTPToken: code,
+	}
+
+	client, err = initializeCookiePoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
-	secretKey, err := base64.RawURLEncoding.DecodeString(apiClient.ClientSecret)
-	require.NoError(t, err)
-
-	pasetoClient, err = initializePASETOPoweredClient(apiClient.ClientID, secretKey)
-	require.NoError(t, err)
-
-	return user, cookie, cookieClient, pasetoClient
+	return user, cookie, client
 }
 
-func initializeCookiePoweredClient(ctx context.Context, cookie *http.Cookie) (*apiclient.Client, error) {
+func initializeCookiePoweredClient(ctx context.Context, loginInput *types.UserLoginInput) (*apiclient.Client, error) {
 	if parsedURLToUse == nil {
 		panic("url not set!")
 	}
@@ -94,26 +85,7 @@ func initializeCookiePoweredClient(ctx context.Context, cookie *http.Cookie) (*a
 	c, err := apiclient.NewClient(parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
 		apiclient.UsingLogger(logger),
-		apiclient.UsingCookie(cookie),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if debug {
-		if setOptionErr := c.SetOptions(apiclient.UsingDebug(true)); setOptionErr != nil {
-			return nil, setOptionErr
-		}
-	}
-
-	return c, nil
-}
-
-func initializePASETOPoweredClient(clientID string, secretKey []byte) (*apiclient.Client, error) {
-	c, err := apiclient.NewClient(parsedURLToUse,
-		tracing.NewNoopTracerProvider(),
-		apiclient.UsingLogger(logging.NewNoopLogger()),
-		apiclient.UsingPASETO(clientID, secretKey),
+		apiclient.UsingLogin(ctx, loginInput),
 	)
 	if err != nil {
 		return nil, err
@@ -147,7 +119,7 @@ func generateTOTPTokenForUser(t *testing.T, u *types.User) string {
 	return code
 }
 
-func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookieClient, pasetoClient *apiclient.Client) {
+func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) *apiclient.Client {
 	t.Helper()
 
 	ctx, span := tracing.StartSpan(ctx)
@@ -162,30 +134,17 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
 	serverutils.EnsureServerIsUp(ctx, urlToUse)
 
-	adminCookie, err := testutils.GetLoginCookie(ctx, urlToUse, premadeAdminUser)
+	adminCode, err := totp.GenerateCode(strings.ToUpper(premadeAdminUser.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 
-	adminCookieClient, err := initializeCookiePoweredClient(ctx, adminCookie)
+	loginInput := &types.UserLoginInput{
+		Username:  premadeAdminUser.Username,
+		Password:  premadeAdminUser.HashedPassword,
+		TOTPToken: adminCode,
+	}
+
+	adminCookieClient, err := initializeCookiePoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
-	code, err := totp.GenerateCode(premadeAdminUser.TwoFactorSecret, time.Now().UTC())
-	require.NoError(t, err)
-
-	apiClient, err := adminCookieClient.CreateAPIClient(ctx, adminCookie, &types.APIClientCreationRequestInput{
-		Name: fmt.Sprintf("admin_paseto_client_%d", time.Now().UnixNano()),
-		UserLoginInput: types.UserLoginInput{
-			Username:  premadeAdminUser.Username,
-			Password:  premadeAdminUser.HashedPassword,
-			TOTPToken: code,
-		},
-	})
-	require.NoError(t, err)
-
-	secretKey, err := base64.RawURLEncoding.DecodeString(apiClient.ClientSecret)
-	require.NoError(t, err)
-
-	PASETOClient, err := initializePASETOPoweredClient(apiClient.ClientID, secretKey)
-	require.NoError(t, err)
-
-	return adminCookieClient, PASETOClient
+	return adminCookieClient
 }

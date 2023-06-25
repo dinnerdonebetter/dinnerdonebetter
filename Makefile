@@ -134,8 +134,8 @@ pre_lint:
 	@until fieldalignment -fix ./...; do true; done > /dev/null
 	@echo ""
 
-.PHONY: docker_lint
-docker_lint:
+.PHONY: lint_docker
+lint_docker:
 	@docker pull $(CONTAINER_LINTER_IMAGE)
 	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
@@ -157,7 +157,7 @@ golang_lint:
 		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
-lint: docker_lint queries_lint golang_lint # terraform_lint
+lint: lint_docker queries_lint golang_lint # terraform_lint
 
 .PHONY: clean_coverage
 clean_coverage:

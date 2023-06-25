@@ -1,0 +1,281 @@
+{
+	"observability": {
+		"logging": {
+			"level": 0,
+			"provider": "zerolog"
+		},
+		"tracing": {
+			"jaeger": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces",
+				"service_name": "dinner_done_better_service",
+				"spanCollectionProbability": 1
+			},
+			"provider": "jaeger"
+		}
+	},
+	"email": {
+		"sendgrid": null,
+		"mailgun": null,
+		"mailjet": null,
+		"provider": ""
+	},
+	"search": {
+		"algolia": {
+			"appID": "",
+			"writeAPIKey": "",
+			"timeout": 0
+		},
+		"elasticsearch": null,
+		"provider": "algolia"
+	},
+	"analytics": {
+		"segment": null,
+		"rudderstack": null,
+		"provider": ""
+	},
+	"featureFlags": {
+		"LaunchDarkly": null,
+		"Provider": ""
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"routing": {
+		"provider": "chi",
+		"enableCORSForLocalhost": true
+	},
+	"meta": {
+		"runMode": "development",
+		"debug": true
+	},
+	"events": {
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"localhost:6379"
+				]
+			}
+		},
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"localhost:6379"
+				]
+			}
+		}
+	},
+	"server": {
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
+		"debug": true
+	},
+	"database": {
+		"connectionDetails": "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable",
+		"debug": true,
+		"logQueries": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000
+	},
+	"services": {
+		"validIngredientGroups": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"serviceSettingConfigurations": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepVessels": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepCompletionConditions": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validIngredientPreparations": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validPreparationInstruments": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanOptionVotes": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlans": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanOptions": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validInstrumentMeasurementUnits": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepInstruments": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepIngredients": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"householdInstrumentOwnerships": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipePrepTasks": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"households": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"vendorProxy": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"userIngredientPreferences": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanEvents": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeRatings": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"serviceSettings": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepProducts": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"websockets": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanGroceryListItems": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validMeasurementConversions": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanTasks": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"validIngredientStateIngredients": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"users": {
+			"dataChangesTopicName": "data_changes",
+			"publicMediaURLPrefix": "",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "artifacts/uploads"
+					},
+					"bucketName": "avatars",
+					"uploadFilenameKey": "avatar",
+					"provider": "filesystem"
+				},
+				"debug": true
+			}
+		},
+		"recipeSteps": {
+			"mediaUploadPrefix": "https://example.website.lol",
+			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "artifacts/uploads"
+					},
+					"bucketName": "recipe_media",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "filesystem"
+				},
+				"debug": true
+			}
+		},
+		"oauth2Clients": {
+			"dataChangesTopicName": "data_changes",
+			"creationEnabled": false,
+			"minimumUsernameLength": 3,
+			"minimumPasswordLength": 8
+		},
+		"meals": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"validMeasurementUnits": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"validIngredientStates": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"webhooks": {
+			"dataChangesTopicName": "data_changes",
+			"debug": false
+		},
+		"validIngredients": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"validPreparations": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"householdInvitations": {
+			"dataChangesTopicName": "data_changes",
+			"debug": false
+		},
+		"validInstruments": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"recipes": {
+			"dataChangesTopicName": "data_changes",
+			"mediaUploadPrefix": "https://example.website.lol",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "artifacts/uploads"
+					},
+					"bucketName": "recipe_media",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "filesystem"
+				},
+				"debug": true
+			},
+			"searchFromDatabase": false
+		},
+		"auth": {
+			"dataChanges": "data_changes",
+			"cookies": {
+				"name": "ddb_api_cookie",
+				"domain": ".whatever.gov",
+				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
+				"lifetime": 86400000000000
+			},
+			"paseto": {
+				"issuer": "dinner_done_better_service",
+				"localModeKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+				"lifetime": 60000000000
+			},
+			"oauth2": {
+				"domain": "http://localhost:9000",
+				"accessTokenLifespan": 3600000000000,
+				"refreshTokenLifespan": 3600000000000,
+				"debug": false
+			},
+			"debug": true,
+			"enableUserSignup": true,
+			"minimumUsernameLength": 3,
+			"minimumPasswordLength": 8
+		}
+	}
+}

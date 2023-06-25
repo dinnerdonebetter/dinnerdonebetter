@@ -27,7 +27,7 @@ func (s *TestSuite) TestLogin() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, _, testClient := createUserAndClientForTest(ctx, t, nil)
 		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
@@ -55,7 +55,7 @@ func (s *TestSuite) TestLogin_WithoutBodyReturnsError() {
 		ctx, span := tracing.StartSpan(context.Background())
 		defer span.End()
 
-		_, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		_, _, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		u, err := url.Parse(testClient.BuildURL(ctx, nil))
 		require.NoError(t, err)
@@ -78,7 +78,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithInvalidPassword() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, _, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		// create login request.
 		var badPassword string
@@ -105,7 +105,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginAsANonexistentUser() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, _, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		exampleUserCreationInput := fakes.BuildFakeUserCreationInput()
 		r := &types.UserLoginInput{
@@ -154,7 +154,7 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, _, testClient := createUserAndClientForTest(ctx, t, nil)
 		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
@@ -183,7 +183,7 @@ func (s *TestSuite) TestPASETOGeneration() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		user, cookie, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		user, cookie, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		// Create API client.
 		exampleAPIClient := fakes.BuildFakeAPIClient()
@@ -227,7 +227,7 @@ func (s *TestSuite) TestPasswordChanging() {
 		ctx, span := tracing.StartSpan(context.Background())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, _, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		// login.
 		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
@@ -273,7 +273,7 @@ func (s *TestSuite) TestTOTPSecretChanging() {
 		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
 		defer span.End()
 
-		testUser, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		testUser, _, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
@@ -356,7 +356,7 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 		ctx, span := tracing.StartSpan(context.Background())
 		defer span.End()
 
-		u, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+		u, _, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		require.NoError(t, testClient.RequestPasswordResetToken(ctx, u.EmailAddress))
 

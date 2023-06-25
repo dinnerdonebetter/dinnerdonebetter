@@ -24,23 +24,19 @@ func ProvideOAuth2ServerImplementation(
 	dataManager database.DataManager,
 ) *server.Server {
 	manager := manage.NewManager()
+
 	manager.MapAuthorizeGenerate(generates.NewAuthorizeGenerate())
 	manager.MapAccessGenerate(generates.NewAccessGenerate())
-
-	// token memory store
+	manager.MapClientStorage(newOAuth2ClientStore(cfg.Domain, logger, tracer, dataManager))
 	manager.MapTokenStorage(&oauth2TokenStoreImpl{
 		tracer:      tracer,
 		logger:      logging.EnsureLogger(logger),
 		dataManager: dataManager,
 	})
 
-	// client memory store
-	manager.MapClientStorage(newOAuth2ClientStore(cfg.Domain, logger, tracer, dataManager))
-
 	oauth2ServerConfig := &server.Config{
 		TokenType: "Bearer",
 		AllowedResponseTypes: []oauth2.ResponseType{
-			// oauth2.Token,
 			oauth2.Code,
 		},
 		AllowedGrantTypes: []oauth2.GrantType{

@@ -16,7 +16,6 @@ import (
 
 const (
 	cookieAuthType = "cookie"
-	pasetoAuthType = "PASETO"
 )
 
 var (
@@ -54,12 +53,12 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.cookie, s.cookieClient, _ = createUserAndClientForTest(s.ctx, t, nil)
-	s.adminCookieClient, _ = buildAdminCookieAndPASETOClients(s.ctx, t)
+	s.user, s.cookie, s.cookieClient = createUserAndClientForTest(s.ctx, t, nil)
+	s.adminCookieClient = buildAdminCookieAndPASETOClients(s.ctx, t)
 }
 
 func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	for a, c := range s.eachClientExcept(pasetoAuthType) {
+	for a, c := range s.eachClientExcept() {
 		authType, testClients := a, c
 		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
 	}

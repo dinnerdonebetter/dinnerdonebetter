@@ -104,7 +104,7 @@ func (s *TestSuite) TestUsers_Reading() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
+			user, _, _ := createUserAndClientForTest(ctx, t, nil)
 
 			actual, err := testClients.admin.GetUser(ctx, user.ID)
 			if err != nil {
@@ -129,7 +129,7 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
+			user, _, _ := createUserAndClientForTest(ctx, t, nil)
 
 			permissions, err := testClients.user.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
 			if err != nil {

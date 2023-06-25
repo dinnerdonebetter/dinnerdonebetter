@@ -1,9 +1,11 @@
 package apiclient
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -12,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient/requests"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -112,6 +115,47 @@ func UsingCookie(cookie *http.Cookie) func(*Client) error {
 	}
 }
 
+// UsingLogin sets the authCookie value on the client.
+func UsingLogin(ctx context.Context, input *types.UserLoginInput) func(*Client) error {
+	return func(c *Client) error {
+		body, err := json.Marshal(input)
+		if err != nil {
+			return fmt.Errorf("generating login request body: %w", err)
+		}
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.buildVersionlessURL(ctx, nil, "users", "login"), bytes.NewReader(body))
+		if err != nil {
+			return fmt.Errorf("building request: %w", err)
+		}
+
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return fmt.Errorf("executing request: %w", err)
+		}
+
+		cookies := res.Cookies()
+		if len(cookies) == 0 {
+			return http.ErrNoCookie
+		}
+		cookie := cookies[0]
+
+		if closeErr := res.Body.Close(); closeErr != nil {
+			return closeErr
+		}
+
+		crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, cookie)
+		c.authMethod = cookieAuthMethod
+		c.authedClient.Transport = crt
+		c.authHeaderBuilder = crt
+		c.websocketDialer = websocket.DefaultDialer
+		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
+
+		c.logger.Debug("set client auth cookie")
+
+		return nil
+	}
+}
+
 // UsingOAuth2 sets the client to use OAuth2.
 func UsingOAuth2(ctx context.Context, clientID, clientSecret string) func(*Client) error {
 	genCodeChallengeS256 := func(s string) string {
@@ -176,21 +220,6 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string) func(*Clien
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
 
 		c.logger.Debug("set client oauth2 token")
-
-		return nil
-	}
-}
-
-// UsingPASETO sets the authCookie value on the client.
-func UsingPASETO(clientID string, secretKey []byte) func(*Client) error {
-	return func(c *Client) error {
-		prt := newPASETORoundTripper(c, clientID, secretKey)
-
-		c.authMethod = pasetoAuthMethod
-		c.authedClient.Transport = prt
-		c.authHeaderBuilder = prt
-		c.websocketDialer = websocket.DefaultDialer
-		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
 
 		return nil
 	}

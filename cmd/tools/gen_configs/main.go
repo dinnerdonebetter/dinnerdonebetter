@@ -182,14 +182,15 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/dev/config_files/service-config.json":                              devEnvironmentServerConfig,
-	"environments/local/config_files/service-config.json":                            localDevelopmentServiceConfig,
+	"environments/local/config_files/service-config.json":                            buildLocalDevelopmentServiceConfig(false),
+	"environments/local/config_files/service-config-local.json":                      buildLocalDevelopmentServiceConfig(true),
 	"environments/local/config_files/queue-loader-config.json":                       localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-finalizer-config.json":                localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-task-creator-config.json":             localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-grocery-list-initializer-config.json": localDevelopmentWorkerConfig,
 	"environments/local/config_files/search-indexer-config.json":                     localDevelopmentWorkerConfig,
 	"environments/testing/config_files/integration-tests-config.json":                integrationTestConfig,
+	"environments/dev/config_files/service-config.json":                              devEnvironmentServerConfig,
 }
 
 func generatePASETOKey() []byte {
@@ -372,13 +373,13 @@ func buildDevConfig() *config.InstanceConfig {
 		Events: msgconfig.Config{
 			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
 			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
@@ -575,10 +576,23 @@ func buildDevConfig() *config.InstanceConfig {
 	}
 }
 
-func localDevelopmentServiceConfig(ctx context.Context, filePath string) error {
-	cfg := buildDevConfig()
+func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string) error {
+	const localUploadsDir = "artifacts/uploads"
+	const localRedisAddr = "localhost:6379"
+	return func(ctx context.Context, filePath string) error {
+		cfg := buildDevConfig()
 
-	return saveConfig(ctx, filePath, cfg, true, true)
+		if local {
+			cfg.Database.ConnectionDetails = "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable"
+			cfg.Events.Consumers.Redis.QueueAddresses = []string{localRedisAddr}
+			cfg.Events.Publishers.Redis.QueueAddresses = []string{localRedisAddr}
+			cfg.Services.Users.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+			cfg.Services.Recipes.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+			cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+		}
+
+		return saveConfig(ctx, filePath, cfg, true, true)
+	}
 }
 
 func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
@@ -600,13 +614,13 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Events: msgconfig.Config{
 			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
 			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
