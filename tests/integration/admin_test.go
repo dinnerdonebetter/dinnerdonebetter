@@ -37,8 +37,8 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 			user, _, userClient := createUserAndClientForTest(ctx, t, nil)
 
 			// Assert that user can access service
-			_, initialCheckErr := userClient.GetAPIClients(ctx, nil)
-			require.NoError(t, initialCheckErr)
+			_, err := userClient.GetWebhooks(ctx, nil)
+			require.NoError(t, err)
 
 			input := &types.UserAccountStatusUpdateInput{
 				TargetUserID: user.ID,
@@ -49,8 +49,8 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 			assert.NoError(t, testClients.admin.UpdateUserAccountStatus(ctx, input))
 
 			// Assert user can no longer access service
-			_, subsequentCheckErr := userClient.GetAPIClients(ctx, nil)
-			assert.Error(t, subsequentCheckErr)
+			_, err = userClient.GetWebhooks(ctx, nil)
+			assert.Error(t, err)
 
 			// Clean up.
 			assert.NoError(t, testClients.admin.ArchiveUser(ctx, user.ID))

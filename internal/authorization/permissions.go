@@ -41,12 +41,6 @@ const (
 	UpdateWebhooksPermission Permission = "update.webhooks"
 	// ArchiveWebhooksPermission is a household admin permission.
 	ArchiveWebhooksPermission Permission = "archive.webhooks"
-	// CreateAPIClientsPermission is a household admin permission.
-	CreateAPIClientsPermission Permission = "create.api_clients"
-	// ReadAPIClientsPermission is a household admin permission.
-	ReadAPIClientsPermission Permission = "read.api_clients"
-	// ArchiveAPIClientsPermission is a household admin permission.
-	ArchiveAPIClientsPermission Permission = "archive.api_clients"
 
 	// CreateValidInstrumentsPermission is a household user permission.
 	CreateValidInstrumentsPermission Permission = "create.valid_instruments"
@@ -456,9 +450,6 @@ var (
 	// household member permissions.
 	householdMemberPermissions = []gorbac.Permission{
 		ReadWebhooksPermission,
-		CreateAPIClientsPermission,
-		ReadAPIClientsPermission,
-		ArchiveAPIClientsPermission,
 		ReadOAuth2ClientsPermission,
 		ReadServiceSettingsPermission,
 		SearchServiceSettingsPermission,

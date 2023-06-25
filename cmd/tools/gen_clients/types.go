@@ -44,10 +44,10 @@ var (
 		"admin": {
 			types.ModifyUserPermissionsInput{},
 		},
-		"apiClients": {
-			types.APIClient{},
-			types.APIClientCreationRequestInput{},
-			types.APIClientCreationResponse{},
+		"oauth2Clients": {
+			types.OAuth2Client{},
+			types.OAuth2ClientCreationRequestInput{},
+			types.OAuth2ClientCreationResponse{},
 		},
 		"auth": {
 			types.ChangeActiveHouseholdInput{},

@@ -43,7 +43,6 @@ type (
 		authenticator              authentication.Authenticator
 		featureFlagManager         featureflags.FeatureFlagManager
 		userDataManager            types.UserDataManager
-		apiClientManager           types.APIClientDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
 		encoderDecoder             encoding.ServerEncoderDecoder
 		secretGenerator            random.Generator
@@ -90,7 +89,6 @@ func ProvideService(
 		encoderDecoder:             encoder,
 		config:                     cfg,
 		userDataManager:            dataManager,
-		apiClientManager:           dataManager,
 		householdMembershipManager: householdMembershipManager,
 		authenticator:              authenticator,
 		sessionManager:             sessionManager,

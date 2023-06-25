@@ -25,7 +25,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/admin"
-	apiclientsservice "github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationssservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
@@ -89,7 +88,6 @@ func Build(
 		usersservice.Providers,
 		householdsservice.Providers,
 		householdinvitationssservice.Providers,
-		apiclientsservice.Providers,
 		webhooksservice.Providers,
 		adminservice.Providers,
 		validinstrumentsservice.Providers,

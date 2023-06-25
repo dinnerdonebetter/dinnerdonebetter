@@ -149,7 +149,6 @@ type (
 		BuildLoginHandler(bool) func(http.ResponseWriter, *http.Request)
 		EndSessionHandler(http.ResponseWriter, *http.Request)
 		CycleCookieSecretHandler(http.ResponseWriter, *http.Request)
-		PASETOHandler(http.ResponseWriter, *http.Request)
 		ChangeActiveHouseholdHandler(http.ResponseWriter, *http.Request)
 
 		PermissionFilterMiddleware(permissions ...authorization.Permission) func(next http.Handler) http.Handler

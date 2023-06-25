@@ -56,7 +56,6 @@ type (
 		UserID                           string                          `json:"userID"`
 		HouseholdID                      string                          `json:"householdID,omitempty"`
 		ValidMeasurementUnitID           string                          `json:"validMeasurementUnitID,omitempty"`
-		APIClientID                      string                          `json:"apiClientID,omitempty"`
 		ValidPreparationInstrumentID     string                          `json:"validPreparationInstrumentID,omitempty"`
 		MealPlanOptionVoteID             string                          `json:"mealPlanOptionVoteID,omitempty"`
 		ValidIngredientMeasurementUnitID string                          `json:"validIngredientMeasurementUnitID,omitempty"`

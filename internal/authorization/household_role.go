@@ -107,21 +107,6 @@ func (r householdRoleCollection) CanArchiveWebhooks() bool {
 	return hasPermission(ArchiveWebhooksPermission, r.Roles...)
 }
 
-// CanCreateAPIClients returns whether a user can create API clients or not.
-func (r householdRoleCollection) CanCreateAPIClients() bool {
-	return hasPermission(CreateAPIClientsPermission, r.Roles...)
-}
-
-// CanSeeAPIClients returns whether a user can view API clients or not.
-func (r householdRoleCollection) CanSeeAPIClients() bool {
-	return hasPermission(ReadAPIClientsPermission, r.Roles...)
-}
-
-// CanDeleteAPIClients returns whether a user can delete API clients or not.
-func (r householdRoleCollection) CanDeleteAPIClients() bool {
-	return hasPermission(ArchiveAPIClientsPermission, r.Roles...)
-}
-
 // PermissionSummary renders a permission summary.
 func (r householdRoleCollection) PermissionSummary() map[string]bool {
 	return map[string]bool{
@@ -134,8 +119,5 @@ func (r householdRoleCollection) PermissionSummary() map[string]bool {
 		"CanSeeWebhooks":                 r.CanSeeWebhooks(),
 		"CanUpdateWebhooks":              r.CanUpdateWebhooks(),
 		"CanArchiveWebhooks":             r.CanArchiveWebhooks(),
-		"CanCreateAPIClients":            r.CanCreateAPIClients(),
-		"CanSeeAPIClients":               r.CanSeeAPIClients(),
-		"CanDeleteAPIClients":            r.CanDeleteAPIClients(),
 	}
 }

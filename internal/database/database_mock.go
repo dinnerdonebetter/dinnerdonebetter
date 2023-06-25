@@ -35,7 +35,6 @@ func NewMockDatabase() *MockDatabase {
 		MealPlanOptionVoteDataManagerMock:             &mocktypes.MealPlanOptionVoteDataManagerMock{},
 		UserDataManagerMock:                           &mocktypes.UserDataManagerMock{},
 		AdminUserDataManagerMock:                      &mocktypes.AdminUserDataManagerMock{},
-		APIClientDataManagerMock:                      &mocktypes.APIClientDataManagerMock{},
 		PasswordResetTokenDataManagerMock:             &mocktypes.PasswordResetTokenDataManagerMock{},
 		WebhookDataManagerMock:                        &mocktypes.WebhookDataManagerMock{},
 		ValidMeasurementUnitDataManagerMock:           &mocktypes.ValidMeasurementUnitDataManagerMock{},
@@ -81,7 +80,6 @@ type MockDatabase struct {
 	*mocktypes.MealPlanOptionDataManagerMock
 	*mocktypes.MealPlanOptionVoteDataManagerMock
 	*mocktypes.UserDataManagerMock
-	*mocktypes.APIClientDataManagerMock
 	*mocktypes.PasswordResetTokenDataManagerMock
 	*mocktypes.WebhookDataManagerMock
 	*mocktypes.HouseholdDataManagerMock

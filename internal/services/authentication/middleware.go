@@ -1,69 +1,17 @@
 package authentication
 
 import (
-	"bytes"
 	"context"
-	"encoding/base64"
-	"encoding/gob"
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/o1egl/paseto"
 )
-
-const (
-	signatureHeaderKey           = "Signature"
-	pasetoAuthorizationHeaderKey = "Authorization"
-)
-
-var (
-	errTokenExpired  = errors.New("token expired")
-	errTokenNotFound = errors.New("no token data found")
-)
-
-func (s *service) fetchSessionContextDataFromPASETO(ctx context.Context, req *http.Request) (*types.SessionContextData, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-
-	if rawToken := req.Header.Get(pasetoAuthorizationHeaderKey); rawToken != "" {
-		var token paseto.JSONToken
-
-		if err := paseto.NewV2().Decrypt(rawToken, s.config.PASETO.LocalModeKey, &token, nil); err != nil {
-			return nil, observability.PrepareError(err, span, "decrypting PASETO")
-		}
-
-		if time.Now().UTC().After(token.Expiration) {
-			return nil, errTokenExpired
-		}
-
-		base64Encoded := token.Get(pasetoDataKey)
-		gobEncoded, err := base64.RawURLEncoding.DecodeString(base64Encoded)
-		if err != nil {
-			return nil, observability.PrepareError(err, span, "decoding base64 encoded GOB payload")
-		}
-
-		var reqContext *types.SessionContextData
-		if err = gob.NewDecoder(bytes.NewReader(gobEncoded)).Decode(&reqContext); err != nil {
-			return nil, observability.PrepareError(err, span, "decoding GOB encoded session info payload")
-		}
-
-		logger.Debug("fetched context from PASETO")
-
-		return reqContext, nil
-	}
-
-	return nil, errTokenNotFound
-}
 
 // CookieRequirementMiddleware requires every request have a valid cookie.
 func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
@@ -118,17 +66,6 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			s.overrideSessionContextDataValuesWithSessionData(ctx, sessionCtxData)
 
 			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
-			return
-		}
-
-		tokenSessionContextData, err := s.fetchSessionContextDataFromPASETO(ctx, req)
-		if err != nil && !(errors.Is(err, errTokenNotFound) || errors.Is(err, errTokenExpired)) {
-			observability.AcknowledgeError(err, logger, span, "extracting token from request")
-		}
-
-		if tokenSessionContextData != nil {
-			// no need to fetch info since tokens are so short-lived.
-			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, tokenSessionContextData)))
 			return
 		}
 

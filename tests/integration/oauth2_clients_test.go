@@ -96,8 +96,8 @@ func (s *TestSuite) TestOAuth2Clients_Listing() {
 					Password:  premadeAdminUser.HashedPassword,
 					TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
 				}
-				createdOAuth2Client, apiClientCreationErr := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
-				requireNotNilAndNoProblems(t, createdOAuth2Client, apiClientCreationErr)
+				createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
+				requireNotNilAndNoProblems(t, createdOAuth2Client, err)
 
 				expected = append(expected, createdOAuth2Client.ID)
 			}

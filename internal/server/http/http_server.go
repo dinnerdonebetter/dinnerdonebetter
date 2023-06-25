@@ -35,7 +35,6 @@ type (
 		householdInvitationsService            types.HouseholdInvitationDataService
 		usersService                           types.UserDataService
 		adminService                           types.AdminService
-		apiClientsService                      types.APIClientDataService
 		webhooksService                        types.WebhookDataService
 		validInstrumentsService                types.ValidInstrumentDataService
 		validIngredientsService                types.ValidIngredientDataService
@@ -95,7 +94,6 @@ func ProvideHTTPServer(
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
 	householdInvitationsService types.HouseholdInvitationDataService,
-	apiClientsService types.APIClientDataService,
 	validInstrumentsService types.ValidInstrumentDataService,
 	validIngredientsService types.ValidIngredientDataService,
 	validIngredientGroupsService types.ValidIngredientGroupDataService,
@@ -166,7 +164,6 @@ func ProvideHTTPServer(
 		mealPlanOptionsService:                 mealPlanOptionsService,
 		mealPlanOptionVotesService:             mealPlanOptionVotesService,
 		validMeasurementUnitsService:           validMeasurementUnitsService,
-		apiClientsService:                      apiClientsService,
 		validPreparationInstrumentsService:     validPreparationInstrumentsService,
 		validIngredientMeasurementUnitsService: validIngredientMeasurementUnitsService,
 		mealPlanEventsService:                  mealPlanEventsService,
