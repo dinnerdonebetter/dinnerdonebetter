@@ -183,9 +183,10 @@ func TestProvideDatabaseClient(T *testing.T) {
 		ctx := context.Background()
 
 		exampleConfig := &config.Config{
-			Debug:           true,
-			RunMigrations:   false,
-			MaxPingAttempts: 1,
+			Debug:                    true,
+			OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
+			RunMigrations:            false,
+			MaxPingAttempts:          1,
 		}
 
 		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, tracing.NewNoopTracerProvider())

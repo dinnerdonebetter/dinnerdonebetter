@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -22,38 +24,47 @@ const (
 	googleCloudIndicatorEnvVar = "RUNNING_IN_GOOGLE_CLOUD_RUN"
 )
 
-func getConfig(ctx context.Context) *config.InstanceConfig {
+func getConfig(ctx context.Context) (*config.InstanceConfig, error) {
 	var cfg *config.InstanceConfig
 	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
-		client, secretManagerCreationErr := secretmanager.NewClient(ctx)
-		if secretManagerCreationErr != nil {
-			log.Fatal(secretManagerCreationErr)
+		client, err := secretmanager.NewClient(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("instantiating secret manager: %w", err)
 		}
 
-		c, cfgHydrateErr := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx, client)
-		if cfgHydrateErr != nil {
-			log.Fatal(cfgHydrateErr)
+		c, err := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx, client)
+		if err != nil {
+			return nil, fmt.Errorf("fetching config from GCP: %w", err)
 		}
+
 		cfg = c
 	} else if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
-		configBytes, configReadErr := os.ReadFile(configFilepath)
-		if configReadErr != nil {
-			log.Fatal(configReadErr)
+		configBytes, err := os.ReadFile(configFilepath)
+		if err != nil {
+			return nil, fmt.Errorf("reading local config file: %w", err)
 		}
 
-		if err := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-			log.Fatal(err)
+		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+			return nil, fmt.Errorf("decoding config file contents: %w", err)
 		}
 	} else {
-		log.Fatal("no config provided")
+		return nil, errors.New("no config provided")
 	}
 
-	return cfg
+	if err := cfg.ValidateWithContext(ctx, true); err != nil {
+		return nil, fmt.Errorf("validating config: %w", err)
+	}
+
+	return cfg, nil
 }
 
 func main() {
 	rootCtx := context.Background()
-	cfg := getConfig(rootCtx)
+
+	cfg, err := getConfig(rootCtx)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// only allow initialization to take so long.
 	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
@@ -61,7 +72,7 @@ func main() {
 	// build our server struct.
 	srv, err := build.Build(buildCtx, cfg)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	cancel()

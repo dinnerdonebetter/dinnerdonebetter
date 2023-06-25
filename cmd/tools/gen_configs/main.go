@@ -91,8 +91,9 @@ const (
 	maxAttempts           = 50
 	defaultPASETOLifetime = 1 * time.Minute
 
-	contentTypeJSON    = "application/json"
-	workerQueueAddress = "worker_queue:6379"
+	contentTypeJSON               = "application/json"
+	workerQueueAddress            = "worker_queue:6379"
+	localOAuth2TokenEncryptionKey = debugCookieSecret
 
 	pasteoIssuer = "dinner_done_better_service"
 )
@@ -390,12 +391,13 @@ func buildDevConfig() *config.InstanceConfig {
 		},
 		Server: localServer,
 		Database: dbconfig.Config{
-			Debug:             true,
-			RunMigrations:     true,
-			LogQueries:        true,
-			MaxPingAttempts:   maxAttempts,
-			PingWaitPeriod:    time.Second,
-			ConnectionDetails: devPostgresDBConnDetails,
+			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
+			Debug:                    true,
+			RunMigrations:            true,
+			LogQueries:               true,
+			MaxPingAttempts:          maxAttempts,
+			PingWaitPeriod:           time.Second,
+			ConnectionDetails:        devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
 			Logging: localLogConfig,
@@ -634,12 +636,13 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			StartupDeadline: time.Minute,
 		},
 		Database: dbconfig.Config{
-			Debug:             true,
-			RunMigrations:     true,
-			LogQueries:        true,
-			MaxPingAttempts:   maxAttempts,
-			PingWaitPeriod:    1500 * time.Millisecond,
-			ConnectionDetails: devPostgresDBConnDetails,
+			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
+			Debug:                    true,
+			RunMigrations:            true,
+			LogQueries:               true,
+			MaxPingAttempts:          maxAttempts,
+			PingWaitPeriod:           1500 * time.Millisecond,
+			ConnectionDetails:        devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
 			Logging: logcfg.Config{

@@ -69,10 +69,11 @@ func init() {
 	}
 
 	cfg := &dbconfig.Config{
-		ConnectionDetails: database.ConnectionDetails(dbAddr),
-		Debug:             false,
-		RunMigrations:     false,
-		MaxPingAttempts:   500,
+		OAuth2TokenEncryptionKey: "                                ",
+		ConnectionDetails:        database.ConnectionDetails(dbAddr),
+		Debug:                    false,
+		RunMigrations:            false,
+		MaxPingAttempts:          500,
 	}
 
 	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg, tracing.NewNoopTracerProvider())
@@ -105,11 +106,11 @@ func init() {
 		panic(err)
 	}
 
-	clientID, err := random.GenerateHexEncodedString(ctx, 32)
+	clientID, err := random.GenerateHexEncodedString(ctx, 16)
 	if err != nil {
 		panic(err)
 	}
-	clientSecret, err := random.GenerateHexEncodedString(ctx, 32)
+	clientSecret, err := random.GenerateHexEncodedString(ctx, 16)
 	if err != nil {
 		panic(err)
 	}

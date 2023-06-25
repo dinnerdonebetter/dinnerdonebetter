@@ -6,31 +6,24 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"io"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
 )
 
-var errSecretNotTheRightLength = errors.New("secret is not the right length")
-
 type (
 	Encryptor interface {
-		Encrypt(ctx context.Context, text, secret string) (string, error)
+		Encrypt(ctx context.Context, content string) (string, error)
 	}
 )
 
-func (e *aesImpl) Encrypt(ctx context.Context, text, secret string) (string, error) {
+func (e *aesImpl) Encrypt(ctx context.Context, content string) (string, error) {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := e.logger.WithValue("text", text)
+	logger := e.logger.WithValue("content", content)
 
-	if len(secret) != 32 {
-		return "", observability.PrepareAndLogError(errSecretNotTheRightLength, logger, span, "secret is too small")
-	}
-
-	aesBlock, err := aes.NewCipher([]byte(secret))
+	aesBlock, err := aes.NewCipher(e.key[:])
 	if err != nil {
 		return "", observability.PrepareAndLogError(err, logger, span, "creating aes cipher")
 	}
@@ -45,7 +38,7 @@ func (e *aesImpl) Encrypt(ctx context.Context, text, secret string) (string, err
 		return "", observability.PrepareAndLogError(err, logger, span, "generating nonce")
 	}
 
-	cipheredText := gcmInstance.Seal(nonce, nonce, []byte(text), nil)
+	cipheredText := gcmInstance.Seal(nonce, nonce, []byte(content), nil)
 
 	return base64.URLEncoding.EncodeToString(cipheredText), nil
 }

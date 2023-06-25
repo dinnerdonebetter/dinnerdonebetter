@@ -82,6 +82,7 @@
 		"debug": true
 	},
 	"database": {
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
 		"debug": true,
 		"logQueries": false,

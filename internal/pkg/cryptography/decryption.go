@@ -11,26 +11,22 @@ import (
 
 type (
 	Decryptor interface {
-		Decrypt(ctx context.Context, text, secret string) (string, error)
+		Decrypt(ctx context.Context, content string) (string, error)
 	}
 )
 
-func (s *aesImpl) Decrypt(ctx context.Context, text, secret string) (string, error) {
-	_, span := s.tracer.StartSpan(ctx)
+func (e *aesImpl) Decrypt(ctx context.Context, content string) (string, error) {
+	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue("text", text)
+	logger := e.logger.WithValue("content", content)
 
-	if len(secret) != 32 {
-		return "", observability.PrepareAndLogError(errSecretNotTheRightLength, logger, span, "secret is too small")
-	}
-
-	ciphered, err := base64.URLEncoding.DecodeString(text)
+	ciphered, err := base64.URLEncoding.DecodeString(content)
 	if err != nil {
-		return "", observability.PrepareAndLogError(err, logger, span, "decoding ciphered text")
+		return "", observability.PrepareAndLogError(err, logger, span, "decoding ciphered content")
 	}
 
-	aesBlock, err := aes.NewCipher([]byte(secret))
+	aesBlock, err := aes.NewCipher(e.key[:])
 	if err != nil {
 		return "", observability.PrepareAndLogError(err, logger, span, "creating aes cipher")
 	}
@@ -45,7 +41,7 @@ func (s *aesImpl) Decrypt(ctx context.Context, text, secret string) (string, err
 
 	originalText, err := gcmInstance.Open(nil, nonce, cipheredText, nil)
 	if err != nil {
-		return "", observability.PrepareAndLogError(err, logger, span, "decrypting ciphered text")
+		return "", observability.PrepareAndLogError(err, logger, span, "decrypting ciphered content")
 	}
 
 	return string(originalText), nil

@@ -54,7 +54,7 @@ type (
 		GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*OAuth2ClientToken, error)
 		GetOAuth2ClientTokenByAccess(ctx context.Context, access string) (*OAuth2ClientToken, error)
 		GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) (*OAuth2ClientToken, error)
-		CreateOAuth2ClientToken(ctx context.Context, input *OAuth2ClientTokenDatabaseCreationInput) (*OAuth2ClientToken, error)
+		CreateOAuth2ClientToken(ctx context.Context, input *OAuth2ClientTokenDatabaseCreationInput) error
 		ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access string) error
 		ArchiveOAuth2ClientTokenByCode(ctx context.Context, code string) error
 		ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error

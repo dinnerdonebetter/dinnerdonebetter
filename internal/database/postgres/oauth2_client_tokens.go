@@ -52,6 +52,21 @@ func (q *Querier) scanOAuth2ClientToken(ctx context.Context, scan database.Scann
 	x.AccessExpiresIn = accessExpiresAt.Sub(x.AccessCreateAt)
 	x.RefreshExpiresIn = refreshExpiresAt.Sub(x.RefreshCreateAt)
 
+	x.Code, err = q.oauth2ClientTokenEncDec.Decrypt(ctx, x.Code)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
+	}
+
+	x.Access, err = q.oauth2ClientTokenEncDec.Decrypt(ctx, x.Access)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
+	}
+
+	x.Refresh, err = q.oauth2ClientTokenEncDec.Decrypt(ctx, x.Refresh)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
+	}
+
 	return x, nil
 }
 
@@ -149,16 +164,31 @@ func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, code string
 var oauth2ClientTokenCreationQuery string
 
 // CreateOAuth2ClientToken creates an OAuth2 client token in the database.
-func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
+func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return ErrNilInputProvided
 	}
 
 	logger := q.logger.WithValue(keys.OAuth2ClientTokenIDKey, input.ID)
 	now := q.currentTime()
+
+	encryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, input.Code)
+	if err != nil {
+		return observability.PrepareError(err, span, "decrypting oauth2 token code")
+	}
+
+	encryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, input.Access)
+	if err != nil {
+		return observability.PrepareError(err, span, "decrypting oauth2 token access")
+	}
+
+	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, input.Refresh)
+	if err != nil {
+		return observability.PrepareError(err, span, "decrypting oauth2 token refresh")
+	}
 
 	args := []any{
 		input.ID,
@@ -166,47 +196,27 @@ func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAut
 		input.BelongsToUser,
 		input.RedirectURI,
 		input.Scope,
-		input.Code,
+		encryptedCode,
 		input.CodeChallenge,
 		input.CodeChallengeMethod,
 		now,
 		now.Add(input.CodeExpiresIn),
-		input.Access,
+		encryptedAccess,
 		now,
 		now.Add(input.AccessExpiresIn),
-		input.Refresh,
+		encryptedRefresh,
 		now,
 		now.Add(input.RefreshExpiresIn),
 	}
 
 	// create the oauth2 client token.
-	if err := q.performWriteQuery(ctx, q.db, "oauth2 client token creation", oauth2ClientTokenCreationQuery, args); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing oauth2 client token creation query")
+	if err = q.performWriteQuery(ctx, q.db, "oauth2 client token creation", oauth2ClientTokenCreationQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "performing oauth2 client token creation query")
 	}
 
-	x := &types.OAuth2ClientToken{
-		ID:                  input.ID,
-		ClientID:            input.ClientID,
-		BelongsToUser:       input.BelongsToUser,
-		RedirectURI:         input.RedirectURI,
-		Scope:               input.Scope,
-		Code:                input.Code,
-		CodeChallenge:       input.CodeChallenge,
-		CodeChallengeMethod: input.CodeChallengeMethod,
-		CodeCreateAt:        input.CodeCreateAt,
-		CodeExpiresIn:       input.CodeExpiresIn,
-		Access:              input.Access,
-		AccessCreateAt:      input.AccessCreateAt,
-		AccessExpiresIn:     input.AccessExpiresIn,
-		Refresh:             input.Refresh,
-		RefreshCreateAt:     input.RefreshCreateAt,
-		RefreshExpiresIn:    input.RefreshExpiresIn,
-	}
-
-	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenIDKey, x.ID)
 	logger.Info("oauth2 client token created")
 
-	return x, nil
+	return nil
 }
 
 //go:embed queries/oauth2_client_tokens/archive_by_access.sql
@@ -225,11 +235,16 @@ func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access s
 	logger = logger.WithValue(keys.OAuth2ClientTokenAccessKey, access)
 	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
 
-	args := []any{
-		access,
+	encryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, access)
+	if err != nil {
+		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "oauth2 client token archive by access", archiveOAuth2ClientTokenByAccessQuery, args); err != nil {
+	args := []any{
+		encryptedAccess,
+	}
+
+	if err = q.performWriteQuery(ctx, q.db, "oauth2 client token archive by access", archiveOAuth2ClientTokenByAccessQuery, args); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating oauth2 client token by access")
 	}
 
@@ -254,11 +269,16 @@ func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code strin
 	logger = logger.WithValue(keys.OAuth2ClientTokenCodeKey, code)
 	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
 
-	args := []any{
-		code,
+	encryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, code)
+	if err != nil {
+		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "oauth2 client token archive by code", archiveOAuth2ClientTokenByCodeQuery, args); err != nil {
+	args := []any{
+		encryptedCode,
+	}
+
+	if err = q.performWriteQuery(ctx, q.db, "oauth2 client token archive by code", archiveOAuth2ClientTokenByCodeQuery, args); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating oauth2 client token by code")
 	}
 
@@ -283,11 +303,16 @@ func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh
 	logger = logger.WithValue(keys.OAuth2ClientTokenRefreshKey, refresh)
 	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
 
-	args := []any{
-		refresh,
+	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, refresh)
+	if err != nil {
+		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "oauth2 client token archive by refresh", archiveOAuth2ClientTokenByRefreshQuery, args); err != nil {
+	args := []any{
+		encryptedRefresh,
+	}
+
+	if err = q.performWriteQuery(ctx, q.db, "oauth2 client token archive by refresh", archiveOAuth2ClientTokenByRefreshQuery, args); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating oauth2 client token by refresh")
 	}
 

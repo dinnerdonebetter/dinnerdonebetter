@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 
-	memstore "github.com/alexedwards/scs/v2/memstore"
+	"github.com/alexedwards/scs/v2/memstore"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +19,8 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			ConnectionDetails: "example_connection_string",
+			ConnectionDetails:        "example_connection_string",
+			OAuth2TokenEncryptionKey: "example",
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

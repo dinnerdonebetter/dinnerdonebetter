@@ -19,8 +19,8 @@ const (
 	// OAuth2ClientIDURIParamKey is used for referring to OAuth2 client IDs in router params.
 	OAuth2ClientIDURIParamKey = "oauth2ClientID"
 
-	clientIDSize     = 32
-	clientSecretSize = 32
+	clientIDSize     = 16
+	clientSecretSize = 16
 )
 
 // ListHandler is a handler that returns a list of OAuth2 clients.

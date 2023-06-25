@@ -20,16 +20,18 @@ func TestStandardEncryptor(T *testing.T) {
 
 		ctx := context.Background()
 		expected := t.Name()
-		secret, err := random.GenerateRawBytes(ctx, 32)
+		secret, err := random.GenerateHexEncodedString(ctx, 16)
 		require.NoError(t, err)
 
-		encryptor := NewAESEncryptorDecryptor(tracing.NewNoopTracerProvider(), logging.NewNoopLogger())
+		encryptor, err := NewAESEncryptorDecryptor(tracing.NewNoopTracerProvider(), logging.NewNoopLogger(), []byte(secret))
+		require.NotNil(t, encryptor)
+		require.NoError(t, err)
 
-		encrypted, err := encryptor.Encrypt(ctx, expected, string(secret))
+		encrypted, err := encryptor.Encrypt(ctx, expected)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, encrypted)
 
-		actual, err := encryptor.Decrypt(ctx, encrypted, string(secret))
+		actual, err := encryptor.Decrypt(ctx, encrypted)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 	})

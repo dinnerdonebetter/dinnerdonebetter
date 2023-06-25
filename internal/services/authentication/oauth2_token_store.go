@@ -47,7 +47,7 @@ func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo
 		RefreshExpiresIn:    info.GetRefreshExpiresIn(),
 	}
 
-	if _, err := s.dataManager.CreateOAuth2ClientToken(ctx, input); err != nil {
+	if err := s.dataManager.CreateOAuth2ClientToken(ctx, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "creating oauth2 client token")
 	}
 
