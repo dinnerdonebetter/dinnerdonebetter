@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/aes"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -108,13 +109,17 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	fakeDB, sqlMock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
 
+	encDec, err := aes.NewEncryptorDecryptor(tracing.NewNoopTracerProvider(), logging.NewNoopLogger(), []byte("blahblahblahblahblahblahblahblah"))
+	require.NoError(t, err)
+
 	c := &Querier{
-		db:         fakeDB,
-		logQueries: false,
-		logger:     logging.NewNoopLogger(),
-		timeFunc:   defaultTimeFunc,
-		tracer:     tracing.NewTracerForTest("test"),
-		sqlBuilder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:                      fakeDB,
+		logQueries:              false,
+		logger:                  logging.NewNoopLogger(),
+		timeFunc:                defaultTimeFunc,
+		tracer:                  tracing.NewTracerForTest("test"),
+		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		oauth2ClientTokenEncDec: encDec,
 	}
 
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}

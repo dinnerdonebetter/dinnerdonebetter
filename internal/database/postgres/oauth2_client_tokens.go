@@ -253,7 +253,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access s
 	logger = logger.WithValue(keys.OAuth2ClientTokenAccessKey, access)
 	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
 
-	encryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, access)
+	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, access)
 	if err != nil {
 		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
@@ -321,7 +321,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh
 	logger = logger.WithValue(keys.OAuth2ClientTokenRefreshKey, refresh)
 	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
 
-	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, refresh)
+	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
 	if err != nil {
 		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}

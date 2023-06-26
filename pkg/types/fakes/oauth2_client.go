@@ -2,6 +2,7 @@ package fakes
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -16,6 +17,28 @@ func BuildFakeOAuth2Client() *types.OAuth2Client {
 		ClientID:     BuildFakeID(),
 		ClientSecret: BuildFakePassword(),
 		CreatedAt:    BuildFakeTime(),
+	}
+}
+
+// BuildFakeOAuth2ClientToken builds a faked OAuth2ClientToken.
+func BuildFakeOAuth2ClientToken() *types.OAuth2ClientToken {
+	return &types.OAuth2ClientToken{
+		RefreshCreateAt:     BuildFakeTime(),
+		AccessCreateAt:      BuildFakeTime(),
+		CodeCreateAt:        BuildFakeTime(),
+		RedirectURI:         fake.URL(),
+		Scope:               "*",
+		Code:                buildUniqueString(),
+		CodeChallenge:       buildUniqueString(),
+		CodeChallengeMethod: "S256",
+		BelongsToUser:       BuildFakeID(),
+		Access:              buildUniqueString(),
+		ClientID:            BuildFakeID(),
+		Refresh:             buildUniqueString(),
+		ID:                  BuildFakeID(),
+		CodeExpiresIn:       time.Hour,
+		AccessExpiresIn:     time.Hour,
+		RefreshExpiresIn:    time.Hour,
 	}
 }
 
